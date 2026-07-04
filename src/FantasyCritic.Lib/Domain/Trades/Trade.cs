@@ -319,7 +319,7 @@ public class Trade
 
             allOpenCounterPartySlotNumbers = allOpenCounterPartySlotNumbers.Where(x => !(x.SlotNumber == slotResult.Value && x.CounterPick == game.CounterPick)).ToList();
             PublisherGame newPublisherGame = new PublisherGame(CounterParty.PublisherID, Guid.NewGuid(), game.MasterGameYear.MasterGame.GameName, completionTime,
-                game.CounterPick, existingPublisherGame.ManualCriticScore, existingPublisherGame.ManualWillNotRelease, existingPublisherGame.FantasyPoints, game.MasterGameYear, slotResult.Value, null, null, null, TradeID);
+                game.CounterPick, existingPublisherGame.ManualCriticScore, existingPublisherGame.ManualWillNotRelease, existingPublisherGame.FantasyPoints, game.MasterGameYear, slotResult.Value, null, null, null, TradeID, null);
             newPublisherGames.Add(newPublisherGame);
         }
         foreach (var game in CounterPartyMasterGames)
@@ -335,7 +335,7 @@ public class Trade
 
             allOpenProposerSlotNumbers = allOpenProposerSlotNumbers.Where(x => !(x.SlotNumber == slotResult.Value && x.CounterPick == game.CounterPick)).ToList();
             PublisherGame newPublisherGame = new PublisherGame(Proposer.PublisherID, Guid.NewGuid(), game.MasterGameYear.MasterGame.GameName, completionTime,
-                game.CounterPick, existingPublisherGame.ManualCriticScore, existingPublisherGame.ManualWillNotRelease, existingPublisherGame.FantasyPoints, game.MasterGameYear, slotResult.Value, null, null, null, TradeID);
+                game.CounterPick, existingPublisherGame.ManualCriticScore, existingPublisherGame.ManualWillNotRelease, existingPublisherGame.FantasyPoints, game.MasterGameYear, slotResult.Value, null, null, null, TradeID, null);
             newPublisherGames.Add(newPublisherGame);
         }
 

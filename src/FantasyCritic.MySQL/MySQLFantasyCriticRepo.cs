@@ -3747,7 +3747,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var conditionalDropGame = await _masterGameRepo.GetMasterGameYearOrThrow(bidEntity.ConditionalDropMasterGameID.Value, year);
         var fakePublisherGame = new PublisherGame(bidEntity.PublisherID, Guid.NewGuid(),
             conditionalDropGame.MasterGame.GameName, bidEntity.Timestamp,
-            false, null, false, null, conditionalDropGame, 0, null, null, null, null);
+            false, null, false, null, conditionalDropGame, 0, null, null, null, null, null);
 
         return fakePublisherGame;
     }

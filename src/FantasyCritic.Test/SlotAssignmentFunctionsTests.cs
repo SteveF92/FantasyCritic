@@ -243,6 +243,6 @@ public class SlotAssignmentFunctionsTests
             publisherID, Guid.NewGuid(), gameName,
             Instant.MinValue, false, null, false, null,
             new MasterGameYear(masterGame, 2026),
-            slotNumber, null, null, null, null);
+            slotNumber, null, null, null, null, null);
     }
 }

@@ -56,18 +56,6 @@ public class LeagueDraft
         return Result.Success();
     }
 
-    public LeagueDraft UpdateDraft(int gamesToDraft, int counterPicksToDraft)
-    {
-        return new LeagueDraft(DraftID, LeagueYearKey, DraftNumber, Name, ScheduledDate, gamesToDraft, counterPicksToDraft,
-            CounterPicksMustBeFromThisDraft, DraftOrderSet, PlayStatus, PublisherDraftInfo, DraftStartedTimestamp);
-    }
-
-    public LeagueDraft UpdateDraft(string name, LocalDate? scheduledDate, int gamesToDraft, int counterPicksToDraft)
-    {
-        return new LeagueDraft(DraftID, LeagueYearKey, DraftNumber, name, scheduledDate, gamesToDraft, counterPicksToDraft,
-            CounterPicksMustBeFromThisDraft, DraftOrderSet, PlayStatus, PublisherDraftInfo, DraftStartedTimestamp);
-    }
-
     public LeagueDraft UpdateDraft(string name, LocalDate? scheduledDate, int gamesToDraft, int counterPicksToDraft,
         bool counterPicksMustBeFromThisDraft)
     {

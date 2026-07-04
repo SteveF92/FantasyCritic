@@ -248,6 +248,7 @@ internal sealed class GetDraftStatusTestBuilder
             null,
             null,
             null,
+            null,
             null);
     }
 
