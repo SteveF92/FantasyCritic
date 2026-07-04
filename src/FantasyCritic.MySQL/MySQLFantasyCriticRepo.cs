@@ -1274,8 +1274,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             await connection.ExecuteAsync(updateLeagueYearSQL, new
             {
-                standardGames = settingsToChange.StandardGames,
-                counterPicks = settingsToChange.CounterPicks,
+                standardGames = settingsToChange.NewLeagueOptions.StandardGames,
+                counterPicks = settingsToChange.NewLeagueOptions.CounterPicks,
                 leagueID = draft.LeagueYearKey.LeagueID,
                 year = draft.LeagueYearKey.Year,
             }, transaction);

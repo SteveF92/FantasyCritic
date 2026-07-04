@@ -9,9 +9,10 @@ public static class SlotAssignmentFunctions
     /// so they stay inside the special-slot range in the new configuration.
     /// Returns an empty dictionary when the standard-game count is unchanged.
     /// </summary>
-    public static IReadOnlyDictionary<Guid, int> GetNewSlotAssignments(
-        int newStandardGames, LeagueYear currentLeagueYear, IReadOnlyList<Publisher> publishers)
+    public static IReadOnlyDictionary<Guid, int> GetNewSlotAssignments(LeagueYear currentLeagueYear,
+        LeagueOptions newLeagueOptions, IReadOnlyList<Publisher> publishers)
     {
+        var newStandardGames = newLeagueOptions.StandardGames;
         var slotCountShift = newStandardGames - currentLeagueYear.Options.StandardGames;
         Dictionary<Guid, int> finalSlotAssignments = new Dictionary<Guid, int>();
         if (slotCountShift == 0)
