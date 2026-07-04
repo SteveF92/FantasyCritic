@@ -6,15 +6,15 @@
       <template v-if="!pendingDraft.readyToDraft">
         <h2 v-if="pendingDraftIsFirst">This year is not active yet!</h2>
         <h4 v-else>
-          Your next draft —
+          The next draft —
           <strong>{{ pendingDraft.name }}</strong>
           — isn't ready to start yet.
         </h4>
         <ul>
           <li v-for="error in pendingDraft.startDraftErrors" :key="error">{{ error }}</li>
         </ul>
-        <p v-if="pendingDraftIsFirst">Please note that once you start the draft, you can no longer add/remove players. Please make sure that everyone who wants to play this year joins beforehand.</p>
-        <b-button v-if="mustSetDraftOrder" v-b-modal="'editDraftOrderForm'" variant="success">Set Draft Order</b-button>
+        <p v-if="pendingDraftIsFirst && isManager">Please note that once you start the draft, you can no longer add/remove players. Please make sure that everyone who wants to play this year joins beforehand.</p>
+        <b-button v-if="mustSetDraftOrder && isManager" v-b-modal="'editDraftOrderForm'" variant="success">Set Draft Order</b-button>
         <b-button v-if="!pendingDraftIsFirst && isManager" variant="secondary" :to="manageDraftsRoute">Manage Drafts</b-button>
       </template>
 
@@ -30,10 +30,10 @@
           <b-button v-b-modal="'startDraft'" variant="primary" class="mx-2">Start Drafting!</b-button>
         </template>
         <template v-else>
-          <span v-if="pendingDraftIsFirst">Things are all set! Your league manager can choose when to begin the draft.</span>
+          <span v-if="pendingDraftIsFirst">Things are all set! The league manager can choose when to begin the draft.</span>
           <span v-else>
             <strong>{{ pendingDraft.name }}</strong>
-            is ready to go! Your league manager can choose when to begin.
+            is ready to go! The league manager can choose when to begin.
           </span>
         </template>
       </template>
@@ -58,14 +58,14 @@
         <router-link :to="manageDraftsRoute">reschedule it on the Manage Drafts page</router-link>
         whenever you're ready — there's no hard deadline.
       </span>
-      <span v-else>Your league manager can start or reschedule whenever they're ready.</span>
+      <span v-else>The league manager can start or reschedule whenever they're ready.</span>
     </div>
 
     <!-- Soft nudge: no scheduled date and not yet imminent -->
-    <div v-if="!pendingDraft.scheduledDate && !pendingDraftIsImminent" class="alert alert-secondary">
-      There is no scheduled date set for your draft —
+    <div v-if="!pendingDraft.scheduledDate && !pendingDraftIsImminent && isManager" class="alert alert-secondary">
+      There is no scheduled date set for this draft —
       <router-link :to="manageDraftsRoute">set one on the Manage Drafts page</router-link>
-      to help your players plan ahead.
+      to help the players plan ahead.
     </div>
   </div>
 </template>
