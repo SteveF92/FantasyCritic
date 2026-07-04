@@ -215,7 +215,7 @@ public class FactCheckerController : FantasyCriticController
         var leagueYears = new List<LeagueYear>();
         foreach (var league in leaguesForUser)
         {
-            if (!league.LeagueIsActiveInActiveYear || league.UserIsFollowingLeague || !league.UserIsInLeague || league.League.TestLeague)
+            if (!league.LeagueIsActiveInActiveYear || !league.UserIsInLeague || league.League.TestLeague)
             {
                 continue;
             }
