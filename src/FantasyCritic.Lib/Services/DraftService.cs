@@ -458,7 +458,7 @@ public class DraftService
             settingsToChange = settingsToChange with { SlotAssignments = slotAssignments };
         }
 
-        await _fantasyCriticRepo.CreateLeagueDraft(draft, newDraftAction, settingsToChange);
+        await _fantasyCriticRepo.CreateLeagueDraft(leagueYear, draft, newDraftAction, settingsToChange);
 
         return Result.Success();
     }
