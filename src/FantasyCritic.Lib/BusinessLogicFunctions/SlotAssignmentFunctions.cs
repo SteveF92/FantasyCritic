@@ -5,16 +5,21 @@ public static class SlotAssignmentFunctions
     /// <summary>
     /// Computes new slot numbers for every non-counter-pick game when the standard-game count is changing.
     /// Normal slots are compacted to 0, 1, 2 … in their current order.
-    /// Games that currently occupy special slots are shifted forward by the same amount the slot count grew,
+    /// Games that currently occupy special slots are shifted forward by the net growth in normal (non-special)
+    /// slot count — i.e. (newStandardGames - oldStandardGames) minus (newSpecialSlots - oldSpecialSlots) —
     /// so they stay inside the special-slot range in the new configuration.
-    /// Returns an empty dictionary when the standard-game count is unchanged.
+    /// Returns an empty dictionary when the normal slot count is unchanged (including the case where
+    /// new special slots are added in equal number to new standard games).
     /// </summary>
     public static IReadOnlyDictionary<Guid, int> GetNewSlotAssignments(LeagueYear currentLeagueYear,
         LeagueOptions newLeagueOptions, IReadOnlyList<Publisher> publishers)
     {
-        var newStandardGames = newLeagueOptions.StandardGames;
-        var slotCountShift = newStandardGames - currentLeagueYear.Options.StandardGames;
         Dictionary<Guid, int> finalSlotAssignments = new Dictionary<Guid, int>();
+
+        var newStandardGames = newLeagueOptions.StandardGames;
+        var numberOfNewSpecialSlots = newLeagueOptions.SpecialGameSlots.Count - currentLeagueYear.Options.SpecialGameSlots.Count;
+        var slotCountShift = newStandardGames - currentLeagueYear.Options.StandardGames - numberOfNewSpecialSlots;
+
         if (slotCountShift == 0)
         {
             return finalSlotAssignments;

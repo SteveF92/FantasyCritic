@@ -125,8 +125,8 @@ public class FantasyCriticService
         }
 
         var league = leagueYear.League;
-        LeagueOptions newLeagueOptions = new LeagueOptions(parameters);
-        var validateOptions = newLeagueOptions.Validate();
+        LeagueOptions options = new LeagueOptions(parameters);
+        var validateOptions = options.Validate();
         if (validateOptions.IsFailure)
         {
             return Result.Failure(validateOptions.Error);
@@ -141,13 +141,13 @@ public class FantasyCriticService
         int maxStandardGames = publishers.Select(publisher => publisher.PublisherGames.Count(x => !x.CounterPick)).DefaultIfEmpty(0).Max();
         int maxCounterPicks = publishers.Select(publisher => publisher.PublisherGames.Count(x => x.CounterPick)).DefaultIfEmpty(0).Max();
 
-        if (maxStandardGames > newLeagueOptions.StandardGames)
+        if (maxStandardGames > options.StandardGames)
         {
-            return Result.Failure($"Cannot reduce number of standard games to {newLeagueOptions.StandardGames} as a publisher has {maxStandardGames} standard games currently.");
+            return Result.Failure($"Cannot reduce number of standard games to {options.StandardGames} as a publisher has {maxStandardGames} standard games currently.");
         }
-        if (maxCounterPicks > newLeagueOptions.CounterPicks)
+        if (maxCounterPicks > options.CounterPicks)
         {
-            return Result.Failure($"Cannot reduce number of counter picks to {newLeagueOptions.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
+            return Result.Failure($"Cannot reduce number of counter picks to {options.CounterPicks} as a publisher has {maxCounterPicks} counter picks currently.");
         }
 
         if (leagueYear.Drafts.Count == 1 && firstDraft is not null)
@@ -183,20 +183,20 @@ public class FantasyCriticService
         int maxWillNotReleaseGamesDropped = publishers.Select(publisher => publisher.WillNotReleaseGamesDropped).DefaultIfEmpty(0).Max();
         int maxWillReleaseGamesDropped = publishers.Select(publisher => publisher.WillReleaseGamesDropped).DefaultIfEmpty(0).Max();
 
-        if (maxUnrestrictedReleaseStatusGamesDropped > newLeagueOptions.UnrestrictedReleaseStatusDroppableGames && newLeagueOptions.UnrestrictedReleaseStatusDroppableGames != -1)
+        if (maxUnrestrictedReleaseStatusGamesDropped > options.UnrestrictedReleaseStatusDroppableGames && options.UnrestrictedReleaseStatusDroppableGames != -1)
         {
-            return Result.Failure($"Cannot reduce number of unrestricted droppable games to {newLeagueOptions.UnrestrictedReleaseStatusDroppableGames} as a publisher has already dropped {maxUnrestrictedReleaseStatusGamesDropped} games.");
+            return Result.Failure($"Cannot reduce number of unrestricted droppable games to {options.UnrestrictedReleaseStatusDroppableGames} as a publisher has already dropped {maxUnrestrictedReleaseStatusGamesDropped} games.");
         }
-        if (maxWillNotReleaseGamesDropped > newLeagueOptions.WillNotReleaseDroppableGames && newLeagueOptions.WillNotReleaseDroppableGames != -1)
+        if (maxWillNotReleaseGamesDropped > options.WillNotReleaseDroppableGames && options.WillNotReleaseDroppableGames != -1)
         {
-            return Result.Failure($"Cannot reduce number of 'will not release' droppable games to {newLeagueOptions.WillNotReleaseDroppableGames} as a publisher has already dropped {maxWillNotReleaseGamesDropped} games.");
+            return Result.Failure($"Cannot reduce number of 'will not release' droppable games to {options.WillNotReleaseDroppableGames} as a publisher has already dropped {maxWillNotReleaseGamesDropped} games.");
         }
-        if (maxWillReleaseGamesDropped > newLeagueOptions.WillReleaseDroppableGames && newLeagueOptions.WillReleaseDroppableGames != -1)
+        if (maxWillReleaseGamesDropped > options.WillReleaseDroppableGames && options.WillReleaseDroppableGames != -1)
         {
-            return Result.Failure($"Cannot reduce number of 'will release' droppable games to {newLeagueOptions.WillReleaseDroppableGames} as a publisher has already dropped {maxWillReleaseGamesDropped} games.");
+            return Result.Failure($"Cannot reduce number of 'will release' droppable games to {options.WillReleaseDroppableGames} as a publisher has already dropped {maxWillReleaseGamesDropped} games.");
         }
 
-        var slotAssignments = SlotAssignmentFunctions.GetNewSlotAssignments(leagueYear, newLeagueOptions, publishers);
+        var slotAssignments = SlotAssignmentFunctions.GetNewSlotAssignments(leagueYear, options, publishers);
         var eligibilityOverrides = leagueYear.EligibilityOverrides;
         var tagOverrides = leagueYear.TagOverrides;
         var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
@@ -210,12 +210,12 @@ public class FantasyCriticService
                 firstDraft.CounterPicksMustBeFromThisDraft)];
         }
 
-        LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, newLeagueOptions,
+        LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, options,
             leagueDrafts, eligibilityOverrides, tagOverrides,
             leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked,
             leagueYear.UnderReview, parameters.LeagueYearName);
 
-        var optionsDiff = newLeagueOptions.GetDifferences(leagueYear.Options);
+        var optionsDiff = options.GetDifferences(leagueYear.Options);
         var draftDiff = leagueYear.Drafts.Count == 1 && firstDraft is not null
             ? leagueDrafts[0].GetDifferences(leagueYear.FirstDraft)
             : new LeagueOptionsDifferences([]);
