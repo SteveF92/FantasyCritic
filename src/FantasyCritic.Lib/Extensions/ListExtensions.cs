@@ -31,4 +31,12 @@ public static class ListExtensions
     {
         return source.Select(x => x!);
     }
+
+    public static IEnumerable<T> ReplaceElement<T>(this IEnumerable<T> source, Func<T, bool> selector, T replacement)
+    {
+        ArgumentNullException.ThrowIfNull(source);
+        ArgumentNullException.ThrowIfNull(selector);
+
+        return source.Select(x => selector(x) ? replacement : x);
+    }
 }

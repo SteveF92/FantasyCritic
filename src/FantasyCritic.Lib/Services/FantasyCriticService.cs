@@ -2,6 +2,7 @@ using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Domain.Requests;
@@ -113,6 +114,12 @@ public class FantasyCriticService
             false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
             .ToList();
 
+        var draftValidationResult = DraftFunctions.ValidateDrafts(options, drafts, null);
+        if (draftValidationResult.Any())
+        {
+            return Result.Failure<League>(string.Join("\n", draftValidationResult));
+        }
+
         await _fantasyCriticRepo.CreateLeague(newLeague, parameters.LeagueYearParameters.Year, options, drafts);
         return Result.Success(newLeague);
     }
@@ -208,6 +215,12 @@ public class FantasyCriticService
             leagueDrafts = [leagueYear.FirstDraft.UpdateDraft(
                 resolvedName, firstDraft.ScheduledDate, firstDraft.GamesToDraft, firstDraft.CounterPicksToDraft,
                 firstDraft.CounterPicksMustBeFromThisDraft)];
+        }
+
+        var draftValidationResult = DraftFunctions.ValidateDrafts(newLeagueOptions, leagueDrafts, null);
+        if (draftValidationResult.Any())
+        {
+            return Result.Failure(string.Join("\n", draftValidationResult));
         }
 
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, newLeagueOptions,

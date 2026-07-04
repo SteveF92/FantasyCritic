@@ -41,6 +41,7 @@ public class DraftService
         {
             throw new Exception($"No pending draft found for league: {leagueYear.Key}");
         }
+
         await _fantasyCriticRepo.StartDraft(leagueYear, leagueYear.PendingDraft);
         var updatedLeagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(leagueYear.League.LeagueID, leagueYear.Year);
         var autoDraftResult = await AutoDraftForLeague(updatedLeagueYear, 0, 0);
@@ -457,6 +458,14 @@ public class DraftService
             settingsToChange = settingsToChange with { SlotAssignments = slotAssignments };
         }
 
+        var leagueOptions = settingsToChange?.NewLeagueOptions ?? leagueYear.Options;
+        var allDrafts = leagueYear.Drafts.Concat([draft]).ToList();
+        var draftValidationResult = DraftFunctions.ValidateDrafts(leagueOptions, allDrafts, null);
+        if (draftValidationResult.Any())
+        {
+            return Result.Failure(string.Join("\n", draftValidationResult));
+        }
+
         await _fantasyCriticRepo.CreateLeagueDraft(leagueYear, draft, newDraftAction, settingsToChange);
 
         return Result.Success();
@@ -494,6 +503,13 @@ public class DraftService
         if (!differences.HasChanges)
         {
             return Result.Success();
+        }
+
+        var updatedDraftList = leagueYear.Drafts.ReplaceElement(x => x.DraftID == updatedDraft.DraftID, updatedDraft).ToList();
+        var draftValidationResult = DraftFunctions.ValidateDrafts(leagueYear.Options, updatedDraftList, null);
+        if (draftValidationResult.Any())
+        {
+            return Result.Failure(string.Join("\n", draftValidationResult));
         }
 
         var timestamp = _clock.GetCurrentInstant();

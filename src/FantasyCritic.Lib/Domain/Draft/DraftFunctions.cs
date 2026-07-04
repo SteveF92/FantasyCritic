@@ -83,6 +83,59 @@ public static class DraftFunctions
             errors.Add("The conference manager has not enabled drafting yet.");
         }
 
+        var draftValidationResult = ValidateDrafts(leagueYear.Options, leagueYear.Drafts, leagueDraft);
+        if (draftValidationResult.Any())
+        {
+            errors.AddRange(draftValidationResult);
+        }
+
+        return errors;
+    }
+
+    public static IReadOnlyList<string> ValidateDrafts(LeagueOptions leagueOptions, IReadOnlyList<LeagueDraft> leagueDrafts, LeagueDraft? draftStartingNow)
+    {
+        List<string> errors = new List<string>();
+
+        foreach (var draft in leagueDrafts)
+        {
+            if (draft.GamesToDraft < 0)
+            {
+                errors.Add($"Draft '{draft.Name}': games to draft cannot be negative.");
+            }
+
+            if (draft.CounterPicksToDraft < 0)
+            {
+                errors.Add($"Draft '{draft.Name}': counter picks to draft cannot be negative.");
+            }
+
+            if (draft.GamesToDraft == 0 && draft.CounterPicksToDraft == 0)
+            {
+                errors.Add($"Draft '{draft.Name}': must draft at least one game.");
+            }
+
+            if (draft.CounterPicksMustBeFromThisDraft && draft.CounterPicksToDraft > draft.GamesToDraft)
+            {
+                errors.Add($"Draft '{draft.Name}': can't have more drafted counter picks than drafted games if they must come from this draft.");
+            }
+        }
+
+        if (draftStartingNow != null)
+        {
+            var gamesDraftedSoFar = leagueDrafts.Where(x => x.DraftNumber < draftStartingNow.DraftNumber).Sum(x => x.GamesToDraft);
+            var remainingSlots = leagueOptions.StandardGames - gamesDraftedSoFar;
+            if (draftStartingNow.GamesToDraft > remainingSlots)
+            {
+                errors.Add($"This draft is configured to draft {draftStartingNow.GamesToDraft} standard games, but the league only has {remainingSlots} standard game slots remaining. Add more slots or reduce the number of games to draft.");
+            }
+
+            var counterPicksDraftedSoFar = leagueDrafts.Where(x => x.DraftNumber < draftStartingNow.DraftNumber).Sum(x => x.CounterPicksToDraft);
+            var remainingCounterPickSlots = leagueOptions.CounterPicks - counterPicksDraftedSoFar;
+            if (draftStartingNow.CounterPicksToDraft > remainingCounterPickSlots)
+            {
+                errors.Add($"This draft is configured to draft {draftStartingNow.CounterPicksToDraft} counter picks, but the league only has {remainingCounterPickSlots} counter pick slots remaining. Add more slots or reduce the number of counter picks to draft.");
+            }
+        }
+
         return errors;
     }
 
