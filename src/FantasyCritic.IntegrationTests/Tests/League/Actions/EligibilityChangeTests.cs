@@ -80,9 +80,9 @@ public class EligibilityChangeTests : IntegrationTestBase
             _league.Year, _league.LeagueID, _league.Publishers[3].PublisherID, null);
         var gameG = await SelectBidTargetAsync(p4Available, usedMasterGameIDs);
 
-        var possibleCPs = await _league.Publishers[1].Session.League.PossibleCounterPicksAsync(
+        var possibleCPKs = await _league.Publishers[1].Session.League.PossibleCounterPicksAsync(
             _league.Publishers[1].PublisherID);
-        var p2CounterPickTarget = await SelectCounterPickTargetAsync(possibleCPs);
+        var p2CounterPickTarget = await SelectCounterPickTargetAsync(possibleCPKs);
 
         var p3DroppableGames = p3Publisher.Games
             .Where(g => !g.CounterPick && !g.DropBlocked
@@ -252,9 +252,9 @@ public class EligibilityChangeTests : IntegrationTestBase
     }
 
     private async Task<Guid> SelectCounterPickTargetAsync(
-        ICollection<PublisherGameViewModel> possibleCPs)
+        ICollection<PublisherGameViewModel> possibleCPKs)
     {
-        var candidates = possibleCPs
+        var candidates = possibleCPKs
             .Where(g => g.MasterGame != null && !g.MasterGame.DelayContention && !g.MasterGame.IsReleased)
             .Select(g => g.MasterGame!.MasterGameID)
             .ToList();

@@ -92,6 +92,11 @@
               <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="publicLeagues" :fields="publicLeagueFields" bordered striped responsive small>
                 <template #cell(leagueName)="data">
                   <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
+                  <font-awesome-icon
+                    v-if="!data.item.anyDraftStarted"
+                    v-b-popover.hover.top="'This league has not started a draft yet for this year.'"
+                    icon="hourglass-half"
+                    class="not-started-icon" />
                 </template>
               </b-table>
             </div>
@@ -210,6 +215,10 @@ export default {
 <style scoped>
 .welcome-header {
   text-align: center;
+}
+.not-started-icon {
+  margin-left: 8px;
+  color: #888;
 }
 .welcome-area {
   margin-top: 10px;

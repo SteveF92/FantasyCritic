@@ -208,6 +208,16 @@ public class ActionProcessor
     private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague,
         PublisherStateSet publisherStateSet, bool specialAuctions, IReadOnlyList<PublisherGame> conditionalDropsThatHaveSucceeded)
     {
+        if (!leagueYear.Options.EnableBids && !specialAuctions)
+        {
+            //Only special auctions are processed if bids are not enabled for a league.
+            var allFailedBids = activeBidsForLeague
+                .Select(x => new FailedPickupBid(x, "Bids are not enabled in your league.", _systemWideValues, _currentDate))
+                .ToList();
+            var allFailSet = new ProcessedBidSet([], allFailedBids);
+            return allFailSet;
+        }
+
         LeagueYear updatedLeagueYear = publisherStateSet.GetUpdatedLeagueYear(leagueYear);
         var gamesGroupedByPublisherAndGame = activeBidsForLeague.GroupBy(x => (x.Publisher.PublisherID, x.MasterGame.MasterGameID));
         var duplicateBidGroups = gamesGroupedByPublisherAndGame.Where(x => x.Count() > 1).ToList();
@@ -248,7 +258,7 @@ public class ActionProcessor
             }
 
             bool counterPickWillBeConditionallyDropped = activeBid.CounterPick && conditionalDropsThatHaveSucceeded.ContainsGame(activeBid.MasterGame);
-            var claimResult = GameEligibilityFunctions.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, false, specialAuctions, counterPickWillBeConditionallyDropped,
+            var claimResult = GameEligibilityFunctions.CanClaimGame(gameRequest, null, validConditionalDropSlot, true, null, specialAuctions, counterPickWillBeConditionallyDropped,
                 _currentDate, activeBid.AllowIneligibleSlot, _allTags);
             if (claimResult.NoSpaceError)
             {
@@ -478,7 +488,7 @@ public class ActionProcessor
             throw new NotImplementedException($"Unknown tiebreak system: {leagueYear.Options.TiebreakSystem}");
         }
 
-        var bestBidsByDraftPosition = remainingGamesAfterTiebreaks.WhereMax(x => x.PickupBid.Publisher.DraftPosition).ToList();
+        var bestBidsByDraftPosition = remainingGamesAfterTiebreaks.WhereMax(x => x.PickupBid.Publisher.FirstDraftInfo.DraftPosition).ToList();
         if (bestBidsByDraftPosition.Count == 1)
         {
             var singleBid = bestBidsByDraftPosition.Single();

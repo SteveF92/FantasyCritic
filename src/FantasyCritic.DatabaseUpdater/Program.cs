@@ -61,6 +61,7 @@ public class Program
                     .WithScriptsFromFileSystem(sequentialScriptsPath)
                     // Run-always scripts (e.g., views / stored procedures)
                     .WithScripts(GetRunAlwaysScripts(idempotentScriptsPath))
+                    .WithExecutionTimeout(TimeSpan.FromMinutes(30))
                     .LogTo(loggerFactory)
                     .Build();
 

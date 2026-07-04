@@ -8,21 +8,19 @@ namespace FantasyCritic.Web.Models.RoundTrip;
 public class LeagueYearSettingsViewModel
 {
     [JsonConstructor]
-    public LeagueYearSettingsViewModel(Guid leagueID, int year, string? leagueYearName, int standardGames, int gamesToDraft, int counterPicks,
-        int counterPicksToDraft, int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedUnrestrictedReleaseStatusDroppableGames,
+    public LeagueYearSettingsViewModel(Guid leagueID, int year, string? leagueYearName, int standardGames, int counterPicks,
+        int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedUnrestrictedReleaseStatusDroppableGames,
         bool unlimitedWillNotReleaseDroppableGames, bool unlimitedWillReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible,
-        int minimumBidAmount, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem, string releaseSystem,
+        int minimumBidAmount, bool enableBids, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem, string releaseSystem,
         string ineligibleGameSystem,
-        LocalDate counterPickDeadline, LocalDate? mightReleaseDroppableDate, LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots)
+        LocalDate counterPickDeadline, LocalDate? mightReleaseDroppableDate, LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots, bool bidsOnlyBeforeNextScheduledDraft)
     {
         LeagueID = leagueID;
         Year = year;
         LeagueYearName = leagueYearName;
 
         StandardGames = standardGames;
-        GamesToDraft = gamesToDraft;
         CounterPicks = counterPicks;
-        CounterPicksToDraft = counterPicksToDraft;
         UnrestrictedReleaseStatusDroppableGames = unrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
         WillReleaseDroppableGames = willReleaseDroppableGames;
@@ -34,6 +32,7 @@ public class LeagueYearSettingsViewModel
         CounterPicksBlockDrops = counterPicksBlockDrops;
         AllowMoveIntoIneligible = allowMoveIntoIneligible;
         MinimumBidAmount = minimumBidAmount;
+        EnableBids = enableBids;
         DraftSystem = draftSystem;
         PickupSystem = pickupSystem;
         ScoringSystem = scoringSystem;
@@ -46,6 +45,7 @@ public class LeagueYearSettingsViewModel
 
         Tags = tags;
         SpecialGameSlots = specialGameSlots;
+        BidsOnlyBeforeNextScheduledDraft = bidsOnlyBeforeNextScheduledDraft;
     }
 
     public LeagueYearSettingsViewModel(LeagueYear leagueYear)
@@ -55,9 +55,7 @@ public class LeagueYearSettingsViewModel
         LeagueYearName = leagueYear.LeagueYearName;
 
         StandardGames = leagueYear.Options.StandardGames;
-        GamesToDraft = leagueYear.Options.GamesToDraft;
         CounterPicks = leagueYear.Options.CounterPicks;
-        CounterPicksToDraft = leagueYear.Options.CounterPicksToDraft;
 
         UnrestrictedReleaseStatusDroppableGames = leagueYear.Options.UnrestrictedReleaseStatusDroppableGames;
         if (leagueYear.Options.UnrestrictedReleaseStatusDroppableGames == -1)
@@ -82,6 +80,8 @@ public class LeagueYearSettingsViewModel
         CounterPicksBlockDrops = leagueYear.Options.CounterPicksBlockDrops;
         AllowMoveIntoIneligible = leagueYear.Options.AllowMoveIntoIneligible;
         MinimumBidAmount = leagueYear.Options.MinimumBidAmount;
+        EnableBids = leagueYear.Options.EnableBids;
+        BidsOnlyBeforeNextScheduledDraft = leagueYear.Options.BidsOnlyBeforeNextScheduledDraft;
 
         DraftSystem = leagueYear.Options.DraftSystem.Value;
         PickupSystem = leagueYear.Options.PickupSystem.Value;
@@ -114,12 +114,8 @@ public class LeagueYearSettingsViewModel
 
     [Range(1, 50)]
     public int StandardGames { get; }
-    [Range(1, 50)]
-    public int GamesToDraft { get; }
     [Range(0, 50)]
     public int CounterPicks { get; }
-    [Range(0, 50)]
-    public int CounterPicksToDraft { get; }
 
     [Range(0, 100)]
     public int UnrestrictedReleaseStatusDroppableGames { get; }
@@ -136,6 +132,8 @@ public class LeagueYearSettingsViewModel
     public bool AllowMoveIntoIneligible { get; }
 
     public int MinimumBidAmount { get; }
+    public bool EnableBids { get; }
+    public bool BidsOnlyBeforeNextScheduledDraft { get; }
     public string DraftSystem { get; }
     public string PickupSystem { get; }
     public string ScoringSystem { get; }
@@ -206,9 +204,9 @@ public class LeagueYearSettingsViewModel
         var leagueTags = Tags.ToDomain(tagDictionary);
         var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
 
-        LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName, StandardGames, GamesToDraft, CounterPicks, CounterPicksToDraft,
-            unrestrictedReleaseStatusDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount,
-            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate);
+        LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName, StandardGames, CounterPicks,
+            unrestrictedReleaseStatusDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount, EnableBids,
+            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
         return parameters;
     }
 }

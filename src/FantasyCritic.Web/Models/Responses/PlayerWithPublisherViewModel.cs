@@ -26,7 +26,7 @@ public class PlayerWithPublisherViewModel
         PreviousYearWinner = previousYearWinner;
         Ranking = ranking;
         ProjectedRanking = projectedRanking;
-        DraftPosition = publisher.DraftPosition;
+        DraftPosition = publisher.GetDraftPosition(leagueYear.DraftForPublisherDisplayOrder.DraftID);
     }
 
     public Guid? InviteID { get; }

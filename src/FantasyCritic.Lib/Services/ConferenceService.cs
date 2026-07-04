@@ -46,11 +46,19 @@ public class ConferenceService
         }
 
         IEnumerable<MinimalConferenceYearInfo> conferenceYears = new List<MinimalConferenceYearInfo>() { new MinimalConferenceYearInfo(parameters.LeagueYearParameters.Year, false, false) };
-        IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, PlayStatus.NotStartedDraft) };
+        IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(parameters.LeagueYearParameters.Year, false, false) };
         //Primary league's conferenceID must start out null so that the database foreign keys work. It'll get set in a moment.
         League primaryLeague = new League(Guid.NewGuid(), parameters.PrimaryLeagueName, parameters.Manager, null, parameters.ConferenceName, leagueYears, true, false, parameters.CustomRulesConference, false, 0);
         Conference newConference = new Conference(Guid.NewGuid(), parameters.ConferenceName, parameters.Manager, conferenceYears, parameters.CustomRulesConference, primaryLeague.LeagueID, new List<Guid>() { primaryLeague.LeagueID });
-        await _conferenceRepo.CreateConference(newConference, primaryLeague, parameters.LeagueYearParameters.Year, options);
+        var leagueYearKey = new LeagueYearKey(primaryLeague.LeagueID, parameters.LeagueYearParameters.Year);
+        var drafts = parameters.Drafts.Select((d, i) => new LeagueDraft(
+            Guid.NewGuid(), leagueYearKey, i + 1,
+            d.Name ?? (i == 0 ? "Initial Draft" : $"Draft {i + 1}"),
+            d.ScheduledDate, d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
+            false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
+            .ToList();
+
+        await _conferenceRepo.CreateConference(newConference, primaryLeague, parameters.LeagueYearParameters.Year, options, drafts);
         return Result.Success(newConference);
     }
 
@@ -74,10 +82,16 @@ public class ConferenceService
             return Result.Failure("Primary league is not active in that year.");
         }
 
-        IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(year, false, PlayStatus.NotStartedDraft) };
+        IEnumerable<MinimalLeagueYearInfo> leagueYears = new List<MinimalLeagueYearInfo>() { new MinimalLeagueYearInfo(year, false, false) };
         League newLeague = new League(Guid.NewGuid(), leagueName, leagueManager.ToMinimal(), conference.ConferenceID, conference.ConferenceName,
             leagueYears, true, false, conference.CustomRulesConference, false, 0);
-        await _conferenceRepo.AddLeagueToConference(conference, primaryLeagueYear, newLeague);
+        var clonedDrafts = primaryLeagueYear.Drafts
+            .Select(d => new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(newLeague.LeagueID, year),
+                d.DraftNumber, d.Name, d.ScheduledDate,
+                d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
+                false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
+            .ToList();
+        await _conferenceRepo.AddLeagueToConference(conference, primaryLeagueYear, newLeague, clonedDrafts);
         return Result.Success();
     }
 
@@ -101,7 +115,13 @@ public class ConferenceService
         }
 
         var mostRecentActivePlayers = await _fantasyCriticRepo.GetActivePlayersForLeagueYear(leagueToRenew.LeagueID, year - 1);
-        await _fantasyCriticRepo.AddNewLeagueYear(leagueToRenew, year, primaryLeagueYear.Options, mostRecentActivePlayers);
+        var clonedDrafts = primaryLeagueYear.Drafts
+            .Select(d => new LeagueDraft(Guid.NewGuid(), new LeagueYearKey(leagueToRenew.LeagueID, year),
+                d.DraftNumber, d.Name, d.ScheduledDate,
+                d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
+                false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
+            .ToList();
+        await _fantasyCriticRepo.AddNewLeagueYear(leagueToRenew, year, primaryLeagueYear.Options, mostRecentActivePlayers, clonedDrafts);
         return Result.Success();
     }
 

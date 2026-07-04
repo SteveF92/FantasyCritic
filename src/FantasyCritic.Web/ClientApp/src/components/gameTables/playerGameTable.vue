@@ -168,7 +168,7 @@ export default {
       return formatPublisherGameReleaseDate(publisherGame);
     },
     getAcquiredDate(publisherGame) {
-      return formatPublisherGameAcquiredDate(publisherGame);
+      return formatPublisherGameAcquiredDate(publisherGame, this.leagueYear.drafts);
     },
     getRemovedDate(publisherGame) {
       return formatPublisherGameRemovedDate(publisherGame);

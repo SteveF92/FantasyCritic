@@ -58,8 +58,6 @@ public class MasterGameYear : IEquatable<MasterGameYear>
     public bool CouldRelease() => MasterGame.CouldReleaseInYear(Year);
     public bool CouldReleaseInQuarter(YearQuarter yearQuarter) => MasterGame.CouldReleaseInQuarter(yearQuarter);
 
-    public bool IsRelevantInYear(bool strict) => IsRelevantInYear(Year, strict);
-
     public bool IsReleasingToday(LocalDate currentDate)
     {
         return MasterGame.ReleaseDate == currentDate;
@@ -85,7 +83,7 @@ public class MasterGameYear : IEquatable<MasterGameYear>
         return quarter.ToDateInterval().Contains(MasterGame.ReleaseDate!.Value);
     }
 
-    public bool IsRelevantInYear(int year, bool strict)
+    public bool IsRelevantInYear(int year)
     {
         if (MasterGame.AddedTimestamp.InUtc().Year > year)
         {
@@ -97,13 +95,7 @@ public class MasterGameYear : IEquatable<MasterGameYear>
             return false;
         }
 
-        var hypeFactorLimit = 3;
-        if (!strict)
-        {
-            hypeFactorLimit = 0;
-        }
-
-        if (DateAdjustedHypeFactor <= hypeFactorLimit)
+        if (DateAdjustedHypeFactor <= 0)
         {
             return false;
         }

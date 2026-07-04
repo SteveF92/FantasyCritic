@@ -28,10 +28,15 @@ BEGIN
   WHERE tbl_league_hasuser.LeagueID = P_LeagueID;
   
   
-  SELECT YEAR,
-         PlayStatus
+  SELECT tbl_league_year.YEAR,
+         EXISTS (
+           SELECT 1 FROM tbl_league_draft ld
+           WHERE ld.LeagueID = tbl_league_year.LeagueID
+             AND ld.Year = tbl_league_year.Year
+             AND ld.PlayStatus <> 'NotStartedDraft'
+         ) AS AnyDraftStarted
   FROM tbl_league_year
-  WHERE LeagueID = P_LeagueID;
+  WHERE tbl_league_year.LeagueID = P_LeagueID;
   
   
   SELECT UserID,

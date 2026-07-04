@@ -44,7 +44,7 @@ internal class LeagueEntity
     public string ManagerDisplayName { get; set; } = null!;
     public string ManagerEmailAddress { get; set; } = null!;
 
-    public bool MostRecentYearOneShot { get; set; }
+    public string MostRecentYearType { get; set; } = null!;
 
     public Guid? LeagueRoyaleGroupID { get; set; }
     

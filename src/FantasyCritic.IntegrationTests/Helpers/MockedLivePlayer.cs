@@ -121,7 +121,12 @@ internal sealed class DraftSimulator
         {
             var leagueYear = await _observerSession.League.GetLeagueYearAsync(leagueID, year, null);
 
-            if (leagueYear.PlayStatus.DraftFinished)
+            // Stop when no draft is actively running (handles both single-draft and multi-draft).
+            // PlayStatus.DraftFinished can be misleading in multi-draft leagues because it reflects
+            // only the first draft; instead, check the per-draft statuses directly.
+            bool anyDraftActive = leagueYear.Drafts.Any(d =>
+                d.PlayStatus == "Drafting" || d.PlayStatus == "DraftPaused");
+            if (!anyDraftActive)
                 return;
 
             var nextPublisher = leagueYear.Publishers.SingleOrDefault(p => p.NextToDraft)
@@ -136,7 +141,7 @@ internal sealed class DraftSimulator
                     + "(e.g. no available games found for the slot). "
                     + "Check TopAvailableGames for this publisher.");
 
-            if (leagueYear.PlayStatus.DraftingCounterPicks)
+            if (leagueYear.ActiveDraft()?.DraftingCounterPicks == true)
                 await player.DraftCounterPickAsync(year);
             else
                 await player.DraftStandardGameAsync(year);
@@ -152,7 +157,8 @@ internal sealed class DraftSimulator
         {
             var leagueYear = await _observerSession.League.GetLeagueYearAsync(leagueID, year, null);
 
-            if (leagueYear.PlayStatus.DraftFinished || leagueYear.PlayStatus.DraftingCounterPicks)
+            var activeDraft = leagueYear.ActiveDraft();
+            if (activeDraft is null || activeDraft.DraftFinished || activeDraft.DraftingCounterPicks)
                 throw new InvalidOperationException(
                     $"Cannot run standard pick {pick + 1} of {count}: draft is finished or in counter-pick phase.");
 
@@ -179,7 +185,8 @@ internal sealed class DraftSimulator
         {
             var leagueYear = await _observerSession.League.GetLeagueYearAsync(leagueID, year, null);
 
-            if (leagueYear.PlayStatus.DraftFinished || leagueYear.PlayStatus.DraftingCounterPicks)
+            var activeDraft = leagueYear.ActiveDraft();
+            if (activeDraft is null || activeDraft.DraftFinished || activeDraft.DraftingCounterPicks)
                 return;
 
             var nextPublisher = leagueYear.Publishers.SingleOrDefault(p => p.NextToDraft)

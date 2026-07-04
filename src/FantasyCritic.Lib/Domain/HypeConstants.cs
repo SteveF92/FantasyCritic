@@ -9,6 +9,6 @@ public record HypeConstants(double BaseScore, double StandardGameConstant, doubl
             $"HypeFactorConstant= {HypeFactorConstant}";
     }
 
-    //These were the correct values on 2025-01-21 and are likely good enough.
-    public static HypeConstants DefaultValues => new HypeConstants(72.95706879412415, 2.2150845010046707, -5.817742823276648, 0.10208646257897502);
+    //These were the correct values on 2026-06-25 and are likely good enough.
+    public static HypeConstants DefaultValues => new HypeConstants(73.2460457170206, 0.0675878234740534, -2.7836334342253632, 0.1711085390579201);
 }

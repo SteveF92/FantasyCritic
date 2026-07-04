@@ -55,12 +55,13 @@ public class LeagueOptionsCommand : InteractionModuleBase<SocketInteractionConte
         }
 
         var leagueYearOptions = leagueChannel.LeagueYear.Options;
+        var firstDraft = leagueChannel.LeagueYear.FirstDraft;
 
         var picksCounterPicksMessage = $"Total Standard Games: **{leagueYearOptions.StandardGames}**\n";
-        picksCounterPicksMessage += $"Games to Draft: **{leagueYearOptions.GamesToDraft}**\n";
-        picksCounterPicksMessage += $"Pickup Games: **{leagueYearOptions.StandardGames - leagueYearOptions.GamesToDraft}**\n";
+        picksCounterPicksMessage += $"Games to Draft: **{firstDraft.GamesToDraft}**\n";
+        picksCounterPicksMessage += $"Pickup Games: **{leagueYearOptions.StandardGames - firstDraft.GamesToDraft}**\n";
         picksCounterPicksMessage += $"Total Counter Picks: **{leagueYearOptions.CounterPicks}**\n";
-        picksCounterPicksMessage += $"Counter Picks to Draft: **{leagueYearOptions.CounterPicksToDraft}**\n";
+        picksCounterPicksMessage += $"Counter Picks to Draft: **{firstDraft.CounterPicksToDraft}**\n";
         if (!leagueYearOptions.CounterPickDeadline.Equals(new AnnualDate(12, 31)))
         {
             picksCounterPicksMessage += $"Counter Pick Deadline: **{leagueYearOptions.CounterPickDeadline.ToString("MMMM d", new DateTimeFormatInfo())}**\n";

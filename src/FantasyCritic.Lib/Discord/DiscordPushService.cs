@@ -1521,7 +1521,7 @@ public class DiscordPushService
             var message = $"Up for another pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";
             if (isDraftingCounterPick)
             {
-                var previousGameWasCounterPick = updatedDraftStatus.PreviousDraftPublisher!.PublisherGames.MaxBy(x => x.OverallDraftPosition)!.CounterPick;
+                var previousGameWasCounterPick = updatedDraftStatus.PreviousPublisherThatWasNotSkipped!.PublisherGames.MaxBy(x => x.OverallDraftPosition)!.CounterPick;
                 message = previousGameWasCounterPick
                     ? $"Up for another counter pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**"
                     : $"Up for another pick, this time a counter pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";
@@ -1534,12 +1534,12 @@ public class DiscordPushService
 
     private static bool ShouldSendRepeatDraftPublisherMessage(DraftStatus updatedDraftStatus)
     {
-        if (updatedDraftStatus.PreviousDraftPublisher is null)
+        if (updatedDraftStatus.PreviousPublisherThatWasNotSkipped is null)
         {
             return false;
         }
 
-        if (updatedDraftStatus.PreviousDraftPublisher.PublisherID != updatedDraftStatus.NextDraftPublisher.PublisherID)
+        if (updatedDraftStatus.PreviousPublisherThatWasNotSkipped.PublisherID != updatedDraftStatus.NextDraftPublisher.PublisherID)
         {
             return false;
         }

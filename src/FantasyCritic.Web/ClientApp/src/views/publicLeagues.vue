@@ -29,6 +29,11 @@
         @filtered="onFiltered">
         <template #cell(leagueName)="data">
           <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
+          <font-awesome-icon
+            v-if="!data.item.anyDraftStarted"
+            v-b-popover.hover.top="'This league has not started a draft yet for this year.'"
+            icon="hourglass-half"
+            class="not-started-icon" />
         </template>
       </b-table>
       <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
@@ -50,8 +55,7 @@ export default {
       publicLeagues: [],
       leagueFields: [
         { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'numberOfFollowers', label: 'Number of Followers', sortable: true, thClass: 'bg-primary' },
-        { key: 'playStatus', label: 'Play Status', sortable: true, thClass: 'bg-primary' }
+        { key: 'numberOfFollowers', label: 'Number of Followers', sortable: true, thClass: 'bg-primary' }
       ],
       sortBy: 'numberOfFollowers',
       sortDesc: true
@@ -82,6 +86,10 @@ export default {
 <style scoped>
 .header {
   max-width: 80%;
+}
+.not-started-icon {
+  margin-left: 8px;
+  color: #888;
 }
 .year-selector {
   position: absolute;

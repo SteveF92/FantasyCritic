@@ -21,12 +21,12 @@
         <div v-show="!playerIsLeagueManager(playerToRemove)">
           <div v-if="playerToRemove.removable" class="alert alert-info">This player does not have any publishers created for any years, so they can be safely removed without issue.</div>
           <div v-else>
-            <div v-show="!leagueYear.playStatus.playStarted && !playerToRemove.removable" class="alert alert-info">
+            <div v-show="!playStarted && !playerToRemove.removable" class="alert alert-info">
               Since the draft has not been started, this player can be safely removed. Because they played in previous years, they will be marked as "inactive" this year, and previous years will not
               be affected.
             </div>
 
-            <template v-if="leagueYear.playStatus.playStarted">
+            <template v-if="playStarted">
               <div class="alert alert-danger">
                 If you delete this user, all of their games will become available for pickup. This is not reversible. You should be really, really, sure that this is what you want.
               </div>
@@ -38,7 +38,7 @@
               </div>
             </template>
 
-            <div v-if="!leagueYear.playStatus.playStarted" class="alert alert-info">
+            <div v-if="!playStarted" class="alert alert-info">
               Please type
               <strong>REMOVE PLAYER</strong>
               into the box below and click the button.
@@ -90,7 +90,7 @@ export default {
       }
       //This "password" isn't a security concern, it's just to protect the user from doing something they really don't want to do. If you've dug through the code and found this, you probably do know what you are doing.
       let passphrase = 'REMOVE PLAYER';
-      if (this.leagueYear.playStatus.playStarted) {
+      if (this.playStarted) {
         passphrase = 'I AM SURE I KNOW WHAT I AM DOING';
       }
       let upperCase = this.removeConfirmation.toUpperCase();

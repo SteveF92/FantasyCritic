@@ -14,10 +14,30 @@
           <input id="leagueYearName" v-model="leagueYearName" name="League Year Name" type="text" class="form-control input" placeholder="Leave blank to use the league name" />
           <p>If set, this name will be displayed instead of the league name for this specific year only.</p>
         </div>
-        <leagueYearSettings v-model="leagueYearSettings" :year="year" edit-mode :current-number-of-players="activePlayersInLeague" :fresh-settings="freshSettings"></leagueYearSettings>
+        <leagueYearSettings
+          v-model="leagueYearSettings"
+          :year="year"
+          edit-mode
+          :current-number-of-players="activePlayersInLeague"
+          :fresh-settings="freshSettings"
+          :is-multi-draft="isMultiDraft"
+          :league-id="leagueid">
+          <template v-if="!isMultiDraft && firstDraft && !oneShotMode" #draft-settings>
+            <hr />
+            <h3>Draft Settings</h3>
+            <DraftCreationSettings
+              v-model="firstDraftAsList"
+              :standard-games="leagueYearSettings.standardGames"
+              game-mode="Standard"
+              edit-mode
+              :bids-only-before-next-scheduled-draft="leagueYearSettings.bidsOnlyBeforeNextScheduledDraft">
+            </DraftCreationSettings>
+          </template>
+        </leagueYearSettings>
       </div>
 
-      <div v-show="!leagueYearIsValid" class="alert alert-warning disclaimer">Some of your settings are invalid.</div>
+      <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" show>{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
+      <div v-else-if="!leagueYearIsValid" class="alert alert-warning disclaimer">Some of your settings are invalid.</div>
 
       <div class="form-group">
         <b-button class="col-10 offset-1" variant="primary" :disabled="!leagueYearIsValid" @click="postRequest">Confirm Settings</b-button>
@@ -28,10 +48,13 @@
 <script>
 import axios from 'axios';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
+import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
+import { buildOneShotDraft } from '@/utilities/leagueCreationPresets';
 
 export default {
   components: {
-    LeagueYearSettings
+    LeagueYearSettings,
+    DraftCreationSettings
   },
   props: {
     leagueid: { type: String, required: true },
@@ -43,28 +66,61 @@ export default {
       leagueYearSettings: null,
       leagueYearName: null,
       leagueYear: null,
+      firstDraft: null,
       freshSettings: false
     };
   },
   computed: {
+    bidsOnlyBeforeNextDraftScheduleError() {
+      if (!this.leagueYearSettings?.bidsOnlyBeforeNextScheduledDraft) return null;
+      if (!this.isMultiDraft) return null;
+      const drafts = this.leagueYear?.drafts ?? [];
+      const draftsMissingDate = drafts.slice(1).some((d) => !d.scheduledDate);
+      if (draftsMissingDate) {
+        return "'Only allow bids before next scheduled draft' is enabled — all drafts after the first must have a scheduled date.";
+      }
+      return null;
+    },
     leagueYearIsValid() {
-      let valid =
-        this.leagueYearSettings &&
+      if (!this.leagueYearSettings) return false;
+      const settingsOk =
         this.leagueYearSettings.standardGames >= 1 &&
         this.leagueYearSettings.standardGames <= 50 &&
-        this.leagueYearSettings.gamesToDraft >= 1 &&
-        this.leagueYearSettings.gamesToDraft <= 50 &&
         this.leagueYearSettings.counterPicks >= 0 &&
-        this.leagueYearSettings.counterPicks <= 20 &&
-        this.leagueYearSettings.counterPicksToDraft >= 0 &&
-        this.leagueYearSettings.counterPicksToDraft <= 20;
-      return valid;
+        this.leagueYearSettings.counterPicks <= 20;
+      const draftOk = this.isMultiDraft || this.oneShotMode || (
+        this.firstDraft &&
+        this.firstDraft.gamesToDraft >= 1 &&
+        this.firstDraft.counterPicksToDraft >= 0
+      );
+      return settingsOk && draftOk && !this.bidsOnlyBeforeNextDraftScheduleError;
+    },
+    oneShotMode() {
+      return this.leagueYear?.settings?.oneShotMode ?? false;
+    },
+    firstDraftAsList: {
+      get() { return this.firstDraft ? [this.firstDraft] : []; },
+      set(val) { this.firstDraft = val[0] ?? null; }
     },
     activePlayersInLeague() {
       if (!this.leagueYear || !this.leagueYear.players) {
         return null;
       }
       return this.leagueYear.players.length;
+    },
+    isMultiDraft() {
+      return (this.leagueYear?.drafts?.length ?? 0) >= 2;
+    }
+  },
+  watch: {
+    leagueYearSettings: {
+      deep: true,
+      handler() {
+        this.syncOneShotDraft();
+      }
+    },
+    oneShotMode() {
+      this.syncOneShotDraft();
     }
   },
   created() {
@@ -76,11 +132,27 @@ export default {
     this.fetchLeagueYear();
   },
   methods: {
+    syncOneShotDraft() {
+      if (!this.oneShotMode || !this.leagueYearSettings) {
+        return;
+      }
+      this.firstDraft = buildOneShotDraft(this.leagueYearSettings.standardGames, this.leagueYearSettings.counterPicks, this.firstDraft ?? undefined);
+    },
     fetchLeagueYear() {
       axios
         .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)
         .then((response) => {
           this.leagueYear = response.data;
+          if (!this.isMultiDraft && response.data.drafts && response.data.drafts.length > 0) {
+            const d = response.data.drafts[0];
+            this.firstDraft = {
+              name: d.name,
+              scheduledDate: d.scheduledDate ?? null,
+              gamesToDraft: d.gamesToDraft,
+              counterPicksToDraft: d.counterPicksToDraft,
+            };
+          }
+          this.syncOneShotDraft();
         })
         .catch((returnedError) => (this.error = returnedError));
     },
@@ -94,7 +166,13 @@ export default {
         .catch((returnedError) => (this.error = returnedError));
     },
     postRequest() {
-      const payload = { ...this.leagueYearSettings, leagueYearName: this.leagueYearName || null };
+      const payload = {
+        leagueID: this.leagueid,
+        year: this.year,
+        leagueYearName: this.leagueYearName || null,
+        leagueYearSettings: this.leagueYearSettings,
+        firstDraft: this.isMultiDraft ? null : this.firstDraft,
+      };
       axios.post('/api/leagueManager/EditLeagueYearSettings', payload).then(this.responseHandler).catch(this.catchHandler);
     },
     responseHandler() {

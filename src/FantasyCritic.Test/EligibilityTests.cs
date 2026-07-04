@@ -2,7 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using FantasyCritic.FakeRepo.TestUtilities;
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -28,6 +30,89 @@ public class EligibilityTests
         return new MasterGame(Guid.NewGuid(), name, "TBA", minimumReleaseDate, maximumReleaseDate,
             earlyAccessReleaseDate, internationalReleaseDate, announcementDate, null, null, null, null, null, false, null, "", null, null, null, false, false, false, false,
             Instant.MinValue, new FantasyCriticUser() { Id = Guid.Empty }.ToVeryMinimal(), new List<MasterSubGame>(), tags);
+    }
+
+    private static LeagueYear CreateLeagueYearForBidTest(
+        bool bidsOnlyBeforeNextScheduledDraft,
+        LocalDate? pendingDraftScheduledDate)
+    {
+        var leagueID = Guid.NewGuid();
+        var year = 2026;
+        var leagueYearKey = new LeagueYearKey(leagueID, year);
+
+        var manager = new MinimalFantasyCriticUser(Guid.NewGuid(), "Manager", "manager@test.com");
+        var league = new League(leagueID, "Test League", manager, null, null,
+            [new MinimalLeagueYearInfo(year, false, true)],
+            true, false, false, false, 0);
+
+        var supportedYear = new SupportedYear(year, true, true, true, new LocalDate(year - 1, 12, 8), false);
+
+        var options = new LeagueOptions(
+            10, 2,
+            0, 0, 0,
+            false, false, false, false,
+            0, true,
+            [], [],
+            DraftSystem.Flexible,
+            PickupSystem.SemiPublicBiddingSecretCounterPicks,
+            ScoringSystem.GetDefaultScoringSystem(year),
+            TradingSystem.Standard,
+            TiebreakSystem.LowestProjectedPoints,
+            ReleaseSystem.MustBeReleased,
+            IneligibleGameSystem.CaseByCase,
+            new AnnualDate(12, 1),
+            null,
+            bidsOnlyBeforeNextScheduledDraft);
+
+        var draftID1 = Guid.NewGuid();
+        var draft1 = new LeagueDraft(draftID1, leagueYearKey, 1, "Initial Draft",
+            null, 5, 1, true, true, PlayStatus.DraftFinal, [], null);
+
+        var draftID2 = Guid.NewGuid();
+        var draft2 = new LeagueDraft(draftID2, leagueYearKey, 2, "Draft 2",
+            pendingDraftScheduledDate, 5, 1, true, false, PlayStatus.NotStartedDraft, [], null);
+
+        return new LeagueYear(league, supportedYear, options, [draft1, draft2],
+            [], [], null, [], null, false, null);
+    }
+
+    private static LeagueYear CreateLeagueYearForBidTestNoPendingDraft(
+        bool bidsOnlyBeforeNextScheduledDraft)
+    {
+        var leagueID = Guid.NewGuid();
+        var year = 2026;
+        var leagueYearKey = new LeagueYearKey(leagueID, year);
+
+        var manager = new MinimalFantasyCriticUser(Guid.NewGuid(), "Manager", "manager@test.com");
+        var league = new League(leagueID, "Test League", manager, null, null,
+            [new MinimalLeagueYearInfo(year, false, true)],
+            true, false, false, false, 0);
+
+        var supportedYear = new SupportedYear(year, true, true, true, new LocalDate(year - 1, 12, 8), false);
+
+        var options = new LeagueOptions(
+            10, 2,
+            0, 0, 0,
+            false, false, false, false,
+            0, true,
+            [], [],
+            DraftSystem.Flexible,
+            PickupSystem.SemiPublicBiddingSecretCounterPicks,
+            ScoringSystem.GetDefaultScoringSystem(year),
+            TradingSystem.Standard,
+            TiebreakSystem.LowestProjectedPoints,
+            ReleaseSystem.MustBeReleased,
+            IneligibleGameSystem.CaseByCase,
+            new AnnualDate(12, 1),
+            null,
+            bidsOnlyBeforeNextScheduledDraft);
+
+        var draftID = Guid.NewGuid();
+        var draft = new LeagueDraft(draftID, leagueYearKey, 1, "Initial Draft",
+            null, 10, 2, true, true, PlayStatus.DraftFinal, [], null);
+
+        return new LeagueYear(league, supportedYear, options, [draft],
+            [], [], null, [], null, false, null);
     }
 
     [Test]
@@ -599,5 +684,177 @@ public class EligibilityTests
         var claimErrors = LeagueTagExtensions.GameHasValidTags(leagueTags, slotTags, masterGame, masterGame.Tags, acquisitionDate);
         Assert.That(claimErrors.Count, Is.EqualTo(1));
         Assert.That(claimErrors[0].Error, Is.EqualTo("That game is not eligible because it does not have any of the following required tags: (Remake)"));
+    }
+
+    [Test]
+    public void BidsOnlyBeforeNextDraft_GameReleasesBeforeDraft_Allowed()
+    {
+        var draftDate = new LocalDate(2026, 6, 1);
+        var maxRelease = new LocalDate(2026, 5, 31);
+        var game = CreateComplexMasterGame("Game A", new LocalDate(2026, 1, 1), maxRelease, null, null, null,
+            [MasterGameTagDictionary.TagDictionary["NG"]]);
+        var leagueYear = CreateLeagueYearForBidTest(bidsOnlyBeforeNextScheduledDraft: true, pendingDraftScheduledDate: draftDate);
+        var currentDate = new LocalDate(2026, 1, 15);
+
+        var errors = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(
+            leagueYear, game, dropping: false, currentDate, currentDate,
+            counterPick: false, counterPickedGameIsManualWillNotRelease: false,
+            drafting: false, partOfSpecialAuction: false);
+
+        Assert.That(errors.Any(e => e.Error.Contains("only allows bids")), Is.False,
+            "No 'bids only before draft' error expected when MaximumReleaseDate < draft date.");
+    }
+
+    [Test]
+    public void BidsOnlyBeforeNextDraft_GameReleasesOnDraftDate_Blocked()
+    {
+        var draftDate = new LocalDate(2026, 6, 1);
+        var maxRelease = draftDate;
+        var game = CreateComplexMasterGame("Game B", new LocalDate(2026, 1, 1), maxRelease, null, null, null,
+            [MasterGameTagDictionary.TagDictionary["NG"]]);
+        var leagueYear = CreateLeagueYearForBidTest(bidsOnlyBeforeNextScheduledDraft: true, pendingDraftScheduledDate: draftDate);
+        var currentDate = new LocalDate(2026, 1, 15);
+
+        var errors = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(
+            leagueYear, game, dropping: false, currentDate, currentDate,
+            counterPick: false, counterPickedGameIsManualWillNotRelease: false,
+            drafting: false, partOfSpecialAuction: false);
+
+        var bidError = errors.FirstOrDefault(e => e.Error.Contains("only allows bids"));
+        Assert.That(bidError, Is.Not.Null, "Expected a 'bids only before draft' error when MaximumReleaseDate == draft date.");
+        Assert.That(bidError!.Overridable, Is.False, "The error must be non-overridable.");
+    }
+
+    [Test]
+    public void BidsOnlyBeforeNextDraft_GameReleasesAfterDraft_Blocked()
+    {
+        var draftDate = new LocalDate(2026, 6, 1);
+        var maxRelease = new LocalDate(2026, 7, 1);
+        var game = CreateComplexMasterGame("Game C", new LocalDate(2026, 1, 1), maxRelease, null, null, null,
+            [MasterGameTagDictionary.TagDictionary["NG"]]);
+        var leagueYear = CreateLeagueYearForBidTest(bidsOnlyBeforeNextScheduledDraft: true, pendingDraftScheduledDate: draftDate);
+        var currentDate = new LocalDate(2026, 1, 15);
+
+        var errors = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(
+            leagueYear, game, dropping: false, currentDate, currentDate,
+            counterPick: false, counterPickedGameIsManualWillNotRelease: false,
+            drafting: false, partOfSpecialAuction: false);
+
+        var bidError = errors.FirstOrDefault(e => e.Error.Contains("only allows bids"));
+        Assert.That(bidError, Is.Not.Null, "Expected a 'bids only before draft' error when MaximumReleaseDate > draft date.");
+        Assert.That(bidError!.Overridable, Is.False);
+    }
+
+    [Test]
+    public void BidsOnlyBeforeNextDraft_NullMaximumReleaseDate_Blocked()
+    {
+        var draftDate = new LocalDate(2026, 6, 1);
+        var game = CreateComplexMasterGame("Game D", new LocalDate(2026, 1, 1), null, null, null, null,
+            [MasterGameTagDictionary.TagDictionary["NG"]]);
+        var leagueYear = CreateLeagueYearForBidTest(bidsOnlyBeforeNextScheduledDraft: true, pendingDraftScheduledDate: draftDate);
+        var currentDate = new LocalDate(2026, 1, 15);
+
+        var errors = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(
+            leagueYear, game, dropping: false, currentDate, currentDate,
+            counterPick: false, counterPickedGameIsManualWillNotRelease: false,
+            drafting: false, partOfSpecialAuction: false);
+
+        var bidError = errors.FirstOrDefault(e => e.Error.Contains("only allows bids"));
+        Assert.That(bidError, Is.Not.Null, "Expected a 'bids only before draft' error when MaximumReleaseDate is null.");
+        Assert.That(bidError!.Overridable, Is.False);
+    }
+
+    [Test]
+    public void BidsOnlyBeforeNextDraft_NoDraftScheduledDate_AllBidsBlocked()
+    {
+        var maxRelease = new LocalDate(2026, 5, 31);
+        var game = CreateComplexMasterGame("Game E", new LocalDate(2026, 1, 1), maxRelease, null, null, null,
+            [MasterGameTagDictionary.TagDictionary["NG"]]);
+        var leagueYear = CreateLeagueYearForBidTest(bidsOnlyBeforeNextScheduledDraft: true, pendingDraftScheduledDate: null);
+        var currentDate = new LocalDate(2026, 1, 15);
+
+        var errors = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(
+            leagueYear, game, dropping: false, currentDate, currentDate,
+            counterPick: false, counterPickedGameIsManualWillNotRelease: false,
+            drafting: false, partOfSpecialAuction: false);
+
+        var bidError = errors.FirstOrDefault(e => e.Error.Contains("only allows bids"));
+        Assert.That(bidError, Is.Not.Null, "Expected a 'bids only before draft' error when pending draft has no scheduled date.");
+        Assert.That(bidError!.Overridable, Is.False);
+    }
+
+    [Test]
+    public void BidsOnlyBeforeNextDraft_NoPendingDraft_NoRestriction()
+    {
+        var maxRelease = new LocalDate(2099, 1, 1);
+        var game = CreateComplexMasterGame("Game F", new LocalDate(2026, 1, 1), maxRelease, null, null, null,
+            [MasterGameTagDictionary.TagDictionary["NG"]]);
+        var leagueYear = CreateLeagueYearForBidTestNoPendingDraft(bidsOnlyBeforeNextScheduledDraft: true);
+        var currentDate = new LocalDate(2026, 1, 15);
+
+        var errors = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(
+            leagueYear, game, dropping: false, currentDate, currentDate,
+            counterPick: false, counterPickedGameIsManualWillNotRelease: false,
+            drafting: false, partOfSpecialAuction: false);
+
+        Assert.That(errors.Any(e => e.Error.Contains("only allows bids")), Is.False,
+            "No bid restriction expected when there is no pending draft.");
+    }
+
+    [Test]
+    public void BidsOnlyBeforeNextDraft_OptionOff_NoRestriction()
+    {
+        var draftDate = new LocalDate(2026, 6, 1);
+        var maxRelease = new LocalDate(2026, 7, 1);
+        var game = CreateComplexMasterGame("Game G", new LocalDate(2026, 1, 1), maxRelease, null, null, null,
+            [MasterGameTagDictionary.TagDictionary["NG"]]);
+        var leagueYear = CreateLeagueYearForBidTest(bidsOnlyBeforeNextScheduledDraft: false, pendingDraftScheduledDate: draftDate);
+        var currentDate = new LocalDate(2026, 1, 15);
+
+        var errors = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(
+            leagueYear, game, dropping: false, currentDate, currentDate,
+            counterPick: false, counterPickedGameIsManualWillNotRelease: false,
+            drafting: false, partOfSpecialAuction: false);
+
+        Assert.That(errors.Any(e => e.Error.Contains("only allows bids")), Is.False,
+            "No bid restriction when option is off.");
+    }
+
+    [Test]
+    public void BidsOnlyBeforeNextDraft_DroppingIsExempt()
+    {
+        var draftDate = new LocalDate(2026, 6, 1);
+        var maxRelease = new LocalDate(2026, 7, 1);
+        var game = CreateComplexMasterGame("Game H", new LocalDate(2026, 1, 1), maxRelease, null, null, null,
+            [MasterGameTagDictionary.TagDictionary["NG"]]);
+        var leagueYear = CreateLeagueYearForBidTest(bidsOnlyBeforeNextScheduledDraft: true, pendingDraftScheduledDate: draftDate);
+        var currentDate = new LocalDate(2026, 1, 15);
+
+        var errors = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(
+            leagueYear, game, dropping: true, currentDate, currentDate,
+            counterPick: false, counterPickedGameIsManualWillNotRelease: false,
+            drafting: false, partOfSpecialAuction: false);
+
+        Assert.That(errors.Any(e => e.Error.Contains("only allows bids")), Is.False,
+            "Drop actions must be exempt from this restriction.");
+    }
+
+    [Test]
+    public void BidsOnlyBeforeNextDraft_DraftingIsExempt()
+    {
+        var draftDate = new LocalDate(2026, 6, 1);
+        var maxRelease = new LocalDate(2026, 7, 1);
+        var game = CreateComplexMasterGame("Game I", new LocalDate(2026, 1, 1), maxRelease, null, null, null,
+            [MasterGameTagDictionary.TagDictionary["NG"]]);
+        var leagueYear = CreateLeagueYearForBidTest(bidsOnlyBeforeNextScheduledDraft: true, pendingDraftScheduledDate: draftDate);
+        var currentDate = new LocalDate(2026, 1, 15);
+
+        var errors = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(
+            leagueYear, game, dropping: false, currentDate, currentDate,
+            counterPick: false, counterPickedGameIsManualWillNotRelease: false,
+            drafting: true, partOfSpecialAuction: false);
+
+        Assert.That(errors.Any(e => e.Error.Contains("only allows bids")), Is.False,
+            "Drafting actions must be exempt from this restriction.");
     }
 }

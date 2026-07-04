@@ -17,7 +17,7 @@ public class LeagueWithStatusViewModel
         IsManager = league.LeagueManager.UserID == currentUser.UserID;
         Archived = league.Archived;
 
-        var latestDraftStartedYear = league.Years.Where(x => x.PlayStatus.PlayStarted).MaxBy(x => x.Year);
+        var latestDraftStartedYear = league.Years.Where(x => x.AnyDraftStarted).MaxBy(x => x.Year);
         var highestNonFinishedYear = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
         Years = league.Years.Select(x => x.Year).ToList();
         ActiveYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? Years.Max();
@@ -29,7 +29,7 @@ public class LeagueWithStatusViewModel
         UserIsFollowingLeague = leagueStatus.UserIsFollowingLeague;
         UserIsActiveInMostRecentYearForLeague = leagueStatus.UserIsActiveInMostRecentYearForLeague;
         LeagueIsActiveInActiveYear = leagueStatus.LeagueIsActiveInActiveYear;
-        OneShotMode = leagueStatus.MostRecentYearOneShot;
+        MostRecentYearType = leagueStatus.MostRecentYearType;
         ActiveYearLeagueYearName = leagueStatus.ActiveYearLeagueYearName;
         RoyaleGroupID = leagueStatus.RoyaleGroupID;
     }
@@ -50,7 +50,7 @@ public class LeagueWithStatusViewModel
     public bool UserIsFollowingLeague { get; }
     public bool UserIsActiveInMostRecentYearForLeague { get; }
     public bool LeagueIsActiveInActiveYear { get; }
-    public bool OneShotMode { get; }
+    public string MostRecentYearType { get; }
     public string? ActiveYearLeagueYearName { get; }
     public Guid? RoyaleGroupID { get; }
 

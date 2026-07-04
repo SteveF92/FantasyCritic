@@ -2,17 +2,25 @@
   <b-modal id="editDraftOrderForm" ref="editDraftOrderFormRef" title="Set Draft Order" hide-footer @hidden="clearData">
     <div v-show="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
     <label>How do you want to set the draft order?</label>
-    <div v-if="hasPreviousYear" class="order-options-list">
+    <div v-if="isFirstDraft && hasPreviousYear" class="order-options-list">
       <label>Recommended:</label>
       <b-button variant="success" size="sm" @click="setDraftOrder('InverseStandings')">Inverse of Last Year's Results</b-button>
       <label>Other Options:</label>
       <b-button variant="secondary" size="sm" @click="setDraftOrder('Random')">Randomly</b-button>
       <b-button variant="warning" size="sm" @click="showManualSettings = true">Manually</b-button>
     </div>
-    <div v-else class="order-options-list">
+    <div v-else-if="isFirstDraft" class="order-options-list">
       <label>Recommended:</label>
       <b-button variant="success" size="sm" @click="setDraftOrder('Random')">Randomly</b-button>
       <label>Other Options:</label>
+      <b-button variant="warning" size="sm" @click="showManualSettings = true">Manually</b-button>
+    </div>
+    <div v-else class="order-options-list">
+      <label>Recommended:</label>
+      <b-button variant="success" size="sm" @click="setDraftOrder('InverseProjectedPoints')">Inverse of Current Projected Points</b-button>
+      <label>Other Options:</label>
+      <b-button v-if="hasPreviousYear" variant="secondary" size="sm" @click="setDraftOrder('InverseStandings')">Inverse of Last Year's Results</b-button>
+      <b-button variant="secondary" size="sm" @click="setDraftOrder('Random')">Randomly</b-button>
       <b-button variant="warning" size="sm" @click="showManualSettings = true">Manually</b-button>
     </div>
 
@@ -64,6 +72,9 @@ export default {
     },
     hasPreviousYear() {
       return this.league.years.includes(this.leagueYear.year - 1);
+    },
+    isFirstDraft() {
+      return (this.pendingDraft?.draftNumber ?? 1) === 1;
     }
   },
   watch: {
@@ -85,6 +96,7 @@ export default {
       const model = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
+        draftID: this.pendingDraft.draftID,
         draftOrderType: draftOrderType
       };
       if (draftOrderType === 'Manual') {

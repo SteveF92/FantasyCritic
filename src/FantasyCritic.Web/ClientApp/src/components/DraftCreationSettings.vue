@@ -1,0 +1,138 @@
+<!-- src/FantasyCritic.Web/ClientApp/src/components/DraftCreationSettings.vue -->
+<template>
+  <div>
+    <div v-if="totalGamesToDraft > standardGames" class="alert alert-warning">
+      Total games to draft across all drafts ({{ totalGamesToDraft }}) exceeds the total number of games ({{ standardGames }}). Please adjust the numbers below.
+    </div>
+
+    <div v-for="(draft, index) in internalDrafts" :key="index" class="draft-section">
+      <div v-if="internalDrafts.length > 1" class="form-group">
+        <label :for="`draftName-${index}`" class="control-label">Draft Name</label>
+        <input :id="`draftName-${index}`" v-model="draft.name" type="text" class="form-control input" @input="emitUpdate" />
+      </div>
+
+      <div class="form-group">
+        <label :for="`scheduledDate-${index}`" class="control-label">
+          Scheduled Date
+          <span v-show="isScheduledDateOptional(index)">(Optional)</span>
+        </label>
+        <input :id="`scheduledDate-${index}`" v-model="draft.scheduledDate" type="date" class="form-control input" @input="emitUpdate" />
+      </div>
+
+      <div class="form-group">
+        <label :for="`gamesToDraft-${index}`" class="control-label">Games to Draft</label>
+        <ValidationProvider v-slot="{ errors }" rules="required|min_value:1|max_value:50|integer">
+          <input :id="`gamesToDraft-${index}`" v-model.number="draft.gamesToDraft" type="text" class="form-control input" @input="emitUpdate" />
+          <span class="text-danger">{{ errors[0] }}</span>
+        </ValidationProvider>
+      </div>
+
+      <div class="form-group">
+        <label :for="`counterPicksToDraft-${index}`" class="control-label">Counter Picks to Draft</label>
+        <ValidationProvider v-slot="{ errors }" rules="required|min_value:0|max_value:50|integer">
+          <input :id="`counterPicksToDraft-${index}`" v-model.number="draft.counterPicksToDraft" type="text" class="form-control input" @input="emitUpdate" />
+          <span class="text-danger">{{ errors[0] }}</span>
+        </ValidationProvider>
+      </div>
+
+      <div v-if="gameMode === 'Multi Draft' && draft.counterPicksToDraft > 0" class="form-group">
+        <b-form-checkbox v-model="draft.counterPicksMustBeFromThisDraft" @input="emitUpdate">
+          <span class="checkbox-label">Require counter picks to be made on games taken during this draft.</span>
+          <p>
+            If checked, all of the counter picks included in this draft must be of the standard games taken in this draft. If you don't enable this, players will be able to counter pick a game that
+            was drafted in a previous draft. It's recommended that you keep this enabled.
+          </p>
+        </b-form-checkbox>
+      </div>
+
+      <div v-if="canRemoveDraft(index)">
+        <b-button size="sm" variant="outline-danger" @click="removeDraft(index)">Remove Draft {{ index + 1 }}</b-button>
+      </div>
+    </div>
+
+    <div v-if="showAddButton">
+      <b-button variant="outline-secondary" @click="addDraft">+ Add Another Draft</b-button>
+    </div>
+  </div>
+</template>
+
+<script>
+import { getDefaultDraft, getDefaultDraftName } from '@/utilities/leagueCreationPresets';
+
+export default {
+  name: 'DraftCreationSettings',
+  props: {
+    value: { type: Array, required: true },
+    standardGames: { type: Number, default: 0 },
+    gameMode: { type: String, default: 'Standard' },
+    editMode: { type: Boolean, default: false },
+    bidsOnlyBeforeNextScheduledDraft: { type: Boolean, default: false }
+  },
+  data() {
+    return {
+      internalDrafts: []
+    };
+  },
+  computed: {
+    totalGamesToDraft() {
+      return this.internalDrafts.reduce((sum, d) => sum + (d.gamesToDraft || 0), 0);
+    },
+    showAddButton() {
+      return this.gameMode === 'Multi Draft' && !this.editMode;
+    }
+  },
+  watch: {
+    value: {
+      immediate: true,
+      handler(newVal) {
+        const normalized = newVal.map((d, index) => ({
+          ...d,
+          name: d.name?.trim() ? d.name : getDefaultDraftName(index),
+          counterPicksMustBeFromThisDraft: d.counterPicksMustBeFromThisDraft ?? true
+        }));
+        const needsEmit = normalized.some((d, index) => d.name !== newVal[index]?.name);
+        this.internalDrafts = normalized;
+        if (needsEmit) {
+          this.$nextTick(() => this.emitUpdate());
+        }
+      }
+    }
+  },
+  methods: {
+    emitUpdate() {
+      this.$emit(
+        'input',
+        this.internalDrafts.map((d) => ({ ...d }))
+      );
+    },
+    isScheduledDateOptional(index) {
+      if (this.gameMode !== 'Multi Draft' || !this.bidsOnlyBeforeNextScheduledDraft) {
+        return true;
+      }
+      return index === 0;
+    },
+    canRemoveDraft(index) {
+      // Only drafts beyond the first can be removed, and only if at least 2 remain (minimum for multi-draft)
+      return !this.editMode && index > 0 && this.internalDrafts.length > 2;
+    },
+    addDraft() {
+      const allocatedSoFar = this.internalDrafts.reduce((s, d) => s + (d.gamesToDraft || 0), 0);
+      const newDraft = getDefaultDraft(this.internalDrafts.length, this.standardGames, allocatedSoFar);
+      this.internalDrafts.push(newDraft);
+      this.emitUpdate();
+    },
+    removeDraft(index) {
+      this.internalDrafts.splice(index, 1);
+      this.emitUpdate();
+    }
+  }
+};
+</script>
+
+<style scoped>
+.draft-section + .draft-section {
+  margin-top: 0.5rem;
+  padding-top: 1.5rem;
+  border-top: 3px solid rgba(255, 255, 255, 0.35);
+}
+</style>

@@ -661,7 +661,7 @@ public class AdminService
         var supportedYears = await _interLeagueService.GetSupportedYears();
         var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MinBy(x => x.Year);
         IReadOnlyList<LeagueYear> allLeagueYears = await GetLeagueYears(currentYear!.Year);
-        var leagueYearsWithSuperDrops = allLeagueYears.Where(x => x.PlayStatus.DraftFinished && x.Options.GrantSuperDrops).ToList();
+        var leagueYearsWithSuperDrops = allLeagueYears.Where(x => x.IsFirstDraftFinished && x.Options.GrantSuperDrops).ToList();
 
         var allLeagueActions = await _fantasyCriticRepo.GetLeagueActions(currentDate.Year);
         var allSuperDropActions = allLeagueActions.Where(x => x.Description.Contains("super drop", StringComparison.InvariantCultureIgnoreCase)).ToList();
@@ -779,7 +779,7 @@ public class AdminService
     {
         _logger.Information("Updating system wide values for year {Year}", year);
 
-        var leaguesToCount = leagueYears.Where(x => x.League.AffectsStats && x.PlayStatus.DraftFinished).ToList();
+        var leaguesToCount = leagueYears.Where(x => x.League.AffectsStats && x.IsFirstDraftFinished).ToList();
         var publisherGames = leaguesToCount.SelectMany(x => x.Publishers).SelectMany(x => x.PublisherGames);
         var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue && !x.ManualCriticScore.HasValue).ToList();
 
@@ -889,7 +889,7 @@ public class AdminService
         foreach (var publisher in allPublishers)
         {
             var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
-            if (!leagueYear.League.AffectsStats || !leagueYear.PlayStatus.DraftFinished)
+            if (!leagueYear.League.AffectsStats || !leagueYear.IsFirstDraftFinished)
             {
                 continue;
             }
@@ -964,8 +964,8 @@ public class AdminService
             if (scoreOrReleaseTime.HasValue && !hadScoreBeforeYear)
             {
                 timeAdjustedLeagues = leaguesWhereEligible.Where(x =>
-                        x.DraftStartedTimestamp.HasValue &&
-                        x.DraftStartedTimestamp <= scoreOrReleaseTime)
+                        x.FirstDraft.DraftStartedTimestamp.HasValue &&
+                        x.FirstDraft.DraftStartedTimestamp <= scoreOrReleaseTime)
                     .ToList();
             }
             else

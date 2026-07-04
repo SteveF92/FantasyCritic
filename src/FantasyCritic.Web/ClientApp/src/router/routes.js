@@ -11,6 +11,7 @@ import CreateConference from '@/views/createConference.vue';
 import League from '@/views/league.vue';
 import Conference from '@/views/conference.vue';
 import EditLeague from '@/views/editLeague.vue';
+import ManageDrafts from '@/views/manageDrafts.vue';
 import Publisher from '@/views/publisher.vue';
 import MasterGame from '@/views/masterGame.vue';
 import MasterGames from '@/views/masterGames.vue';
@@ -276,6 +277,24 @@ export const routes = [
         parsedYear = 0;
       }
 
+      return {
+        leagueid: route.params.leagueid,
+        year: parsedYear
+      };
+    }
+  },
+  {
+    path: '/manageDrafts/:leagueid/:year',
+    component: ManageDrafts,
+    name: 'manageDrafts',
+    meta: {
+      title: 'Manage Drafts'
+    },
+    props: (route) => {
+      let parsedYear = Number.parseInt(route.params.year, 10);
+      if (Number.isNaN(parsedYear)) {
+        parsedYear = 0;
+      }
       return {
         leagueid: route.params.leagueid,
         year: parsedYear

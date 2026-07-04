@@ -3,6 +3,7 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Utilities;
+using FantasyCritic.Web.Models.Requests.League;
 using FantasyCritic.Web.Models.Responses.AllTimeStats;
 using FantasyCritic.Web.Models.RoundTrip;
 
@@ -16,7 +17,7 @@ public class ConsolidatedLeagueDataViewModel
         var typedManager = new VeryMinimalFantasyCriticUserViewModel(league.LeagueManager);
         var typedPlayersInLeague = playersInLeague.Select(x => new VeryMinimalFantasyCriticUserViewModel(x.User)).ToList();
 
-        var latestDraftStartedYear = league.Years.Where(x => x.PlayStatus.PlayStarted).MaxBy(x => x.Year);
+        var latestDraftStartedYear = league.Years.Where(x => x.AnyDraftStarted).MaxBy(x => x.Year);
         var highestNonFinishedYear = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
         var years = league.Years.Select(x => x.Year).ToList();
         var activeYear = latestDraftStartedYear?.Year ?? highestNonFinishedYear?.Year ?? years.Max();
@@ -51,11 +52,11 @@ public class ConsolidatedLeagueYearViewModel
         List<FantasyCriticUser> activePublisherUsers = leagueYear.Publishers.Select(x => x.User).ToList();
         List<MinimalFantasyCriticUser> activeUsersMinimal = activePublisherUsers.Select(x => x.ToMinimal()).ToList();
         bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
-        CompletePlayStatus completePlayStatus = new CompletePlayStatus(leagueYear, activePublisherUsers, false, conferenceDraftsNotEnabled);
+        var activeDraftNextPublisher = DraftFunctions.GetDraftStatus(leagueYear)?.NextDraftPublisher;
 
         Publishers = leagueYear.Publishers
-            .OrderBy(x => x.DraftPosition)
-            .Select(x => new PublisherViewModel(leagueYear, x, currentDate, completePlayStatus.DraftStatus?.NextDraftPublisher,
+            .OrderBy(x => x.GetDraftPosition(leagueYear.DraftForPublisherDisplayOrder.DraftID))
+            .Select(x => new PublisherViewModel(leagueYear, x, currentDate, activeDraftNextPublisher,
                 userIsInLeague: false, outstandingInvite: false, systemWideValues, counterPickedByDictionary))
             .ToList();
 
@@ -95,7 +96,7 @@ public class ConsolidatedLeagueYearViewModel
 
         Players = playerVMs.OrderBy(x => x.Publisher!.DraftPosition).ToList();
 
-        PlayStatus = new PlayStatusViewModel(completePlayStatus);
+        Drafts = leagueYear.Drafts.Select(d => new LeagueDraftViewModel(d, leagueYear, activePublisherUsers, isManager: false, conferenceDraftsNotEnabled)).ToList();
         EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();
         TagOverrides = leagueYear.TagOverrides.Select(x => new TagOverrideViewModel(x, currentDate)).ToList();
         SlotInfo = new PublisherSlotRequirementsViewModel(leagueYear.Options);
@@ -132,7 +133,7 @@ public class ConsolidatedLeagueYearViewModel
     public IReadOnlyList<PublisherViewModel> Publishers { get; }
     public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }
     public IReadOnlyList<TagOverrideViewModel> TagOverrides { get; }
-    public PlayStatusViewModel PlayStatus { get; }
+    public IReadOnlyList<LeagueDraftViewModel> Drafts { get; }
     public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
     public IReadOnlyList<TradeViewModel> Trades { get; }
     public IReadOnlyList<SpecialAuctionViewModel> SpecialAuctions { get; }

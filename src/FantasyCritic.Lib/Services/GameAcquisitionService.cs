@@ -24,7 +24,7 @@ public class GameAcquisitionService
         _discordPushService = discordPushService;
     }
 
-    public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, bool draft, bool drafting, bool allowIneligibleSlot)
+    public async Task<ClaimResult> ClaimGame(ClaimGameDomainRequest request, bool managerAction, Guid? draftID, bool allowIneligibleSlot)
     {
         MasterGameYear? masterGameYear = null;
         if (request.MasterGame is not null)
@@ -33,16 +33,16 @@ public class GameAcquisitionService
         }
 
         var allTags = await _masterGameRepo.GetMasterGameTags();
-        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, drafting, false, false, _clock.GetToday(), allowIneligibleSlot, allTags);
+        ClaimResult claimResult = GameEligibilityFunctions.CanClaimGame(request, null, null, true, draftID, false, false, _clock.GetToday(), allowIneligibleSlot, allTags);
         if (!claimResult.Success)
         {
             return claimResult;
         }
 
         PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
-            masterGameYear, claimResult.BestSlotNumber!.Value, request.DraftPosition, request.OverallDraftPosition, null, null);
+            masterGameYear, claimResult.BestSlotNumber!.Value, request.DraftPosition, request.OverallDraftPosition, null, null, draftID);
 
-        LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draft, request.AutoDraft);
+        LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draftID.HasValue, request.AutoDraft);
         await _fantasyCriticRepo.AddLeagueAction(leagueAction);
         await _fantasyCriticRepo.AddPublisherGame(playerGame);
         if (managerAction)
@@ -133,7 +133,7 @@ public class GameAcquisitionService
         }
 
         var allTags = await _masterGameRepo.GetMasterGameTags();
-        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, false, partOfSpecialAuction, false, _clock.GetToday(), allowIneligibleSlot, allTags);
+        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, nextBidTime, validDropSlot, false, null, partOfSpecialAuction, false, _clock.GetToday(), allowIneligibleSlot, allTags);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -158,7 +158,7 @@ public class GameAcquisitionService
 
         var claimRequest = new ClaimGameDomainRequest(leagueYear, publisher, masterGame.GameName, false, false, false, false, masterGame, null, null);
         var allTags = await _masterGameRepo.GetMasterGameTags();
-        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, null, null, false, false, false, false, _clock.GetToday(), true, allTags);
+        var claimResult = GameEligibilityFunctions.CanClaimGame(claimRequest, null, null, false, null, false, false, _clock.GetToday(), true, allTags);
         if (!claimResult.Success)
         {
             return claimResult;
@@ -456,7 +456,7 @@ public class GameAcquisitionService
         List<LeagueYearPublicBiddingSet> publicBiddingSets = new List<LeagueYearPublicBiddingSet>();
         foreach (var activeBidsForLeague in activeBidsByLeague)
         {
-            if (!activeBidsForLeague.Key.PlayStatus.DraftFinished || !activeBidsForLeague.Key.Options.PickupSystem.HasPublicBiddingWindow)
+            if (!activeBidsForLeague.Key.IsPublicBiddingValid)
             {
                 continue;
             }
@@ -485,12 +485,7 @@ public class GameAcquisitionService
 
     public bool IsInPublicBiddingWindow(LeagueYear leagueYear)
     {
-        if (!leagueYear.Options.PickupSystem.HasPublicBiddingWindow)
-        {
-            return false;
-        }
-
-        if (!leagueYear.PlayStatus.DraftFinished)
+        if (!leagueYear.IsPublicBiddingValid)
         {
             return false;
         }
@@ -503,12 +498,7 @@ public class GameAcquisitionService
 
     public bool WasBidPlacedDuringPublicBiddingWindow(LeagueYear leagueYear, Instant bidTimestamp)
     {
-        if (!leagueYear.Options.PickupSystem.HasPublicBiddingWindow)
-        {
-            return false;
-        }
-
-        if (!leagueYear.PlayStatus.DraftFinished)
+        if (!leagueYear.IsPublicBiddingValid)
         {
             return false;
         }

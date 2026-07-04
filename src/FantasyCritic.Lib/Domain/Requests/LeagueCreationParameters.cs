@@ -4,7 +4,7 @@ namespace FantasyCritic.Lib.Domain.Requests;
 
 public class LeagueCreationParameters
 {
-    public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, bool publicLeague, bool testLeague, bool customRulesLeague, LeagueYearParameters leagueYearParameters)
+    public LeagueCreationParameters(FantasyCriticUser manager, string leagueName, bool publicLeague, bool testLeague, bool customRulesLeague, LeagueYearParameters leagueYearParameters, IEnumerable<DraftParameters> drafts)
     {
         Manager = manager;
         LeagueName = leagueName;
@@ -12,6 +12,7 @@ public class LeagueCreationParameters
         TestLeague = testLeague;
         CustomRulesLeague = customRulesLeague;
         LeagueYearParameters = leagueYearParameters;
+        Drafts = drafts.ToList();
     }
 
     public FantasyCriticUser Manager { get; }
@@ -20,4 +21,5 @@ public class LeagueCreationParameters
     public bool TestLeague { get; }
     public bool CustomRulesLeague { get; }
     public LeagueYearParameters LeagueYearParameters { get; }
+    public IReadOnlyList<DraftParameters> Drafts { get; }
 }

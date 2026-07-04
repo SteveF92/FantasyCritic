@@ -144,7 +144,6 @@ BEGIN
     AND tbl_league_publisher.Year IN (SELECT YEAR FROM RelevantYears);
   
   -- Public League Years
-  
   SELECT YEAR INTO highestNormalYear
   FROM tbl_meta_supportedyear
   WHERE tbl_meta_supportedyear.Finished = 0
@@ -154,7 +153,12 @@ BEGIN
   SELECT vw_league.LeagueID,
          vw_league.LeagueName,
          vw_league.NumberOfFollowers,
-         tbl_league_year.PlayStatus
+         EXISTS (
+           SELECT 1 FROM tbl_league_draft ld
+           WHERE ld.LeagueID = tbl_league_year.LeagueID
+             AND ld.Year = tbl_league_year.Year
+             AND ld.PlayStatus <> 'NotStartedDraft'
+         ) AS AnyDraftStarted
   FROM vw_league
   JOIN tbl_league_year ON vw_league.LeagueID = tbl_league_year.LeagueID
   WHERE vw_league.PublicLeague = 1

@@ -40,6 +40,7 @@ public class PublisherGameViewModel
         WillReleaseEarlyAccessOnly = publisherGame.WillRelease(leagueYear).Equals(WillReleaseStatus.WillReleaseEarlyAccessOnly);
         ManualWillNotRelease = publisherGame.ManualWillNotRelease;
         OverallDraftPosition = publisherGame.OverallDraftPosition;
+        DraftID = publisherGame.DraftID;
         BidAmount = publisherGame.BidAmount;
         AcquiredInTradeID = publisherGame.AcquiredInTradeID;
         SlotNumber = publisherGame.SlotNumber;
@@ -86,6 +87,7 @@ public class PublisherGameViewModel
         WillReleaseEarlyAccessOnly = publisherGame.PublisherGame.WillRelease(leagueYear).Equals(WillReleaseStatus.WillReleaseEarlyAccessOnly);
         ManualWillNotRelease = publisherGame.PublisherGame.ManualWillNotRelease;
         OverallDraftPosition = publisherGame.PublisherGame.OverallDraftPosition;
+        DraftID = publisherGame.PublisherGame.DraftID;
         BidAmount = publisherGame.PublisherGame.BidAmount;
         AcquiredInTradeID = publisherGame.PublisherGame.AcquiredInTradeID;
         SlotNumber = publisherGame.PublisherGame.SlotNumber;
@@ -105,6 +107,7 @@ public class PublisherGameViewModel
 
     public MasterGameYearViewModel? MasterGame { get; }
     public int? OverallDraftPosition { get; }
+    public Guid? DraftID { get; }
     public uint? BidAmount { get; }
     public Guid? AcquiredInTradeID { get; }
     public int SlotNumber { get; }

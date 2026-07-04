@@ -36,6 +36,8 @@ public sealed class LeagueScenario
 
     // Bid rules
     public int MinimumBidAmount { get; init; } = 0;
+    public bool EnableBids { get; init; } = false;
+    public bool BidsOnlyBeforeNextScheduledDraft { get; init; } = false;
 
     // System strings — must match the enum names used by the server
     public string DraftSystem { get; init; } = "Flexible";
@@ -60,9 +62,7 @@ public sealed class LeagueScenario
             Year = year,
             LeagueYearName = null,
             StandardGames = StandardGames,
-            GamesToDraft = GamesToDraft,
             CounterPicks = CounterPicks,
-            CounterPicksToDraft = CounterPicksToDraft,
             UnrestrictedReleaseStatusDroppableGames = UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames = WillNotReleaseDroppableGames,
             WillReleaseDroppableGames = WillReleaseDroppableGames,
@@ -74,6 +74,8 @@ public sealed class LeagueScenario
             CounterPicksBlockDrops = CounterPicksBlockDrops,
             AllowMoveIntoIneligible = AllowMoveIntoIneligible,
             MinimumBidAmount = MinimumBidAmount,
+            EnableBids = EnableBids,
+            BidsOnlyBeforeNextScheduledDraft = BidsOnlyBeforeNextScheduledDraft,
             DraftSystem = DraftSystem,
             PickupSystem = PickupSystem,
             ScoringSystem = ScoringSystem,
@@ -87,6 +89,18 @@ public sealed class LeagueScenario
             Tags = new LeagueTagOptionsViewModel { Banned = [], Required = [] },
             HasSpecialSlots = HasSpecialSlots,
             SpecialGameSlots = SpecialGameSlots.ToList(),
+        };
+
+    public IReadOnlyList<DraftSettingsRequest> BuildDraftSettings() =>
+        new List<DraftSettingsRequest>
+        {
+            new()
+            {
+                Name = null,
+                ScheduledDate = null,
+                GamesToDraft = GamesToDraft,
+                CounterPicksToDraft = CounterPicksToDraft,
+            }
         };
 
     public override string ToString() => Name;
@@ -124,6 +138,7 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = true,
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
+        EnableBids = false
     };
 
     /// <summary>
@@ -152,6 +167,37 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = Standard.CounterPicksBlockDrops,
         AllowMoveIntoIneligible = Standard.AllowMoveIntoIneligible,
         MinimumBidAmount = Standard.MinimumBidAmount,
+        EnableBids = true
+    };
+
+    /// <summary>
+    /// A minimal 3-player league for auto-skip view-model tests. Standard picks only (no counter-pick
+    /// phase). Bids disabled so manager claims can pre-fill roster slots before the draft starts.
+    /// </summary>
+    public static readonly LeagueScenario ThreePlayerAutoSkip = new()
+    {
+        Name = "ThreePlayerAutoSkip",
+        PlayerCount = 3,
+        StandardGames = 2,
+        GamesToDraft = 2,
+        CounterPicks = 0,
+        CounterPicksToDraft = 0,
+        DraftSystem = "Flexible",
+        PickupSystem = "SemiPublicBiddingSecretCounterPicks",
+        ScoringSystem = "LinearPositive",
+        TradingSystem = "NoTrades",
+        TiebreakSystem = "LowestProjectedPoints",
+        ReleaseSystem = "MustBeReleased",
+        IneligibleGameSystem = "DroppableAsWillNotRelease",
+        UnrestrictedReleaseStatusDroppableGames = 0,
+        WillNotReleaseDroppableGames = 0,
+        WillReleaseDroppableGames = 0,
+        DropOnlyDraftGames = true,
+        GrantSuperDrops = false,
+        CounterPicksBlockDrops = true,
+        AllowMoveIntoIneligible = false,
+        MinimumBidAmount = 0,
+        EnableBids = false,
     };
 
     /// <summary>
@@ -181,6 +227,7 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = true,
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
+        EnableBids = true
     };
 
     /// <summary>
@@ -210,6 +257,7 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = true,
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
+        EnableBids = true
     };
 
     /// <summary>
@@ -240,6 +288,7 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = true,
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
+        EnableBids = true
     };
 
     /// <summary>
@@ -274,5 +323,6 @@ public static class LeagueScenarios
         CounterPicksBlockDrops = false,
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
+        EnableBids = true
     };
 }

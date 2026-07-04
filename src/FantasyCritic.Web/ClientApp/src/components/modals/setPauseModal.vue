@@ -16,6 +16,7 @@ export default {
       const model = {
         leagueID: this.league.leagueID,
         year: this.leagueYear.year,
+        draftID: this.activeDraft.draftID,
         pause: newPause
       };
       try {
