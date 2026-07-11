@@ -1,0 +1,21 @@
+<Project>
+  <!--
+    Solution-level format targets (CLI only; not loaded by Visual Studio).
+    Apply:  dotnet msbuild FantasyCritic.slnx -t:Format
+    Check:  dotnet msbuild FantasyCritic.slnx -t:FormatCheck
+  -->
+  <PropertyGroup>
+    <_FormatSolutionPath>$(MSBuildThisFileDirectory)FantasyCritic.slnx</_FormatSolutionPath>
+    <_FormatCommonArgs>format &quot;$(_FormatSolutionPath)&quot; --severity info</_FormatCommonArgs>
+  </PropertyGroup>
+
+  <Target Name="Format">
+    <Message Importance="High" Text="Formatting C# (dotnet format --severity info)..." />
+    <Exec Command="dotnet $(_FormatCommonArgs)" />
+  </Target>
+
+  <Target Name="FormatCheck">
+    <Message Importance="High" Text="Checking C# formatting (dotnet format --verify-no-changes)..." />
+    <Exec Command="dotnet $(_FormatCommonArgs) --verify-no-changes" />
+  </Target>
+</Project>
