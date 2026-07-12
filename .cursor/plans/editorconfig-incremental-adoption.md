@@ -13,7 +13,7 @@ Format applies `dotnet format style --severity warn` — only rules at warning s
 
 ## Current state (after reset to `65a50550`)
 
-HEAD is **`6525eb66`** — `Apply EditorConfig rule: Assert.EnterMultipleScope (NUnit2045).`
+HEAD is **`52fd5b8b`** — `Wire NUnit2045 (Assert.EnterMultipleScope) into the format scripts.`
 
 ### Applied via format (keep)
 
@@ -66,6 +66,10 @@ The fixer only resolves non-overlapping violation groups per pass, so a single r
 
 Effect: wraps groups of independent `Assert.That` calls in `using (Assert.EnterMultipleScope()) { ... }` so all failures report in one test run. Result: 29 files changed (5 unit, 24 integration) — close to orig branch's ~32 files. Full test suites verified green after: `FantasyCritic.Test` (2234 passed), `FantasyCritic.IntegrationTests` (234 passed, run with `-c Release` against the local MySQL Docker container).
 
+**Now automated** (`52fd5b8b`): `scripts/Format.ps1` and `scripts/format.sh` run this check/fix loop for you via new `FormatAnalyzers`/`FormatAnalyzersCheck` MSBuild targets in `src/Directory.Solution.targets`. Running the format script once now applies (or, with `-Check`, verifies) every agreed rule in one command — no need to hand-run the `dotnet format analyzers` commands above anymore.
+
+One gotcha hit along the way: `dotnet format analyzers` wrote CRLF line endings for the newly-inserted `using (Assert.EnterMultipleScope())` blocks on Windows, violating `end_of_line = lf`. A follow-up `dotnet msbuild -t:Format` (whitespace pass) fixed it — worth remembering if a future analyzer-based rule shows the same symptom.
+
 ### Explicitly skipping
 
 - Null propagation (`?.`)
@@ -87,7 +91,7 @@ All format-only-viable rules identified from `orig-editorconfig-branch` are now 
 | IDE1006 (naming) | `NamingStyleCodeFixProvider` does not support Fix All in Solution |
 | IDE0052 | No associated code fix — unused private fields must be removed by hand |
 | IDE0051 / IDE0059 | Little or no auto-fix at solution scope with `--severity warn` |
-| NUnit2045 | 3rd-party analyzer diagnostic — not covered by `dotnet msbuild -t:Format` (`style` command); needs `dotnet format analyzers <csproj> --diagnostics NUnit2045 --severity warn` per project, run repeatedly until `--verify-no-changes` is clean |
+| NUnit2045 | 3rd-party analyzer diagnostic — not covered by `dotnet msbuild -t:Format` (`style` command); needs `dotnet format analyzers <csproj> --diagnostics NUnit2045 --severity warn` per project, run repeatedly until `--verify-no-changes` is clean. Automated in `scripts/Format.ps1` / `scripts/format.sh` (`52fd5b8b`) via the `FormatAnalyzers`/`FormatAnalyzersCheck` targets, so this is now handled by the normal format script. |
 
 ## Reference: orig branch vs main
 
