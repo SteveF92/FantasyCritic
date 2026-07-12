@@ -11,7 +11,7 @@ internal static class MasterGameFactory
 {
     public static List<MasterGame> GetMasterGames()
     {
-        List<MasterGame> games = new List<MasterGame>();
+        List<MasterGame> games = [];
 
         var sekiro = CreateMasterGame("96f5e8e3-672b-4626-b47e-4bff3a6c4430", "Sekiro: Shadows Die Twice",
             "2019-03-22", new LocalDate(2019, 1, 1), new LocalDate(2019, 3, 22), null, null, null, new LocalDate(2019, 3, 22),

@@ -197,8 +197,8 @@ public class TradePrivacyTests : IntegrationTestBase
         {
             ProposerPublisherID = proposer.PublisherID,
             CounterPartyPublisherID = counterParty.PublisherID,
-            ProposerPublisherGameIDs = new List<Guid> { proposerGame.PublisherGameID },
-            CounterPartyPublisherGameIDs = new List<Guid> { counterPartyGame.PublisherGameID },
+            ProposerPublisherGameIDs = [proposerGame.PublisherGameID],
+            CounterPartyPublisherGameIDs = [counterPartyGame.PublisherGameID],
             ProposerBudgetSendAmount = 0,
             CounterPartyBudgetSendAmount = 0,
             Message = message,

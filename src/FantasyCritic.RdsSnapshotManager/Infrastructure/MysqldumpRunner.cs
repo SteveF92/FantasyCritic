@@ -28,7 +28,7 @@ public sealed class MysqldumpRunner
         await using FileStream outputFile = File.Create(outputFilePath);
         await using GZipStream gzipStream = new GZipStream(outputFile, CompressionLevel.Optimal);
 
-        List<string> stderrLines = new();
+        List<string> stderrLines = [];
         Task stderrTask = PumpProcessOutputToConsoleAsync(process.StandardError, "mysqldump", stderrLines, cancellationToken);
         Task copyTask = CopyStdoutToGzipWithConsoleProgressAsync(process.StandardOutput.BaseStream, gzipStream, cancellationToken);
 
@@ -54,7 +54,7 @@ public sealed class MysqldumpRunner
         await using FileStream inputFile = File.OpenRead(inputFilePath);
         await using GZipStream gzipStream = new GZipStream(inputFile, CompressionMode.Decompress);
 
-        List<string> stderrLines = new();
+        List<string> stderrLines = [];
         Task stderrTask = PumpProcessOutputToConsoleAsync(process.StandardError, "mysql", stderrLines, cancellationToken);
         Task copyTask = CopyWithConsoleProgressAsync(gzipStream, process.StandardInput.BaseStream, "mysql import", cancellationToken);
 

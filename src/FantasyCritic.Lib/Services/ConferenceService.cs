@@ -324,7 +324,7 @@ public class ConferenceService
 
     private static IReadOnlyList<ConferenceYearStanding> GetConferenceYearStandings(IReadOnlyList<LeagueYear> leagueYears, SystemWideValues systemWideValues)
     {
-        List<ConferenceYearStanding> standings = new List<ConferenceYearStanding>();
+        List<ConferenceYearStanding> standings = [];
         foreach (var leagueYear in leagueYears)
         {
             var supportedYear = leagueYear.SupportedYear;

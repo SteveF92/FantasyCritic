@@ -77,7 +77,7 @@ public class ConsolidatedLeagueYearViewModel
 
         Guid? previousYearWinnerUserID = domain.PreviousSeasonWinnerUserID;
 
-        List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
+        List<PlayerWithPublisherViewModel> playerVMs = [];
         foreach (MinimalFantasyCriticUser user in activeUsersMinimal)
         {
             Publisher? publisher = leagueYear.GetUserPublisher(user);

@@ -146,7 +146,7 @@ public class Program
                     Password = lokiApiToken
                 },
                 labels: lokiLabels,
-                propertiesAsLabels: new[] { "SourceContext" });
+                propertiesAsLabels: ["SourceContext"]);
         }
 
         Log.Logger = loggerConfig.CreateLogger();

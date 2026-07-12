@@ -11,26 +11,24 @@ public sealed class CrontabFieldImpl
     public static readonly CrontabFieldImpl Day = new CrontabFieldImpl(CrontabFieldKind.Day, 1, 31, null);
 
     public static readonly CrontabFieldImpl Month = new CrontabFieldImpl(CrontabFieldKind.Month, 1, 12,
-        new[]
-        {
+        [
             "January", "February", "March", "April",
             "May", "June", "July", "August",
             "September", "October", "November",
             "December"
-        });
+        ]);
 
     public static readonly CrontabFieldImpl DayOfWeek = new CrontabFieldImpl(CrontabFieldKind.DayOfWeek, 0, 6,
-        new[]
-        {
+        [
             "Sunday", "Monday", "Tuesday",
             "Wednesday", "Thursday", "Friday",
             "Saturday"
-        });
+        ]);
 
-    private static readonly CrontabFieldImpl[] FieldByKind = { Minute, Hour, Day, Month, DayOfWeek };
+    private static readonly CrontabFieldImpl[] FieldByKind = [Minute, Hour, Day, Month, DayOfWeek];
 
     private static readonly CompareInfo Comparer = CultureInfo.InvariantCulture.CompareInfo;
-    private static readonly char[] Comma = { ',' };
+    private static readonly char[] Comma = [','];
 
     private readonly CrontabFieldKind _kind;
     private readonly int _maxValue;

@@ -98,14 +98,14 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         {
             if (!conferenceDictionary.TryGetValue(yearEntity.ConferenceID, out var years))
             {
-                years = new List<int>();
+                years = [];
                 conferenceDictionary[yearEntity.ConferenceID] = years;
             }
             years.Add(yearEntity.Year);
         }
 
         var myConferences = conferenceEntities
-            .Select(conference => conference.ToDomain(conferenceDictionary.GetValueOrDefault(conference.ConferenceID, new List<int>())))
+            .Select(conference => conference.ToDomain(conferenceDictionary.GetValueOrDefault(conference.ConferenceID, [])))
             .ToList();
 
         //Top Bids and Drops
@@ -618,7 +618,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         var leagueActivePlayerLookup = leagueActivePlayers.ToLookup(x => x.UserID);
         var conferenceActivePlayerLookup = conferenceActivePlayers.ToLookup(x => x.UserID);
 
-        List<ConferencePlayer> conferencePlayers = new List<ConferencePlayer>();
+        List<ConferencePlayer> conferencePlayers = [];
         foreach (var user in distinctUsers)
         {
             var leaguesManaged = leagueManagerLookup[user.UserID].Select(x => x.LeagueID).ToHashSet();

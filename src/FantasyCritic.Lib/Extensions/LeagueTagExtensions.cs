@@ -15,7 +15,7 @@ public static class LeagueTagExtensions
     public static IReadOnlyList<ClaimError> GameHasValidTags(IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueTagStatus> slotSpecificTags,
         MasterGame masterGame, IEnumerable<MasterGameTag> masterGameTags, LocalDate dateOfAcquisition)
     {
-        List<ClaimError> claimErrors = new List<ClaimError>();
+        List<ClaimError> claimErrors = [];
         if (masterGameTags.Any(x => x.Name == "Cancelled"))
         {
             claimErrors.Add(new ClaimError("That game is not eligible because it has been cancelled.", true));

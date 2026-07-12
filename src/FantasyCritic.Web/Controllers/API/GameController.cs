@@ -123,7 +123,7 @@ public class GameController : FantasyCriticController
     [HttpGet("{id}")]
     public async Task<ActionResult<List<MasterGameYearViewModel>>> MasterGameYears(Guid id)
     {
-        List<MasterGameYear> masterGameYears = new List<MasterGameYear>();
+        List<MasterGameYear> masterGameYears = [];
         var supportedYears = await _interLeagueService.GetSupportedYears();
         foreach (var supportedYear in supportedYears)
         {

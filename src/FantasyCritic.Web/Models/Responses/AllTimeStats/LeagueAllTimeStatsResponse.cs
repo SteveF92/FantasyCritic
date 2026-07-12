@@ -9,7 +9,7 @@ public class LeagueAllTimeStatsResponse
         League = leagueViewModel;
 
         PlayerAllTimeStats = allTimeStats.PlayerAllTimeStats.Select(x => new LeaguePlayerAllTimeStatsResponse(x)).ToList();
-        Publishers = new List<AllTimeStatsPublisherViewModel>();
+        Publishers = [];
         foreach (var leagueYear in allTimeStats.LeagueYears)
         {
             foreach (var publisher in leagueYear.Publishers)

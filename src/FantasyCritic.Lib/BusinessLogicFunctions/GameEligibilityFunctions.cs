@@ -18,7 +18,7 @@ public static class GameEligibilityFunctions
 
         var leagueYear = request.LeagueYear;
 
-        List<ClaimError> claimErrors = new List<ClaimError>();
+        List<ClaimError> claimErrors = [];
 
         var basicErrors = GetBasicErrors(leagueYear.League, request.Publisher);
         claimErrors.AddRange(basicErrors);
@@ -124,7 +124,7 @@ public static class GameEligibilityFunctions
             dateOfPotentialDrop = nextDropTime.Value.ToEasternDate();
         }
 
-        List<ClaimError> dropErrors = new List<ClaimError>();
+        List<ClaimError> dropErrors = [];
 
         var basicErrors = GetBasicErrors(leagueYear.League, publisher);
         dropErrors.AddRange(basicErrors);
@@ -189,7 +189,7 @@ public static class GameEligibilityFunctions
 
     public static DropResult CanConditionallyDropGame(PickupBid request, LeagueYear leagueYear, Publisher publisher, Instant? nextBidTime, LocalDate currentDate)
     {
-        List<ClaimError> dropErrors = new List<ClaimError>();
+        List<ClaimError> dropErrors = [];
 
         var basicErrors = GetBasicErrors(leagueYear.League, publisher);
         dropErrors.AddRange(basicErrors);
@@ -267,7 +267,7 @@ public static class GameEligibilityFunctions
 
     public static ClaimResult CanAssociateGame(AssociateGameDomainRequest request, LocalDate currentDate)
     {
-        List<ClaimError> associationErrors = new List<ClaimError>();
+        List<ClaimError> associationErrors = [];
         var basicErrors = GetBasicErrors(request.LeagueYear.League, request.Publisher);
         associationErrors.AddRange(basicErrors);
         var leagueYear = request.LeagueYear;
@@ -326,7 +326,7 @@ public static class GameEligibilityFunctions
 
     private static IReadOnlyList<ClaimError> GetBasicErrors(League league, Publisher publisher)
     {
-        List<ClaimError> claimErrors = new List<ClaimError>();
+        List<ClaimError> claimErrors = [];
 
         bool isInLeague = (publisher.LeagueYearKey.LeagueID == league.LeagueID);
         if (!isInLeague)
@@ -347,7 +347,7 @@ public static class GameEligibilityFunctions
         bool drafting, bool partOfSpecialAuction)
     {
         MasterGameWithEligibilityFactors eligibilityFactors = leagueYear.GetEligibilityFactorsForMasterGame(masterGame, dateOfPotentialAcquisition);
-        List<ClaimError> claimErrors = new List<ClaimError>();
+        List<ClaimError> claimErrors = [];
 
         bool manuallyEligible = eligibilityFactors.OverridenEligibility.HasValue && eligibilityFactors.OverridenEligibility.Value && !dropping;
         bool released = masterGame.IsReleased(currentDate);

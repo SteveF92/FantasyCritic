@@ -215,7 +215,7 @@ public class MasterGameRequestTests : IntegrationTestBase
         {
             GameName = requestedGameName,
             EstimatedReleaseDate = "2027",
-            Tags = new[] { "NewGame" },
+            Tags = ["NewGame"],
         });
 
         using var completionResult = await fcSession.FactChecker.CompleteMasterGameRequestAsync(new CompleteMasterGameRequestRequest

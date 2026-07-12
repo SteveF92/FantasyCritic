@@ -75,14 +75,14 @@ public class MySQLConferenceRepo : IConferenceRepo
         {
             if (!conferenceDictionary.TryGetValue(yearEntity.ConferenceID, out var years))
             {
-                years = new List<int>();
+                years = [];
                 conferenceDictionary[yearEntity.ConferenceID] = years;
             }
             years.Add(yearEntity.Year);
         }
 
         var domainObjects = conferenceEntities
-            .Select(conference => conference.ToDomain(conferenceDictionary.GetValueOrDefault(conference.ConferenceID, new List<int>())))
+            .Select(conference => conference.ToDomain(conferenceDictionary.GetValueOrDefault(conference.ConferenceID, [])))
             .ToList();
         return domainObjects;
     }
@@ -360,7 +360,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         var leagueActivePlayerLookup = leagueActivePlayers.ToLookup(x => x.UserID);
         var conferenceActivePlayerLookup = conferenceActivePlayers.ToLookup(x => x.UserID);
 
-        List<ConferencePlayer> conferencePlayers = new List<ConferencePlayer>();
+        List<ConferencePlayer> conferencePlayers = [];
         foreach (var user in usersInConference)
         {
             var leaguesManaged = leagueManagerLookup[user.Id].Select(x => x.LeagueID).ToHashSet();
@@ -415,7 +415,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         var leagueManagers = await _userStore.GetUsers(leagueManagerIDs);
         var leagueManagerDictionary = leagueManagers.ToDictionary(x => x.Id);
 
-        List<ConferenceLeague> leaguesInConference = new List<ConferenceLeague>();
+        List<ConferenceLeague> leaguesInConference = [];
         foreach (var leagueEntity in leagueEntities)
         {
             var leagueManager = leagueManagerDictionary[leagueEntity.LeagueManager];
@@ -636,7 +636,7 @@ public class MySQLConferenceRepo : IConferenceRepo
             {
                 if (!leagueHasPlayerInPreviousYear.ContainsKey(conferenceLeagueYear.League))
                 {
-                    leagueHasPlayerInPreviousYear.Add(conferenceLeagueYear.League, new HashSet<FantasyCriticUser>());
+                    leagueHasPlayerInPreviousYear.Add(conferenceLeagueYear.League, []);
                 }
 
                 var fullLeagueYear = await _combinedDataRepo.GetLeagueYear(conferenceLeagueYear.League.LeagueID, conferenceLeagueYear.Year);
@@ -666,8 +666,8 @@ public class MySQLConferenceRepo : IConferenceRepo
 
             var leagueUserLookup = currentLeagueUsers.ToLookup(x => x.LeagueID);
 
-            List<LeagueHasUserEntity> usersThatCanBeSafelyRemovedFromLeague = new List<LeagueHasUserEntity>();
-            List<LeagueYearActivePlayer> activePlayersToRemove = new List<LeagueYearActivePlayer>();
+            List<LeagueHasUserEntity> usersThatCanBeSafelyRemovedFromLeague = [];
+            List<LeagueYearActivePlayer> activePlayersToRemove = [];
             foreach (var leagueUser in currentLeagueUsers)
             {
                 var conferenceLeague = conferenceLeagues.Single(x => x.LeagueID == leagueUser.LeagueID);
@@ -692,8 +692,8 @@ public class MySQLConferenceRepo : IConferenceRepo
                 usersThatCanBeSafelyRemovedFromLeague.Add(new LeagueHasUserEntity() { LeagueID = leagueUser.LeagueID, UserID = leagueUser.UserID });
             }
 
-            List<LeagueHasUserEntity> newUsersToAdd = new List<LeagueHasUserEntity>();
-            List<LeagueYearActivePlayer> newActivePlayersToAdd = new List<LeagueYearActivePlayer>();
+            List<LeagueHasUserEntity> newUsersToAdd = [];
+            List<LeagueYearActivePlayer> newActivePlayersToAdd = [];
 
             foreach (var leagueUsers in userAssignments)
             {
@@ -715,8 +715,8 @@ public class MySQLConferenceRepo : IConferenceRepo
                 }));
             }
 
-            List<LeagueYearKey> leagueYearsToFixDraftOrders = new List<LeagueYearKey>();
-            List<ConferencePublisherInfoEntity> publishersToUpdate = new List<ConferencePublisherInfoEntity>();
+            List<LeagueYearKey> leagueYearsToFixDraftOrders = [];
+            List<ConferencePublisherInfoEntity> publishersToUpdate = [];
             foreach (var publisher in currentPublisherEntities)
             {
                 var userNewLeague = newActivePlayersToAdd.FirstOrDefault(x => x.UserID == publisher.UserID);

@@ -143,7 +143,7 @@ public class PublisherStateSet
         var newPublisherGames = publisherToEdit.PublisherGames.ToList();
         if (addGame is not null)
         {
-            newPublisherGames = newPublisherGames.Concat(new[] { addGame }).ToList();
+            newPublisherGames = newPublisherGames.Concat([addGame]).ToList();
         }
         if (removeGame is not null)
         {

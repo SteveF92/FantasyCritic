@@ -21,7 +21,7 @@ public class LeagueYearScoreChanges
         var oldPublisherDictionary = _oldPublishers.ToDictionary(x => x.PublisherID);
 
         bool anyChanges = false;
-        List<PublisherScoreChange> scoreChanges = new List<PublisherScoreChange>();
+        List<PublisherScoreChange> scoreChanges = [];
         for (int newIndex = 0; newIndex < publishersOrderedByNewScore.Count; newIndex++)
         {
             var newPublisher = publishersOrderedByNewScore[newIndex];

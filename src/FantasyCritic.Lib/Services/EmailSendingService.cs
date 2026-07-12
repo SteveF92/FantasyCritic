@@ -48,7 +48,7 @@ public class EmailSendingService
                 continue;
             }
 
-            List<LeagueYearPublicBiddingSet> publicBiddingSetsForUser = new List<LeagueYearPublicBiddingSet>();
+            List<LeagueYearPublicBiddingSet> publicBiddingSetsForUser = [];
             foreach (var leagueYearKey in leagueYearKeys)
             {
                 var publicBiddingSet = publicBiddingSetDictionary.GetValueOrDefault(leagueYearKey);

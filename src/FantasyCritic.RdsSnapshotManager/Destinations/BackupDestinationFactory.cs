@@ -9,7 +9,7 @@ public static class BackupDestinationFactory
 {
     public static IReadOnlyList<BackupDestinationRegistration> CreateRegistrations(RdsSnapshotManagerOptions options)
     {
-        List<BackupDestinationRegistration> destinations = new();
+        List<BackupDestinationRegistration> destinations = [];
 
         if (options.Destinations.LocalDirectory.Enabled)
         {

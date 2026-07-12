@@ -598,6 +598,6 @@ public class RoyaleTests : IntegrationTestBase
             }
         }
 
-        return Array.Empty<PossibleRoyaleMasterGameViewModel>();
+        return [];
     }
 }

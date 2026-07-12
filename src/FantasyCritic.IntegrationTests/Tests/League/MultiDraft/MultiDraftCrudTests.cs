@@ -55,7 +55,7 @@ public class MultiDraftCrudTests : IntegrationTestBase
             CounterPicksToDraft = counterPicksToDraft,
             AdditionalStandardGames = additionalStandardGames,
             AdditionalCounterPicks = additionalCounterPicks,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         return await _league.GetLeagueYearAsync();
@@ -98,7 +98,7 @@ public class MultiDraftCrudTests : IntegrationTestBase
             CounterPicksToDraft = 0,
             AdditionalStandardGames = 3,
             AdditionalCounterPicks = 0,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         var after = await freshLeague.GetLeagueYearAsync();

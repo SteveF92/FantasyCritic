@@ -12,7 +12,7 @@ internal class MyGameNewsEntity
 
     public static IReadOnlyList<SingleGameNews> BuildMyGameNewsFromEntities(IEnumerable<MyGameNewsEntity> myGameNewsEntities, IReadOnlyDictionary<MasterGameYearKey, MasterGameYear> masterGameYears)
     {
-        List<SingleGameNews> domains = new List<SingleGameNews>();
+        List<SingleGameNews> domains = [];
 
         var groupedByMasterGame = myGameNewsEntities.GroupBy(x => x.MasterGameID);
 

@@ -48,7 +48,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
                 CounterPicksToDraft = 0,
                 AdditionalStandardGames = 0,
                 AdditionalCounterPicks = 0,
-                NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+                NewSpecialGameSlots = [],
             });
         }
         catch (ApiException caught)
@@ -77,7 +77,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
                 CounterPicksMustBeFromThisDraft = true,
                 AdditionalStandardGames = 3,
                 AdditionalCounterPicks = 3,
-                NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+                NewSpecialGameSlots = [],
             });
         }
         catch (ApiException caught)
@@ -105,7 +105,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
             CounterPicksToDraft = 0,
             AdditionalStandardGames = 2,
             AdditionalCounterPicks = 0,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         var snapshot = await _league.GetLeagueYearAsync();
@@ -147,7 +147,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
             CounterPicksToDraft = 1,
             AdditionalStandardGames = 2,
             AdditionalCounterPicks = 2,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         var snapshot = await _league.GetLeagueYearAsync();
@@ -203,7 +203,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
             CounterPicksToDraft = 0,
             AdditionalStandardGames = 0,
             AdditionalCounterPicks = 0,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         await MultiDraftTestScenario.SetDraft2OrderAsync(league);
@@ -235,7 +235,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
             CounterPicksToDraft = 2,
             AdditionalStandardGames = 1,
             AdditionalCounterPicks = 0,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         await MultiDraftTestScenario.SetDraft2OrderAsync(league);

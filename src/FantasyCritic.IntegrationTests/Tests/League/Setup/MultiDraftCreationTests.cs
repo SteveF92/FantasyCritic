@@ -28,11 +28,11 @@ public class MultiDraftCreationTests : IntegrationTestBase
             TestLeague = true,
             CustomRulesLeague = false,
             LeagueYearSettings = scenario.BuildSettings(year),
-            Drafts = new List<DraftSettingsRequest>
-            {
+            Drafts =
+            [
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 1 },
                 new() { Name = "Draft 2", ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 0 },
-            }
+            ]
         });
 
         var leagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);
@@ -69,18 +69,18 @@ public class MultiDraftCreationTests : IntegrationTestBase
             TestLeague = true,
             CustomRulesLeague = false,
             LeagueYearSettings = scenario.BuildSettings(year),
-            Drafts = new List<DraftSettingsRequest>
-            {
+            Drafts =
+            [
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 2, CounterPicksToDraft = 1 },
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 2, CounterPicksToDraft = 0 },
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 2, CounterPicksToDraft = 0 },
-            }
+            ]
         });
 
         var leagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);
 
         Assert.That(leagueYear.Drafts, Has.Count.EqualTo(3));
-        Assert.That(leagueYear.Drafts.Select(d => d.DraftNumber).Order(), Is.EqualTo(new[] { 1, 2, 3 }));
+        Assert.That(leagueYear.Drafts.Select(d => d.DraftNumber).Order(), Is.EqualTo([1, 2, 3]));
     }
 
     [Test]
@@ -127,11 +127,11 @@ public class MultiDraftCreationTests : IntegrationTestBase
             TestLeague = true,
             CustomRulesLeague = false,
             LeagueYearSettings = LeagueScenarios.Standard.BuildSettings(year),
-            Drafts = new List<DraftSettingsRequest>
-            {
+            Drafts =
+            [
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 1 },
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 0 },
-            }
+            ]
         });
 
         var originalLeagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);

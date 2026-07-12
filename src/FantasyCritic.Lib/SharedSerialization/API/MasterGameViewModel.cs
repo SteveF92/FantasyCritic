@@ -82,7 +82,7 @@ public class MasterGameViewModel
 
     public MasterGame ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        List<MasterGameTag> tags = new List<MasterGameTag>();
+        List<MasterGameTag> tags = [];
         foreach (var tag in Tags)
         {
             if (tagDictionary.TryGetValue(tag, out var masterGameTag))

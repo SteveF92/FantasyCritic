@@ -103,7 +103,7 @@ public class LeagueController : BaseLeagueController
     public async Task<ActionResult<List<PublicLeagueYearViewModel>>> PublicLeagues(int year, int? count)
     {
         IReadOnlyList<PublicLeagueYearStats> publicLeagueYears = await _fantasyCriticService.GetPublicLeagueYears(year, count);
-        List<PublicLeagueYearViewModel> viewModels = new List<PublicLeagueYearViewModel>();
+        List<PublicLeagueYearViewModel> viewModels = [];
         foreach (var leagueYear in publicLeagueYears)
         {
             viewModels.Add(new PublicLeagueYearViewModel(leagueYear));
@@ -1084,7 +1084,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
-        List<KeyValuePair<PickupBid, int>> bidPriorities = new List<KeyValuePair<PickupBid, int>>();
+        List<KeyValuePair<PickupBid, int>> bidPriorities = [];
         for (var index = 0; index < request.BidPriorities.Count; index++)
         {
             var requestBid = request.BidPriorities[index];
@@ -1594,7 +1594,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
-        List<KeyValuePair<QueuedGame, int>> queueRanks = new List<KeyValuePair<QueuedGame, int>>();
+        List<KeyValuePair<QueuedGame, int>> queueRanks = [];
         for (var index = 0; index < request.QueueRanks.Count; index++)
         {
             var requestQueuedGame = request.QueueRanks[index];

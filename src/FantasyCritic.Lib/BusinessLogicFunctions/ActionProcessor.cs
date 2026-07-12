@@ -64,7 +64,7 @@ public class ActionProcessor
         var newDictionary = new Dictionary<LeagueYear, List<PickupBid>>();
         foreach (var leagueGroup in allActiveBids)
         {
-            newDictionary[leagueGroup.Key] = new List<PickupBid>();
+            newDictionary[leagueGroup.Key] = [];
             var groupedByPublisher = leagueGroup.Value.GroupBy(x => x.Publisher);
             foreach (var publisherGroup in groupedByPublisher)
             {
@@ -97,10 +97,10 @@ public class ActionProcessor
 
     private ActionProcessingResults ProcessDrops(IReadOnlyDictionary<LeagueYear, IReadOnlyList<DropRequest>> allDropRequests, PublisherStateSet publisherStateSet)
     {
-        List<FormerPublisherGame> gamesToDelete = new List<FormerPublisherGame>();
-        List<LeagueAction> leagueActions = new List<LeagueAction>();
-        List<DropRequest> successDrops = new List<DropRequest>();
-        List<DropRequest> failedDrops = new List<DropRequest>();
+        List<FormerPublisherGame> gamesToDelete = [];
+        List<LeagueAction> leagueActions = [];
+        List<DropRequest> successDrops = [];
+        List<DropRequest> failedDrops = [];
 
         foreach (var leagueYearGroup in allDropRequests)
         {
@@ -179,12 +179,12 @@ public class ActionProcessor
         var allPublishers = leagueYearSpecialAuctions.SelectMany(x => x.LeagueYear.Publishers);
         var publisherStateSet = new PublisherStateSet(allPublishers);
         var processedBids = new ProcessedBidSet();
-        List<LeagueManagerAction> noBidsActions = new List<LeagueManagerAction>();
+        List<LeagueManagerAction> noBidsActions = [];
         foreach (var singleLeagueYearSet in leagueYearSpecialAuctions)
         {
             var leagueYear = singleLeagueYearSet.LeagueYear;
             var orderedSpecialAuctions = singleLeagueYearSet.SpecialAuctionsWithBids.OrderBy(x => x.SpecialAuction.ScheduledEndTime).ToList();
-            List<PickupBid> bidsToProcessForLeague = new List<PickupBid>();
+            List<PickupBid> bidsToProcessForLeague = [];
             foreach (var specialAuctionWithBids in orderedSpecialAuctions)
             {
                 var masterGame = specialAuctionWithBids.SpecialAuction.MasterGameYear.MasterGame;
@@ -221,7 +221,7 @@ public class ActionProcessor
         LeagueYear updatedLeagueYear = publisherStateSet.GetUpdatedLeagueYear(leagueYear);
         var gamesGroupedByPublisherAndGame = activeBidsForLeague.GroupBy(x => (x.Publisher.PublisherID, x.MasterGame.MasterGameID));
         var duplicateBidGroups = gamesGroupedByPublisherAndGame.Where(x => x.Count() > 1).ToList();
-        List<PickupBid> duplicateBids = new List<PickupBid>();
+        List<PickupBid> duplicateBids = [];
         foreach (var duplicateBidGroup in duplicateBidGroups)
         {
             var bestBid = duplicateBidGroup.WhereMax(x => x.BidAmount).WhereMin(x => x.Timestamp).First();
@@ -231,13 +231,13 @@ public class ActionProcessor
 
         var nonDuplicateBids = activeBidsForLeague.Except(duplicateBids).ToList();
 
-        List<PickupBid> noSpaceLeftBids = new List<PickupBid>();
-        List<PickupBid> noEligibleSpaceLeftBids = new List<PickupBid>();
-        List<PickupBid> insufficientFundsBids = new List<PickupBid>();
-        List<PickupBid> belowMinimumBids = new List<PickupBid>();
-        List<KeyValuePair<PickupBid, string>> invalidGameBids = new List<KeyValuePair<PickupBid, string>>();
+        List<PickupBid> noSpaceLeftBids = [];
+        List<PickupBid> noEligibleSpaceLeftBids = [];
+        List<PickupBid> insufficientFundsBids = [];
+        List<PickupBid> belowMinimumBids = [];
+        List<KeyValuePair<PickupBid, string>> invalidGameBids = [];
 
-        List<ValidPickupBid> validPickupBids = new List<ValidPickupBid>();
+        List<ValidPickupBid> validPickupBids = [];
         foreach (var activeBid in nonDuplicateBids)
         {
             Publisher bidPublisher = publisherStateSet.GetPublisher(activeBid.Publisher.PublisherID);
@@ -313,7 +313,7 @@ public class ActionProcessor
         var invalidGameBidFailures = invalidGameBids.Select(x => new FailedPickupBid(x.Key, "Game is no longer eligible: " + x.Value, _systemWideValues, processDate)).ToList();
         var insufficientFundsBidFailures = insufficientFundsBids.Select(x => new FailedPickupBid(x, "Not enough budget.", _systemWideValues, processDate)).ToList();
         var belowMinimumBidFailures = belowMinimumBids.Select(x => new FailedPickupBid(x, "Bid is below the minimum bid amount.", _systemWideValues, processDate)).ToList();
-        List<FailedPickupBid> noSpaceLeftBidFailures = new List<FailedPickupBid>();
+        List<FailedPickupBid> noSpaceLeftBidFailures = [];
         foreach (var noSpaceLeftBid in noSpaceLeftBids)
         {
             FailedPickupBid failedBid;
@@ -387,7 +387,7 @@ public class ActionProcessor
             highestPriorityPerPublisher[bidGroup.Key] = highestPriority;
         }
 
-        List<SucceededPickupBid> winnableBids = new List<SucceededPickupBid>();
+        List<SucceededPickupBid> winnableBids = [];
         var groupedByGame = activeBidsForLeagueYear.GroupToDictionary(x => x.PickupBid.MasterGame);
         foreach (var gameGroup in groupedByGame)
         {
@@ -501,8 +501,8 @@ public class ActionProcessor
     private ActionProcessingResults GetBidProcessingResults(IReadOnlyList<SucceededPickupBid> successBids, IReadOnlyList<FailedPickupBid> failedBids, PublisherStateSet publisherStateSet,
         IEnumerable<LeagueManagerAction> leagueManagerActions)
     {
-        List<PublisherGame> gamesToAdd = new List<PublisherGame>();
-        List<LeagueAction> leagueActions = new List<LeagueAction>();
+        List<PublisherGame> gamesToAdd = [];
+        List<LeagueAction> leagueActions = [];
         foreach (var successBid in successBids)
         {
             var masterGameYear = _masterGameYearDictionary[successBid.PickupBid.MasterGame.MasterGameID];
@@ -522,7 +522,7 @@ public class ActionProcessor
             leagueActions.Add(leagueAction);
         }
 
-        List<FormerPublisherGame> conditionalDroppedGames = new List<FormerPublisherGame>();
+        List<FormerPublisherGame> conditionalDroppedGames = [];
         var successfulConditionalDrops = successBids.Where(x => x.PickupBid.ConditionalDropPublisherGame is not null && x.PickupBid.ConditionalDropResult!.Result.IsSuccess);
         foreach (var successfulConditionalDrop in successfulConditionalDrops)
         {

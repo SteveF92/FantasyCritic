@@ -51,7 +51,7 @@ public class LeagueYearViewModel
             )
             .ToDictionary(x => x.PublisherID, x => x.Ranking);
 
-        List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
+        List<PlayerWithPublisherViewModel> playerVMs = [];
         bool allPublishersMade = true;
         foreach (var user in activeUsers)
         {

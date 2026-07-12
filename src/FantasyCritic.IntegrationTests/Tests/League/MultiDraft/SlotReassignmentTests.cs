@@ -41,8 +41,8 @@ public class SlotReassignmentTests : IntegrationTestBase
         HasSpecialSlots = true,
         SpecialGameSlots =
         [
-            new SpecialGameSlotViewModel { SpecialSlotPosition = 0, RequiredTags = new List<string> { "NewGame" } },
-            new SpecialGameSlotViewModel { SpecialSlotPosition = 1, RequiredTags = new List<string> { "NewGame" } },
+            new SpecialGameSlotViewModel { SpecialSlotPosition = 0, RequiredTags = ["NewGame"] },
+            new SpecialGameSlotViewModel { SpecialSlotPosition = 1, RequiredTags = ["NewGame"] },
         ],
     };
 
@@ -60,7 +60,7 @@ public class SlotReassignmentTests : IntegrationTestBase
 
         Assert.That(specialSlotGamesBefore, Has.Count.EqualTo(2),
             "Each publisher should have both special slots filled after a full draft.");
-        Assert.That(specialSlotGamesBefore.Select(slot => slot.SlotNumber), Is.EquivalentTo(new[] { 6, 7 }),
+        Assert.That(specialSlotGamesBefore.Select(slot => slot.SlotNumber), Is.EquivalentTo([6, 7]),
             "Special slots should occupy the last two standard-game indices before expansion.");
 
         var trackedGames = specialSlotGamesBefore
@@ -81,7 +81,7 @@ public class SlotReassignmentTests : IntegrationTestBase
             CounterPicksToDraft = 0,
             AdditionalStandardGames = 5,
             AdditionalCounterPicks = 0,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         var after = await league.GetLeagueYearAsync();
@@ -108,7 +108,7 @@ public class SlotReassignmentTests : IntegrationTestBase
             .Select(slot => slot.SlotNumber)
             .ToList();
 
-        Assert.That(normalSlotNumbersAfter, Is.EquivalentTo(new[] { 0, 1, 2, 3, 4, 5 }),
+        Assert.That(normalSlotNumbersAfter, Is.EquivalentTo([0, 1, 2, 3, 4, 5]),
             "Normal-slot games should remain compacted at the front of the roster.");
     }
 

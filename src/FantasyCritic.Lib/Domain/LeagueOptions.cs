@@ -148,7 +148,7 @@ public class LeagueOptions
 
     public LeagueOptionsDifferences GetDifferences(LeagueOptions existingOptions)
     {
-        List<string> differences = new List<string>();
+        List<string> differences = [];
 
         if (StandardGames != existingOptions.StandardGames)
         {

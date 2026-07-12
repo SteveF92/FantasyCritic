@@ -294,7 +294,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         var userResults = await connection.QueryAsync<Guid>(@"select tbl_user.UserID from tbl_user join tbl_user_hasrole on (tbl_user.UserID = tbl_user_hasrole.UserID) " +
                                                             "join tbl_user_role on (tbl_user_hasrole.RoleID = tbl_user_role.RoleID) WHERE tbl_user_role.Name = @roleName", new { roleName });
 
-        List<FantasyCriticUser> users = new List<FantasyCriticUser>();
+        List<FantasyCriticUser> users = [];
         foreach (Guid userID in userResults)
         {
             var user = await this.FindByIdOrThrowAsync(userID, cancellationToken);
@@ -602,13 +602,13 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
 
         var userResults = await connection.QueryAsync<FantasyCriticUserEntity, ExternalLoginEntity, Tuple<FantasyCriticUserEntity, ExternalLoginEntity>>(
             sql, (user, externalLogin) => new Tuple<FantasyCriticUserEntity, ExternalLoginEntity>(user, externalLogin), queryObject, splitOn: "LoginProvider");
-        List<FantasyCriticUserWithExternalLogins> domainResults = new List<FantasyCriticUserWithExternalLogins>();
+        List<FantasyCriticUserWithExternalLogins> domainResults = [];
         foreach (var userEntity in userResults)
         {
-            List<UserLoginInfo> userLogins = new List<UserLoginInfo>()
-            {
+            List<UserLoginInfo> userLogins =
+            [
                 new UserLoginInfo(userEntity.Item2.LoginProvider, userEntity.Item2.ProviderKey, userEntity.Item2.ProviderDisplayName)
-            };
+            ];
             var domain = new FantasyCriticUserWithExternalLogins(userEntity.Item1.ToDomain(), userLogins);
             domainResults.Add(domain);
         }
@@ -627,7 +627,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         }
 
         var allUsers = await GetAllUsers();
-        List<FantasyCriticUserWithEmailSettings> usersWithEmailSettings = new List<FantasyCriticUserWithEmailSettings>();
+        List<FantasyCriticUserWithEmailSettings> usersWithEmailSettings = [];
         foreach (var user in allUsers)
         {
             var emailSettings = userEmailSettings[user.Id];
@@ -726,7 +726,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
             return null;
         }
 
-        var users = await GetUsers(new[] { entity.UserID });
+        var users = await GetUsers([entity.UserID]);
         var user = users.SingleOrDefault();
         if (user is null)
         {
@@ -750,7 +750,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
             return null;
         }
 
-        var users = await GetUsers(new[] { entity.UserID });
+        var users = await GetUsers([entity.UserID]);
         var user = users.SingleOrDefault();
         if (user is null)
         {
@@ -872,7 +872,7 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
                 }
 
                 var byId = await FindByIdAsync(userId.ToString(), CancellationToken.None);
-                return byId is null ? new List<FantasyCriticUser>() : new List<FantasyCriticUser>() { byId };
+                return byId is null ? [] : [byId];
             case SupportUserSearchKind.DisplayName:
                 {
                     string normalizedDisplayName = searchValue.Trim().ToUpperInvariant();

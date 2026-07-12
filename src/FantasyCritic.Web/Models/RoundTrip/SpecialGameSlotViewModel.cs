@@ -22,7 +22,7 @@ public class SpecialGameSlotViewModel
 
     public SpecialGameSlot ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        List<MasterGameTag> tags = new List<MasterGameTag>();
+        List<MasterGameTag> tags = [];
         foreach (var tag in RequiredTags)
         {
             var foundTag = tagDictionary.GetValueOrDefault(tag);

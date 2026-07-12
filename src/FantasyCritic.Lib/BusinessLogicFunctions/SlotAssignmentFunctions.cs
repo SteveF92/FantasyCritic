@@ -14,7 +14,7 @@ public static class SlotAssignmentFunctions
     public static IReadOnlyDictionary<Guid, int> GetNewSlotAssignments(LeagueYear currentLeagueYear,
         LeagueOptions newLeagueOptions, IReadOnlyList<Publisher> publishers)
     {
-        Dictionary<Guid, int> finalSlotAssignments = new Dictionary<Guid, int>();
+        Dictionary<Guid, int> finalSlotAssignments = [];
 
         var newStandardGames = newLeagueOptions.StandardGames;
         var numberOfNewSpecialSlots = newLeagueOptions.SpecialGameSlots.Count - currentLeagueYear.Options.SpecialGameSlots.Count;
@@ -27,7 +27,7 @@ public static class SlotAssignmentFunctions
 
         foreach (var publisher in publishers)
         {
-            Dictionary<Guid, int> slotAssignmentsForPublisher = new Dictionary<Guid, int>();
+            Dictionary<Guid, int> slotAssignmentsForPublisher = [];
             var slots = publisher.GetPublisherSlots(currentLeagueYear);
             var filledNonCounterPickSlots = slots.Where(x => !x.CounterPick && x.PublisherGame is not null).ToList();
 
@@ -50,7 +50,7 @@ public static class SlotAssignmentFunctions
             if (invalidSlotsMade)
             {
                 //If we cannot do the more advanced way to preserve slots, then just do the very basic thing, and line the games up.
-                slotAssignmentsForPublisher = new Dictionary<Guid, int>();
+                slotAssignmentsForPublisher = [];
                 int allSlotNumber = 0;
                 foreach (var slot in filledNonCounterPickSlots)
                 {

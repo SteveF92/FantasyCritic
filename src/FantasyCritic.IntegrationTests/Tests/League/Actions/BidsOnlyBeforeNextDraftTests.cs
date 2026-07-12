@@ -191,8 +191,8 @@ public class BidsOnlyBeforeNextDraftTests : IntegrationTestBase
             TestLeague = true,
             CustomRulesLeague = false,
             LeagueYearSettings = BidsOnlyScenario.BuildSettings(year),
-            Drafts = new List<DraftSettingsRequest>
-            {
+            Drafts =
+            [
                 new() { GamesToDraft = 2, CounterPicksToDraft = 1, ScheduledDate = null },
                 new()
                 {
@@ -201,7 +201,7 @@ public class BidsOnlyBeforeNextDraftTests : IntegrationTestBase
                     CounterPicksToDraft = 0,
                     ScheduledDate = draft2ScheduledDate,
                 },
-            },
+            ],
         });
 
         await LeagueTestHelpers.InviteAndAcceptAsync(manager, player2, leagueID);

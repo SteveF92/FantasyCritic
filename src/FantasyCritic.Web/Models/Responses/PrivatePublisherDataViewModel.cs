@@ -18,7 +18,7 @@ public class PrivatePublisherDataViewModel
 
         HashSet<MasterGame> myPublisherMasterGames = userPublisher.MyMasterGames;
 
-        List<QueuedGameViewModel> queuedGameVMs = new List<QueuedGameViewModel>();
+        List<QueuedGameViewModel> queuedGameVMs = [];
 
         foreach (var queuedGame in domainData.QueuedGames)
         {

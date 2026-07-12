@@ -41,7 +41,7 @@ public class ProductionGameStatsCacheTests
         var result = ProductionGameStatsCache.SelectHighestHypeAvailable(
             candidates,
             c => c.MasterGameID,
-            Array.Empty<ProductionMasterGameYearStat>());
+            []);
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.MasterGameID, Is.EqualTo(id1));
@@ -87,7 +87,7 @@ public class ProductionGameStatsCacheTests
             c => c.Cost,
             maxCount: 10,
             budgetCap: 100m,
-            Array.Empty<ProductionMasterGameYearStat>());
+            []);
 
         Assert.That(result, Is.Empty);
     }
@@ -109,7 +109,7 @@ public class ProductionGameStatsCacheTests
             c => c.Cost,
             maxCount: 10,
             budgetCap: 20m,
-            Array.Empty<ProductionMasterGameYearStat>());
+            []);
 
         Assert.That(result.Count, Is.EqualTo(1));
         Assert.That(result[0].Id, Is.EqualTo(cheapID));
@@ -128,7 +128,7 @@ public class ProductionGameStatsCacheTests
             c => c.Cost,
             maxCount: 3,
             budgetCap: 100m,
-            Array.Empty<ProductionMasterGameYearStat>());
+            []);
 
         Assert.That(result.Count, Is.EqualTo(3));
     }

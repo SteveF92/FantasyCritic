@@ -347,8 +347,8 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         string remainingUnrestrictedReleaseStatusDroppableGames,
         int leagueOptionsUnrestrictedReleaseStatusDroppableGames)
     {
-        return new List<EmbedFieldBuilder>
-        {
+        return
+        [
             new()
             {
                 Name = "Picks",
@@ -388,7 +388,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
                 Name = "'Unrestricted' Drops Remaining",
                 Value = BuildDropDisplay(remainingUnrestrictedReleaseStatusDroppableGames, leagueOptionsUnrestrictedReleaseStatusDroppableGames)
             }
-        };
+        ];
     }
 
     private static string BuildDropDisplay(string remaining, int total)

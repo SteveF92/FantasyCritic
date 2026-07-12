@@ -41,8 +41,8 @@ internal class Program
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(repoConfig, userStore, masterGameRepo, combinedDataRepo);
 
         Console.WriteLine("Gathering data...");
-        List<PickupBid> allProcessedPickups = new List<PickupBid>();
-        List<DropRequest> allProcessedDrops = new List<DropRequest>();
+        List<PickupBid> allProcessedPickups = [];
+        List<DropRequest> allProcessedDrops = [];
         var relevantYears = new List<int>() { 2022, 2023, 2024 };
         foreach (var year in relevantYears)
         {
@@ -59,7 +59,7 @@ internal class Program
         var actionProcessingSets = (await fantasyCriticRepo.GetActionProcessingSets()).OrderBy(x => x.ProcessTime).ToList();
         IReadOnlyList<ActionSetGrouping> groupings = GetGroupings(actionProcessingSets);
 
-        List<TopBidsAndDropsEntity> finalEntities = new List<TopBidsAndDropsEntity>();
+        List<TopBidsAndDropsEntity> finalEntities = [];
 
         Console.WriteLine("Parsing data...");
         foreach (var actionProcessingGroup in groupings)
@@ -121,9 +121,9 @@ internal class Program
 
     private static IReadOnlyList<ActionSetGrouping> GetGroupings(IReadOnlyList<ActionProcessingSetMetadata> actionProcessingSets)
     {
-        List<ActionSetGrouping> groupings = new List<ActionSetGrouping>();
+        List<ActionSetGrouping> groupings = [];
 
-        List<ActionProcessingSetMetadata> currentList = new List<ActionProcessingSetMetadata>();
+        List<ActionProcessingSetMetadata> currentList = [];
         for (var index = 0; index < actionProcessingSets.Count; index++)
         {
             var actionSet = actionProcessingSets[index];
@@ -132,7 +132,7 @@ internal class Program
             {
                 var processDate = actionSet.ProcessTime.ToEasternDate();
                 groupings.Add(new ActionSetGrouping(processDate, currentList));
-                currentList = new List<ActionProcessingSetMetadata>();
+                currentList = [];
             }
         }
 

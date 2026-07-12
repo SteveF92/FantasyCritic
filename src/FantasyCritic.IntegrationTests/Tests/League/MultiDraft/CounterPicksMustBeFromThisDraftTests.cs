@@ -126,7 +126,7 @@ public class CounterPicksMustBeFromThisDraftTests : IntegrationTestBase
             CounterPicksToDraft = 1,
             AdditionalStandardGames = 2,
             AdditionalCounterPicks = 1,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
             CounterPicksMustBeFromThisDraft = true,
         });
 

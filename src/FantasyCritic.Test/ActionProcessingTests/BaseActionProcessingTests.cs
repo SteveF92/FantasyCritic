@@ -15,7 +15,7 @@ namespace FantasyCritic.Test.ActionProcessingTests;
 
 public abstract class BaseActionProcessingTests
 {
-    private readonly Dictionary<string, FinalizedActionProcessingResults> _results = new Dictionary<string, FinalizedActionProcessingResults>();
+    private readonly Dictionary<string, FinalizedActionProcessingResults> _results = [];
 
     protected abstract Instant ProcessingTime { get; }
     protected abstract string ActionProcessingSetName { get; }

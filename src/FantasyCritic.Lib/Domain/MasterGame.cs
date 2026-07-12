@@ -244,7 +244,7 @@ public class MasterGame : IEquatable<MasterGame>
 
     public IReadOnlyList<string> CompareToExistingGame(MasterGame existingMasterGame, LocalDate today)
     {
-        List<string> differences = new List<string>();
+        List<string> differences = [];
 
         if (GameName != existingMasterGame.GameName)
         {

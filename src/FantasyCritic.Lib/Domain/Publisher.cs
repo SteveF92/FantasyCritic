@@ -164,7 +164,7 @@ public class Publisher : IEquatable<Publisher>
     public static IReadOnlyList<PublisherSlot> GetPublisherSlots(LeagueYear leagueYear, IReadOnlyList<PublisherGame> publisherGames, IReadOnlyList<PublisherGame> otherPublisherGames)
     {
         var leagueOptions = leagueYear.Options;
-        List<PublisherSlot> publisherSlots = new List<PublisherSlot>();
+        List<PublisherSlot> publisherSlots = [];
 
         int overallSlotNumber = 0;
         var standardGamesBySlot = publisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);

@@ -100,8 +100,7 @@ public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
             header,
             "",
             Context.User,
-            new List<EmbedFieldBuilder>
-            {
+            [
               new()
               {
                   Name = "Bids",
@@ -114,7 +113,7 @@ public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
               Value = dropResultMessages.Any() ? string.Join("\n", dropResultMessages) : "No drops this week.",
               IsInline = false,
             }
-            },
+            ],
             url: leagueUrl));
     }
 }

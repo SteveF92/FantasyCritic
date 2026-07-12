@@ -238,7 +238,7 @@ public class RoyaleController : FantasyCriticController
         var previousWinnersByUser = royaleData.AllYearQuarters.Where(x => x.WinningUser is not null).ToLookup(x => x.WinningUser);
         var publishersToShow = royaleData.RoyalePublishers.OrderByDescending(x => x.GetTotalFantasyPoints());
 
-        List<RoyaleStandingsViewModel> publisherViewModels = new List<RoyaleStandingsViewModel>();
+        List<RoyaleStandingsViewModel> publisherViewModels = [];
         var topPublishers = new List<RoyalePublisherViewModel>();
         bool validStatistics = true;
         foreach (var publisher in publishersToShow)

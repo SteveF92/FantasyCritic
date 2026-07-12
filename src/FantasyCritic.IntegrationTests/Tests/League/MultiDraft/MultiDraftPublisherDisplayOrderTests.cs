@@ -71,7 +71,7 @@ public class MultiDraftPublisherDisplayOrderTests : IntegrationTestBase
         var manager = league.Publishers.Single(p => p.DraftPosition == 1);
         var player = league.Publishers.Single(p => p.DraftPosition == 2);
         Assert.That(snapshot.Publishers.Select(p => p.PublisherID).ToList(),
-            Is.EqualTo(new[] { manager.PublisherID, player.PublisherID }));
+            Is.EqualTo([manager.PublisherID, player.PublisherID]));
 
         AssertPublisherDisplayOrder(snapshot);
     }
@@ -91,15 +91,15 @@ public class MultiDraftPublisherDisplayOrderTests : IntegrationTestBase
 
         // Draft 1 order was manager-first; reverse it for draft 2.
         await LeagueTestHelpers.SetDraftOrderAsync(
-            league.Manager, league.LeagueID, league.Year, new[] { player.PublisherID, manager.PublisherID });
+            league.Manager, league.LeagueID, league.Year, [player.PublisherID, manager.PublisherID]);
 
         var snapshot = await league.GetLeagueYearAsync();
 
         Assert.That(snapshot.DisplayOrderDraft().DraftNumber, Is.EqualTo(2));
         Assert.That(snapshot.Publishers.Select(p => p.PublisherID).ToList(),
-            Is.EqualTo(new[] { player.PublisherID, manager.PublisherID }),
+            Is.EqualTo([player.PublisherID, manager.PublisherID]),
             "Publishers should follow draft 2 order, not draft 1.");
-        Assert.That(snapshot.Publishers.Select(p => p.DraftPosition).ToList(), Is.EqualTo(new[] { 1, 2 }));
+        Assert.That(snapshot.Publishers.Select(p => p.DraftPosition).ToList(), Is.EqualTo([1, 2]));
 
         AssertPublisherDisplayOrder(snapshot);
     }

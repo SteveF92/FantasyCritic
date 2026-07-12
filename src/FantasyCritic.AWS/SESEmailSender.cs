@@ -26,7 +26,7 @@ public class SESEmailSender : IEmailSender
             FromEmailAddress = _fromEmail,
             Destination = new Destination()
             {
-                ToAddresses = new List<string>() { email }
+                ToAddresses = [email]
             },
             Content = new EmailContent()
             {

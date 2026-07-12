@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.Discord.UrlBuilders;
 public abstract class UrlBuilder : IUrlBuilder
 {
     protected string UrlTemplate { get; init; } = "";
-    protected Dictionary<string, string> UrlTemplateKeywordMapping { get; init; } = new();
+    protected Dictionary<string, string> UrlTemplateKeywordMapping { get; init; } = [];
     private string _url = "";
 
     public string BuildUrl(string displayText = "", bool hidePreview = false)

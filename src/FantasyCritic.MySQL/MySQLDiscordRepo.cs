@@ -250,7 +250,7 @@ public class MySQLDiscordRepo : IDiscordRepo
         var tagEntities = await connection.QueryAsync<GameNewsChannelSkippedTagEntity>(tagSQL);
 
         var tagLookup = tagEntities.ToLookup(x => new DiscordChannelKey(x.GuildID, x.ChannelID));
-        List<GameNewsChannel> gameNewsChannels = new List<GameNewsChannel>();
+        List<GameNewsChannel> gameNewsChannels = [];
         foreach (var channelEntity in channelEntities)
         {
             var tagAssociations = tagLookup[new DiscordChannelKey(channelEntity.GuildID, channelEntity.ChannelID)].Select(x => x.TagName).ToList();

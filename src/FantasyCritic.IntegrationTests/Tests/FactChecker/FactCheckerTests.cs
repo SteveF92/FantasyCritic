@@ -59,7 +59,7 @@ public class FactCheckerTests : IntegrationTestBase
         {
             GameName = gameName,
             EstimatedReleaseDate = "2099",
-            Tags = new[] { "NewGame" },
+            Tags = ["NewGame"],
         });
 
         Assert.That(created, Is.Not.Null);

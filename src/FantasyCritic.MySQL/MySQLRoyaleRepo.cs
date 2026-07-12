@@ -133,7 +133,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
         }
 
-        List<RoyalePublisherGame> domainPublisherGames = new List<RoyalePublisherGame>();
+        List<RoyalePublisherGame> domainPublisherGames = [];
         foreach (var entity in publisherGameEntities)
         {
             var masterGameYear = masterGameYearDictionary.GetValueOrDefault(entity.MasterGameID);
@@ -148,7 +148,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
         var publisherGameLookup = domainPublisherGames.ToLookup(x => x.PublisherID);
 
-        List<RoyalePublisher> domainPublishers = new List<RoyalePublisher>();
+        List<RoyalePublisher> domainPublishers = [];
         foreach (var entity in publisherEntities)
         {
             var gamesForPublisher = publisherGameLookup[entity.PublisherID];
@@ -161,7 +161,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         {
             if (!topPublisherStatisticsDomain.ContainsKey(publisherStatistics.PublisherID))
             {
-                topPublisherStatisticsDomain.Add(publisherStatistics.PublisherID, new List<RoyalePublisherStatistics>());
+                topPublisherStatisticsDomain.Add(publisherStatistics.PublisherID, []);
             }
 
             topPublisherStatisticsDomain[publisherStatistics.PublisherID].Add(publisherStatistics.ToDomain());
@@ -216,7 +216,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
         }
 
-        List<RoyalePublisherGame> domainPublisherGames = new List<RoyalePublisherGame>();
+        List<RoyalePublisherGame> domainPublisherGames = [];
         foreach (var entity in publisherGameEntities)
         {
             var masterGameYear = masterGameYearDictionary.GetValueOrDefault(entity.MasterGameID);
@@ -273,7 +273,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         await using var connection = new MySqlConnection(_connectionString);
         var entities = await connection.QueryAsync<RoyalePublisherEntity>(publisherSQL, new { year, quarter });
 
-        List<RoyalePublisher> domainPublishers = new List<RoyalePublisher>();
+        List<RoyalePublisher> domainPublishers = [];
         foreach (var entity in entities)
         {
             var user = users.SingleOrDefault(x => x.Id == entity.UserID);
@@ -382,7 +382,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                 year = yearQuarter.YearQuarter.Year,
                 quarter = yearQuarter.YearQuarter.Quarter
             });
-        List<RoyalePublisherGame> domains = new List<RoyalePublisherGame>();
+        List<RoyalePublisherGame> domains = [];
         foreach (var entity in entities)
         {
             var masterGameYear = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, yearQuarter.YearQuarter.Year);
@@ -451,7 +451,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             {
                 publisherID
             });
-        List<RoyalePublisherGame> domains = new List<RoyalePublisherGame>();
+        List<RoyalePublisherGame> domains = [];
         foreach (var entity in entities)
         {
             var masterGameYear = await _masterGameRepo.GetMasterGameYear(entity.MasterGameID, yearQuarter.YearQuarter.Year);
@@ -773,7 +773,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
         }
 
-        List<RoyalePublisherGame> domainPublisherGames = new List<RoyalePublisherGame>();
+        List<RoyalePublisherGame> domainPublisherGames = [];
         foreach (var entity in publisherGameEntities)
         {
             var masterGameYear = masterGameYearDictionary.GetValueOrDefault(entity.MasterGameID);
@@ -788,7 +788,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
 
         var publisherGameLookup = domainPublisherGames.ToLookup(x => x.PublisherID);
 
-        Dictionary<Guid, RoyalePublisher> userIdToPublisher = new Dictionary<Guid, RoyalePublisher>();
+        Dictionary<Guid, RoyalePublisher> userIdToPublisher = [];
         foreach (var entity in currentPublisherEntities)
         {
             var gamesForPublisher = publisherGameLookup[entity.PublisherID];
@@ -800,7 +800,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
             .GroupBy(x => x.PublisherID)
             .ToDictionary(g => g.Key, g => (IReadOnlyList<RoyalePublisherStatistics>)g.Select(x => x.ToDomain()).ToList());
 
-        List<RoyaleGroupMemberDisplayRow> rows = new List<RoyaleGroupMemberDisplayRow>();
+        List<RoyaleGroupMemberDisplayRow> rows = [];
 
         foreach (var member in memberUsers)
         {
@@ -821,7 +821,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
                 }
             }
 
-            IReadOnlyList<RoyalePublisherStatistics> statistics = Array.Empty<RoyalePublisherStatistics>();
+            IReadOnlyList<RoyalePublisherStatistics> statistics = [];
             if (publisher is not null && statisticsByPublisher.TryGetValue(publisher.PublisherID, out var stats))
             {
                 statistics = stats;

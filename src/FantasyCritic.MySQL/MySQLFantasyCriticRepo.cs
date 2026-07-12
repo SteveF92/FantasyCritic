@@ -77,7 +77,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "SELECT DISTINCT LeagueID, Year FROM tbl_league_draft WHERE PlayStatus <> 'NotStartedDraft'");
         var anyDraftStartedByLeagueYear = startedDraftYears.Select(x => (x.LeagueID, x.Year)).ToHashSet();
         var leagueYearLookup = yearEntities.ToLookup(x => x.LeagueID);
-        List<League> leagues = new List<League>();
+        List<League> leagues = [];
         var allUsers = await _userStore.GetAllUsers();
         var userDictionary = allUsers.ToDictionary(x => x.Id);
         foreach (var leagueEntity in leagueEntities)
@@ -150,7 +150,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition,
                 pickSkipLookup[(x.DraftID, x.PublisherID)].Select(s => s.ToDomain()).ToList()));
 
-        List<LeagueYear> leagueYears = new List<LeagueYear>();
+        List<LeagueYear> leagueYears = [];
 
         foreach (var entity in yearEntities)
         {
@@ -194,7 +194,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         var supportedYears = await GetSupportedYears();
         var activeYears = supportedYears.Where(x => !x.Finished).ToList();
-        List<LeagueYear> requestedLeagueYears = new List<LeagueYear>();
+        List<LeagueYear> requestedLeagueYears = [];
 
         var leagueIDSet = leagueIDs.ToHashSet();
         foreach (var activeYear in activeYears)
@@ -248,7 +248,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         var yearsForPublishers = await connection.QueryAsync<int>(sql, queryObject);
 
-        List<LeagueYear> requestedLeagueYears = new List<LeagueYear>();
+        List<LeagueYear> requestedLeagueYears = [];
         foreach (var year in yearsForPublishers)
         {
             var allLeagueYears = await GetLeagueYears(year);
@@ -486,7 +486,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
         await using var connection = new MySqlConnection(_connectionString);
         var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, queryObject);
-        List<PickupBid> domainBids = new List<PickupBid>();
+        List<PickupBid> domainBids = [];
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
@@ -520,7 +520,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
         await using var connection = new MySqlConnection(_connectionString);
         var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, queryObject);
-        List<PickupBid> domainBids = new List<PickupBid>();
+        List<PickupBid> domainBids = [];
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
@@ -556,7 +556,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         };
         await using var connection = new MySqlConnection(_connectionString);
         var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, queryObject);
-        List<PickupBid> domainBids = new List<PickupBid>();
+        List<PickupBid> domainBids = [];
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
@@ -568,7 +568,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         var lookup = domainBids.ToLookup(x => x.LeagueYear);
-        Dictionary<LeagueYear, List<PickupBid>> finalDictionary = new Dictionary<LeagueYear, List<PickupBid>>();
+        Dictionary<LeagueYear, List<PickupBid>> finalDictionary = [];
         foreach (var leagueYear in leagueYears)
         {
             finalDictionary[leagueYear] = lookup[leagueYear].ToList();
@@ -607,7 +607,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, queryObject);
-        List<PickupBid> domainBids = new List<PickupBid>();
+        List<PickupBid> domainBids = [];
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
@@ -673,7 +673,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         var dropEntities = await connection.QueryAsync<DropRequestEntity>(sql, queryObject);
-        List<DropRequest> domainDrops = new List<DropRequest>();
+        List<DropRequest> domainDrops = [];
         foreach (var dropEntity in dropEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(dropEntity.MasterGameID);
@@ -697,7 +697,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         var dropEntities = await connection.QueryAsync<DropRequestEntity>(sql, queryObject);
-        List<DropRequest> domainDrops = new List<DropRequest>();
+        List<DropRequest> domainDrops = [];
         foreach (var dropEntity in dropEntities)
         {
             var publisher = publisherDictionary[dropEntity.PublisherID];
@@ -763,7 +763,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             .Where(x => x.PublisherGame.MasterGame is not null)
             .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
 
-        List<PickupBid> domainBids = new List<PickupBid>();
+        List<PickupBid> domainBids = [];
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
@@ -774,7 +774,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             domainBids.Add(domain);
         }
 
-        List<DropRequest> domainDrops = new List<DropRequest>();
+        List<DropRequest> domainDrops = [];
         foreach (var dropEntity in dropEntities)
         {
             var publisher = publisherDictionary[dropEntity.PublisherID];
@@ -805,7 +805,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var queuedEntities = await connection.QueryAsync<QueuedGameEntity>("select * from tbl_league_publisherqueue where PublisherID = @publisherID",
             new { publisherID = publisher.PublisherID });
 
-        List<QueuedGame> domainQueue = new List<QueuedGame>();
+        List<QueuedGame> domainQueue = [];
         foreach (var queuedEntity in queuedEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(queuedEntity.MasterGameID);
@@ -1998,7 +1998,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var allUsers = await _userStore.GetAllUsers();
         var usersDictionary = allUsers.ToDictionary(x => x.Id, y => y);
 
-        List<Publisher> publishers = new List<Publisher>();
+        List<Publisher> publishers = [];
         foreach (var entity in publisherEntities)
         {
             var user = usersDictionary[entity.UserID];
@@ -2041,7 +2041,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         IEnumerable<PublisherGameEntity> gameEntities = await connection.QueryAsync<PublisherGameEntity>(sql, query, transaction);
 
-        List<PublisherGame> domainGames = new List<PublisherGame>();
+        List<PublisherGame> domainGames = [];
         foreach (var entity in gameEntities)
         {
             MasterGameYear? masterGame = null;
@@ -2090,7 +2090,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         IEnumerable<FormerPublisherGameEntity> gameEntities = await connection.QueryAsync<FormerPublisherGameEntity>(sql, query, transaction);
 
-        List<FormerPublisherGame> domainGames = new List<FormerPublisherGame>();
+        List<FormerPublisherGame> domainGames = [];
         foreach (var entity in gameEntities)
         {
             MasterGameYear? masterGame = null;
@@ -2238,15 +2238,15 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var voteLookup = voteEntities.ToLookup(x => x.TradeID);
         var voteUserLookup = (await _userStore.GetUsers(voteEntities.Select(x => x.UserID).Distinct())).ToDictionary(x => x.Id);
 
-        List<Trade> domainTrades = new List<Trade>();
+        List<Trade> domainTrades = [];
         foreach (var tradeEntity in tradeEntities)
         {
             Publisher proposer = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.ProposerPublisherID);
             Publisher counterParty = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.CounterPartyPublisherID);
 
             var components = componentLookup[tradeEntity.TradeID];
-            List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
-            List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
+            List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = [];
+            List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = [];
             foreach (var component in components)
             {
                 var masterGameYear = await _masterGameRepo.GetMasterGameYear(component.MasterGameID, leagueYear.Year);
@@ -2271,7 +2271,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             }
 
             var votes = voteLookup[tradeEntity.TradeID];
-            List<TradeVote> tradeVotes = new List<TradeVote>();
+            List<TradeVote> tradeVotes = [];
             foreach (var vote in votes)
             {
                 var user = DomainConversionUtilities.ResolveTradeVoteUser(vote.UserID, leagueYear, voteUserLookup);
@@ -2312,7 +2312,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var voteLookup = voteEntities.ToLookup(x => x.TradeID);
         var voteUserLookup = (await _userStore.GetUsers(voteEntities.Select(x => x.UserID).Distinct())).ToDictionary(x => x.Id);
 
-        List<Trade> domainTrades = new List<Trade>();
+        List<Trade> domainTrades = [];
         foreach (var tradeEntity in tradeEntities)
         {
             var leagueYear = leagueYearDictionary.GetValueOrDefault(tradeEntity.LeagueID);
@@ -2325,8 +2325,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             Publisher counterParty = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.CounterPartyPublisherID);
 
             var components = componentLookup[tradeEntity.TradeID];
-            List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
-            List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
+            List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = [];
+            List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = [];
             foreach (var component in components)
             {
                 var masterGameYear = await _masterGameRepo.GetMasterGameYear(component.MasterGameID, leagueYear.Year);
@@ -2351,7 +2351,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             }
 
             var votes = voteLookup[tradeEntity.TradeID];
-            List<TradeVote> tradeVotes = new List<TradeVote>();
+            List<TradeVote> tradeVotes = [];
             foreach (var vote in votes)
             {
                 var user = DomainConversionUtilities.ResolveTradeVoteUser(vote.UserID, leagueYear, voteUserLookup);
@@ -2399,8 +2399,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         Publisher counterParty = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.CounterPartyPublisherID);
 
         var components = componentLookup[tradeEntity.TradeID];
-        List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
-        List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
+        List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = [];
+        List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = [];
         foreach (var component in components)
         {
             var masterGameYear = await _masterGameRepo.GetMasterGameYear(component.MasterGameID, leagueYear.Key.Year);
@@ -2425,7 +2425,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         var votes = voteLookup[tradeEntity.TradeID];
-        List<TradeVote> tradeVotes = new List<TradeVote>();
+        List<TradeVote> tradeVotes = [];
         foreach (var vote in votes)
         {
             var user = DomainConversionUtilities.ResolveTradeVoteUser(vote.UserID, leagueYear, voteUserLookup);
@@ -2528,7 +2528,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         var results = await connection.QueryAsync<SpecialAuctionEntity>(sql);
 
-        List<SpecialAuction> domains = new List<SpecialAuction>();
+        List<SpecialAuction> domains = [];
         foreach (var result in results)
         {
             var masterGame = await _masterGameRepo.GetMasterGameYearOrThrow(result.MasterGameID, result.Year);
@@ -2546,7 +2546,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         var results = await connection.QueryAsync<SpecialAuctionEntity>(sql, key);
 
-        List<SpecialAuction> domains = new List<SpecialAuction>();
+        List<SpecialAuction> domains = [];
         foreach (var result in results)
         {
             var masterGame = await _masterGameRepo.GetMasterGameYearOrThrow(result.MasterGameID, leagueYear.Year);
@@ -2686,8 +2686,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         }
 
         int tempSlotNumber = 1000;
-        List<PublisherGameSlotNumberUpdateEntity> preRunUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
-        List<PublisherGameSlotNumberUpdateEntity> finalUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
+        List<PublisherGameSlotNumberUpdateEntity> preRunUpdates = [];
+        List<PublisherGameSlotNumberUpdateEntity> finalUpdates = [];
         foreach (var publisher in leagueYear.Publishers)
         {
             var nonCounterPicks = publisher.PublisherGames.Where(x => !x.CounterPick);
@@ -2881,7 +2881,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "where tbl_league_publishergame.PublisherID = @publisherID and IsDeleted = 0;",
             query);
 
-        List<PublisherGame> domainGames = new List<PublisherGame>();
+        List<PublisherGame> domainGames = [];
         foreach (var entity in gameEntities)
         {
             MasterGameYear? masterGame = null;
@@ -2911,7 +2911,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "where tbl_league_formerpublishergame.PublisherID = @publisherID and IsDeleted = 0;",
             query);
 
-        List<FormerPublisherGame> domainGames = new List<FormerPublisherGame>();
+        List<FormerPublisherGame> domainGames = [];
         foreach (var entity in gameEntities)
         {
             MasterGameYear? masterGame = null;
@@ -2963,7 +2963,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             results = await connection.QueryAsync<EligibilityOverrideEntity>(sql, queryObject);
         }
 
-        List<Tuple<Guid, EligibilityOverride>> domainObjects = new List<Tuple<Guid, EligibilityOverride>>();
+        List<Tuple<Guid, EligibilityOverride>> domainObjects = [];
         foreach (var result in results)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(result.MasterGameID);
@@ -2996,13 +2996,13 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var allTags = await _masterGameRepo.GetMasterGameTags();
         var tagDictionary = allTags.ToDictionary(x => x.Name);
 
-        List<Tuple<Guid, TagOverride>> domainObjects = new List<Tuple<Guid, TagOverride>>();
+        List<Tuple<Guid, TagOverride>> domainObjects = [];
 
         var groupedResults = results.GroupBy(x => (x.LeagueID, x.Year, x.MasterGameID));
         foreach (var resultGroup in groupedResults)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(resultGroup.Key.MasterGameID);
-            List<MasterGameTag> tagsForGroup = new List<MasterGameTag>();
+            List<MasterGameTag> tagsForGroup = [];
             foreach (var result in resultGroup)
             {
                 var fullTag = tagDictionary[result.TagName];
@@ -3425,7 +3425,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var dropEntities = await connection.QueryAsync<DropRequestEntity>("select * from tbl_league_droprequest where PublisherID = @publisherID and Successful is NULL",
             new { publisherID = publisher.PublisherID });
 
-        List<DropRequest> domainDrops = new List<DropRequest>();
+        List<DropRequest> domainDrops = [];
         foreach (var dropEntity in dropEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(dropEntity.MasterGameID);
@@ -3659,7 +3659,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             dismissalEntities = await connection.QueryAsync<ManagerMessageDismissalEntity>(dismissSQL, dismissQueryObject);
         }
 
-        List<ManagerMessage> domainMessages = new List<ManagerMessage>();
+        List<ManagerMessage> domainMessages = [];
         var dismissalLookup = dismissalEntities.ToLookup(x => x.MessageID);
         foreach (var messageEntity in messageEntities)
         {

@@ -24,11 +24,11 @@ public class SpecialGameSlotEntity
 
     public static ILookup<LeagueYearKey, SpecialGameSlot> ConvertSpecialGameSlotEntities(IEnumerable<SpecialGameSlotEntity> specialGameSlotEntities, IReadOnlyDictionary<string, MasterGameTag> tagOptions)
     {
-        Dictionary<LeagueYearKey, List<SpecialGameSlot>> fullDomains = new Dictionary<LeagueYearKey, List<SpecialGameSlot>>();
+        Dictionary<LeagueYearKey, List<SpecialGameSlot>> fullDomains = [];
         var groupByLeagueYearKey = specialGameSlotEntities.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
         foreach (var leagueYearGroup in groupByLeagueYearKey)
         {
-            List<SpecialGameSlot> domainsForLeagueYear = new List<SpecialGameSlot>();
+            List<SpecialGameSlot> domainsForLeagueYear = [];
             var groupByPosition = leagueYearGroup.GroupBy(x => x.SpecialSlotPosition);
             foreach (var positionGroup in groupByPosition)
             {

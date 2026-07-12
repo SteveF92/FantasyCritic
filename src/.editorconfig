@@ -19,13 +19,30 @@ indent_size = 4
 
 # Style rules (add one at a time at :warning, run scripts/Format.ps1 -Style, commit, repeat):
 dotnet_diagnostic.IDE0005.severity = warning
+csharp_style_implicit_object_creation_when_type_is_apparent = false:suggestion
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
 dotnet_sort_system_directives_first = true:warning
 dotnet_separate_import_directive_groups = true:warning
 csharp_prefer_braces = true:warning
 csharp_style_prefer_null_check_over_type_check = true:warning
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
-# csharp_style_prefer_collection_expression = true:warning
+# Collection expressions: allow [] for empty/new, but NOT [..x] from .ToList() (IDE0305).
+csharp_style_prefer_collection_expression = true:suggestion
+dotnet_diagnostic.IDE0305.severity = none
+# Guards during collection format (prevent coalesce/primary-constructor bleed at info severity):
+dotnet_style_coalesce_expression = false:suggestion
+dotnet_diagnostic.IDE0016.severity = none
+dotnet_diagnostic.IDE0029.severity = none
+dotnet_diagnostic.IDE0030.severity = none
+dotnet_diagnostic.IDE0290.severity = none
+dotnet_diagnostic.IDE0054.severity = none
+dotnet_diagnostic.IDE0074.severity = none
+dotnet_diagnostic.IDE0037.severity = none
+dotnet_diagnostic.IDE0057.severity = none
+dotnet_diagnostic.IDE0078.severity = none
+dotnet_diagnostic.IDE0083.severity = none
+dotnet_diagnostic.IDE0031.severity = none
+dotnet_diagnostic.IDE0044.severity = none
 
 [*.{js,json,vue}]
 indent_size = 2

@@ -37,7 +37,7 @@ public class ActionProcessingResults
             .Concat(SuccessDrops.Select(x => x.GetLeagueYearPublisherPair()))
             .Concat(FailedDrops.Select(x => x.GetLeagueYearPublisherPair()));
 
-        List<LeagueYearPublisherPair> updatedPublisherPairs = new List<LeagueYearPublisherPair>();
+        List<LeagueYearPublisherPair> updatedPublisherPairs = [];
         foreach (var publisherPair in publisherPairsToInclude)
         {
             var updatedPublisher = PublisherStateSet.GetPublisher(publisherPair.Publisher.PublisherID);

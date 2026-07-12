@@ -10,7 +10,7 @@ namespace FantasyCritic.Lib.Scheduling.Lib.Cron;
 [Serializable]
 public sealed class CrontabSchedule
 {
-    private static readonly char[] Separators = { ' ' };
+    private static readonly char[] Separators = [' '];
     private readonly CrontabField _days;
     private readonly CrontabField _daysOfWeek;
     private readonly CrontabField _hours;

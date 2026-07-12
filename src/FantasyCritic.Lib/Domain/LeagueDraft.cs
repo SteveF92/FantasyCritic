@@ -69,7 +69,7 @@ public class LeagueDraft
 
     public LeagueOptionsDifferences GetDifferences(LeagueDraft existingDraft)
     {
-        List<string> differences = new List<string>();
+        List<string> differences = [];
 
         if (GamesToDraft != existingDraft.GamesToDraft)
         {

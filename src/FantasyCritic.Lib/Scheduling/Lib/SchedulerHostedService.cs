@@ -6,7 +6,7 @@ public class SchedulerHostedService : HostedService
 {
     public event EventHandler<UnobservedTaskExceptionEventArgs>? UnobservedTaskException;
 
-    private readonly List<SchedulerTaskWrapper> _scheduledTasks = new List<SchedulerTaskWrapper>();
+    private readonly List<SchedulerTaskWrapper> _scheduledTasks = [];
 
     public SchedulerHostedService(IEnumerable<IScheduledTask> scheduledTasks)
     {

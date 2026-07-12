@@ -27,7 +27,7 @@ public static class DraftFunctions
         }
 
         var supportedYear = leagueYear.SupportedYear;
-        List<string> errors = new List<string>();
+        List<string> errors = [];
 
         if (activeUsers.Count() < 2)
         {
@@ -95,7 +95,7 @@ public static class DraftFunctions
 
     public static IReadOnlyList<string> ValidateDrafts(LeagueOptions leagueOptions, IReadOnlyList<LeagueDraft> leagueDrafts, LeagueDraft? draftStartingNow)
     {
-        List<string> errors = new List<string>();
+        List<string> errors = [];
 
         foreach (var draft in leagueDrafts)
         {
@@ -220,7 +220,7 @@ public static class DraftFunctions
             var previousYearPublishers = previousLeagueYear.Publishers
                 .OrderBy(x => x.GetTotalFantasyPoints(previousLeagueYear.SupportedYear, previousLeagueYear.Options));
 
-            List<Publisher> currentYearPublishersInOrder = new List<Publisher>();
+            List<Publisher> currentYearPublishersInOrder = [];
             foreach (var previousYearPublisher in previousYearPublishers)
             {
                 var currentYearPublisher = leagueYear.GetUserPublisher(previousYearPublisher.User);
@@ -273,7 +273,7 @@ public static class DraftFunctions
 
     private static Result<IReadOnlyList<KeyValuePair<Publisher, int>>> GetDraftPositionsInternal(LeagueYear leagueYear, IReadOnlyList<Guid> publisherIDsInRequestedDraftOrder)
     {
-        List<KeyValuePair<Publisher, int>> draftPositions = new List<KeyValuePair<Publisher, int>>();
+        List<KeyValuePair<Publisher, int>> draftPositions = [];
         for (var index = 0; index < publisherIDsInRequestedDraftOrder.Count; index++)
         {
             var requestPublisher = publisherIDsInRequestedDraftOrder[index];

@@ -13,7 +13,7 @@ public class LeagueTagOptionsViewModel
 
     public IReadOnlyList<LeagueTagStatus> ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        List<LeagueTagStatus> leagueTags = new List<LeagueTagStatus>();
+        List<LeagueTagStatus> leagueTags = [];
         foreach (var bannedTag in Banned)
         {
             var foundTag = tagDictionary.GetValueOrDefault(bannedTag);

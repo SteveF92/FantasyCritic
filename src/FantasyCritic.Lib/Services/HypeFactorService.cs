@@ -22,7 +22,7 @@ public class HypeFactorService : IHypeFactorService
     {
         _logger.Information("Getting Hype Constants");
         var supportedYears = await _interLeagueService.GetSupportedYears();
-        List<MasterGameYear> allMasterGameYears = new List<MasterGameYear>();
+        List<MasterGameYear> allMasterGameYears = [];
 
         foreach (var supportedYear in supportedYears)
         {
