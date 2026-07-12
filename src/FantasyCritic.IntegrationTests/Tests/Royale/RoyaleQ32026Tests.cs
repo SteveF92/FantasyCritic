@@ -199,12 +199,15 @@ public class RoyaleQ32026Tests : IntegrationTestBase
         var purchased = publisher!.PublisherGames!
             .Single(g => g.MasterGame?.MasterGameID == game.MasterGame.MasterGameID);
 
-        // Ineligible games also give a full refund, so rule that out to isolate the regret window.
-        Assert.That(purchased.CurrentlyIneligible, Is.False,
-            "Game should not be ineligible — we want to verify the regret-window path, not the ineligibility path.");
+        using (Assert.EnterMultipleScope())
+        {
+            // Ineligible games also give a full refund, so rule that out to isolate the regret window.
+            Assert.That(purchased.CurrentlyIneligible, Is.False,
+                "Game should not be ineligible — we want to verify the regret-window path, not the ineligibility path.");
 
-        Assert.That(purchased.RefundAmount, Is.EqualTo(purchased.AmountSpent),
-            "Selling within the 10-minute regret window must refund the full purchase price.");
+            Assert.That(purchased.RefundAmount, Is.EqualTo(purchased.AmountSpent),
+                "Selling within the 10-minute regret window must refund the full purchase price.");
+        }
     }
 
     [Test]
@@ -248,11 +251,14 @@ public class RoyaleQ32026Tests : IntegrationTestBase
         var purchased = publisher!.PublisherGames!
             .Single(g => g.MasterGame?.MasterGameID == game.MasterGame.MasterGameID);
 
-        Assert.That(purchased.CurrentlyIneligible, Is.False,
-            "Game should not be ineligible — we want to verify the normal Q3 refund path.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(purchased.CurrentlyIneligible, Is.False,
+                    "Game should not be ineligible — we want to verify the normal Q3 refund path.");
 
-        Assert.That(purchased.RefundAmount, Is.EqualTo(purchased.AmountSpent * 0.5m),
-            "After the regret window expires, the Q3 2026 refund must be exactly half the original purchase price.");
+            Assert.That(purchased.RefundAmount, Is.EqualTo(purchased.AmountSpent * 0.5m),
+                "After the regret window expires, the Q3 2026 refund must be exactly half the original purchase price.");
+        }
     }
 
     [Test]
@@ -308,15 +314,18 @@ public class RoyaleQ32026Tests : IntegrationTestBase
         var publisherAfterSell = await session.Royale.GetRoyalePublisherAsync(publisherID);
 
         var expectedRefund = amountSpent * 0.5m + advertisingMoney;
-        Assert.That(
-            publisherAfterSell!.Budget,
-            Is.EqualTo(budgetAfterBuy + expectedRefund).Within(0.001m),
-            "Budget after sell must equal (budget before sell) + (half amount spent) + (advertising money).");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(
+                    publisherAfterSell!.Budget,
+                    Is.EqualTo(budgetAfterBuy + expectedRefund).Within(0.001m),
+                    "Budget after sell must equal (budget before sell) + (half amount spent) + (advertising money).");
 
-        Assert.That(
-            publisherAfterSell.PublisherGames!.All(g => g.MasterGame?.MasterGameID != game.MasterGame.MasterGameID),
-            Is.True,
-            "Sold game must no longer appear on the publisher's roster.");
+            Assert.That(
+                publisherAfterSell.PublisherGames!.All(g => g.MasterGame?.MasterGameID != game.MasterGame.MasterGameID),
+                Is.True,
+                "Sold game must no longer appear on the publisher's roster.");
+        }
     }
 
     [Test]
@@ -417,12 +426,15 @@ public class RoyaleQ32026Tests : IntegrationTestBase
                 MasterGameID = lockoutGame.MasterGame.MasterGameID,
             });
 
-        Assert.That(purchaseResult!.Success, Is.False,
-            "Purchasing a game inside the 7-day Q3 lockout window must return Success=false.");
-        Assert.That(
-            purchaseResult.Errors!.Any(e => e.Contains("7")),
-            Is.True,
-            "The failure message must reference the 7-day lockout window.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(purchaseResult!.Success, Is.False,
+                    "Purchasing a game inside the 7-day Q3 lockout window must return Success=false.");
+            Assert.That(
+                purchaseResult.Errors!.Any(e => e.Contains("7")),
+                Is.True,
+                "The failure message must reference the 7-day lockout window.");
+        }
     }
 
     [Test]
@@ -583,12 +595,15 @@ public class RoyaleQ32026Tests : IntegrationTestBase
                 MasterGameID = biddingCycleBlocked.MasterGame.MasterGameID,
             });
 
-        Assert.That(purchaseResult!.Success, Is.False,
-            "Purchasing a game blocked by the bidding-cycle rule must return Success=false.");
-        Assert.That(
-            purchaseResult.Errors!.Any(e => e.Contains("bids process", StringComparison.OrdinalIgnoreCase)),
-            Is.True,
-            "The failure message must reference the bidding-cycle restriction.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(purchaseResult!.Success, Is.False,
+                    "Purchasing a game blocked by the bidding-cycle rule must return Success=false.");
+            Assert.That(
+                purchaseResult.Errors!.Any(e => e.Contains("bids process", StringComparison.OrdinalIgnoreCase)),
+                Is.True,
+                "The failure message must reference the bidding-cycle restriction.");
+        }
     }
 
     [Test]

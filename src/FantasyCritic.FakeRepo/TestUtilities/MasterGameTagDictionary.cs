@@ -3,6 +3,7 @@ using System.Linq;
 using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.FakeRepo.TestUtilities;
+
 public static class MasterGameTagDictionary
 {
     private static readonly MasterGameTagType RemakeLevelType = new MasterGameTagType("RemakeLevel");

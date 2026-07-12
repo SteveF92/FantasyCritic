@@ -63,10 +63,7 @@ export default {
   },
   computed: {
     dreamsDashedYearOptions() {
-      return [
-        { value: null, text: 'All Time' },
-        ...this.supportedYears.filter((y) => y.finished).map((y) => ({ value: y.year, text: String(y.year) }))
-      ];
+      return [{ value: null, text: 'All Time' }, ...this.supportedYears.filter((y) => y.finished).map((y) => ({ value: y.year, text: String(y.year) }))];
     },
     showTable() {
       return this.games && !this.isBusy;

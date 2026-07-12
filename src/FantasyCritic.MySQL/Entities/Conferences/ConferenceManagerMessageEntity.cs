@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Domain.Conferences;
 
 namespace FantasyCritic.MySQL.Entities.Conferences;
+
 internal class ConferenceManagerMessageEntity
 {
     public ConferenceManagerMessageEntity()

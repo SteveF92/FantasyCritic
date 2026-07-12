@@ -2,6 +2,7 @@ using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.MySQL.Entities.Conferences;
+
 internal class ConferenceLeagueEntity
 {
     public Guid LeagueID { get; set; }

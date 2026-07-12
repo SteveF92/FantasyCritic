@@ -1,18 +1,18 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
-using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.OpenCritic;
-using FantasyCritic.Lib.Utilities;
-using FantasyCritic.Lib.Domain.LeagueActions;
-using FantasyCritic.Lib.GG;
-using Serilog;
-using FantasyCritic.Lib.Patreon;
-using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Domain.Trades;
+using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.GG;
+using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.OpenCritic;
+using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Royale;
+using FantasyCritic.Lib.Utilities;
+using Serilog;
 
 namespace FantasyCritic.Lib.Services;
 
@@ -483,12 +483,12 @@ public class AdminService
         var groupedByLeagueYear = specialAuctionsToProcess.GroupBy(x => x.LeagueYearKey);
         var leagueYearDictionary = allLeagueYears.ToDictionary(x => x.Key);
         IReadOnlyDictionary<LeagueYear, IReadOnlyList<PickupBid>> leaguesAndBids = await _fantasyCriticRepo.GetActivePickupBids(year, allLeagueYears);
-        List<LeagueYearSpecialAuctionSet> specialAuctionSets = new List<LeagueYearSpecialAuctionSet>();
+        List<LeagueYearSpecialAuctionSet> specialAuctionSets = [];
         foreach (var leagueYearGroup in groupedByLeagueYear)
         {
             var leagueYear = leagueYearDictionary[leagueYearGroup.Key];
             var bidsForLeagueYear = leaguesAndBids[leagueYear];
-            List<SpecialAuctionWithBids> specialAuctionsWithBids = new List<SpecialAuctionWithBids>();
+            List<SpecialAuctionWithBids> specialAuctionsWithBids = [];
             foreach (var specialAuction in leagueYearGroup)
             {
                 var bidsForGame = bidsForLeagueYear.Where(x => x.MasterGame.Equals(specialAuction.MasterGameYear.MasterGame)).ToList();
@@ -566,7 +566,7 @@ public class AdminService
 
     private static IReadOnlyList<TopBidsAndDropsGame> CalculateTopBidsAndDrops(LocalDate processDate, BidsAndDropsSet bidsAndDrops, IEnumerable<int> relevantYears, IReadOnlyList<MasterGameYear> masterGameYears)
     {
-        List<TopBidsAndDropsGame> results = new List<TopBidsAndDropsGame>();
+        List<TopBidsAndDropsGame> results = [];
         foreach (var year in relevantYears)
         {
             var masterGameYearDictionaryForYear = masterGameYears.Where(x => x.Year == year).ToDictionary(x => x.MasterGame);
@@ -669,8 +669,8 @@ public class AdminService
         var manualGrantActions = new List<LeagueAction>();
         var publishersAlreadyGranted = automatedGrantActions.Concat(manualGrantActions).Select(x => x.Publisher.PublisherID).ToHashSet();
 
-        List<Publisher> publishersToGrantSuperDrop = new List<Publisher>();
-        List<LeagueAction> superDropActions = new List<LeagueAction>();
+        List<Publisher> publishersToGrantSuperDrop = [];
+        List<LeagueAction> superDropActions = [];
         foreach (var leagueYear in leagueYearsWithSuperDrops)
         {
             if (!leagueYear.Publishers.Any())
@@ -686,7 +686,7 @@ public class AdminService
 
             var publishersWithProjectedPoints = leagueYear.Publishers.ToDictionary(x => x, y => y.GetProjectedFantasyPoints(leagueYear, systemWideValues));
             var publishersWithLowScores = publishersWithProjectedPoints.Where(x => x.Value < superDropPointCutoff).ToList();
-            List<LeagueAction> actions = new List<LeagueAction>();
+            List<LeagueAction> actions = [];
             foreach (var publisher in publishersWithLowScores)
             {
                 if (publishersAlreadyGranted.Contains(publisher.Key.PublisherID))
@@ -713,7 +713,7 @@ public class AdminService
         IReadOnlyList<Trade> trades = await _fantasyCriticRepo.GetTradesForYear(currentYear!.Year);
 
         var activeTrades = trades.Where(x => x.Status.IsActive).ToList();
-        List<Trade> tradesToExpire = new List<Trade>();
+        List<Trade> tradesToExpire = [];
         foreach (var trade in activeTrades)
         {
             var tradeExpirationTime = trade.GetExpirationTime();
@@ -791,8 +791,8 @@ public class AdminService
         var averagePickupOnlyStandardPoints = allPickupOnlyStandardGamesWithPoints.Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
         var averageCounterPickPoints = allCounterPicksWithPoints.Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();
 
-        Dictionary<int, List<decimal>> pointsForPosition = new Dictionary<int, List<decimal>>();
-        Dictionary<uint, List<decimal>> pointsForBidAmount = new Dictionary<uint, List<decimal>>();
+        Dictionary<int, List<decimal>> pointsForPosition = [];
+        Dictionary<uint, List<decimal>> pointsForBidAmount = [];
         foreach (var leagueYear in leagueYears)
         {
             var publishers = leagueYear.Publishers;
@@ -803,7 +803,7 @@ public class AdminService
                 var pickPosition = index + 1;
                 if (!pointsForPosition.ContainsKey(pickPosition))
                 {
-                    pointsForPosition[pickPosition] = new List<decimal>();
+                    pointsForPosition[pickPosition] = [];
                 }
 
                 pointsForPosition[pickPosition].Add(game.FantasyPoints!.Value);
@@ -814,7 +814,7 @@ public class AdminService
             {
                 if (!pointsForBidAmount.ContainsKey(game.BidAmount!.Value))
                 {
-                    pointsForBidAmount[game.BidAmount!.Value] = new List<decimal>();
+                    pointsForBidAmount[game.BidAmount!.Value] = [];
                 }
 
                 pointsForBidAmount[game.BidAmount!.Value].Add(game.FantasyPoints!.Value);
@@ -868,7 +868,7 @@ public class AdminService
         IReadOnlyList<MasterGame> cleanMasterGames, IReadOnlyList<MasterGameYear> cachedMasterGames, IReadOnlyList<PickupBid> processedBids,
         IReadOnlyList<RoyalePublisher> royalePublishers, HypeConstants hypeConstants, LocalDate currentDate)
     {
-        List<MasterGameCalculatedStats> calculatedStats = new List<MasterGameCalculatedStats>();
+        List<MasterGameCalculatedStats> calculatedStats = [];
         var publisherMasterGames = new HashSet<MasterGame>();
         foreach (var leagueYear in leagueYears)
         {
@@ -885,7 +885,7 @@ public class AdminService
         var royalePublisherMasterGames = royalePublishers.SelectMany(x => x.PublisherGames.Select(x => x.MasterGame.MasterGame)).ToHashSet();
         var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
         IReadOnlyList<Publisher> allPublishers = leagueYears.SelectMany(x => x.Publishers).ToList();
-        List<Publisher> publishersInCompleteLeagues = new List<Publisher>();
+        List<Publisher> publishersInCompleteLeagues = [];
         foreach (var publisher in allPublishers)
         {
             var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
@@ -905,18 +905,18 @@ public class AdminService
         IReadOnlyDictionary<MasterGame, long> totalBidAmounts = bidsByGame.ToDictionary(x => x.Key, y => y.Sum(x => x.BidAmount));
 
         var publisherGamesByMasterGame = publisherGames.ToLookup(x => x.MasterGame!.MasterGame.MasterGameID);
-        Dictionary<LeagueYearKey, HashSet<MasterGame>> standardGamesByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
-        Dictionary<LeagueYearKey, HashSet<MasterGame>> counterPicksByLeague = new Dictionary<LeagueYearKey, HashSet<MasterGame>>();
+        Dictionary<LeagueYearKey, HashSet<MasterGame>> standardGamesByLeague = [];
+        Dictionary<LeagueYearKey, HashSet<MasterGame>> counterPicksByLeague = [];
         foreach (var publisher in publishersInCompleteLeagues)
         {
             if (!standardGamesByLeague.ContainsKey(publisher.LeagueYearKey))
             {
-                standardGamesByLeague[publisher.LeagueYearKey] = new HashSet<MasterGame>();
+                standardGamesByLeague[publisher.LeagueYearKey] = [];
             }
 
             if (!counterPicksByLeague.ContainsKey(publisher.LeagueYearKey))
             {
-                counterPicksByLeague[publisher.LeagueYearKey] = new HashSet<MasterGame>();
+                counterPicksByLeague[publisher.LeagueYearKey] = [];
             }
 
             foreach (var game in publisher.PublisherGames)

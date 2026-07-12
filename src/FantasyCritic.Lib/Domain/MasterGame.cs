@@ -204,16 +204,36 @@ public class MasterGame : IEquatable<MasterGame>
 
     public bool Equals(MasterGame? other)
     {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
         return MasterGameID.Equals(other.MasterGameID);
     }
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj.GetType() != GetType())
+        {
+            return false;
+        }
+
         return Equals((MasterGame)obj);
     }
 
@@ -224,7 +244,7 @@ public class MasterGame : IEquatable<MasterGame>
 
     public IReadOnlyList<string> CompareToExistingGame(MasterGame existingMasterGame, LocalDate today)
     {
-        List<string> differences = new List<string>();
+        List<string> differences = [];
 
         if (GameName != existingMasterGame.GameName)
         {
@@ -252,7 +272,7 @@ public class MasterGame : IEquatable<MasterGame>
                 differences.Add($"Estimated release date changed from '{existingMasterGame.EstimatedReleaseDate}' to '{EstimatedReleaseDate}'.");
             }
         }
-        
+
         if (EarlyAccessReleaseDate != existingMasterGame.EarlyAccessReleaseDate)
         {
             differences.Add($"Early access release date changed from {existingMasterGame.EarlyAccessReleaseDate.ToNullableLongDate("'")} to {EarlyAccessReleaseDate.ToNullableLongDate("'")}.");

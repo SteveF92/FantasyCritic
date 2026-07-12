@@ -1,4 +1,5 @@
 namespace FantasyCritic.MySQL.Entities.Discord;
+
 internal class GameNewsChannelSkippedTagEntity
 {
     public GameNewsChannelSkippedTagEntity()

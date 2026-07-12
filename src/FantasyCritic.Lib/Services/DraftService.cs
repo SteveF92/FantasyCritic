@@ -350,7 +350,7 @@ public class DraftService
         }
 
         var alreadyCounterPicked = gamesForYear.Where(x => x.CounterPick).ToList();
-        List<PublisherGame> availableCounterPicks = new List<PublisherGame>();
+        List<PublisherGame> availableCounterPicks = [];
         foreach (var otherPlayerGame in otherPlayersGames)
         {
             bool playerHasCounterPick = alreadyCounterPicked.ContainsGame(otherPlayerGame);

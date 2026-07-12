@@ -21,8 +21,11 @@ public class RoyaleTests : IntegrationTestBase
 
         var activeQuarter = await session.Royale.ActiveRoyaleQuarterAsync();
         Assert.That(activeQuarter, Is.Not.Null);
-        Assert.That(activeQuarter.OpenForPlay, Is.True, "Active quarter must be open for play.");
-        Assert.That(activeQuarter.Finished, Is.False, "Active quarter must not be finished.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activeQuarter.OpenForPlay, Is.True, "Active quarter must be open for play.");
+            Assert.That(activeQuarter.Finished, Is.False, "Active quarter must not be finished.");
+        }
 
         var publisherName = $"Pub-{Guid.NewGuid():N}"[..20];
         var publisherID = await session.Royale.CreateRoyalePublisherAsync(
@@ -37,9 +40,12 @@ public class RoyaleTests : IntegrationTestBase
 
         var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
         Assert.That(publisher, Is.Not.Null);
-        Assert.That(publisher.PublisherName, Is.EqualTo(publisherName));
-        Assert.That(publisher.YearQuarter.Year, Is.EqualTo(activeQuarter.Year));
-        Assert.That(publisher.YearQuarter.Quarter, Is.EqualTo(activeQuarter.Quarter));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(publisher.PublisherName, Is.EqualTo(publisherName));
+            Assert.That(publisher.YearQuarter.Year, Is.EqualTo(activeQuarter.Year));
+            Assert.That(publisher.YearQuarter.Quarter, Is.EqualTo(activeQuarter.Quarter));
+        }
     }
 
     [Test]
@@ -128,9 +134,12 @@ public class RoyaleTests : IntegrationTestBase
         var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
         Assert.That(publisher, Is.Not.Null);
 
-        Assert.That(publisher.PublisherName, Is.EqualTo(newName));
-        Assert.That(publisher.PublisherIcon, Is.EqualTo("🎮"));
-        Assert.That(publisher.PublisherSlogan, Is.EqualTo("Test Slogan"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(publisher.PublisherName, Is.EqualTo(newName));
+            Assert.That(publisher.PublisherIcon, Is.EqualTo("🎮"));
+            Assert.That(publisher.PublisherSlogan, Is.EqualTo("Test Slogan"));
+        }
     }
 
     [Test]
@@ -183,14 +192,17 @@ public class RoyaleTests : IntegrationTestBase
         var publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
         Assert.That(publisher, Is.Not.Null);
 
-        Assert.That(publisher!.PublisherGames!.Count, Is.EqualTo(gameSet.Count),
-            "Roster count should match the number of successful purchases.");
-        Assert.That(publisher!.Budget, Is.GreaterThanOrEqualTo(adReserve),
-            "Budget should have at least $9 remaining for advertising.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(publisher!.PublisherGames!.Count, Is.EqualTo(gameSet.Count),
+                    "Roster count should match the number of successful purchases.");
+            Assert.That(publisher!.Budget, Is.GreaterThanOrEqualTo(adReserve),
+                "Budget should have at least $9 remaining for advertising.");
 
-        // ── Step B: Advertising budgets ────────────────────────────────────────
-        Assert.That(purchasedIDs.Count, Is.GreaterThanOrEqualTo(3),
-            "Need at least 3 games to set advertising money on games 0, 1, 2.");
+            // ── Step B: Advertising budgets ────────────────────────────────────────
+            Assert.That(purchasedIDs.Count, Is.GreaterThanOrEqualTo(3),
+                "Need at least 3 games to set advertising money on games 0, 1, 2.");
+        }
 
         var game0ID = purchasedIDs[0];
         var game1ID = purchasedIDs[1];
@@ -209,15 +221,18 @@ public class RoyaleTests : IntegrationTestBase
         publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
         Assert.That(publisher, Is.Not.Null);
 
-        Assert.That(
-            publisher!.PublisherGames!.Single(g => g.MasterGame!.MasterGameID == game0ID).AdvertisingMoney,
-            Is.EqualTo(1.0), "game0 should have $1 advertising money.");
-        Assert.That(
-            publisher!.PublisherGames!.Single(g => g.MasterGame!.MasterGameID == game1ID).AdvertisingMoney,
-            Is.EqualTo(3.0), "game1 should have $3 advertising money.");
-        Assert.That(
-            publisher!.PublisherGames!.Single(g => g.MasterGame!.MasterGameID == game2ID).AdvertisingMoney,
-            Is.EqualTo(5.0), "game2 should have $5 advertising money.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(
+                    publisher!.PublisherGames!.Single(g => g.MasterGame!.MasterGameID == game0ID).AdvertisingMoney,
+                    Is.EqualTo(1.0), "game0 should have $1 advertising money.");
+            Assert.That(
+                publisher!.PublisherGames!.Single(g => g.MasterGame!.MasterGameID == game1ID).AdvertisingMoney,
+                Is.EqualTo(3.0), "game1 should have $3 advertising money.");
+            Assert.That(
+                publisher!.PublisherGames!.Single(g => g.MasterGame!.MasterGameID == game2ID).AdvertisingMoney,
+                Is.EqualTo(5.0), "game2 should have $5 advertising money.");
+        }
 
         // ── Step C: Sell game0 and buy a replacement ───────────────────────────
         var budgetBeforeSell = publisher!.Budget;
@@ -228,12 +243,15 @@ public class RoyaleTests : IntegrationTestBase
         publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
         Assert.That(publisher, Is.Not.Null);
 
-        Assert.That(
-            publisher!.PublisherGames!.All(g => g.MasterGame?.MasterGameID != game0ID),
-            Is.True,
-            "Sold game (game0) should not appear on the roster after selling.");
-        Assert.That(publisher!.Budget, Is.GreaterThan(budgetBeforeSell),
-            "Budget should increase after selling (refund applied).");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(
+                    publisher!.PublisherGames!.All(g => g.MasterGame?.MasterGameID != game0ID),
+                    Is.True,
+                    "Sold game (game0) should not appear on the roster after selling.");
+            Assert.That(publisher!.Budget, Is.GreaterThan(budgetBeforeSell),
+                "Budget should increase after selling (refund applied).");
+        }
 
         var replacement = await FindPurchasableGameViaApiAsync(session, publisherID, activeQuarter!.Year);
         Assert.That(replacement, Is.Not.Null,
@@ -277,10 +295,13 @@ public class RoyaleTests : IntegrationTestBase
 
         foreach (var hidden in hiddenFromPublic)
         {
-            Assert.That(hidden.MasterGame, Is.Null,
-                "Public viewers must not see the MasterGame identity of hidden games.");
-            Assert.That(hidden.AmountSpent, Is.Null,
-                "Public viewers must not see the AmountSpent of hidden games.");
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(hidden.MasterGame, Is.Null,
+                            "Public viewers must not see the MasterGame identity of hidden games.");
+                Assert.That(hidden.AmountSpent, Is.Null,
+                    "Public viewers must not see the AmountSpent of hidden games.");
+            }
         }
 
         // Owner still sees MasterGame for their own hidden games.
@@ -370,7 +391,10 @@ public class RoyaleTests : IntegrationTestBase
                 releaseFilter: RoyalePossibleMasterGamesReleaseFilter.All);
 
             var next = (all ?? []).Where(g => g.IsAvailable == true).MaxBy(g => g.Cost);
-            if (next is null) break;
+            if (next is null)
+            {
+                break;
+            }
 
             var result = await session.Royale.PurchaseGameAsync(
                 new PurchaseRoyaleGameRequest
@@ -378,7 +402,11 @@ public class RoyaleTests : IntegrationTestBase
                     PublisherID = publisherID,
                     MasterGameID = next.MasterGame.MasterGameID,
                 });
-            if (result?.Success != true) break;
+            if (result?.Success != true)
+            {
+                break;
+            }
+
             boughtIDs.Add(next.MasterGame.MasterGameID);
         }
 
@@ -406,10 +434,13 @@ public class RoyaleTests : IntegrationTestBase
             });
 
         Assert.That(failureResult, Is.Not.Null);
-        Assert.That(failureResult.Success, Is.False,
-            "Purchasing a game the publisher cannot afford (or already owns) must return Success=false.");
-        Assert.That(failureResult.Errors, Is.Not.Null.And.Not.Empty,
-            "A failed purchase must include at least one error message.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(failureResult.Success, Is.False,
+                    "Purchasing a game the publisher cannot afford (or already owns) must return Success=false.");
+            Assert.That(failureResult.Errors, Is.Not.Null.And.Not.Empty,
+                "A failed purchase must include at least one error message.");
+        }
     }
 
     [Test]
@@ -426,10 +457,13 @@ public class RoyaleTests : IntegrationTestBase
 
         Assert.That(data, Is.Not.Null);
         Assert.That(data.RoyaleYearQuarter, Is.Not.Null);
-        Assert.That(data.RoyaleYearQuarter.Year, Is.EqualTo(activeQuarter.Year));
-        Assert.That(data.RoyaleYearQuarter.Quarter, Is.EqualTo(activeQuarter.Quarter));
-        Assert.That(data.RoyaleYearQuarters, Is.Not.Null.And.Not.Empty,
-            "All year quarters should be populated.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(data.RoyaleYearQuarter.Year, Is.EqualTo(activeQuarter.Year));
+            Assert.That(data.RoyaleYearQuarter.Quarter, Is.EqualTo(activeQuarter.Quarter));
+            Assert.That(data.RoyaleYearQuarters, Is.Not.Null.And.Not.Empty,
+                "All year quarters should be populated.");
+        }
     }
 
     [Test]
@@ -458,12 +492,15 @@ public class RoyaleTests : IntegrationTestBase
 
         var history = await session.Royale.UserRoyaleHistoryAsync(publisher.UserID);
         Assert.That(history, Is.Not.Null);
-        Assert.That(history.UserID, Is.EqualTo(publisher.UserID));
-        Assert.That(history.PlayerName, Is.Not.Null.And.Not.Empty);
-        Assert.That(history.Publishers, Is.Not.Null,
-            "Publishers collection must not be null (may be empty for a brand-new user).");
-        Assert.That(history.QuartersWon, Is.Not.Null,
-            "QuartersWon collection must not be null.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(history.UserID, Is.EqualTo(publisher.UserID));
+            Assert.That(history.PlayerName, Is.Not.Null.And.Not.Empty);
+            Assert.That(history.Publishers, Is.Not.Null,
+                "Publishers collection must not be null (may be empty for a brand-new user).");
+            Assert.That(history.QuartersWon, Is.Not.Null,
+                "QuartersWon collection must not be null.");
+        }
     }
 
     [Test]
@@ -507,14 +544,17 @@ public class RoyaleTests : IntegrationTestBase
             new PurchaseRoyaleGameRequest
             {
                 PublisherID = publisherID,
-                    MasterGameID = lockoutGame.MasterGame.MasterGameID,
+                MasterGameID = lockoutGame.MasterGame.MasterGameID,
             });
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result!.Success, Is.False,
-            $"Purchasing a game in the {lockoutDays}-day lockout window must return Success=false.");
-        Assert.That(result.Errors, Is.Not.Null.And.Not.Empty,
-            "A failed purchase must include at least one error message.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result!.Success, Is.False,
+                    $"Purchasing a game in the {lockoutDays}-day lockout window must return Success=false.");
+            Assert.That(result.Errors, Is.Not.Null.And.Not.Empty,
+                "A failed purchase must include at least one error message.");
+        }
         Assert.That(
             result.Errors!.Any(e => e.Contains(lockoutDays.ToString())),
             Is.True,
@@ -572,7 +612,10 @@ public class RoyaleTests : IntegrationTestBase
                 releaseFilter: releaseFilter);
 
             var available = (possibleGames ?? []).Where(g => g.IsAvailable == true).ToList();
-            if (available.Count == 0) continue;
+            if (available.Count == 0)
+            {
+                continue;
+            }
 
             var set = await ProductionGameStatsCache.FindAffordableSetAsync(
                 available,
@@ -582,9 +625,12 @@ public class RoyaleTests : IntegrationTestBase
                 budgetCap,
                 year);
 
-            if (set.Count > 0) return set;
+            if (set.Count > 0)
+            {
+                return set;
+            }
         }
 
-        return Array.Empty<PossibleRoyaleMasterGameViewModel>();
+        return [];
     }
 }

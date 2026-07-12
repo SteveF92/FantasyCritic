@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
@@ -135,7 +134,7 @@ public class MultiDraftSecondDraftExecutionTests : IntegrationTestBase
             CounterPicksToDraft = 1,
             AdditionalStandardGames = 2,
             AdditionalCounterPicks = 1,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         var preSnapshot = await _league.GetLeagueYearAsync();

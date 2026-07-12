@@ -4,8 +4,16 @@ public record MinimalFantasyCriticUser(Guid UserID, string DisplayName, string E
 {
     public virtual bool Equals(IVeryMinimalFantasyCriticUser? other)
     {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
         return UserID.Equals(other.UserID);
     }
 
@@ -19,8 +27,16 @@ public record VeryMinimalFantasyCriticUser(Guid UserID, string DisplayName) : IV
 {
     public virtual bool Equals(IVeryMinimalFantasyCriticUser? other)
     {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
         return UserID.Equals(other.UserID);
     }
 

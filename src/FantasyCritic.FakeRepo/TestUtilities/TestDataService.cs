@@ -13,6 +13,7 @@ using FantasyCritic.Lib.Utilities;
 using NodaTime;
 
 namespace FantasyCritic.FakeRepo.TestUtilities;
+
 public class TestDataService
 {
     private readonly string _basePath;
@@ -38,7 +39,7 @@ public class TestDataService
     {
         var pickupBidEntities = GetPickupBidEntities();
         var bidLookup = pickupBidEntities.ToLookup(x => x.PublisherID);
-        Dictionary<LeagueYear, List<PickupBid>> domainBidsDictionary = new Dictionary<LeagueYear, List<PickupBid>>();
+        Dictionary<LeagueYear, List<PickupBid>> domainBidsDictionary = [];
         foreach (var leagueYear in leagueYears)
         {
             Dictionary<Guid, PublisherGame> publisherGamesDictionary = leagueYear.Publishers
@@ -46,7 +47,7 @@ public class TestDataService
                 .Where(x => x.MasterGame is not null && !x.CounterPick)
                 .ToDictionary(x => x.MasterGame!.MasterGame.MasterGameID);
 
-            List<PickupBid> domainBidsForLeague = new List<PickupBid>();
+            List<PickupBid> domainBidsForLeague = [];
             foreach (var publisher in leagueYear.Publishers)
             {
                 var bidsForPublisher = bidLookup[publisher.PublisherID].ToList();
@@ -67,10 +68,10 @@ public class TestDataService
     {
         var dropRequestEntities = GetDropRequestEntities();
         var dropLookup = dropRequestEntities.ToLookup(x => x.PublisherID);
-        Dictionary<LeagueYear, List<DropRequest>> domainBidsDictionary = new Dictionary<LeagueYear, List<DropRequest>>();
+        Dictionary<LeagueYear, List<DropRequest>> domainBidsDictionary = [];
         foreach (var leagueYear in leagueYears)
         {
-            List<DropRequest> domainBidsForLeague = new List<DropRequest>();
+            List<DropRequest> domainBidsForLeague = [];
             foreach (var publisher in leagueYear.Publishers)
             {
                 var dropsForPublisher = dropLookup[publisher.PublisherID].ToList();
@@ -91,8 +92,8 @@ public class TestDataService
         var publisherEntities = GetPublisherEntities();
         var publisherGameEntities = GetPublisherGamesEntities();
         var publisherGameLookup = publisherGameEntities.ToLookup(x => x.PublisherID);
-        
-        List<Publisher> domains = new List<Publisher>();
+
+        List<Publisher> domains = [];
         foreach (var entity in publisherEntities)
         {
             var gameEntities = publisherGameLookup[entity.PublisherID];
@@ -148,7 +149,7 @@ public class TestDataService
         var leagueTagEntityLookup = leagueTagEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
         var specialGameSlotsDictionary = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, tagDictionary);
 
-        List<LeagueYear> domains = new List<LeagueYear>();
+        List<LeagueYear> domains = [];
         foreach (var leagueYearEntity in leagueYearEntities)
         {
             var leagueYearKey = new LeagueYearKey(leagueYearEntity.LeagueID, leagueYearEntity.Year);
@@ -172,7 +173,7 @@ public class TestDataService
                 .Select(x => new TagOverride(masterGameYears[x.Key].MasterGame, tags.Where(t => x.Select(e => e.TagName).Contains(t.Name))));
             var leagueTags = leagueTagEntityLookup[leagueYearKey].Select(x => x.ToDomain(tagDictionary[x.Tag]));
             var specialGameSlots = specialGameSlotsDictionary[leagueYearKey];
-            domains.Add(leagueYearEntity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, leagueTags, specialGameSlots, null, publishersInLeague, new[] { leagueDraft }));
+            domains.Add(leagueYearEntity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, leagueTags, specialGameSlots, null, publishersInLeague, [leagueDraft]));
         }
 
         return domains;

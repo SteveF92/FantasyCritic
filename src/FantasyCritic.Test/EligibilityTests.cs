@@ -20,7 +20,7 @@ public class EligibilityTests
     private static MasterGame CreateBasicMasterGame(string name, LocalDate releaseDate, MasterGameTag tag)
     {
         return new MasterGame(Guid.NewGuid(), name, releaseDate.ToISOString(), releaseDate, releaseDate, null, null, null,
-            releaseDate, null, null, null, null, false, null, "", null, null, null, false, false, false, false, Instant.MinValue, new FantasyCriticUser() { Id = Guid.Empty }.ToVeryMinimal(), 
+            releaseDate, null, null, null, null, false, null, "", null, null, null, false, false, false, false, Instant.MinValue, new FantasyCriticUser() { Id = Guid.Empty }.ToVeryMinimal(),
             new List<MasterSubGame>(), new List<MasterGameTag>() { tag });
     }
 

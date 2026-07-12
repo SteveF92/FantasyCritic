@@ -120,13 +120,7 @@ export default {
   },
   computed: {
     memberFields() {
-      const statsFields = [
-        this.displayNameField,
-        this.quartersParticipatedField,
-        this.averageRankField,
-        this.averageRankOverallField,
-        this.totalPointsField
-      ];
+      const statsFields = [this.displayNameField, this.quartersParticipatedField, this.averageRankField, this.averageRankOverallField, this.totalPointsField];
       if (this.isManager && this.showManagerActions) {
         return [...statsFields, this.actionField];
       }

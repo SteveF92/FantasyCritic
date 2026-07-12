@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 
 namespace FantasyCritic.Web.Helpers;
+
 public class GenericResultRecord<TValidResult> where TValidResult : class
 {
     public TValidResult? ValidResult { get; }

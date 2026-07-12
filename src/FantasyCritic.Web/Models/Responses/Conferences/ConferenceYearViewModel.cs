@@ -22,19 +22,19 @@ public class ConferenceYearViewModel
 
         var publisherRankings = standings
             .Select(x => new
-                {
-                    x.PublisherID,
-                    Ranking = standings.Count(y => y.TotalFantasyPoints > x.TotalFantasyPoints) + 1
-                }
+            {
+                x.PublisherID,
+                Ranking = standings.Count(y => y.TotalFantasyPoints > x.TotalFantasyPoints) + 1
+            }
             )
             .ToDictionary(x => x.PublisherID, x => x.Ranking);
 
         var publisherProjectedRankings = standings
             .Select(x => new
-                {
-                    x.PublisherID,
-                    Ranking = standings.Count(y => y.ProjectedFantasyPoints > x.ProjectedFantasyPoints) + 1
-                }
+            {
+                x.PublisherID,
+                Ranking = standings.Count(y => y.ProjectedFantasyPoints > x.ProjectedFantasyPoints) + 1
+            }
             )
             .ToDictionary(x => x.PublisherID, x => x.Ranking);
 

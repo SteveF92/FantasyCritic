@@ -1,3 +1,4 @@
+using System.Text.Json;
 using FantasyCritic.Lib;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Identity;
@@ -6,7 +7,6 @@ using FantasyCritic.Web.Helpers;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
 namespace FantasyCritic.Web.Controllers;
 

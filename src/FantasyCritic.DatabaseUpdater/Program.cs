@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Text;
 using DbUp;
 using DbUp.Engine;
 using DbUp.Support;
@@ -10,8 +12,6 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Sinks.Grafana.Loki;
-using System.Reflection;
-using System.Text;
 
 namespace FantasyCritic.DatabaseUpdater;
 
@@ -81,7 +81,7 @@ public class Program
             logger.Dispose();
             loggerFactory.Dispose();
         }
-        
+
     }
 
     private static async Task<IConfigurationRoot> GetConfiguration(string environmentName, string awsRegion)
@@ -216,7 +216,7 @@ public class Program
                     Password = lokiApiToken
                 },
                 labels: lokiLabels,
-                propertiesAsLabels: new[] { "SourceContext" });
+                propertiesAsLabels: ["SourceContext"]);
         }
 
         var logger = loggerConfig.CreateLogger();

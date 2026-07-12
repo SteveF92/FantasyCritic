@@ -1,6 +1,7 @@
 using System.Globalization;
 
 namespace FantasyCritic.Lib.Extensions;
+
 public static class AnnualDateExtensions
 {
     public static string ToReadableString(this AnnualDate date)

@@ -3,6 +3,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Extensions;
+
 public static class RepositoryInterfaceExtensions
 {
     public static async Task<League> GetLeagueOrThrow(this IFantasyCriticRepo repo, Guid id)

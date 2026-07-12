@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Extensions;
 
 namespace FantasyCritic.Web.Models.Responses;
+
 public class SpecialAuctionViewModel
 {
     public SpecialAuctionViewModel(SpecialAuction domain, Instant currentInstant)

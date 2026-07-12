@@ -1,11 +1,12 @@
 using FantasyCritic.Lib.Patreon;
 
 namespace FantasyCritic.MySQL.Entities;
+
 public class PatreonTokensEntity
 {
     public PatreonTokensEntity()
     {
-        
+
     }
 
     public PatreonTokensEntity(PatreonTokens domain)

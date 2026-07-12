@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.Test;
+
 public static class MasterGameTestExtensions
 {
     public static MasterGame WithScore(this MasterGame game, decimal? score)

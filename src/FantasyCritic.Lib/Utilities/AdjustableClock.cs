@@ -1,6 +1,3 @@
-using CSharpFunctionalExtensions;
-using NodaTime;
-
 namespace FantasyCritic.Lib.Utilities;
 
 /// <summary>
@@ -14,7 +11,7 @@ namespace FantasyCritic.Lib.Utilities;
 /// </summary>
 public sealed class AdjustableClock : IClock
 {
-    private readonly object _lock = new();
+    private readonly Lock _lock = new Lock();
     private Instant _setAt;
     private Instant _targetAt;
 

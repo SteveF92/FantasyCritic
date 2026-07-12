@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Discord.Models;
 
 namespace FantasyCritic.MySQL.Entities.Discord;
+
 internal class GameNewsChannelEntity
 {
     public GameNewsChannelEntity()

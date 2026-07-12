@@ -1,4 +1,5 @@
 namespace FantasyCritic.Web.Models.Responses;
+
 public class PublicBiddingSetViewModel
 {
     public PublicBiddingSetViewModel(PublicBiddingSet domain, LocalDate currentDate)

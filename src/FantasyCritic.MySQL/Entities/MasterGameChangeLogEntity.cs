@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.MySQL.Entities;
+
 internal class MasterGameChangeLogEntity
 {
     public MasterGameChangeLogEntity()

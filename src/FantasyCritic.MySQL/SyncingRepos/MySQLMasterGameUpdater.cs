@@ -3,6 +3,7 @@ using FantasyCritic.MySQL.Entities;
 using Serilog;
 
 namespace FantasyCritic.MySQL.SyncingRepos;
+
 public class MySQLMasterGameUpdater
 {
     private static readonly ILogger _logger = Log.ForContext<MySQLMasterGameUpdater>();
@@ -35,7 +36,7 @@ public class MySQLMasterGameUpdater
         List<MasterGameTagEntity> tagEntities = productionTags.Select(x => new MasterGameTagEntity(x)).ToList();
         List<MasterGameEntity> masterGameEntities = productionMasterGames.Select(x => new MasterGameEntity(x, addedByUserIDOverride)).ToList();
         List<MasterSubGameEntity> masterSubGameEntities = productionMasterGames.SelectMany(x => x.SubGames).Select(x => new MasterSubGameEntity(x)).ToList();
-        List<MasterGameHasTagEntity> productionGamesHaveTagEntities = new List<MasterGameHasTagEntity>();
+        List<MasterGameHasTagEntity> productionGamesHaveTagEntities = [];
         foreach (var masterGame in productionMasterGames)
         {
             foreach (var tag in masterGame.Tags)

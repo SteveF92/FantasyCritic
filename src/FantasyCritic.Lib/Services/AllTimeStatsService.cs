@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Services;
+
 public class AllTimeStatsService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
@@ -111,7 +112,7 @@ public class AllTimeStatsService
                                 TimeFunctions.InstantsAreWithinDuration(successfulBid.Timestamp, x.Timestamp, Duration.FromDays(7)))
                     .ToList();
 
-                List<PickupBid> wasOutbid = new List<PickupBid>();
+                List<PickupBid> wasOutbid = [];
 
                 foreach (var unsuccessfulBid in unsuccessfulBids)
                 {

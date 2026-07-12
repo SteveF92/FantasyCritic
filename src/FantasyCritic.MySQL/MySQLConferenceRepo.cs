@@ -10,10 +10,11 @@ using FantasyCritic.MySQL.Entities.Conferences;
 using Serilog;
 
 namespace FantasyCritic.MySQL;
+
 public class MySQLConferenceRepo : IConferenceRepo
 {
     private static readonly ILogger _logger = Log.ForContext<MySQLConferenceRepo>();
-    
+
     private readonly string _connectionString;
     private readonly MySQLFantasyCriticRepo _fantasyCriticRepo;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
@@ -74,14 +75,14 @@ public class MySQLConferenceRepo : IConferenceRepo
         {
             if (!conferenceDictionary.TryGetValue(yearEntity.ConferenceID, out var years))
             {
-                years = new List<int>();
+                years = [];
                 conferenceDictionary[yearEntity.ConferenceID] = years;
             }
             years.Add(yearEntity.Year);
         }
 
         var domainObjects = conferenceEntities
-            .Select(conference => conference.ToDomain(conferenceDictionary.GetValueOrDefault(conference.ConferenceID, new List<int>())))
+            .Select(conference => conference.ToDomain(conferenceDictionary.GetValueOrDefault(conference.ConferenceID, [])))
             .ToList();
         return domainObjects;
     }
@@ -245,7 +246,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-        
+
         ConferenceEntity? conferenceEntity = await connection.QuerySingleOrDefaultAsync<ConferenceEntity?>(conferenceSQL, queryObject);
         if (conferenceEntity is null)
         {
@@ -273,7 +274,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                                          GROUP BY cy.Year, sy.Finished;
                                          """;
         IEnumerable<ConferenceYearKeyWithDetailsEntity> years = await connection.QueryAsync<ConferenceYearKeyWithDetailsEntity>(conferenceYearSQL, queryObject);
-        
+
         const string leaguesInConferenceSQL = "select LeagueID from tbl_league where ConferenceID = @conferenceID";
         IEnumerable<Guid> leagueIDs = await connection.QueryAsync<Guid>(leaguesInConferenceSQL, queryObject);
 
@@ -359,7 +360,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         var leagueActivePlayerLookup = leagueActivePlayers.ToLookup(x => x.UserID);
         var conferenceActivePlayerLookup = conferenceActivePlayers.ToLookup(x => x.UserID);
 
-        List<ConferencePlayer> conferencePlayers = new List<ConferencePlayer>();
+        List<ConferencePlayer> conferencePlayers = [];
         foreach (var user in usersInConference)
         {
             var leaguesManaged = leagueManagerLookup[user.Id].Select(x => x.LeagueID).ToHashSet();
@@ -369,7 +370,7 @@ public class MySQLConferenceRepo : IConferenceRepo
             var player = new ConferencePlayer(user.ToMinimal(), leaguesIn, leaguesManaged, conferenceYearsActiveIn, leagueYearsActiveIn);
             conferencePlayers.Add(player);
         }
-        
+
         return conferencePlayers;
     }
 
@@ -384,7 +385,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                            delete from tbl_conference_hasuser
                            where ConferenceID = @conferenceID and UserID = @userID;
                            """;
-        
+
         var deleteParam = new
         {
             conferenceID = conference.ConferenceID,
@@ -409,12 +410,12 @@ public class MySQLConferenceRepo : IConferenceRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         var leagueEntities = (await connection.QueryAsync<ConferenceLeagueEntity>(leagueSQL, queryObject)).ToList();
-        
+
         var leagueManagerIDs = leagueEntities.Select(x => x.LeagueManager).ToList();
         var leagueManagers = await _userStore.GetUsers(leagueManagerIDs);
         var leagueManagerDictionary = leagueManagers.ToDictionary(x => x.Id);
 
-        List<ConferenceLeague> leaguesInConference = new List<ConferenceLeague>();
+        List<ConferenceLeague> leaguesInConference = [];
         foreach (var leagueEntity in leagueEntities)
         {
             var leagueManager = leagueManagerDictionary[leagueEntity.LeagueManager];
@@ -635,7 +636,7 @@ public class MySQLConferenceRepo : IConferenceRepo
             {
                 if (!leagueHasPlayerInPreviousYear.ContainsKey(conferenceLeagueYear.League))
                 {
-                    leagueHasPlayerInPreviousYear.Add(conferenceLeagueYear.League, new HashSet<FantasyCriticUser>());
+                    leagueHasPlayerInPreviousYear.Add(conferenceLeagueYear.League, []);
                 }
 
                 var fullLeagueYear = await _combinedDataRepo.GetLeagueYear(conferenceLeagueYear.League.LeagueID, conferenceLeagueYear.Year);
@@ -650,11 +651,11 @@ public class MySQLConferenceRepo : IConferenceRepo
                 }
             }
         }
-        
+
         var leagueHasPlayerInPreviousYearLookup = leagueHasPlayerInPreviousYear
             .SelectMany(kv => kv.Value.Select(v => new { Key = kv.Key, Value = v }))
             .ToLookup(item => item.Key, item => item.Value);
-        
+
         try
         {
             var currentLeagueUsers = (await connection.QueryAsync<LeagueHasUserEntity>(currentLeagueUserSQL, conferenceParam, transaction)).ToList();
@@ -665,8 +666,8 @@ public class MySQLConferenceRepo : IConferenceRepo
 
             var leagueUserLookup = currentLeagueUsers.ToLookup(x => x.LeagueID);
 
-            List<LeagueHasUserEntity> usersThatCanBeSafelyRemovedFromLeague = new List<LeagueHasUserEntity>();
-            List<LeagueYearActivePlayer> activePlayersToRemove = new List<LeagueYearActivePlayer>();
+            List<LeagueHasUserEntity> usersThatCanBeSafelyRemovedFromLeague = [];
+            List<LeagueYearActivePlayer> activePlayersToRemove = [];
             foreach (var leagueUser in currentLeagueUsers)
             {
                 var conferenceLeague = conferenceLeagues.Single(x => x.LeagueID == leagueUser.LeagueID);
@@ -691,8 +692,8 @@ public class MySQLConferenceRepo : IConferenceRepo
                 usersThatCanBeSafelyRemovedFromLeague.Add(new LeagueHasUserEntity() { LeagueID = leagueUser.LeagueID, UserID = leagueUser.UserID });
             }
 
-            List<LeagueHasUserEntity> newUsersToAdd = new List<LeagueHasUserEntity>();
-            List<LeagueYearActivePlayer> newActivePlayersToAdd = new List<LeagueYearActivePlayer>();
+            List<LeagueHasUserEntity> newUsersToAdd = [];
+            List<LeagueYearActivePlayer> newActivePlayersToAdd = [];
 
             foreach (var leagueUsers in userAssignments)
             {
@@ -714,8 +715,8 @@ public class MySQLConferenceRepo : IConferenceRepo
                 }));
             }
 
-            List<LeagueYearKey> leagueYearsToFixDraftOrders = new List<LeagueYearKey>();
-            List<ConferencePublisherInfoEntity> publishersToUpdate = new List<ConferencePublisherInfoEntity>();
+            List<LeagueYearKey> leagueYearsToFixDraftOrders = [];
+            List<ConferencePublisherInfoEntity> publishersToUpdate = [];
             foreach (var publisher in currentPublisherEntities)
             {
                 var userNewLeague = newActivePlayersToAdd.FirstOrDefault(x => x.UserID == publisher.UserID);

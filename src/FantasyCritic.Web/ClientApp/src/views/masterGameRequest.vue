@@ -194,8 +194,7 @@ export default {
         }
       }
       return false;
-    },
-    validUnannounced() {}
+    }
   },
   async created() {
     await this.fetchMyRequests();

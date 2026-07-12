@@ -1,4 +1,3 @@
-using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Web.Models.RoundTrip;
 

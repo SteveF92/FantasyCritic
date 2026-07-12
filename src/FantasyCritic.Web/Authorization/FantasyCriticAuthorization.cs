@@ -9,11 +9,11 @@ public class FantasyCriticAuthorizationDebugHandler : IAuthorizationHandler
 {
     public Task HandleAsync(AuthorizationHandlerContext context)
     {
-        var user = context?.User?.Identity?.Name;
-        var isAuth = context?.User?.Identity?.IsAuthenticated;
+        _ = context?.User?.Identity?.Name;
+        _ = context?.User?.Identity?.IsAuthenticated;
         if (context?.FailureReasons.Any() ?? false)
         {
-            var contextString = context.ToString();
+            _ = context.ToString();
         }
         return Task.CompletedTask;
     }

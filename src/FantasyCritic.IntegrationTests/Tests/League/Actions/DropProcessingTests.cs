@@ -105,7 +105,9 @@ public class DropProcessingTests : IntegrationTestBase
         }
         _adminSession?.Dispose();
         if (_league != null)
+        {
             await _league.DisposeAsync();
+        }
     }
 
     private static PublisherGameViewModel FindDroppableDraftedGame(PublisherViewModel publisher)

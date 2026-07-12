@@ -1,8 +1,8 @@
 using FantasyCritic.Lib.Extensions;
-using NodaTime.Text;
 using NodaTime;
-using NUnit.Framework;
 using NodaTime.Testing;
+using NodaTime.Text;
+using NUnit.Framework;
 
 namespace FantasyCritic.Test;
 
@@ -15,7 +15,7 @@ public class TimingTests
         var instant = localDateTime.InZoneStrictly(TimeExtensions.EasternTimeZone).ToInstant();
         return instant;
     }
-    
+
     [TestCase("2023-09-15T19:00:00", false)]
     [TestCase("2023-09-16T19:00:00", false)]
     [TestCase("2023-09-16T19:59:00", false)]

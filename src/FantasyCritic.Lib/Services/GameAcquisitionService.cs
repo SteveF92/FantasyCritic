@@ -407,7 +407,7 @@ public class GameAcquisitionService
 
         var specialAuctionGames = activeSpecialAuctions.Select(x => x.MasterGameYear.MasterGame).ToHashSet();
         var distinctBids = bidsToCount.DistinctBy(x => x.MasterGame).OrderBy(x => x.MasterGame.GameName);
-        List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
+        List<PublicBiddingMasterGame> masterGameYears = [];
         foreach (var bid in distinctBids)
         {
             if (specialAuctionGames.Contains(bid.MasterGame))
@@ -453,7 +453,7 @@ public class GameAcquisitionService
         var currentDate = _clock.GetToday();
         var dateOfPotentialAcquisition = _clock.GetNextBidTime().ToEasternDate();
 
-        List<LeagueYearPublicBiddingSet> publicBiddingSets = new List<LeagueYearPublicBiddingSet>();
+        List<LeagueYearPublicBiddingSet> publicBiddingSets = [];
         foreach (var activeBidsForLeague in activeBidsByLeague)
         {
             if (!activeBidsForLeague.Key.IsPublicBiddingValid)
@@ -468,7 +468,7 @@ public class GameAcquisitionService
             }
 
             var distinctBids = bidsToCount.DistinctBy(x => x.MasterGame).OrderBy(x => x.MasterGame.GameName);
-            List<PublicBiddingMasterGame> masterGameYears = new List<PublicBiddingMasterGame>();
+            List<PublicBiddingMasterGame> masterGameYears = [];
             foreach (var bid in distinctBids)
             {
                 var masterGameYear = await _masterGameRepo.GetMasterGameYearOrThrow(bid.MasterGame.MasterGameID, activeBidsForLeague.Key.Year);

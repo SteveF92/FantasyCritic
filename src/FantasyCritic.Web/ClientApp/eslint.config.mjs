@@ -1,10 +1,16 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
-import tseslint from "@typescript-eslint/eslint-plugin"; // Adjusted to match the package name
+import tseslint from "typescript-eslint";
 import pluginVue from "eslint-plugin-vue";
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
+  // Build output and NSwag-generated code are not hand-written; keep them out of lint
+  // (mirrors the root .gitignore entries for these paths — `--ignore-path` was removed
+  // in ESLint 9's flat config, so ignoring has to live here instead).
+  {
+    ignores: ["dist/**", "src/api/generated/**"],
+  },
   // Global settings for all files
   {
     files: ["**/*.{js,mjs,cjs,ts,vue}"],
@@ -12,14 +18,26 @@ export default [
       globals: {
         ...globals.browser,
         __dirname: "readonly", // Adding `__dirname` global from your original config
+        process: "readonly", // Vite statically replaces `process.env.NODE_ENV` at build time
+      },
+    },
+  },
+  // Root-level Node scripts (dev server setup, Vite config) run outside the browser
+  {
+    files: ["aspnetcore-https.js", "vite.config.js", "vite.client.config.js", "vite.build.config.js", "eslint.config.mjs"],
+    languageOptions: {
+      globals: {
+        ...globals.node,
       },
     },
   },
   // JavaScript and TypeScript specific configurations
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  // Vue-specific configurations
-  ...pluginVue.configs["flat/essential"],
+  // Vue-specific configurations (vue2-* presets: this app runs Vue 2.7, and the
+  // default "flat/essential" preset targets Vue 3, flagging valid Vue 2 syntax
+  // like .sync/.native modifiers and filters as errors)
+  ...pluginVue.configs["flat/vue2-essential"],
   {
     files: ["**/*.vue"],
     languageOptions: {

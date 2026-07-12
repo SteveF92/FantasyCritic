@@ -26,7 +26,7 @@ public class PublisherSingleSlotRequirementsViewModel
 
     public IReadOnlyList<LeagueTagStatus> GetLeagueTagStatus(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        List<LeagueTagStatus> domains = new List<LeagueTagStatus>();
+        List<LeagueTagStatus> domains = [];
 
         var bannedTagsWithoutRequiredTags = BannedTags.Except(RequiredTags);
         foreach (var bannedTag in bannedTagsWithoutRequiredTags)

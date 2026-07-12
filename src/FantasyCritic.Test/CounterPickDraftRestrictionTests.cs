@@ -63,8 +63,11 @@ public class CounterPickDraftRestrictionTests
             request, null, null, true, draftID2, false, false,
             new LocalDate(2026, 1, 15), false, []);
 
-        Assert.That(result.Success, Is.False);
-        Assert.That(result.Errors.Any(e => e.Error.Contains("not drafted in this draft", StringComparison.OrdinalIgnoreCase)), Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Success, Is.False);
+            Assert.That(result.Errors.Any(e => e.Error.Contains("not drafted in this draft", StringComparison.OrdinalIgnoreCase)), Is.True);
+        }
     }
 
     [Test]

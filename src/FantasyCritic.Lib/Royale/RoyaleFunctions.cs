@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Royale;
+
 public static class RoyaleFunctions
 {
     public static bool GameOrActionIsHidden(RoyaleYearQuarter yearQuarter, MasterGameYear masterGame, LocalDate currentDate)

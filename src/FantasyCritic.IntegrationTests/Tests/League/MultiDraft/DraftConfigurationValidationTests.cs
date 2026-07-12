@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
@@ -49,7 +47,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
                 CounterPicksToDraft = 0,
                 AdditionalStandardGames = 0,
                 AdditionalCounterPicks = 0,
-                NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+                NewSpecialGameSlots = [],
             });
         }
         catch (ApiException caught)
@@ -78,7 +76,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
                 CounterPicksMustBeFromThisDraft = true,
                 AdditionalStandardGames = 3,
                 AdditionalCounterPicks = 3,
-                NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+                NewSpecialGameSlots = [],
             });
         }
         catch (ApiException caught)
@@ -106,7 +104,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
             CounterPicksToDraft = 0,
             AdditionalStandardGames = 2,
             AdditionalCounterPicks = 0,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         var snapshot = await _league.GetLeagueYearAsync();
@@ -148,7 +146,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
             CounterPicksToDraft = 1,
             AdditionalStandardGames = 2,
             AdditionalCounterPicks = 2,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         var snapshot = await _league.GetLeagueYearAsync();
@@ -204,7 +202,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
             CounterPicksToDraft = 0,
             AdditionalStandardGames = 0,
             AdditionalCounterPicks = 0,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         await MultiDraftTestScenario.SetDraft2OrderAsync(league);
@@ -212,10 +210,13 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
         var snapshot = await league.GetLeagueYearAsync();
         var draft2 = snapshot.Drafts.Single(d => d.DraftNumber == 2);
 
-        Assert.That(draft2.ReadyToDraft, Is.False,
-            "Draft 2 should not be ready when GamesToDraft exceeds remaining standard slots.");
-        Assert.That(draft2.StartDraftErrors, Has.Some.Contains("remaining"),
-            "Start errors should explain that there are not enough remaining standard slots.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft2.ReadyToDraft, Is.False,
+                    "Draft 2 should not be ready when GamesToDraft exceeds remaining standard slots.");
+            Assert.That(draft2.StartDraftErrors, Has.Some.Contains("remaining"),
+                "Start errors should explain that there are not enough remaining standard slots.");
+        }
     }
 
     [Test]
@@ -236,7 +237,7 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
             CounterPicksToDraft = 2,
             AdditionalStandardGames = 1,
             AdditionalCounterPicks = 0,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         await MultiDraftTestScenario.SetDraft2OrderAsync(league);
@@ -244,9 +245,12 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
         var snapshot = await league.GetLeagueYearAsync();
         var draft2 = snapshot.Drafts.Single(d => d.DraftNumber == 2);
 
-        Assert.That(draft2.ReadyToDraft, Is.False,
-            "Draft 2 should not be ready when CounterPicksToDraft exceeds remaining counter-pick slots.");
-        Assert.That(draft2.StartDraftErrors, Has.Some.Contains("remaining"),
-            "Start errors should explain that there are not enough remaining counter-pick slots.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft2.ReadyToDraft, Is.False,
+                    "Draft 2 should not be ready when CounterPicksToDraft exceeds remaining counter-pick slots.");
+            Assert.That(draft2.StartDraftErrors, Has.Some.Contains("remaining"),
+                "Start errors should explain that there are not enough remaining counter-pick slots.");
+        }
     }
 }

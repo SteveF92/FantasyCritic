@@ -39,8 +39,10 @@ internal class MockedLivePlayer
 
         var candidates = available.Where(g => g.IsAvailable && !g.Taken).ToList();
         if (candidates.Count == 0)
+        {
             throw new InvalidOperationException(
                 $"TopAvailableGames returned no available games for publisher {PublisherID}.");
+        }
 
         foreach (var pick in candidates)
         {
@@ -54,7 +56,9 @@ internal class MockedLivePlayer
             });
 
             if (result.Success)
+            {
                 return;
+            }
         }
 
         throw new InvalidOperationException(
@@ -83,9 +87,11 @@ internal class MockedLivePlayer
         });
 
         if (!result.Success)
+        {
             throw new InvalidOperationException(
                 $"DraftGame (counter-pick) failed for publisher {PublisherID}: "
                 + string.Join("; ", result.Errors));
+        }
     }
 }
 
@@ -127,24 +133,32 @@ internal sealed class DraftSimulator
             bool anyDraftActive = leagueYear.Drafts.Any(d =>
                 d.PlayStatus == "Drafting" || d.PlayStatus == "DraftPaused");
             if (!anyDraftActive)
+            {
                 return;
+            }
 
             var nextPublisher = leagueYear.Publishers.SingleOrDefault(p => p.NextToDraft)
                 ?? throw new InvalidOperationException(
                     "Draft is active and not finished, but no publisher has NextToDraft = true.");
 
             if (!_players.TryGetValue(nextPublisher.PublisherID, out var player))
+            {
                 throw new InvalidOperationException(
                     $"No MockedLivePlayer registered for publisher {nextPublisher.PublisherID} "
                     + $"({nextPublisher.PublisherName}). "
                     + "If this publisher has auto-draft enabled, their auto-draft may have failed "
                     + "(e.g. no available games found for the slot). "
                     + "Check TopAvailableGames for this publisher.");
+            }
 
             if (leagueYear.ActiveDraft()?.DraftingCounterPicks == true)
+            {
                 await player.DraftCounterPickAsync(year);
+            }
             else
+            {
                 await player.DraftStandardGameAsync(year);
+            }
         }
     }
 
@@ -159,17 +173,21 @@ internal sealed class DraftSimulator
 
             var activeDraft = leagueYear.ActiveDraft();
             if (activeDraft is null || activeDraft.DraftFinished || activeDraft.DraftingCounterPicks)
+            {
                 throw new InvalidOperationException(
                     $"Cannot run standard pick {pick + 1} of {count}: draft is finished or in counter-pick phase.");
+            }
 
             var nextPublisher = leagueYear.Publishers.SingleOrDefault(p => p.NextToDraft)
                 ?? throw new InvalidOperationException(
                     "Draft is active but no publisher has NextToDraft = true.");
 
             if (!_players.TryGetValue(nextPublisher.PublisherID, out var player))
+            {
                 throw new InvalidOperationException(
                     $"No MockedLivePlayer registered for publisher {nextPublisher.PublisherID} "
                     + $"({nextPublisher.PublisherName}).");
+            }
 
             await player.DraftStandardGameAsync(year);
         }
@@ -187,7 +205,9 @@ internal sealed class DraftSimulator
 
             var activeDraft = leagueYear.ActiveDraft();
             if (activeDraft is null || activeDraft.DraftFinished || activeDraft.DraftingCounterPicks)
+            {
                 return;
+            }
 
             var nextPublisher = leagueYear.Publishers.SingleOrDefault(p => p.NextToDraft)
                 ?? throw new InvalidOperationException(
@@ -195,9 +215,11 @@ internal sealed class DraftSimulator
                     + "but no publisher has NextToDraft = true.");
 
             if (!_players.TryGetValue(nextPublisher.PublisherID, out var player))
+            {
                 throw new InvalidOperationException(
                     $"No MockedLivePlayer registered for publisher {nextPublisher.PublisherID} "
                     + $"({nextPublisher.PublisherName}).");
+            }
 
             await player.DraftStandardGameAsync(year);
         }

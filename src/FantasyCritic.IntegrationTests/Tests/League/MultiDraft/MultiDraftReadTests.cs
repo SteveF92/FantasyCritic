@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
@@ -38,7 +37,7 @@ public class MultiDraftReadTests : IntegrationTestBase
             CounterPicksToDraft = 0,
             AdditionalStandardGames = 2,
             AdditionalCounterPicks = 0,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
 
         return await league.GetLeagueYearAsync();
@@ -143,8 +142,11 @@ public class MultiDraftReadTests : IntegrationTestBase
         var snapshot = await AddSecondDraftAsync(league);
 
         Assert.That(snapshot.Drafts.Count, Is.EqualTo(2));
-        Assert.That(snapshot.Drafts.Select(d => d.DraftNumber), Is.EquivalentTo(new[] { 1, 2 }));
-        Assert.That(snapshot.Drafts.All(d => d.PlayStatus == "NotStartedDraft"), Is.True,
-            "Neither draft has started, so both should read as NotStartedDraft.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(snapshot.Drafts.Select(d => d.DraftNumber), Is.EquivalentTo([1, 2]));
+            Assert.That(snapshot.Drafts.All(d => d.PlayStatus == "NotStartedDraft"), Is.True,
+                "Neither draft has started, so both should read as NotStartedDraft.");
+        }
     }
 }

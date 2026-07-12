@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace FantasyCritic.Lib.Identity;
+
 public class FantasyCriticSignInManager : SignInManager<FantasyCriticUser>
 {
     public FantasyCriticSignInManager(UserManager<FantasyCriticUser> userManager, IHttpContextAccessor contextAccessor,

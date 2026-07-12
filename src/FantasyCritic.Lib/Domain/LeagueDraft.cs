@@ -62,14 +62,14 @@ public class LeagueDraft
             .Where(x => !x.AcquiredInTradeID.HasValue)
             .GroupBy(x => x.CounterPick)
             .ToDictionary(x => x.Key, y => y.Count(z => z.Timestamp < draftStartedTimestamp));
-        
+
         var tuple = (gamesTakenBeforeThisDraft.GetValueOrDefault(false, 0), gamesTakenBeforeThisDraft.GetValueOrDefault(true, 0));
         return Result.Success(tuple);
     }
 
     public LeagueOptionsDifferences GetDifferences(LeagueDraft existingDraft)
     {
-        List<string> differences = new List<string>();
+        List<string> differences = [];
 
         if (GamesToDraft != existingDraft.GamesToDraft)
         {

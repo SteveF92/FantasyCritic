@@ -36,7 +36,7 @@ public class FinalizedActionProcessingResults
 
     public IReadOnlyList<LeagueActionProcessingSet> GetLeagueActionSets()
     {
-        List<DropRequest> allDrops = new List<DropRequest>();
+        List<DropRequest> allDrops = [];
         foreach (var successDrop in Results.SuccessDrops)
         {
             allDrops.Add(successDrop.ToDropWithSuccess(true, ProcessSetID));
@@ -45,8 +45,8 @@ public class FinalizedActionProcessingResults
         {
             allDrops.Add(failedDrop.ToDropWithSuccess(false, ProcessSetID));
         }
-        
-        List<PickupBid> allBids = new List<PickupBid>();
+
+        List<PickupBid> allBids = [];
         foreach (var successBid in Results.SuccessBids)
         {
             allBids.Add(successBid.ToFlatBid(ProcessSetID));
@@ -55,11 +55,11 @@ public class FinalizedActionProcessingResults
         {
             allBids.Add(failedBid.ToFlatBid(ProcessSetID));
         }
-        
+
         var bidsByLeague = allBids.GroupToDictionary(x => x.LeagueYear);
         var dropsByLeague = allDrops.GroupToDictionary(x => x.LeagueYear);
 
-        List<LeagueActionProcessingSet> leagueSets = new List<LeagueActionProcessingSet>();
+        List<LeagueActionProcessingSet> leagueSets = [];
         var leagueYears = bidsByLeague.Keys.Concat(dropsByLeague.Keys).Distinct().ToList();
         foreach (var leagueYear in leagueYears)
         {

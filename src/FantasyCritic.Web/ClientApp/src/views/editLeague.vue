@@ -30,8 +30,7 @@
               :standard-games="leagueYearSettings.standardGames"
               game-mode="Standard"
               edit-mode
-              :bids-only-before-next-scheduled-draft="leagueYearSettings.bidsOnlyBeforeNextScheduledDraft">
-            </DraftCreationSettings>
+              :bids-only-before-next-scheduled-draft="leagueYearSettings.bidsOnlyBeforeNextScheduledDraft"></DraftCreationSettings>
           </template>
         </leagueYearSettings>
       </div>
@@ -84,23 +83,20 @@ export default {
     leagueYearIsValid() {
       if (!this.leagueYearSettings) return false;
       const settingsOk =
-        this.leagueYearSettings.standardGames >= 1 &&
-        this.leagueYearSettings.standardGames <= 50 &&
-        this.leagueYearSettings.counterPicks >= 0 &&
-        this.leagueYearSettings.counterPicks <= 20;
-      const draftOk = this.isMultiDraft || this.oneShotMode || (
-        this.firstDraft &&
-        this.firstDraft.gamesToDraft >= 1 &&
-        this.firstDraft.counterPicksToDraft >= 0
-      );
+        this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 && this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
+      const draftOk = this.isMultiDraft || this.oneShotMode || (this.firstDraft && this.firstDraft.gamesToDraft >= 1 && this.firstDraft.counterPicksToDraft >= 0);
       return settingsOk && draftOk && !this.bidsOnlyBeforeNextDraftScheduleError;
     },
     oneShotMode() {
       return this.leagueYear?.settings?.oneShotMode ?? false;
     },
     firstDraftAsList: {
-      get() { return this.firstDraft ? [this.firstDraft] : []; },
-      set(val) { this.firstDraft = val[0] ?? null; }
+      get() {
+        return this.firstDraft ? [this.firstDraft] : [];
+      },
+      set(val) {
+        this.firstDraft = val[0] ?? null;
+      }
     },
     activePlayersInLeague() {
       if (!this.leagueYear || !this.leagueYear.players) {
@@ -149,7 +145,7 @@ export default {
               name: d.name,
               scheduledDate: d.scheduledDate ?? null,
               gamesToDraft: d.gamesToDraft,
-              counterPicksToDraft: d.counterPicksToDraft,
+              counterPicksToDraft: d.counterPicksToDraft
             };
           }
           this.syncOneShotDraft();
@@ -171,7 +167,7 @@ export default {
         year: this.year,
         leagueYearName: this.leagueYearName || null,
         leagueYearSettings: this.leagueYearSettings,
-        firstDraft: this.isMultiDraft ? null : this.firstDraft,
+        firstDraft: this.isMultiDraft ? null : this.firstDraft
       };
       axios.post('/api/leagueManager/EditLeagueYearSettings', payload).then(this.responseHandler).catch(this.catchHandler);
     },

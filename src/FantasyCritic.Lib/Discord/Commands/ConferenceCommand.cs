@@ -92,7 +92,7 @@ public class ConferenceCommand : InteractionModuleBase<SocketInteractionContext>
         var conferenceYearData = await _conferenceService.GetConferenceYearData(conferenceChannel.ConferenceYear.Conference.ConferenceID, conferenceChannel.ConferenceYear.Year);
         if (conferenceYearData is null)
         {
-            return new List<string>();
+            return [];
         }
         var conferencePublishersRanked = DiscordSharedMessageUtilities.RankConferencePublishers(conferenceYearData.ConferenceYearStandings);
         return conferencePublishersRanked;

@@ -100,6 +100,39 @@ dotnet test src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.cs
 
 The integration tests spin up the full ASP.NET Core stack in-process and talk to the Docker MySQL database, so the database must be running (step 1) before running the tests.
 
+#### 5. Code formatting
+
+From the repo root, `scripts/Format.ps1` (Windows) and `scripts/format.sh` (Linux/macOS) apply every agreed formatting rule in one pass:
+
+- **C#** — whitespace and style rules from `src/.editorconfig` (via `dotnet format`), plus the test-project-only NUnit2045 (`Assert.EnterMultipleScope`) analyzer rule
+- **ClientApp** — Prettier and ESLint `--fix` on the Vue client
+
+**Apply formatting:**
+
+On Windows (PowerShell):
+```powershell
+scripts/Format.ps1
+```
+
+On Linux/macOS:
+```sh
+scripts/format.sh
+```
+
+**Verify only** (no writes; exits non-zero if anything would change — useful for CI):
+
+On Windows:
+```powershell
+scripts/Format.ps1 -Check
+```
+
+On Linux/macOS:
+```sh
+scripts/format.sh --check
+```
+
+ClientApp dependencies must be installed first (`npm install` in `src/FantasyCritic.Web/ClientApp`). When iterating on a new `.editorconfig` style rule during incremental adoption, `scripts/Format.ps1 -Style` runs the C# style pass on its own.
+
 #### Extra notes
 
 - If you need social login (Google, Discord, Twitch, etc.) you will need to configure the relevant OAuth credentials via [User Secrets](https://learn.microsoft.com/en-us/aspnet/core/security/app-secrets). For day-to-day backend development these are optional.

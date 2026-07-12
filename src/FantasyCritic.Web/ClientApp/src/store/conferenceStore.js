@@ -31,7 +31,7 @@ export default {
       try {
         const response = await axios.get(queryURL);
         context.commit('setConferenceYear', response.data);
-      } catch (err) {
+      } catch {
         context.commit('setConferenceError');
       }
     }

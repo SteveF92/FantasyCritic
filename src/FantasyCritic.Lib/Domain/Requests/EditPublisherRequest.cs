@@ -54,7 +54,7 @@ public class EditPublisherRequest
 
     public string GetActionString()
     {
-        List<string> changes = new List<string>();
+        List<string> changes = [];
         if (NewPublisherName is not null)
         {
             changes.Add($"Changed publisher name to {NewPublisherName}");

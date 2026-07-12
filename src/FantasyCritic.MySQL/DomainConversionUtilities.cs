@@ -9,12 +9,13 @@ using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 
 namespace FantasyCritic.MySQL;
+
 internal static class DomainConversionUtilities
 {
     public static IReadOnlyList<EligibilityOverride> ConvertEligibilityOverrideEntities(IEnumerable<EligibilityOverrideEntity> eligibilityOverrideEntities,
         IReadOnlyDictionary<Guid, MasterGame> masterGameDictionary)
     {
-        List<EligibilityOverride> domainEligibilityOverrides = new List<EligibilityOverride>();
+        List<EligibilityOverride> domainEligibilityOverrides = [];
         foreach (var entity in eligibilityOverrideEntities)
         {
             var masterGame = masterGameDictionary[entity.MasterGameID];
@@ -28,12 +29,12 @@ internal static class DomainConversionUtilities
     public static IReadOnlyList<TagOverride> ConvertTagOverrideEntities(IEnumerable<TagOverrideEntity> tagOverrideEntities,
         IReadOnlyDictionary<Guid, MasterGame> masterGameDictionary, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        List<TagOverride> domainTagOverrides = new List<TagOverride>();
+        List<TagOverride> domainTagOverrides = [];
         var entitiesByMasterGameID = tagOverrideEntities.GroupBy(x => x.MasterGameID);
         foreach (var entitySet in entitiesByMasterGameID)
         {
             var masterGame = masterGameDictionary[entitySet.Key];
-            List<MasterGameTag> tagsForMasterGame = new List<MasterGameTag>();
+            List<MasterGameTag> tagsForMasterGame = [];
             foreach (var entity in entitySet)
             {
                 var fullTag = tagDictionary[entity.TagName];
@@ -56,7 +57,7 @@ internal static class DomainConversionUtilities
         var domainGameLookup = domainGames.ToLookup(x => x.PublisherID);
         var domainFormerGameLookup = domainFormerGames.ToLookup(x => x.PublisherGame.PublisherID);
 
-        List<Publisher> domainPublishers = new List<Publisher>();
+        List<Publisher> domainPublishers = [];
         foreach (var entity in publisherEntities)
         {
             var gamesForPublisher = domainGameLookup[entity.PublisherID];
@@ -72,7 +73,7 @@ internal static class DomainConversionUtilities
 
     public static IReadOnlyList<PublisherGame> ConvertPublisherGameEntities(IEnumerable<PublisherGameEntity> gameEntities, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
-        List<PublisherGame> domainGames = new List<PublisherGame>();
+        List<PublisherGame> domainGames = [];
         foreach (var entity in gameEntities)
         {
             MasterGameYear? masterGame = null;
@@ -89,7 +90,7 @@ internal static class DomainConversionUtilities
 
     public static IReadOnlyList<FormerPublisherGame> ConvertFormerPublisherGameEntities(IEnumerable<FormerPublisherGameEntity> gameEntities, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
-        List<FormerPublisherGame> domainGames = new List<FormerPublisherGame>();
+        List<FormerPublisherGame> domainGames = [];
         foreach (var entity in gameEntities)
         {
             MasterGameYear? masterGame = null;
@@ -106,7 +107,7 @@ internal static class DomainConversionUtilities
 
     public static List<ManagerMessage> GetManagersMessages(IEnumerable<ManagerMessageDismissalEntity> dismissalEntities, IEnumerable<ManagerMessageEntity> messageEntities)
     {
-        List<ManagerMessage> managersMessages = new List<ManagerMessage>();
+        List<ManagerMessage> managersMessages = [];
         var dismissalLookup = dismissalEntities.ToLookup(x => x.MessageID);
         foreach (var messageEntity in messageEntities)
         {
@@ -142,15 +143,15 @@ internal static class DomainConversionUtilities
         var componentLookup = componentEntities.ToLookup(x => x.TradeID);
         var voteLookup = voteEntities.ToLookup(x => x.TradeID);
 
-        List<Trade> domainTrades = new List<Trade>();
+        List<Trade> domainTrades = [];
         foreach (var tradeEntity in tradeEntities)
         {
             Publisher proposer = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.ProposerPublisherID);
             Publisher counterParty = leagueYear.GetPublisherByIDOrFakePublisher(tradeEntity.CounterPartyPublisherID);
 
             var components = componentLookup[tradeEntity.TradeID];
-            List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
-            List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = new List<MasterGameYearWithCounterPick>();
+            List<MasterGameYearWithCounterPick> proposerMasterGameYearWithCounterPicks = [];
+            List<MasterGameYearWithCounterPick> counterPartyMasterGameYearWithCounterPicks = [];
             foreach (var component in components)
             {
                 var masterGameYear = masterGameYearDictionary.GetValueOrDefault(component.MasterGameID);
@@ -175,7 +176,7 @@ internal static class DomainConversionUtilities
             }
 
             var votes = voteLookup[tradeEntity.TradeID];
-            List<TradeVote> tradeVotes = new List<TradeVote>();
+            List<TradeVote> tradeVotes = [];
             foreach (var vote in votes)
             {
                 var user = ResolveTradeVoteUser(vote.UserID, leagueYear, userDictionary);
@@ -192,7 +193,7 @@ internal static class DomainConversionUtilities
 
     public static List<SpecialAuction> GetActiveSpecialAuctions(IEnumerable<SpecialAuctionEntity> specialAuctionEntities, Dictionary<Guid, MasterGameYear> masterGameYearDictionary)
     {
-        List<SpecialAuction> specialAuctions = new List<SpecialAuction>();
+        List<SpecialAuction> specialAuctions = [];
         foreach (var entity in specialAuctionEntities)
         {
             var masterGame = masterGameYearDictionary[entity.MasterGameID];
@@ -217,7 +218,7 @@ internal static class DomainConversionUtilities
             .Where(x => x.PublisherGame.MasterGame is not null)
             .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
 
-        List<PickupBid> activePickupBids = new List<PickupBid>();
+        List<PickupBid> activePickupBids = [];
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = masterGameDictionary[bidEntity.MasterGameID];
@@ -243,7 +244,7 @@ internal static class DomainConversionUtilities
         var bidsForUser = activePickupBids.Where(x => x.Publisher.PublisherID == userPublisher.PublisherID).ToList();
 
         //Active Drops
-        List<DropRequest> domainDrops = new List<DropRequest>();
+        List<DropRequest> domainDrops = [];
         foreach (var dropEntity in dropEntities)
         {
             var masterGame = masterGameDictionary[dropEntity.MasterGameID];
@@ -252,7 +253,7 @@ internal static class DomainConversionUtilities
         }
 
         //Queued Games
-        List<QueuedGame> domainQueue = new List<QueuedGame>();
+        List<QueuedGame> domainQueue = [];
         foreach (var queuedEntity in queuedEntities)
         {
             var masterGame = masterGameDictionary[queuedEntity.MasterGameID];
@@ -301,7 +302,7 @@ internal static class DomainConversionUtilities
         {
             if (!userYearsDictionary.ContainsKey(userYear.Year))
             {
-                userYearsDictionary[userYear.Year] = new HashSet<Guid>();
+                userYearsDictionary[userYear.Year] = [];
             }
 
             userYearsDictionary[userYear.Year].Add(userYear.UserID);
@@ -312,7 +313,7 @@ internal static class DomainConversionUtilities
             .Select(x => x.Year)
             .ToList();
 
-        List<FantasyCriticUserRemovable> usersWithStatus = new List<FantasyCriticUserRemovable>();
+        List<FantasyCriticUserRemovable> usersWithStatus = [];
         foreach (var user in usersInLeague)
         {
             bool userRemovable = league.LeagueManager.UserID != user.UserID;

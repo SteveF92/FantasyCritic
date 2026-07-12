@@ -53,7 +53,7 @@ internal static class MultiDraftTestScenario
             CounterPicksToDraft = counterPicksToDraft,
             AdditionalStandardGames = additionalStandardGames,
             AdditionalCounterPicks = additionalCounterPicks,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
         });
     }
 
@@ -150,26 +150,26 @@ public class MultiDraftPositionResetTests : IntegrationTestBase
     [Test]
     public void Draft1_StandardOverallPositions_AreOneThroughFour()
     {
-        Assert.That(StandardPositions(draft2: false), Is.EqualTo(new[] { 1, 2, 3, 4 }));
+        Assert.That(StandardPositions(draft2: false), Is.EqualTo([1, 2, 3, 4]));
     }
 
     [Test]
     public void Draft2_StandardOverallPositions_ResetToOneThroughFour()
     {
-        Assert.That(StandardPositions(draft2: true), Is.EqualTo(new[] { 1, 2, 3, 4 }),
+        Assert.That(StandardPositions(draft2: true), Is.EqualTo([1, 2, 3, 4]),
             "Draft 2 standard OverallDraftPositions should reset to 1..4, not continue from draft 1.");
     }
 
     [Test]
     public void Draft1_CounterPickOverallPositions_AreOneTwo()
     {
-        Assert.That(CounterPickPositions(draft2: false), Is.EqualTo(new[] { 1, 2 }));
+        Assert.That(CounterPickPositions(draft2: false), Is.EqualTo([1, 2]));
     }
 
     [Test]
     public void Draft2_CounterPickOverallPositions_ResetToOneTwo()
     {
-        Assert.That(CounterPickPositions(draft2: true), Is.EqualTo(new[] { 1, 2 }),
+        Assert.That(CounterPickPositions(draft2: true), Is.EqualTo([1, 2]),
             "Draft 2 counter-pick OverallDraftPositions should reset to 1..2, not continue from draft 1.");
     }
 }

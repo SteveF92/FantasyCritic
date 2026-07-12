@@ -103,10 +103,13 @@ public class DraftEdgeCaseTests : IntegrationTestBase
             AllowIneligibleSlot = false,
         });
 
-        Assert.That(result.Success, Is.False,
-            "Picking a game already on another publisher's roster should return Success = false.");
-        Assert.That(result.Errors, Is.Not.Empty,
-            "Errors should be non-empty when a duplicate game pick fails.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Success, Is.False,
+                    "Picking a game already on another publisher's roster should return Success = false.");
+            Assert.That(result.Errors, Is.Not.Empty,
+                "Errors should be non-empty when a duplicate game pick fails.");
+        }
     }
 
     [Test]
@@ -124,9 +127,12 @@ public class DraftEdgeCaseTests : IntegrationTestBase
             AllowIneligibleSlot = false,
         });
 
-        Assert.That(result.Success, Is.False,
-            "Drafting an ineligible game with AllowIneligibleSlot = false should return Success = false.");
-        Assert.That(result.Errors, Is.Not.Empty,
-            "Errors should be non-empty when an ineligible game pick fails.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Success, Is.False,
+                    "Drafting an ineligible game with AllowIneligibleSlot = false should return Success = false.");
+            Assert.That(result.Errors, Is.Not.Empty,
+                "Errors should be non-empty when an ineligible game pick fails.");
+        }
     }
 }

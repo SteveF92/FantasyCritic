@@ -180,7 +180,7 @@ export default {
         this.possibleMasterGames = response.data;
         this.showingTopAvailable = true;
         this.isBusy = false;
-      } catch (error) {
+      } catch {
         this.isBusy = false;
       }
     },

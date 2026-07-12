@@ -47,7 +47,7 @@ internal class LeagueEntity
     public string MostRecentYearType { get; set; } = null!;
 
     public Guid? LeagueRoyaleGroupID { get; set; }
-    
+
     public League ToDomain(IEnumerable<MinimalLeagueYearInfo> years)
     {
         var minimalManager = new MinimalFantasyCriticUser(LeagueManager, ManagerDisplayName, ManagerEmailAddress);

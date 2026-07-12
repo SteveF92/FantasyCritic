@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.FakeRepo.TestUtilities;
+
 public class TestPublisherEntity
 {
     public Guid PublisherID { get; set; }

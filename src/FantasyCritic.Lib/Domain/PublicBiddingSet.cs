@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Domain;
+
 public class PublicBiddingSet
 {
     public PublicBiddingSet(IEnumerable<PublicBiddingMasterGame> masterGames, Instant postedTimestamp)

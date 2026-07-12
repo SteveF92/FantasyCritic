@@ -4,10 +4,11 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Web.Helpers;
-using Microsoft.AspNetCore.SignalR;
 using FantasyCritic.Web.Hubs;
+using Microsoft.AspNetCore.SignalR;
 
 namespace FantasyCritic.Web.Controllers;
+
 public abstract class BaseLeagueController : FantasyCriticController
 {
     protected readonly FantasyCriticService _fantasyCriticService;

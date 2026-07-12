@@ -3,6 +3,7 @@ using CsvHelper.Configuration;
 using FantasyCritic.Lib.SharedSerialization.Database;
 
 namespace FantasyCritic.FakeRepo.TestUtilities;
+
 public sealed class MasterGameYearEntityMap : ClassMap<MasterGameYearEntity>
 {
     public MasterGameYearEntityMap()

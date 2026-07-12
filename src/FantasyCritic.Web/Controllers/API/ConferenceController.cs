@@ -593,7 +593,7 @@ public class ConferenceController : BaseLeagueController
         var leaguesInConference = await _conferenceService.GetLeaguesInConference(validResult.Conference);
         var leagueDictionary = leaguesInConference.ToDictionary(x => x.LeagueID);
 
-        Dictionary<ConferenceLeague, List<FantasyCriticUser>> userAssignments = new Dictionary<ConferenceLeague, List<FantasyCriticUser>>();
+        Dictionary<ConferenceLeague, List<FantasyCriticUser>> userAssignments = [];
         foreach (var assignment in request.LeagueAssignments)
         {
             var league = leagueDictionary.GetValueOrDefault(assignment.Key);
@@ -616,7 +616,7 @@ public class ConferenceController : BaseLeagueController
                 }
                 else
                 {
-                    userAssignments.Add(league, new List<FantasyCriticUser> { user });
+                    userAssignments.Add(league, [user]);
                 }
             }
 

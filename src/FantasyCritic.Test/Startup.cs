@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using FantasyCritic.Lib.DependencyInjection;
 using NUnit.Framework;
-using Serilog.Events;
 using Serilog;
+using Serilog.Events;
 
 namespace FantasyCritic.Test;
+
 [SetUpFixture]
 internal class Startup
 {

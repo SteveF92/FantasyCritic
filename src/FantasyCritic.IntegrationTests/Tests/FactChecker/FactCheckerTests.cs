@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
 using FantasyCritic.IntegrationTests.Helpers;
@@ -36,10 +35,17 @@ public class FactCheckerTests : IntegrationTestBase
         var result = await fcSession.FactChecker.ParseEstimatedDateAsync("Q2 2027");
 
         Assert.That(result, Is.Not.Null);
-        Assert.That(result.MinimumReleaseDate, Is.Not.Null);
-        Assert.That(result.MaximumReleaseDate, Is.Not.Null);
-        Assert.That(result.MinimumReleaseDate!.Value.Date, Is.EqualTo(new DateTime(2027, 4, 1)));
-        Assert.That(result.MaximumReleaseDate!.Value.Date, Is.EqualTo(new DateTime(2027, 6, 30)));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.MinimumReleaseDate, Is.Not.Null);
+            Assert.That(result.MaximumReleaseDate, Is.Not.Null);
+        }
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.MinimumReleaseDate!.Value.Date, Is.EqualTo(new DateTime(2027, 4, 1)));
+            Assert.That(result.MaximumReleaseDate!.Value.Date, Is.EqualTo(new DateTime(2027, 6, 30)));
+        }
     }
 
     [Test]
@@ -60,12 +66,15 @@ public class FactCheckerTests : IntegrationTestBase
         {
             GameName = gameName,
             EstimatedReleaseDate = "2099",
-            Tags = new[] { "NewGame" },
+            Tags = ["NewGame"],
         });
 
         Assert.That(created, Is.Not.Null);
-        Assert.That(created.MasterGameID, Is.Not.EqualTo(Guid.Empty));
-        Assert.That(created.GameName, Is.EqualTo(gameName));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(created.MasterGameID, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(created.GameName, Is.EqualTo(gameName));
+        }
 
         var retrieved = await fcSession.Game.MasterGameAsync(created.MasterGameID);
         Assert.That(retrieved.GameName, Is.EqualTo(gameName));

@@ -34,9 +34,9 @@ public record CreateLeagueDraftRequest(
     public CreateLeagueDraftParameters ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
         var specialGameSlots = NewSpecialGameSlots.Select(x => x.ToDomain(tagDictionary)).ToList();
-        
+
         return new CreateLeagueDraftParameters(new LeagueYearKey(LeagueID, Year), Name, ScheduledDate,
-            GamesToDraft, CounterPicksToDraft, CounterPicksMustBeFromThisDraft, AdditionalStandardGames, AdditionalCounterPicks, 
+            GamesToDraft, CounterPicksToDraft, CounterPicksMustBeFromThisDraft, AdditionalStandardGames, AdditionalCounterPicks,
             specialGameSlots);
     }
 }

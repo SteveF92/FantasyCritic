@@ -25,7 +25,7 @@ public class ConferenceCloneTests : IntegrationTestBase
     private sealed class SimpleConferenceVm
     {
         public Guid ConferenceID { get; set; }
-        public List<SimpleConferenceLeagueVm> LeaguesInConference { get; set; } = new();
+        public List<SimpleConferenceLeagueVm> LeaguesInConference { get; set; } = [];
         public SimpleConferenceLeagueVm PrimaryLeague { get; set; } = new();
     }
 
@@ -77,11 +77,11 @@ public class ConferenceCloneTests : IntegrationTestBase
             PrimaryLeagueName = $"Primary-{Guid.NewGuid():N}"[..20],
             CustomRulesConference = false,
             LeagueYearSettings = LeagueScenarios.Standard.BuildSettings(year),
-            Drafts = new List<DraftSettingsRequest>
-            {
+            Drafts =
+            [
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 1 },
                 new() { Name = "Draft 2", ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 0 },
-            },
+            ],
         });
     }
 
@@ -166,13 +166,19 @@ public class ConferenceCloneTests : IntegrationTestBase
             "AddLeagueToConference must clone ALL draft rows from the primary league.");
 
         var draft1 = newLeagueYear.Drafts.Single(d => d.DraftNumber == 1);
-        Assert.That(draft1.GamesToDraft, Is.EqualTo(3));
-        Assert.That(draft1.CounterPicksToDraft, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft1.GamesToDraft, Is.EqualTo(3));
+            Assert.That(draft1.CounterPicksToDraft, Is.EqualTo(1));
+        }
 
         var draft2 = newLeagueYear.Drafts.Single(d => d.DraftNumber == 2);
-        Assert.That(draft2.Name, Is.EqualTo("Draft 2"));
-        Assert.That(draft2.GamesToDraft, Is.EqualTo(3));
-        Assert.That(draft2.CounterPicksToDraft, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft2.Name, Is.EqualTo("Draft 2"));
+            Assert.That(draft2.GamesToDraft, Is.EqualTo(3));
+            Assert.That(draft2.CounterPicksToDraft, Is.EqualTo(0));
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -225,8 +231,8 @@ public class ConferenceCloneTests : IntegrationTestBase
             Year = year,
             LeagueAssignments = new Dictionary<string, ICollection<Guid>>
             {
-                [primaryLeagueID.ToString()] = new List<Guid> { userAId },
-                [secondLeagueID.ToString()] = new List<Guid> { userBId },
+                [primaryLeagueID.ToString()] = [userAId],
+                [secondLeagueID.ToString()] = [userBId],
             },
         });
 
@@ -243,8 +249,8 @@ public class ConferenceCloneTests : IntegrationTestBase
             Year = year,
             LeagueAssignments = new Dictionary<string, ICollection<Guid>>
             {
-                [primaryLeagueID.ToString()] = new List<Guid> { userBId },
-                [secondLeagueID.ToString()] = new List<Guid> { userAId },
+                [primaryLeagueID.ToString()] = [userBId],
+                [secondLeagueID.ToString()] = [userAId],
             },
         });
 

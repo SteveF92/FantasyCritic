@@ -18,11 +18,14 @@ public class GetDraftStatusTests
         int expectedOverallDraftPosition)
     {
         Assert.That(actual, Is.Not.Null);
-        Assert.That(actual!.Draft.DraftID, Is.EqualTo(expectedDraft.DraftID));
-        Assert.That(actual.DraftPhase, Is.EqualTo(expectedPhase));
-        Assert.That(
-            actual.NextDraftPublisher.GetDraftPosition(expectedDraft.DraftID),
-            Is.EqualTo(expectedNextDraftPosition));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(actual!.Draft.DraftID, Is.EqualTo(expectedDraft.DraftID));
+            Assert.That(actual.DraftPhase, Is.EqualTo(expectedPhase));
+            Assert.That(
+                actual.NextDraftPublisher.GetDraftPosition(expectedDraft.DraftID),
+                Is.EqualTo(expectedNextDraftPosition));
+        }
 
         if (expectedPreviousDraftPosition is null)
         {
@@ -36,8 +39,11 @@ public class GetDraftStatusTests
                 Is.EqualTo(expectedPreviousDraftPosition));
         }
 
-        Assert.That(actual.RoundNumber, Is.EqualTo(expectedDraftPosition));
-        Assert.That(actual.OverallPickNumber, Is.EqualTo(expectedOverallDraftPosition));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(actual.RoundNumber, Is.EqualTo(expectedDraftPosition));
+            Assert.That(actual.OverallPickNumber, Is.EqualTo(expectedOverallDraftPosition));
+        }
     }
 
     [Test]
@@ -311,8 +317,11 @@ public class GetDraftStatusTests
 
         var status = DraftFunctions.GetDraftStatus(leagueYear);
         Assert.That(status, Is.Not.Null);
-        Assert.That(status!.SkippedPicksSinceLastRealPick, Has.Count.EqualTo(1));
-        Assert.That(status.SkippedPicksSinceLastRealPick[0].IsManualSkip, Is.False);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(status!.SkippedPicksSinceLastRealPick, Has.Count.EqualTo(1));
+            Assert.That(status.SkippedPicksSinceLastRealPick[0].IsManualSkip, Is.False);
+        }
     }
 
     [Test]
@@ -327,8 +336,11 @@ public class GetDraftStatusTests
 
         var status = DraftFunctions.GetDraftStatus(leagueYear);
         Assert.That(status, Is.Not.Null);
-        Assert.That(status!.SkippedPicksSinceLastRealPick, Has.Count.EqualTo(1));
-        Assert.That(status.SkippedPicksSinceLastRealPick[0].IsManualSkip, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(status!.SkippedPicksSinceLastRealPick, Has.Count.EqualTo(1));
+            Assert.That(status.SkippedPicksSinceLastRealPick[0].IsManualSkip, Is.True);
+        }
     }
 
     [Test]
@@ -361,8 +373,11 @@ public class GetDraftStatusTests
 
         var status = DraftFunctions.GetDraftStatus(leagueYear);
         Assert.That(status, Is.Not.Null);
-        Assert.That(status!.SkippedPicksSinceLastRealPick, Has.Count.EqualTo(1));
-        Assert.That(status.SkippedPicksSinceLastRealPick[0].RoundNumber, Is.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(status!.SkippedPicksSinceLastRealPick, Has.Count.EqualTo(1));
+            Assert.That(status.SkippedPicksSinceLastRealPick[0].RoundNumber, Is.EqualTo(2));
+        }
     }
 
     [Test]
@@ -376,8 +391,11 @@ public class GetDraftStatusTests
 
         var status = DraftFunctions.GetDraftStatus(leagueYear);
         Assert.That(status, Is.Not.Null);
-        Assert.That(status!.SkippedPicksSinceLastRealPick, Has.Count.EqualTo(1));
-        Assert.That(status.SkippedPicksSinceLastRealPick[0].IsManualSkip, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(status!.SkippedPicksSinceLastRealPick, Has.Count.EqualTo(1));
+            Assert.That(status.SkippedPicksSinceLastRealPick[0].IsManualSkip, Is.True);
+        }
     }
 
     [Test]
@@ -406,9 +424,12 @@ public class GetDraftStatusTests
         var trailingSkips = DraftFunctions.GetTrailingPicksToSkip(leagueYear);
 
         Assert.That(trailingSkips, Has.Count.EqualTo(2));
-        Assert.That(trailingSkips[0].RoundNumber, Is.EqualTo(1));
-        Assert.That(trailingSkips[0].Publisher.GetDraftPosition(GetDraftStatusTestBuilder.DraftIDFor(1)), Is.EqualTo(1));
-        Assert.That(trailingSkips[1].Publisher.GetDraftPosition(GetDraftStatusTestBuilder.DraftIDFor(1)), Is.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(trailingSkips[0].RoundNumber, Is.EqualTo(1));
+            Assert.That(trailingSkips[0].Publisher.GetDraftPosition(GetDraftStatusTestBuilder.DraftIDFor(1)), Is.EqualTo(1));
+            Assert.That(trailingSkips[1].Publisher.GetDraftPosition(GetDraftStatusTestBuilder.DraftIDFor(1)), Is.EqualTo(2));
+        }
     }
 
     [Test]
@@ -426,8 +447,11 @@ public class GetDraftStatusTests
         var trailingSkips = DraftFunctions.GetTrailingPicksToSkip(leagueYear);
 
         Assert.That(trailingSkips, Has.Count.EqualTo(1));
-        Assert.That(trailingSkips[0].RoundNumber, Is.EqualTo(1));
-        Assert.That(trailingSkips[0].Publisher.GetDraftPosition(GetDraftStatusTestBuilder.DraftIDFor(1)), Is.EqualTo(2));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(trailingSkips[0].RoundNumber, Is.EqualTo(1));
+            Assert.That(trailingSkips[0].Publisher.GetDraftPosition(GetDraftStatusTestBuilder.DraftIDFor(1)), Is.EqualTo(2));
+        }
     }
 
     [Test]

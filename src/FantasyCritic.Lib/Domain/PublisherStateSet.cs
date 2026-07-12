@@ -3,6 +3,7 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Domain;
+
 public class PublisherStateSet
 {
     private readonly Dictionary<Guid, Publisher> _publisherDictionary;
@@ -142,7 +143,7 @@ public class PublisherStateSet
         var newPublisherGames = publisherToEdit.PublisherGames.ToList();
         if (addGame is not null)
         {
-            newPublisherGames = newPublisherGames.Concat(new[] { addGame }).ToList();
+            newPublisherGames = newPublisherGames.Concat([addGame]).ToList();
         }
         if (removeGame is not null)
         {

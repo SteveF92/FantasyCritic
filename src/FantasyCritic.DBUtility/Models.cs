@@ -3,6 +3,7 @@ using FantasyCritic.Lib.Extensions;
 using NodaTime;
 
 namespace FantasyCritic.DBUtility;
+
 public record ActionSetGrouping(LocalDate ProcessDate, IReadOnlyList<ActionProcessingSetMetadata> ProcessingSets)
 {
     public override string ToString() => $"{ProcessDate.ToISOString()}_{ProcessingSets.Count} Sets";

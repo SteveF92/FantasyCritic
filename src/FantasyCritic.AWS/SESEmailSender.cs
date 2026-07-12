@@ -1,16 +1,16 @@
-using FantasyCritic.Lib.Interfaces;
 using System.Threading.Tasks;
-using Amazon.SimpleEmailV2;
 using Amazon;
+using Amazon.SimpleEmailV2;
 using Amazon.SimpleEmailV2.Model;
-using System.Collections.Generic;
+using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.AWS;
+
 public class SESEmailSender : IEmailSender
 {
     private readonly string _region;
     private readonly string _fromEmail;
-    
+
     public SESEmailSender(string region, string fromEmail)
     {
         _region = region;
@@ -25,7 +25,7 @@ public class SESEmailSender : IEmailSender
             FromEmailAddress = _fromEmail,
             Destination = new Destination()
             {
-                ToAddresses = new List<string>() { email }
+                ToAddresses = [email]
             },
             Content = new EmailContent()
             {
@@ -45,7 +45,7 @@ public class SESEmailSender : IEmailSender
                 }
             }
         };
-        
+
         await client.SendEmailAsync(request);
     }
 }

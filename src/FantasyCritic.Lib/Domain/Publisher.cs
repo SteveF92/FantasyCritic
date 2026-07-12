@@ -164,7 +164,7 @@ public class Publisher : IEquatable<Publisher>
     public static IReadOnlyList<PublisherSlot> GetPublisherSlots(LeagueYear leagueYear, IReadOnlyList<PublisherGame> publisherGames, IReadOnlyList<PublisherGame> otherPublisherGames)
     {
         var leagueOptions = leagueYear.Options;
-        List<PublisherSlot> publisherSlots = new List<PublisherSlot>();
+        List<PublisherSlot> publisherSlots = [];
 
         int overallSlotNumber = 0;
         var standardGamesBySlot = publisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
@@ -246,7 +246,7 @@ public class Publisher : IEquatable<Publisher>
         return new Publisher(PublisherID, LeagueYearKey, User, PublisherName, PublisherIcon, PublisherSlogan, DraftInfos, newPublisherGames,
             FormerPublisherGames, Budget, UnrestrictedReleaseStatusGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftSettings);
     }
-    
+
     public HashSet<MasterGame> MyMasterGames => PublisherGames
         .Where(x => x.MasterGame is not null)
         .Select(x => x.MasterGame!.MasterGame)
@@ -255,16 +255,36 @@ public class Publisher : IEquatable<Publisher>
 
     public bool Equals(Publisher? other)
     {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
         return PublisherID.Equals(other.PublisherID);
     }
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj.GetType() != GetType())
+        {
+            return false;
+        }
+
         return Equals((Publisher)obj);
     }
 
@@ -374,7 +394,7 @@ public class Publisher : IEquatable<Publisher>
         {
             FantasyPoints = GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options),
             ProjectedPoints = GetProjectedFantasyPoints(leagueYear, systemWideValues),
-            RemainingBudget = (ushort) Budget,
+            RemainingBudget = (ushort)Budget,
             NumberOfStandardGames = numberOfStandardGames,
             NumberOfStandardGamesReleased = numberOfStandardGamesReleased,
             NumberOfStandardGamesExpectedToRelease = numberOfStandardGamesExpectedToRelease,

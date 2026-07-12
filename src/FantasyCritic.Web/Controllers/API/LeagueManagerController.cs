@@ -600,7 +600,7 @@ public class LeagueManagerController : BaseLeagueController
         var validResult = leagueYearRecord.ValidResult!;
         var leagueYear = validResult.LeagueYear;
 
-        Dictionary<FantasyCriticUser, bool> userActiveStatus = new Dictionary<FantasyCriticUser, bool>();
+        Dictionary<FantasyCriticUser, bool> userActiveStatus = [];
         foreach (var userKeyValue in request.ActiveStatus)
         {
             var domainUser = await _userManager.FindByIdAsync(userKeyValue.Key.ToString());

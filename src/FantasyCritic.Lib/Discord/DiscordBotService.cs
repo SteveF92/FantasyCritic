@@ -5,6 +5,7 @@ using FantasyCritic.Lib.DependencyInjection;
 using Serilog.Events;
 
 namespace FantasyCritic.Lib.Discord;
+
 public class DiscordBotService
 {
     private readonly InteractionService _interactionService;

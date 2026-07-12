@@ -41,7 +41,7 @@ public class ProductionGameStatsCacheTests
         var result = ProductionGameStatsCache.SelectHighestHypeAvailable(
             candidates,
             c => c.MasterGameID,
-            Array.Empty<ProductionMasterGameYearStat>());
+            []);
 
         Assert.That(result, Is.Not.Null);
         Assert.That(result!.MasterGameID, Is.EqualTo(id1));
@@ -87,7 +87,7 @@ public class ProductionGameStatsCacheTests
             c => c.Cost,
             maxCount: 10,
             budgetCap: 100m,
-            Array.Empty<ProductionMasterGameYearStat>());
+            []);
 
         Assert.That(result, Is.Empty);
     }
@@ -95,7 +95,7 @@ public class ProductionGameStatsCacheTests
     [Test]
     public void SelectAffordableSet_WhenBudgetCapExcludesCostlyGame_ExcludesThatGame()
     {
-        var cheapID    = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        var cheapID = Guid.Parse("11111111-1111-1111-1111-111111111111");
         var expensiveID = Guid.Parse("22222222-2222-2222-2222-222222222222");
         var candidates = new[]
         {
@@ -109,7 +109,7 @@ public class ProductionGameStatsCacheTests
             c => c.Cost,
             maxCount: 10,
             budgetCap: 20m,
-            Array.Empty<ProductionMasterGameYearStat>());
+            []);
 
         Assert.That(result.Count, Is.EqualTo(1));
         Assert.That(result[0].Id, Is.EqualTo(cheapID));
@@ -128,7 +128,7 @@ public class ProductionGameStatsCacheTests
             c => c.Cost,
             maxCount: 3,
             budgetCap: 100m,
-            Array.Empty<ProductionMasterGameYearStat>());
+            []);
 
         Assert.That(result.Count, Is.EqualTo(3));
     }
@@ -136,7 +136,7 @@ public class ProductionGameStatsCacheTests
     [Test]
     public void SelectAffordableSet_WhenStatsPresent_PicksHighestHypeFirst()
     {
-        var lowHypeID  = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var lowHypeID = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         var highHypeID = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
         var candidates = new[]
         {

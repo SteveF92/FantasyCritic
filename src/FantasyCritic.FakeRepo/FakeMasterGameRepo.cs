@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using FantasyCritic.FakeRepo.Factories;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
@@ -6,10 +10,6 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using NodaTime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FantasyCritic.FakeRepo;
 
@@ -95,22 +95,22 @@ public class FakeMasterGameRepo : IMasterGameRepo
 
     public Task<IReadOnlyList<MasterGameDesireResult>> GetMostDesiredReviews(LocalDate currentDate)
     {
-        return Task.FromResult<IReadOnlyList<MasterGameDesireResult>>(Array.Empty<MasterGameDesireResult>());
+        return Task.FromResult<IReadOnlyList<MasterGameDesireResult>>([]);
     }
 
     public Task<IReadOnlyList<LongestTenuredGame>> GetLongestTenuredUnreleasedGames(LocalDate currentDate)
     {
-        return Task.FromResult<IReadOnlyList<LongestTenuredGame>>(Array.Empty<LongestTenuredGame>());
+        return Task.FromResult<IReadOnlyList<LongestTenuredGame>>([]);
     }
 
     public Task<IReadOnlyList<LongestTenuredGame>> GetLongestTenuredReleasedGames(LocalDate currentDate)
     {
-        return Task.FromResult<IReadOnlyList<LongestTenuredGame>>(Array.Empty<LongestTenuredGame>());
+        return Task.FromResult<IReadOnlyList<LongestTenuredGame>>([]);
     }
 
     public Task<IReadOnlyList<LongestTenuredGame>> GetMostDreamsDashedGames(LocalDate currentDate, int? year)
     {
-        return Task.FromResult<IReadOnlyList<LongestTenuredGame>>(Array.Empty<LongestTenuredGame>());
+        return Task.FromResult<IReadOnlyList<LongestTenuredGame>>([]);
     }
 
     public Task CreateMasterGameRequest(MasterGameRequest domainRequest)

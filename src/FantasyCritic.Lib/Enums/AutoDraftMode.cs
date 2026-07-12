@@ -12,7 +12,7 @@ public class AutoDraftMode : TypeSafeEnum<AutoDraftMode>
     private AutoDraftMode(string value)
         : base(value)
     {
-        
+
     }
 
     public override string ToString() => Value;

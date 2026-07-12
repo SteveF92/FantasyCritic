@@ -9,7 +9,6 @@ using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
-using NodaTime;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -366,7 +365,9 @@ public class AdminController : FantasyCriticController
     {
         var user = await _userManager.FindByIdAsync(userID.ToString());
         if (user is null)
+        {
             return NotFound();
+        }
 
         var roles = await _userManager.GetRolesAsync(user);
         return new FantasyCriticUserViewModel(user, roles);
@@ -380,7 +381,9 @@ public class AdminController : FantasyCriticController
     {
         var user = await _userManager.FindByIdAsync(request.UserID.ToString());
         if (user is null)
+        {
             return NotFound();
+        }
 
         try
         {
@@ -401,7 +404,9 @@ public class AdminController : FantasyCriticController
     {
         var user = await _userManager.FindByIdAsync(request.UserID.ToString());
         if (user is null)
+        {
             return NotFound();
+        }
 
         await _userManager.RemoveFromRoleAsync(user, request.RoleName);
         return Ok();
@@ -418,8 +423,7 @@ public class AdminController : FantasyCriticController
             return NotFound();
         }
 
-        var adjustableClock = _clock as AdjustableClock;
-        if (adjustableClock is null)
+        if (_clock is not AdjustableClock adjustableClock)
         {
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
@@ -441,8 +445,7 @@ public class AdminController : FantasyCriticController
             return NotFound();
         }
 
-        var adjustableClock = _clock as AdjustableClock;
-        if (adjustableClock is null)
+        if (_clock is not AdjustableClock adjustableClock)
         {
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
@@ -468,8 +471,7 @@ public class AdminController : FantasyCriticController
             return NotFound();
         }
 
-        var adjustableClock = _clock as AdjustableClock;
-        if (adjustableClock is null)
+        if (_clock is not AdjustableClock adjustableClock)
         {
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");

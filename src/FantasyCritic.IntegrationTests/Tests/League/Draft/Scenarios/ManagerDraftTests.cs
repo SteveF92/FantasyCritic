@@ -28,7 +28,9 @@ public class ManagerDraftTests : LeagueDraftTestBase
             bool anyDraftActive = leagueYear.Drafts.Any(d =>
                 d.PlayStatus == "Drafting" || d.PlayStatus == "DraftPaused");
             if (!anyDraftActive)
+            {
                 return;
+            }
 
             var nextPublisher = leagueYear.Publishers.SingleOrDefault(p => p.NextToDraft)
                 ?? throw new InvalidOperationException(
@@ -55,9 +57,11 @@ public class ManagerDraftTests : LeagueDraftTestBase
                     });
 
                 if (!result.Success)
+                {
                     throw new InvalidOperationException(
                         $"ManagerDraftGame (counter-pick) failed for publisher {nextPublisher.PublisherID}: "
                         + string.Join("; ", result.Errors ?? []));
+                }
             }
             else
             {
@@ -80,9 +84,11 @@ public class ManagerDraftTests : LeagueDraftTestBase
                     });
 
                 if (!result.Success)
+                {
                     throw new InvalidOperationException(
                         $"ManagerDraftGame (standard) failed for publisher {nextPublisher.PublisherID}: "
                         + string.Join("; ", result.Errors ?? []));
+                }
             }
         }
     }

@@ -12,7 +12,7 @@ public static class GameUtilities
             .Where(x => x.CounterPick)
             .ToLookup(x => x.MasterGame!.MasterGame);
 
-        Dictionary<PublisherGame, Publisher> dictionary = new Dictionary<PublisherGame, Publisher>();
+        Dictionary<PublisherGame, Publisher> dictionary = [];
         var nonCounterPicks = gamesWithMasterGame.Where(x => !x.CounterPick).ToList();
 
         foreach (var nonCounterPick in nonCounterPicks)

@@ -26,7 +26,9 @@ public class DraftAutoSkipViewModelTests : IntegrationTestBase
 
         var middlePublisher = _league.Publishers[1];
         for (var slot = 0; slot < LeagueScenarios.ThreePlayerAutoSkip.StandardGames; slot++)
+        {
             await MultiDraftTestScenario.ManagerFillOneStandardSlotAsync(_league, middlePublisher.PublisherID);
+        }
 
         await _league.Manager.LeagueManager.StartDraftAsync(new StartDraftRequest
         {
@@ -49,8 +51,11 @@ public class DraftAutoSkipViewModelTests : IntegrationTestBase
             .Single(p => p.PublisherID == _league.Publishers[2].PublisherID);
         var expectedDisplayName = $"{thirdPublisher.PublisherName} ({thirdPublisher.PlayerName})";
 
-        Assert.That(activeDraft?.NextPickPublisherName, Is.EqualTo(expectedDisplayName));
-        Assert.That(thirdPublisher.NextToDraft, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(activeDraft?.NextPickPublisherName, Is.EqualTo(expectedDisplayName));
+            Assert.That(thirdPublisher.NextToDraft, Is.True);
+        }
     }
 
     [Test]
@@ -63,9 +68,12 @@ public class DraftAutoSkipViewModelTests : IntegrationTestBase
 
         Assert.That(activeDraft?.SkippedPicksSinceLastRealPick, Has.Count.EqualTo(1));
         var skippedPick = activeDraft!.SkippedPicksSinceLastRealPick.Single();
-        Assert.That(skippedPick.PublisherName, Is.EqualTo(expectedDisplayName));
-        Assert.That(skippedPick.IsManualSkip, Is.False);
-        Assert.That(skippedPick.CounterPick, Is.False);
-        Assert.That(skippedPick.RoundNumber, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(skippedPick.PublisherName, Is.EqualTo(expectedDisplayName));
+            Assert.That(skippedPick.IsManualSkip, Is.False);
+            Assert.That(skippedPick.CounterPick, Is.False);
+            Assert.That(skippedPick.RoundNumber, Is.EqualTo(1));
+        }
     }
 }

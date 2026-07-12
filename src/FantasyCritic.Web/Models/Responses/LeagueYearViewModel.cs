@@ -2,7 +2,6 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Web.Models.Requests.League;
 using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Responses;
@@ -36,23 +35,23 @@ public class LeagueYearViewModel
 
         var publisherRankings = leagueYear.Publishers
             .Select(x => new
-                {
-                    x.PublisherID,
-                    Ranking = leagueYear.Publishers.Count(y => y.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options) > x.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options)) + 1
-                }
+            {
+                x.PublisherID,
+                Ranking = leagueYear.Publishers.Count(y => y.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options) > x.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options)) + 1
+            }
             )
             .ToDictionary(x => x.PublisherID, x => x.Ranking);
 
         var publisherProjectedRankings = leagueYear.Publishers
             .Select(x => new
-                {
-                    x.PublisherID,
-                    Ranking = leagueYear.Publishers.Count(y => y.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues) > x.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues)) + 1
-                }
+            {
+                x.PublisherID,
+                Ranking = leagueYear.Publishers.Count(y => y.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues) > x.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues)) + 1
+            }
             )
             .ToDictionary(x => x.PublisherID, x => x.Ranking);
 
-        List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
+        List<PlayerWithPublisherViewModel> playerVMs = [];
         bool allPublishersMade = true;
         foreach (var user in activeUsers)
         {
@@ -102,7 +101,7 @@ public class LeagueYearViewModel
                 }
             }
         }
-        
+
         Players = allPublishersMade ? playerVMs.OrderBy(x => x.Publisher!.DraftPosition).ToList() : playerVMs;
         EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();
         TagOverrides = leagueYear.TagOverrides.Select(x => new TagOverrideViewModel(x, currentDate)).ToList();

@@ -46,9 +46,7 @@
             <li v-if="hasPendingOrActiveDraft">
               <strong>Draft Actions</strong>
               <ul class="actions-list">
-                <li v-show="activeDraft?.draftIsActive && !activeDraft?.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftGameForm'" class="fake-link action">
-                  Draft Game
-                </li>
+                <li v-show="activeDraft?.draftIsActive && !activeDraft?.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftGameForm'" class="fake-link action">Draft Game</li>
                 <li v-show="activeDraft?.draftIsActive && activeDraft?.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftCounterPickForm'" class="fake-link action">
                   Draft Counter Pick
                 </li>
@@ -78,9 +76,7 @@
           <h4>Draft Management</h4>
           <ul class="actions-list">
             <li v-show="!activeDraft?.draftingCounterPicks && activeDraft?.draftIsActive" v-b-modal="'managerDraftGameForm'" class="fake-link action">Draft Game for Next Player</li>
-            <li v-show="activeDraft?.draftingCounterPicks && activeDraft?.draftIsActive" v-b-modal="'managerDraftCounterPickForm'" class="fake-link action">
-              Draft Game for Next Player
-            </li>
+            <li v-show="activeDraft?.draftingCounterPicks && activeDraft?.draftIsActive" v-b-modal="'managerDraftCounterPickForm'" class="fake-link action">Draft Game for Next Player</li>
             <li v-b-modal="'setPauseModal'" class="fake-link action">
               <span v-show="activeDraft?.draftIsActive">Pause Draft</span>
               <span v-show="activeDraft?.draftIsPaused">Resume Draft</span>

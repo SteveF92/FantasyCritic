@@ -66,7 +66,7 @@ public class RoyaleGroupMemberRankedViewModel
         GamesPurchased = row.Publisher?.PublisherGames.Count;
         GamesReleased = row.Publisher?.PublisherGames.Count(x => x.MasterGame.IsReleasedAndReleasedInQuarter(currentDate, row.Publisher.YearQuarter.YearQuarter));
 
-        PublisherGames = (row.Publisher?.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, row.Publisher.YearQuarter, currentDate, allMasterGameTags, false, clock)).ToList()) ?? new List<RoyalePublisherGameViewModel>();
+        PublisherGames = (row.Publisher?.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, row.Publisher.YearQuarter, currentDate, allMasterGameTags, false, clock)).ToList()) ?? [];
         Statistics = row.Statistics.Select(x => new RoyalePublisherStatisticsViewModel(x)).ToList();
     }
 

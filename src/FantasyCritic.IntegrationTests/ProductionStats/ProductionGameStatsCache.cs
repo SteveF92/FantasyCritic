@@ -58,7 +58,7 @@ internal static class ProductionGameStatsCache
             {
                 Console.Error.WriteLine(
                     $"ProductionGameStatsCache: null response deserializing stats for year {year}.");
-                return Array.Empty<ProductionMasterGameYearStat>();
+                return [];
             }
 
             return rows
@@ -69,7 +69,7 @@ internal static class ProductionGameStatsCache
         {
             Console.Error.WriteLine(
                 $"ProductionGameStatsCache: failed to fetch stats for year {year}: {ex.Message}");
-            return Array.Empty<ProductionMasterGameYearStat>();
+            return [];
         }
     }
 
@@ -104,7 +104,11 @@ internal static class ProductionGameStatsCache
 
         foreach (var candidate in sorted)
         {
-            if (result.Count >= maxCount) break;
+            if (result.Count >= maxCount)
+            {
+                break;
+            }
+
             var cost = costSelector(candidate);
             if (cost <= remainingBudget)
             {

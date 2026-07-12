@@ -218,7 +218,11 @@ img.critic-royale-nav {
 .tag-badge {
   font-size: 13px;
   color: #fff;
-  text-shadow: 0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black;
+  text-shadow:
+    0 0 2px black,
+    0 0 2px black,
+    0 0 2px black,
+    0 0 2px black;
   min-width: 50px;
 }
 

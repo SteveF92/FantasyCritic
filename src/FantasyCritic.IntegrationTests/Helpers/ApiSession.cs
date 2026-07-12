@@ -1,12 +1,12 @@
-using FantasyCritic.ApiClient;
-using Microsoft.AspNetCore.Mvc.Testing;
-using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using FantasyCritic.ApiClient;
+using Microsoft.AspNetCore.Mvc.Testing;
+using Newtonsoft.Json;
 
 namespace FantasyCritic.IntegrationTests.Helpers;
 

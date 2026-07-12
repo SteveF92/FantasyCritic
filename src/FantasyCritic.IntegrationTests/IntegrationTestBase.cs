@@ -57,8 +57,10 @@ public abstract class IntegrationTestBase
     {
         var success = await session.LoginAsync(LocalAdminEmail, LocalAdminPassword);
         if (!success)
+        {
             throw new InvalidOperationException(
                 "Local admin login failed. Is the Docker DB running and seeded? " +
                 "Run: docker compose -f infrastructure/docker-compose-mysql.yaml up -d");
+        }
     }
 }

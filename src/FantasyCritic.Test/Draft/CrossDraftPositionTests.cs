@@ -89,8 +89,11 @@ public class CrossDraftPositionTests
         var draft2 = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
         var startingPoint = draft2.GetStartingOverallDraftPosition(leagueYear);
 
-        Assert.That(startingPoint.IsSuccess, Is.True);
-        Assert.That(startingPoint.Value.StandardGameStartingPoint, Is.EqualTo(14));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(startingPoint.IsSuccess, Is.True);
+            Assert.That(startingPoint.Value.StandardGameStartingPoint, Is.EqualTo(14));
+        }
         var cache = CrossDraftPositionCache.Build([leagueYear]);
         Assert.That(cache.GetPosition(draft2FirstPick), Is.EqualTo(15));
     }
@@ -139,8 +142,11 @@ public class CrossDraftPositionTests
         var draft2 = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
         var startingPoint = draft2.GetStartingOverallDraftPosition(leagueYear);
 
-        Assert.That(startingPoint.IsSuccess, Is.True);
-        Assert.That(startingPoint.Value.StandardGameStartingPoint, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(startingPoint.IsSuccess, Is.True);
+            Assert.That(startingPoint.Value.StandardGameStartingPoint, Is.EqualTo(1));
+        }
     }
 
     [Test]
@@ -165,8 +171,11 @@ public class CrossDraftPositionTests
         var draft2 = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
         var startingPoint = draft2.GetStartingOverallDraftPosition(leagueYear);
 
-        Assert.That(startingPoint.IsSuccess, Is.True);
-        Assert.That(startingPoint.Value.StandardGameStartingPoint, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(startingPoint.IsSuccess, Is.True);
+            Assert.That(startingPoint.Value.StandardGameStartingPoint, Is.EqualTo(1));
+        }
     }
 
     [Test]
@@ -216,8 +225,11 @@ public class CrossDraftPositionTests
         var draft1 = leagueYear.Drafts.Single();
         var startingPoint = draft1.GetStartingOverallDraftPosition(leagueYear);
 
-        Assert.That(startingPoint.IsSuccess, Is.True);
-        Assert.That(startingPoint.Value, Is.EqualTo((0, 0)));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(startingPoint.IsSuccess, Is.True);
+            Assert.That(startingPoint.Value, Is.EqualTo((0, 0)));
+        }
     }
 
     [Test]

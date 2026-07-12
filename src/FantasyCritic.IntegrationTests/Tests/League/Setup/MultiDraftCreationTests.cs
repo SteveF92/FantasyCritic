@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
@@ -28,11 +27,11 @@ public class MultiDraftCreationTests : IntegrationTestBase
             TestLeague = true,
             CustomRulesLeague = false,
             LeagueYearSettings = scenario.BuildSettings(year),
-            Drafts = new List<DraftSettingsRequest>
-            {
+            Drafts =
+            [
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 1 },
                 new() { Name = "Draft 2", ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 0 },
-            }
+            ]
         });
 
         var leagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);
@@ -41,14 +40,20 @@ public class MultiDraftCreationTests : IntegrationTestBase
         Assert.That(leagueYear.Drafts, Has.Count.EqualTo(2));
 
         var first = leagueYear.Drafts.Single(d => d.DraftNumber == 1);
-        Assert.That(first.Name, Is.EqualTo("Initial Draft"));
-        Assert.That(first.GamesToDraft, Is.EqualTo(3));
-        Assert.That(first.CounterPicksToDraft, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(first.Name, Is.EqualTo("Initial Draft"));
+            Assert.That(first.GamesToDraft, Is.EqualTo(3));
+            Assert.That(first.CounterPicksToDraft, Is.EqualTo(1));
+        }
 
         var second = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
-        Assert.That(second.Name, Is.EqualTo("Draft 2"));
-        Assert.That(second.GamesToDraft, Is.EqualTo(3));
-        Assert.That(second.CounterPicksToDraft, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(second.Name, Is.EqualTo("Draft 2"));
+            Assert.That(second.GamesToDraft, Is.EqualTo(3));
+            Assert.That(second.CounterPicksToDraft, Is.EqualTo(0));
+        }
     }
 
     [Test]
@@ -69,18 +74,18 @@ public class MultiDraftCreationTests : IntegrationTestBase
             TestLeague = true,
             CustomRulesLeague = false,
             LeagueYearSettings = scenario.BuildSettings(year),
-            Drafts = new List<DraftSettingsRequest>
-            {
+            Drafts =
+            [
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 2, CounterPicksToDraft = 1 },
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 2, CounterPicksToDraft = 0 },
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 2, CounterPicksToDraft = 0 },
-            }
+            ]
         });
 
         var leagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);
 
         Assert.That(leagueYear.Drafts, Has.Count.EqualTo(3));
-        Assert.That(leagueYear.Drafts.Select(d => d.DraftNumber).Order(), Is.EqualTo(new[] { 1, 2, 3 }));
+        Assert.That(leagueYear.Drafts.Select(d => d.DraftNumber).Order(), Is.EqualTo([1, 2, 3]));
     }
 
     [Test]
@@ -106,8 +111,11 @@ public class MultiDraftCreationTests : IntegrationTestBase
 
         var leagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);
         var firstDraft = leagueYear.Drafts.Single(d => d.DraftNumber == 1);
-        Assert.That(firstDraft.GamesToDraft, Is.EqualTo(4));
-        Assert.That(firstDraft.CounterPicksToDraft, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(firstDraft.GamesToDraft, Is.EqualTo(4));
+            Assert.That(firstDraft.CounterPicksToDraft, Is.EqualTo(1));
+        }
     }
 
     [Test]
@@ -127,11 +135,11 @@ public class MultiDraftCreationTests : IntegrationTestBase
             TestLeague = true,
             CustomRulesLeague = false,
             LeagueYearSettings = LeagueScenarios.Standard.BuildSettings(year),
-            Drafts = new List<DraftSettingsRequest>
-            {
+            Drafts =
+            [
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 1 },
                 new() { Name = null, ScheduledDate = null, GamesToDraft = 3, CounterPicksToDraft = 0 },
-            }
+            ]
         });
 
         var originalLeagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);

@@ -38,7 +38,7 @@ public class LeagueMemberService
         var currentlyActivePlayers = await GetActivePlayersForLeagueYear(leagueYear.League, leagueYear.Year);
         var playersInLeague = await GetUsersInLeague(leagueYear.League);
 
-        Dictionary<FantasyCriticUser, bool> usersToChange = new Dictionary<FantasyCriticUser, bool>();
+        Dictionary<FantasyCriticUser, bool> usersToChange = [];
         foreach (var userToChange in userActiveStatus)
         {
             bool userIsCurrentlyActive = currentlyActivePlayers.Any(x => x.Id == userToChange.Key.Id);

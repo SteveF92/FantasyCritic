@@ -1,4 +1,3 @@
-using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
@@ -11,6 +10,7 @@ using FantasyCritic.Lib.Utilities;
 using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
+
 public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
@@ -99,8 +99,7 @@ public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
             header,
             "",
             Context.User,
-            new List<EmbedFieldBuilder>
-            {
+            [
               new()
               {
                   Name = "Bids",
@@ -113,7 +112,7 @@ public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
               Value = dropResultMessages.Any() ? string.Join("\n", dropResultMessages) : "No drops this week.",
               IsInline = false,
             }
-            },
+            ],
             url: leagueUrl));
     }
 }

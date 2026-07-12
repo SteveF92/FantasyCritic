@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Services;
+
 public class ConferenceService
 {
     private readonly IConferenceRepo _conferenceRepo;
@@ -323,7 +324,7 @@ public class ConferenceService
 
     private static IReadOnlyList<ConferenceYearStanding> GetConferenceYearStandings(IReadOnlyList<LeagueYear> leagueYears, SystemWideValues systemWideValues)
     {
-        List<ConferenceYearStanding> standings = new List<ConferenceYearStanding>();
+        List<ConferenceYearStanding> standings = [];
         foreach (var leagueYear in leagueYears)
         {
             var supportedYear = leagueYear.SupportedYear;

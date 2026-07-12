@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.Test.Discord;
+
 internal static class DatabaseDeserializer
 {
     public static BaseGameNewsRelevanceHandler GetCombinedChannelGameSetting(OriginalDatabaseStructure originalStructure, LeagueYear? leagueYear = null)
@@ -12,7 +13,8 @@ internal static class DatabaseDeserializer
         var translatedSetting = GameNewsSetting.GetOffSetting();
         if (newStructure.GameChannel is not null)
         {
-            translatedSetting = new GameNewsSetting(){
+            translatedSetting = new GameNewsSetting()
+            {
                 ShowJustReleasedAnnouncements = newStructure.GameChannel.ShowJustReleasedAnnouncements,
                 ShowNewGameAnnouncements = newStructure.GameChannel.ShowNewGameAnnouncements,
                 ShowAlreadyReleasedNews = newStructure.GameChannel.ShowAlreadyReleasedNews,
@@ -43,7 +45,7 @@ internal static class DatabaseDeserializer
 
     private static NewDatabaseStructure TranslateDatabaseStructure(OriginalDatabaseStructure originalStructure)
     {
-        NewGameChannel? translatedGameChannel = null;
+        NewGameChannel? translatedGameChannel;
         if (originalStructure.GameChannel is not null)
         {
             bool showAlreadyReleasedNews = originalStructure.GameChannel.GameNewsSetting == "All";
@@ -96,7 +98,8 @@ internal static class DatabaseDeserializer
                 ShowIneligibleGameNews = showIneligibleGameNews,
                 NotableMissSetting = notableMissSetting
             };
-        };
+        }
+        ;
 
         return new NewDatabaseStructure(translatedGameChannel, translatedLeagueChannel, originalStructure.SkippedTags);
     }
@@ -109,9 +112,9 @@ public record OriginalLeagueChannel(bool SendLeagueMasterGameUpdates, bool SendN
 public record NewDatabaseStructure(NewGameChannel? GameChannel, NewLeagueChannel? LeagueChannel, List<MasterGameTag> SkippedTags);
 public record NewGameChannel
 {
-    public required bool ShowAlreadyReleasedNews {get; init;}
-    public required bool ShowWillReleaseInYearNews {get; init;}
-    public required bool ShowMightReleaseInYearNews {get; init;}
+    public required bool ShowAlreadyReleasedNews { get; init; }
+    public required bool ShowWillReleaseInYearNews { get; init; }
+    public required bool ShowMightReleaseInYearNews { get; init; }
     public required bool ShowWillNotReleaseInYearNews { get; init; }
     public required bool ShowJustReleasedAnnouncements { get; init; }
     public required bool ShowNewGameAnnouncements { get; init; }

@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Domain;
+
 public class SpecialAuction
 {
     public SpecialAuction(Guid specialAuctionID, LeagueYearKey leagueYearKey, MasterGameYear masterGameYear, Instant creationTime,

@@ -2,6 +2,7 @@ using FantasyCritic.Lib.Enums;
 using NUnit.Framework;
 
 namespace FantasyCritic.Test.Discord;
+
 [TestFixture]
 internal class GameChannelExistingGameIsRelevantTests : GameNewsChannelTests
 {

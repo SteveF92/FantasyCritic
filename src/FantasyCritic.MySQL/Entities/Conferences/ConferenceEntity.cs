@@ -35,4 +35,4 @@ internal class ConferenceEntity
         return new Conference(ConferenceID, ConferenceName, conferenceManager, years, CustomRulesConference, PrimaryLeagueID, leaguesInConference);
     }
 }
-    
+

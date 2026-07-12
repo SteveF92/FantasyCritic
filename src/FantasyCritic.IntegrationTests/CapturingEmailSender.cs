@@ -29,7 +29,9 @@ public sealed class CapturingEmailSender : IEmailSender
     public string? GetConfirmEmailPath(string email)
     {
         if (!_bodies.TryGetValue(email.ToLowerInvariant(), out var html))
+        {
             return null;
+        }
 
         // The confirmation link looks like:
         //   href="http://localhost/Account/ConfirmEmail?userId=...&code=..."
@@ -37,7 +39,9 @@ public sealed class CapturingEmailSender : IEmailSender
         var match = Regex.Match(html, @"href=""([^""]*Account/ConfirmEmail[^""]*)""",
             RegexOptions.IgnoreCase);
         if (!match.Success)
+        {
             return null;
+        }
 
         // The href attribute value may have HTML-encoded ampersands (&amp; → &)
         var fullUrl = System.Net.WebUtility.HtmlDecode(match.Groups[1].Value);

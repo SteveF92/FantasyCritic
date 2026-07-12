@@ -2,6 +2,7 @@ using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain.Conferences;
+
 public class ConferenceCreationParameters
 {
     public ConferenceCreationParameters(MinimalFantasyCriticUser manager, string conferenceName, string primaryLeagueName, bool customRulesConference, LeagueYearParameters leagueYearParameters, IEnumerable<DraftParameters> drafts)

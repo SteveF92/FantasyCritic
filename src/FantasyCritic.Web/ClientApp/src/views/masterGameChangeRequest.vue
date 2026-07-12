@@ -48,7 +48,10 @@
           </div>
 
           <b-alert v-if="masterGame.notes" show variant="info" class="mt-3">
-            <strong><font-awesome-icon icon="info-circle" /> Special Notes:</strong>
+            <strong>
+              <font-awesome-icon icon="info-circle" />
+              Special Notes:
+            </strong>
             {{ masterGame.notes }}
           </b-alert>
 
@@ -75,8 +78,8 @@
               </div>
 
               <b-alert variant="warning" :show="invalidOpenCriticRequest">
-                If you are requesting an OpenCritic link, please include the link here. It is possible that OpenCritic may not have created a page yet if this game was recently released or is a
-                lesser known title.
+                If you are requesting an OpenCritic link, please include the link here. It is possible that OpenCritic may not have created a page yet if this game was recently released or is a lesser
+                known title.
               </b-alert>
 
               <div class="form-group">

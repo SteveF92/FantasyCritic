@@ -19,7 +19,7 @@ public class MySQLBetaCleaner
         var betaUserList = betaUsers.ToList();
         var betaUserIds = betaUserList.Select(u => u.Id).ToHashSet();
         var nonBetaUsers = allUsers.Except(betaUserList).ToList();
-        List<string> updateStatements = new List<string>();
+        List<string> updateStatements = [];
         foreach (var nonBetaUser in nonBetaUsers)
         {
             var fakedEmailAddress = Guid.NewGuid() + "@example.com";

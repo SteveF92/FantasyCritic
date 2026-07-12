@@ -1,13 +1,10 @@
 <template>
   <b-modal id="skipCurrentDraftPickModal" ref="skipCurrentDraftPickModalRef" title="Warning!" :ok-disabled="!skipConfirmed" @ok="skipCurrentDraftPick" @hidden="clearData">
-    <p>
-      Are you sure you want to skip the current pick?
-    </p>
+    <p>Are you sure you want to skip the current pick?</p>
     <p v-if="activeDraft && activeDraft.nextPickPublisherName">
       This will skip
-      <strong>{{ activeDraft.nextPickPublisherName }}</strong>'s turn
-      (round {{ activeDraft.nextPickRoundNumber }},
-      {{ activeDraft.nextPickIsCounterPick ? 'counter-pick' : 'standard game' }}).
+      <strong>{{ activeDraft.nextPickPublisherName }}</strong>
+      's turn (round {{ activeDraft.nextPickRoundNumber }}, {{ activeDraft.nextPickIsCounterPick ? 'counter-pick' : 'standard game' }}).
     </p>
     <p>
       If you are sure, type

@@ -61,7 +61,7 @@ public class GameNewsOnlyRelevanceHandler : BaseGameNewsRelevanceHandler
         if (_gameNewsSetting.IsAllOn()
             && !_skippedTags.Any())
         {
-           return true;
+            return true;
         }
 
         //If user set any tags to be skipped, check if the game has any of those tags

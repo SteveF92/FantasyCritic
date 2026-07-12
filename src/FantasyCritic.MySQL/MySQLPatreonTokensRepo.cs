@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Patreon;
 using FantasyCritic.MySQL.Entities;
 
 namespace FantasyCritic.MySQL;
+
 public class MySQLPatreonTokensRepo : IPatreonTokensRepo
 {
     private readonly string _connectionString;

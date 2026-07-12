@@ -46,8 +46,11 @@ public class LocalDatabaseConnectionGuardTests
             BetaConnectionString,
             DumpConnectionString);
 
-        Assert.That(result.IsFailure, Is.True);
-        Assert.That(result.Error, Does.Contain("localhost").Or.Contain("remote"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.IsFailure, Is.True);
+            Assert.That(result.Error, Does.Contain("localhost").Or.Contain("remote"));
+        }
     }
 
     [Test]
@@ -58,8 +61,11 @@ public class LocalDatabaseConnectionGuardTests
             BetaConnectionString,
             DumpConnectionString);
 
-        Assert.That(result.IsFailure, Is.True);
-        Assert.That(result.Error, Does.Contain("3307"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.IsFailure, Is.True);
+            Assert.That(result.Error, Does.Contain("3307"));
+        }
     }
 
     [Test]
@@ -70,8 +76,11 @@ public class LocalDatabaseConnectionGuardTests
             LocalConnectionString,
             DumpConnectionString);
 
-        Assert.That(result.IsFailure, Is.True);
-        Assert.That(result.Error, Does.Contain("beta connection string"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.IsFailure, Is.True);
+            Assert.That(result.Error, Does.Contain("beta connection string"));
+        }
     }
 
     [Test]
@@ -82,8 +91,11 @@ public class LocalDatabaseConnectionGuardTests
             BetaConnectionString,
             LocalConnectionString);
 
-        Assert.That(result.IsFailure, Is.True);
-        Assert.That(result.Error, Does.Contain("dump connection string"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.IsFailure, Is.True);
+            Assert.That(result.Error, Does.Contain("dump connection string"));
+        }
     }
 
     [Test]
@@ -94,8 +106,11 @@ public class LocalDatabaseConnectionGuardTests
             BetaConnectionString,
             DumpConnectionString);
 
-        Assert.That(result.IsFailure, Is.True);
-        Assert.That(result.Error, Does.Contain("fantasycritic"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.IsFailure, Is.True);
+            Assert.That(result.Error, Does.Contain("fantasycritic"));
+        }
         Assert.That(result.Error, Does.Contain("seeded").IgnoreCase);
     }
 

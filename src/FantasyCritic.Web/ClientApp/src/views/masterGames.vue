@@ -208,7 +208,6 @@ export default {
   font-size: 1.05rem;
 }
 
-
 .master-games-nav-sep {
   color: #6c757d;
   user-select: none;

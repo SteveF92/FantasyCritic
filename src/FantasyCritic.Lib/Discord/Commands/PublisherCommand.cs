@@ -3,14 +3,15 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
+
 public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
@@ -346,8 +347,8 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         string remainingUnrestrictedReleaseStatusDroppableGames,
         int leagueOptionsUnrestrictedReleaseStatusDroppableGames)
     {
-        return new List<EmbedFieldBuilder>
-        {
+        return
+        [
             new()
             {
                 Name = "Picks",
@@ -387,7 +388,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
                 Name = "'Unrestricted' Drops Remaining",
                 Value = BuildDropDisplay(remainingUnrestrictedReleaseStatusDroppableGames, leagueOptionsUnrestrictedReleaseStatusDroppableGames)
             }
-        };
+        ];
     }
 
     private static string BuildDropDisplay(string remaining, int total)

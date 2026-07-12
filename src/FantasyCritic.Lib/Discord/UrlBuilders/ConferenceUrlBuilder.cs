@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Discord.UrlBuilders;
+
 public class ConferenceUrlBuilder : UrlBuilder
 {
     private const string BaseAddressKeyword = "{{BASEADDRESS}}";

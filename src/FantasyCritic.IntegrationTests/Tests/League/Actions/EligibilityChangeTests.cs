@@ -89,16 +89,20 @@ public class EligibilityChangeTests : IntegrationTestBase
                 && g.MasterGame != null && g.OverallDraftPosition.HasValue)
             .ToList();
         if (p3DroppableGames.Count < 2)
+        {
             throw new InvalidOperationException(
                 "P3 needs at least 2 droppable drafted games for the eligibility-change test setup.");
+        }
 
         var p4DroppableGames = p4Publisher.Games
             .Where(g => !g.CounterPick && !g.DropBlocked
                 && g.MasterGame != null && g.OverallDraftPosition.HasValue)
             .ToList();
         if (p4DroppableGames.Count < 2)
+        {
             throw new InvalidOperationException(
                 "P4 needs at least 2 droppable drafted games for the eligibility-change test setup.");
+        }
 
         _targets = new EligibilityTargets(
             GameA: gameA,
@@ -164,7 +168,9 @@ public class EligibilityChangeTests : IntegrationTestBase
         }
         _adminSession?.Dispose();
         if (_league != null)
+        {
             await _league.DisposeAsync();
+        }
     }
 
     private async Task EditMasterGameToAddScoreAsync(Guid masterGameID)
@@ -196,12 +202,18 @@ public class EligibilityChangeTests : IntegrationTestBase
     private async Task SafeResetMasterGameScoreAsync(Guid masterGameID)
     {
         if (masterGameID == Guid.Empty)
+        {
             return;
+        }
+
         try
         {
             var game = await _adminSession.Game.MasterGameAsync(masterGameID);
             if (game.CriticScore == null)
+            {
                 return;
+            }
+
             await _adminSession.FactChecker.EditMasterGameAsync(new EditMasterGameRequest
             {
                 MasterGameID = masterGameID,
@@ -245,7 +257,9 @@ public class EligibilityChangeTests : IntegrationTestBase
         {
             var liveGame = await _adminSession.Game.MasterGameAsync(id);
             if (liveGame.CriticScore == null)
+            {
                 return id;
+            }
         }
         throw new InvalidOperationException(
             "No suitable bid target found — all candidates already have a live critic score.");
@@ -263,7 +277,9 @@ public class EligibilityChangeTests : IntegrationTestBase
         {
             var liveGame = await _adminSession.Game.MasterGameAsync(id);
             if (liveGame.CriticScore == null)
+            {
                 return id;
+            }
         }
         throw new InvalidOperationException(
             "No suitable counter-pick target found — all candidates already have a live critic score.");
@@ -399,10 +415,13 @@ public class EligibilityChangeTests : IntegrationTestBase
     {
         var bid = _actionSet.Bids.Single(b =>
             !b.CounterPick && b.MasterGame.MasterGameID == _targets.GameB);
-        Assert.That(bid.Successful, Is.False,
-            "The action history should record Game B's bid as unsuccessful.");
-        Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
-            "The failure outcome should mention 'score'.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(bid.Successful, Is.False,
+                    "The action history should record Game B's bid as unsuccessful.");
+            Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
+                "The failure outcome should mention 'score'.");
+        }
     }
 
     [Test]
@@ -430,10 +449,13 @@ public class EligibilityChangeTests : IntegrationTestBase
     {
         var bid = _actionSet.Bids.Single(b =>
             !b.CounterPick && b.MasterGame.MasterGameID == _targets.GameG);
-        Assert.That(bid.Successful, Is.False,
-            "The action history should record Game G's bid as unsuccessful — G gained a score before processing.");
-        Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
-            "The failure outcome should mention 'score'.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(bid.Successful, Is.False,
+                    "The action history should record Game G's bid as unsuccessful — G gained a score before processing.");
+            Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
+                "The failure outcome should mention 'score'.");
+        }
     }
 
     [Test]
@@ -441,9 +463,12 @@ public class EligibilityChangeTests : IntegrationTestBase
     {
         var bid = _actionSet.Bids.Single(b =>
             b.CounterPick && b.MasterGame.MasterGameID == _targets.P2CounterPickTarget);
-        Assert.That(bid.Successful, Is.False,
-            "The action history should record the counter-pick bid as unsuccessful.");
-        Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
-            "The failure outcome should mention 'score'.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(bid.Successful, Is.False,
+                    "The action history should record the counter-pick bid as unsuccessful.");
+            Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
+                "The failure outcome should mention 'score'.");
+        }
     }
 }

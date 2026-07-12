@@ -105,10 +105,10 @@ public class Trade
             return null;
         }
 
-        List<Instant> actionTimestamps = new List<Instant>()
-        {
+        List<Instant> actionTimestamps =
+        [
             ProposedTimestamp
-        };
+        ];
 
         if (AcceptedTimestamp.HasValue)
         {
@@ -230,7 +230,7 @@ public class Trade
 
     private static LeagueAction GetActionForPublisher(Publisher publisher, Instant actionTime, IEnumerable<MasterGameYearWithCounterPick> games, uint budgetSend)
     {
-        List<string> acquisitions = new List<string>();
+        List<string> acquisitions = [];
         foreach (var game in games)
         {
             var counterPickString = "";
@@ -252,7 +252,7 @@ public class Trade
 
     public IReadOnlyList<FormerPublisherGame> GetRemovedPublisherGames(Instant completionTime)
     {
-        List<FormerPublisherGame> formerGames = new List<FormerPublisherGame>();
+        List<FormerPublisherGame> formerGames = [];
         foreach (var proposerGame in Proposer.PublisherGames)
         {
             var masterGameWithCounterPick = proposerGame.GetMasterGameYearWithCounterPick();
@@ -287,13 +287,13 @@ public class Trade
         var proposerGameDictionary = Proposer.PublisherGames.Where(x => x.MasterGame is not null).ToDictionary(x => x.GetMasterGameYearWithCounterPick()!);
         var counterPartyGameDictionary = CounterParty.PublisherGames.Where(x => x.MasterGame is not null).ToDictionary(x => x.GetMasterGameYearWithCounterPick()!);
 
-        List<PotentialPublisherSlot> newlyOpenProposerSlotNumbers = new List<PotentialPublisherSlot>();
+        List<PotentialPublisherSlot> newlyOpenProposerSlotNumbers = [];
         foreach (var game in ProposerMasterGames)
         {
             var existingPublisherGame = proposerGameDictionary[game];
             newlyOpenProposerSlotNumbers.Add(new PotentialPublisherSlot(existingPublisherGame.SlotNumber, game.CounterPick));
         }
-        List<PotentialPublisherSlot> newlyOpenCounterPartySlotNumbers = new List<PotentialPublisherSlot>();
+        List<PotentialPublisherSlot> newlyOpenCounterPartySlotNumbers = [];
         foreach (var game in CounterPartyMasterGames)
         {
             var existingPublisherGame = counterPartyGameDictionary[game];
@@ -305,7 +305,7 @@ public class Trade
         var allOpenProposerSlotNumbers = alreadyOpenProposerSlotNumbers.Concat(newlyOpenProposerSlotNumbers).Distinct().OrderBy(x => x.CounterPick).ThenBy(x => x.SlotNumber).ToList();
         var allOpenCounterPartySlotNumbers = alreadyOpenCounterPartySlotNumbers.Concat(newlyOpenCounterPartySlotNumbers).Distinct().OrderBy(x => x.CounterPick).ThenBy(x => x.SlotNumber).ToList();
 
-        List<PublisherGame> newPublisherGames = new List<PublisherGame>();
+        List<PublisherGame> newPublisherGames = [];
         foreach (var game in ProposerMasterGames)
         {
             var existingPublisherGame = proposerGameDictionary[game];

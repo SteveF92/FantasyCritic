@@ -19,7 +19,7 @@ public class ConferenceYearStandingViewModel
         LeagueRanking = leagueRanking;
         ProjectedLeagueRanking = projectedLeagueRanking;
     }
-    
+
     public Guid LeagueID { get; }
     public string LeagueName { get; }
     public int Year { get; }

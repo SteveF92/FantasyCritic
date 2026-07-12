@@ -3,7 +3,6 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Utilities;
-using FantasyCritic.Web.Models.Requests.League;
 using FantasyCritic.Web.Models.Responses.AllTimeStats;
 using FantasyCritic.Web.Models.RoundTrip;
 
@@ -78,7 +77,7 @@ public class ConsolidatedLeagueYearViewModel
 
         Guid? previousYearWinnerUserID = domain.PreviousSeasonWinnerUserID;
 
-        List<PlayerWithPublisherViewModel> playerVMs = new List<PlayerWithPublisherViewModel>();
+        List<PlayerWithPublisherViewModel> playerVMs = [];
         foreach (MinimalFantasyCriticUser user in activeUsersMinimal)
         {
             Publisher? publisher = leagueYear.GetUserPublisher(user);

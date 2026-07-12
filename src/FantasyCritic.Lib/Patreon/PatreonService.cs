@@ -25,7 +25,7 @@ public class PatreonService
     public async Task<IReadOnlyList<PatronInfo>> GetPatronInfo(IReadOnlyList<FantasyCriticUserWithExternalLogins> patreonUsers)
     {
         _logger.Information("Getting patreon users.");
-        Dictionary<string, FantasyCriticUser> patreonUserDictionary = new Dictionary<string, FantasyCriticUser>();
+        Dictionary<string, FantasyCriticUser> patreonUserDictionary = [];
         foreach (var patreonUser in patreonUsers)
         {
             var patreonLogin = patreonUser.UserLogins.SingleOrDefault(x => x.LoginProvider == "Patreon");
@@ -42,8 +42,8 @@ public class PatreonService
         var tokens = await _tokensRepo.GetMostRecentTokens();
         using var client = new PatreonClient(tokens.AccessToken, tokens.RefreshToken, _clientId);
         client.TokensRefreshedAsync += SaveNewTokens;
-        
-        List<PatronInfo> patronInfo = new List<PatronInfo>();
+
+        List<PatronInfo> patronInfo = [];
         _logger.Information("Making patreon request.");
         var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
         if (campaignMembers != null)
@@ -82,7 +82,7 @@ public class PatreonService
         var tokens = await _tokensRepo.GetMostRecentTokens();
         using var client = new PatreonClient(tokens.AccessToken, tokens.RefreshToken, _clientId);
         client.TokensRefreshedAsync += SaveNewTokens;
-        
+
         var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
         if (campaignMembers != null)
         {
@@ -97,7 +97,7 @@ public class PatreonService
                 return isPlusUser;
             }
         }
-        
+
         return false;
     }
 

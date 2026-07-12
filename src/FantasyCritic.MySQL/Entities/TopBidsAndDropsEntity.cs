@@ -1,6 +1,5 @@
-using FantasyCritic.Lib.Domain;
-
 namespace FantasyCritic.MySQL.Entities;
+
 internal class TopBidsAndDropsEntity
 {
     public TopBidsAndDropsEntity()

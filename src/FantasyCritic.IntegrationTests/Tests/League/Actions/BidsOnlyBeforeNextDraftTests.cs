@@ -46,7 +46,10 @@ public class BidsOnlyBeforeNextDraftTests : IntegrationTestBase
         {
             await AdminSession.Admin.ResetTimeAsync();
             foreach (var session in OwnedSessions)
+            {
                 session.Dispose();
+            }
+
             AdminSession.Dispose();
         }
     }
@@ -108,9 +111,12 @@ public class BidsOnlyBeforeNextDraftTests : IntegrationTestBase
                 AllowIneligibleSlot = false,
             });
 
-            Assert.That(result.Success, Is.False);
-            Assert.That(result.Errors.Any(e => e.Contains("only allows bids", StringComparison.OrdinalIgnoreCase)), Is.True,
-                () => $"Expected bids-only error. Actual errors: {string.Join("; ", result.Errors ?? [])}");
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(result.Success, Is.False);
+                Assert.That(result.Errors.Any(e => e.Contains("only allows bids", StringComparison.OrdinalIgnoreCase)), Is.True,
+                    () => $"Expected bids-only error. Actual errors: {string.Join("; ", result.Errors ?? [])}");
+            }
         }
         finally
         {
@@ -149,9 +155,12 @@ public class BidsOnlyBeforeNextDraftTests : IntegrationTestBase
                 AllowIneligibleSlot = false,
             });
 
-            Assert.That(result.Success, Is.False);
-            Assert.That(result.Errors.Any(e => e.Contains("only allows bids", StringComparison.OrdinalIgnoreCase)), Is.True,
-                () => $"Expected bids-only error. Actual errors: {string.Join("; ", result.Errors ?? [])}");
+            using (Assert.EnterMultipleScope())
+            {
+                Assert.That(result.Success, Is.False);
+                Assert.That(result.Errors.Any(e => e.Contains("only allows bids", StringComparison.OrdinalIgnoreCase)), Is.True,
+                    () => $"Expected bids-only error. Actual errors: {string.Join("; ", result.Errors ?? [])}");
+            }
         }
         finally
         {
@@ -188,8 +197,8 @@ public class BidsOnlyBeforeNextDraftTests : IntegrationTestBase
             TestLeague = true,
             CustomRulesLeague = false,
             LeagueYearSettings = BidsOnlyScenario.BuildSettings(year),
-            Drafts = new List<DraftSettingsRequest>
-            {
+            Drafts =
+            [
                 new() { GamesToDraft = 2, CounterPicksToDraft = 1, ScheduledDate = null },
                 new()
                 {
@@ -198,7 +207,7 @@ public class BidsOnlyBeforeNextDraftTests : IntegrationTestBase
                     CounterPicksToDraft = 0,
                     ScheduledDate = draft2ScheduledDate,
                 },
-            },
+            ],
         });
 
         await LeagueTestHelpers.InviteAndAcceptAsync(manager, player2, leagueID);
@@ -227,11 +236,14 @@ public class BidsOnlyBeforeNextDraftTests : IntegrationTestBase
         var draft1 = snapshot.Drafts.Single(d => d.DraftNumber == 1);
         var draft2 = snapshot.Drafts.Single(d => d.DraftNumber == 2);
 
-        Assert.That(draft1.PlayStatus, Is.EqualTo("DraftFinal"),
-            "Draft 1 should be complete before bid placement tests run.");
-        Assert.That(draft2.PlayStatus, Is.EqualTo("NotStartedDraft"),
-            "Draft 2 should remain pending so BidsOnlyBeforeNextScheduledDraft applies.");
-        Assert.That(draft2.ScheduledDate, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft1.PlayStatus, Is.EqualTo("DraftFinal"),
+                    "Draft 1 should be complete before bid placement tests run.");
+            Assert.That(draft2.PlayStatus, Is.EqualTo("NotStartedDraft"),
+                "Draft 2 should remain pending so BidsOnlyBeforeNextScheduledDraft applies.");
+            Assert.That(draft2.ScheduledDate, Is.Not.Null);
+        }
         Assert.That(draft2.ScheduledDate!.Value.Date, Is.EqualTo(draft2ScheduledDate.Date));
 
         return new LeagueContext(adminSession, publisher1, publisher2, leagueID, year, ownedSessions);

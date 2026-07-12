@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.SharedSerialization.API;
 
 namespace FantasyCritic.Web.Models.Responses;
+
 public class CompleteMasterGameChangeViewModel
 {
     public CompleteMasterGameChangeViewModel(MasterGameChangeLogEntry change, LocalDate currentDate)

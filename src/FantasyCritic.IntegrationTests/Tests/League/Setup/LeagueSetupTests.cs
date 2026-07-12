@@ -55,9 +55,12 @@ public class LeagueSetupTests : IntegrationTestBase
         var league = await session.League.GetLeagueAsync(leagueID, null);
 
         Assert.That(league, Is.Not.Null);
-        Assert.That(league.LeagueID, Is.EqualTo(leagueID));
-        Assert.That(league.IsManager, Is.True, "The creator must be the league manager.");
-        Assert.That(league.TestLeague, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(league.LeagueID, Is.EqualTo(leagueID));
+            Assert.That(league.IsManager, Is.True, "The creator must be the league manager.");
+            Assert.That(league.TestLeague, Is.True);
+        }
     }
 
     [Test]
@@ -74,15 +77,21 @@ public class LeagueSetupTests : IntegrationTestBase
         var leagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);
 
         Assert.That(settings, Is.Not.Null);
-        Assert.That(settings.StandardGames, Is.EqualTo(LeagueScenarios.Standard.StandardGames));
-        Assert.That(leagueYear.Drafts, Has.Count.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(settings.StandardGames, Is.EqualTo(LeagueScenarios.Standard.StandardGames));
+            Assert.That(leagueYear.Drafts, Has.Count.EqualTo(1));
+        }
         var firstDraft = leagueYear.Drafts.Single();
-        Assert.That(firstDraft.GamesToDraft, Is.EqualTo(LeagueScenarios.Standard.GamesToDraft));
-        Assert.That(firstDraft.CounterPicksToDraft, Is.EqualTo(LeagueScenarios.Standard.CounterPicksToDraft));
-        Assert.That(settings.CounterPicks, Is.EqualTo(LeagueScenarios.Standard.CounterPicks));
-        Assert.That(settings.DraftSystem, Is.EqualTo(LeagueScenarios.Standard.DraftSystem));
-        Assert.That(settings.ScoringSystem, Is.EqualTo(LeagueScenarios.Standard.ScoringSystem));
-        Assert.That(settings.IneligibleGameSystem, Is.EqualTo(LeagueScenarios.Standard.IneligibleGameSystem));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(firstDraft.GamesToDraft, Is.EqualTo(LeagueScenarios.Standard.GamesToDraft));
+            Assert.That(firstDraft.CounterPicksToDraft, Is.EqualTo(LeagueScenarios.Standard.CounterPicksToDraft));
+            Assert.That(settings.CounterPicks, Is.EqualTo(LeagueScenarios.Standard.CounterPicks));
+            Assert.That(settings.DraftSystem, Is.EqualTo(LeagueScenarios.Standard.DraftSystem));
+            Assert.That(settings.ScoringSystem, Is.EqualTo(LeagueScenarios.Standard.ScoringSystem));
+            Assert.That(settings.IneligibleGameSystem, Is.EqualTo(LeagueScenarios.Standard.IneligibleGameSystem));
+        }
     }
 
     [Test]
@@ -98,8 +107,11 @@ public class LeagueSetupTests : IntegrationTestBase
 
         var leagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);
 
-        Assert.That(leagueYear.Settings.GrantSuperDrops, Is.True);
-        Assert.That(leagueYear.SuperDropPointCutoff, Is.Null,
-            "Super drop cutoff must not be computed until the draft has finished.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(leagueYear.Settings.GrantSuperDrops, Is.True);
+            Assert.That(leagueYear.SuperDropPointCutoff, Is.Null,
+                "Super drop cutoff must not be computed until the draft has finished.");
+        }
     }
 }

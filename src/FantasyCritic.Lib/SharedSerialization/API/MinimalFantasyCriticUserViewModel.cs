@@ -8,7 +8,7 @@ public class MinimalFantasyCriticUserViewModel
     {
 
     }
-    
+
     public MinimalFantasyCriticUserViewModel(VeryMinimalFantasyCriticUser user)
     {
         UserID = user.UserID;

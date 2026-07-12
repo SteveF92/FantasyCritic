@@ -6,7 +6,6 @@ using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using NodaTime;
 using NUnit.Framework;

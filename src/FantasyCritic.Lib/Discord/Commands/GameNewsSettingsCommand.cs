@@ -1,10 +1,10 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Lib.Interfaces;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Handlers;
+using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace FantasyCritic.Lib.Discord.Commands;
@@ -153,7 +153,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         bool showEditedGameNews = gameNewsChannel?.GameNewsSetting.ShowEditedGameNews ?? false;
         var skippedTags = gameNewsChannel?.SkippedTags ?? new List<MasterGameTag>();
 
-        string GetEmoji(bool? setting) => setting switch
+        static string GetEmoji(bool? setting) => setting switch
         {
             true => "✅",
             false => "❌",
@@ -299,7 +299,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
 
     private static bool IsRecommendedSettings(MinimalLeagueChannel? leagueChannel, GameNewsSetting? gameNewsSetting)
     {
-        if (gameNewsSetting == null) return false;
+        if (gameNewsSetting == null)
+        {
+            return false;
+        }
 
         bool leagueRecommended = leagueChannel is null or { ShowPickedGameNews: true, ShowEligibleGameNews: true };
 
@@ -410,9 +413,8 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         await DeferAsync();
 
         // Cast the interaction to SocketMessageComponent
-        var interaction = Context.Interaction as SocketMessageComponent;
 
-        if (interaction == null)
+        if (Context.Interaction is not SocketMessageComponent interaction)
         {
             await FollowupAsync("Failed to process the button interaction.", ephemeral: true);
             return;
@@ -605,9 +607,8 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         await DeferAsync();
 
         // Cast the interaction to SocketMessageComponent
-        var component = Context.Interaction as SocketMessageComponent;
 
-        if (component == null)
+        if (Context.Interaction is not SocketMessageComponent component)
         {
             await FollowupAsync("Failed to process the select menu interaction.", ephemeral: true);
             return;

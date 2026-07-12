@@ -28,7 +28,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     {
         _connectionString = configuration.ConnectionString;
         _userStore = userStore;
-        _masterGameYearsCache = new Dictionary<int, Dictionary<Guid, MasterGameYear>>();
+        _masterGameYearsCache = [];
         _clock = clock;
     }
 
@@ -39,7 +39,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public void ClearMasterGameYearCache()
     {
-        _masterGameYearsCache = new Dictionary<int, Dictionary<Guid, MasterGameYear>>();
+        _masterGameYearsCache = [];
     }
 
     public async Task<IReadOnlyList<MasterGame>> GetMasterGames()
@@ -91,7 +91,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
 
         var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
-        List<MasterGameYear> masterGames = new List<MasterGameYear>();
+        List<MasterGameYear> masterGames = [];
         foreach (var entity in masterGameResults)
         {
             var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
@@ -393,7 +393,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         var masterGameYears = await GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
-        List<MasterGameDesireResult> results = new List<MasterGameDesireResult>();
+        List<MasterGameDesireResult> results = [];
         foreach (MasterGameDesireRow row in rows)
         {
             if (masterGameYearDictionary.TryGetValue(row.MasterGameID, out MasterGameYear? masterGameYear))
@@ -430,7 +430,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         IReadOnlyDictionary<Guid, LongestTenuredDreamsStatsRow> dreamsStats = await GetLongestTenuredDreamsStats(masterGameIDs);
         IReadOnlyDictionary<Guid, LongestTenuredPeakHypeRow> peakHypeByGame = await GetLongestTenuredPeakHypeByGame(masterGameIDs);
 
-        List<LongestTenuredGame> results = new List<LongestTenuredGame>();
+        List<LongestTenuredGame> results = [];
         foreach (Guid masterGameID in masterGameIDs)
         {
             if (!masterGameYearDictionary.TryGetValue(masterGameID, out MasterGameYear? masterGameYear))
@@ -468,7 +468,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         List<Guid> masterGameIDs = rows.Select(x => x.MasterGameID).ToList();
         IReadOnlyDictionary<Guid, LongestTenuredDreamsStatsRow> dreamsStats = await GetLongestTenuredDreamsStats(masterGameIDs);
 
-        List<LongestTenuredGame> results = new List<LongestTenuredGame>();
+        List<LongestTenuredGame> results = [];
         foreach (LongestTenuredReleasedGameRow row in rows)
         {
             MasterGameYear? masterGameYear = await GetMasterGameYear(row.MasterGameID, row.ReleaseDate.Year);
@@ -554,10 +554,10 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
         if (rows.Count == 0)
         {
-            return Array.Empty<LongestTenuredGame>();
+            return [];
         }
 
-        List<LongestTenuredGame> results = new List<LongestTenuredGame>();
+        List<LongestTenuredGame> results = [];
 
         if (year.HasValue)
         {
@@ -704,7 +704,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<LongestTenuredPeakHypeYearRow> rows = await connection.QueryAsync<LongestTenuredPeakHypeYearRow>(sql, new { masterGameIDs });
 
-        Dictionary<Guid, LongestTenuredPeakHypeRow> peakHypeByGame = new Dictionary<Guid, LongestTenuredPeakHypeRow>();
+        Dictionary<Guid, LongestTenuredPeakHypeRow> peakHypeByGame = [];
         foreach (IGrouping<Guid, LongestTenuredPeakHypeYearRow> gameGroup in rows.GroupBy(x => x.MasterGameID))
         {
             LongestTenuredPeakHypeYearRow peakYear = gameGroup.OrderByDescending(x => x.YearCount).ThenByDescending(x => x.Year).First();
@@ -831,7 +831,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         var masterGames = await GetMasterGames();
         var users = await _userStore.GetAllUsers();
         var userDictionary = users.ToDictionary(x => x.Id);
-        List<MasterGameRequest> domainRequests = new List<MasterGameRequest>();
+        List<MasterGameRequest> domainRequests = [];
         foreach (var entity in entities)
         {
             MasterGame? masterGame = null;
@@ -852,7 +852,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         var masterGames = await GetMasterGames();
         var users = await _userStore.GetAllUsers();
         var userDictionary = users.ToDictionary(x => x.Id);
-        List<MasterGameChangeRequest> domainRequests = new List<MasterGameChangeRequest>();
+        List<MasterGameChangeRequest> domainRequests = [];
         foreach (var entity in entities)
         {
             var masterGame = masterGames.Single(x => x.MasterGameID == entity.MasterGameID);
@@ -1081,7 +1081,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<TopBidsAndDropsEntity> entities = await connection.QueryAsync<TopBidsAndDropsEntity>(sql, param);
 
-        List<TopBidsAndDropsGame> domains = new List<TopBidsAndDropsGame>();
+        List<TopBidsAndDropsGame> domains = [];
 
         foreach (var entity in entities)
         {

@@ -215,7 +215,7 @@ public class MasterGameRequestTests : IntegrationTestBase
         {
             GameName = requestedGameName,
             EstimatedReleaseDate = "2027",
-            Tags = new[] { "NewGame" },
+            Tags = ["NewGame"],
         });
 
         using var completionResult = await fcSession.FactChecker.CompleteMasterGameRequestAsync(new CompleteMasterGameRequestRequest
@@ -228,8 +228,11 @@ public class MasterGameRequestTests : IntegrationTestBase
         var updatedRequests = await requesterSession.Game.MyMasterGameRequestsAsync();
         var answeredRequest = updatedRequests.Single(r => r.RequestID == requestID);
 
-        Assert.That(answeredRequest.Answered, Is.True);
-        Assert.That(answeredRequest.MasterGame, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(answeredRequest.Answered, Is.True);
+            Assert.That(answeredRequest.MasterGame, Is.Not.Null);
+        }
         Assert.That(answeredRequest.MasterGame!.MasterGameID, Is.EqualTo(createdGame.MasterGameID));
     }
 
@@ -270,7 +273,10 @@ public class MasterGameRequestTests : IntegrationTestBase
         var updatedRequests = await requesterSession.Game.MyMasterGameRequestsAsync();
         var answeredRequest = updatedRequests.Single(r => r.RequestID == requestID);
 
-        Assert.That(answeredRequest.Answered, Is.True);
-        Assert.That(answeredRequest.MasterGame, Is.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(answeredRequest.Answered, Is.True);
+            Assert.That(answeredRequest.MasterGame, Is.Null);
+        }
     }
 }

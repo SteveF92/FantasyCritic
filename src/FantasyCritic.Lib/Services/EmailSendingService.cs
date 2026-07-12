@@ -1,7 +1,7 @@
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Domain.Combinations;
 
 namespace FantasyCritic.Lib.Services;
 
@@ -32,12 +32,12 @@ public class EmailSendingService
         var adminUsers = (await _userManager.GetUsersInRoleAsync("Admin")).ToHashSet();
         var userEmailSettings = await _userManager.GetAllEmailSettings();
         var usersWithPublicBidEmails = userEmailSettings.Where(x => !x.User.IsDeleted && x.User.EmailConfirmed && x.EmailTypes.Contains(EmailType.PublicBids)).Select(x => x.User).ToList();
-        
+
         if (!_isProduction)
         {
             usersWithPublicBidEmails = usersWithPublicBidEmails.Intersect(adminUsers).ToList();
         }
-        
+
         var usersWithLeagueYears = await _leagueMemberService.GetUsersWithLeagueYearsWithPublisher();
 
         foreach (var user in usersWithPublicBidEmails)
@@ -48,7 +48,7 @@ public class EmailSendingService
                 continue;
             }
 
-            List<LeagueYearPublicBiddingSet> publicBiddingSetsForUser = new List<LeagueYearPublicBiddingSet>();
+            List<LeagueYearPublicBiddingSet> publicBiddingSetsForUser = [];
             foreach (var leagueYearKey in leagueYearKeys)
             {
                 var publicBiddingSet = publicBiddingSetDictionary.GetValueOrDefault(leagueYearKey);

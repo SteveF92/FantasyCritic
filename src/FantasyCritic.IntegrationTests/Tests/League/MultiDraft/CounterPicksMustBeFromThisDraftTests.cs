@@ -31,10 +31,13 @@ public class CounterPicksMustBeFromThisDraftTests : IntegrationTestBase
         _draft1StandardMasterGameIDs = StandardMasterGameIDsForDraft(_flagOnSnapshot, draftNumber: 1);
         _draft2StandardMasterGameIDs = StandardMasterGameIDsForDraft(_flagOnSnapshot, draftNumber: 2);
 
-        Assert.That(_draft1StandardMasterGameIDs, Is.Not.Empty, "Draft 1 should have standard games on rosters.");
-        Assert.That(_draft2StandardMasterGameIDs, Is.Not.Empty, "Draft 2 should have standard games on rosters.");
-        Assert.That(_flagOnSnapshot.Drafts.Single(d => d.DraftNumber == 2).CounterPicksMustBeFromThisDraft,
-            Is.EqualTo(true));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_draft1StandardMasterGameIDs, Is.Not.Empty, "Draft 1 should have standard games on rosters.");
+            Assert.That(_draft2StandardMasterGameIDs, Is.Not.Empty, "Draft 2 should have standard games on rosters.");
+            Assert.That(_flagOnSnapshot.Drafts.Single(d => d.DraftNumber == 2).CounterPicksMustBeFromThisDraft,
+                Is.EqualTo(true));
+        }
     }
 
     [OneTimeTearDown]
@@ -78,9 +81,12 @@ public class CounterPicksMustBeFromThisDraftTests : IntegrationTestBase
             AllowIneligibleSlot = false,
         });
 
-        Assert.That(result.Success, Is.False,
-            "Counter-picking a Draft 1 standard game during Draft 2 should be rejected when the flag is on.");
-        Assert.That(result.Errors, Is.Not.Empty);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Success, Is.False,
+                    "Counter-picking a Draft 1 standard game during Draft 2 should be rejected when the flag is on.");
+            Assert.That(result.Errors, Is.Not.Empty);
+        }
     }
 
     [Test]
@@ -126,7 +132,7 @@ public class CounterPicksMustBeFromThisDraftTests : IntegrationTestBase
             CounterPicksToDraft = 1,
             AdditionalStandardGames = 2,
             AdditionalCounterPicks = 1,
-            NewSpecialGameSlots = new List<SpecialGameSlotViewModel>(),
+            NewSpecialGameSlots = [],
             CounterPicksMustBeFromThisDraft = true,
         });
 

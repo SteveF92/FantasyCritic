@@ -4,7 +4,7 @@ public class MasterSubGameViewModel
 {
     public MasterSubGameViewModel()
     {
-        
+
     }
 
     public MasterSubGameViewModel(MasterSubGame masterSubGame, LocalDate currentDate)

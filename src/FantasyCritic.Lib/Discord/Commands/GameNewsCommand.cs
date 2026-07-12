@@ -2,15 +2,16 @@ using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.BusinessLogicFunctions;
+using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Discord.Utilities;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Lib.Domain.Combinations;
-using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Services;
 using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
+
 public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;

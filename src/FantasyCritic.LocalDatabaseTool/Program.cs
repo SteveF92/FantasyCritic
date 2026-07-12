@@ -1,3 +1,6 @@
+using System.ComponentModel.Design;
+using System.Reflection;
+using System.Text.Json;
 using DiscordDotNetUtilities;
 using FantasyCritic.Lib;
 using FantasyCritic.Lib.DependencyInjection;
@@ -18,9 +21,6 @@ using FantasyCritic.MySQL.SyncingRepos;
 using Microsoft.Extensions.Configuration;
 using NodaTime;
 using Serilog;
-using System.ComponentModel.Design;
-using System.Reflection;
-using System.Text.Json;
 
 namespace FantasyCritic.LocalDatabaseTool;
 
@@ -32,7 +32,7 @@ public static class Program
 
     private static readonly IClock _clock = SystemClock.Instance;
 
-    static async Task Main()
+    private static async Task Main()
     {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()
@@ -143,12 +143,12 @@ public static class Program
 
         var entities = responses.Select(r => new SupportedYearEntity
         {
-            Year             = r.Year,
-            OpenForCreation  = r.OpenForCreation,
-            OpenForPlay      = r.OpenForPlay,
+            Year = r.Year,
+            OpenForCreation = r.OpenForCreation,
+            OpenForPlay = r.OpenForPlay,
             OpenForBetaUsers = false,
-            StartDate        = LocalDate.FromDateTime(r.StartDate),
-            Finished         = r.Finished
+            StartDate = LocalDate.FromDateTime(r.StartDate),
+            Finished = r.Finished
         }).ToList();
 
         var syncer = new MySQLLocalSetupSyncer(_localConnectionString);

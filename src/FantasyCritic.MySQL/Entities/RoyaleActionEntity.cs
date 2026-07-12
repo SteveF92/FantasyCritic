@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Royale;
 
 namespace FantasyCritic.MySQL.Entities;
+
 internal class RoyaleActionEntity
 {
     public RoyaleActionEntity()

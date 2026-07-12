@@ -1,8 +1,8 @@
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Interfaces;
-using Microsoft.AspNetCore.Identity;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL.Entities.Identity;
+using Microsoft.AspNetCore.Identity;
 
 namespace FantasyCritic.MySQL;
 

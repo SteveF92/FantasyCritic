@@ -4,8 +4,8 @@ using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Domain.LeagueActions;
-using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Domain.Requests;
+using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -260,12 +260,12 @@ public class FantasyCriticService
 
     public YearCalculatedStatsSet GetCalculatedStatsForYear(int year, IReadOnlyList<LeagueYear> leagueYears, bool recalculateWinners)
     {
-        Dictionary<Guid, PublisherGameCalculatedStats> publisherGameCalculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
+        Dictionary<Guid, PublisherGameCalculatedStats> publisherGameCalculatedStats = [];
         IReadOnlyList<Publisher> allPublishersForYear = leagueYears.SelectMany(x => x.Publishers).ToList();
         var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
 
         var currentDate = _clock.GetToday();
-        Dictionary<LeagueYearKey, FantasyCriticUser> winningUsers = new Dictionary<LeagueYearKey, FantasyCriticUser>();
+        Dictionary<LeagueYearKey, FantasyCriticUser> winningUsers = [];
         var publishersByLeagueYear = allPublishersForYear.GroupBy(x => x.LeagueYearKey);
         foreach (var publishersForLeagueYear in publishersByLeagueYear)
         {
@@ -298,10 +298,10 @@ public class FantasyCriticService
 
         return new YearCalculatedStatsSet(publisherGameCalculatedStats, winningUsers);
     }
-    
+
     public async Task UpdatePublisherGameCalculatedStats(LeagueYear leagueYear)
     {
-        Dictionary<Guid, PublisherGameCalculatedStats> calculatedStats = new Dictionary<Guid, PublisherGameCalculatedStats>();
+        Dictionary<Guid, PublisherGameCalculatedStats> calculatedStats = [];
 
         var currentDate = _clock.GetToday();
         foreach (var publisher in leagueYear.Publishers)
@@ -383,7 +383,7 @@ public class FantasyCriticService
         var bidsByProcessSet = bidsForLeague.ToLookup(x => x.ProcessSetID);
         var dropsByProcessSet = dropsForLeague.ToLookup(x => x.ProcessSetID);
 
-        List<LeagueActionProcessingSet> processingSets = new List<LeagueActionProcessingSet>();
+        List<LeagueActionProcessingSet> processingSets = [];
         foreach (var processSet in processSets)
         {
             var bids = bidsByProcessSet[processSet.ProcessSetID];
@@ -592,7 +592,7 @@ public class FantasyCriticService
 
     public async Task<IReadOnlyList<ConsolidatedLeagueYearData>> GetConsolidatedLeagueYearData(League league)
     {
-        List<ConsolidatedLeagueYearData> results = new List<ConsolidatedLeagueYearData>();
+        List<ConsolidatedLeagueYearData> results = [];
         foreach (MinimalLeagueYearInfo yearInfo in league.Years.OrderBy(x => x.Year))
         {
             LeagueYear? leagueYear = await GetLeagueYear(league.LeagueID, yearInfo.Year);

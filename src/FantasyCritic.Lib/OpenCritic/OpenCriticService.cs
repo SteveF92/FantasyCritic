@@ -1,7 +1,7 @@
-using FantasyCritic.Lib.Extensions;
-using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Net.Http.Json;
+using FantasyCritic.Lib.Extensions;
+using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.OpenCritic;
 

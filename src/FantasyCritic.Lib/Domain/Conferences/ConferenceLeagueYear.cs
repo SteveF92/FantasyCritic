@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Domain.Conferences;
+
 public class ConferenceLeagueYear
 {
     public ConferenceLeagueYear(ConferenceLeague league, int year, bool conferenceLocked, bool draftStarted, bool draftFinished, int? activeDraftNumber)

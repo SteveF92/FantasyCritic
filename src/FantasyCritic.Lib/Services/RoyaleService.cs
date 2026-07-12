@@ -100,7 +100,7 @@ public class RoyaleService
         var quarters = await GetYearQuarters();
         var quartersInYear = quarters.Where(x => x.YearQuarter.Year == year);
 
-        List<RoyalePublisher> allPublishers = new List<RoyalePublisher>();
+        List<RoyalePublisher> allPublishers = [];
         foreach (var quarter in quartersInYear)
         {
             var publishers = await GetAllPublishers(year, quarter.YearQuarter.Quarter);
@@ -299,7 +299,7 @@ public class RoyaleService
 
     public async Task UpdateFantasyPoints(YearQuarter yearQuarter)
     {
-        Dictionary<(Guid, Guid), decimal?> publisherGameScores = new Dictionary<(Guid, Guid), decimal?>();
+        Dictionary<(Guid, Guid), decimal?> publisherGameScores = [];
         var allPublishersForQuarter = await _royaleRepo.GetAllPublishers(yearQuarter.Year, yearQuarter.Quarter);
 
         var allMasterGameTags = await _masterGameRepo.GetMasterGameTags();

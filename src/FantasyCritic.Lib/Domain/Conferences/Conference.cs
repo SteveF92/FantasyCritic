@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain.Conferences;
+
 public class Conference : IEquatable<Conference>
 {
     public Conference(Guid conferenceID, string conferenceName, MinimalFantasyCriticUser conferenceManager, IEnumerable<MinimalConferenceYearInfo> years, bool customRulesConference, Guid primaryLeagueID, IEnumerable<Guid> leaguesInConference)
@@ -24,16 +25,36 @@ public class Conference : IEquatable<Conference>
 
     public bool Equals(Conference? other)
     {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
+        if (other is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
         return ConferenceID.Equals(other.ConferenceID);
     }
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj)) return false;
-        if (ReferenceEquals(this, obj)) return true;
-        if (obj.GetType() != this.GetType()) return false;
+        if (obj is null)
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, obj))
+        {
+            return true;
+        }
+
+        if (obj.GetType() != GetType())
+        {
+            return false;
+        }
+
         return Equals((Conference)obj);
     }
 

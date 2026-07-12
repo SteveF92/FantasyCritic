@@ -1,5 +1,4 @@
 using System.Diagnostics.CodeAnalysis;
-using FantasyCritic.Lib.Domain;
 
 namespace FantasyCritic.MySQL.Entities;
 
