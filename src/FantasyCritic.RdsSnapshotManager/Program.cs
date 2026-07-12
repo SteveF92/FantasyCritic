@@ -17,7 +17,7 @@ namespace FantasyCritic.RdsSnapshotManager;
 
 public static class Program
 {
-    static async Task Main()
+    private static async Task Main()
     {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()

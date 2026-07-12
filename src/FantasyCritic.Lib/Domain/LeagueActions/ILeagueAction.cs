@@ -2,9 +2,9 @@ namespace FantasyCritic.Lib.Domain.LeagueActions;
 
 public interface ILeagueAction
 {
-    public string PublisherNameOrManager { get; }
-    public Instant Timestamp { get; }
-    public string ActionType { get; }
-    public string Description { get; }
-    public bool ManagerAction { get; }
+    string PublisherNameOrManager { get; }
+    Instant Timestamp { get; }
+    string ActionType { get; }
+    string Description { get; }
+    bool ManagerAction { get; }
 }

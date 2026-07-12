@@ -12,7 +12,7 @@ using System.Reflection;
 
 namespace FantasyCritic.DBUtility;
 
-class Program
+internal class Program
 {
 
     private static string _connectionString = null!;

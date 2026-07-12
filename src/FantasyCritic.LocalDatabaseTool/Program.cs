@@ -32,7 +32,7 @@ public static class Program
 
     private static readonly IClock _clock = SystemClock.Instance;
 
-    static async Task Main()
+    private static async Task Main()
     {
         Log.Logger = new LoggerConfiguration()
             .WriteTo.Console()

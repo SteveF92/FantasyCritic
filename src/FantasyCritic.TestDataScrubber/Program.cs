@@ -9,7 +9,7 @@ internal class Program
 {
     private const string _basePath = "..\\..\\..\\..\\FantasyCritic.Test\\TestData\\June2024";
     private static readonly string _resultsPath = Path.Combine("..\\..\\..\\", "Results");
-    static void Main()
+    private static void Main()
     {
         var leagueYears = GetLeagueYearEntities();
         var leaguePairs = leagueYears.Select(x => new GuidMap(x.LeagueID, Guid.NewGuid())).ToList();
