@@ -11,7 +11,7 @@ public class ResetAuthenticatorModel : PageModel
 {
     private readonly FantasyCriticUserManager _userManager;
     private readonly FantasyCriticSignInManager _signInManager;
-    private ILogger<ResetAuthenticatorModel> _logger;
+    private readonly ILogger<ResetAuthenticatorModel> _logger;
 
     public ResetAuthenticatorModel(
         FantasyCriticUserManager userManager,
