@@ -5,6 +5,12 @@ import pluginVue from "eslint-plugin-vue";
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
 export default [
+  // Build output and NSwag-generated code are not hand-written; keep them out of lint
+  // (mirrors the root .gitignore entries for these paths — `--ignore-path` was removed
+  // in ESLint 9's flat config, so ignoring has to live here instead).
+  {
+    ignores: ["dist/**", "src/api/generated/**"],
+  },
   // Global settings for all files
   {
     files: ["**/*.{js,mjs,cjs,ts,vue}"],
