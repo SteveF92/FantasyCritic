@@ -6,7 +6,7 @@ export function publisherIconIsValid(publisherIcon: string): boolean {
   if (!publisherIcon) {
     return true;
   }
-  let length = GraphemeBreaker.countBreaks(publisherIcon);
+  const length = GraphemeBreaker.countBreaks(publisherIcon);
   return length === 1;
 }
 
@@ -66,7 +66,7 @@ export function formatPublisherGameAcquiredDate(publisherGame: PublisherGameView
     type = 'Acquired';
   }
 
-  let date = DateTime.fromISO(publisherGame.timestamp).toFormat('MMMM dd, yyyy');
+  const date = DateTime.fromISO(publisherGame.timestamp).toFormat('MMMM dd, yyyy');
   return type + ' on ' + date;
 }
 

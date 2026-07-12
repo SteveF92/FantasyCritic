@@ -58,9 +58,9 @@ function computeGameCounts(
   const thisGTD = Math.floor(thisStdGames * draftGameRatio);
   const thisCPKTD = Math.floor(thisCPKs * draftGameRatio);
 
-  let standardGames = Math.floor((avgStdGames + thisStdGames) / 2);
+  const standardGames = Math.floor((avgStdGames + thisStdGames) / 2);
   let counterPicks = Math.floor((avgCPKs + thisCPKs) / 2);
-  let gamesToDraft = Math.floor((avgGTD + thisGTD) / 2);
+  const gamesToDraft = Math.floor((avgGTD + thisGTD) / 2);
   let counterPicksToDraft = Math.floor((avgCPKTD + thisCPKTD) / 2);
 
   if (counterPicks === 0 || counterPicksToDraft === 0) {

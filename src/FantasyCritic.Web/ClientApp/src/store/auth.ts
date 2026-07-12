@@ -26,7 +26,7 @@ export default {
         } else {
           context.commit('setUserInfo', userInfo);
         }
-      } catch (error) {
+      } catch {
         context.commit('clearUserInfo');
       } finally {
         context.commit('setBusy', false);

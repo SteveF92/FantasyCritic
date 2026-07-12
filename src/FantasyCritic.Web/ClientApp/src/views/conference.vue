@@ -240,7 +240,7 @@ export default {
       try {
         await axios.post('/api/conference/JoinWithInviteLink', model);
         await this.refreshConferenceYear();
-      } catch (error) {
+      } catch {
         this.errorInfo = 'Something went wrong joining the conference.';
       }
     },

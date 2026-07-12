@@ -73,7 +73,7 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
       window.location.href = '/Account/Login';
       return;
     }
-  } catch (error) {
+  } catch {
     console.log('Router error');
     store.commit('clearUserInfo');
     window.location.href = '/Account/Login';
