@@ -45,7 +45,7 @@ internal static class DatabaseDeserializer
 
     private static NewDatabaseStructure TranslateDatabaseStructure(OriginalDatabaseStructure originalStructure)
     {
-        NewGameChannel? translatedGameChannel = null;
+        NewGameChannel? translatedGameChannel;
         if (originalStructure.GameChannel is not null)
         {
             bool showAlreadyReleasedNews = originalStructure.GameChannel.GameNewsSetting == "All";
