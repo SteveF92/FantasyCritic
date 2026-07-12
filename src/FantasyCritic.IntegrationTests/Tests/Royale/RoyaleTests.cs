@@ -370,7 +370,10 @@ public class RoyaleTests : IntegrationTestBase
                 releaseFilter: RoyalePossibleMasterGamesReleaseFilter.All);
 
             var next = (all ?? []).Where(g => g.IsAvailable == true).MaxBy(g => g.Cost);
-            if (next is null) break;
+            if (next is null)
+            {
+                break;
+            }
 
             var result = await session.Royale.PurchaseGameAsync(
                 new PurchaseRoyaleGameRequest
@@ -378,7 +381,11 @@ public class RoyaleTests : IntegrationTestBase
                     PublisherID = publisherID,
                     MasterGameID = next.MasterGame.MasterGameID,
                 });
-            if (result?.Success != true) break;
+            if (result?.Success != true)
+            {
+                break;
+            }
+
             boughtIDs.Add(next.MasterGame.MasterGameID);
         }
 
@@ -572,7 +579,10 @@ public class RoyaleTests : IntegrationTestBase
                 releaseFilter: releaseFilter);
 
             var available = (possibleGames ?? []).Where(g => g.IsAvailable == true).ToList();
-            if (available.Count == 0) continue;
+            if (available.Count == 0)
+            {
+                continue;
+            }
 
             var set = await ProductionGameStatsCache.FindAffordableSetAsync(
                 available,
@@ -582,7 +592,10 @@ public class RoyaleTests : IntegrationTestBase
                 budgetCap,
                 year);
 
-            if (set.Count > 0) return set;
+            if (set.Count > 0)
+            {
+                return set;
+            }
         }
 
         return Array.Empty<PossibleRoyaleMasterGameViewModel>();

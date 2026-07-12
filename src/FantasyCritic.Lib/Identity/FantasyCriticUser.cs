@@ -70,15 +70,30 @@ public class FantasyCriticUser : IdentityUser<Guid>, IMinimalFantasyCriticUser
 
     public virtual bool Equals(IVeryMinimalFantasyCriticUser? other)
     {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
+        if (ReferenceEquals(null, other))
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
+
         return UserID.Equals(other.UserID);
     }
 
     public override bool Equals(object? other)
     {
-        if (ReferenceEquals(null, other)) return false;
-        if (ReferenceEquals(this, other)) return true;
+        if (ReferenceEquals(null, other))
+        {
+            return false;
+        }
+
+        if (ReferenceEquals(this, other))
+        {
+            return true;
+        }
 
         if (other is not IVeryMinimalFantasyCriticUser otherUser)
         {

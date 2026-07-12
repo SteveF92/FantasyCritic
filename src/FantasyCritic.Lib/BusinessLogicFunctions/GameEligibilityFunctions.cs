@@ -257,7 +257,9 @@ public static class GameEligibilityFunctions
         }
 
         if (leagueYear.Options.IneligibleGameSystem.Equals(IneligibleGameSystem.DroppableAsWillNotRelease) && !gameIsEligibleInAnySlots)
+        {
             gameCouldRelease = false;
+        }
 
         var dropResult = publisher.CanDropGame(gameCouldRelease, leagueYear.Options, false);
         return new DropResult(dropResult);

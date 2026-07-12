@@ -104,7 +104,11 @@ internal static class ProductionGameStatsCache
 
         foreach (var candidate in sorted)
         {
-            if (result.Count >= maxCount) break;
+            if (result.Count >= maxCount)
+            {
+                break;
+            }
+
             var cost = costSelector(candidate);
             if (cost <= remainingBudget)
             {

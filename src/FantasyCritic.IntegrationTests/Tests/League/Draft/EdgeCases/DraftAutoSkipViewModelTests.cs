@@ -26,7 +26,9 @@ public class DraftAutoSkipViewModelTests : IntegrationTestBase
 
         var middlePublisher = _league.Publishers[1];
         for (var slot = 0; slot < LeagueScenarios.ThreePlayerAutoSkip.StandardGames; slot++)
+        {
             await MultiDraftTestScenario.ManagerFillOneStandardSlotAsync(_league, middlePublisher.PublisherID);
+        }
 
         await _league.Manager.LeagueManager.StartDraftAsync(new StartDraftRequest
         {

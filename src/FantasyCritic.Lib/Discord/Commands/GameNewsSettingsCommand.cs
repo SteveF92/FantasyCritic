@@ -299,7 +299,10 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
 
     private static bool IsRecommendedSettings(MinimalLeagueChannel? leagueChannel, GameNewsSetting? gameNewsSetting)
     {
-        if (gameNewsSetting == null) return false;
+        if (gameNewsSetting == null)
+        {
+            return false;
+        }
 
         bool leagueRecommended = leagueChannel is null or { ShowPickedGameNews: true, ShowEligibleGameNews: true };
 

@@ -46,7 +46,10 @@ public class BidsOnlyBeforeNextDraftTests : IntegrationTestBase
         {
             await AdminSession.Admin.ResetTimeAsync();
             foreach (var session in OwnedSessions)
+            {
                 session.Dispose();
+            }
+
             AdminSession.Dispose();
         }
     }

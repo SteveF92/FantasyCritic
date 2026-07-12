@@ -365,7 +365,9 @@ public class AdminController : FantasyCriticController
     {
         var user = await _userManager.FindByIdAsync(userID.ToString());
         if (user is null)
+        {
             return NotFound();
+        }
 
         var roles = await _userManager.GetRolesAsync(user);
         return new FantasyCriticUserViewModel(user, roles);
@@ -379,7 +381,9 @@ public class AdminController : FantasyCriticController
     {
         var user = await _userManager.FindByIdAsync(request.UserID.ToString());
         if (user is null)
+        {
             return NotFound();
+        }
 
         try
         {
@@ -400,7 +404,9 @@ public class AdminController : FantasyCriticController
     {
         var user = await _userManager.FindByIdAsync(request.UserID.ToString());
         if (user is null)
+        {
             return NotFound();
+        }
 
         await _userManager.RemoveFromRoleAsync(user, request.RoleName);
         return Ok();

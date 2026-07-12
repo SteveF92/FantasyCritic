@@ -20,8 +20,11 @@ internal static class LeagueTestHelpers
     {
         var options = await session.League.LeagueOptionsAsync();
         if (options.OpenYears.Count == 0)
+        {
             throw new InvalidOperationException(
                 "LeagueOptions returned no open years. Is the seed DB running?");
+        }
+
         return options.OpenYears.First();
     }
 

@@ -44,7 +44,9 @@ public sealed class CrontabField
     public int Next(int start)
     {
         if (start < _minValueSet)
+        {
             return _minValueSet;
+        }
 
         var startIndex = ValueToIndex(start);
         var lastIndex = ValueToIndex(_maxValueSet);
@@ -52,7 +54,9 @@ public sealed class CrontabField
         for (var i = startIndex; i <= lastIndex; i++)
         {
             if (_bits[i])
+            {
                 return IndexToValue(i);
+            }
         }
 
         return -1;
@@ -218,7 +222,9 @@ public sealed class CrontabField
         }
 
         if (interval < 1)
+        {
             interval = 1;
+        }
 
         int i;
 
@@ -228,7 +234,9 @@ public sealed class CrontabField
         //
 
         for (i = start - minValue; i <= (end - minValue); i += interval)
+        {
             _bits[i] = true;
+        }
 
         //
         // Make sure we remember the minimum value set so far Keep track of
@@ -237,12 +245,16 @@ public sealed class CrontabField
         //
 
         if (_minValueSet > start)
+        {
             _minValueSet = start;
+        }
 
         i += (minValue - interval);
 
         if (_maxValueSet < i)
+        {
             _maxValueSet = i;
+        }
     }
 
     public override string ToString()

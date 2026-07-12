@@ -107,7 +107,9 @@ public class BidProcessingTests : IntegrationTestBase
         }
         _adminSession?.Dispose();
         if (_league != null)
+        {
             await _league.DisposeAsync();
+        }
     }
 
     [Test]

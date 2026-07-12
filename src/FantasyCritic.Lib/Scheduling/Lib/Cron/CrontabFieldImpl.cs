@@ -85,10 +85,14 @@ public sealed class CrontabFieldImpl
     public void Format(CrontabField field, TextWriter writer, bool noNames)
     {
         if (field == null)
+        {
             throw new ArgumentNullException(nameof(field));
+        }
 
         if (writer == null)
+        {
             throw new ArgumentNullException(nameof(writer));
+        }
 
         var next = field.GetFirst();
         var count = 0;
@@ -112,7 +116,9 @@ public sealed class CrontabFieldImpl
             }
 
             if (count > 0)
+            {
                 writer.Write(',');
+            }
 
             if (first == last)
             {
@@ -170,10 +176,14 @@ public sealed class CrontabFieldImpl
     public void Parse(string str, CrontabFieldAccumulator acc)
     {
         if (acc == null)
+        {
             throw new ArgumentNullException(nameof(acc));
+        }
 
         if (string.IsNullOrEmpty(str))
+        {
             return;
+        }
 
         try
         {
@@ -200,7 +210,9 @@ public sealed class CrontabFieldImpl
         Debug.Assert(acc != null);
 
         if (str.Length == 0)
+        {
             throw new FormatException("A crontab field value cannot be empty.");
+        }
 
         //
         // Next, look for a list of values (e.g. 1,2,3).
@@ -211,7 +223,9 @@ public sealed class CrontabFieldImpl
         if (commaIndex > 0)
         {
             foreach (var token in str.Split(Comma))
+            {
                 InternalParse(token, acc);
+            }
         }
         else
         {
@@ -278,12 +292,16 @@ public sealed class CrontabFieldImpl
         Debug.Assert(str != null);
 
         if (str.Length == 0)
+        {
             throw new FormatException("A crontab field value cannot be empty.");
+        }
 
         var firstChar = str[0];
 
         if (firstChar >= '0' && firstChar <= '9')
+        {
             return int.Parse(str, CultureInfo.InvariantCulture);
+        }
 
         if (_names == null)
         {
@@ -295,7 +313,9 @@ public sealed class CrontabFieldImpl
         for (var i = 0; i < _names.Length; i++)
         {
             if (Comparer.IsPrefix(_names[i], str, CompareOptions.IgnoreCase))
+            {
                 return i + _minValue;
+            }
         }
 
         throw new FormatException(string.Format(

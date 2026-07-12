@@ -19,10 +19,16 @@ internal static class AntiForgeryHelper
     public static string ExtractToken(string html)
     {
         var m = TokenByValue.Match(html);
-        if (m.Success) return m.Groups[1].Value;
+        if (m.Success)
+        {
+            return m.Groups[1].Value;
+        }
 
         m = TokenByName.Match(html);
-        if (m.Success) return m.Groups[1].Value;
+        if (m.Success)
+        {
+            return m.Groups[1].Value;
+        }
 
         throw new InvalidOperationException(
             "Could not find __RequestVerificationToken in the page HTML. " +

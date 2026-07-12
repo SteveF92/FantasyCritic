@@ -76,7 +76,10 @@ public sealed class LeagueFixture : IAsyncDisposable
     public ValueTask DisposeAsync()
     {
         foreach (var session in _ownedSessions)
+        {
             session.Dispose();
+        }
+
         return ValueTask.CompletedTask;
     }
 
@@ -137,7 +140,9 @@ public static class LeagueFixtureBuilder
         var leagueID = await LeagueTestHelpers.CreateLeagueAsync(manager, scenario, year);
 
         foreach (var playerSession in playerSessions)
+        {
             await LeagueTestHelpers.InviteAndAcceptAsync(manager, playerSession, leagueID);
+        }
 
         var publishers = new List<TestPublisher>();
         var publisherIDsInOrder = new List<Guid>();
