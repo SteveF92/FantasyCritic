@@ -62,6 +62,7 @@ csharp_style_pattern_matching_over_as_with_null_check = true:warning
 csharp_prefer_static_local_function = true:warning
 dotnet_style_prefer_simplified_boolean_expressions = true:warning
 dotnet_style_collection_initializer = true:warning
+csharp_style_unused_value_assignment_preference = discard_variable:warning
 
 [{FantasyCritic.Test/**,FantasyCritic.IntegrationTests/**}.cs]
 dotnet_diagnostic.NUnit2045.severity = warning
