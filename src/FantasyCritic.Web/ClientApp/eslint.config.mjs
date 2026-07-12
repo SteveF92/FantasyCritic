@@ -1,6 +1,6 @@
 import globals from "globals";
 import pluginJs from "@eslint/js";
-import tseslint from "@typescript-eslint/eslint-plugin"; // Adjusted to match the package name
+import tseslint from "typescript-eslint";
 import pluginVue from "eslint-plugin-vue";
 
 /** @type {import('eslint').Linter.FlatConfig[]} */
