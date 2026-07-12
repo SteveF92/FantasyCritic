@@ -27,6 +27,7 @@ csharp_prefer_braces = true:warning
 csharp_style_prefer_null_check_over_type_check = true:warning
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
 csharp_style_pattern_matching_over_is_with_cast_check = true:warning
+csharp_style_prefer_not_pattern = true:warning
 # Collection expressions: allow [] for empty/new, but NOT [..x] from .ToList() (IDE0305).
 csharp_style_prefer_collection_expression = true:suggestion
 dotnet_diagnostic.IDE0305.severity = none
@@ -40,7 +41,6 @@ dotnet_diagnostic.IDE0054.severity = none
 dotnet_diagnostic.IDE0074.severity = none
 dotnet_diagnostic.IDE0037.severity = none
 dotnet_diagnostic.IDE0057.severity = none
-dotnet_diagnostic.IDE0083.severity = none
 dotnet_diagnostic.IDE0031.severity = none
 dotnet_diagnostic.IDE0044.severity = none
 
