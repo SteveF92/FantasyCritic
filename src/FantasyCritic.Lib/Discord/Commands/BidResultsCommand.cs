@@ -1,4 +1,3 @@
-using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Models;

@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using FantasyCritic.FakeRepo.TestUtilities;
 using FantasyCritic.Lib.Discord.Handlers;
 using FantasyCritic.Lib.Domain;
