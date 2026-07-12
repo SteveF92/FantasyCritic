@@ -50,10 +50,9 @@ export default {
     },
     setCurrentActivePlayers() {
       this.internalPlayerActive = {};
-      let outerScope = this;
-      this.conference.players.forEach(function (player) {
-        let playerIsActive = outerScope.userIsActive(player);
-        outerScope.internalPlayerActive[player.userID] = {
+      this.conference.players.forEach((player) => {
+        let playerIsActive = this.userIsActive(player);
+        this.internalPlayerActive[player.userID] = {
           displayName: player.displayName,
           active: playerIsActive
         };
