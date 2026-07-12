@@ -153,7 +153,7 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         bool showEditedGameNews = gameNewsChannel?.GameNewsSetting.ShowEditedGameNews ?? false;
         var skippedTags = gameNewsChannel?.SkippedTags ?? new List<MasterGameTag>();
 
-        string GetEmoji(bool? setting) => setting switch
+        static string GetEmoji(bool? setting) => setting switch
         {
             true => "✅",
             false => "❌",
