@@ -34,8 +34,10 @@ export default [
   // JavaScript and TypeScript specific configurations
   pluginJs.configs.recommended,
   ...tseslint.configs.recommended,
-  // Vue-specific configurations
-  ...pluginVue.configs["flat/essential"],
+  // Vue-specific configurations (vue2-* presets: this app runs Vue 2.7, and the
+  // default "flat/essential" preset targets Vue 3, flagging valid Vue 2 syntax
+  // like .sync/.native modifiers and filters as errors)
+  ...pluginVue.configs["flat/vue2-essential"],
   {
     files: ["**/*.vue"],
     languageOptions: {
