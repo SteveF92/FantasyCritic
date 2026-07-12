@@ -1,3 +1,4 @@
+using System.Data;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -6,7 +7,6 @@ using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
-using System.Data;
 
 namespace FantasyCritic.MySQL;
 

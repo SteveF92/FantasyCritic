@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
-using System.Text.Json.Serialization;
 
 namespace FantasyCritic.Web.Models.RoundTrip;
 

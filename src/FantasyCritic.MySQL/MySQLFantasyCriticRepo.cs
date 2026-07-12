@@ -1,19 +1,19 @@
 using System.Data;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Domain.Calculations;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 using Serilog;
-using FantasyCritic.Lib.Domain.Combinations;
-using FantasyCritic.Lib.SharedSerialization.Database;
 
 namespace FantasyCritic.MySQL;
 

@@ -1,3 +1,6 @@
+using System.Net;
+using System.Runtime.InteropServices;
+using System.Text.Json;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -38,9 +41,6 @@ using Microsoft.Extensions.Hosting;
 using NodaTime.Serialization.SystemTextJson;
 using NSwag;
 using Serilog;
-using System.Net;
-using System.Runtime.InteropServices;
-using System.Text.Json;
 using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
 using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 

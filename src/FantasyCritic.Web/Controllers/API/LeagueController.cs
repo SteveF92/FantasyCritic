@@ -1,3 +1,8 @@
+using System.Globalization;
+using System.IO;
+using System.IO.Compression;
+using System.Text;
+using System.Text.Json;
 using CsvHelper;
 using FantasyCritic.Lib;
 using FantasyCritic.Lib.BusinessLogicFunctions;
@@ -24,11 +29,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Logging;
-using System.Globalization;
-using System.IO;
-using System.IO.Compression;
-using System.Text;
-using System.Text.Json;
 
 namespace FantasyCritic.Web.Controllers.API;
 

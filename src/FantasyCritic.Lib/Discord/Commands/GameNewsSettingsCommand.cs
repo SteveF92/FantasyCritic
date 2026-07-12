@@ -1,10 +1,10 @@
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
-using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Lib.Interfaces;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.Discord.Handlers;
+using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.Interfaces;
 using Microsoft.Extensions.Caching.Memory;
 
 namespace FantasyCritic.Lib.Discord.Commands;

@@ -1,12 +1,12 @@
+using System;
+using System.Collections.Generic;
+using FantasyCritic.FakeRepo.TestUtilities;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Identity;
 using NodaTime;
-using System;
-using System.Collections.Generic;
-using FantasyCritic.FakeRepo.TestUtilities;
 
 namespace FantasyCritic.Test.Discord;
 

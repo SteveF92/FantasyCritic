@@ -1,3 +1,6 @@
+using System.ComponentModel.Design;
+using System.Reflection;
+using System.Text.Json;
 using DiscordDotNetUtilities;
 using FantasyCritic.Lib;
 using FantasyCritic.Lib.DependencyInjection;
@@ -18,9 +21,6 @@ using FantasyCritic.MySQL.SyncingRepos;
 using Microsoft.Extensions.Configuration;
 using NodaTime;
 using Serilog;
-using System.ComponentModel.Design;
-using System.Reflection;
-using System.Text.Json;
 
 namespace FantasyCritic.LocalDatabaseTool;
 

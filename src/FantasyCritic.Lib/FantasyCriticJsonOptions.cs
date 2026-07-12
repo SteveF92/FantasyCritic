@@ -1,5 +1,5 @@
-using NodaTime.Serialization.SystemTextJson;
 using System.Text.Json;
+using NodaTime.Serialization.SystemTextJson;
 
 namespace FantasyCritic.Lib;
 

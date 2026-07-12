@@ -1,3 +1,5 @@
+using System.Reflection;
+using System.Text;
 using DbUp;
 using DbUp.Engine;
 using DbUp.Support;
@@ -10,8 +12,6 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Events;
 using Serilog.Sinks.Grafana.Loki;
-using System.Reflection;
-using System.Text;
 
 namespace FantasyCritic.DatabaseUpdater;
 

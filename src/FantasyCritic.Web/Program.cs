@@ -1,3 +1,7 @@
+using System.IO;
+using System.Reflection;
+using System.Runtime.InteropServices;
+using System.Security.Claims;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.MySQL.DapperTypeMaps;
@@ -8,10 +12,6 @@ using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.Grafana.Loki;
-using System.IO;
-using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Security.Claims;
 
 namespace FantasyCritic.Web;
 

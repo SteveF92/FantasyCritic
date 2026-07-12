@@ -3,10 +3,10 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 using JetBrains.Annotations;
 

@@ -1,7 +1,7 @@
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Domain.Combinations;
 
 namespace FantasyCritic.Lib.Services;
 

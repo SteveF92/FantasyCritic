@@ -1,9 +1,9 @@
+using System.Text.Json;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.SharedSerialization.API;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
 
 namespace FantasyCritic.Web.Controllers.API;
 

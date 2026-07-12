@@ -1,3 +1,4 @@
+using System.Reflection;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
@@ -8,7 +9,6 @@ using FantasyCritic.MySQL.DapperTypeMaps;
 using Microsoft.Extensions.Configuration;
 using MySqlConnector;
 using NodaTime;
-using System.Reflection;
 
 namespace FantasyCritic.DBUtility;
 

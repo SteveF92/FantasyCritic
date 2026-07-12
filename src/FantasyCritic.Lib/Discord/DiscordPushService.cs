@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Discord;
 using Discord.WebSocket;
 using DiscordDotNetUtilities;
@@ -18,7 +19,6 @@ using FantasyCritic.Lib.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
-using System.Collections.Concurrent;
 
 namespace FantasyCritic.Lib.Discord;
 

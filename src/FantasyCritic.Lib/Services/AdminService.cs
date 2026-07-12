@@ -1,18 +1,18 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
-using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.OpenCritic;
-using FantasyCritic.Lib.Utilities;
-using FantasyCritic.Lib.Domain.LeagueActions;
-using FantasyCritic.Lib.GG;
-using Serilog;
-using FantasyCritic.Lib.Patreon;
-using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Domain.Trades;
+using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.GG;
+using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.OpenCritic;
+using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Royale;
+using FantasyCritic.Lib.Utilities;
+using Serilog;
 
 namespace FantasyCritic.Lib.Services;
 

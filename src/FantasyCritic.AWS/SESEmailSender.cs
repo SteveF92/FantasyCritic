@@ -1,9 +1,9 @@
-using FantasyCritic.Lib.Interfaces;
-using System.Threading.Tasks;
-using Amazon.SimpleEmailV2;
-using Amazon;
-using Amazon.SimpleEmailV2.Model;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Amazon;
+using Amazon.SimpleEmailV2;
+using Amazon.SimpleEmailV2.Model;
+using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.AWS;
 

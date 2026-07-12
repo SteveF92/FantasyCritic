@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using FantasyCritic.FakeRepo.Factories;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
@@ -6,10 +10,6 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using NodaTime;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace FantasyCritic.FakeRepo;
 

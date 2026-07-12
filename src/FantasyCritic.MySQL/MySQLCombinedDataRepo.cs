@@ -1,15 +1,15 @@
+using System.Data;
+using FantasyCritic.Lib;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.MySQL.Entities;
-using System.Data;
 using FantasyCritic.Lib.SharedSerialization.Database;
+using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Conferences;
-using FantasyCritic.MySQL.Entities.Trades;
 using FantasyCritic.MySQL.Entities.Identity;
-using FantasyCritic.Lib.Domain.Conferences;
-using FantasyCritic.Lib;
+using FantasyCritic.MySQL.Entities.Trades;
 
 namespace FantasyCritic.MySQL;
 

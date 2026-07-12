@@ -1,8 +1,8 @@
 using FantasyCritic.Lib.Extensions;
-using NodaTime.Text;
 using NodaTime;
-using NUnit.Framework;
 using NodaTime.Testing;
+using NodaTime.Text;
+using NUnit.Framework;
 
 namespace FantasyCritic.Test;
 

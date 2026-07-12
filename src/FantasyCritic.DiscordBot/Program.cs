@@ -1,3 +1,4 @@
+using System.Reflection;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -5,6 +6,7 @@ using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Handlers;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -17,8 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using NodaTime;
 using Serilog;
 using Serilog.Events;
-using System.Reflection;
-using FantasyCritic.Lib.Discord.Handlers;
 
 namespace FantasyCritic.DiscordBot;
 
