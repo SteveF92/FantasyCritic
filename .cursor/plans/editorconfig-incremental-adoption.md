@@ -96,3 +96,29 @@ All format-only-viable rules identified from `orig-editorconfig-branch` are now 
 ## Reference: orig branch vs main
 
 `orig-editorconfig-branch` used `dotnet format --severity info` (all suggestions), which bundled many changes including NUnit analyzer fixes. Main uses `--severity warn` for incremental, reviewable commits.
+
+## ClientApp format/lint pipeline (Prettier + ESLint) — done
+
+Goal driving this: one command (`scripts/Format.ps1` / `scripts/format.sh`, with `-Check` for CI-style verification) that applies or verifies *every* agreed rule, C# and ClientApp alike. The C# side already worked; the ClientApp side turned out to be completely broken in several independent ways. Fixed 2026-07-12, HEAD **`49497ce9`**, ten commits (oldest/simplest → newest/most involved):
+
+| Commit | What |
+|--------|------|
+| `b47fbe2b` | Fixed the actual bug that started this: `criticsRoyaleInfo.vue` had `<ul>` nested inside `<p>` (invalid HTML — browsers implicitly close `<p>` before block content), which crashed Prettier's parser outright. |
+| `10d905bc` | `eslint.config.mjs` imported `@typescript-eslint/eslint-plugin` (whose `configs.recommended` is a single object) instead of the `typescript-eslint` meta-package (array of flat configs) the `...tseslint.configs.recommended` spread needs. Crashed every ESLint run with `TypeError: ... is not iterable`. ESLint had apparently not run successfully in a while. |
+| `b615d283` | `--ignore-path .gitignore` was removed entirely in ESLint 9's flat config (`Invalid option`). Moved the intent (skip `dist/` and the NSwag-generated API client, mirroring root `.gitignore`) into `eslint.config.mjs`'s own `ignores` array. |
+| `db86e57f` | Once ESLint could run, it lit up `no-undef` on `process`/Node globals in root scripts (`aspnetcore-https.js`, `vite.*.config.js`, `eslint.config.mjs` itself — all Node context, not browser) and in `basicMixin.js` (`process.env.NODE_ENV`, which Vite statically replaces at build time even in browser code). Added the missing globals. |
+| `ce2693d8` | Biggest false-positive source: `eslint-plugin-vue`'s `flat/essential` preset targets **Vue 3** and flags valid Vue 2 syntax (`.sync`/`.native` modifiers, filters) as errors. This app runs Vue 2.7. Switched to the dedicated `flat/vue2-essential` preset — dropped errors from **217 → 16**. |
+| `7a66c231` | The original symptom: `npm exec -- prettier --check src/` (and the equivalent `eslint` invocation) dumped megabytes of raw matched-file content to stdout on this machine/npm version instead of terse pass/fail output — even on a fully clean run. `npm run <script>` doesn't have this problem. Added `format:check`/`lint:check` npm scripts mirroring the existing `format`/`lint` scripts, and switched `Format.ps1`/`format.sh` to call them instead of `npm exec --`. |
+| `5b0f147a` | Fixed the remaining mechanical, zero-behavior-change findings: unused `catch (error)` bindings (6 files, → ES2019 optional catch binding) and `prefer-const` (2 files). |
+| `ad590901` | Two files aliased `let outerScope = this` to reach the component from a `function()` callback passed to `.forEach`. Converted to arrow functions (preserve `this` lexically) and dropped the alias. |
+| `2ff1c500` | Deleted `validUnannounced() {}` in `masterGameRequest.vue` — an empty computed property, always returning `undefined`, referenced nowhere else. Dead stub from an earlier iteration of the page. |
+| `49497ce9` | `royalePublisherGraph.vue`'s `releaseAnnotations` computed getter called `this.$set(...)` on `byDate`, a plain local object created fresh inside the getter (never part of Vue's reactive data). `$set` exists only to make reactive-object property adds trigger re-renders, which is moot for a non-reactive local — replaced with a plain assignment. Fixes `vue/no-side-effects-in-computed-properties` and `vue/no-deprecated-delete-set` with no behavior change. |
+
+Verified after each stage: `scripts/Format.ps1` and `scripts/Format.ps1 -Check` both exit 0 end-to-end (C# whitespace/style/NUnit2045 + ClientApp prettier + eslint), and `npm run build` still succeeds.
+
+### What's next
+
+- **C# side**: the two blocked items from "Remaining work" above (private `_` field naming, unused-private/mark-static) are unchanged — still need a manual approach since format can't fix them solution-wide.
+- **ClientApp side**: the pipeline is clean at `flat/vue2-essential` (ESLint's "essential" tier — Vue's baseline error-prevention rules). Stepping up to `flat/vue2-strongly-recommended` or `flat/vue2-recommended` would surface more style-level findings; not done here since it wasn't part of the original ask — worth a deliberate follow-up if wanted.
+- **No CI enforcement found** (no `.github/workflows`, no `azure-pipelines.yml` in this repo) — `Format.ps1 -Check` / `format.sh -Check` aren't wired into any pipeline yet, so nothing currently stops this from drifting out of sync again. Worth deciding whether/where to add that check if this repo's CI lives elsewhere.
+- Build output surfaced a large, unrelated pile of Sass legacy `@import`/`darken()`/`lighten()` deprecation warnings (Dart Sass 3.0 removal). Not blocking anything today; noted here only because it was seen in passing and is a separate future cleanup (modern `@use`/`color.scale`), not part of this effort.
