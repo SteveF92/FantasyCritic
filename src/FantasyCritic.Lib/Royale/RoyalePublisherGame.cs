@@ -239,7 +239,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
 
     public bool Equals(RoyalePublisherGame? other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }
@@ -254,7 +254,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj))
+        if (obj is null)
         {
             return false;
         }

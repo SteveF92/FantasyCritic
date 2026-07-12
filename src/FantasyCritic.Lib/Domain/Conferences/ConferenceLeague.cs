@@ -19,7 +19,7 @@ public class ConferenceLeague : IEquatable<ConferenceLeague>
 
     public bool Equals(ConferenceLeague? other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }
@@ -34,7 +34,7 @@ public class ConferenceLeague : IEquatable<ConferenceLeague>
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj))
+        if (obj is null)
         {
             return false;
         }

@@ -70,7 +70,7 @@ public class FantasyCriticUser : IdentityUser<Guid>, IMinimalFantasyCriticUser
 
     public virtual bool Equals(IVeryMinimalFantasyCriticUser? other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }
@@ -85,7 +85,7 @@ public class FantasyCriticUser : IdentityUser<Guid>, IMinimalFantasyCriticUser
 
     public override bool Equals(object? other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }

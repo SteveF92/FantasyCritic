@@ -255,7 +255,7 @@ public class Publisher : IEquatable<Publisher>
 
     public bool Equals(Publisher? other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }
@@ -270,7 +270,7 @@ public class Publisher : IEquatable<Publisher>
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj))
+        if (obj is null)
         {
             return false;
         }

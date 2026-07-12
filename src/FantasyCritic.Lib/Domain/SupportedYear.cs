@@ -34,7 +34,7 @@ public class SupportedYear : IComparable<SupportedYear>, IEquatable<SupportedYea
             return 0;
         }
 
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return 1;
         }
@@ -44,7 +44,7 @@ public class SupportedYear : IComparable<SupportedYear>, IEquatable<SupportedYea
 
     public bool Equals(SupportedYear? other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }
@@ -59,7 +59,7 @@ public class SupportedYear : IComparable<SupportedYear>, IEquatable<SupportedYea
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj))
+        if (obj is null)
         {
             return false;
         }

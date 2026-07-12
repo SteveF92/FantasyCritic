@@ -15,7 +15,7 @@ public class SpecialGameSlot : IEquatable<SpecialGameSlot>
 
     public bool Equals(SpecialGameSlot? other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }
@@ -30,7 +30,7 @@ public class SpecialGameSlot : IEquatable<SpecialGameSlot>
 
     public override bool Equals(object? obj)
     {
-        if (ReferenceEquals(null, obj))
+        if (obj is null)
         {
             return false;
         }

@@ -23,6 +23,9 @@ dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
 dotnet_sort_system_directives_first = true:warning
 dotnet_separate_import_directive_groups = true:warning
 csharp_prefer_braces = true:warning
+csharp_style_prefer_null_check_over_type_check = true:warning
+dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
+# csharp_style_prefer_collection_expression = true:warning
 
 [*.{js,json,vue}]
 indent_size = 2

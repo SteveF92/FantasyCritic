@@ -4,7 +4,7 @@ public record MinimalFantasyCriticUser(Guid UserID, string DisplayName, string E
 {
     public virtual bool Equals(IVeryMinimalFantasyCriticUser? other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }
@@ -27,7 +27,7 @@ public record VeryMinimalFantasyCriticUser(Guid UserID, string DisplayName) : IV
 {
     public virtual bool Equals(IVeryMinimalFantasyCriticUser? other)
     {
-        if (ReferenceEquals(null, other))
+        if (other is null)
         {
             return false;
         }
