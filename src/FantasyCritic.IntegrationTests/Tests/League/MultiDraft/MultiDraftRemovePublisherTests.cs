@@ -76,9 +76,10 @@ public class MultiDraftRemovePublisherTests : IntegrationTestBase
             await LeagueTestHelpers.InviteAndAcceptAsync(manager, playerSession, leagueID);
         }
 
-        var publisherIDsInOrder = new List<Guid>();
-        publisherIDsInOrder.Add(await LeagueTestHelpers.CreatePublisherAsync(
-            manager, leagueID, year, "Manager Publisher"));
+        var publisherIDsInOrder = new List<Guid>
+        {
+            await LeagueTestHelpers.CreatePublisherAsync(manager, leagueID, year, "Manager Publisher")
+        };
 
         for (var i = 0; i < playerSessions.Count; i++)
         {
