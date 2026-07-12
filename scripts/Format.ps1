@@ -119,7 +119,7 @@ if ($Check) {
     Invoke-Step "ClientApp (prettier --check)" {
         Push-Location $clientAppDir
         try {
-            npm exec -- prettier --check src/
+            npm run format:check
         }
         finally {
             Pop-Location
@@ -129,7 +129,7 @@ if ($Check) {
     Invoke-Step "ClientApp (eslint)" {
         Push-Location $clientAppDir
         try {
-            npm exec -- eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore
+            npm run lint:check
         }
         finally {
             Pop-Location

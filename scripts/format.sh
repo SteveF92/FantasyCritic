@@ -73,8 +73,8 @@ fi
 if [[ "$CHECK" -eq 1 ]]; then
     (
         cd "$CLIENT_APP_DIR"
-        run_step "ClientApp (prettier --check)" npm exec -- prettier --check src/
-        run_step "ClientApp (eslint)" npm exec -- eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore
+        run_step "ClientApp (prettier --check)" npm run format:check
+        run_step "ClientApp (eslint)" npm run lint:check
     )
 else
     (
