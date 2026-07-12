@@ -1,8 +1,8 @@
 root = true
 
 # Baseline: whitespace only. Format.ps1 applies these via `dotnet format whitespace`.
-# To adopt a C# style rule incrementally, add it under [*.cs] at :warning (or higher),
-# run `scripts/Format.ps1 -Style`, commit the rule + resulting code changes, repeat.
+# To adopt a C# style rule incrementally, add it under [*.cs] at :warning, run
+# dotnet msbuild FantasyCritic.slnx -t:Format, commit the rule + resulting code changes, repeat.
 
 [*]
 charset = utf-8
@@ -17,7 +17,7 @@ indent_size = 2
 [*.cs]
 indent_size = 4
 
-# Style rules (add one at a time at :warning, run scripts/Format.ps1 -Style, commit, repeat):
+# Style rules (add one at a time at :warning, run dotnet msbuild FantasyCritic.slnx -t:Format, commit, repeat):
 dotnet_diagnostic.IDE0005.severity = warning
 csharp_style_implicit_object_creation_when_type_is_apparent = false:suggestion
 dotnet_style_require_accessibility_modifiers = for_non_interface_members:warning
@@ -26,8 +26,6 @@ dotnet_separate_import_directive_groups = true:warning
 csharp_prefer_braces = true:warning
 csharp_style_prefer_null_check_over_type_check = true:warning
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
-csharp_style_pattern_matching_over_is_with_cast_check = true:warning
-csharp_style_prefer_not_pattern = true:warning
 # Collection expressions: allow [] for empty/new, but NOT [..x] from .ToList() (IDE0305).
 csharp_style_prefer_collection_expression = true:suggestion
 dotnet_diagnostic.IDE0305.severity = none
@@ -41,7 +39,6 @@ dotnet_diagnostic.IDE0054.severity = none
 dotnet_diagnostic.IDE0074.severity = none
 dotnet_diagnostic.IDE0037.severity = none
 dotnet_diagnostic.IDE0057.severity = none
-dotnet_diagnostic.IDE0031.severity = none
 dotnet_diagnostic.IDE0044.severity = none
 
 [*.{js,json,vue}]

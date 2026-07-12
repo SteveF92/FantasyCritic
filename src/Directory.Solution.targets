@@ -2,15 +2,13 @@
   <!--
     Solution-level format targets (CLI only; not loaded by Visual Studio).
 
-    Baseline Format applies whitespace rules from src/.editorconfig only (indent, EOL,
-    final newline, trim trailing whitespace). It does not run code-style or analyzer fixes.
+    Baseline Format applies whitespace from src/.editorconfig, then code-style rules at
+    warning severity or higher (dotnet format style at warn severity).
 
-    After adding a style rule to .editorconfig at warning severity or higher, run FormatStyle
-    (or scripts/Format.ps1 -Style) to apply that rule incrementally.
+    After adding a style rule to .editorconfig at :warning, run Format to apply it.
 
     Apply:  dotnet msbuild FantasyCritic.slnx -t:Format
     Check:  dotnet msbuild FantasyCritic.slnx -t:FormatCheck
-    Style:  dotnet msbuild FantasyCritic.slnx -t:FormatStyle
   -->
   <PropertyGroup>
     <_FormatSolutionPath>$(MSBuildThisFileDirectory)FantasyCritic.slnx</_FormatSolutionPath>
@@ -21,11 +19,15 @@
   <Target Name="Format">
     <Message Importance="High" Text="Formatting C# whitespace (dotnet format whitespace)..." />
     <Exec Command="dotnet $(_FormatWhitespaceArgs)" />
+    <Message Importance="High" Text="Applying C# style rules at warning+ (dotnet format style --severity warn)..." />
+    <Exec Command="dotnet $(_FormatStyleArgs)" />
   </Target>
 
   <Target Name="FormatCheck">
     <Message Importance="High" Text="Checking C# whitespace (dotnet format whitespace --verify-no-changes)..." />
     <Exec Command="dotnet $(_FormatWhitespaceArgs) --verify-no-changes" />
+    <Message Importance="High" Text="Checking C# style rules at warning+ (dotnet format style --severity warn --verify-no-changes)..." />
+    <Exec Command="dotnet $(_FormatStyleArgs) --verify-no-changes" />
   </Target>
 
   <Target Name="FormatStyle">
