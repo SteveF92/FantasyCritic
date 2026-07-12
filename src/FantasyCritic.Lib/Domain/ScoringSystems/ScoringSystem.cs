@@ -68,7 +68,7 @@ public abstract class ScoringSystem : IEquatable<ScoringSystem>
             return true;
         }
 
-        if (obj.GetType() != this.GetType())
+        if (obj.GetType() != GetType())
         {
             return false;
         }

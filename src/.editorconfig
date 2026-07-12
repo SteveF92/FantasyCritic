@@ -44,6 +44,10 @@ dotnet_diagnostic.IDE0290.severity = none
 dotnet_diagnostic.IDE0074.severity = none
 dotnet_diagnostic.IDE0037.severity = none
 dotnet_diagnostic.IDE0057.severity = none
+dotnet_style_qualification_for_field = false:warning
+dotnet_style_qualification_for_property = false:warning
+dotnet_style_qualification_for_method = false:warning
+dotnet_style_qualification_for_event = false:warning
 
 [*.{js,json,vue}]
 indent_size = 2
