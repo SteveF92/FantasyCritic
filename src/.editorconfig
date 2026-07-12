@@ -60,6 +60,7 @@ dotnet_style_object_initializer = true:warning
 dotnet_style_prefer_auto_properties = true:warning
 csharp_style_pattern_matching_over_as_with_null_check = true:warning
 csharp_prefer_static_local_function = true:warning
+dotnet_style_prefer_simplified_boolean_expressions = true:warning
 
 [{FantasyCritic.Test/**,FantasyCritic.IntegrationTests/**}.cs]
 dotnet_diagnostic.NUnit2045.severity = warning

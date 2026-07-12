@@ -5,7 +5,7 @@ public record AutoDraftSettings
     public AutoDraftSettings(AutoDraftMode mode, bool onlyDraftFromWatchlist)
     {
         Mode = mode;
-        OnlyDraftFromWatchlist = mode.Equals(AutoDraftMode.Off) ? false : onlyDraftFromWatchlist;
+        OnlyDraftFromWatchlist = !mode.Equals(AutoDraftMode.Off) && onlyDraftFromWatchlist;
     }
 
     public AutoDraftMode Mode { get; init; }
