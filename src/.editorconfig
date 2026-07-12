@@ -26,6 +26,7 @@ dotnet_separate_import_directive_groups = true:warning
 csharp_prefer_braces = true:warning
 csharp_style_prefer_null_check_over_type_check = true:warning
 dotnet_style_prefer_is_null_check_over_reference_equality_method = true:warning
+csharp_prefer_simple_using_statement = true:warning
 # Collection expressions: allow [] for empty/new, but NOT [..x] from .ToList() (IDE0305).
 csharp_style_prefer_collection_expression = true:suggestion
 dotnet_diagnostic.IDE0305.severity = none
