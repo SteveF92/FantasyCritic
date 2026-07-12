@@ -13,7 +13,7 @@ Format applies `dotnet format style --severity warn` — only rules at warning s
 
 ## Current state (after reset to `65a50550`)
 
-HEAD is **`65a50550`** — `Apply EditorConfig rule: predefined type aliases.`
+HEAD is **`a1a3a01a`** — `Apply EditorConfig rule: file-scoped namespaces.`
 
 ### Applied via format (keep)
 
@@ -21,6 +21,7 @@ HEAD is **`65a50550`** — `Apply EditorConfig rule: predefined type aliases.`
 |------|--------|---------------|
 | Remove `this.` qualification | `fe2c5eed` | 18 domain `Equals` files auto-fixed |
 | Predefined type aliases (`int`/`string` vs `Int32`/`String`) | `65a50550` | Rule added; codebase already conformed — no code changes |
+| File-scoped namespaces (`csharp_style_namespace_declarations = file_scoped`) | `a1a3a01a` | Rule added; codebase already conformed (0 block-scoped namespaces) — no code changes |
 
 ### Reverted (do not re-apply manually)
 
@@ -40,6 +41,9 @@ HEAD is **`65a50550`** — `Apply EditorConfig rule: predefined type aliases.`
 | 3 | Private `_` field naming | ❌ Blocked at solution scope | Per-project `dotnet format` or IDE per-file fixes only; no solution-wide auto-fix |
 | 4 | Unused private / mark static | ⚠️ Mostly blocked | IDE0052 (unread private fields) has **no code fix**; static marking on repos did not run at warn severity |
 | 5 | `Assert.EnterMultipleScope` (NUnit2045) | ✅ Separate path | Not an EditorConfig style rule; see below |
+| 6 | File-scoped namespaces (`csharp_style_namespace_declarations`) | ✅ Done | `a1a3a01a` — found via full diff of `orig-editorconfig-branch` `.editorconfig` vs current; had been missed in earlier triage. Rule added; codebase already conformed — no code changes |
+
+A full `git diff orig-editorconfig-branch:src/.editorconfig main:src/.editorconfig` was reviewed line-by-line (2026-07-12) to confirm no other rules from the orig branch were missed. Result: only file-scoped namespaces (above) had been overlooked; everything else in the orig branch's `.editorconfig` maps to a row in this table, the skip list below, or a guard/opt-out that main already matches (e.g. disabling expression-bodied members, `var` for built-ins, primary constructors, switch expressions, `CA2007`).
 
 ### Assert.EnterMultipleScope (NUnit2045)
 
