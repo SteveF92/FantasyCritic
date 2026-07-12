@@ -1,0 +1,86 @@
+# EditorConfig incremental adoption
+
+Adopting rules from `orig-editorconfig-branch` one at a time via format, not manual edits.
+
+## Workflow
+
+1. Add rule to `src/.editorconfig` at `:warning`
+2. Run `dotnet msbuild FantasyCritic.slnx -t:Format` (from `src/`)
+3. Commit the rule + any resulting code changes
+4. Repeat
+
+Format applies `dotnet format style --severity warn` — only rules at warning severity or higher are auto-fixed.
+
+## Current state (after reset to `65a50550`)
+
+HEAD is **`65a50550`** — `Apply EditorConfig rule: predefined type aliases.`
+
+### Applied via format (keep)
+
+| Rule | Commit | Format result |
+|------|--------|---------------|
+| Remove `this.` qualification | `fe2c5eed` | 18 domain `Equals` files auto-fixed |
+| Predefined type aliases (`int`/`string` vs `Int32`/`String`) | `65a50550` | Rule added; codebase already conformed — no code changes |
+
+### Reverted (do not re-apply manually)
+
+| Rule | Why it was reverted |
+|------|---------------------|
+| Private `_` field naming | Format cannot fix IDE1006 solution-wide: `NamingStyleCodeFixProvider doesn't support Fix All in Solution`. A manual 32-file rename was attempted and rolled back. |
+| Unused private / mark static (IDE0051, IDE0052, IDE0059) | Uncommitted partial work was discarded on reset. Format auto-fixed almost nothing; IDE0052 has no code fix. |
+
+## Remaining work
+
+### Confirmed goals (from `orig-editorconfig-branch` review)
+
+| # | Rule | Format-only viable? | Notes |
+|---|------|---------------------|-------|
+| 1 | Predefined type aliases | ✅ Done | `65a50550` |
+| 2 | Remove `this.` | ✅ Done | `fe2c5eed` |
+| 3 | Private `_` field naming | ❌ Blocked at solution scope | Per-project `dotnet format` or IDE per-file fixes only; no solution-wide auto-fix |
+| 4 | Unused private / mark static | ⚠️ Mostly blocked | IDE0052 (unread private fields) has **no code fix**; static marking on repos did not run at warn severity |
+| 5 | `Assert.EnterMultipleScope` (NUnit2045) | ✅ Separate path | Not an EditorConfig style rule; see below |
+
+### Assert.EnterMultipleScope (NUnit2045)
+
+Not applied yet. This is the large test-only change (~32 files, ~47 scopes on orig branch).
+
+Add to `src/.editorconfig`, scoped to test projects:
+
+```editorconfig
+[{FantasyCritic.Test/**,FantasyCritic.IntegrationTests/**}.cs]
+dotnet_diagnostic.NUnit2045.severity = warning
+```
+
+Then try format, or target the diagnostic directly:
+
+```powershell
+dotnet format src/FantasyCritic.Test/FantasyCritic.Test.csproj --diagnostics NUnit2045 --severity warning
+dotnet format src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.csproj --diagnostics NUnit2045 --severity warning
+```
+
+Effect: wraps groups of independent `Assert.That` calls in `using (Assert.EnterMultipleScope()) { ... }` so all failures report in one test run.
+
+### Explicitly skipping
+
+- Null propagation (`?.`)
+- Broader pattern matching (`is < 2 or > 20`, `csharp_style_prefer_pattern_matching`)
+- IDE0037 anonymous-type member inference (`DraftID = draft.DraftID` → `draft.DraftID`)
+
+## Suggested order (format-only, realistic)
+
+1. **Assert.EnterMultipleScope** — next up; test projects only
+2. **Unused private / mark static** — only if willing to accept manual cleanup for IDE0052 violations format cannot fix
+3. **Private `_` naming** — skip or defer unless approach changes (per-project format, IDE fixes)
+
+## Format limitations discovered
+
+| Diagnostic | Issue |
+|------------|-------|
+| IDE1006 (naming) | `NamingStyleCodeFixProvider` does not support Fix All in Solution |
+| IDE0052 | No associated code fix — unused private fields must be removed by hand |
+| IDE0051 / IDE0059 | Little or no auto-fix at solution scope with `--severity warn` |
+
+## Reference: orig branch vs main
+
+`orig-editorconfig-branch` used `dotnet format --severity info` (all suggestions), which bundled many changes including NUnit analyzer fixes. Main uses `--severity warn` for incremental, reviewable commits.
