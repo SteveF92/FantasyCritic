@@ -59,41 +59,56 @@ public class TradePrivacyTests : IntegrationTestBase
     [Test]
     public void PrivateProposal_IsVisibleOnlyToProposerAndCounterparty()
     {
-        Assert.That(_privateProposerProposalActiveTrades, Does.Contain(_privateAcceptedTradeID));
-        Assert.That(_privateCounterPartyProposalActiveTrades, Does.Contain(_privateAcceptedTradeID));
-        Assert.That(_privateNonInvolvedProposalActiveTrades, Does.Not.Contain(_privateAcceptedTradeID));
-        Assert.That(_privateManagerProposalActiveTrades, Does.Not.Contain(_privateAcceptedTradeID));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_privateProposerProposalActiveTrades, Does.Contain(_privateAcceptedTradeID));
+            Assert.That(_privateCounterPartyProposalActiveTrades, Does.Contain(_privateAcceptedTradeID));
+            Assert.That(_privateNonInvolvedProposalActiveTrades, Does.Not.Contain(_privateAcceptedTradeID));
+            Assert.That(_privateManagerProposalActiveTrades, Does.Not.Contain(_privateAcceptedTradeID));
+        }
     }
 
     [Test]
     public void PrivateProposal_BlocksNonInvolvedDirectVoteAndManagerReject()
     {
-        Assert.That(_privateProposalVoteStatusCode, Is.EqualTo(403));
-        Assert.That(_privateProposalManagerRejectStatusCode, Is.EqualTo(403));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_privateProposalVoteStatusCode, Is.EqualTo(403));
+            Assert.That(_privateProposalManagerRejectStatusCode, Is.EqualTo(403));
+        }
     }
 
     [Test]
     public void PrivateAcceptedTrade_BecomesVisibleToLeagueAndManager()
     {
-        Assert.That(_privateNonInvolvedAcceptedActiveTrades, Does.Contain(_privateAcceptedTradeID));
-        Assert.That(_privateManagerAcceptedActiveTrades, Does.Contain(_privateAcceptedTradeID));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_privateNonInvolvedAcceptedActiveTrades, Does.Contain(_privateAcceptedTradeID));
+            Assert.That(_privateManagerAcceptedActiveTrades, Does.Contain(_privateAcceptedTradeID));
+        }
     }
 
     [Test]
     public void PrivateNeverAcceptedTrades_AreExcludedFromHistoryAndExport()
     {
         Assert.That(_privateHistoryTradeIDs, Does.Contain(_privateAcceptedTradeID));
-        Assert.That(_privateHistoryTradeIDs, Does.Not.Contain(_privateRescindedTradeID));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_privateHistoryTradeIDs, Does.Not.Contain(_privateRescindedTradeID));
 
-        Assert.That(_privateExportTradeIDs, Does.Contain(_privateAcceptedTradeID));
+            Assert.That(_privateExportTradeIDs, Does.Contain(_privateAcceptedTradeID));
+        }
         Assert.That(_privateExportTradeIDs, Does.Not.Contain(_privateRescindedTradeID));
     }
 
     [Test]
     public void StandardProposal_RemainsVisibleToNonInvolvedMembersAndManager()
     {
-        Assert.That(_standardNonInvolvedProposalActiveTrades, Does.Contain(_standardProposedTradeID));
-        Assert.That(_standardManagerProposalActiveTrades, Does.Contain(_standardProposedTradeID));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(_standardNonInvolvedProposalActiveTrades, Does.Contain(_standardProposedTradeID));
+            Assert.That(_standardManagerProposalActiveTrades, Does.Contain(_standardProposedTradeID));
+        }
     }
 
     private async Task<LeagueFixture> BuildDraftedLeagueAsync(string tradingSystem)

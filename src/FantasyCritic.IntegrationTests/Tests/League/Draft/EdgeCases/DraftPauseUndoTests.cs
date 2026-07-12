@@ -120,9 +120,12 @@ public class DraftPauseUndoTests : IntegrationTestBase
     public async Task Undo_LogsDraftPickUndoneActionType()
     {
         var actions = await _league.Manager.League.GetLeagueActionsAsync(_league.LeagueID, _league.Year);
-        Assert.That(actions.Any(a => a.ActionType == "Draft Pick Undone"), Is.True,
-            "Undo should log 'Draft Pick Undone', not 'Publisher Game Removed'.");
-        Assert.That(actions.Any(a => a.ActionType == "Publisher Game Removed"), Is.False,
-            "Draft undo should not use the generic game removal action type.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(actions.Any(a => a.ActionType == "Draft Pick Undone"), Is.True,
+                    "Undo should log 'Draft Pick Undone', not 'Publisher Game Removed'.");
+            Assert.That(actions.Any(a => a.ActionType == "Publisher Game Removed"), Is.False,
+                "Draft undo should not use the generic game removal action type.");
+        }
     }
 }

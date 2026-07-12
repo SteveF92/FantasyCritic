@@ -142,8 +142,11 @@ public class MultiDraftReadTests : IntegrationTestBase
         var snapshot = await AddSecondDraftAsync(league);
 
         Assert.That(snapshot.Drafts.Count, Is.EqualTo(2));
-        Assert.That(snapshot.Drafts.Select(d => d.DraftNumber), Is.EquivalentTo([1, 2]));
-        Assert.That(snapshot.Drafts.All(d => d.PlayStatus == "NotStartedDraft"), Is.True,
-            "Neither draft has started, so both should read as NotStartedDraft.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(snapshot.Drafts.Select(d => d.DraftNumber), Is.EquivalentTo([1, 2]));
+            Assert.That(snapshot.Drafts.All(d => d.PlayStatus == "NotStartedDraft"), Is.True,
+                "Neither draft has started, so both should read as NotStartedDraft.");
+        }
     }
 }

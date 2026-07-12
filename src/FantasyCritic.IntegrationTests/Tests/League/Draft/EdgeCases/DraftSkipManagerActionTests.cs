@@ -119,12 +119,18 @@ public class DraftSkipManagerActionTests : IntegrationTestBase
         var skippedPublisherName = _beforeSkipSnapshot.ActiveDraft()?.NextPickPublisherName;
         var skippedPicks = _afterSkipSnapshot.ActiveDraft()?.SkippedPicksSinceLastRealPick;
 
-        Assert.That(skippedPublisherName, Is.Not.Null);
-        Assert.That(skippedPicks, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(skippedPublisherName, Is.Not.Null);
+            Assert.That(skippedPicks, Is.Not.Null);
+        }
         Assert.That(skippedPicks, Has.Count.EqualTo(1));
         var skippedPick = skippedPicks!.Single();
-        Assert.That(skippedPick.PublisherName, Is.EqualTo(skippedPublisherName));
-        Assert.That(skippedPick.IsManualSkip, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(skippedPick.PublisherName, Is.EqualTo(skippedPublisherName));
+            Assert.That(skippedPick.IsManualSkip, Is.True);
+        }
     }
 
     [Test]

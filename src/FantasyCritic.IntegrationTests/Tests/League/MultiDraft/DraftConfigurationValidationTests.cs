@@ -210,10 +210,13 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
         var snapshot = await league.GetLeagueYearAsync();
         var draft2 = snapshot.Drafts.Single(d => d.DraftNumber == 2);
 
-        Assert.That(draft2.ReadyToDraft, Is.False,
-            "Draft 2 should not be ready when GamesToDraft exceeds remaining standard slots.");
-        Assert.That(draft2.StartDraftErrors, Has.Some.Contains("remaining"),
-            "Start errors should explain that there are not enough remaining standard slots.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft2.ReadyToDraft, Is.False,
+                    "Draft 2 should not be ready when GamesToDraft exceeds remaining standard slots.");
+            Assert.That(draft2.StartDraftErrors, Has.Some.Contains("remaining"),
+                "Start errors should explain that there are not enough remaining standard slots.");
+        }
     }
 
     [Test]
@@ -242,9 +245,12 @@ public class DraftConfigurationValidationTests : IntegrationTestBase
         var snapshot = await league.GetLeagueYearAsync();
         var draft2 = snapshot.Drafts.Single(d => d.DraftNumber == 2);
 
-        Assert.That(draft2.ReadyToDraft, Is.False,
-            "Draft 2 should not be ready when CounterPicksToDraft exceeds remaining counter-pick slots.");
-        Assert.That(draft2.StartDraftErrors, Has.Some.Contains("remaining"),
-            "Start errors should explain that there are not enough remaining counter-pick slots.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft2.ReadyToDraft, Is.False,
+                    "Draft 2 should not be ready when CounterPicksToDraft exceeds remaining counter-pick slots.");
+            Assert.That(draft2.StartDraftErrors, Has.Some.Contains("remaining"),
+                "Start errors should explain that there are not enough remaining counter-pick slots.");
+        }
     }
 }

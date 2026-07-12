@@ -71,11 +71,14 @@ public class MultiDraftCrudTests : IntegrationTestBase
             "A second draft should appear in the Drafts list.");
         var second = snapshot.Drafts.FirstOrDefault(d => d.Name == "Winter Draft");
         Assert.That(second, Is.Not.Null, "The newly created draft should be visible by name.");
-        Assert.That(second!.DraftNumber, Is.EqualTo(2));
-        Assert.That(second.GamesToDraft, Is.EqualTo(2));
-        Assert.That(second.CounterPicksToDraft, Is.EqualTo(0));
-        Assert.That(second.PlayStatus, Is.EqualTo("NotStartedDraft"));
-        Assert.That(second.DraftOrderSet, Is.False);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(second!.DraftNumber, Is.EqualTo(2));
+            Assert.That(second.GamesToDraft, Is.EqualTo(2));
+            Assert.That(second.CounterPicksToDraft, Is.EqualTo(0));
+            Assert.That(second.PlayStatus, Is.EqualTo("NotStartedDraft"));
+            Assert.That(second.DraftOrderSet, Is.False);
+        }
     }
 
     [Test]
@@ -235,7 +238,10 @@ public class MultiDraftCrudTests : IntegrationTestBase
         Assert.That(snapshot.Drafts, Is.Not.Null);
         Assert.That(snapshot.Drafts.Count, Is.EqualTo(1),
             "Single-draft leagues must still expose a one-entry Drafts list.");
-        Assert.That(snapshot.Drafts.Single().DraftNumber, Is.EqualTo(1));
-        Assert.That(snapshot.Drafts.Single().PlayStatus, Is.EqualTo("NotStartedDraft"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(snapshot.Drafts.Single().DraftNumber, Is.EqualTo(1));
+            Assert.That(snapshot.Drafts.Single().PlayStatus, Is.EqualTo("NotStartedDraft"));
+        }
     }
 }

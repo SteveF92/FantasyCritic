@@ -166,13 +166,19 @@ public class ConferenceCloneTests : IntegrationTestBase
             "AddLeagueToConference must clone ALL draft rows from the primary league.");
 
         var draft1 = newLeagueYear.Drafts.Single(d => d.DraftNumber == 1);
-        Assert.That(draft1.GamesToDraft, Is.EqualTo(3));
-        Assert.That(draft1.CounterPicksToDraft, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft1.GamesToDraft, Is.EqualTo(3));
+            Assert.That(draft1.CounterPicksToDraft, Is.EqualTo(1));
+        }
 
         var draft2 = newLeagueYear.Drafts.Single(d => d.DraftNumber == 2);
-        Assert.That(draft2.Name, Is.EqualTo("Draft 2"));
-        Assert.That(draft2.GamesToDraft, Is.EqualTo(3));
-        Assert.That(draft2.CounterPicksToDraft, Is.EqualTo(0));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft2.Name, Is.EqualTo("Draft 2"));
+            Assert.That(draft2.GamesToDraft, Is.EqualTo(3));
+            Assert.That(draft2.CounterPicksToDraft, Is.EqualTo(0));
+        }
     }
 
     // -------------------------------------------------------------------------

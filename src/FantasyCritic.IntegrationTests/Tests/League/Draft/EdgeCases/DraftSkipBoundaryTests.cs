@@ -202,11 +202,14 @@ internal static class DraftSkipBoundaryScenario
     public static void AssertDraftFinal(LeagueYearViewModel snapshot)
     {
         var draft = snapshot.Drafts.Single();
-        Assert.That(draft.PlayStatus, Is.EqualTo("DraftFinal"),
-            "Draft should be marked DraftFinal.");
-        Assert.That(draft.DraftFinished, Is.True);
-        Assert.That(snapshot.ActiveDraft(), Is.Null,
-            "No draft should remain active after completion.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft.PlayStatus, Is.EqualTo("DraftFinal"),
+                    "Draft should be marked DraftFinal.");
+            Assert.That(draft.DraftFinished, Is.True);
+            Assert.That(snapshot.ActiveDraft(), Is.Null,
+                "No draft should remain active after completion.");
+        }
     }
 
     public static async Task AssertTrailingAutoSkipPersistedAsync(LeagueFixture league, string slotTypePhrase)
@@ -223,9 +226,12 @@ internal static class DraftSkipBoundaryScenario
     {
         var draft = snapshot.ActiveDraft();
         Assert.That(draft, Is.Not.Null);
-        Assert.That(draft!.DraftingCounterPicks, Is.True,
-            "Draft should have advanced to the counter-pick phase.");
-        Assert.That(draft.DraftFinished, Is.False);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft!.DraftingCounterPicks, Is.True,
+                    "Draft should have advanced to the counter-pick phase.");
+            Assert.That(draft.DraftFinished, Is.False);
+        }
     }
 }
 

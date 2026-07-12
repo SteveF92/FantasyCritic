@@ -70,8 +70,11 @@ public class AdjustableClockTests
         var earlier = Instant.FromUtc(2024, 1, 1, 0, 0, 0);
         var result = clock.SetTime(earlier);
 
-        Assert.That(result.IsFailure, Is.True);
-        Assert.That(result.Error, Does.Contain("past"));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.IsFailure, Is.True);
+            Assert.That(result.Error, Does.Contain("past"));
+        }
     }
 
     [Test]

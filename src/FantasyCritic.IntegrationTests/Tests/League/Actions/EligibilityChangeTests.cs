@@ -415,10 +415,13 @@ public class EligibilityChangeTests : IntegrationTestBase
     {
         var bid = _actionSet.Bids.Single(b =>
             !b.CounterPick && b.MasterGame.MasterGameID == _targets.GameB);
-        Assert.That(bid.Successful, Is.False,
-            "The action history should record Game B's bid as unsuccessful.");
-        Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
-            "The failure outcome should mention 'score'.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(bid.Successful, Is.False,
+                    "The action history should record Game B's bid as unsuccessful.");
+            Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
+                "The failure outcome should mention 'score'.");
+        }
     }
 
     [Test]
@@ -446,10 +449,13 @@ public class EligibilityChangeTests : IntegrationTestBase
     {
         var bid = _actionSet.Bids.Single(b =>
             !b.CounterPick && b.MasterGame.MasterGameID == _targets.GameG);
-        Assert.That(bid.Successful, Is.False,
-            "The action history should record Game G's bid as unsuccessful — G gained a score before processing.");
-        Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
-            "The failure outcome should mention 'score'.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(bid.Successful, Is.False,
+                    "The action history should record Game G's bid as unsuccessful — G gained a score before processing.");
+            Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
+                "The failure outcome should mention 'score'.");
+        }
     }
 
     [Test]
@@ -457,9 +463,12 @@ public class EligibilityChangeTests : IntegrationTestBase
     {
         var bid = _actionSet.Bids.Single(b =>
             b.CounterPick && b.MasterGame.MasterGameID == _targets.P2CounterPickTarget);
-        Assert.That(bid.Successful, Is.False,
-            "The action history should record the counter-pick bid as unsuccessful.");
-        Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
-            "The failure outcome should mention 'score'.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(bid.Successful, Is.False,
+                    "The action history should record the counter-pick bid as unsuccessful.");
+            Assert.That(bid.Outcome, Does.Contain("score").IgnoreCase,
+                "The failure outcome should mention 'score'.");
+        }
     }
 }

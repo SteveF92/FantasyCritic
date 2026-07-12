@@ -26,8 +26,11 @@ public class RoyaleGroupTests : IntegrationTestBase
 
         var group = await session.RoyaleGroup.GetRoyaleGroupAsync(created.GroupID);
         Assert.That(group, Is.Not.Null);
-        Assert.That(group.GroupName, Is.EqualTo(groupName));
-        Assert.That(group.MemberCount, Is.EqualTo(1));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(group.GroupName, Is.EqualTo(groupName));
+            Assert.That(group.MemberCount, Is.EqualTo(1));
+        }
     }
 
     [Test]
@@ -44,10 +47,16 @@ public class RoyaleGroupTests : IntegrationTestBase
         var data = await session.RoyaleGroup.GetRoyaleGroupDataAsync(created.GroupID);
 
         Assert.That(data, Is.Not.Null);
-        Assert.That(data.Group.GroupName, Is.EqualTo(groupName));
-        Assert.That(data.Members, Is.Not.Null);
-        Assert.That(data.Members.Count, Is.EqualTo(1));
-        Assert.That(data.ActiveQuarter, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(data.Group.GroupName, Is.EqualTo(groupName));
+            Assert.That(data.Members, Is.Not.Null);
+        }
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(data.Members.Count, Is.EqualTo(1));
+            Assert.That(data.ActiveQuarter, Is.Not.Null);
+        }
     }
 
     [Test]
@@ -64,9 +73,12 @@ public class RoyaleGroupTests : IntegrationTestBase
         var link = await session.RoyaleGroup.CreateGroupInviteLinkAsync(created.GroupID);
 
         Assert.That(link, Is.Not.Null);
-        Assert.That(link.InviteID, Is.Not.EqualTo(Guid.Empty));
-        Assert.That(link.InviteCode, Is.Not.EqualTo(Guid.Empty));
-        Assert.That(link.Active, Is.True);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(link.InviteID, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(link.InviteCode, Is.Not.EqualTo(Guid.Empty));
+            Assert.That(link.Active, Is.True);
+        }
     }
 
     [Test]
@@ -281,7 +293,10 @@ public class RoyaleGroupTests : IntegrationTestBase
             created.GroupID, activeQuarter.Year, activeQuarter.Quarter);
 
         Assert.That(quarterData, Is.Not.Null);
-        Assert.That(quarterData.Year, Is.EqualTo(activeQuarter.Year));
-        Assert.That(quarterData.Quarter, Is.EqualTo(activeQuarter.Quarter));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(quarterData.Year, Is.EqualTo(activeQuarter.Year));
+            Assert.That(quarterData.Quarter, Is.EqualTo(activeQuarter.Quarter));
+        }
     }
 }

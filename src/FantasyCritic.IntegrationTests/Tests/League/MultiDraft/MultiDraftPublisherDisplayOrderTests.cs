@@ -64,9 +64,12 @@ public class MultiDraftPublisherDisplayOrderTests : IntegrationTestBase
         var snapshot = await league.GetLeagueYearAsync();
         var draft2 = snapshot.Drafts.Single(d => d.DraftNumber == 2);
 
-        Assert.That(draft2.DraftOrderSet, Is.False, "Draft 2 should not have order set yet.");
-        Assert.That(snapshot.DisplayOrderDraft().DraftNumber, Is.EqualTo(1),
-            "With no pending draft order, display should fall back to the last completed draft.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draft2.DraftOrderSet, Is.False, "Draft 2 should not have order set yet.");
+            Assert.That(snapshot.DisplayOrderDraft().DraftNumber, Is.EqualTo(1),
+                "With no pending draft order, display should fall back to the last completed draft.");
+        }
 
         var manager = league.Publishers.Single(p => p.DraftPosition == 1);
         var player = league.Publishers.Single(p => p.DraftPosition == 2);
@@ -95,11 +98,14 @@ public class MultiDraftPublisherDisplayOrderTests : IntegrationTestBase
 
         var snapshot = await league.GetLeagueYearAsync();
 
-        Assert.That(snapshot.DisplayOrderDraft().DraftNumber, Is.EqualTo(2));
-        Assert.That(snapshot.Publishers.Select(p => p.PublisherID).ToList(),
-            Is.EqualTo([player.PublisherID, manager.PublisherID]),
-            "Publishers should follow draft 2 order, not draft 1.");
-        Assert.That(snapshot.Publishers.Select(p => p.DraftPosition).ToList(), Is.EqualTo([1, 2]));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(snapshot.DisplayOrderDraft().DraftNumber, Is.EqualTo(2));
+            Assert.That(snapshot.Publishers.Select(p => p.PublisherID).ToList(),
+                Is.EqualTo([player.PublisherID, manager.PublisherID]),
+                "Publishers should follow draft 2 order, not draft 1.");
+            Assert.That(snapshot.Publishers.Select(p => p.DraftPosition).ToList(), Is.EqualTo([1, 2]));
+        }
 
         AssertPublisherDisplayOrder(snapshot);
     }

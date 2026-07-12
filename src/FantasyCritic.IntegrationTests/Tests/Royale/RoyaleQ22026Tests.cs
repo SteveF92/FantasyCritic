@@ -137,12 +137,15 @@ public class RoyaleQ22026Tests : IntegrationTestBase
                 MasterGameID = lockoutGame.MasterGame.MasterGameID,
             });
 
-        Assert.That(purchaseResult!.Success, Is.False,
-            "Purchasing a game inside the 5-day Q2 lockout window must return Success=false.");
-        Assert.That(
-            purchaseResult.Errors!.Any(e => e.Contains("5")),
-            Is.True,
-            "The failure message must reference the 5-day lockout window.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(purchaseResult!.Success, Is.False,
+                    "Purchasing a game inside the 5-day Q2 lockout window must return Success=false.");
+            Assert.That(
+                purchaseResult.Errors!.Any(e => e.Contains("5")),
+                Is.True,
+                "The failure message must reference the 5-day lockout window.");
+        }
     }
 
     [Test]

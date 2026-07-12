@@ -52,5 +52,8 @@ dotnet_style_predefined_type_for_locals = true:warning
 dotnet_style_predefined_type_for_member_access = true:warning
 csharp_style_namespace_declarations = file_scoped:warning
 
+[{FantasyCritic.Test/**,FantasyCritic.IntegrationTests/**}.cs]
+dotnet_diagnostic.NUnit2045.severity = warning
+
 [*.{js,json,vue}]
 indent_size = 2

@@ -61,10 +61,13 @@ public class LeagueMemberTests : IntegrationTestBase
     {
         var leagueYear = await _league.GetLeagueYearAsync();
         var pendingDraft = leagueYear.PendingDraft();
-        Assert.That(pendingDraft?.ReadyToDraft, Is.True,
-            "All publishers have been created and draft order set — league should be ready to draft.");
-        Assert.That(pendingDraft?.StartDraftErrors, Is.Empty,
-            $"No start-draft errors expected. Got: {string.Join("; ", pendingDraft?.StartDraftErrors ?? [])}");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(pendingDraft?.ReadyToDraft, Is.True,
+                    "All publishers have been created and draft order set — league should be ready to draft.");
+            Assert.That(pendingDraft?.StartDraftErrors, Is.Empty,
+                $"No start-draft errors expected. Got: {string.Join("; ", pendingDraft?.StartDraftErrors ?? [])}");
+        }
     }
 
     [Test, Order(5)]
@@ -84,8 +87,11 @@ public class LeagueMemberTests : IntegrationTestBase
         var links = await _league.Manager.LeagueManager.InviteLinksAsync(_league.LeagueID);
 
         Assert.That(links, Is.Not.Empty, "At least one invite link must be returned.");
-        Assert.That(links.First().LeagueID, Is.EqualTo(_league.LeagueID));
-        Assert.That(links.First().InviteCode, Is.Not.EqualTo(Guid.Empty));
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(links.First().LeagueID, Is.EqualTo(_league.LeagueID));
+            Assert.That(links.First().InviteCode, Is.Not.EqualTo(Guid.Empty));
+        }
     }
 
     [Test, Order(11)]

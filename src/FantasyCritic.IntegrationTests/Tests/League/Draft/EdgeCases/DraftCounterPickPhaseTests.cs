@@ -77,9 +77,12 @@ public class DraftCounterPickPhaseTests : IntegrationTestBase
             AllowIneligibleSlot = false,
         });
 
-        Assert.That(result.Success, Is.False,
-            "Counter-picking a game not on any publisher's roster should return Success = false.");
-        Assert.That(result.Errors, Is.Not.Empty,
-            "Errors should be non-empty when an invalid counter-pick target is used.");
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(result.Success, Is.False,
+                    "Counter-picking a game not on any publisher's roster should return Success = false.");
+            Assert.That(result.Errors, Is.Not.Empty,
+                "Errors should be non-empty when an invalid counter-pick target is used.");
+        }
     }
 }
