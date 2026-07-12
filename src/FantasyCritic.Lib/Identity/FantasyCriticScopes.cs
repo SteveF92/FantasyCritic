@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Identity;
+
 public static class FantasyCriticScopes
 {
     public static readonly FantasyCriticScope ReadScope = new FantasyCriticScope("fc_read", "Read Data");

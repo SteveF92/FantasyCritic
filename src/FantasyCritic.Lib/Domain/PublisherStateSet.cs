@@ -3,6 +3,7 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Domain;
+
 public class PublisherStateSet
 {
     private readonly Dictionary<Guid, Publisher> _publisherDictionary;

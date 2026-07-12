@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain.Conferences;
+
 public class Conference : IEquatable<Conference>
 {
     public Conference(Guid conferenceID, string conferenceName, MinimalFantasyCriticUser conferenceManager, IEnumerable<MinimalConferenceYearInfo> years, bool customRulesConference, Guid primaryLeagueID, IEnumerable<Guid> leaguesInConference)

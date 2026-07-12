@@ -6,11 +6,12 @@ using Amazon.SimpleEmailV2.Model;
 using System.Collections.Generic;
 
 namespace FantasyCritic.AWS;
+
 public class SESEmailSender : IEmailSender
 {
     private readonly string _region;
     private readonly string _fromEmail;
-    
+
     public SESEmailSender(string region, string fromEmail)
     {
         _region = region;
@@ -45,7 +46,7 @@ public class SESEmailSender : IEmailSender
                 }
             }
         };
-        
+
         await client.SendEmailAsync(request);
     }
 }

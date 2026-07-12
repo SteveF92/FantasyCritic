@@ -1,4 +1,5 @@
 namespace FantasyCritic.MySQL.Entities;
+
 internal class MyGameNewsEntity
 {
     public Guid MasterGameID { get; set; }

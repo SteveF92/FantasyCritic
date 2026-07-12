@@ -252,7 +252,7 @@ public class MasterGame : IEquatable<MasterGame>
                 differences.Add($"Estimated release date changed from '{existingMasterGame.EstimatedReleaseDate}' to '{EstimatedReleaseDate}'.");
             }
         }
-        
+
         if (EarlyAccessReleaseDate != existingMasterGame.EarlyAccessReleaseDate)
         {
             differences.Add($"Early access release date changed from {existingMasterGame.EarlyAccessReleaseDate.ToNullableLongDate("'")} to {EarlyAccessReleaseDate.ToNullableLongDate("'")}.");

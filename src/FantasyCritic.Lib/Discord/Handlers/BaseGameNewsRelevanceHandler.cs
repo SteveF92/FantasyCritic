@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Discord.Models;
 
 namespace FantasyCritic.Lib.Discord.Handlers;
+
 public abstract class BaseGameNewsRelevanceHandler
 {
     protected readonly GameNewsSetting _gameNewsSetting;

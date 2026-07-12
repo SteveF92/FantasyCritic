@@ -39,20 +39,20 @@ public class MySQLLocalSetupSyncer
 
         var entity = new FantasyCriticUserEntity
         {
-            UserID                  = localAdminUserId,
-            DisplayName             = "LocalAdmin",
+            UserID = localAdminUserId,
+            DisplayName = "LocalAdmin",
             PatreonDonorNameOverride = null,
-            DisplayNumber           = 1000,
-            EmailAddress            = email,
-            NormalizedEmailAddress  = email.ToUpperInvariant(),
-            EmailConfirmed          = true,
-            SecurityStamp           = Guid.NewGuid().ToString(),
-            PasswordHash            = passwordHash,
-            TwoFactorEnabled        = false,
-            AuthenticatorKey        = null,
-            LastChangedCredentials  = clock.GetCurrentInstant(),
-            ShowDecimalPoints       = false,
-            IsDeleted               = false
+            DisplayNumber = 1000,
+            EmailAddress = email,
+            NormalizedEmailAddress = email.ToUpperInvariant(),
+            EmailConfirmed = true,
+            SecurityStamp = Guid.NewGuid().ToString(),
+            PasswordHash = passwordHash,
+            TwoFactorEnabled = false,
+            AuthenticatorKey = null,
+            LastChangedCredentials = clock.GetCurrentInstant(),
+            ShowDecimalPoints = false,
+            IsDeleted = false
         };
 
         await connection.ExecuteAsync(

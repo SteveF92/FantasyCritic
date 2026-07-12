@@ -13,6 +13,7 @@ using FantasyCritic.Lib.Utilities;
 using NodaTime;
 
 namespace FantasyCritic.FakeRepo.TestUtilities;
+
 public class TestDataService
 {
     private readonly string _basePath;
@@ -91,7 +92,7 @@ public class TestDataService
         var publisherEntities = GetPublisherEntities();
         var publisherGameEntities = GetPublisherGamesEntities();
         var publisherGameLookup = publisherGameEntities.ToLookup(x => x.PublisherID);
-        
+
         List<Publisher> domains = new List<Publisher>();
         foreach (var entity in publisherEntities)
         {

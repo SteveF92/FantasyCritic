@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Enums;
+
 public class WillReleaseStatus : TypeSafeEnum<WillReleaseStatus>
 {
 

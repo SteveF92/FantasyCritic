@@ -479,7 +479,7 @@ public class RoyaleController : FantasyCriticController
                 _ => masterGameYears,
             };
         }
-        
+
         var viewModels = masterGameYears.Select(masterGame =>
             new PossibleRoyaleMasterGameViewModel(masterGame, currentDate, publisher, masterGameTags, _clock)).ToList();
         return viewModels;

@@ -15,7 +15,7 @@ public class PublisherEditRequest
         WillReleaseGamesDropped = willReleaseGamesDropped;
         SuperDropsAvailable = superDropsAvailable;
     }
-    
+
 
     public Guid PublisherID { get; }
     public string PublisherName { get; }

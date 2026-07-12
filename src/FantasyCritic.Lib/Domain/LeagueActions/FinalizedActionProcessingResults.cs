@@ -45,7 +45,7 @@ public class FinalizedActionProcessingResults
         {
             allDrops.Add(failedDrop.ToDropWithSuccess(false, ProcessSetID));
         }
-        
+
         List<PickupBid> allBids = new List<PickupBid>();
         foreach (var successBid in Results.SuccessBids)
         {
@@ -55,7 +55,7 @@ public class FinalizedActionProcessingResults
         {
             allBids.Add(failedBid.ToFlatBid(ProcessSetID));
         }
-        
+
         var bidsByLeague = allBids.GroupToDictionary(x => x.LeagueYear);
         var dropsByLeague = allDrops.GroupToDictionary(x => x.LeagueYear);
 

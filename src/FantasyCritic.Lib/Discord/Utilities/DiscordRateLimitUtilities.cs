@@ -2,6 +2,7 @@ using Discord;
 using FantasyCritic.Lib.Discord.Models;
 
 namespace FantasyCritic.Lib.Discord.Utilities;
+
 public static class DiscordRateLimitUtilities
 {
     public static readonly TimeSpan Delay = TimeSpan.FromSeconds(1);

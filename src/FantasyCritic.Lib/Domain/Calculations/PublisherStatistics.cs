@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Domain.Calculations;
+
 public record PublisherStatistics(Guid PublisherID, LocalDate Date)
 {
     public required decimal FantasyPoints { get; init; }

@@ -1,13 +1,14 @@
 using FantasyCritic.Lib.Domain.Conferences;
 
 namespace FantasyCritic.MySQL.Entities.Conferences;
+
 internal class ConferenceYearEntity
 {
     public ConferenceYearEntity()
     {
-        
+
     }
-    
+
     public ConferenceYearEntity(Conference conference, int year)
     {
         ConferenceID = conference.ConferenceID;
@@ -16,7 +17,7 @@ internal class ConferenceYearEntity
 
     public Guid ConferenceID { get; set; }
     public int Year { get; set; }
-    
+
     public ConferenceYear ToDomain(Conference conference, SupportedYear supportedYear)
     {
         return new ConferenceYear(conference, supportedYear);

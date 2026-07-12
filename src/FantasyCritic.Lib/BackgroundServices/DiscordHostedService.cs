@@ -4,6 +4,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.BackgroundServices;
+
 public class DiscordHostedService : BackgroundService
 {
     private readonly ILogger<DiscordHostedService> _logger;

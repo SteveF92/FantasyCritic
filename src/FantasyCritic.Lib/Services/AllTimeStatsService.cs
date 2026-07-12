@@ -7,6 +7,7 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Services;
+
 public class AllTimeStatsService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;

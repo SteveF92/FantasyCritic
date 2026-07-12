@@ -17,7 +17,7 @@ public class MasterGameYearScriptInput
 
         if (masterGameYear.MasterGame.CriticScore.HasValue)
         {
-            CriticScore = (double) masterGameYear.MasterGame.CriticScore.Value;
+            CriticScore = (double)masterGameYear.MasterGame.CriticScore.Value;
         }
         else if (!masterGameYear.CouldRelease())
         {

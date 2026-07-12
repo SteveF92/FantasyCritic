@@ -95,7 +95,7 @@ public class ProductionGameStatsCacheTests
     [Test]
     public void SelectAffordableSet_WhenBudgetCapExcludesCostlyGame_ExcludesThatGame()
     {
-        var cheapID    = Guid.Parse("11111111-1111-1111-1111-111111111111");
+        var cheapID = Guid.Parse("11111111-1111-1111-1111-111111111111");
         var expensiveID = Guid.Parse("22222222-2222-2222-2222-222222222222");
         var candidates = new[]
         {
@@ -136,7 +136,7 @@ public class ProductionGameStatsCacheTests
     [Test]
     public void SelectAffordableSet_WhenStatsPresent_PicksHighestHypeFirst()
     {
-        var lowHypeID  = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
+        var lowHypeID = Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa");
         var highHypeID = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
         var candidates = new[]
         {

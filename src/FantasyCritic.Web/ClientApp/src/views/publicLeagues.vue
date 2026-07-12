@@ -29,11 +29,7 @@
         @filtered="onFiltered">
         <template #cell(leagueName)="data">
           <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
-          <font-awesome-icon
-            v-if="!data.item.anyDraftStarted"
-            v-b-popover.hover.top="'This league has not started a draft yet for this year.'"
-            icon="hourglass-half"
-            class="not-started-icon" />
+          <font-awesome-icon v-if="!data.item.anyDraftStarted" v-b-popover.hover.top="'This league has not started a draft yet for this year.'" icon="hourglass-half" class="not-started-icon" />
         </template>
       </b-table>
       <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>

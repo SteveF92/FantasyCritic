@@ -6,6 +6,7 @@ using Amazon.SecretsManager;
 using Amazon.SecretsManager.Model;
 
 namespace FantasyCritic.AWS;
+
 public class SecretsManagerConfigurationStore
 {
     private readonly string _region;

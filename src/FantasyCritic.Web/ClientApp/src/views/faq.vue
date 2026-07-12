@@ -515,14 +515,19 @@
       <template #body>
         <p>League managers choose a trade system when creating or editing a league year.</p>
         <ul>
-          <li><strong>No Trades:</strong> Trades are disabled for the league year.</li>
           <li>
-            <strong>Standard:</strong> Trade proposals are visible to the league as soon as they are proposed. Other league members can see active proposals, and public trade notifications can be sent
-            to Discord if the league has Discord integration enabled.
+            <strong>No Trades:</strong>
+            Trades are disabled for the league year.
           </li>
           <li>
-            <strong>Private Until Accepted:</strong> New proposals are visible only to the two players involved. If the counterparty accepts the trade, it becomes visible to the rest of the league for
-            the normal review and voting process. Proposals that are rescinded, rejected, or expire before being accepted stay private and do not appear in trade history.
+            <strong>Standard:</strong>
+            Trade proposals are visible to the league as soon as they are proposed. Other league members can see active proposals, and public trade notifications can be sent to Discord if the league
+            has Discord integration enabled.
+          </li>
+          <li>
+            <strong>Private Until Accepted:</strong>
+            New proposals are visible only to the two players involved. If the counterparty accepts the trade, it becomes visible to the rest of the league for the normal review and voting process.
+            Proposals that are rescinded, rejected, or expire before being accepted stay private and do not appear in trade history.
           </li>
         </ul>
       </template>

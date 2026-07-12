@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Services;
 using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
+
 public class LeagueCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;

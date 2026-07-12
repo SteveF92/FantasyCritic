@@ -4,6 +4,7 @@ using FantasyCritic.MySQL.Entities;
 using Microsoft.AspNetCore.DataProtection.Repositories;
 
 namespace FantasyCritic.MySQL;
+
 public class MySQLXmlRepository : IXmlRepository
 {
 

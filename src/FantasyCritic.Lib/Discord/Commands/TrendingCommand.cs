@@ -6,6 +6,7 @@ using FantasyCritic.Lib.Utilities;
 using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
+
 public class TrendingCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly InterLeagueService _interLeagueService;

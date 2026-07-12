@@ -42,7 +42,7 @@ public class PatreonService
         var tokens = await _tokensRepo.GetMostRecentTokens();
         using var client = new PatreonClient(tokens.AccessToken, tokens.RefreshToken, _clientId);
         client.TokensRefreshedAsync += SaveNewTokens;
-        
+
         List<PatronInfo> patronInfo = new List<PatronInfo>();
         _logger.Information("Making patreon request.");
         var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
@@ -82,7 +82,7 @@ public class PatreonService
         var tokens = await _tokensRepo.GetMostRecentTokens();
         using var client = new PatreonClient(tokens.AccessToken, tokens.RefreshToken, _clientId);
         client.TokensRefreshedAsync += SaveNewTokens;
-        
+
         var campaignMembers = await client.GetCampaignMembersAsync(_campaignID, Includes.CurrentlyEntitledTiers | Includes.User);
         if (campaignMembers != null)
         {
@@ -97,7 +97,7 @@ public class PatreonService
                 return isPlusUser;
             }
         }
-        
+
         return false;
     }
 

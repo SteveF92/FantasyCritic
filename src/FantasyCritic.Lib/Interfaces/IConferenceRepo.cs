@@ -2,6 +2,7 @@ using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Interfaces;
+
 public interface IConferenceRepo
 {
     Task<IReadOnlyList<MinimalConference>> GetConferencesForUser(FantasyCriticUser user);

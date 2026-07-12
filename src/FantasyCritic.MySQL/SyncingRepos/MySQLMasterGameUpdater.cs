@@ -3,6 +3,7 @@ using FantasyCritic.MySQL.Entities;
 using Serilog;
 
 namespace FantasyCritic.MySQL.SyncingRepos;
+
 public class MySQLMasterGameUpdater
 {
     private static readonly ILogger _logger = Log.ForContext<MySQLMasterGameUpdater>();

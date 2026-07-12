@@ -246,7 +246,7 @@ public class Publisher : IEquatable<Publisher>
         return new Publisher(PublisherID, LeagueYearKey, User, PublisherName, PublisherIcon, PublisherSlogan, DraftInfos, newPublisherGames,
             FormerPublisherGames, Budget, UnrestrictedReleaseStatusGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftSettings);
     }
-    
+
     public HashSet<MasterGame> MyMasterGames => PublisherGames
         .Where(x => x.MasterGame is not null)
         .Select(x => x.MasterGame!.MasterGame)
@@ -374,7 +374,7 @@ public class Publisher : IEquatable<Publisher>
         {
             FantasyPoints = GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options),
             ProjectedPoints = GetProjectedFantasyPoints(leagueYear, systemWideValues),
-            RemainingBudget = (ushort) Budget,
+            RemainingBudget = (ushort)Budget,
             NumberOfStandardGames = numberOfStandardGames,
             NumberOfStandardGamesReleased = numberOfStandardGamesReleased,
             NumberOfStandardGamesExpectedToRelease = numberOfStandardGamesExpectedToRelease,

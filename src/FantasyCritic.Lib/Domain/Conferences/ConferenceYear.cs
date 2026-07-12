@@ -1,5 +1,6 @@
 
 namespace FantasyCritic.Lib.Domain.Conferences;
+
 public class ConferenceYear
 {
     public ConferenceYear(Conference conference, SupportedYear supportedYear)

@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Services;
+
 public class ConferenceService
 {
     private readonly IConferenceRepo _conferenceRepo;

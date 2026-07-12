@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Discord.Models;
+
 public record GameNewsSetting
 {
     public required bool ShowJustReleasedAnnouncements { get; init; }

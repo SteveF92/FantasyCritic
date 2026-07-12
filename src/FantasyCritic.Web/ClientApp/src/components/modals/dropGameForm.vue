@@ -15,7 +15,9 @@
       <ul>
         <li v-if="userPublisher.willReleaseDroppableGames !== 0">Will Release: {{ dropStatus(userPublisher.willReleaseGamesDropped, userPublisher.willReleaseDroppableGames) }}</li>
         <li v-if="userPublisher.willNotReleaseDroppableGames !== 0">Will Not Release: {{ dropStatus(userPublisher.willNotReleaseGamesDropped, userPublisher.willNotReleaseDroppableGames) }}</li>
-        <li v-if="userPublisher.unrestrictedReleaseStatusDroppableGames !== 0">Any Unreleased: {{ dropStatus(userPublisher.unrestrictedReleaseStatusGamesDropped, userPublisher.unrestrictedReleaseStatusDroppableGames) }}</li>
+        <li v-if="userPublisher.unrestrictedReleaseStatusDroppableGames !== 0">
+          Any Unreleased: {{ dropStatus(userPublisher.unrestrictedReleaseStatusGamesDropped, userPublisher.unrestrictedReleaseStatusDroppableGames) }}
+        </li>
         <li v-if="userPublisher.superDropsAvailable !== undefined">Super Drops: {{ userPublisher.superDropsAvailable }}</li>
       </ul>
     </div>

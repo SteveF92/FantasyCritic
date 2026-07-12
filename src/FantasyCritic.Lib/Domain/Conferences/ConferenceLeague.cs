@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain.Conferences;
+
 public class ConferenceLeague : IEquatable<ConferenceLeague>
 {
     public ConferenceLeague(Guid leagueID, string leagueName, MinimalFantasyCriticUser leagueManager)
@@ -28,7 +29,7 @@ public class ConferenceLeague : IEquatable<ConferenceLeague>
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((ConferenceLeague) obj);
+        return Equals((ConferenceLeague)obj);
     }
 
     public override int GetHashCode()

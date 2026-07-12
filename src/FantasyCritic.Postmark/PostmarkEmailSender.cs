@@ -7,7 +7,7 @@ namespace FantasyCritic.Postmark;
 public class PostmarkEmailSender : IEmailSender
 {
     private static readonly ILogger _logger = Log.ForContext<PostmarkEmailSender>();
-    
+
     private readonly string _apiKey;
     private readonly string _fromEmail;
 
@@ -16,7 +16,7 @@ public class PostmarkEmailSender : IEmailSender
         _apiKey = apiKey;
         _fromEmail = fromEmail;
     }
-    
+
     public async Task SendEmailAsync(string email, string subject, string message)
     {
         var postmarkMessage = new PostmarkMessage()

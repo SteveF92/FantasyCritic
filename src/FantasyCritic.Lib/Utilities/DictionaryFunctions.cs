@@ -1,5 +1,6 @@
 
 namespace FantasyCritic.Lib.Utilities;
+
 public static class DictionaryFunctions
 {
     public static TValue? GetValueOrDefaultNullable<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary, TKey? key) where TKey : struct, IEquatable<TKey>
@@ -24,7 +25,7 @@ public static class DictionaryFunctions
 
     public static TValue GetValueOrThrow<TKey, TValue>(this IReadOnlyDictionary<TKey, TValue> dictionary, TKey key, string exceptionMessage) where TKey : IEquatable<TKey>
     {
-        var result =  dictionary.GetValueOrDefault(key);
+        var result = dictionary.GetValueOrDefault(key);
         if (result is null)
         {
             throw new Exception(exceptionMessage);

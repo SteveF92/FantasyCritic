@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using FantasyCritic.FakeRepo.TestUtilities;
 
 namespace FantasyCritic.Test.Discord;
+
 internal abstract class BaseGameNewsTests
 {
     public static LocalDate CurrentDateForTesting = new LocalDate(2025, 04, 02);

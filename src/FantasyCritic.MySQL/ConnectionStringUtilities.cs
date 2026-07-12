@@ -1,4 +1,5 @@
 namespace FantasyCritic.MySQL;
+
 public static class ConnectionStringUtilities
 {
     public static string GetLongTimeoutConnectionString(string originalConnectionString, Duration timeoutDuration)

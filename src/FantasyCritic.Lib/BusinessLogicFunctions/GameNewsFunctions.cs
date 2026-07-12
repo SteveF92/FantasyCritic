@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Domain.Combinations;
 
 namespace FantasyCritic.Lib.BusinessLogicFunctions;
+
 public static class GameNewsFunctions
 {
     public static IReadOnlyList<IGrouping<MasterGameYear, PublisherGame>> GetGameNews(IEnumerable<LeagueYearPublisherPair> publishers,

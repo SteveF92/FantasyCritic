@@ -507,7 +507,7 @@ public class RoyaleTests : IntegrationTestBase
             new PurchaseRoyaleGameRequest
             {
                 PublisherID = publisherID,
-                    MasterGameID = lockoutGame.MasterGame.MasterGameID,
+                MasterGameID = lockoutGame.MasterGame.MasterGameID,
             });
 
         Assert.That(result, Is.Not.Null);

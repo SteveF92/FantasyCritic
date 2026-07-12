@@ -101,11 +101,26 @@
       <h2 class="mt-5">Close ticket</h2>
       <div class="card mb-3">
         <div class="card-body">
-          <div><strong>Display name:</strong> {{ selectedCloseTicket.userDisplayName }}</div>
-          <div><strong>Email address:</strong> {{ selectedCloseTicket.emailAddress }}</div>
-          <div><strong>Verification code:</strong> {{ selectedCloseTicket.verificationCode }}</div>
-          <div><strong>Opened:</strong> {{ selectedCloseTicket.openedAt }}</div>
-          <div><strong>Issue:</strong> {{ selectedCloseTicket.issueDescription }}</div>
+          <div>
+            <strong>Display name:</strong>
+            {{ selectedCloseTicket.userDisplayName }}
+          </div>
+          <div>
+            <strong>Email address:</strong>
+            {{ selectedCloseTicket.emailAddress }}
+          </div>
+          <div>
+            <strong>Verification code:</strong>
+            {{ selectedCloseTicket.verificationCode }}
+          </div>
+          <div>
+            <strong>Opened:</strong>
+            {{ selectedCloseTicket.openedAt }}
+          </div>
+          <div>
+            <strong>Issue:</strong>
+            {{ selectedCloseTicket.issueDescription }}
+          </div>
         </div>
       </div>
       <div class="form-group">

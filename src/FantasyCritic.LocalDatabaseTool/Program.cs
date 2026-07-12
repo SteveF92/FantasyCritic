@@ -143,12 +143,12 @@ public static class Program
 
         var entities = responses.Select(r => new SupportedYearEntity
         {
-            Year             = r.Year,
-            OpenForCreation  = r.OpenForCreation,
-            OpenForPlay      = r.OpenForPlay,
+            Year = r.Year,
+            OpenForCreation = r.OpenForCreation,
+            OpenForPlay = r.OpenForPlay,
             OpenForBetaUsers = false,
-            StartDate        = LocalDate.FromDateTime(r.StartDate),
-            Finished         = r.Finished
+            StartDate = LocalDate.FromDateTime(r.StartDate),
+            Finished = r.Finished
         }).ToList();
 
         var syncer = new MySQLLocalSetupSyncer(_localConnectionString);

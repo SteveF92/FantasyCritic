@@ -1,4 +1,5 @@
 namespace FantasyCritic.MySQL.Entities.Conferences;
+
 internal class LeagueManagerEntity
 {
     public Guid LeagueID { get; set; }

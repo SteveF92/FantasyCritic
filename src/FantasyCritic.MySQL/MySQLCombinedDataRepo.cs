@@ -389,7 +389,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         if (supportedYearEntity is null)
         {
             return null;
-        }    
+        }
 
         var leagueEntity = resultSets.ReadSingleOrDefault<LeagueEntity>();
         if (leagueEntity is null)

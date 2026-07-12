@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Discord.Interfaces;
 
 namespace FantasyCritic.Lib.Discord.UrlBuilders;
+
 public abstract class UrlBuilder : IUrlBuilder
 {
     protected string UrlTemplate { get; init; } = "";

@@ -8,7 +8,7 @@ public class FantasyCriticUserViewModel
     {
 
     }
-    
+
     public FantasyCriticUserViewModel(FantasyCriticUser user, IEnumerable<string> roles)
     {
         UserID = user.Id;

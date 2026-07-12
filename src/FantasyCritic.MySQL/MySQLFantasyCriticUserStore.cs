@@ -874,29 +874,29 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
                 var byId = await FindByIdAsync(userId.ToString(), CancellationToken.None);
                 return byId is null ? new List<FantasyCriticUser>() : new List<FantasyCriticUser>() { byId };
             case SupportUserSearchKind.DisplayName:
-            {
-                string normalizedDisplayName = searchValue.Trim().ToUpperInvariant();
-                if (normalizedDisplayName.Length == 0)
                 {
-                    return new List<FantasyCriticUser>();
-                }
+                    string normalizedDisplayName = searchValue.Trim().ToUpperInvariant();
+                    if (normalizedDisplayName.Length == 0)
+                    {
+                        return new List<FantasyCriticUser>();
+                    }
 
-                await using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync();
-                var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    "select * from tbl_user where IsDeleted = 0 and UPPER(DisplayName) = @normalizedDisplayName;",
-                    new { normalizedDisplayName });
-                return userResult.Select(x => x.ToDomain()).ToList();
-            }
+                    await using var connection = new MySqlConnection(_connectionString);
+                    await connection.OpenAsync();
+                    var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
+                        "select * from tbl_user where IsDeleted = 0 and UPPER(DisplayName) = @normalizedDisplayName;",
+                        new { normalizedDisplayName });
+                    return userResult.Select(x => x.ToDomain()).ToList();
+                }
             case SupportUserSearchKind.Email:
-            {
-                await using var connection = new MySqlConnection(_connectionString);
-                await connection.OpenAsync();
-                var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
-                    "select * from tbl_user where IsDeleted = 0 and NormalizedEmailAddress = @normalizedEmail;",
-                    new { normalizedEmail = searchValue });
-                return userResult.Select(x => x.ToDomain()).ToList();
-            }
+                {
+                    await using var connection = new MySqlConnection(_connectionString);
+                    await connection.OpenAsync();
+                    var userResult = await connection.QueryAsync<FantasyCriticUserEntity>(
+                        "select * from tbl_user where IsDeleted = 0 and NormalizedEmailAddress = @normalizedEmail;",
+                        new { normalizedEmail = searchValue });
+                    return userResult.Select(x => x.ToDomain()).ToList();
+                }
             default:
                 throw new ArgumentOutOfRangeException(nameof(searchKind), searchKind, null);
         }

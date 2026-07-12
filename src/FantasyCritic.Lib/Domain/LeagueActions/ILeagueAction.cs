@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Domain.LeagueActions;
+
 public interface ILeagueAction
 {
     public string PublisherNameOrManager { get; }

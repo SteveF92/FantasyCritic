@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Domain.Draft;
+
 public static class DraftFunctions
 {
     public static bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<IMinimalFantasyCriticUser> activeUsers)

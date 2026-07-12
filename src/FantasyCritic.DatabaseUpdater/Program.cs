@@ -81,7 +81,7 @@ public class Program
             logger.Dispose();
             loggerFactory.Dispose();
         }
-        
+
     }
 
     private static async Task<IConfigurationRoot> GetConfiguration(string environmentName, string awsRegion)

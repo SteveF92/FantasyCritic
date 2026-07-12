@@ -36,19 +36,19 @@ public class LeagueYearViewModel
 
         var publisherRankings = leagueYear.Publishers
             .Select(x => new
-                {
-                    x.PublisherID,
-                    Ranking = leagueYear.Publishers.Count(y => y.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options) > x.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options)) + 1
-                }
+            {
+                x.PublisherID,
+                Ranking = leagueYear.Publishers.Count(y => y.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options) > x.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options)) + 1
+            }
             )
             .ToDictionary(x => x.PublisherID, x => x.Ranking);
 
         var publisherProjectedRankings = leagueYear.Publishers
             .Select(x => new
-                {
-                    x.PublisherID,
-                    Ranking = leagueYear.Publishers.Count(y => y.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues) > x.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues)) + 1
-                }
+            {
+                x.PublisherID,
+                Ranking = leagueYear.Publishers.Count(y => y.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues) > x.GetProjectedFantasyPoints(leagueYear, supplementalData.SystemWideValues)) + 1
+            }
             )
             .ToDictionary(x => x.PublisherID, x => x.Ranking);
 
@@ -102,7 +102,7 @@ public class LeagueYearViewModel
                 }
             }
         }
-        
+
         Players = allPublishersMade ? playerVMs.OrderBy(x => x.Publisher!.DraftPosition).ToList() : playerVMs;
         EligibilityOverrides = leagueYear.EligibilityOverrides.Select(x => new EligibilityOverrideViewModel(x, currentDate)).ToList();
         TagOverrides = leagueYear.TagOverrides.Select(x => new TagOverrideViewModel(x, currentDate)).ToList();

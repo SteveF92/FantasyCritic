@@ -19,10 +19,7 @@
                 v-b-popover.hover.top="'Multi Draft League'"
                 icon="list-ol"
                 size="2x" />
-              <font-awesome-icon
-                v-if="!data.item.conferenceID && !data.item.customRulesLeague && data.item.mostRecentYearType === 'Standard'"
-                icon="user"
-                size="2x" />
+              <font-awesome-icon v-if="!data.item.conferenceID && !data.item.customRulesLeague && data.item.mostRecentYearType === 'Standard'" icon="user" size="2x" />
             </template>
           </router-link>
         </div>
@@ -43,8 +40,7 @@
             <span v-else>{{ data.item.leagueManager.displayName }}</span>
           </div>
           <div v-if="data.item.royaleGroupID && activeRoyaleQuarter" class="league-detail">
-            <router-link
-              :to="{ name: 'royaleGroupQuarter', params: { groupid: data.item.royaleGroupID, year: activeRoyaleQuarter.year, quarter: activeRoyaleQuarter.quarter } }">
+            <router-link :to="{ name: 'royaleGroupQuarter', params: { groupid: data.item.royaleGroupID, year: activeRoyaleQuarter.year, quarter: activeRoyaleQuarter.quarter } }">
               View Royale Group
             </router-link>
           </div>

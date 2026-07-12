@@ -170,7 +170,7 @@ public class ActionProcessor
             runningResults = runningResults.Combine(newResults);
             iteration++;
         }
-        
+
         return runningResults;
     }
 

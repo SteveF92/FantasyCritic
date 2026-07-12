@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Domain;
+
 public class LeagueYearScoreChanges
 {
     private readonly IReadOnlyList<Publisher> _oldPublishers;

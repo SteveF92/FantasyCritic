@@ -112,14 +112,14 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
         return sleeperFactor;
     }
 
-    
+
     public double GetFlopFactor(ScoringSystem scoringSystem)
     {
         double minFantasyPoints = (double)scoringSystem.GetMinimumScore();
         double maxFantasyPoints = (double)scoringSystem.GetMaximumScore();
 
         var hypeFactor = MasterGame!.DateAdjustedHypeFactor;
-        var fantasyPoints = (double) (FantasyPoints ?? 0);
+        var fantasyPoints = (double)(FantasyPoints ?? 0);
         if (hypeFactor <= 0)
         {
             return 0;
@@ -226,7 +226,7 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((PublisherGame) obj);
+        return Equals((PublisherGame)obj);
     }
 
     public override int GetHashCode()

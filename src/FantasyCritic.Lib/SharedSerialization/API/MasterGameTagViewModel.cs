@@ -4,7 +4,7 @@ public class MasterGameTagViewModel
 {
     public MasterGameTagViewModel()
     {
-        
+
     }
 
     public MasterGameTagViewModel(MasterGameTag domain)

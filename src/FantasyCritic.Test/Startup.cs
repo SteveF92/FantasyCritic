@@ -5,6 +5,7 @@ using Serilog.Events;
 using Serilog;
 
 namespace FantasyCritic.Test;
+
 [SetUpFixture]
 internal class Startup
 {

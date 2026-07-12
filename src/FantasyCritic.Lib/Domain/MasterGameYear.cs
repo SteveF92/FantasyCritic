@@ -131,7 +131,7 @@ public class MasterGameYear : IEquatable<MasterGameYear>
                 projectedPoints = 3m;
             }
         }
-  
+
         return projectedPoints;
     }
 

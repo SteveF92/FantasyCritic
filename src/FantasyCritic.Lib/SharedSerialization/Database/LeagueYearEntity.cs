@@ -94,7 +94,7 @@ public class LeagueYearEntity
         {
             mightReleaseDroppableDate = new AnnualDate(MightReleaseDroppableMonth.Value, MightReleaseDroppableDay.Value);
         }
-        
+
         LeagueOptions options = new LeagueOptions(StandardGames, CounterPicks, UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
             DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount,
             EnableBids, leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem,

@@ -1,4 +1,5 @@
 namespace FantasyCritic.Web.Helpers;
+
 public class LeagueUserRelationship
 {
     public LeagueUserRelationship(LeagueInvite? leagueInvite, bool inLeague, bool leagueManager, bool isAdmin)

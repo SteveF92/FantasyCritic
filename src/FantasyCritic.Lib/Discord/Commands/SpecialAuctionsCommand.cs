@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Services;
 using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
+
 public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;
@@ -42,7 +43,7 @@ public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionCon
         [Summary("year", "The year for the league (if not entered, defaults to the current year).")] int? year = null)
     {
         await DeferAsync();
-        
+
         var supportedYears = await _interLeagueService.GetSupportedYears();
         if (year != null && supportedYears.All(y => y.Year != year.Value))
         {
@@ -84,7 +85,7 @@ public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionCon
             specialAuctionMessage += $"\n> Time Until Auction Ends: {DiscordSharedMessageUtilities.BuildRemainingTimeMessage(duration)}";
             specialAuctionMessages.Add(specialAuctionMessage);
         }
-        
+
         var leagueUrl = new LeagueUrlBuilder(_baseAddress, leagueYear.League.LeagueID,
             leagueYear.Year)
             .BuildUrl();

@@ -4,6 +4,7 @@ using MathNet.Numerics.LinearRegression;
 using Serilog;
 
 namespace FantasyCritic.Lib.Services;
+
 public class HypeFactorService : IHypeFactorService
 {
     private static readonly ILogger _logger = Log.ForContext<AdminService>();

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using FantasyCritic.FakeRepo.TestUtilities;
 
 namespace FantasyCritic.Test.Discord;
+
 internal class LeagueGameNewsChannelTests : BaseGameNewsTests
 {
     public static BaseGameNewsRelevanceHandler LeagueGames_On_Misses_On_SettingAll_NoSkippedTags(LeagueYear leagueYear) =>

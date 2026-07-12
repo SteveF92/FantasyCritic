@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Domain.Results;
 using FantasyCritic.Lib.Extensions;
 
 namespace FantasyCritic.Lib.BusinessLogicFunctions;
+
 public static class GameEligibilityFunctions
 {
     public static ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool acquiringNow, Guid? draftID,

@@ -1,6 +1,7 @@
 using NUnit.Framework;
 
 namespace FantasyCritic.Test.Discord;
+
 [TestFixture]
 internal class GameChannelNewGameIsRelevantTests : GameNewsChannelTests
 {

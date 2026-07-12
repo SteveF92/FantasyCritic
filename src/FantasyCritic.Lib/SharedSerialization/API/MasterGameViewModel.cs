@@ -6,7 +6,7 @@ public class MasterGameViewModel
 {
     public MasterGameViewModel()
     {
-        
+
     }
 
     public MasterGameViewModel(MasterGame masterGame, LocalDate currentDate, bool error = false, int numberOutstandingCorrections = 0)
@@ -94,7 +94,7 @@ public class MasterGameViewModel
         var addedByUser = new VeryMinimalFantasyCriticUser(AddedByUser.UserID, AddedByUser.DisplayName);
 
         return new MasterGame(MasterGameID, GameName, EstimatedReleaseDate, MinimumReleaseDate, MaximumReleaseDate, EarlyAccessReleaseDate, InternationalReleaseDate,
-            AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, CriticScore.HasValue, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName,  AddedTimestamp,
+            AnnouncementDate, ReleaseDate, OpenCriticID, GGToken, GGSlug, CriticScore, CriticScore.HasValue, OpenCriticSlug, Notes, BoxartFileName, GGCoverArtFileName, AddedTimestamp,
             SyncWithExternalAPIs, UseSimpleEligibility, DelayContention, ShowNote, AddedTimestamp, addedByUser, new List<MasterSubGame>(), tags);
     }
 }

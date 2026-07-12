@@ -1,6 +1,7 @@
 using System.Reflection;
 
 namespace FantasyCritic.Lib.Enums;
+
 public static class EnumUtils
 {
     public static IReadOnlyList<TEnum> GetAllPossibleValues<TEnum>()

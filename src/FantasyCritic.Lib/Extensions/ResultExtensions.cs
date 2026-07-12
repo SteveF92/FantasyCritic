@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Extensions;
+
 public static class ResultExtensions
 {
     public static T? ToNullable<T>(this Result<T> result) where T : class

@@ -9,6 +9,7 @@ using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 
 namespace FantasyCritic.MySQL;
+
 internal static class DomainConversionUtilities
 {
     public static IReadOnlyList<EligibilityOverride> ConvertEligibilityOverrideEntities(IEnumerable<EligibilityOverrideEntity> eligibilityOverrideEntities,

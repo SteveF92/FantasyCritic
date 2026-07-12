@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.SignalR;
 using FantasyCritic.Web.Hubs;
 
 namespace FantasyCritic.Web.Controllers;
+
 public abstract class BaseLeagueController : FantasyCriticController
 {
     protected readonly FantasyCriticService _fantasyCriticService;

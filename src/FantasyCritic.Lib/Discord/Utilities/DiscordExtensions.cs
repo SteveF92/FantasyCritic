@@ -3,6 +3,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 
 namespace FantasyCritic.Lib.Discord.Utilities;
+
 public static class DiscordExtensions
 {
     public static async Task<RestUserMessage?> TrySendMessageAsync(this SocketTextChannel channel, string messageToSend)
@@ -33,7 +34,7 @@ public static class DiscordExtensions
         MessageFlags flags = MessageFlags.None)
     {
         TimeSpan[] delays = [TimeSpan.FromMilliseconds(50), TimeSpan.FromMilliseconds(100), TimeSpan.FromMilliseconds(200), TimeSpan.FromMilliseconds(400), TimeSpan.FromMilliseconds(800)];
-        for (int attempt = 1; attempt <=5; attempt++)
+        for (int attempt = 1; attempt <= 5; attempt++)
         {
             try
             {
@@ -54,7 +55,7 @@ public static class DiscordExtensions
                 }
             }
         }
-        
+
         return null;
     }
 

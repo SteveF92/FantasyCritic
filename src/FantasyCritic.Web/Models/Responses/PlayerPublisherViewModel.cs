@@ -1,4 +1,5 @@
 namespace FantasyCritic.Web.Models.Responses;
+
 public class PlayerPublisherViewModel
 {
     public PlayerPublisherViewModel(LeagueYear leagueYear, Publisher publisher, LocalDate currentDate, bool userIsInLeague,

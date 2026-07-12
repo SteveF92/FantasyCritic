@@ -10,10 +10,11 @@ using FantasyCritic.MySQL.Entities.Conferences;
 using Serilog;
 
 namespace FantasyCritic.MySQL;
+
 public class MySQLConferenceRepo : IConferenceRepo
 {
     private static readonly ILogger _logger = Log.ForContext<MySQLConferenceRepo>();
-    
+
     private readonly string _connectionString;
     private readonly MySQLFantasyCriticRepo _fantasyCriticRepo;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
@@ -245,7 +246,7 @@ public class MySQLConferenceRepo : IConferenceRepo
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-        
+
         ConferenceEntity? conferenceEntity = await connection.QuerySingleOrDefaultAsync<ConferenceEntity?>(conferenceSQL, queryObject);
         if (conferenceEntity is null)
         {
@@ -273,7 +274,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                                          GROUP BY cy.Year, sy.Finished;
                                          """;
         IEnumerable<ConferenceYearKeyWithDetailsEntity> years = await connection.QueryAsync<ConferenceYearKeyWithDetailsEntity>(conferenceYearSQL, queryObject);
-        
+
         const string leaguesInConferenceSQL = "select LeagueID from tbl_league where ConferenceID = @conferenceID";
         IEnumerable<Guid> leagueIDs = await connection.QueryAsync<Guid>(leaguesInConferenceSQL, queryObject);
 
@@ -369,7 +370,7 @@ public class MySQLConferenceRepo : IConferenceRepo
             var player = new ConferencePlayer(user.ToMinimal(), leaguesIn, leaguesManaged, conferenceYearsActiveIn, leagueYearsActiveIn);
             conferencePlayers.Add(player);
         }
-        
+
         return conferencePlayers;
     }
 
@@ -384,7 +385,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                            delete from tbl_conference_hasuser
                            where ConferenceID = @conferenceID and UserID = @userID;
                            """;
-        
+
         var deleteParam = new
         {
             conferenceID = conference.ConferenceID,
@@ -409,7 +410,7 @@ public class MySQLConferenceRepo : IConferenceRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         var leagueEntities = (await connection.QueryAsync<ConferenceLeagueEntity>(leagueSQL, queryObject)).ToList();
-        
+
         var leagueManagerIDs = leagueEntities.Select(x => x.LeagueManager).ToList();
         var leagueManagers = await _userStore.GetUsers(leagueManagerIDs);
         var leagueManagerDictionary = leagueManagers.ToDictionary(x => x.Id);
@@ -650,11 +651,11 @@ public class MySQLConferenceRepo : IConferenceRepo
                 }
             }
         }
-        
+
         var leagueHasPlayerInPreviousYearLookup = leagueHasPlayerInPreviousYear
             .SelectMany(kv => kv.Value.Select(v => new { Key = kv.Key, Value = v }))
             .ToLookup(item => item.Key, item => item.Value);
-        
+
         try
         {
             var currentLeagueUsers = (await connection.QueryAsync<LeagueHasUserEntity>(currentLeagueUserSQL, conferenceParam, transaction)).ToList();

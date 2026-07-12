@@ -21,7 +21,12 @@
         </div>
         <div class="form-group">
           <label for="newUnrestrictedReleaseStatusGamesDropped" class="control-label">"Any Unreleased" Games Dropped</label>
-          <input id="newUnrestrictedReleaseStatusGamesDropped" v-model="newUnrestrictedReleaseStatusGamesDropped" name="newUnrestrictedReleaseStatusGamesDropped" type="text" class="form-control input" />
+          <input
+            id="newUnrestrictedReleaseStatusGamesDropped"
+            v-model="newUnrestrictedReleaseStatusGamesDropped"
+            name="newUnrestrictedReleaseStatusGamesDropped"
+            type="text"
+            class="form-control input" />
         </div>
         <div class="form-group">
           <label for="newWillNotReleaseGamesDropped" class="control-label">Will not Release Games Dropped</label>

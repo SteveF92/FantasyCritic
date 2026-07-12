@@ -11,6 +11,7 @@ using FantasyCritic.Lib.Utilities;
 using JetBrains.Annotations;
 
 namespace FantasyCritic.Lib.Discord.Commands;
+
 public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
 {
     private readonly IDiscordRepo _discordRepo;

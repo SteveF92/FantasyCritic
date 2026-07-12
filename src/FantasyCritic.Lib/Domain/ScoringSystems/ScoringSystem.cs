@@ -53,7 +53,7 @@ public abstract class ScoringSystem : IEquatable<ScoringSystem>
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((ScoringSystem) obj);
+        return Equals((ScoringSystem)obj);
     }
 
     public override int GetHashCode()

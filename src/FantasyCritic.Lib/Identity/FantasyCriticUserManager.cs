@@ -35,7 +35,7 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
         var now = _clock.GetCurrentInstant();
         var fullUser = new FantasyCriticUser(user.Id, user.UserName, null, openUserNumber, user.Email,
             user.NormalizedEmail, user.EmailConfirmed, Guid.NewGuid().ToString(), user.PasswordHash, user.TwoFactorEnabled,
-            user.AuthenticatorKey, now, GeneralUserSettings.Default,  false);
+            user.AuthenticatorKey, now, GeneralUserSettings.Default, false);
         var createdUser = await base.CreateAsync(fullUser, password);
         return createdUser;
     }

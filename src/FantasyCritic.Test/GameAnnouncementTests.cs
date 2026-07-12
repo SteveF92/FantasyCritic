@@ -11,11 +11,12 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace FantasyCritic.Test;
+
 internal class GameAnnouncementTests
 {
     [Test]
     public void BasicNotificationTest()
     {
-        
+
     }
 }

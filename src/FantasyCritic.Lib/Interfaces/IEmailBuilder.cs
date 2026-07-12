@@ -2,6 +2,7 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Interfaces;
+
 public interface IEmailBuilder
 {
     public Task<string> BuildEmailChangeNotificationEmail(FantasyCriticUser user, string newEmailAddress);

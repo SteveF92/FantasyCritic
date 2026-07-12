@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Domain.Combinations;
 
 namespace FantasyCritic.Web.Models.Responses;
+
 public class PrivatePublisherDataViewModel
 {
     public PrivatePublisherDataViewModel(LeagueYear leagueYear, Publisher userPublisher, PrivatePublisherData domainData,
@@ -23,10 +24,10 @@ public class PrivatePublisherDataViewModel
         {
             bool taken = publisherMasterGames.Contains(queuedGame.MasterGame);
             bool alreadyOwned = myPublisherMasterGames.Contains(queuedGame.MasterGame);
-            
+
             if (masterGameYearDictionary.TryGetValue(queuedGame.MasterGame.MasterGameID, out var masterGameYear))
             {
-                
+
                 queuedGameVMs.Add(new QueuedGameViewModel(queuedGame, masterGameYear, currentDate, taken, alreadyOwned));
             }
             else

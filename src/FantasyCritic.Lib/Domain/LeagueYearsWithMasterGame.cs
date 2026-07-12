@@ -1,4 +1,5 @@
 namespace FantasyCritic.Lib.Domain;
+
 public class LeagueYearWithMasterGame
 {
     public Guid LeagueID { get; set; }

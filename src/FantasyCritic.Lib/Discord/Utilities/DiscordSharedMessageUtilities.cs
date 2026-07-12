@@ -5,6 +5,7 @@ using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Discord.Utilities;
+
 public static class DiscordSharedMessageUtilities
 {
     public static string BuildDateGroupedGameMessages(IReadOnlyList<MatchedGameDisplay> games, string baseAddress)

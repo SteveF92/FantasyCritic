@@ -1,4 +1,5 @@
 namespace FantasyCritic.MySQL.Entities;
+
 public class XmlKey
 {
     public Guid Id { get; set; }

@@ -40,7 +40,7 @@ public class MasterGameTag : IEquatable<MasterGameTag>
         if (ReferenceEquals(null, obj)) return false;
         if (ReferenceEquals(this, obj)) return true;
         if (obj.GetType() != this.GetType()) return false;
-        return Equals((MasterGameTag) obj);
+        return Equals((MasterGameTag)obj);
     }
 
     public override int GetHashCode()

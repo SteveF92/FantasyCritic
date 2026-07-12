@@ -4,6 +4,7 @@ using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Services;
+
 public class TradeService
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
