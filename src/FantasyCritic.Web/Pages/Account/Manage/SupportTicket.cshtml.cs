@@ -1,6 +1,5 @@
 #nullable disable
 
-using System;
 using System.ComponentModel.DataAnnotations;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Mvc;

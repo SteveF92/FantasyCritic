@@ -7,7 +7,6 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using JetBrains.Annotations;
 using Serilog;

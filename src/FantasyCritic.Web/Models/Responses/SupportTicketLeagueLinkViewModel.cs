@@ -1,5 +1,3 @@
-using FantasyCritic.Lib.Domain;
-
 namespace FantasyCritic.Web.Models.Responses;
 
 public class SupportTicketLeagueLinkViewModel

@@ -1,6 +1,3 @@
-using CSharpFunctionalExtensions;
-using NodaTime;
-
 namespace FantasyCritic.Lib.Utilities;
 
 /// <summary>

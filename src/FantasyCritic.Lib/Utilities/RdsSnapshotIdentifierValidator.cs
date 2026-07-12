@@ -1,5 +1,4 @@
 using System.Text.RegularExpressions;
-using CSharpFunctionalExtensions;
 
 namespace FantasyCritic.Lib.Utilities;
 

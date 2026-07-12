@@ -2,7 +2,6 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Web.Models.Requests.League;
 using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Responses;
