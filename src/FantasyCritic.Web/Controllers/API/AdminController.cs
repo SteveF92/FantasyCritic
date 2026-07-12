@@ -423,8 +423,7 @@ public class AdminController : FantasyCriticController
             return NotFound();
         }
 
-        var adjustableClock = _clock as AdjustableClock;
-        if (adjustableClock is null)
+        if (_clock is not AdjustableClock adjustableClock)
         {
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
@@ -446,8 +445,7 @@ public class AdminController : FantasyCriticController
             return NotFound();
         }
 
-        var adjustableClock = _clock as AdjustableClock;
-        if (adjustableClock is null)
+        if (_clock is not AdjustableClock adjustableClock)
         {
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");
@@ -473,8 +471,7 @@ public class AdminController : FantasyCriticController
             return NotFound();
         }
 
-        var adjustableClock = _clock as AdjustableClock;
-        if (adjustableClock is null)
+        if (_clock is not AdjustableClock adjustableClock)
         {
             return StatusCode(StatusCodes.Status500InternalServerError,
                 "IntegrationTestMode is enabled but the registered IClock is not an AdjustableClock.");

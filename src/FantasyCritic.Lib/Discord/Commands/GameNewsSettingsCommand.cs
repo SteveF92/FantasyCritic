@@ -413,9 +413,8 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         await DeferAsync();
 
         // Cast the interaction to SocketMessageComponent
-        var interaction = Context.Interaction as SocketMessageComponent;
 
-        if (interaction == null)
+        if (Context.Interaction is not SocketMessageComponent interaction)
         {
             await FollowupAsync("Failed to process the button interaction.", ephemeral: true);
             return;
@@ -608,9 +607,8 @@ public class GameNewsSettingsCommand : InteractionModuleBase<SocketInteractionCo
         await DeferAsync();
 
         // Cast the interaction to SocketMessageComponent
-        var component = Context.Interaction as SocketMessageComponent;
 
-        if (component == null)
+        if (Context.Interaction is not SocketMessageComponent component)
         {
             await FollowupAsync("Failed to process the select menu interaction.", ephemeral: true);
             return;

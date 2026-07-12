@@ -58,6 +58,7 @@ csharp_style_prefer_local_over_anonymous_function = true:warning
 csharp_style_prefer_extended_property_pattern = true:warning
 dotnet_style_object_initializer = true:warning
 dotnet_style_prefer_auto_properties = true:warning
+csharp_style_pattern_matching_over_as_with_null_check = true:warning
 
 [{FantasyCritic.Test/**,FantasyCritic.IntegrationTests/**}.cs]
 dotnet_diagnostic.NUnit2045.severity = warning
