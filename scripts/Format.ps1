@@ -3,8 +3,11 @@
     Applies all deterministic formatting rules for FantasyCritic (C# and ClientApp).
 
 .DESCRIPTION
-    Runs dotnet format (whitespace, style, and analyzers) against src/.editorconfig,
-    then Prettier and ESLint --fix on the Vue client app.
+    Runs dotnet format whitespace against src/.editorconfig (indent, EOL, final newline,
+    trim trailing whitespace), then Prettier and ESLint --fix on the Vue client app.
+
+    Use -Style to also apply C# code-style rules configured at warning severity or higher
+    in .editorconfig (for incremental style adoption).
 
     Use -Check to verify formatting without writing changes (for CI).
 
@@ -18,7 +21,8 @@
 #>
 
 param(
-    [switch]$Check
+    [switch]$Check,
+    [switch]$Style
 )
 
 $ErrorActionPreference = "Stop"
@@ -49,13 +53,26 @@ if ($Check) {
     Write-Host "  Mode: check (no writes)"
 }
 
-Invoke-Step "C# (dotnet msbuild -t:$formatTarget)" {
+Invoke-Step "C# whitespace (dotnet msbuild -t:$formatTarget)" {
     Push-Location $srcDir
     try {
         dotnet msbuild $solution "-t:$formatTarget"
     }
     finally {
         Pop-Location
+    }
+}
+
+if ($Style) {
+    $styleTarget = if ($Check) { "FormatStyleCheck" } else { "FormatStyle" }
+    Invoke-Step "C# style (dotnet msbuild -t:$styleTarget)" {
+        Push-Location $srcDir
+        try {
+            dotnet msbuild $solution "-t:$styleTarget"
+        }
+        finally {
+            Pop-Location
+        }
     }
 }
 

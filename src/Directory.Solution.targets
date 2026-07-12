@@ -1,21 +1,40 @@
 <Project>
   <!--
     Solution-level format targets (CLI only; not loaded by Visual Studio).
+
+    Baseline Format applies whitespace rules from src/.editorconfig only (indent, EOL,
+    final newline, trim trailing whitespace). It does not run code-style or analyzer fixes.
+
+    After adding a style rule to .editorconfig at warning severity or higher, run FormatStyle
+    (or scripts/Format.ps1 -Style) to apply that rule incrementally.
+
     Apply:  dotnet msbuild FantasyCritic.slnx -t:Format
     Check:  dotnet msbuild FantasyCritic.slnx -t:FormatCheck
+    Style:  dotnet msbuild FantasyCritic.slnx -t:FormatStyle
   -->
   <PropertyGroup>
     <_FormatSolutionPath>$(MSBuildThisFileDirectory)FantasyCritic.slnx</_FormatSolutionPath>
-    <_FormatCommonArgs>format &quot;$(_FormatSolutionPath)&quot; --severity info</_FormatCommonArgs>
+    <_FormatWhitespaceArgs>format whitespace &quot;$(_FormatSolutionPath)&quot;</_FormatWhitespaceArgs>
+    <_FormatStyleArgs>format style &quot;$(_FormatSolutionPath)&quot; --severity warn</_FormatStyleArgs>
   </PropertyGroup>
 
   <Target Name="Format">
-    <Message Importance="High" Text="Formatting C# (dotnet format --severity info)..." />
-    <Exec Command="dotnet $(_FormatCommonArgs)" />
+    <Message Importance="High" Text="Formatting C# whitespace (dotnet format whitespace)..." />
+    <Exec Command="dotnet $(_FormatWhitespaceArgs)" />
   </Target>
 
   <Target Name="FormatCheck">
-    <Message Importance="High" Text="Checking C# formatting (dotnet format --verify-no-changes)..." />
-    <Exec Command="dotnet $(_FormatCommonArgs) --verify-no-changes" />
+    <Message Importance="High" Text="Checking C# whitespace (dotnet format whitespace --verify-no-changes)..." />
+    <Exec Command="dotnet $(_FormatWhitespaceArgs) --verify-no-changes" />
+  </Target>
+
+  <Target Name="FormatStyle">
+    <Message Importance="High" Text="Applying C# style rules at warning+ (dotnet format style --severity warn)..." />
+    <Exec Command="dotnet $(_FormatStyleArgs)" />
+  </Target>
+
+  <Target Name="FormatStyleCheck">
+    <Message Importance="High" Text="Checking C# style rules at warning+ (dotnet format style --severity warn --verify-no-changes)..." />
+    <Exec Command="dotnet $(_FormatStyleArgs) --verify-no-changes" />
   </Target>
 </Project>
