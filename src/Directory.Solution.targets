@@ -16,6 +16,18 @@
     <_FormatStyleArgs>format style &quot;$(_FormatSolutionPath)&quot; --severity warn</_FormatStyleArgs>
   </PropertyGroup>
 
+  <!--
+    NUnit2045 (Assert.EnterMultipleScope) comes from the NUnit.Analyzers 3rd-party package,
+    which "dotnet format style" does not cover — it needs the separate "analyzers" command,
+    run per-project (not solution-wide). Its fixer also only resolves non-overlapping
+    violation groups per pass, so the wrapping scripts (Format.ps1 / format.sh) call this
+    target in a loop until FormatAnalyzersCheck reports clean.
+  -->
+  <ItemGroup>
+    <_FormatAnalyzerTestProject Include="$(MSBuildThisFileDirectory)FantasyCritic.Test\FantasyCritic.Test.csproj" />
+    <_FormatAnalyzerTestProject Include="$(MSBuildThisFileDirectory)FantasyCritic.IntegrationTests\FantasyCritic.IntegrationTests.csproj" />
+  </ItemGroup>
+
   <Target Name="Format">
     <Message Importance="High" Text="Formatting C# whitespace (dotnet format whitespace)..." />
     <Exec Command="dotnet $(_FormatWhitespaceArgs)" />
@@ -38,5 +50,15 @@
   <Target Name="FormatStyleCheck">
     <Message Importance="High" Text="Checking C# style rules at warning+ (dotnet format style --severity warn --verify-no-changes)..." />
     <Exec Command="dotnet $(_FormatStyleArgs) --verify-no-changes" />
+  </Target>
+
+  <Target Name="FormatAnalyzers">
+    <Message Importance="High" Text="Applying test-project analyzer rules at warning+ (NUnit2045, dotnet format analyzers --severity warn)..." />
+    <Exec Command="dotnet format analyzers &quot;%(_FormatAnalyzerTestProject.Identity)&quot; --diagnostics NUnit2045 --severity warn" />
+  </Target>
+
+  <Target Name="FormatAnalyzersCheck">
+    <Message Importance="High" Text="Checking test-project analyzer rules at warning+ (NUnit2045, dotnet format analyzers --severity warn --verify-no-changes)..." />
+    <Exec Command="dotnet format analyzers &quot;%(_FormatAnalyzerTestProject.Identity)&quot; --diagnostics NUnit2045 --severity warn --verify-no-changes" />
   </Target>
 </Project>
