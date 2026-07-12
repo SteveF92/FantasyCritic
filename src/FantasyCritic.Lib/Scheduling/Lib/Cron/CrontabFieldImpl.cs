@@ -29,10 +29,6 @@ public sealed class CrontabFieldImpl
 
     private static readonly CompareInfo Comparer = CultureInfo.InvariantCulture.CompareInfo;
     private static readonly char[] Comma = [','];
-
-    private readonly CrontabFieldKind _kind;
-    private readonly int _maxValue;
-    private readonly int _minValue;
     private readonly string[]? _names;
 
     private CrontabFieldImpl(CrontabFieldKind kind, int minValue, int maxValue, string[]? names)
@@ -42,30 +38,21 @@ public sealed class CrontabFieldImpl
         Debug.Assert(maxValue >= minValue);
         Debug.Assert(names == null || names.Length == (maxValue - minValue + 1));
 
-        _kind = kind;
-        _minValue = minValue;
-        _maxValue = maxValue;
+        Kind = kind;
+        MinValue = minValue;
+        MaxValue = maxValue;
         _names = names;
     }
 
-    public CrontabFieldKind Kind
-    {
-        get { return _kind; }
-    }
+    public CrontabFieldKind Kind { get; }
 
-    public int MinValue
-    {
-        get { return _minValue; }
-    }
+    public int MinValue { get; }
 
-    public int MaxValue
-    {
-        get { return _maxValue; }
-    }
+    public int MaxValue { get; }
 
     public int ValueCount
     {
-        get { return _maxValue - _minValue + 1; }
+        get { return MaxValue - MinValue + 1; }
     }
 
     public static CrontabFieldImpl FromKind(CrontabFieldKind kind)
@@ -107,7 +94,7 @@ public sealed class CrontabFieldImpl
             } while (next - last == 1);
 
             if (count == 0
-                && first == _minValue && last == _maxValue)
+                && first == MinValue && last == MaxValue)
             {
                 writer.Write('*');
                 return;
@@ -150,7 +137,7 @@ public sealed class CrontabFieldImpl
         }
         else
         {
-            var index = value - _minValue;
+            var index = value - MinValue;
             writer.Write((string)_names[index]);
         }
     }
@@ -280,7 +267,7 @@ public sealed class CrontabFieldImpl
             {
                 Debug.Assert(every != 0);
 
-                acc(value, _maxValue, every);
+                acc(value, MaxValue, every);
             }
         }
     }
@@ -305,14 +292,14 @@ public sealed class CrontabFieldImpl
         {
             throw new FormatException(string.Format(
                 "'{0}' is not a valid value for this crontab field. It must be a numeric value between {1} and {2} (all inclusive).",
-                str, _minValue, _maxValue));
+                str, MinValue, MaxValue));
         }
 
         for (var i = 0; i < _names.Length; i++)
         {
             if (Comparer.IsPrefix(_names[i], str, CompareOptions.IgnoreCase))
             {
-                return i + _minValue;
+                return i + MinValue;
             }
         }
 
