@@ -88,8 +88,8 @@ export default {
 
           const gameName = masterGame.gameName;
 
-          this.$set(byDate, dateLabel, byDate[dateLabel] ?? {});
-          this.$set(byDate[dateLabel], gameName, byDate[dateLabel][gameName] ?? []);
+          byDate[dateLabel] = byDate[dateLabel] ?? {};
+          byDate[dateLabel][gameName] = byDate[dateLabel][gameName] ?? [];
 
           byDate[dateLabel][gameName].push(member.publisherName);
         }
