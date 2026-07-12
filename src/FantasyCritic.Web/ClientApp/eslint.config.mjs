@@ -18,6 +18,16 @@ export default [
       globals: {
         ...globals.browser,
         __dirname: "readonly", // Adding `__dirname` global from your original config
+        process: "readonly", // Vite statically replaces `process.env.NODE_ENV` at build time
+      },
+    },
+  },
+  // Root-level Node scripts (dev server setup, Vite config) run outside the browser
+  {
+    files: ["aspnetcore-https.js", "vite.config.js", "vite.client.config.js", "vite.build.config.js", "eslint.config.mjs"],
+    languageOptions: {
+      globals: {
+        ...globals.node,
       },
     },
   },
