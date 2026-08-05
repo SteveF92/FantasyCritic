@@ -38,24 +38,16 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             return null;
         }
 
-        var lockDate = MasterGame.MasterGame.ReleaseDate.Value.Minus(Period.FromDays(RoyaleService.GetFutureReleaseLimitDays(YearQuarter.YearQuarter)));
+        var lockDate = MasterGame.MasterGame.ReleaseDate.Value.Minus(Period.FromDays(RoyaleService.FUTURE_RELEASE_LIMIT_DAYS));
         var lockDateTime = lockDate.AtStartOfDayInZone(TimeExtensions.EasternTimeZone);
         return lockDateTime.ToInstant();
     }
 
     public bool IsInRegretWindow(IClock clock)
     {
-        if (RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(YearQuarter.YearQuarter))
-        {
-            var currentInstant = clock.GetCurrentInstant();
-            var timeSincePurchase = currentInstant - Timestamp;
-            if (timeSincePurchase < Duration.FromMinutes(10))
-            {
-                return true;
-            }
-        }
-
-        return false;
+        var currentInstant = clock.GetCurrentInstant();
+        var timeSincePurchase = currentInstant - Timestamp;
+        return timeSincePurchase < Duration.FromMinutes(10);
     }
 
     public decimal CalculateRefundAmount(IEnumerable<MasterGameTag> masterGameTags, IClock clock)
@@ -66,16 +58,6 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
         }
 
         var currentlyIneligible = CalculateIsCurrentlyIneligible(masterGameTags);
-
-        decimal baseRefund;
-        if (!RoyaleYearQuarter.YearQuarter2026Q3FeatureSupported(YearQuarter.YearQuarter))
-        {
-            baseRefund = MasterGame.GetRoyaleGameCost(YearQuarter.YearQuarter);
-        }
-        else
-        {
-            baseRefund = AmountSpent;
-        }
 
         decimal refundMultiplier = 0.5m;
         if (currentlyIneligible)
@@ -91,7 +73,7 @@ public class RoyalePublisherGame : IEquatable<RoyalePublisherGame>
             }
         }
 
-        var finalRefund = baseRefund * refundMultiplier;
+        var finalRefund = AmountSpent * refundMultiplier;
         return finalRefund;
     }
 

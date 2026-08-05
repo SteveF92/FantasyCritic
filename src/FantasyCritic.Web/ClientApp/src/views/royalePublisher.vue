@@ -106,7 +106,7 @@
         <template v-else>This publisher has not bought any games yet.</template>
       </div>
 
-      <sellRoyaleGameModal :publisher-game="gameToModify" :year-quarter="publisher.yearQuarter" @sellGame="sellGame"></sellRoyaleGameModal>
+      <sellRoyaleGameModal :publisher-game="gameToModify" @sellGame="sellGame"></sellRoyaleGameModal>
     </div>
 
     <b-modal id="setAdvertisingMoneyModal" ref="setAdvertisingMoneyModalRef" title="Set Advertising Budget" @ok="setBudget">
@@ -116,11 +116,9 @@
           <strong>{{ gameToModify.masterGame.gameName }}</strong>
           ?
         </p>
-        <p>Each dollar allocated will increase your fantasy points received by {{ advertisingBudgetPercentPerDollar }}</p>
-        <p>You can spend up to $10 for a bonus of {{ advertisingBudgetMaxBonus }}.</p>
-        <p>
-          You can adjust this up until the game is locked, which happens when the game is {{ advertisingBudgetLockoutDays }} days away from release, or when it gets its first review on OpenCritic.
-        </p>
+        <p>Each dollar allocated will increase your fantasy points received by 5%</p>
+        <p>You can spend up to $10 for a bonus of 50%.</p>
+        <p>You can adjust this up until the game is locked, which happens when the game is 7 days away from release, or when it gets its first review on OpenCritic.</p>
         <div class="form-group row">
           <label for="advertisingBudgetToSet" class="col-sm-2 col-form-label">Budget</label>
           <div class="col-sm-10">
@@ -176,7 +174,6 @@ import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal.vue';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
 import { publisherIconIsValid } from '@/globalFunctions';
-import { yearQuarter2026Q1AndQ2FeatureSupported, yearQuarter2026Q3FeatureSupported } from '@/models/royale/RoyaleYearQuarter';
 
 export default {
   components: {
@@ -248,18 +245,6 @@ export default {
     },
     quarterIsFinished() {
       return this.publisher.yearQuarter.finished;
-    },
-    is2026Q1Q2() {
-      return yearQuarter2026Q1AndQ2FeatureSupported(this.publisher.yearQuarter);
-    },
-    advertisingBudgetPercentPerDollar() {
-      return this.is2026Q1Q2 ? '10%' : '5%';
-    },
-    advertisingBudgetMaxBonus() {
-      return this.is2026Q1Q2 ? '100%' : '50%';
-    },
-    advertisingBudgetLockoutDays() {
-      return yearQuarter2026Q3FeatureSupported(this.publisher.yearQuarter) ? 7 : 5;
     }
   },
   watch: {

@@ -7,18 +7,12 @@
           <strong>{{ publisherGame.masterGame.gameName }}</strong>
           ?
         </p>
-        <template v-if="isYearQuarter2026Q3FeatureSupported">
-          <template v-if="publisherGame.inRegretWindow">
-            <p>Since you are still within the 10 minute "regret window", you can sell this game back for a full refund.</p>
-          </template>
-          <template v-else>
-            <p>You will get back half of what you spent on the game, plus any advertising money currently assigned to it.</p>
-            <p>If the games is confirmed to not release in the quarter, you get back 75% of what you spent on it instead.</p>
-          </template>
+        <template v-if="publisherGame.inRegretWindow">
+          <p>Since you are still within the 10 minute "regret window", you can sell this game back for a full refund.</p>
         </template>
         <template v-else>
-          <p>You will get back half of the current market value of the game, plus any advertising money currently assigned to it.</p>
-          <p>If the games is confirmed to not release in the quarter, you get back 75% of market value instead.</p>
+          <p>You will get back half of what you spent on the game, plus any advertising money currently assigned to it.</p>
+          <p>If the games is confirmed to not release in the quarter, you get back 75% of what you spent on it instead.</p>
         </template>
         <p>
           Money to receive:
@@ -41,17 +35,9 @@
   </b-modal>
 </template>
 <script>
-import { yearQuarter2026Q3FeatureSupported } from '@/models/royale/RoyaleYearQuarter';
-
 export default {
   props: {
-    publisherGame: { type: Object, default: null },
-    yearQuarter: { type: Object, required: true }
-  },
-  computed: {
-    isYearQuarter2026Q3FeatureSupported() {
-      return yearQuarter2026Q3FeatureSupported(this.yearQuarter);
-    }
+    publisherGame: { type: Object, default: null }
   },
   methods: {
     sellGame() {

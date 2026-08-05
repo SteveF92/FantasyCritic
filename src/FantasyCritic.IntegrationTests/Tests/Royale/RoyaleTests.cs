@@ -527,8 +527,7 @@ public class RoyaleTests : IntegrationTestBase
             publisherID: publisherID,
             releaseFilter: RoyalePossibleMasterGamesReleaseFilter.All);
 
-        // Lockout status depends on the active quarter's rules (5 days pre-Q3 2026, 7 days from Q3 2026 onward).
-        var lockoutDays = activeQuarter.Year == 2026 && activeQuarter.Quarter >= 3 ? 7 : 5;
+        const int lockoutDays = 7;
         var lockoutStatus = $"Game will release within {lockoutDays} days.";
         var lockoutGame = (allGames ?? []).FirstOrDefault(g => g.IsAvailable != true && g.Status == lockoutStatus);
 
@@ -536,7 +535,7 @@ public class RoyaleTests : IntegrationTestBase
         {
             Assert.Inconclusive(
                 $"No game currently has Status == \"{lockoutStatus}\". "
-                + "This test only runs when a game is releasing within 5 days. Skipping.");
+                + $"This test only runs when a game is releasing within {lockoutDays} days. Skipping.");
             return;
         }
 
