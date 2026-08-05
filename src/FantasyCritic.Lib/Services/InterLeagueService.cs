@@ -59,6 +59,26 @@ public class InterLeagueService
         return _fantasyCriticRepo.GetSiteAnnouncements();
     }
 
+    public Task<SiteAnnouncement?> GetSiteAnnouncement(Guid announcementID)
+    {
+        return _fantasyCriticRepo.GetSiteAnnouncement(announcementID);
+    }
+
+    public Task CreateSiteAnnouncement(SiteAnnouncement announcement)
+    {
+        return _fantasyCriticRepo.CreateSiteAnnouncement(announcement);
+    }
+
+    public Task EditSiteAnnouncement(SiteAnnouncement announcement)
+    {
+        return _fantasyCriticRepo.EditSiteAnnouncement(announcement);
+    }
+
+    public Task DeleteSiteAnnouncement(Guid announcementID)
+    {
+        return _fantasyCriticRepo.DeleteSiteAnnouncement(announcementID);
+    }
+
     public async Task CreateMasterGame(MasterGame masterGame)
     {
         await _masterGameRepo.CreateMasterGame(masterGame);

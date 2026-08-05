@@ -129,6 +129,10 @@ public interface IFantasyCriticRepo
     Task<SystemWideSettings> GetSystemWideSettings();
     Task<SiteCounts> GetSiteCounts();
     Task<IReadOnlyList<SiteAnnouncement>> GetSiteAnnouncements();
+    Task<SiteAnnouncement?> GetSiteAnnouncement(Guid announcementID);
+    Task CreateSiteAnnouncement(SiteAnnouncement announcement);
+    Task EditSiteAnnouncement(SiteAnnouncement announcement);
+    Task DeleteSiteAnnouncement(Guid announcementID);
 
     Task SetActionProcessingMode(bool modeOn);
 

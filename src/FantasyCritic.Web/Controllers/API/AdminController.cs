@@ -412,6 +412,76 @@ public class AdminController : FantasyCriticController
         return Ok();
     }
 
+    [HttpGet]
+    [ProducesResponseType<List<SiteAnnouncementViewModel>>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<List<SiteAnnouncementViewModel>>> GetSiteAnnouncements()
+    {
+        var announcements = await _interLeagueService.GetSiteAnnouncements();
+        return announcements.Select(x => new SiteAnnouncementViewModel(x)).ToList();
+    }
+
+    [HttpPost]
+    [ProducesResponseType<SiteAnnouncementViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<SiteAnnouncementViewModel>> CreateSiteAnnouncement([FromBody] CreateSiteAnnouncementRequest request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Title))
+        {
+            return BadRequest("Announcements must have a title.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Body))
+        {
+            return BadRequest("Announcements must have a body.");
+        }
+
+        var announcement = request.ToDomain(_clock);
+        await _interLeagueService.CreateSiteAnnouncement(announcement);
+        return new SiteAnnouncementViewModel(announcement);
+    }
+
+    [HttpPost]
+    [ProducesResponseType<SiteAnnouncementViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<SiteAnnouncementViewModel>> EditSiteAnnouncement([FromBody] EditSiteAnnouncementRequest request)
+    {
+        var existingAnnouncement = await _interLeagueService.GetSiteAnnouncement(request.AnnouncementID);
+        if (existingAnnouncement is null)
+        {
+            return NotFound();
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Title))
+        {
+            return BadRequest("Announcements must have a title.");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Body))
+        {
+            return BadRequest("Announcements must have a body.");
+        }
+
+        var announcement = request.ToDomain();
+        await _interLeagueService.EditSiteAnnouncement(announcement);
+        return new SiteAnnouncementViewModel(announcement);
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DeleteSiteAnnouncement([FromBody] DeleteSiteAnnouncementRequest request)
+    {
+        var existingAnnouncement = await _interLeagueService.GetSiteAnnouncement(request.AnnouncementID);
+        if (existingAnnouncement is null)
+        {
+            return NotFound();
+        }
+
+        await _interLeagueService.DeleteSiteAnnouncement(request.AnnouncementID);
+        return Ok();
+    }
+
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]

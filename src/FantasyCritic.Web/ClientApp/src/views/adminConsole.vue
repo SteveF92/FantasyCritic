@@ -42,6 +42,11 @@
             <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
             <b-button variant="info" @click="takePostAction('Admin', 'RefreshPatreonInfo')">Refresh Patreon</b-button>
           </div>
+
+          <h2>Site Content</h2>
+          <div>
+            <b-button variant="info" :to="{ name: 'adminSiteAnnouncements' }">Manage site announcements</b-button>
+          </div>
         </div>
         <template v-if="isDevelopment">
           <h2>Discord Push Service</h2>

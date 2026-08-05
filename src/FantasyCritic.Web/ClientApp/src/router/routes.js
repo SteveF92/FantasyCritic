@@ -24,6 +24,7 @@ import LeagueAllTimeStats from '@/views/leagueAllTimeStats.vue';
 import ConferenceHistory from '@/views/conferenceHistory.vue';
 import AdminConsole from '@/views/adminConsole.vue';
 import AdminSupportTickets from '@/views/adminSupportTickets.vue';
+import AdminSiteAnnouncements from '@/views/adminSiteAnnouncements.vue';
 import MasterGameRequest from '@/views/masterGameRequest.vue';
 import MasterGameChangeRequest from '@/views/masterGameChangeRequest.vue';
 import ActiveMasterGameRequests from '@/views/activeMasterGameRequests.vue';
@@ -395,6 +396,15 @@ export const routes = [
     name: 'adminSupportTickets',
     meta: {
       title: 'Support Tickets',
+      adminOnly: true
+    }
+  },
+  {
+    path: '/adminSiteAnnouncements',
+    component: AdminSiteAnnouncements,
+    name: 'adminSiteAnnouncements',
+    meta: {
+      title: 'Site Announcements',
       adminOnly: true
     }
   },

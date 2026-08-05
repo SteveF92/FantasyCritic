@@ -2,8 +2,22 @@ namespace FantasyCritic.MySQL.Entities;
 
 internal class SiteAnnouncementEntity
 {
+    public SiteAnnouncementEntity()
+    {
+
+    }
+
+    public SiteAnnouncementEntity(SiteAnnouncement domain)
+    {
+        ID = domain.Id;
+        Title = domain.Title;
+        Body = domain.Body;
+        PostedAt = domain.PostedAt;
+        LinkAddress = domain.LinkAddress;
+        LinkLabel = domain.LinkLabel;
+    }
+
     public Guid ID { get; set; }
-    public string HtmlID { get; set; } = null!;
     public string Title { get; set; } = null!;
     public string Body { get; set; } = null!;
     public Instant PostedAt { get; set; }
@@ -12,6 +26,6 @@ internal class SiteAnnouncementEntity
 
     public SiteAnnouncement ToDomain()
     {
-        return new SiteAnnouncement(ID, HtmlID, Title, Body, PostedAt, LinkAddress, LinkLabel);
+        return new SiteAnnouncement(ID, Title, Body, PostedAt, LinkAddress, LinkLabel);
     }
 }

@@ -3126,8 +3126,46 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task<IReadOnlyList<SiteAnnouncement>> GetSiteAnnouncements()
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var result = await connection.QueryAsync<SiteAnnouncementEntity>("select * from tbl_meta_siteannouncements order by PostedAt desc;");
+        var result = await connection.QueryAsync<SiteAnnouncementEntity>("select * from tbl_meta_siteannouncements where IsDeleted = 0 order by PostedAt desc;");
         return result.Select(x => x.ToDomain()).ToList();
+    }
+
+    public async Task<SiteAnnouncement?> GetSiteAnnouncement(Guid announcementID)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        var result = await connection.QuerySingleOrDefaultAsync<SiteAnnouncementEntity>(
+            "select * from tbl_meta_siteannouncements where ID = @announcementID and IsDeleted = 0;", new { announcementID });
+        return result?.ToDomain();
+    }
+
+    public async Task CreateSiteAnnouncement(SiteAnnouncement announcement)
+    {
+        const string sql =
+            "INSERT INTO tbl_meta_siteannouncements(ID,Title,Body,PostedAt,LinkAddress,LinkLabel) " +
+            "VALUES (@ID,@Title,@Body,@PostedAt,@LinkAddress,@LinkLabel);";
+
+        var entity = new SiteAnnouncementEntity(announcement);
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, entity);
+    }
+
+    public async Task EditSiteAnnouncement(SiteAnnouncement announcement)
+    {
+        const string sql =
+            "UPDATE tbl_meta_siteannouncements SET Title = @Title, Body = @Body, PostedAt = @PostedAt, " +
+            "LinkAddress = @LinkAddress, LinkLabel = @LinkLabel WHERE ID = @ID;";
+
+        var entity = new SiteAnnouncementEntity(announcement);
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, entity);
+    }
+
+    public async Task DeleteSiteAnnouncement(Guid announcementID)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync("update tbl_meta_siteannouncements set IsDeleted = 1 where ID = @announcementID;", new { announcementID });
     }
 
     public async Task SetActionProcessingMode(bool modeOn)
