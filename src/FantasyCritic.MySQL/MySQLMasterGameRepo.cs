@@ -756,6 +756,16 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return await ConvertMasterGameChangeRequestEntities(entities);
     }
 
+    public async Task<MasterGameRequestCounts> GetOutstandingMasterGameRequestCounts()
+    {
+        const string sql = "select (select count(*) from tbl_mastergame_request where Answered = 0) as MasterGameRequestCount, " +
+                           "(select count(*) from tbl_mastergame_changerequest where Answered = 0) as MasterGameChangeRequestCount;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var entity = await connection.QuerySingleAsync<MasterGameRequestCountsEntity>(sql);
+        return entity.ToDomain();
+    }
+
     public async Task<int> GetNumberOutstandingCorrections(MasterGame masterGame)
     {
         const string sql = "select count(*) from tbl_mastergame_changerequest where MasterGameID = @masterGameID AND Answered = 0";

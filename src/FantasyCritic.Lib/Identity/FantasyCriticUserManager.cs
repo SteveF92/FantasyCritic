@@ -153,6 +153,11 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
         return _userStore.GetAllActiveSupportTickets();
     }
 
+    public Task<int> GetActiveSupportTicketCount()
+    {
+        return _userStore.GetActiveSupportTicketCount();
+    }
+
     public Task<IReadOnlyList<FantasyCriticUser>> SearchUsersForSupport(SupportUserSearchKind searchKind, string searchValue)
     {
         return _userStore.SearchUsersForSupport(searchKind, searchValue);

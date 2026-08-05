@@ -11,8 +11,14 @@
       <div v-if="isFactChecker">
         <h2>Master Game Management</h2>
         <div>
-          <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">View master game requests</b-button>
-          <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">View master game change requests</b-button>
+          <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">
+            View master game requests
+            <b-badge v-if="masterGameRequestCount" variant="danger" class="ml-1">{{ masterGameRequestCount }}</b-badge>
+          </b-button>
+          <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">
+            View master game change requests
+            <b-badge v-if="masterGameChangeRequestCount" variant="danger" class="ml-1">{{ masterGameChangeRequestCount }}</b-badge>
+          </b-button>
           <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new master game</b-button>
           <b-button variant="warning" @click="showMergeMasterGame = true">Merge Master Games</b-button>
         </div>
@@ -29,7 +35,10 @@
         <div v-if="isAdmin">
           <h2>User Support Actions</h2>
           <div>
-            <b-button variant="info" :to="{ name: 'adminSupportTickets' }">Support tickets</b-button>
+            <b-button variant="info" :to="{ name: 'adminSupportTickets' }">
+              Support tickets
+              <b-badge v-if="supportTicketCount" variant="danger" class="ml-1">{{ supportTicketCount }}</b-badge>
+            </b-button>
             <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
             <b-button variant="info" @click="takePostAction('Admin', 'RefreshPatreonInfo')">Refresh Patreon</b-button>
           </div>
@@ -114,6 +123,7 @@
 </template>
 <script>
 import axios from 'axios';
+import { mapGetters } from 'vuex';
 
 export default {
   data() {
@@ -132,6 +142,21 @@ export default {
       showGrantSuperDrops: false,
       superDropConfirmation: null
     };
+  },
+  computed: {
+    ...mapGetters(['adminTaskCounts']),
+    masterGameRequestCount() {
+      return this.adminTaskCounts ? this.adminTaskCounts.masterGameRequestCount : null;
+    },
+    masterGameChangeRequestCount() {
+      return this.adminTaskCounts ? this.adminTaskCounts.masterGameChangeRequestCount : null;
+    },
+    supportTicketCount() {
+      return this.adminTaskCounts ? this.adminTaskCounts.supportTicketCount : null;
+    }
+  },
+  async created() {
+    await this.$store.dispatch('fetchAdminTaskCounts');
   },
   methods: {
     async takePostAction(controller, endPoint) {

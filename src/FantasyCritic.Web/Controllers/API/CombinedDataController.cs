@@ -99,4 +99,29 @@ public class CombinedDataController : FantasyCriticController
             homePageData.ActiveYearQuarterRoyalePublisherID);
         return vm;
     }
+
+    [HttpGet]
+    [Authorize("FactCheckerOrAdmin")]
+    [ProducesResponseType<AdminTaskCountsViewModel>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<AdminTaskCountsViewModel>> AdminTaskCounts()
+    {
+        var currentUser = await GetCurrentUserOrThrow();
+        var userIsFactChecker = await _userManager.IsInRoleAsync(currentUser, "FactChecker");
+        var userIsAdmin = await _userManager.IsInRoleAsync(currentUser, "Admin");
+
+        MasterGameRequestCounts? masterGameRequestCounts = null;
+        if (userIsFactChecker)
+        {
+            masterGameRequestCounts = await _interLeagueService.GetOutstandingMasterGameRequestCounts();
+        }
+
+        int? supportTicketCount = null;
+        if (userIsAdmin)
+        {
+            supportTicketCount = await _userManager.GetActiveSupportTicketCount();
+        }
+
+        var vm = new AdminTaskCountsViewModel(masterGameRequestCounts, supportTicketCount);
+        return vm;
+    }
 }

@@ -173,6 +173,11 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
+    public Task<MasterGameRequestCounts> GetOutstandingMasterGameRequestCounts()
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<int> GetNumberOutstandingCorrections(MasterGame masterGame)
     {
         throw new NotImplementedException();

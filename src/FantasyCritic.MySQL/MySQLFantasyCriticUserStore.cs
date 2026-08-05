@@ -791,6 +791,14 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return results;
     }
 
+    public async Task<int> GetActiveSupportTicketCount()
+    {
+        const string sql = "select count(*) from tbl_user_supportticket where ClosedAt is null;";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        return await connection.QuerySingleAsync<int>(sql);
+    }
+
     public async Task<SupportTicket> CloseSupportTicket(SupportTicket supportTicket, string? resolutionNotes)
     {
         var closedTicket = supportTicket.Close(_clock.GetCurrentInstant(), resolutionNotes);

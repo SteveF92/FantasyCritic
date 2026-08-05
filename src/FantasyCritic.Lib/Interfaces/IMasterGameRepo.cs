@@ -40,6 +40,7 @@ public interface IMasterGameRepo
     Task DismissMasterGameChangeRequest(MasterGameChangeRequest request);
     Task<IReadOnlyList<MasterGameRequest>> GetAllMasterGameRequests();
     Task<IReadOnlyList<MasterGameChangeRequest>> GetAllMasterGameChangeRequests();
+    Task<MasterGameRequestCounts> GetOutstandingMasterGameRequestCounts();
     Task<int> GetNumberOutstandingCorrections(MasterGame masterGame);
     Task CompleteMasterGameRequest(MasterGameRequest masterGameRequest, Instant responseTime, string responseNote,
         FantasyCriticUser responseUser, MasterGame? masterGame);

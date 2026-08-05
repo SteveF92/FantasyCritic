@@ -1,5 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
+import admin from './adminStore';
 import auth from './auth';
 import league from './leagueStore';
 import conference from './conferenceStore';
@@ -10,6 +11,7 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
   modules: {
+    admin,
     auth,
     league,
     conference,

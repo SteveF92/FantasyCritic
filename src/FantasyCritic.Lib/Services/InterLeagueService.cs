@@ -179,6 +179,11 @@ public class InterLeagueService
         return _masterGameRepo.GetAllMasterGameChangeRequests();
     }
 
+    public Task<MasterGameRequestCounts> GetOutstandingMasterGameRequestCounts()
+    {
+        return _masterGameRepo.GetOutstandingMasterGameRequestCounts();
+    }
+
     public Task<int> GetNumberOutstandingCorrections(MasterGame masterGame)
     {
         return _masterGameRepo.GetNumberOutstandingCorrections(masterGame);

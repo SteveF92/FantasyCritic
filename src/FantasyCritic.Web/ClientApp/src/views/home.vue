@@ -19,7 +19,10 @@
               <b-button size="sm" variant="outline-primary" :to="{ name: 'createLeague' }" class="welcome-action-btn">Create a League</b-button>
               <b-button v-if="isPlusUser" size="sm" variant="outline-primary" :to="{ name: 'createConference' }" class="welcome-action-btn">Create a Conference</b-button>
               <b-button size="sm" variant="outline-primary" :to="{ name: 'criticsRoyale' }" class="welcome-action-btn">Play Critics Royale</b-button>
-              <b-button v-show="isFactChecker || isAdmin" size="sm" variant="outline-warning" :to="{ name: 'adminConsole' }" class="welcome-action-btn">Admin Console</b-button>
+              <b-button v-show="isFactChecker || isAdmin" size="sm" variant="outline-warning" :to="{ name: 'adminConsole' }" class="welcome-action-btn">
+                Admin Console
+                <b-badge v-if="adminTaskTotalCount" variant="danger" class="ml-1">{{ adminTaskTotalCount }}</b-badge>
+              </b-button>
             </div>
           </div>
           <div class="col-lg-8 col-12 welcome-announcements-col">
@@ -109,6 +112,7 @@
 
 <script>
 import axios from 'axios';
+import { mapGetters } from 'vuex';
 
 import TopBidsAndDrops from '@/components/topBidsAndDropsWidget.vue';
 import LeagueTable from '@/components/leagueTable.vue';
@@ -146,6 +150,10 @@ export default {
     };
   },
   computed: {
+    ...mapGetters(['adminTaskCounts']),
+    adminTaskTotalCount() {
+      return this.adminTaskCounts ? this.adminTaskCounts.totalCount : 0;
+    },
     myStandardLeagues() {
       return this.myLeagues.filter((x) => !x.testLeague && !x.archived);
     },
@@ -161,7 +169,7 @@ export default {
   },
   async created() {
     this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
-    await Promise.all([this.fetchHomePageData(), this.fetchSiteAnnouncements()]);
+    await Promise.all([this.fetchHomePageData(), this.fetchSiteAnnouncements(), this.$store.dispatch('fetchAdminTaskCounts')]);
   },
   methods: {
     async fetchSiteAnnouncements() {
