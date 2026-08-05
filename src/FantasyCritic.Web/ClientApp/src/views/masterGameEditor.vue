@@ -244,6 +244,8 @@ export default {
       request.minorEdit = this.minorEdit;
       request.tags = tagNames;
       request.clearCriticScore = this.clearCriticScore;
+      // Text inputs turn cleared/edited numbers into ""; STJ cannot bind that to int?.
+      request.openCriticID = request.openCriticID === '' || request.openCriticID == null ? null : Number(request.openCriticID);
 
       try {
         const response = await axios.post('/api/factChecker/EditMasterGame', request);
