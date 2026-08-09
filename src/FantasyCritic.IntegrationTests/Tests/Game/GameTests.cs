@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
 using FantasyCritic.IntegrationTests.Helpers;
@@ -117,5 +118,48 @@ public class GameTests : IntegrationTestBase
         var result = await session.Game.LeagueYearsWithMasterGameAsync(Guid.NewGuid());
         Assert.That(result, Is.Not.Null);
         Assert.That(result.Count, Is.EqualTo(0));
+    }
+
+    private async Task GrantFactCheckerRoleAsync(Guid userID)
+    {
+        using var adminSession = new ApiSession(Factory);
+        await LoginAsLocalAdminAsync(adminSession);
+        await adminSession.Admin.GrantRoleAsync(new UserRoleRequest
+        {
+            UserID = userID,
+            RoleName = "FactChecker",
+        });
+    }
+
+    [Test]
+    public async Task GetRecentMasterGameChanges_IncludesNewlyAddedGame()
+    {
+        var (email, password, displayName) = NewUser();
+        using var regSession = new ApiSession(Factory);
+        await regSession.RegisterAsync(email, password, displayName);
+        var me = await regSession.Account.CurrentUserAsync();
+        await GrantFactCheckerRoleAsync(me.UserID);
+
+        using var fcSession = new ApiSession(Factory);
+        await fcSession.LoginAsync(email, password);
+
+        var gameName = $"Recent Add {Guid.NewGuid():N}"[..36];
+        var created = await fcSession.FactChecker.CreateMasterGameAsync(new CreateMasterGameRequest
+        {
+            GameName = gameName,
+            EstimatedReleaseDate = "2099",
+            Tags = ["NewGame"],
+        });
+
+        var recentChanges = await fcSession.Game.GetRecentMasterGameChangesAsync();
+
+        Assert.That(recentChanges, Is.Not.Null);
+        var addEntry = recentChanges.SingleOrDefault(x =>
+            x.MasterGame.MasterGameID == created.MasterGameID
+            && x.Change.Description == "Game added");
+
+        Assert.That(addEntry, Is.Not.Null,
+            "Newly created master game should appear in recent changes with description 'Game added'.");
+        Assert.That(addEntry!.Change.ChangedByUser.UserID, Is.EqualTo(me.UserID));
     }
 }
