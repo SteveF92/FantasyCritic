@@ -267,6 +267,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await connection.ExecuteAsync(masterGameCreateSQL, entity, transaction);
         await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
         await transaction.CommitAsync();
+        ClearMasterGameCache();
+        ClearMasterGameYearCache();
     }
 
     public async Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries)
@@ -344,7 +346,25 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         var masterGames = await GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
 
-        const string sql = "select * from tbl_mastergame_changelog order by Timestamp desc limit 100";
+        const string sql =
+            """
+            SELECT MasterGameChangeID, MasterGameID, ChangedByUserID, Timestamp, Description
+            FROM (
+                SELECT MasterGameChangeID, MasterGameID, ChangedByUserID, Timestamp, Description
+                FROM tbl_mastergame_changelog
+
+                UNION ALL
+
+                SELECT MasterGameID AS MasterGameChangeID,
+                       MasterGameID,
+                       AddedByUserID AS ChangedByUserID,
+                       AddedTimestamp AS Timestamp,
+                       'Game added' AS Description
+                FROM tbl_mastergame
+            ) AS recent
+            ORDER BY Timestamp DESC
+            LIMIT 100
+            """;
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameChangeLogEntity> entities = await connection.QueryAsync<MasterGameChangeLogEntity>(sql);
 
