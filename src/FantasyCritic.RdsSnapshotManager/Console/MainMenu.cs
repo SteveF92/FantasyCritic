@@ -8,8 +8,8 @@ namespace FantasyCritic.RdsSnapshotManager.Console;
 public sealed class MainMenu
 {
     private readonly SnapshotCreateService _snapshotCreateService;
-    private readonly IRDSManager _productionRdsManager;
-    private readonly BetaSyncService _betaSyncService;
+    private readonly IRDSManager _defaultSourceRdsManager;
+    private readonly RestoreSnapshotService _restoreSnapshotService;
     private readonly DumpAndPublishService _dumpAndPublishService;
     private readonly LocalImportService _localImportService;
     private readonly LocalDatabaseCleanService _localDatabaseCleanService;
@@ -17,16 +17,16 @@ public sealed class MainMenu
 
     public MainMenu(
         SnapshotCreateService snapshotCreateService,
-        IRDSManager productionRdsManager,
-        BetaSyncService betaSyncService,
+        IRDSManager defaultSourceRdsManager,
+        RestoreSnapshotService restoreSnapshotService,
         DumpAndPublishService dumpAndPublishService,
         LocalImportService localImportService,
         LocalDatabaseCleanService localDatabaseCleanService,
         RdsSnapshotManagerOptions options)
     {
         _snapshotCreateService = snapshotCreateService;
-        _productionRdsManager = productionRdsManager;
-        _betaSyncService = betaSyncService;
+        _defaultSourceRdsManager = defaultSourceRdsManager;
+        _restoreSnapshotService = restoreSnapshotService;
         _dumpAndPublishService = dumpAndPublishService;
         _localImportService = localImportService;
         _localDatabaseCleanService = localDatabaseCleanService;
@@ -40,7 +40,7 @@ public sealed class MainMenu
             System.Console.WriteLine();
             System.Console.WriteLine("RDS Snapshot Manager");
             System.Console.WriteLine("1. Create production snapshot");
-            System.Console.WriteLine("2. Beta sync from snapshot");
+            System.Console.WriteLine("2. Restore snapshot to instance (sanitized)");
             System.Console.WriteLine("3. Dump & publish raw backup (unsanitized)");
             System.Console.WriteLine("4. Import local dump to Docker MySQL");
             System.Console.WriteLine("5. Clean local Docker database (scrub sensitive data)");
@@ -54,7 +54,7 @@ public sealed class MainMenu
                     await CreateSnapshot(cancellationToken);
                     break;
                 case "2":
-                    await BetaSync(cancellationToken);
+                    await RestoreSnapshotToInstance(cancellationToken);
                     break;
                 case "3":
                     await DumpAndPublish(cancellationToken);
@@ -102,11 +102,11 @@ public sealed class MainMenu
         }
     }
 
-    private async Task BetaSync(CancellationToken cancellationToken)
+    private async Task RestoreSnapshotToInstance(CancellationToken cancellationToken)
     {
         try
         {
-            var snapshots = await _productionRdsManager.GetRecentSnapshots();
+            var snapshots = await _defaultSourceRdsManager.GetRecentSnapshots();
             var recentSnapshots = snapshots
                 .OrderByDescending(x => x.CreationTime)
                 .Take(10)
@@ -118,21 +118,38 @@ public sealed class MainMenu
                 return;
             }
 
-            Log.Information("Starting beta sync from {Snapshot}", snapshotIdentifier);
-            var result = await _betaSyncService.Sync(snapshotIdentifier, cancellationToken);
+            var destinationKey = InstancePicker.PickInstanceKey(_options.RdsInstances, i => i.EnableWriteOperations);
+            if (destinationKey is null)
+            {
+                return;
+            }
+
+            var destinationInstanceName = _options.RdsInstances[destinationKey].InstanceName;
+            System.Console.Write(
+                $"Restore snapshot '{snapshotIdentifier}' onto '{destinationKey}' ({destinationInstanceName})? " +
+                "This will overwrite the instance and scrub PII. (y/N): ");
+            var confirmation = System.Console.ReadLine();
+            if (!string.Equals(confirmation, "y", StringComparison.OrdinalIgnoreCase))
+            {
+                System.Console.WriteLine("Cancelled.");
+                return;
+            }
+
+            Log.Information("Starting restore of {Snapshot} to {Destination}", snapshotIdentifier, destinationKey);
+            var result = await _restoreSnapshotService.Restore(snapshotIdentifier, destinationKey, cancellationToken);
             if (result.IsSuccess)
             {
-                System.Console.WriteLine("Beta sync complete.");
+                System.Console.WriteLine("Restore complete.");
             }
             else
             {
-                System.Console.WriteLine($"Beta sync failed: {result.Error}");
+                System.Console.WriteLine($"Restore failed: {result.Error}");
             }
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Beta sync failed.");
-            System.Console.WriteLine($"Beta sync failed: {ex.Message}");
+            Log.Error(ex, "Restore failed.");
+            System.Console.WriteLine($"Restore failed: {ex.Message}");
         }
     }
 

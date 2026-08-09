@@ -36,16 +36,13 @@ public static class Program
 
         IClock clock = SystemClock.Instance;
 
-        IRDSManager productionRdsManager = new RDSManager(options.ProductionRdsInstance);
+        var defaultSnapshotSource = RdsInstanceLookup.GetDefaultSnapshotSource(options.RdsInstances);
+        IRDSManager defaultSourceRdsManager = new RDSManager(defaultSnapshotSource.Value.InstanceName);
         var restoreService = new RdsRestoreService();
         var mysqldumpRunner = new MysqldumpRunner();
         var dockerHealthChecker = new DockerMySqlHealthChecker();
         var emptyChecker = new DatabaseEmptyChecker();
         var destinations = BackupDestinationFactory.CreateRegistrations(options);
-
-        RepositoryConfiguration betaRepoConfig = new RepositoryConfiguration(options.BetaConnectionString, clock);
-        MySQLFantasyCriticUserStore betaUserStore = new MySQLFantasyCriticUserStore(betaRepoConfig);
-        MySQLBetaCleaner betaCleaner = new MySQLBetaCleaner(options.BetaConnectionString);
 
         string localSnapshotConnectionString = LocalSnapshotConnectionString.BuildSnapshotConnectionString(
             options.LocalDocker.ConnectionString);
@@ -54,8 +51,8 @@ public static class Program
         MySQLFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         MySQLBetaCleaner localCleaner = new MySQLBetaCleaner(localSnapshotConnectionString);
 
-        SnapshotCreateService snapshotCreateService = new SnapshotCreateService(productionRdsManager, clock);
-        BetaSyncService betaSyncService = new BetaSyncService(restoreService, options, betaCleaner, betaUserStore);
+        SnapshotCreateService snapshotCreateService = new SnapshotCreateService(defaultSourceRdsManager, clock);
+        RestoreSnapshotService restoreSnapshotService = new RestoreSnapshotService(restoreService, options, clock);
         DumpAndPublishService dumpAndPublishService = new DumpAndPublishService(options, mysqldumpRunner, destinations, clock);
         LocalImportService localImportService = new LocalImportService(
             options,
@@ -72,8 +69,8 @@ public static class Program
 
         Console.MainMenu mainMenu = new Console.MainMenu(
             snapshotCreateService,
-            productionRdsManager,
-            betaSyncService,
+            defaultSourceRdsManager,
+            restoreSnapshotService,
             dumpAndPublishService,
             localImportService,
             localDatabaseCleanService,
