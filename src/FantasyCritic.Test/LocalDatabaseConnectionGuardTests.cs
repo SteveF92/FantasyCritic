@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using FantasyCritic.RdsSnapshotManager.Infrastructure;
 using NUnit.Framework;
 
@@ -9,19 +10,18 @@ public class LocalDatabaseConnectionGuardTests
     private const string LocalConnectionString =
         "Server=localhost;Port=3307;Database=fantasycritic-fromsnapshot;Uid=fantasycritic-admin;Pwd=secret;SslMode=Required;charset=utf8;";
 
-    private const string BetaConnectionString =
+    private const string RemoteConnectionStringA =
         "Server=example-beta-db.abc123.us-east-1.rds.amazonaws.com;Database=fantasycritic;Uid=fantasycritic;Pwd=secret;SslMode=Required;charset=utf8;";
 
-    private const string DumpConnectionString =
+    private const string RemoteConnectionStringB =
         "Server=example-prod-db.abc123.us-east-1.rds.amazonaws.com;Database=fantasycritic;Uid=fantasycritic-admin;Pwd=secret;SslMode=Required;charset=utf8;";
+
+    private static readonly IReadOnlyList<string> RemoteConnectionStrings = [RemoteConnectionStringA, RemoteConnectionStringB];
 
     [Test]
     public void ValidateForClean_AcceptsConfiguredLocalDockerConnection()
     {
-        var result = LocalDatabaseConnectionGuard.ValidateForClean(
-            LocalConnectionString,
-            BetaConnectionString,
-            DumpConnectionString);
+        var result = LocalDatabaseConnectionGuard.ValidateForClean(LocalConnectionString, RemoteConnectionStrings);
 
         Assert.That(result.IsSuccess, Is.True);
     }
@@ -30,10 +30,7 @@ public class LocalDatabaseConnectionGuardTests
     [TestCase("Server=::1;Port=3307;Database=fantasycritic-fromsnapshot;Uid=fantasycritic;Pwd=secret;")]
     public void ValidateForClean_AcceptsLocalhostVariants(string connectionString)
     {
-        var result = LocalDatabaseConnectionGuard.ValidateForClean(
-            connectionString,
-            BetaConnectionString,
-            DumpConnectionString);
+        var result = LocalDatabaseConnectionGuard.ValidateForClean(connectionString, RemoteConnectionStrings);
 
         Assert.That(result.IsSuccess, Is.True);
     }
@@ -41,10 +38,7 @@ public class LocalDatabaseConnectionGuardTests
     [Test]
     public void ValidateForClean_RejectsRemoteConnectionString()
     {
-        var result = LocalDatabaseConnectionGuard.ValidateForClean(
-            BetaConnectionString,
-            BetaConnectionString,
-            DumpConnectionString);
+        var result = LocalDatabaseConnectionGuard.ValidateForClean(RemoteConnectionStringA, RemoteConnectionStrings);
 
         using (Assert.EnterMultipleScope())
         {
@@ -58,8 +52,7 @@ public class LocalDatabaseConnectionGuardTests
     {
         var result = LocalDatabaseConnectionGuard.ValidateForClean(
             "Server=localhost;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=secret;",
-            BetaConnectionString,
-            DumpConnectionString);
+            RemoteConnectionStrings);
 
         using (Assert.EnterMultipleScope())
         {
@@ -69,33 +62,23 @@ public class LocalDatabaseConnectionGuardTests
     }
 
     [Test]
-    public void ValidateForClean_RejectsWhenLocalMatchesBetaConnectionString()
+    public void ValidateForClean_RejectsWhenLocalMatchesAnyConfiguredRemoteConnectionString()
     {
-        var result = LocalDatabaseConnectionGuard.ValidateForClean(
-            LocalConnectionString,
-            LocalConnectionString,
-            DumpConnectionString);
+        var result = LocalDatabaseConnectionGuard.ValidateForClean(LocalConnectionString, [RemoteConnectionStringB, LocalConnectionString]);
 
         using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsFailure, Is.True);
-            Assert.That(result.Error, Does.Contain("beta connection string"));
+            Assert.That(result.Error, Does.Contain("remote RDS instance"));
         }
     }
 
     [Test]
-    public void ValidateForClean_RejectsWhenLocalMatchesDumpConnectionString()
+    public void ValidateForClean_AcceptsWhenNoRemoteConnectionStringsConfigured()
     {
-        var result = LocalDatabaseConnectionGuard.ValidateForClean(
-            LocalConnectionString,
-            BetaConnectionString,
-            LocalConnectionString);
+        var result = LocalDatabaseConnectionGuard.ValidateForClean(LocalConnectionString, []);
 
-        using (Assert.EnterMultipleScope())
-        {
-            Assert.That(result.IsFailure, Is.True);
-            Assert.That(result.Error, Does.Contain("dump connection string"));
-        }
+        Assert.That(result.IsSuccess, Is.True);
     }
 
     [Test]
@@ -103,8 +86,7 @@ public class LocalDatabaseConnectionGuardTests
     {
         var result = LocalDatabaseConnectionGuard.ValidateForClean(
             "Server=localhost;Port=3307;Database=fantasycritic;Uid=fantasycritic-admin;Pwd=secret;SslMode=Required;charset=utf8;",
-            BetaConnectionString,
-            DumpConnectionString);
+            RemoteConnectionStrings);
 
         using (Assert.EnterMultipleScope())
         {
@@ -117,10 +99,7 @@ public class LocalDatabaseConnectionGuardTests
     [Test]
     public void ValidateForClean_AcceptsSnapshotDatabaseName()
     {
-        var result = LocalDatabaseConnectionGuard.ValidateForClean(
-            LocalConnectionString,
-            BetaConnectionString,
-            DumpConnectionString);
+        var result = LocalDatabaseConnectionGuard.ValidateForClean(LocalConnectionString, RemoteConnectionStrings);
 
         Assert.That(result.IsSuccess, Is.True);
     }

@@ -8,7 +8,7 @@ public static class LocalDatabaseConnectionGuard
 {
     private const uint LocalDockerPort = 3307;
 
-    public static Result ValidateForClean(string localDockerConnectionString, string betaConnectionString, string dumpConnectionString)
+    public static Result ValidateForClean(string localDockerConnectionString, IEnumerable<string> remoteConnectionStrings)
     {
         if (string.IsNullOrWhiteSpace(localDockerConnectionString))
         {
@@ -20,14 +20,12 @@ public static class LocalDatabaseConnectionGuard
             return Result.Failure("Refusing to clean: local Docker connection string appears to target a remote database.");
         }
 
-        if (string.Equals(localDockerConnectionString, betaConnectionString, StringComparison.Ordinal))
+        foreach (var remoteConnectionString in remoteConnectionStrings)
         {
-            return Result.Failure("Refusing to clean: local Docker connection string matches the beta connection string.");
-        }
-
-        if (string.Equals(localDockerConnectionString, dumpConnectionString, StringComparison.Ordinal))
-        {
-            return Result.Failure("Refusing to clean: local Docker connection string matches the dump connection string.");
+            if (string.Equals(localDockerConnectionString, remoteConnectionString, StringComparison.Ordinal))
+            {
+                return Result.Failure("Refusing to clean: local Docker connection string matches a configured remote RDS instance's connection string.");
+            }
         }
 
         var builder = new MySqlConnectionStringBuilder(localDockerConnectionString);
