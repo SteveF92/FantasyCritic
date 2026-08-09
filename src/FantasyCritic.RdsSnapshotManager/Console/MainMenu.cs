@@ -138,16 +138,18 @@ public sealed class MainMenu
 
     private async Task DumpAndPublish(CancellationToken cancellationToken)
     {
-        var instanceName = InstancePicker.PickInstance(_options);
-        if (instanceName is null)
+        var instanceKey = InstancePicker.PickInstanceKey(_options.RdsInstances);
+        if (instanceKey is null)
         {
             System.Console.WriteLine("Invalid instance selection.");
             return;
         }
 
+        var instanceName = _options.RdsInstances[instanceKey].InstanceName;
+
         try
         {
-            Log.Information("Starting dump and publish from {Instance}", instanceName);
+            Log.Information("Starting dump and publish from {Instance}", instanceKey);
             var result = await _dumpAndPublishService.DumpAndPublish(instanceName, cancellationToken);
             if (result.IsSuccess)
             {
