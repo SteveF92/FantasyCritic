@@ -86,7 +86,7 @@ public class EligibilityChangeTests : IntegrationTestBase
 
         var p3DroppableGames = p3Publisher.Games
             .Where(g => !g.CounterPick && !g.DropBlocked
-                && g.MasterGame != null && g.OverallDraftPosition.HasValue)
+                && g.MasterGame != null && g.OverallPickNumber.HasValue)
             .ToList();
         if (p3DroppableGames.Count < 2)
         {
@@ -96,7 +96,7 @@ public class EligibilityChangeTests : IntegrationTestBase
 
         var p4DroppableGames = p4Publisher.Games
             .Where(g => !g.CounterPick && !g.DropBlocked
-                && g.MasterGame != null && g.OverallDraftPosition.HasValue)
+                && g.MasterGame != null && g.OverallPickNumber.HasValue)
             .ToList();
         if (p4DroppableGames.Count < 2)
         {

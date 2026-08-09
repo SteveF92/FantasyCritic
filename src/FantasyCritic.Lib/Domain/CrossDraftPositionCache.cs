@@ -22,7 +22,7 @@ public sealed class CrossDraftPositionCache
         {
             foreach (var draft in leagueYear.Drafts)
             {
-                var result = draft.GetStartingOverallDraftPosition(leagueYear);
+                var result = draft.GetStartingOverallPickNumber(leagueYear);
                 if (result.IsSuccess)
                 {
                     draftStartingPositions[draft.DraftID] = result.Value;
@@ -67,7 +67,7 @@ public sealed class CrossDraftPositionCache
         if (!game.OverallPickNumber.HasValue)
         {
             throw new InvalidOperationException(
-                $"PublisherGame {game.PublisherGameID} (publisher {game.PublisherID}) has DraftID {game.DraftID} but no OverallDraftPosition.");
+                $"PublisherGame {game.PublisherGameID} (publisher {game.PublisherID}) has DraftID {game.DraftID} but no OverallPickNumber.");
         }
 
         if (!draftStartingPositions.TryGetValue(game.DraftID.Value, out var startingPos))

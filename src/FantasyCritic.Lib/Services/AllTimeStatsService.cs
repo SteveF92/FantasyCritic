@@ -270,24 +270,24 @@ public class AllTimeStatsService
             .ToList();
 
         var highestDraftValue = calculatedAllTimeStats
-            .Where(x => !x.CounterPick && x.FantasyPoints.HasValue && x.OverallDraftPosition.HasValue)
+            .Where(x => !x.CounterPick && x.FantasyPoints.HasValue && x.OverallPickNumber.HasValue)
             .OrderByDescending(x => x.DraftValue)
             .Take(10)
             .Select(x => new HallOfFameGame(x.Game, x.PickedBy, new Dictionary<string, HallOfFameGameStat>()
             {
-                {"Drafted", new HallOfFameGameStat(x.OverallDraftPosition!.Value, "Position")},
+                {"Drafted", new HallOfFameGameStat(x.OverallPickNumber!.Value, "Position")},
                 {"Critic Score", new HallOfFameGameStat(x.FormattedCriticScore, "Score")},
                 {"Draft Value",  new HallOfFameGameStat(x.DraftValue, "Factor")}
             }))
             .ToList();
 
         var lowestDraftValue = calculatedAllTimeStats
-            .Where(x => !x.CounterPick && x.OverallDraftPosition.HasValue)
+            .Where(x => !x.CounterPick && x.OverallPickNumber.HasValue)
             .OrderBy(x => x.DraftValue)
             .Take(10)
             .Select(x => new HallOfFameGame(x.Game, x.PickedBy, new Dictionary<string, HallOfFameGameStat>()
             {
-                {"Drafted", new HallOfFameGameStat(x.OverallDraftPosition!.Value, "Position")},
+                {"Drafted", new HallOfFameGameStat(x.OverallPickNumber!.Value, "Position")},
                 {"Critic Score", new HallOfFameGameStat(x.FormattedCriticScore, "Score")},
                 {"Draft Value",  new HallOfFameGameStat(x.DraftValue, "Factor")}
             }))

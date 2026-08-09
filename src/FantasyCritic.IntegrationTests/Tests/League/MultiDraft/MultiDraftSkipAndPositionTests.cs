@@ -103,8 +103,8 @@ internal static class MultiDraftTestScenario
 }
 
 /// <summary>
-/// Concern 1: DraftPosition / OverallDraftPosition should be per-draft and reset to start at 1 for
-/// each draft. Verified via the stored OverallDraftPosition on each publisher game.
+/// Concern 1: PickNumber / OverallPickNumber should be per-draft and reset to start at 1 for
+/// each draft. Verified via the stored OverallPickNumber on each publisher game.
 /// </summary>
 [TestFixture]
 public class MultiDraftPositionResetTests : IntegrationTestBase
@@ -136,14 +136,14 @@ public class MultiDraftPositionResetTests : IntegrationTestBase
     private IReadOnlyList<int> StandardPositions(bool draft2) =>
         _finalSnapshot.Publishers.SelectMany(p => p.Games)
             .Where(g => !g.CounterPick && _draft1GameIDs.Contains(g.PublisherGameID) != draft2)
-            .Select(g => g.OverallDraftPosition!.Value)
+            .Select(g => g.OverallPickNumber!.Value)
             .OrderBy(x => x)
             .ToList();
 
     private IReadOnlyList<int> CounterPickPositions(bool draft2) =>
         _finalSnapshot.Publishers.SelectMany(p => p.Games)
             .Where(g => g.CounterPick && _draft1GameIDs.Contains(g.PublisherGameID) != draft2)
-            .Select(g => g.OverallDraftPosition!.Value)
+            .Select(g => g.OverallPickNumber!.Value)
             .OrderBy(x => x)
             .ToList();
 
@@ -157,7 +157,7 @@ public class MultiDraftPositionResetTests : IntegrationTestBase
     public void Draft2_StandardOverallPositions_ResetToOneThroughFour()
     {
         Assert.That(StandardPositions(draft2: true), Is.EqualTo([1, 2, 3, 4]),
-            "Draft 2 standard OverallDraftPositions should reset to 1..4, not continue from draft 1.");
+            "Draft 2 standard OverallPickNumbers should reset to 1..4, not continue from draft 1.");
     }
 
     [Test]
@@ -170,7 +170,7 @@ public class MultiDraftPositionResetTests : IntegrationTestBase
     public void Draft2_CounterPickOverallPositions_ResetToOneTwo()
     {
         Assert.That(CounterPickPositions(draft2: true), Is.EqualTo([1, 2]),
-            "Draft 2 counter-pick OverallDraftPositions should reset to 1..2, not continue from draft 1.");
+            "Draft 2 counter-pick OverallPickNumbers should reset to 1..2, not continue from draft 1.");
     }
 }
 

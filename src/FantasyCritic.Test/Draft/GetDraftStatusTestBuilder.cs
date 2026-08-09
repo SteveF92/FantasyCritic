@@ -159,14 +159,14 @@ internal sealed class GetDraftStatusTestBuilder
             null);
     }
 
-    internal void AddGame(DraftSpec draft, Publisher publisher, bool counterPick, int publisherDraftPosition, int overallDraftPosition, Instant timestamp)
+    internal void AddGame(DraftSpec draft, Publisher publisher, bool counterPick, int pickNumber, int overallPickNumber, Instant timestamp)
     {
         var publisherSpec = _publisherSpecs.Single(x => x.PublisherID == publisher.PublisherID);
         publisherSpec.Games.Add(new GameSpec(
             draft.DraftNumber,
             counterPick,
-            publisherDraftPosition,
-            overallDraftPosition,
+            pickNumber,
+            overallPickNumber,
             timestamp));
     }
 
@@ -258,16 +258,16 @@ internal sealed class GetDraftStatusTestBuilder
         return new PublisherGame(
             publisherID,
             Guid.NewGuid(),
-            $"Game d{gameSpec.DraftNumber}-{(gameSpec.CounterPick ? "cp" : "std")}-{gameSpec.OverallDraftPosition}",
+            $"Game d{gameSpec.DraftNumber}-{(gameSpec.CounterPick ? "cp" : "std")}-{gameSpec.OverallPickNumber}",
             gameSpec.Timestamp,
             gameSpec.CounterPick,
             null,
             false,
             null,
             null,
-            gameSpec.OverallDraftPosition,
-            gameSpec.PublisherDraftPosition,
-            gameSpec.OverallDraftPosition,
+            gameSpec.OverallPickNumber,
+            gameSpec.PickNumber,
+            gameSpec.OverallPickNumber,
             null,
             null,
             draftID);
@@ -293,7 +293,7 @@ internal sealed class GetDraftStatusTestBuilder
         public int PickSequence { get; set; }
     }
 
-    internal sealed record GameSpec(int DraftNumber, bool CounterPick, int PublisherDraftPosition, int OverallDraftPosition, Instant Timestamp);
+    internal sealed record GameSpec(int DraftNumber, bool CounterPick, int PickNumber, int OverallPickNumber, Instant Timestamp);
     internal sealed record SkipSpec(int DraftNumber, bool CounterPick, int PickNumber, bool IsManualSkip);
 }
 

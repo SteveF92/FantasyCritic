@@ -40,7 +40,7 @@ public class GameAcquisitionService
         }
 
         PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
-            masterGameYear, claimResult.BestSlotNumber!.Value, request.DraftPosition, request.OverallDraftPosition, null, null, draftID);
+            masterGameYear, claimResult.BestSlotNumber!.Value, request.PickNumber, request.OverallPickNumber, null, null, draftID);
 
         LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draftID.HasValue, request.AutoDraft);
         await _fantasyCriticRepo.AddLeagueAction(leagueAction);

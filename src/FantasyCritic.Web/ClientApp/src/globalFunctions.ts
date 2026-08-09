@@ -50,13 +50,13 @@ export function formatMasterGameReleaseDate(masterGame, shorten: boolean): strin
 
 export function formatPublisherGameAcquiredDate(publisherGame: PublisherGameViewModel, drafts: LeagueDraftViewModel[]): string {
   let type = '';
-  if (publisherGame.overallDraftPosition) {
+  if (publisherGame.overallPickNumber) {
     if (drafts.length >= 2 && publisherGame.draftID) {
       const draft = drafts.find((d) => d.draftID === publisherGame.draftID);
       const draftLabel = draft ? ` in ${draft.name}` : '';
-      type = `Drafted ${ordinal_suffix_of(publisherGame.overallDraftPosition)}${draftLabel}`;
+      type = `Drafted ${ordinal_suffix_of(publisherGame.overallPickNumber)}${draftLabel}`;
     } else {
-      type = `Drafted ${ordinal_suffix_of(publisherGame.overallDraftPosition)}`;
+      type = `Drafted ${ordinal_suffix_of(publisherGame.overallPickNumber)}`;
     }
   } else if (publisherGame.bidAmount || publisherGame.bidAmount === 0) {
     type = 'Picked up for $' + publisherGame.bidAmount;

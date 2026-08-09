@@ -15,7 +15,7 @@ public class GetDraftStatusTests
         int expectedNextDraftPosition,
         int? expectedPreviousDraftPosition,
         int expectedDraftPosition,
-        int expectedOverallDraftPosition)
+        int expectedOverallPickNumber)
     {
         Assert.That(actual, Is.Not.Null);
         using (Assert.EnterMultipleScope())
@@ -42,7 +42,7 @@ public class GetDraftStatusTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(actual.RoundNumber, Is.EqualTo(expectedDraftPosition));
-            Assert.That(actual.OverallPickNumber, Is.EqualTo(expectedOverallDraftPosition));
+            Assert.That(actual.OverallPickNumber, Is.EqualTo(expectedOverallPickNumber));
         }
     }
 
@@ -91,7 +91,7 @@ public class GetDraftStatusTests
             expectedNextDraftPosition: 1,
             expectedPreviousDraftPosition: null,
             expectedDraftPosition: 1,
-            expectedOverallDraftPosition: 1);
+            expectedOverallPickNumber: 1);
     }
 
     [Test]
@@ -112,7 +112,7 @@ public class GetDraftStatusTests
             expectedNextDraftPosition: 2,
             expectedPreviousDraftPosition: 1,
             expectedDraftPosition: 1,
-            expectedOverallDraftPosition: 2);
+            expectedOverallPickNumber: 2);
     }
 
     [Test]
@@ -134,7 +134,7 @@ public class GetDraftStatusTests
             expectedNextDraftPosition: 2,
             expectedPreviousDraftPosition: 2,
             expectedDraftPosition: 2,
-            expectedOverallDraftPosition: 3);
+            expectedOverallPickNumber: 3);
     }
 
     [Test]
@@ -158,7 +158,7 @@ public class GetDraftStatusTests
             expectedNextDraftPosition: 2,
             expectedPreviousDraftPosition: 1,
             expectedDraftPosition: 1,
-            expectedOverallDraftPosition: 1);
+            expectedOverallPickNumber: 1);
     }
 
     [Test]
@@ -183,7 +183,7 @@ public class GetDraftStatusTests
             expectedNextDraftPosition: 1,
             expectedPreviousDraftPosition: 2,
             expectedDraftPosition: 1,
-            expectedOverallDraftPosition: 2);
+            expectedOverallPickNumber: 2);
     }
 
     [Test]
@@ -208,7 +208,7 @@ public class GetDraftStatusTests
             expectedNextDraftPosition: 3,
             expectedPreviousDraftPosition: 4,
             expectedDraftPosition: 2,
-            expectedOverallDraftPosition: 6);
+            expectedOverallPickNumber: 6);
     }
 
     [Test]
@@ -236,7 +236,7 @@ public class GetDraftStatusTests
             expectedNextDraftPosition: 1,
             expectedPreviousDraftPosition: 1,
             expectedDraftPosition: 2,
-            expectedOverallDraftPosition: 5);
+            expectedOverallPickNumber: 5);
     }
 
     [Test]
@@ -266,7 +266,7 @@ public class GetDraftStatusTests
             expectedNextDraftPosition: 2,
             expectedPreviousDraftPosition: 1,
             expectedDraftPosition: 1,
-            expectedOverallDraftPosition: 2);
+            expectedOverallPickNumber: 2);
     }
 
     [Test]
@@ -287,7 +287,7 @@ public class GetDraftStatusTests
             expectedNextDraftPosition: 2,
             expectedPreviousDraftPosition: 1,
             expectedDraftPosition: 1,
-            expectedOverallDraftPosition: 2);
+            expectedOverallPickNumber: 2);
     }
 
     [Test]

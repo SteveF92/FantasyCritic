@@ -116,7 +116,7 @@ public class DropProcessingTests : IntegrationTestBase
             !g.CounterPick
             && !g.DropBlocked
             && g.MasterGame != null
-            && g.OverallDraftPosition.HasValue);
+            && g.OverallPickNumber.HasValue);
     }
 
     private async Task<Guid> PickAvailableBidTargetAsync(

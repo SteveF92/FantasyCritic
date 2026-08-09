@@ -39,7 +39,7 @@ public class PublisherGameViewModel
         WillRelease = publisherGame.CouldRelease(leagueYear);
         WillReleaseEarlyAccessOnly = publisherGame.WillRelease(leagueYear).Equals(WillReleaseStatus.WillReleaseEarlyAccessOnly);
         ManualWillNotRelease = publisherGame.ManualWillNotRelease;
-        OverallDraftPosition = publisherGame.OverallPickNumber;
+        OverallPickNumber = publisherGame.OverallPickNumber;
         DraftID = publisherGame.DraftID;
         BidAmount = publisherGame.BidAmount;
         AcquiredInTradeID = publisherGame.AcquiredInTradeID;
@@ -86,7 +86,7 @@ public class PublisherGameViewModel
         WillRelease = publisherGame.PublisherGame.CouldRelease(leagueYear);
         WillReleaseEarlyAccessOnly = publisherGame.PublisherGame.WillRelease(leagueYear).Equals(WillReleaseStatus.WillReleaseEarlyAccessOnly);
         ManualWillNotRelease = publisherGame.PublisherGame.ManualWillNotRelease;
-        OverallDraftPosition = publisherGame.PublisherGame.OverallPickNumber;
+        OverallPickNumber = publisherGame.PublisherGame.OverallPickNumber;
         DraftID = publisherGame.PublisherGame.DraftID;
         BidAmount = publisherGame.PublisherGame.BidAmount;
         AcquiredInTradeID = publisherGame.PublisherGame.AcquiredInTradeID;
@@ -106,7 +106,7 @@ public class PublisherGameViewModel
     public decimal? CriticScore { get; }
 
     public MasterGameYearViewModel? MasterGame { get; }
-    public int? OverallDraftPosition { get; }
+    public int? OverallPickNumber { get; }
     public Guid? DraftID { get; }
     public uint? BidAmount { get; }
     public Guid? AcquiredInTradeID { get; }

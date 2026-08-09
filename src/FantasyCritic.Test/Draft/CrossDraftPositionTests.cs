@@ -19,7 +19,7 @@ public class CrossDraftPositionTests
     private static readonly Instant Draft2Started = Instant.FromUtc(2025, 8, 1, 12, 0);
 
     [Test]
-    public void GetCrossDraftPosition_Draft1_ReturnsOverallDraftPosition()
+    public void GetCrossDraftPosition_Draft1_ReturnsOverallPickNumber()
     {
         var draftID = Guid.NewGuid();
         var pick = CreateDraftPick(draftID, overallDraftPosition: 7, timestamp: Draft1Started.Plus(Duration.FromMinutes(7)));
@@ -87,7 +87,7 @@ public class CrossDraftPositionTests
             ]);
 
         var draft2 = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
-        var startingPoint = draft2.GetStartingOverallDraftPosition(leagueYear);
+        var startingPoint = draft2.GetStartingOverallPickNumber(leagueYear);
 
         using (Assert.EnterMultipleScope())
         {
@@ -115,7 +115,7 @@ public class CrossDraftPositionTests
     }
 
     [Test]
-    public void GetStartingOverallDraftPosition_TradeReceival_DoesNotDoubleCount()
+    public void GetStartingOverallPickNumber_TradeReceival_DoesNotDoubleCount()
     {
         var draftID1 = Guid.NewGuid();
         var draftID2 = Guid.NewGuid();
@@ -140,7 +140,7 @@ public class CrossDraftPositionTests
             ]);
 
         var draft2 = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
-        var startingPoint = draft2.GetStartingOverallDraftPosition(leagueYear);
+        var startingPoint = draft2.GetStartingOverallPickNumber(leagueYear);
 
         using (Assert.EnterMultipleScope())
         {
@@ -150,7 +150,7 @@ public class CrossDraftPositionTests
     }
 
     [Test]
-    public void GetStartingOverallDraftPosition_FormerDroppedDraftPick_StillCounts()
+    public void GetStartingOverallPickNumber_FormerDroppedDraftPick_StillCounts()
     {
         var draftID1 = Guid.NewGuid();
         var draftID2 = Guid.NewGuid();
@@ -169,7 +169,7 @@ public class CrossDraftPositionTests
             [CreateMultiDraftPublisher(draftID1, draftID2, publisherID, formerGames: [formerPick])]);
 
         var draft2 = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
-        var startingPoint = draft2.GetStartingOverallDraftPosition(leagueYear);
+        var startingPoint = draft2.GetStartingOverallPickNumber(leagueYear);
 
         using (Assert.EnterMultipleScope())
         {
@@ -213,7 +213,7 @@ public class CrossDraftPositionTests
     }
 
     [Test]
-    public void GetStartingOverallDraftPosition_Draft1_ReturnsZero()
+    public void GetStartingOverallPickNumber_Draft1_ReturnsZero()
     {
         var draftID = Guid.NewGuid();
         var leagueYear = BuildSingleDraftLeagueYear(
@@ -223,7 +223,7 @@ public class CrossDraftPositionTests
             [CreateSingleDraftPublisher(draftID)]);
 
         var draft1 = leagueYear.Drafts.Single();
-        var startingPoint = draft1.GetStartingOverallDraftPosition(leagueYear);
+        var startingPoint = draft1.GetStartingOverallPickNumber(leagueYear);
 
         using (Assert.EnterMultipleScope())
         {
@@ -233,7 +233,7 @@ public class CrossDraftPositionTests
     }
 
     [Test]
-    public void GetStartingOverallDraftPosition_UnstartedDraft2_ReturnsFailure()
+    public void GetStartingOverallPickNumber_UnstartedDraft2_ReturnsFailure()
     {
         var draftID1 = Guid.NewGuid();
         var draftID2 = Guid.NewGuid();
@@ -247,7 +247,7 @@ public class CrossDraftPositionTests
             [CreateMultiDraftPublisher(draftID1, draftID2, Guid.NewGuid())]);
 
         var draft2 = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
-        var startingPoint = draft2.GetStartingOverallDraftPosition(leagueYear);
+        var startingPoint = draft2.GetStartingOverallPickNumber(leagueYear);
 
         Assert.That(startingPoint.IsFailure, Is.True);
     }
@@ -278,7 +278,7 @@ public class CrossDraftPositionTests
     }
 
     [Test]
-    public void GetCrossDraftPosition_MissingOverallDraftPosition_Throws()
+    public void GetCrossDraftPosition_MissingOverallPickNumber_Throws()
     {
         var draftID = Guid.NewGuid();
         var invalidPick = new PublisherGame(

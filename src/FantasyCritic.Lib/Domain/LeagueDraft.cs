@@ -44,7 +44,7 @@ public class LeagueDraft
             counterPicksMustBeFromThisDraft, DraftOrderSet, PlayStatus, PublisherDraftInfo, DraftStartedTimestamp);
     }
 
-    public Result<(int StandardGameStartingPoint, int CounterPickStartingPoint)> GetStartingOverallDraftPosition(LeagueYear leagueYear)
+    public Result<(int StandardGameStartingPoint, int CounterPickStartingPoint)> GetStartingOverallPickNumber(LeagueYear leagueYear)
     {
         if (DraftNumber == 1)
         {

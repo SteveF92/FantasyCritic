@@ -2187,9 +2187,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string sql =
             "INSERT INTO tbl_league_publishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
-            "ManualWillNotRelease,FantasyPoints,MasterGameID,SlotNumber,DraftPosition,OverallDraftPosition,DraftID,BidAmount) VALUES " +
+            "ManualWillNotRelease,FantasyPoints,MasterGameID,SlotNumber,PickNumber,OverallPickNumber,DraftID,BidAmount) VALUES " +
             "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@DraftPosition,@OverallDraftPosition,@DraftID,@BidAmount);";
+            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@PickNumber,@OverallPickNumber,@DraftID,@BidAmount);";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, entity);
     }
@@ -3559,9 +3559,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         const string sql =
             "INSERT INTO tbl_league_publishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
-            "ManualWillNotRelease,FantasyPoints,MasterGameID,SlotNumber,DraftPosition,OverallDraftPosition,DraftID,BidAmount,AcquiredInTradeID) VALUES " +
+            "ManualWillNotRelease,FantasyPoints,MasterGameID,SlotNumber,PickNumber,OverallPickNumber,DraftID,BidAmount,AcquiredInTradeID) VALUES " +
             "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@DraftPosition,@OverallDraftPosition,@DraftID,@BidAmount,@AcquiredInTradeID);";
+            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@PickNumber,@OverallPickNumber,@DraftID,@BidAmount,@AcquiredInTradeID);";
         var entities = publisherGames.Select(x => new PublisherGameEntity(x));
         return connection.ExecuteAsync(sql, entities, transaction);
     }
@@ -3570,9 +3570,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         const string sql =
             "insert into tbl_league_formerpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
-            "ManualWillNotRelease,FantasyPoints,MasterGameID,DraftPosition,OverallDraftPosition,BidAmount,AcquiredInTradeID,RemovedTimestamp,RemovedNote) VALUES " +
+            "ManualWillNotRelease,FantasyPoints,MasterGameID,PickNumber,OverallPickNumber,BidAmount,AcquiredInTradeID,RemovedTimestamp,RemovedNote) VALUES " +
             "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@DraftPosition,@OverallDraftPosition,@BidAmount,@AcquiredInTradeID,@RemovedTimestamp,@RemovedNote);";
+            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@PickNumber,@OverallPickNumber,@BidAmount,@AcquiredInTradeID,@RemovedTimestamp,@RemovedNote);";
         var entities = publisherGames.Select(x => new FormerPublisherGameEntity(x));
         return connection.ExecuteAsync(sql, entities, transaction);
     }
