@@ -360,9 +360,10 @@ public class GameController : FantasyCriticController
     }
 
     [HttpGet]
-    public async Task<ActionResult<List<CompleteMasterGameChangeViewModel>>> GetRecentMasterGameChanges()
+    public async Task<ActionResult<List<CompleteMasterGameChangeViewModel>>> GetRecentMasterGameChanges(
+        [FromQuery] RecentMasterGameChangeMode mode = RecentMasterGameChangeMode.Both)
     {
-        IReadOnlyList<MasterGameChangeLogEntry> recentChanges = await _interLeagueService.GetRecentMasterGameChanges();
+        IReadOnlyList<MasterGameChangeLogEntry> recentChanges = await _interLeagueService.GetRecentMasterGameChanges(mode);
         var currentDate = _clock.GetToday();
         var vms = recentChanges.Select(x => new CompleteMasterGameChangeViewModel(x, currentDate)).ToList();
         return vms;

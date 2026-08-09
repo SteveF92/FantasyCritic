@@ -151,7 +151,7 @@ public class GameTests : IntegrationTestBase
             Tags = ["NewGame"],
         });
 
-        var recentChanges = await fcSession.Game.GetRecentMasterGameChangesAsync();
+        var recentChanges = await fcSession.Game.GetRecentMasterGameChangesAsync(RecentMasterGameChangeMode.Both);
 
         Assert.That(recentChanges, Is.Not.Null);
         var addEntry = recentChanges.SingleOrDefault(x =>
@@ -161,5 +161,72 @@ public class GameTests : IntegrationTestBase
         Assert.That(addEntry, Is.Not.Null,
             "Newly created master game should appear in recent changes with description 'Game added'.");
         Assert.That(addEntry!.Change.ChangedByUser.UserID, Is.EqualTo(me.UserID));
+    }
+
+    [Test]
+    public async Task GetRecentMasterGameChanges_NewGamesMode_IncludesNewlyAddedGame()
+    {
+        var (email, password, displayName) = NewUser();
+        using var regSession = new ApiSession(Factory);
+        await regSession.RegisterAsync(email, password, displayName);
+        var me = await regSession.Account.CurrentUserAsync();
+        await GrantFactCheckerRoleAsync(me.UserID);
+
+        using var fcSession = new ApiSession(Factory);
+        await fcSession.LoginAsync(email, password);
+
+        var gameName = $"NewGames Mode {Guid.NewGuid():N}"[..36];
+        var created = await fcSession.FactChecker.CreateMasterGameAsync(new CreateMasterGameRequest
+        {
+            GameName = gameName,
+            EstimatedReleaseDate = "2099",
+            Tags = ["NewGame"],
+        });
+
+        var recentChanges = await fcSession.Game.GetRecentMasterGameChangesAsync(RecentMasterGameChangeMode.NewGames);
+
+        Assert.That(recentChanges, Is.Not.Null);
+        var addEntry = recentChanges.SingleOrDefault(x =>
+            x.MasterGame.MasterGameID == created.MasterGameID
+            && x.Change.Description == "Game added");
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(addEntry, Is.Not.Null,
+                "NewGames mode should include newly created master game with description 'Game added'.");
+            Assert.That(recentChanges.All(x => x.Change.Description == "Game added"), Is.True,
+                "NewGames mode should only return Game added rows.");
+        }
+    }
+
+    [Test]
+    public async Task GetRecentMasterGameChanges_ChangesMode_ExcludesNewlyAddedGame()
+    {
+        var (email, password, displayName) = NewUser();
+        using var regSession = new ApiSession(Factory);
+        await regSession.RegisterAsync(email, password, displayName);
+        var me = await regSession.Account.CurrentUserAsync();
+        await GrantFactCheckerRoleAsync(me.UserID);
+
+        using var fcSession = new ApiSession(Factory);
+        await fcSession.LoginAsync(email, password);
+
+        var gameName = $"Changes Mode {Guid.NewGuid():N}"[..36];
+        var created = await fcSession.FactChecker.CreateMasterGameAsync(new CreateMasterGameRequest
+        {
+            GameName = gameName,
+            EstimatedReleaseDate = "2099",
+            Tags = ["NewGame"],
+        });
+
+        var recentChanges = await fcSession.Game.GetRecentMasterGameChangesAsync(RecentMasterGameChangeMode.Changes);
+
+        Assert.That(recentChanges, Is.Not.Null);
+        var addEntry = recentChanges.SingleOrDefault(x =>
+            x.MasterGame.MasterGameID == created.MasterGameID
+            && x.Change.Description == "Game added");
+
+        Assert.That(addEntry, Is.Null,
+            "Changes mode must not include synthetic Game added rows for newly created games.");
     }
 }

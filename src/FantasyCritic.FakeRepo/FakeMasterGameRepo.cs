@@ -88,7 +88,7 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges()
+    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges(RecentMasterGameChangeMode mode)
     {
         throw new NotImplementedException();
     }

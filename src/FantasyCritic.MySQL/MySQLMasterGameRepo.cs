@@ -338,7 +338,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return entities.Select(entity => entity.ToDomain(masterGame, userDictionary[entity.ChangedByUserID])).ToList();
     }
 
-    public async Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges()
+    public async Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges(RecentMasterGameChangeMode mode)
     {
         var users = await _userStore.GetAllUsers();
         var userDictionary = users.ToDictionary(x => x.Id);
@@ -346,25 +346,47 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         var masterGames = await GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
 
-        const string sql =
-            """
-            SELECT MasterGameChangeID, MasterGameID, ChangedByUserID, Timestamp, Description
-            FROM (
+        string sql = mode switch
+        {
+            RecentMasterGameChangeMode.Changes =>
+                """
                 SELECT MasterGameChangeID, MasterGameID, ChangedByUserID, Timestamp, Description
                 FROM tbl_mastergame_changelog
-
-                UNION ALL
-
+                ORDER BY Timestamp DESC
+                LIMIT 100
+                """,
+            RecentMasterGameChangeMode.NewGames =>
+                """
                 SELECT MasterGameID AS MasterGameChangeID,
                        MasterGameID,
                        AddedByUserID AS ChangedByUserID,
                        AddedTimestamp AS Timestamp,
                        'Game added' AS Description
                 FROM tbl_mastergame
-            ) AS recent
-            ORDER BY Timestamp DESC
-            LIMIT 100
-            """;
+                ORDER BY Timestamp DESC
+                LIMIT 100
+                """,
+            RecentMasterGameChangeMode.Both =>
+                """
+                SELECT MasterGameChangeID, MasterGameID, ChangedByUserID, Timestamp, Description
+                FROM (
+                    SELECT MasterGameChangeID, MasterGameID, ChangedByUserID, Timestamp, Description
+                    FROM tbl_mastergame_changelog
+
+                    UNION ALL
+
+                    SELECT MasterGameID AS MasterGameChangeID,
+                           MasterGameID,
+                           AddedByUserID AS ChangedByUserID,
+                           AddedTimestamp AS Timestamp,
+                           'Game added' AS Description
+                    FROM tbl_mastergame
+                ) AS recent
+                ORDER BY Timestamp DESC
+                LIMIT 100
+                """,
+            _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+        };
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameChangeLogEntity> entities = await connection.QueryAsync<MasterGameChangeLogEntity>(sql);
 
