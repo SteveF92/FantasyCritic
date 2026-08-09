@@ -244,11 +244,11 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
             g.MasterGame?.MasterGame.MasterGameID == matchedGameDisplay.GameFound.MasterGame.MasterGameID);
         if (pickedPublisherGame != null)
         {
-            if (pickedPublisherGame.DraftPosition != null)
+            if (pickedPublisherGame.PickNumber != null)
             {
                 pickDisplayText += $"\nDrafted on: {pickedPublisherGame.Timestamp.ToEasternDateTime()}";
-                pickDisplayText += $"\n{(isCounterPick ? "Counter Pick " : "")}Draft Position: {pickedPublisherGame.DraftPosition}";
-                pickDisplayText += $"\nOverall {(isCounterPick ? "Counter Pick " : "")}Draft Position: {pickedPublisherGame.OverallDraftPosition}";
+                pickDisplayText += $"\n{(isCounterPick ? "Counter Pick " : "")}Draft Position: {pickedPublisherGame.PickNumber}";
+                pickDisplayText += $"\nOverall {(isCounterPick ? "Counter Pick " : "")}Draft Position: {pickedPublisherGame.OverallPickNumber}";
             }
             else
             {

@@ -7,7 +7,7 @@ namespace FantasyCritic.Lib.Domain;
 public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
 {
     public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, bool manualWillNotRelease,
-        decimal? fantasyPoints, MasterGameYear? masterGame, int slotNumber, int? draftPosition, int? overallDraftPosition, uint? bidAmount, Guid? acquiredInTradeID, Guid? draftID)
+        decimal? fantasyPoints, MasterGameYear? masterGame, int slotNumber, int? pickNumber, int? overallPickNumber, uint? bidAmount, Guid? acquiredInTradeID, Guid? draftID)
     {
         PublisherID = publisherID;
         PublisherGameID = publisherGameID;
@@ -19,8 +19,8 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
         FantasyPoints = fantasyPoints;
         MasterGame = masterGame;
         SlotNumber = slotNumber;
-        DraftPosition = draftPosition;
-        OverallDraftPosition = overallDraftPosition;
+        PickNumber = pickNumber;
+        OverallPickNumber = overallPickNumber;
         BidAmount = bidAmount;
         AcquiredInTradeID = acquiredInTradeID;
         DraftID = draftID;
@@ -36,8 +36,8 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
     public decimal? FantasyPoints { get; }
     public MasterGameYear? MasterGame { get; }
     public int SlotNumber { get; }
-    public int? DraftPosition { get; }
-    public int? OverallDraftPosition { get; }
+    public int? PickNumber { get; }
+    public int? OverallPickNumber { get; }
     public Guid? DraftID { get; }
     public uint? BidAmount { get; }
     public Guid? AcquiredInTradeID { get; }
@@ -81,7 +81,7 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
         }
 
         return new PublisherGame(PublisherID, PublisherGameID, OriginalGameName, Timestamp, CounterPick, ManualCriticScore, ManualWillNotRelease,
-            stats.FantasyPoints, MasterGame, SlotNumber, DraftPosition, OverallDraftPosition, BidAmount, AcquiredInTradeID, DraftID);
+            stats.FantasyPoints, MasterGame, SlotNumber, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
     }
 
     public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote) => new FormerPublisherGame(this, removedTimestamp, removedNote);
@@ -140,7 +140,7 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
     public double GetDraftValue(LeagueYear leagueYear)
     {
         var scoringSystem = leagueYear.Options.ScoringSystem;
-        if (!DraftPosition.HasValue || DraftPosition.Value <= 0)
+        if (!PickNumber.HasValue || PickNumber.Value <= 0)
         {
             return 0; // No valid draft position
         }
@@ -153,7 +153,7 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
         // Ensure FantasyPoints are within the valid range
         fantasyPoints = Math.Clamp(fantasyPoints, minFantasyPoints, maxFantasyPoints);
 
-        double draftValue = fantasyPoints * DraftPosition.Value;
+        double draftValue = fantasyPoints * PickNumber.Value;
         return draftValue;
     }
 

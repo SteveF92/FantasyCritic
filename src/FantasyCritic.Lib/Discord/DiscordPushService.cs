@@ -1521,7 +1521,7 @@ public class DiscordPushService
             var message = $"Up for another pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";
             if (isDraftingCounterPick)
             {
-                var previousGameWasCounterPick = updatedDraftStatus.PreviousPublisherThatWasNotSkipped!.PublisherGames.MaxBy(x => x.OverallDraftPosition)!.CounterPick;
+                var previousGameWasCounterPick = updatedDraftStatus.PreviousPublisherThatWasNotSkipped!.PublisherGames.MaxBy(x => x.OverallPickNumber)!.CounterPick;
                 message = previousGameWasCounterPick
                     ? $"Up for another counter pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**"
                     : $"Up for another pick, this time a counter pick: **{nextPublisherUp.GetPublisherAndUserDisplayName()}**";

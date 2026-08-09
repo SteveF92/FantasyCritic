@@ -784,7 +784,7 @@ public class AdminService
         var gamesWithPoints = publisherGames.Where(x => x.FantasyPoints.HasValue && !x.ManualCriticScore.HasValue).ToList();
 
         var allStandardGamesWithPoints = gamesWithPoints.Where(x => !x.CounterPick).ToList();
-        var allPickupOnlyStandardGamesWithPoints = allStandardGamesWithPoints.Where(x => !x.OverallDraftPosition.HasValue).ToList();
+        var allPickupOnlyStandardGamesWithPoints = allStandardGamesWithPoints.Where(x => !x.OverallPickNumber.HasValue).ToList();
         var allCounterPicksWithPoints = gamesWithPoints.Where(x => x.CounterPick).ToList();
 
         var averageStandardPoints = allStandardGamesWithPoints.Select(x => x.FantasyPoints!.Value).DefaultIfEmpty(0m).Average();

@@ -12,8 +12,8 @@ public interface IPublisherGame
     decimal? FantasyPoints { get; }
     MasterGameYear? MasterGame { get; }
     int SlotNumber { get; }
-    int? DraftPosition { get; }
-    int? OverallDraftPosition { get; }
+    int? PickNumber { get; }
+    int? OverallPickNumber { get; }
     Guid? DraftID { get; }
     uint? BidAmount { get; }
     Guid? AcquiredInTradeID { get; }

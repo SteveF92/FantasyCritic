@@ -39,7 +39,7 @@ public class PublisherGameViewModel
         WillRelease = publisherGame.CouldRelease(leagueYear);
         WillReleaseEarlyAccessOnly = publisherGame.WillRelease(leagueYear).Equals(WillReleaseStatus.WillReleaseEarlyAccessOnly);
         ManualWillNotRelease = publisherGame.ManualWillNotRelease;
-        OverallDraftPosition = publisherGame.OverallDraftPosition;
+        OverallDraftPosition = publisherGame.OverallPickNumber;
         DraftID = publisherGame.DraftID;
         BidAmount = publisherGame.BidAmount;
         AcquiredInTradeID = publisherGame.AcquiredInTradeID;
@@ -86,7 +86,7 @@ public class PublisherGameViewModel
         WillRelease = publisherGame.PublisherGame.CouldRelease(leagueYear);
         WillReleaseEarlyAccessOnly = publisherGame.PublisherGame.WillRelease(leagueYear).Equals(WillReleaseStatus.WillReleaseEarlyAccessOnly);
         ManualWillNotRelease = publisherGame.PublisherGame.ManualWillNotRelease;
-        OverallDraftPosition = publisherGame.PublisherGame.OverallDraftPosition;
+        OverallDraftPosition = publisherGame.PublisherGame.OverallPickNumber;
         DraftID = publisherGame.PublisherGame.DraftID;
         BidAmount = publisherGame.PublisherGame.BidAmount;
         AcquiredInTradeID = publisherGame.PublisherGame.AcquiredInTradeID;

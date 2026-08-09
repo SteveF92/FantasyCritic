@@ -19,8 +19,8 @@ public class PublisherGameEntity
         FantasyPoints = publisherGame.FantasyPoints;
 
         SlotNumber = publisherGame.SlotNumber;
-        DraftPosition = publisherGame.DraftPosition;
-        OverallDraftPosition = publisherGame.OverallDraftPosition;
+        DraftPosition = publisherGame.PickNumber;
+        OverallDraftPosition = publisherGame.OverallPickNumber;
         DraftID = publisherGame.DraftID;
         if (publisherGame.MasterGame is not null)
         {

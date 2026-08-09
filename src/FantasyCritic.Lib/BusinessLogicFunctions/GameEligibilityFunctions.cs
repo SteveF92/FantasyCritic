@@ -142,7 +142,7 @@ public static class GameEligibilityFunctions
         {
             return new DropResult(Result.Failure("Game is no longer eligible for dropping."));
         }
-        bool gameWasDrafted = publisherGame.OverallDraftPosition.HasValue;
+        bool gameWasDrafted = publisherGame.OverallPickNumber.HasValue;
         if (!gameWasDrafted && leagueYear.Options.DropOnlyDraftGames)
         {
             return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."));
@@ -219,7 +219,7 @@ public static class GameEligibilityFunctions
         {
             return new DropResult(Result.Failure("Game is no longer eligible for dropping."));
         }
-        bool gameWasDrafted = publisherGame.OverallDraftPosition.HasValue;
+        bool gameWasDrafted = publisherGame.OverallPickNumber.HasValue;
         if (!gameWasDrafted && leagueYear.Options.DropOnlyDraftGames)
         {
             return new DropResult(Result.Failure("You can only drop games that you drafted due to your league settings."));

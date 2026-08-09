@@ -175,7 +175,7 @@ public class AllTimeStatsService
             var leagueOptions = leagueYear.Options;
             var scoringSystem = leagueOptions.ScoringSystem;
 
-            calculatedAllTimeStats.Add(new AllTimeStatsCalculation(game.MasterGame!, publisher, game.CounterPick, game.OverallDraftPosition, game.BidAmount, game.MasterGame!.MasterGame.CriticScore, game.FantasyPoints)
+            calculatedAllTimeStats.Add(new AllTimeStatsCalculation(game.MasterGame!, publisher, game.CounterPick, game.OverallPickNumber, game.BidAmount, game.MasterGame!.MasterGame.CriticScore, game.FantasyPoints)
             {
                 CountedForPointsInYear = game.MasterGame.IsReleasedAndReleasedInYear(currentDate) ||
                                          (leagueOptions.ReleaseSystem.Equals(ReleaseSystem.OnlyNeedsScore) && game.MasterGame.MasterGame.CriticScore.HasValue &&

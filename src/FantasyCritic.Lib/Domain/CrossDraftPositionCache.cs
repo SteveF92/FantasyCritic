@@ -64,7 +64,7 @@ public sealed class CrossDraftPositionCache
             return null;
         }
 
-        if (!game.OverallDraftPosition.HasValue)
+        if (!game.OverallPickNumber.HasValue)
         {
             throw new InvalidOperationException(
                 $"PublisherGame {game.PublisherGameID} (publisher {game.PublisherID}) has DraftID {game.DraftID} but no OverallDraftPosition.");
@@ -78,7 +78,7 @@ public sealed class CrossDraftPositionCache
         }
 
         return game.CounterPick
-            ? startingPos.CounterPickStartingPoint + game.OverallDraftPosition.Value
-            : startingPos.StandardGameStartingPoint + game.OverallDraftPosition.Value;
+            ? startingPos.CounterPickStartingPoint + game.OverallPickNumber.Value
+            : startingPos.StandardGameStartingPoint + game.OverallPickNumber.Value;
     }
 }

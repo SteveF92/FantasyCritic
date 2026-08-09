@@ -103,8 +103,8 @@ public class DraftService
 
             var counterPicks = publisherGamesForDraft.Where(x => x.CounterPick).ToList();
             PublisherGame publisherGameToUndo = counterPicks.Any()
-                ? counterPicks.MaxBy(x => x.OverallDraftPosition)!
-                : publisherGamesForDraft.MaxBy(x => x.OverallDraftPosition)!;
+                ? counterPicks.MaxBy(x => x.OverallPickNumber)!
+                : publisherGamesForDraft.MaxBy(x => x.OverallPickNumber)!;
 
             var publisher = leagueYear.Publishers.Single(x => x.PublisherID == publisherGameToUndo.PublisherID);
             await _publisherService.UndoDraftPick(leagueYear, publisher, publisherGameToUndo);

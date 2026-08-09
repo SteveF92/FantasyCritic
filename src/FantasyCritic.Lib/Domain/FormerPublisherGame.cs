@@ -25,8 +25,8 @@ public class FormerPublisherGame : IPublisherGame
     public decimal? FantasyPoints => PublisherGame.FantasyPoints;
     public MasterGameYear? MasterGame => PublisherGame.MasterGame;
     public int SlotNumber => PublisherGame.SlotNumber;
-    public int? DraftPosition => PublisherGame.DraftPosition;
-    public int? OverallDraftPosition => PublisherGame.OverallDraftPosition;
+    public int? PickNumber => PublisherGame.PickNumber;
+    public int? OverallPickNumber => PublisherGame.OverallPickNumber;
     public Guid? DraftID => PublisherGame.DraftID;
     public uint? BidAmount => PublisherGame.BidAmount;
     public Guid? AcquiredInTradeID => PublisherGame.AcquiredInTradeID;

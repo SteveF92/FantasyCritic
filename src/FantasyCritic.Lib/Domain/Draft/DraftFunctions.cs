@@ -300,7 +300,7 @@ public static class DraftFunctions
             .Where(x => x.DraftID == draft.DraftID)
             .ToList();
 
-        var invalidGames = draftedGames.Where(g => !g.DraftPosition.HasValue || !g.OverallDraftPosition.HasValue).ToList();
+        var invalidGames = draftedGames.Where(g => !g.PickNumber.HasValue || !g.OverallPickNumber.HasValue).ToList();
         if (invalidGames.Count > 0)
         {
             throw new InvalidOperationException(
@@ -308,7 +308,7 @@ public static class DraftFunctions
                 $"First bad game belongs to publisher {invalidGames[0].PublisherID}.");
         }
 
-        var gameDictionary = draftedGames.ToDictionary(x => (x.CounterPick, x.OverallDraftPosition!.Value));
+        var gameDictionary = draftedGames.ToDictionary(x => (x.CounterPick, x.OverallPickNumber!.Value));
 
         var skipLookup = draft.PublisherDraftInfo
             .SelectMany(info => info.PickSkips, (info, skip) => (Key: (info.PublisherID, skip.CounterPick, skip.PickNumber), Skip: skip))
