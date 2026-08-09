@@ -941,7 +941,7 @@ public class AdminService
         var completeLeagueYearKeys = publishersInCompleteLeagues.Select(x => x.LeagueYearKey).ToHashSet();
         var allLeagueYears = leagueYears.Where(x => completeLeagueYearKeys.Contains(x.Key)).ToList();
         double totalLeagueCount = allLeagueYears.Count;
-        var crossDraftPositionCache = CrossDraftPositionCache.Build(allLeagueYears);
+        var crossDraftPickNumberCache = CrossDraftPickNumberCache.Build(allLeagueYears);
 
         foreach (var masterGame in cleanMasterGames)
         {
@@ -993,7 +993,7 @@ public class AdminService
             var gamesWithMoreBidTotal = totalBidAmounts.Where(x => x.Value > totalBidAmount);
             double percentageGamesWithHigherBidTotal = gamesWithMoreBidTotal.Count() / (double)cleanMasterGames.Count;
             double bidPercentile = 100 - (percentageGamesWithHigherBidTotal * 100);
-            double? averageDraftPosition = publisherGamesForMasterGame.Average(x => crossDraftPositionCache.GetPosition(x));
+            double? averageDraftPosition = publisherGamesForMasterGame.Average(x => crossDraftPickNumberCache.GetPickNumber(x));
             double? averageWinningBid = bidsByGame[masterGame].Where(x => x.Successful.HasValue && x.Successful.Value).Select(x => (double)x.BidAmount).DefaultIfEmpty(0.0).Average();
 
             double notNullAverageDraftPosition = averageDraftPosition ?? 0;
