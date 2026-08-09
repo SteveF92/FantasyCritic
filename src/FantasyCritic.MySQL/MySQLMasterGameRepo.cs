@@ -346,7 +346,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         var masterGames = await GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
 
-        const string bothSql =
+        const string allSql =
             """
             SELECT MasterGameChangeID, MasterGameID, ChangedByUserID, Timestamp, Description
             FROM (
@@ -386,8 +386,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 ORDER BY Timestamp DESC
                 LIMIT 100
                 """,
-            RecentMasterGameChangeMode.Both => bothSql,
-            _ => bothSql,
+            RecentMasterGameChangeMode.All => allSql,
+            _ => allSql,
         };
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameChangeLogEntity> entities = await connection.QueryAsync<MasterGameChangeLogEntity>(sql);

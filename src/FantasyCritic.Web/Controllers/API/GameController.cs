@@ -361,7 +361,7 @@ public class GameController : FantasyCriticController
 
     [HttpGet]
     public async Task<ActionResult<List<CompleteMasterGameChangeViewModel>>> GetRecentMasterGameChanges(
-        [FromQuery] RecentMasterGameChangeMode mode = RecentMasterGameChangeMode.Both)
+        [FromQuery] RecentMasterGameChangeMode mode = RecentMasterGameChangeMode.All)
     {
         IReadOnlyList<MasterGameChangeLogEntry> recentChanges = await _interLeagueService.GetRecentMasterGameChanges(mode);
         var currentDate = _clock.GetToday();

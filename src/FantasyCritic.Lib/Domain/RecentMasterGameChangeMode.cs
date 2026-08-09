@@ -2,7 +2,7 @@ namespace FantasyCritic.Lib.Domain;
 
 public enum RecentMasterGameChangeMode
 {
-    Both,
+    All,
     NewGames,
     Changes
 }

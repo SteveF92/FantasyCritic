@@ -151,7 +151,7 @@ public class GameTests : IntegrationTestBase
             Tags = ["NewGame"],
         });
 
-        var recentChanges = await fcSession.Game.GetRecentMasterGameChangesAsync(RecentMasterGameChangeMode.Both);
+        var recentChanges = await fcSession.Game.GetRecentMasterGameChangesAsync(RecentMasterGameChangeMode.All);
 
         Assert.That(recentChanges, Is.Not.Null);
         var addEntry = recentChanges.SingleOrDefault(x =>
