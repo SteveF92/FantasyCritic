@@ -41,7 +41,7 @@ public sealed class MainMenu
             System.Console.WriteLine("RDS Snapshot Manager");
             System.Console.WriteLine("1. Create production snapshot");
             System.Console.WriteLine("2. Beta sync from snapshot");
-            System.Console.WriteLine("3. Dump and publish from instance");
+            System.Console.WriteLine("3. Dump & publish raw backup (unsanitized)");
             System.Console.WriteLine("4. Import local dump to Docker MySQL");
             System.Console.WriteLine("5. Clean local Docker database (scrub sensitive data)");
             System.Console.WriteLine("0. Exit");
@@ -145,12 +145,10 @@ public sealed class MainMenu
             return;
         }
 
-        var instanceName = _options.RdsInstances[instanceKey].InstanceName;
-
         try
         {
             Log.Information("Starting dump and publish from {Instance}", instanceKey);
-            var result = await _dumpAndPublishService.DumpAndPublish(instanceName, cancellationToken);
+            var result = await _dumpAndPublishService.DumpAndPublish(instanceKey, cancellationToken);
             if (result.IsSuccess)
             {
                 System.Console.WriteLine($"Dump complete: {result.Value}");

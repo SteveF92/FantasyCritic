@@ -28,14 +28,21 @@ public sealed class DumpAndPublishService
         _clock = clock;
     }
 
-    public async Task<Result<string>> DumpAndPublish(string instanceName, CancellationToken cancellationToken)
+    public async Task<Result<string>> DumpAndPublish(string instanceKey, CancellationToken cancellationToken)
     {
+        var instanceResult = RdsInstanceLookup.TryResolve(_options.RdsInstances, instanceKey);
+        if (instanceResult.IsFailure)
+        {
+            return Result.Failure<string>(instanceResult.Error);
+        }
+
+        var instance = instanceResult.Value;
         var timestamp = _clock.GetCurrentInstant();
         var zonedTimestamp = timestamp.InZone(TimeExtensions.EasternTimeZone);
-        var fileName = $"{instanceName}-{zonedTimestamp.LocalDateTime.ToString("yyyy-MM-dd-HHmmss", CultureInfo.InvariantCulture)}.sql.gz";
+        var fileName = $"{instance.InstanceName}-{zonedTimestamp.LocalDateTime.ToString("yyyy-MM-dd-HHmmss", CultureInfo.InvariantCulture)}.sql.gz";
         var stagingPath = Path.Combine(_options.LocalStagingDirectory, fileName);
 
-        var dumpResult = await _mysqldumpRunner.DumpToGzipFile(_options.DumpConnectionString, stagingPath, cancellationToken);
+        var dumpResult = await _mysqldumpRunner.DumpToGzipFile(instance.ConnectionString, stagingPath, cancellationToken);
         if (dumpResult.IsFailure)
         {
             return Result.Failure<string>(dumpResult.Error);
@@ -43,7 +50,7 @@ public sealed class DumpAndPublishService
 
         foreach (var destination in _destinations)
         {
-            var remoteKey = BackupRemoteKeyBuilder.Build(destination.Prefix, instanceName, timestamp, fileName);
+            var remoteKey = BackupRemoteKeyBuilder.Build(destination.Prefix, instance.InstanceName, timestamp, fileName);
             await destination.Destination.UploadAsync(stagingPath, remoteKey, cancellationToken);
         }
 
