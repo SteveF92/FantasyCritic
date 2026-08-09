@@ -53,6 +53,14 @@ public class Program
             var sequentialScriptsPath = Path.Combine(scriptsRoot, "Sequential");
             var idempotentScriptsPath = Path.Combine(scriptsRoot, "Idempotent");
 
+            // Code-based migrations (see CodeMigrations/): for data fixes too complex for plain SQL.
+            // Each one is journaled (run-once) by the name it's registered under below, same as the
+            // file-based scripts. To run one, uncomment/add a line like this:
+            //
+            //   var repositoryConfiguration = new RepositoryConfiguration(_connectionString, SystemClock.Instance);
+            //   ...
+            //   .WithScript("2026-08-09_002_processSetCleanup.cs", new ProcessSetCleanupMigration(repositoryConfiguration))
+
             var upgrader =
                 DeployChanges.To
                     .MySqlDatabase(_connectionString)
