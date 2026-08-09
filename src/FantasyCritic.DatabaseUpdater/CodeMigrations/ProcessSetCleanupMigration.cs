@@ -10,9 +10,9 @@ namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 /// Template for a code-based migration: use this when a data fix/cleanup is too complex to express
 /// as a plain SQL script but still needs to run (once) as part of a normal DbUp deployment.
 ///
-/// To wire this up, see the (commented-out) example in Program.cs. Once registered, this runs and
-/// is journaled exactly like a SQL script from Scripts/Sequential — it only ever runs once per
-/// database, tracked by the name it's registered under.
+/// Registered in Program.cs. Once it completes without throwing, it's journaled exactly like a SQL
+/// script from Scripts/Sequential — it only ever runs (to completion) once per database, tracked by
+/// the name it's registered under.
 ///
 /// Note: this executes against its own repo-managed connection(s), not the same connection/
 /// transaction DbUp uses for journaling (available via <paramref name="dbCommandFactory"/> in
@@ -37,8 +37,9 @@ public class ProcessSetCleanupMigration : IScript
         // TODO: implement ProcessSetCleanup here using the repos above (add more as needed,
         // following the same `new MySQLWhatever(_repositoryConfiguration, ...)` pattern).
 
-        // Code-based migrations don't have to return SQL — returning an empty string just tells
-        // DbUp "this migration's work is done in C#, nothing left to execute."
-        return string.Empty;
+        // Unconditional throw so this never gets journaled as applied while under development —
+        // safe to re-run against a local/refreshable DB as many times as needed. Remove this once
+        // the logic above is verified and you're ready to let it complete for real.
+        throw new InvalidOperationException("ProcessSetCleanup is not ready to be marked as done yet.");
     }
 }

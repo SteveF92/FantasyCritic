@@ -4,10 +4,12 @@ using DbUp;
 using DbUp.Engine;
 using DbUp.Support;
 using FantasyCritic.AWS;
+using FantasyCritic.DatabaseUpdater.CodeMigrations;
 using FantasyCritic.Lib.DependencyInjection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;
+using NodaTime;
 using Serilog;
 using Serilog.Core;
 using Serilog.Events;
@@ -55,11 +57,8 @@ public class Program
 
             // Code-based migrations (see CodeMigrations/): for data fixes too complex for plain SQL.
             // Each one is journaled (run-once) by the name it's registered under below, same as the
-            // file-based scripts. To run one, uncomment/add a line like this:
-            //
-            //   var repositoryConfiguration = new RepositoryConfiguration(_connectionString, SystemClock.Instance);
-            //   ...
-            //   .WithScript("2026-08-09_002_processSetCleanup.cs", new ProcessSetCleanupMigration(repositoryConfiguration))
+            // file-based scripts.
+            var repositoryConfiguration = new RepositoryConfiguration(_connectionString, SystemClock.Instance);
 
             var upgrader =
                 DeployChanges.To
@@ -69,6 +68,8 @@ public class Program
                     .WithScriptsFromFileSystem(sequentialScriptsPath)
                     // Run-always scripts (e.g., views / stored procedures)
                     .WithScripts(GetRunAlwaysScripts(idempotentScriptsPath))
+                    // Run-once, journaled code migrations
+                    .WithScript("2026-08-09_002_processSetCleanup.cs", new ProcessSetCleanupMigration(repositoryConfiguration))
                     .WithExecutionTimeout(TimeSpan.FromMinutes(30))
                     .LogTo(loggerFactory)
                     .Build();
