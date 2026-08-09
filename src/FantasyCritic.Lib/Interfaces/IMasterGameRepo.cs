@@ -23,7 +23,7 @@ public interface IMasterGameRepo
     Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year);
 
     Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame);
-    Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges();
+    Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges(RecentMasterGameChangeMode mode);
     Task<IReadOnlyList<MasterGameDesireResult>> GetMostDesiredReviews(LocalDate currentDate);
     Task<IReadOnlyList<LongestTenuredGame>> GetLongestTenuredUnreleasedGames(LocalDate currentDate);
     Task<IReadOnlyList<LongestTenuredGame>> GetLongestTenuredReleasedGames(LocalDate currentDate);

@@ -281,9 +281,9 @@ public class InterLeagueService
         return _fantasyCriticRepo.GetActionProcessingSets();
     }
 
-    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges()
+    public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetRecentMasterGameChanges(RecentMasterGameChangeMode mode)
     {
-        return _masterGameRepo.GetRecentMasterGameChanges();
+        return _masterGameRepo.GetRecentMasterGameChanges(mode);
     }
 
     public Task<IReadOnlyList<MasterGameDesireResult>> GetMostDesiredReviews(LocalDate currentDate)
