@@ -2,6 +2,12 @@
   <div class="col-md-10 offset-md-1 col-sm-12">
     <h1>Recent Master Game Changes</h1>
 
+    <b-form-group>
+      <b-form-radio v-model="mode" value="Both">Both</b-form-radio>
+      <b-form-radio v-model="mode" value="NewGames">New games</b-form-radio>
+      <b-form-radio v-model="mode" value="Changes">Changes</b-form-radio>
+    </b-form-group>
+
     <b-table small bordered striped responsive :items="recentChanges" :fields="gameFields">
       <template #cell(masterGame.gameName)="data">
         <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
@@ -29,6 +35,7 @@ export default {
   },
   data() {
     return {
+      mode: 'Both',
       recentChanges: null,
       gameFields: [
         { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
@@ -38,9 +45,21 @@ export default {
       ]
     };
   },
+  watch: {
+    mode() {
+      this.fetchRecentChanges();
+    }
+  },
   async created() {
-    const response = await axios.get('/api/game/GetRecentMasterGameChanges');
-    this.recentChanges = response.data;
+    await this.fetchRecentChanges();
+  },
+  methods: {
+    async fetchRecentChanges() {
+      const response = await axios.get('/api/game/GetRecentMasterGameChanges', {
+        params: { mode: this.mode }
+      });
+      this.recentChanges = response.data;
+    }
   }
 };
 </script>
