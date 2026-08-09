@@ -346,6 +346,26 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         var masterGames = await GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
 
+        const string bothSql =
+            """
+            SELECT MasterGameChangeID, MasterGameID, ChangedByUserID, Timestamp, Description
+            FROM (
+                SELECT MasterGameChangeID, MasterGameID, ChangedByUserID, Timestamp, Description
+                FROM tbl_mastergame_changelog
+
+                UNION ALL
+
+                SELECT MasterGameID AS MasterGameChangeID,
+                       MasterGameID,
+                       AddedByUserID AS ChangedByUserID,
+                       AddedTimestamp AS Timestamp,
+                       'Game added' AS Description
+                FROM tbl_mastergame
+            ) AS recent
+            ORDER BY Timestamp DESC
+            LIMIT 100
+            """;
+
         string sql = mode switch
         {
             RecentMasterGameChangeMode.Changes =>
@@ -366,26 +386,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
                 ORDER BY Timestamp DESC
                 LIMIT 100
                 """,
-            RecentMasterGameChangeMode.Both =>
-                """
-                SELECT MasterGameChangeID, MasterGameID, ChangedByUserID, Timestamp, Description
-                FROM (
-                    SELECT MasterGameChangeID, MasterGameID, ChangedByUserID, Timestamp, Description
-                    FROM tbl_mastergame_changelog
-
-                    UNION ALL
-
-                    SELECT MasterGameID AS MasterGameChangeID,
-                           MasterGameID,
-                           AddedByUserID AS ChangedByUserID,
-                           AddedTimestamp AS Timestamp,
-                           'Game added' AS Description
-                    FROM tbl_mastergame
-                ) AS recent
-                ORDER BY Timestamp DESC
-                LIMIT 100
-                """,
-            _ => throw new ArgumentOutOfRangeException(nameof(mode), mode, null)
+            RecentMasterGameChangeMode.Both => bothSql,
+            _ => bothSql,
         };
         await using var connection = new MySqlConnection(_connectionString);
         IEnumerable<MasterGameChangeLogEntity> entities = await connection.QueryAsync<MasterGameChangeLogEntity>(sql);
