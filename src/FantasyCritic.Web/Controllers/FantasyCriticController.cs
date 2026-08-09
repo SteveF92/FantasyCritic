@@ -97,7 +97,7 @@ public abstract class FantasyCriticController : ControllerBase
     protected static LeagueOptionsViewModel BuildLeagueOptionsViewModel(IReadOnlyList<SupportedYear> supportedYears)
     {
         var openYears = supportedYears.Where(x => x.OpenForCreation && !x.Finished).Select(x => x.Year);
-        LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears, DraftSystem.GetAllPossibleValues(),
+        LeagueOptionsViewModel viewModel = new LeagueOptionsViewModel(openYears,
             PickupSystem.GetAllPossibleValues(), TiebreakSystem.GetAllPossibleValues(),
             ScoringSystem.GetAllPossibleValues(), TradingSystem.GetAllPossibleValues(),
             ReleaseSystem.GetAllPossibleValues(), IneligibleGameSystem.GetAllPossibleValues());

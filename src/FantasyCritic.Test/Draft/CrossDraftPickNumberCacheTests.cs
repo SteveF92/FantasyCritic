@@ -545,7 +545,6 @@ public class CrossDraftPickNumberCacheTests
         true,
         [],
         [],
-        DraftSystem.Flexible,
         PickupSystem.SemiPublicBiddingSecretCounterPicks,
         ScoringSystem.GetDefaultScoringSystem(year),
         TradingSystem.Standard,

@@ -1148,10 +1148,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             """
             INSERT INTO tbl_league_year
             (LeagueID,Year,StandardGames,CounterPicks,UnrestrictedReleaseStatusDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
-            GrantSuperDrops,CounterPicksBlockDrops,AllowMoveIntoIneligible,MinimumBidAmount,EnableBids,BidsOnlyBeforeNextScheduledDraft,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,IneligibleGameSystem,
+            GrantSuperDrops,CounterPicksBlockDrops,AllowMoveIntoIneligible,MinimumBidAmount,EnableBids,BidsOnlyBeforeNextScheduledDraft,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,IneligibleGameSystem,
             CounterPickDeadlineMonth,CounterPickDeadlineDay,MightReleaseDroppableMonth,MightReleaseDroppableDay,ConferenceLocked,UnderReview,LeagueYearName) VALUES
             (@LeagueID,@Year,@StandardGames,@CounterPicks,@UnrestrictedReleaseStatusDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
-            @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@AllowMoveIntoIneligible,@MinimumBidAmount,@EnableBids,@BidsOnlyBeforeNextScheduledDraft,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
+            @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@AllowMoveIntoIneligible,@MinimumBidAmount,@EnableBids,@BidsOnlyBeforeNextScheduledDraft,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
             @ReleaseSystem,@IneligibleGameSystem,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay,@ConferenceLocked,0,@LeagueYearName);
             """;
 
@@ -1200,7 +1200,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             UPDATE tbl_league_year SET StandardGames = @StandardGames, CounterPicks = @CounterPicks,
             UnrestrictedReleaseStatusDroppableGames = @UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames,
             DropOnlyDraftGames = @DropOnlyDraftGames, GrantSuperDrops = @GrantSuperDrops, CounterPicksBlockDrops = @CounterPicksBlockDrops,
-            AllowMoveIntoIneligible = @AllowMoveIntoIneligible, MinimumBidAmount = @MinimumBidAmount, EnableBids = @EnableBids, BidsOnlyBeforeNextScheduledDraft = @BidsOnlyBeforeNextScheduledDraft, DraftSystem = @DraftSystem,
+            AllowMoveIntoIneligible = @AllowMoveIntoIneligible, MinimumBidAmount = @MinimumBidAmount, EnableBids = @EnableBids, BidsOnlyBeforeNextScheduledDraft = @BidsOnlyBeforeNextScheduledDraft,
             PickupSystem = @PickupSystem, TiebreakSystem = @TiebreakSystem, ScoringSystem = @ScoringSystem, TradingSystem = @TradingSystem, ReleaseSystem = @ReleaseSystem,
             IneligibleGameSystem = @IneligibleGameSystem,
             CounterPickDeadlineMonth = @CounterPickDeadlineMonth, CounterPickDeadlineDay = @CounterPickDeadlineDay, MightReleaseDroppableMonth = @MightReleaseDroppableMonth, MightReleaseDroppableDay = @MightReleaseDroppableDay
@@ -1377,10 +1377,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             """
             INSERT INTO tbl_league_year
             (LeagueID,Year,StandardGames,CounterPicks,UnrestrictedReleaseStatusDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
-            GrantSuperDrops,CounterPicksBlockDrops,AllowMoveIntoIneligible,MinimumBidAmount,EnableBids,BidsOnlyBeforeNextScheduledDraft,DraftSystem,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,IneligibleGameSystem,
+            GrantSuperDrops,CounterPicksBlockDrops,AllowMoveIntoIneligible,MinimumBidAmount,EnableBids,BidsOnlyBeforeNextScheduledDraft,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,IneligibleGameSystem,
             CounterPickDeadlineMonth,CounterPickDeadlineDay,MightReleaseDroppableMonth,MightReleaseDroppableDay,ConferenceLocked,UnderReview) VALUES
             (@LeagueID,@Year,@StandardGames,@CounterPicks,@UnrestrictedReleaseStatusDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
-            @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@AllowMoveIntoIneligible,@MinimumBidAmount,@EnableBids,@BidsOnlyBeforeNextScheduledDraft,@DraftSystem,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
+            @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@AllowMoveIntoIneligible,@MinimumBidAmount,@EnableBids,@BidsOnlyBeforeNextScheduledDraft,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
             @ReleaseSystem,@IneligibleGameSystem,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay,@ConferenceLocked,0);
             """;
 

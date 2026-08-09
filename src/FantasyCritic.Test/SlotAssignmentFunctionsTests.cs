@@ -175,7 +175,6 @@ public class SlotAssignmentFunctionsTests
             false, false, false, false,
             0, false,
             [], specialSlots,
-            DraftSystem.Flexible,
             PickupSystem.SemiPublicBiddingSecretCounterPicks,
             ScoringSystem.GetDefaultScoringSystem(_year),
             TradingSystem.Standard,

@@ -115,7 +115,6 @@ public class CounterPickDraftRestrictionTests
             false, false, false, false,
             0, true,
             [], [],
-            DraftSystem.Flexible,
             PickupSystem.SemiPublicBiddingSecretCounterPicks,
             ScoringSystem.GetDefaultScoringSystem(year),
             TradingSystem.Standard,

@@ -121,7 +121,6 @@ public class TradePrivacyTests : IntegrationTestBase
             GamesToDraft = 2,
             CounterPicks = 0,
             CounterPicksToDraft = 0,
-            DraftSystem = "Flexible",
             PickupSystem = "SemiPublicBiddingSecretCounterPicks",
             ScoringSystem = "LinearPositive",
             TradingSystem = tradingSystem,

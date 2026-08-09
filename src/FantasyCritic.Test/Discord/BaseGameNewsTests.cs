@@ -59,7 +59,7 @@ internal abstract class BaseGameNewsTests
 
         var leagueOptions = new LeagueOptions(10, 5, 2, 1, 0, false, false, false, false, 0, true, leagueTags,
             new List<SpecialGameSlot>(),
-            DraftSystem.Flexible, PickupSystem.SemiPublicBiddingSecretCounterPicks, ScoringSystem.GetDefaultScoringSystem(2025),
+            PickupSystem.SemiPublicBiddingSecretCounterPicks, ScoringSystem.GetDefaultScoringSystem(2025),
             TradingSystem.Standard, TiebreakSystem.LowestProjectedPoints, ReleaseSystem.MustBeReleased,
             IneligibleGameSystem.CaseByCase,
             new AnnualDate(10, 1), new AnnualDate(10, 1), false);

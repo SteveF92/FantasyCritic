@@ -11,7 +11,7 @@ public class LeagueYearSettingsViewModel
     public LeagueYearSettingsViewModel(Guid leagueID, int year, string? leagueYearName, int standardGames, int counterPicks,
         int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool unlimitedUnrestrictedReleaseStatusDroppableGames,
         bool unlimitedWillNotReleaseDroppableGames, bool unlimitedWillReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible,
-        int minimumBidAmount, bool enableBids, string draftSystem, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem, string releaseSystem,
+        int minimumBidAmount, bool enableBids, string pickupSystem, string scoringSystem, string tradingSystem, string tiebreakSystem, string releaseSystem,
         string ineligibleGameSystem,
         LocalDate counterPickDeadline, LocalDate? mightReleaseDroppableDate, LeagueTagOptionsViewModel tags, List<SpecialGameSlotViewModel> specialGameSlots, bool bidsOnlyBeforeNextScheduledDraft)
     {
@@ -33,7 +33,6 @@ public class LeagueYearSettingsViewModel
         AllowMoveIntoIneligible = allowMoveIntoIneligible;
         MinimumBidAmount = minimumBidAmount;
         EnableBids = enableBids;
-        DraftSystem = draftSystem;
         PickupSystem = pickupSystem;
         ScoringSystem = scoringSystem;
         TradingSystem = tradingSystem;
@@ -83,7 +82,6 @@ public class LeagueYearSettingsViewModel
         EnableBids = leagueYear.Options.EnableBids;
         BidsOnlyBeforeNextScheduledDraft = leagueYear.Options.BidsOnlyBeforeNextScheduledDraft;
 
-        DraftSystem = leagueYear.Options.DraftSystem.Value;
         PickupSystem = leagueYear.Options.PickupSystem.Value;
         TiebreakSystem = leagueYear.Options.TiebreakSystem.Value;
         ScoringSystem = leagueYear.Options.ScoringSystem.Name;
@@ -134,7 +132,6 @@ public class LeagueYearSettingsViewModel
     public int MinimumBidAmount { get; }
     public bool EnableBids { get; }
     public bool BidsOnlyBeforeNextScheduledDraft { get; }
-    public string DraftSystem { get; }
     public string PickupSystem { get; }
     public string ScoringSystem { get; }
     public string TradingSystem { get; }
@@ -170,7 +167,6 @@ public class LeagueYearSettingsViewModel
 
     public LeagueYearParameters ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        DraftSystem draftSystem = Lib.Enums.DraftSystem.FromValue(DraftSystem);
         PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
         TradingSystem tradingSystem = Lib.Enums.TradingSystem.FromValue(TradingSystem);
         TiebreakSystem tiebreakSystem = Lib.Enums.TiebreakSystem.FromValue(TiebreakSystem);
@@ -206,7 +202,7 @@ public class LeagueYearSettingsViewModel
 
         LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName, StandardGames, CounterPicks,
             unrestrictedReleaseStatusDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount, EnableBids,
-            leagueTags, specialGameSlots, draftSystem, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
+            leagueTags, specialGameSlots, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
         return parameters;
     }
 }

@@ -20,16 +20,6 @@ public class LeagueSetupTests : IntegrationTestBase
     }
 
     [Test]
-    public async Task LeagueOptions_DraftSystems_ContainsFlexible()
-    {
-        using var session = new ApiSession(Factory);
-        var options = await session.League.LeagueOptionsAsync();
-
-        Assert.That(options.DraftSystems, Contains.Item("Flexible"),
-            "DraftSystems must include 'Flexible'.");
-    }
-
-    [Test]
     public async Task CreateLeague_WithValidSettings_ReturnsNonEmptyGuid()
     {
         var (email, password, displayName) = NewUser();
@@ -88,7 +78,6 @@ public class LeagueSetupTests : IntegrationTestBase
             Assert.That(firstDraft.GamesToDraft, Is.EqualTo(LeagueScenarios.Standard.GamesToDraft));
             Assert.That(firstDraft.CounterPicksToDraft, Is.EqualTo(LeagueScenarios.Standard.CounterPicksToDraft));
             Assert.That(settings.CounterPicks, Is.EqualTo(LeagueScenarios.Standard.CounterPicks));
-            Assert.That(settings.DraftSystem, Is.EqualTo(LeagueScenarios.Standard.DraftSystem));
             Assert.That(settings.ScoringSystem, Is.EqualTo(LeagueScenarios.Standard.ScoringSystem));
             Assert.That(settings.IneligibleGameSystem, Is.EqualTo(LeagueScenarios.Standard.IneligibleGameSystem));
         }

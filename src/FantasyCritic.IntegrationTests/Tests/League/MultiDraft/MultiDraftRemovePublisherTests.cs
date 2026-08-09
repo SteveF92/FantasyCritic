@@ -22,7 +22,6 @@ public class MultiDraftRemovePublisherTests : IntegrationTestBase
         GamesToDraft = 3,
         CounterPicks = 0,
         CounterPicksToDraft = 0,
-        DraftSystem = "Flexible",
         PickupSystem = "SemiPublicBiddingSecretCounterPicks",
         ScoringSystem = "LinearPositive",
         TradingSystem = "Standard",

@@ -37,7 +37,7 @@ public class EditLeagueYearRequest
             parsed.CounterPicksBlockDrops, parsed.AllowMoveIntoIneligible,
             parsed.MinimumBidAmount, parsed.EnableBids,
             parsed.LeagueTags, parsed.SpecialGameSlots,
-            parsed.DraftSystem, parsed.PickupSystem, parsed.ScoringSystem,
+            parsed.PickupSystem, parsed.ScoringSystem,
             parsed.TradingSystem, parsed.TiebreakSystem, parsed.ReleaseSystem,
             parsed.IneligibleGameSystem, parsed.CounterPickDeadline,
             parsed.MightReleaseDroppableDate, parsed.BidsOnlyBeforeNextScheduledDraft);

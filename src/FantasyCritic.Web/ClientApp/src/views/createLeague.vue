@@ -187,7 +187,6 @@ export default {
           pickupSystem: 'SemiPublicBiddingSecretCounterPicks',
           tiebreakSystem: 'LowestProjectedPoints',
           tradingSystem: 'Standard',
-          draftSystem: 'Flexible',
           scoringSystem: 'LinearPositive',
           releaseSystem: 'MustBeReleased',
           ineligibleGameSystem: 'CaseByCase',

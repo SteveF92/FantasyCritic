@@ -134,7 +134,6 @@ internal sealed class GetDraftStatusTestBuilder
             true,
             [new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned)],
             [],
-            DraftSystem.Flexible,
             PickupSystem.SemiPublicBiddingSecretCounterPicks,
             ScoringSystem.GetDefaultScoringSystem(_year),
             TradingSystem.Standard,

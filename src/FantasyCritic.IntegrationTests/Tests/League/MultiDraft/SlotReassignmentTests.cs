@@ -31,7 +31,6 @@ public class SlotReassignmentTests : IntegrationTestBase
         AllowMoveIntoIneligible = false,
         MinimumBidAmount = 0,
         EnableBids = false,
-        DraftSystem = "Flexible",
         PickupSystem = "SemiPublicBiddingSecretCounterPicks",
         ScoringSystem = "LinearPositive",
         TradingSystem = "NoTrades",

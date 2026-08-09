@@ -40,7 +40,6 @@ public sealed class LeagueScenario
     public bool BidsOnlyBeforeNextScheduledDraft { get; init; } = false;
 
     // System strings — must match the enum names used by the server
-    public string DraftSystem { get; init; } = "Flexible";
     public string PickupSystem { get; init; } = "SemiPublicBiddingSecretCounterPicks";
     public string ScoringSystem { get; init; } = "LinearPositive";
     public string TradingSystem { get; init; } = "Standard";
@@ -76,7 +75,6 @@ public sealed class LeagueScenario
             MinimumBidAmount = MinimumBidAmount,
             EnableBids = EnableBids,
             BidsOnlyBeforeNextScheduledDraft = BidsOnlyBeforeNextScheduledDraft,
-            DraftSystem = DraftSystem,
             PickupSystem = PickupSystem,
             ScoringSystem = ScoringSystem,
             TradingSystem = TradingSystem,
@@ -123,7 +121,6 @@ public static class LeagueScenarios
         GamesToDraft = 6,
         CounterPicks = 1,
         CounterPicksToDraft = 1,
-        DraftSystem = "Flexible",
         PickupSystem = "SemiPublicBiddingSecretCounterPicks",
         ScoringSystem = "LinearPositive",
         TradingSystem = "Standard",
@@ -152,7 +149,6 @@ public static class LeagueScenarios
         GamesToDraft = Standard.GamesToDraft,
         CounterPicks = Standard.CounterPicks,
         CounterPicksToDraft = Standard.CounterPicksToDraft,
-        DraftSystem = Standard.DraftSystem,
         PickupSystem = Standard.PickupSystem,
         ScoringSystem = Standard.ScoringSystem,
         TradingSystem = Standard.TradingSystem,
@@ -182,7 +178,6 @@ public static class LeagueScenarios
         GamesToDraft = 2,
         CounterPicks = 0,
         CounterPicksToDraft = 0,
-        DraftSystem = "Flexible",
         PickupSystem = "SemiPublicBiddingSecretCounterPicks",
         ScoringSystem = "LinearPositive",
         TradingSystem = "NoTrades",
@@ -212,7 +207,6 @@ public static class LeagueScenarios
         GamesToDraft = 2,
         CounterPicks = 1,
         CounterPicksToDraft = 1,
-        DraftSystem = "Flexible",
         PickupSystem = "SemiPublicBiddingSecretCounterPicks",
         ScoringSystem = "LinearPositive",
         TradingSystem = "Standard",
@@ -242,7 +236,6 @@ public static class LeagueScenarios
         GamesToDraft = 3,
         CounterPicks = 2,
         CounterPicksToDraft = 1,
-        DraftSystem = "Flexible",
         PickupSystem = "SemiPublicBiddingSecretCounterPicks",
         ScoringSystem = "LinearPositive",
         TradingSystem = "Standard",
@@ -273,7 +266,6 @@ public static class LeagueScenarios
         GamesToDraft = 4,
         CounterPicks = 1,
         CounterPicksToDraft = 1,
-        DraftSystem = "Flexible",
         PickupSystem = "SemiPublicBiddingSecretCounterPicks",
         ScoringSystem = "LinearPositive",
         TradingSystem = "Standard",
@@ -308,7 +300,6 @@ public static class LeagueScenarios
         GamesToDraft = 3,
         CounterPicks = 2,
         CounterPicksToDraft = 1,
-        DraftSystem = "Flexible",
         PickupSystem = "SemiPublicBiddingSecretCounterPicks",
         ScoringSystem = "LinearPositive",
         TradingSystem = "Standard",

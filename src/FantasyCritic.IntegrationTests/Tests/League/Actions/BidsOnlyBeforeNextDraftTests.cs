@@ -25,7 +25,6 @@ public class BidsOnlyBeforeNextDraftTests : IntegrationTestBase
         CounterPicks = 1,
         EnableBids = true,
         BidsOnlyBeforeNextScheduledDraft = true,
-        DraftSystem = "Flexible",
         PickupSystem = "SemiPublicBiddingSecretCounterPicks",
         ScoringSystem = "LinearPositive",
         TradingSystem = "Standard",

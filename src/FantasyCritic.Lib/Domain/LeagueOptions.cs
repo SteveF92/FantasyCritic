@@ -11,7 +11,7 @@ public class LeagueOptions
 
     public LeagueOptions(int standardGames, int counterPicks, int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames,
         int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount,
-        bool enableBids, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, DraftSystem draftSystem, PickupSystem pickupSystem,
+        bool enableBids, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, PickupSystem pickupSystem,
         ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
         IneligibleGameSystem ineligibleGameSystem,
         AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate, bool bidsOnlyBeforeNextScheduledDraft)
@@ -29,7 +29,6 @@ public class LeagueOptions
         EnableBids = enableBids;
         LeagueTags = leagueTags.ToList();
         SpecialGameSlots = specialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
-        DraftSystem = draftSystem;
         PickupSystem = pickupSystem;
         ScoringSystem = scoringSystem;
         TradingSystem = tradingSystem;
@@ -58,7 +57,6 @@ public class LeagueOptions
         EnableBids = parameters.EnableBids;
         LeagueTags = parameters.LeagueTags;
         SpecialGameSlots = parameters.SpecialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
-        DraftSystem = parameters.DraftSystem;
         PickupSystem = parameters.PickupSystem;
         ScoringSystem = parameters.ScoringSystem;
         TradingSystem = parameters.TradingSystem;
@@ -85,7 +83,6 @@ public class LeagueOptions
     public bool EnableBids { get; }
     public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
     public IReadOnlyList<SpecialGameSlot> SpecialGameSlots { get; }
-    public DraftSystem DraftSystem { get; }
     public PickupSystem PickupSystem { get; }
     public ScoringSystem ScoringSystem { get; }
     public TradingSystem TradingSystem { get; }
@@ -200,11 +197,6 @@ public class LeagueOptions
             differences.Add($"'Minimum Bid Amount' changed from {existingOptions.MinimumBidAmount} to {MinimumBidAmount}.");
         }
 
-        if (!DraftSystem.Equals(existingOptions.DraftSystem))
-        {
-            differences.Add($"Draft System changed from {existingOptions.DraftSystem} to {DraftSystem}.");
-        }
-
         if (!PickupSystem.Equals(existingOptions.PickupSystem))
         {
             differences.Add($"Pickup System changed from {existingOptions.PickupSystem.ReadableName} to {PickupSystem.ReadableName}.");
@@ -277,7 +269,7 @@ public class LeagueOptions
         var newScoringSystem = ScoringSystem.SupportedInYear(requestYear) ? ScoringSystem : ScoringSystem.GetDefaultScoringSystem(requestYear);
         LeagueOptions options = new LeagueOptions(StandardGames, CounterPicks, UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
-            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, SpecialGameSlots, DraftSystem,
+            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, SpecialGameSlots,
             PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
             CounterPickDeadline, MightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
         return options;
@@ -299,7 +291,7 @@ public class LeagueOptions
 
         LeagueOptions newOptions = new LeagueOptions(totalStandardGames, totalCounterPicks, UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
-            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, totalSpecialGameSlots, DraftSystem,
+            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, totalSpecialGameSlots,
             PickupSystem, ScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
             CounterPickDeadline, MightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
 

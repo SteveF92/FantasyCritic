@@ -7,7 +7,7 @@ public class LeagueYearParameters
     public LeagueYearParameters(Guid leagueID, int year, string? leagueYearName, int standardGames, int counterPicks,
         int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops,
         bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount, bool enableBids, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
-        DraftSystem draftSystem, PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
+        PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
         IneligibleGameSystem ineligibleGameSystem,
         AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate, bool bidsOnlyBeforeNextScheduledDraft)
     {
@@ -27,7 +27,6 @@ public class LeagueYearParameters
         EnableBids = enableBids;
         LeagueTags = leagueTags.ToList();
         SpecialGameSlots = specialGameSlots.ToList();
-        DraftSystem = draftSystem;
         PickupSystem = pickupSystem;
         ScoringSystem = scoringSystem;
         TradingSystem = tradingSystem;
@@ -55,7 +54,6 @@ public class LeagueYearParameters
     public bool EnableBids { get; }
     public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
     public IReadOnlyList<SpecialGameSlot> SpecialGameSlots { get; }
-    public DraftSystem DraftSystem { get; }
     public PickupSystem PickupSystem { get; }
     public ScoringSystem ScoringSystem { get; }
     public TradingSystem TradingSystem { get; }
