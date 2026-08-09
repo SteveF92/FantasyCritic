@@ -2,10 +2,6 @@ namespace FantasyCritic.RdsSnapshotManager.Configuration;
 
 public sealed class RdsSnapshotManagerOptions
 {
-    public string ProductionRdsInstance { get; set; } = null!;
-    public string BetaRdsInstance { get; set; } = null!;
-    public string BetaConnectionString { get; set; } = null!;
-    public string DumpConnectionString { get; set; } = null!;
     public Dictionary<string, RdsInstanceOptions> RdsInstances { get; set; } = new();
     public string LocalStagingDirectory { get; set; } = null!;
     public LocalDockerOptions LocalDocker { get; set; } = new();

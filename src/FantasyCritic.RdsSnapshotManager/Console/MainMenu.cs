@@ -42,7 +42,7 @@ public sealed class MainMenu
             System.Console.WriteLine("1. Create snapshot");
             System.Console.WriteLine("2. Restore snapshot to instance (sanitized)");
             System.Console.WriteLine("3. Dump & publish raw backup (unsanitized)");
-            System.Console.WriteLine("4. Import local dump to Docker MySQL");
+            System.Console.WriteLine("4. Import local dump to Docker (sanitized)");
             System.Console.WriteLine("5. Clean local Docker database (scrub sensitive data)");
             System.Console.WriteLine("0. Exit");
             System.Console.Write("Select option: ");

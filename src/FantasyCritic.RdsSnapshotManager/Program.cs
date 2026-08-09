@@ -32,6 +32,14 @@ public static class Program
         var options = new RdsSnapshotManagerOptions();
         configuration.Bind(options);
 
+        var validation = RdsSnapshotManagerOptionsValidator.Validate(options);
+        if (validation.IsFailure)
+        {
+            Log.Fatal("Invalid RDS Snapshot Manager configuration: {Error}", validation.Error);
+            Environment.Exit(1);
+            return;
+        }
+
         DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
 
         IClock clock = SystemClock.Instance;
