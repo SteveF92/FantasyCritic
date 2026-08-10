@@ -8,28 +8,31 @@ namespace FantasyCritic.RdsSnapshotManager.Console;
 public sealed class MainMenu
 {
     private readonly SnapshotCreateService _snapshotCreateService;
-    private readonly IRDSManager _productionRdsManager;
-    private readonly BetaSyncService _betaSyncService;
+    private readonly IRDSManager _defaultSourceRdsManager;
+    private readonly RestoreSnapshotService _restoreSnapshotService;
     private readonly DumpAndPublishService _dumpAndPublishService;
     private readonly LocalImportService _localImportService;
     private readonly LocalDatabaseCleanService _localDatabaseCleanService;
+    private readonly ManualUploadService _manualUploadService;
     private readonly RdsSnapshotManagerOptions _options;
 
     public MainMenu(
         SnapshotCreateService snapshotCreateService,
-        IRDSManager productionRdsManager,
-        BetaSyncService betaSyncService,
+        IRDSManager defaultSourceRdsManager,
+        RestoreSnapshotService restoreSnapshotService,
         DumpAndPublishService dumpAndPublishService,
         LocalImportService localImportService,
         LocalDatabaseCleanService localDatabaseCleanService,
+        ManualUploadService manualUploadService,
         RdsSnapshotManagerOptions options)
     {
         _snapshotCreateService = snapshotCreateService;
-        _productionRdsManager = productionRdsManager;
-        _betaSyncService = betaSyncService;
+        _defaultSourceRdsManager = defaultSourceRdsManager;
+        _restoreSnapshotService = restoreSnapshotService;
         _dumpAndPublishService = dumpAndPublishService;
         _localImportService = localImportService;
         _localDatabaseCleanService = localDatabaseCleanService;
+        _manualUploadService = manualUploadService;
         _options = options;
     }
 
@@ -39,11 +42,12 @@ public sealed class MainMenu
         {
             System.Console.WriteLine();
             System.Console.WriteLine("RDS Snapshot Manager");
-            System.Console.WriteLine("1. Create production snapshot");
-            System.Console.WriteLine("2. Beta sync from snapshot");
-            System.Console.WriteLine("3. Dump and publish from instance");
-            System.Console.WriteLine("4. Import local dump to Docker MySQL");
+            System.Console.WriteLine("1. Create snapshot");
+            System.Console.WriteLine("2. Restore snapshot to instance (sanitized)");
+            System.Console.WriteLine("3. Dump & publish raw backup (unsanitized)");
+            System.Console.WriteLine("4. Import local dump to Docker (sanitized)");
             System.Console.WriteLine("5. Clean local Docker database (scrub sensitive data)");
+            System.Console.WriteLine("6. Upload existing local dump to a destination (retry a failed upload)");
             System.Console.WriteLine("0. Exit");
             System.Console.Write("Select option: ");
 
@@ -54,7 +58,7 @@ public sealed class MainMenu
                     await CreateSnapshot(cancellationToken);
                     break;
                 case "2":
-                    await BetaSync(cancellationToken);
+                    await RestoreSnapshotToInstance(cancellationToken);
                     break;
                 case "3":
                     await DumpAndPublish(cancellationToken);
@@ -64,6 +68,9 @@ public sealed class MainMenu
                     break;
                 case "5":
                     await CleanLocalDatabase(cancellationToken);
+                    break;
+                case "6":
+                    await UploadExistingDump(cancellationToken);
                     break;
                 case "0":
                     return;
@@ -76,6 +83,9 @@ public sealed class MainMenu
 
     private async Task CreateSnapshot(CancellationToken cancellationToken)
     {
+        var instance = RdsInstanceLookup.GetDefaultSnapshotSource(_options.RdsInstances);
+        var instanceName = instance.InstanceName;
+
         System.Console.Write("Custom snapshot name (leave blank for auto-generated): ");
         var customName = System.Console.ReadLine();
         if (string.IsNullOrWhiteSpace(customName))
@@ -85,7 +95,7 @@ public sealed class MainMenu
 
         try
         {
-            var result = await _snapshotCreateService.CreateSnapshot(customName, cancellationToken);
+            var result = await _snapshotCreateService.CreateSnapshot(instanceName, customName, cancellationToken);
             if (result.IsSuccess)
             {
                 System.Console.WriteLine($"Snapshot created: {result.Value}");
@@ -102,11 +112,11 @@ public sealed class MainMenu
         }
     }
 
-    private async Task BetaSync(CancellationToken cancellationToken)
+    private async Task RestoreSnapshotToInstance(CancellationToken cancellationToken)
     {
         try
         {
-            var snapshots = await _productionRdsManager.GetRecentSnapshots();
+            var snapshots = await _defaultSourceRdsManager.GetRecentSnapshots();
             var recentSnapshots = snapshots
                 .OrderByDescending(x => x.CreationTime)
                 .Take(10)
@@ -118,28 +128,45 @@ public sealed class MainMenu
                 return;
             }
 
-            Log.Information("Starting beta sync from {Snapshot}", snapshotIdentifier);
-            var result = await _betaSyncService.Sync(snapshotIdentifier, cancellationToken);
+            var destinationKey = InstancePicker.PickInstanceKey(_options.RdsInstances, i => i.EnableWriteOperations);
+            if (destinationKey is null)
+            {
+                return;
+            }
+
+            var destinationInstanceName = _options.RdsInstances[destinationKey].InstanceName;
+            System.Console.Write(
+                $"Restore snapshot '{snapshotIdentifier}' onto '{destinationKey}' ({destinationInstanceName})? " +
+                "This will overwrite the instance and scrub PII. (y/N): ");
+            var confirmation = System.Console.ReadLine();
+            if (!string.Equals(confirmation, "y", StringComparison.OrdinalIgnoreCase))
+            {
+                System.Console.WriteLine("Cancelled.");
+                return;
+            }
+
+            Log.Information("Starting restore of {Snapshot} to {Destination}", snapshotIdentifier, destinationKey);
+            var result = await _restoreSnapshotService.Restore(snapshotIdentifier, destinationKey, cancellationToken);
             if (result.IsSuccess)
             {
-                System.Console.WriteLine("Beta sync complete.");
+                System.Console.WriteLine("Restore complete.");
             }
             else
             {
-                System.Console.WriteLine($"Beta sync failed: {result.Error}");
+                System.Console.WriteLine($"Restore failed: {result.Error}");
             }
         }
         catch (Exception ex)
         {
-            Log.Error(ex, "Beta sync failed.");
-            System.Console.WriteLine($"Beta sync failed: {ex.Message}");
+            Log.Error(ex, "Restore failed.");
+            System.Console.WriteLine($"Restore failed: {ex.Message}");
         }
     }
 
     private async Task DumpAndPublish(CancellationToken cancellationToken)
     {
-        var instanceName = InstancePicker.PickInstance(_options);
-        if (instanceName is null)
+        var instanceKey = InstancePicker.PickInstanceKey(_options.RdsInstances);
+        if (instanceKey is null)
         {
             System.Console.WriteLine("Invalid instance selection.");
             return;
@@ -147,8 +174,8 @@ public sealed class MainMenu
 
         try
         {
-            Log.Information("Starting dump and publish from {Instance}", instanceName);
-            var result = await _dumpAndPublishService.DumpAndPublish(instanceName, cancellationToken);
+            Log.Information("Starting dump and publish from {Instance}", instanceKey);
+            var result = await _dumpAndPublishService.DumpAndPublish(instanceKey, cancellationToken);
             if (result.IsSuccess)
             {
                 System.Console.WriteLine($"Dump complete: {result.Value}");
@@ -167,35 +194,11 @@ public sealed class MainMenu
 
     private async Task ImportLocalDump(CancellationToken cancellationToken)
     {
-        if (!Directory.Exists(_options.LocalStagingDirectory))
+        var dumpPath = DumpFilePicker.PickDumpFile(_options);
+        if (dumpPath is null)
         {
-            System.Console.WriteLine($"Staging directory not found: {_options.LocalStagingDirectory}");
             return;
         }
-
-        var dumpFiles = Directory.GetFiles(_options.LocalStagingDirectory, "*.sql.gz")
-            .OrderByDescending(File.GetLastWriteTimeUtc)
-            .ToList();
-
-        if (dumpFiles.Count == 0)
-        {
-            System.Console.WriteLine("No .sql.gz files found in staging directory.");
-            return;
-        }
-
-        for (var index = 0; index < dumpFiles.Count; index++)
-        {
-            System.Console.WriteLine($"{index}: {Path.GetFileName(dumpFiles[index])}");
-        }
-
-        System.Console.Write("Select dump file index: ");
-        if (!int.TryParse(System.Console.ReadLine(), out var selected) || selected < 0 || selected >= dumpFiles.Count)
-        {
-            System.Console.WriteLine("Invalid selection.");
-            return;
-        }
-
-        var dumpPath = dumpFiles[selected];
 
         try
         {
@@ -256,6 +259,40 @@ public sealed class MainMenu
         {
             Log.Error(ex, "Local database clean failed.");
             System.Console.WriteLine($"Local database clean failed: {ex.Message}");
+        }
+    }
+
+    private async Task UploadExistingDump(CancellationToken cancellationToken)
+    {
+        var dumpPath = DumpFilePicker.PickDumpFile(_options);
+        if (dumpPath is null)
+        {
+            return;
+        }
+
+        var destinationName = DestinationPicker.PickDestinationName(_manualUploadService.Destinations);
+        if (destinationName is null)
+        {
+            return;
+        }
+
+        try
+        {
+            Log.Information("Uploading {File} to {Destination}", Path.GetFileName(dumpPath), destinationName);
+            var result = await _manualUploadService.Upload(dumpPath, destinationName, cancellationToken);
+            if (result.IsSuccess)
+            {
+                System.Console.WriteLine("Upload complete.");
+            }
+            else
+            {
+                System.Console.WriteLine($"Upload failed: {result.Error}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Upload failed.");
+            System.Console.WriteLine($"Upload failed: {ex.Message}");
         }
     }
 }

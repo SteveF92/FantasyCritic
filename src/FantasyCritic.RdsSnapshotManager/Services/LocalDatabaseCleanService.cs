@@ -32,8 +32,7 @@ public sealed class LocalDatabaseCleanService
 
         var guard = LocalDatabaseConnectionGuard.ValidateForClean(
             snapshotConnectionString,
-            _options.BetaConnectionString,
-            _options.DumpConnectionString);
+            _options.RdsInstances.Values.Select(i => i.ConnectionString));
         if (guard.IsFailure)
         {
             return guard;

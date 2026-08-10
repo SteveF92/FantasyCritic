@@ -5,10 +5,13 @@ namespace FantasyCritic.Lib.Utilities;
 
 public static class BackupRemoteKeyBuilder
 {
-    public static string Build(string prefix, string instanceName, Instant timestamp, string fileName)
+    public static string Build(string prefix, string instanceName, Instant timestamp, string fileName) =>
+        Build(prefix, instanceName, timestamp.InZone(TimeExtensions.EasternTimeZone).Date, fileName);
+
+    public static string Build(string prefix, string instanceName, LocalDate date, string fileName)
     {
         var normalizedPrefix = string.IsNullOrEmpty(prefix) ? string.Empty : prefix.EndsWith('/') ? prefix : prefix + "/";
-        var date = timestamp.InZone(TimeExtensions.EasternTimeZone).Date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        return $"{normalizedPrefix}{instanceName}/{date}/{fileName}";
+        var dateString = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
+        return $"{normalizedPrefix}{instanceName}/{dateString}/{fileName}";
     }
 }
