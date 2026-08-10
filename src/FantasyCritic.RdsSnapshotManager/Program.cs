@@ -51,7 +51,7 @@ public static class Program
         MySQLFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         MySQLBetaCleaner localCleaner = new MySQLBetaCleaner(localSnapshotConnectionString);
 
-        SnapshotCreateService snapshotCreateService = new SnapshotCreateService(defaultSourceRdsManager, clock);
+        SnapshotCreateService snapshotCreateService = new SnapshotCreateService(clock);
         RestoreSnapshotService restoreSnapshotService = new RestoreSnapshotService(restoreService, options, clock);
         DumpAndPublishService dumpAndPublishService = new DumpAndPublishService(options, mysqldumpRunner, destinations, clock);
         LocalImportService localImportService = new LocalImportService(

@@ -39,7 +39,7 @@ public sealed class MainMenu
         {
             System.Console.WriteLine();
             System.Console.WriteLine("RDS Snapshot Manager");
-            System.Console.WriteLine("1. Create production snapshot");
+            System.Console.WriteLine("1. Create snapshot");
             System.Console.WriteLine("2. Restore snapshot to instance (sanitized)");
             System.Console.WriteLine("3. Dump & publish raw backup (unsanitized)");
             System.Console.WriteLine("4. Import local dump to Docker MySQL");
@@ -76,6 +76,14 @@ public sealed class MainMenu
 
     private async Task CreateSnapshot(CancellationToken cancellationToken)
     {
+        var instanceKey = InstancePicker.PickInstanceKey(_options.RdsInstances);
+        if (instanceKey is null)
+        {
+            return;
+        }
+
+        var instanceName = _options.RdsInstances[instanceKey].InstanceName;
+
         System.Console.Write("Custom snapshot name (leave blank for auto-generated): ");
         var customName = System.Console.ReadLine();
         if (string.IsNullOrWhiteSpace(customName))
@@ -85,7 +93,7 @@ public sealed class MainMenu
 
         try
         {
-            var result = await _snapshotCreateService.CreateSnapshot(customName, cancellationToken);
+            var result = await _snapshotCreateService.CreateSnapshot(instanceName, customName, cancellationToken);
             if (result.IsSuccess)
             {
                 System.Console.WriteLine($"Snapshot created: {result.Value}");
