@@ -272,3 +272,6 @@ src/FantasyCritic.Web/ClientApp/src/api/generated/
 
 # Git worktrees (isolated feature branches)
 .worktrees/
+
+# Superpowers SDD scratch files
+.superpowers/
