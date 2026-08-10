@@ -22,4 +22,12 @@ public class BackupRemoteKeyBuilderTests
         var key = BackupRemoteKeyBuilder.Build("db-dumps", "prod", instant, "prod.sql.gz");
         Assert.That(key, Is.EqualTo("db-dumps/prod/2026-06-18/prod.sql.gz"));
     }
+
+    [Test]
+    public void Build_WithLocalDate_IncludesPrefixInstanceDateAndFileName()
+    {
+        var date = new LocalDate(2026, 6, 18);
+        var key = BackupRemoteKeyBuilder.Build("db-dumps/", "fantasy-critic-beta-rds", date, "fantasy-critic-beta-rds-2026-06-18.sql.gz");
+        Assert.That(key, Is.EqualTo("db-dumps/fantasy-critic-beta-rds/2026-06-18/fantasy-critic-beta-rds-2026-06-18.sql.gz"));
+    }
 }

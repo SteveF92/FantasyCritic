@@ -74,6 +74,7 @@ public static class Program
             dockerHealthChecker,
             localCleaner,
             localUserStore);
+        ManualUploadService manualUploadService = new ManualUploadService(destinations);
 
         Console.MainMenu mainMenu = new Console.MainMenu(
             snapshotCreateService,
@@ -82,6 +83,7 @@ public static class Program
             dumpAndPublishService,
             localImportService,
             localDatabaseCleanService,
+            manualUploadService,
             options);
 
         await mainMenu.Run(CancellationToken.None);

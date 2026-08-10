@@ -13,6 +13,7 @@ public sealed class MainMenu
     private readonly DumpAndPublishService _dumpAndPublishService;
     private readonly LocalImportService _localImportService;
     private readonly LocalDatabaseCleanService _localDatabaseCleanService;
+    private readonly ManualUploadService _manualUploadService;
     private readonly RdsSnapshotManagerOptions _options;
 
     public MainMenu(
@@ -22,6 +23,7 @@ public sealed class MainMenu
         DumpAndPublishService dumpAndPublishService,
         LocalImportService localImportService,
         LocalDatabaseCleanService localDatabaseCleanService,
+        ManualUploadService manualUploadService,
         RdsSnapshotManagerOptions options)
     {
         _snapshotCreateService = snapshotCreateService;
@@ -30,6 +32,7 @@ public sealed class MainMenu
         _dumpAndPublishService = dumpAndPublishService;
         _localImportService = localImportService;
         _localDatabaseCleanService = localDatabaseCleanService;
+        _manualUploadService = manualUploadService;
         _options = options;
     }
 
@@ -44,6 +47,7 @@ public sealed class MainMenu
             System.Console.WriteLine("3. Dump & publish raw backup (unsanitized)");
             System.Console.WriteLine("4. Import local dump to Docker (sanitized)");
             System.Console.WriteLine("5. Clean local Docker database (scrub sensitive data)");
+            System.Console.WriteLine("6. Upload existing local dump to a destination (retry a failed upload)");
             System.Console.WriteLine("0. Exit");
             System.Console.Write("Select option: ");
 
@@ -64,6 +68,9 @@ public sealed class MainMenu
                     break;
                 case "5":
                     await CleanLocalDatabase(cancellationToken);
+                    break;
+                case "6":
+                    await UploadExistingDump(cancellationToken);
                     break;
                 case "0":
                     return;
@@ -187,35 +194,11 @@ public sealed class MainMenu
 
     private async Task ImportLocalDump(CancellationToken cancellationToken)
     {
-        if (!Directory.Exists(_options.LocalStagingDirectory))
+        var dumpPath = DumpFilePicker.PickDumpFile(_options);
+        if (dumpPath is null)
         {
-            System.Console.WriteLine($"Staging directory not found: {_options.LocalStagingDirectory}");
             return;
         }
-
-        var dumpFiles = Directory.GetFiles(_options.LocalStagingDirectory, "*.sql.gz")
-            .OrderByDescending(File.GetLastWriteTimeUtc)
-            .ToList();
-
-        if (dumpFiles.Count == 0)
-        {
-            System.Console.WriteLine("No .sql.gz files found in staging directory.");
-            return;
-        }
-
-        for (var index = 0; index < dumpFiles.Count; index++)
-        {
-            System.Console.WriteLine($"{index}: {Path.GetFileName(dumpFiles[index])}");
-        }
-
-        System.Console.Write("Select dump file index: ");
-        if (!int.TryParse(System.Console.ReadLine(), out var selected) || selected < 0 || selected >= dumpFiles.Count)
-        {
-            System.Console.WriteLine("Invalid selection.");
-            return;
-        }
-
-        var dumpPath = dumpFiles[selected];
 
         try
         {
@@ -276,6 +259,40 @@ public sealed class MainMenu
         {
             Log.Error(ex, "Local database clean failed.");
             System.Console.WriteLine($"Local database clean failed: {ex.Message}");
+        }
+    }
+
+    private async Task UploadExistingDump(CancellationToken cancellationToken)
+    {
+        var dumpPath = DumpFilePicker.PickDumpFile(_options);
+        if (dumpPath is null)
+        {
+            return;
+        }
+
+        var destinationName = DestinationPicker.PickDestinationName(_manualUploadService.Destinations);
+        if (destinationName is null)
+        {
+            return;
+        }
+
+        try
+        {
+            Log.Information("Uploading {File} to {Destination}", Path.GetFileName(dumpPath), destinationName);
+            var result = await _manualUploadService.Upload(dumpPath, destinationName, cancellationToken);
+            if (result.IsSuccess)
+            {
+                System.Console.WriteLine("Upload complete.");
+            }
+            else
+            {
+                System.Console.WriteLine($"Upload failed: {result.Error}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Upload failed.");
+            System.Console.WriteLine($"Upload failed: {ex.Message}");
         }
     }
 }
