@@ -88,8 +88,7 @@ public class RdsInstanceLookupTests
 
         using (Assert.EnterMultipleScope())
         {
-            Assert.That(defaultSource.Key, Is.EqualTo("production"));
-            Assert.That(defaultSource.Value.InstanceName, Is.EqualTo("fantasy-critic-rds"));
+            Assert.That(defaultSource.InstanceName, Is.EqualTo("fantasy-critic-rds"));
         }
     }
 }

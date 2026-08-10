@@ -45,7 +45,7 @@ public static class Program
         IClock clock = SystemClock.Instance;
 
         var defaultSnapshotSource = RdsInstanceLookup.GetDefaultSnapshotSource(options.RdsInstances);
-        IRDSManager defaultSourceRdsManager = new RDSManager(defaultSnapshotSource.Value.InstanceName);
+        IRDSManager defaultSourceRdsManager = new RDSManager(defaultSnapshotSource.InstanceName);
         var restoreService = new RdsRestoreService();
         var mysqldumpRunner = new MysqldumpRunner();
         var dockerHealthChecker = new DockerMySqlHealthChecker();

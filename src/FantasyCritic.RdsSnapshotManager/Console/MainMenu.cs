@@ -76,13 +76,8 @@ public sealed class MainMenu
 
     private async Task CreateSnapshot(CancellationToken cancellationToken)
     {
-        var instanceKey = InstancePicker.PickInstanceKey(_options.RdsInstances);
-        if (instanceKey is null)
-        {
-            return;
-        }
-
-        var instanceName = _options.RdsInstances[instanceKey].InstanceName;
+        var instance = RdsInstanceLookup.GetDefaultSnapshotSource(_options.RdsInstances);
+        var instanceName = instance.InstanceName;
 
         System.Console.Write("Custom snapshot name (leave blank for auto-generated): ");
         var customName = System.Console.ReadLine();

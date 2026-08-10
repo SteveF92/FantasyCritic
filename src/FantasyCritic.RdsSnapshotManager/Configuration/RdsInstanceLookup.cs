@@ -31,8 +31,8 @@ public static class RdsInstanceLookup
         return resolved;
     }
 
-    public static KeyValuePair<string, RdsInstanceOptions> GetDefaultSnapshotSource(IReadOnlyDictionary<string, RdsInstanceOptions> instances)
+    public static RdsInstanceOptions GetDefaultSnapshotSource(IReadOnlyDictionary<string, RdsInstanceOptions> instances)
     {
-        return instances.Single(kv => kv.Value.DefaultSnapshotSource);
+        return instances.Single(kv => kv.Value.DefaultSnapshotSource).Value;
     }
 }
