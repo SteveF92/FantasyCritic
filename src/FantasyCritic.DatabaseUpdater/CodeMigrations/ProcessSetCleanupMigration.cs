@@ -2,6 +2,7 @@ using System.Data;
 using System.Security.Cryptography;
 using Dapper;
 using DbUp.Engine;
+using Discord;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Extensions;
@@ -56,7 +57,7 @@ public class ProcessSetCleanupMigration : IScript
         await connection.OpenAsync();
 
         string actionSql = """
-                           SELECT tbl_league_action.*, tbl_league_publisher.LeagueID, tbl_league_publisher.Year 
+                           SELECT tbl_league_action.*, tbl_league_publisher.LeagueID, tbl_league_publisher.Year , tbl_league_publisher.PublisherName
                            FROM tbl_league_action 
                            JOIN tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_action.PublisherID
                            WHERE tbl_league_action.Timestamp <= '2022-02-06 00:27:19' AND ActionType IN
@@ -75,9 +76,10 @@ public class ProcessSetCleanupMigration : IScript
 
 
         string bidSql = """
-                        SELECT tbl_league_pickupbid.*, tbl_league_publisher.LeagueID, tbl_league_publisher.Year 
+                        SELECT tbl_league_pickupbid.*, tbl_league_publisher.LeagueID, tbl_league_publisher.Year, tbl_league_publisher.PublisherName, tbl_mastergame.GameName 
                         FROM tbl_league_pickupbid
                         JOIN tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_pickupbid.PublisherID
+                        JOIN tbl_mastergame on tbl_mastergame.MasterGameID = tbl_league_pickupbid.MasterGameID
                         WHERE ProcessSetId IS NULL AND Successful IS NOT NULL;
                         """;
         var allBidEntities = await connection.QueryAsync<PickupBidWithLeagueYearEntity>(bidSql);
@@ -135,8 +137,8 @@ public class ProcessSetCleanupMigration : IScript
                     var bidsByLeague = bidsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
                     foreach (var bidsForLeague in bidsByLeague)
                     {
-                        var actions = actionsLeagueLookup[bidsForLeague.Key].ToList();
-                        var processedBidsForLeague = GetProcessedBids(actionProcessingSetToMake, bidsForLeague.ToList(), actions, masterGameDictionary);
+                        var actionsForLeague = actionsLeagueLookup[bidsForLeague.Key].ToList();
+                        var processedBidsForLeague = GetProcessedBids(actionProcessingSetToMake, bidsForLeague.ToList(), actionsForLeague, masterGameDictionary);
                         pickupBidsToUpdate.AddRange(processedBidsForLeague);
                     }
                 }
@@ -175,23 +177,22 @@ public class ProcessSetCleanupMigration : IScript
     }
 
     private List<PickupBidWithLeagueYearEntity> GetProcessedBids(ActionProcessingSetEntity actionProcessingSetToMake,
-        List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions,
+        List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actionsForLeague,
         Dictionary<Guid, MasterGame> masterGameDictionary)
     {
         foreach (var bid in bids)
         {
             var masterGame = masterGameDictionary[bid.MasterGameID];
-            var actionsForPublisher = actions.Where(x => x.PublisherID == bid.PublisherID).ToList();
             var allBidsForGame = bids.Where(x => x.MasterGameID == masterGame.MasterGameID).ToList();
 
             bid.ProcessSetID = actionProcessingSetToMake.ProcessSetID;
-            bid.Outcome = GetOutcomeString(bid, allBidsForGame, actionsForPublisher);
+            bid.Outcome = GetOutcomeString(bid, allBidsForGame, actionsForLeague);
         }
 
         return bids;
     }
 
-    private string GetOutcomeString(PickupBidWithLeagueYearEntity bid, List<PickupBidWithLeagueYearEntity> allBidsForGame, List<LeagueActionWithLeagueYearEntity> actionsForPublisher)
+    private string GetOutcomeString(PickupBidWithLeagueYearEntity bid, List<PickupBidWithLeagueYearEntity> allBidsForGame, List<LeagueActionWithLeagueYearEntity> actionsForLeague)
     {
         //TODO we must construct the outcome string. Find all the possible outcome strings, and try to make heuristics for them
         if (bid.Successful == true && allBidsForGame.Count == 1)
@@ -314,6 +315,11 @@ internal class ActionProcessingSetEntity
     public Instant ProcessTime { get; set; }
     public string ProcessName { get; set; } = null!;
     public ActionProcessingSetType ActionProcessingSetType { get; set; }
+
+    public override string ToString()
+    {
+        return ProcessName;
+    }
 }
 
 internal interface ITimestampEntity
@@ -330,6 +336,13 @@ internal class LeagueActionWithLeagueYearEntity : ITimestampEntity
     public required bool ManagerAction { get; init; }
     public Guid LeagueID { get; init; }
     public int Year { get; init; }
+
+    public string PublisherName { get; init; }
+
+    public override string ToString()
+    {
+        return $"{ActionType}|{PublisherName}|{Description}";
+    }
 }
 
 internal class PickupBidWithLeagueYearEntity : ITimestampEntity
@@ -347,8 +360,17 @@ internal class PickupBidWithLeagueYearEntity : ITimestampEntity
     public Guid? ProcessSetID { get; set; }
     public string? Outcome { get; set; }
     public decimal? ProjectedPointsAtTimeOfBid { get; set; }
+
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
+
+    public string PublisherName { get; set; }
+    public string GameName { get; set; }
+
+    public override string ToString()
+    {
+        return $"{PublisherName}|{GameName}|{CounterPick}|{BidAmount}|{Priority}|{Successful}";
+    }
 }
 
 internal class DropRequestWithLeagueYearEntity : ITimestampEntity
