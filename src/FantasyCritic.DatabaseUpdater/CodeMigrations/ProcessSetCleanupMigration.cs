@@ -124,18 +124,28 @@ public class ProcessSetCleanupMigration : IScript
                 var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, actionProcessingTimestampToUse, actionsOnDate, bidsForSiteYear, dropsForSiteYear);
 
                 List<PickupBidWithLeagueYearEntity> pickupBidsToUpdate = new List<PickupBidWithLeagueYearEntity>();
-                var bidsByLeague = bidsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
-                foreach (var bidsForLeague in bidsByLeague)
+                List<DropRequestWithLeagueYearEntity> dropsToUpdate = new List<DropRequestWithLeagueYearEntity>();
+
+                if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Bids)
                 {
-                    var actions = actionsLeagueLookup[bidsForLeague.Key];
+                    var bidsByLeague = bidsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
+                    foreach (var bidsForLeague in bidsByLeague)
+                    {
+                        var actions = actionsLeagueLookup[bidsForLeague.Key].ToList();
+                        var processedBidsForLeague = GetProcessedBids(actionProcessingSetToMake, bidsForLeague.ToList(), actions);
+                        pickupBidsToUpdate.AddRange(processedBidsForLeague);
+                    }
                 }
 
-                List<DropRequestWithLeagueYearEntity> dropsToUpdate = new List<DropRequestWithLeagueYearEntity>();
-                var dropsByLeague = dropsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
-                foreach (var dropsForLeague in dropsByLeague)
+                if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Drops)
                 {
-                    var actions = actionsLeagueLookup[dropsForLeague.Key];
-
+                    var dropsByLeague = dropsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
+                    foreach (var dropsForLeague in dropsByLeague)
+                    {
+                        var actions = actionsLeagueLookup[dropsForLeague.Key];
+                        var processedDropsForLeague = GetProcessedDrops(actionProcessingSetToMake, dropsForLeague.ToList(), actions);
+                        dropsToUpdate.AddRange(processedDropsForLeague);
+                    }
                 }
 
                 if (pickupBidsToUpdate.Any() || dropsToUpdate.Any())
@@ -159,6 +169,20 @@ public class ProcessSetCleanupMigration : IScript
         // safe to re-run against a local/refreshable DB as many times as needed. Remove this once
         // the logic above is verified and you're ready to let it complete for real.
         throw new InvalidOperationException("ProcessSetCleanup is not ready to be marked as done yet.");
+    }
+
+    private List<PickupBidWithLeagueYearEntity> GetProcessedBids(ActionProcessingSetEntity actionProcessingSetToMake,
+        List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions)
+    {
+        List<PickupBidWithLeagueYearEntity> pickupBidsToUpdate = new List<PickupBidWithLeagueYearEntity>();
+        return pickupBidsToUpdate;
+    }
+
+    private List<DropRequestWithLeagueYearEntity> GetProcessedDrops(ActionProcessingSetEntity actionProcessingSetToMake, 
+        List<DropRequestWithLeagueYearEntity> drops, IEnumerable<LeagueActionWithLeagueYearEntity> actions)
+    {
+        List<DropRequestWithLeagueYearEntity> dropsToUpdate = new List<DropRequestWithLeagueYearEntity>();
+        return dropsToUpdate;
     }
 
     private async Task UpdateDropsAndBids(MySqlConnection connection, List<PickupBidWithLeagueYearEntity> bidsToUpdate, List<DropRequestWithLeagueYearEntity> dropsToUpdate)
@@ -202,8 +226,7 @@ public class ProcessSetCleanupMigration : IScript
     }
 
     private static (string Prefix, ActionProcessingSetType Type) GetActionProcessingSetNamePrefix(int siteYear, LocalDate date,
-        IReadOnlyList<LeagueActionWithLeagueYearEntity> actions, 
-        IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
+        IReadOnlyList<LeagueActionWithLeagueYearEntity> actions, IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
     {
         if (siteYear == 2019)
         {
