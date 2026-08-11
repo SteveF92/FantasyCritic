@@ -6,6 +6,7 @@ using DbUp.Support;
 using FantasyCritic.AWS;
 using FantasyCritic.DatabaseUpdater.CodeMigrations;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.MySQL.DapperTypeMaps;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using MySqlConnector;
@@ -41,6 +42,8 @@ public class Program
         var configuration = await GetConfiguration(environmentName, awsRegion);
         _connectionString = configuration.GetConnectionString("AdminConnection")!;
         MySqlConnectionStringBuilder mySqlConnectionStringBuilder = new MySqlConnectionStringBuilder(_connectionString);
+        DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
+
 
         if (environmentName != "Development")
         {
