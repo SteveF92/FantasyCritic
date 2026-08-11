@@ -51,6 +51,7 @@ public class ProcessSetCleanupMigration : IScript
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_repositoryConfiguration, userStore, masterGameRepo, combinedDataRepo);
 
         var actionProcessingSets = await fantasyCriticRepo.GetActionProcessingSets();
+
         var connection = new MySqlConnection(_repositoryConfiguration.ConnectionString);
         await connection.OpenAsync();
 
@@ -68,7 +69,7 @@ public class ProcessSetCleanupMigration : IScript
                            'Counter Pick Pickup Failed'
                            );
                            """;
-        var allActionEntities = await connection.QueryAsync<LeagueActionWithLeagueYearEntity>(actionSql);
+        var allActionEntities = (await connection.QueryAsync<LeagueActionWithLeagueYearEntity>(actionSql)).ToList();
         var actionsByDate = allActionEntities.ToLookup(x => x.Timestamp.ToEasternDate());
         var datesWithUnassignedActions = allActionEntities.Select(x => x.Timestamp.ToEasternDate()).Distinct().OrderBy(x => x).ToList();
 
@@ -88,18 +89,20 @@ public class ProcessSetCleanupMigration : IScript
                          JOIN tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_droprequest.PublisherID
                          WHERE ProcessSetId IS NULL AND Successful IS NOT NULL;
                          """;
-        var allDropEntities = await connection.QueryAsync<DropRequestWithLeagueYearEntity>(bidSql);
+        var allDropEntities = await connection.QueryAsync<DropRequestWithLeagueYearEntity>(dropSql);
         var dropsByDate = allDropEntities.ToLookup(x => x.Timestamp.ToEasternDate());
 
         Instant previousProcessInstant = Instant.MinValue;
         LocalDate previousProcessDate = LocalDate.MinIsoValue;
         foreach (var date in datesWithUnassignedActions)
         {
-            var actionsOnDate = actionsByDate[date];
+            var actionsOnDate = actionsByDate[date].ToList();
             var actionsLeagueLookup = actionsOnDate.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
 
-            var bidsToInclude = GetEntitiesUpToTimestamp(bidsByDate, previousProcessInstant, previousProcessDate);
-            var dropsToInclude = GetEntitiesUpToTimestamp(dropsByDate, previousProcessInstant, previousProcessDate);
+            var actionProcessingTimestampToUse = actionsOnDate.OrderBy(x => x.Timestamp).First().Timestamp;
+
+            var bidsToInclude = GetEntitiesUpToTimestamp(bidsByDate, date, actionProcessingTimestampToUse, previousProcessDate, previousProcessInstant);
+            var dropsToInclude = GetEntitiesUpToTimestamp(dropsByDate, date, actionProcessingTimestampToUse, previousProcessDate, previousProcessInstant);
             if (!bidsToInclude.Any() && !dropsToInclude.Any())
             {
                 throw new Exception($"Invalid Date {date}");
@@ -114,7 +117,7 @@ public class ProcessSetCleanupMigration : IScript
             {
                 var bidsForSiteYear = bidsByLeagueYear[siteYear];
                 var dropsForSiteYear = dropsByLeagueYear[siteYear];
-                var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, bidsForSiteYear, dropsForSiteYear);
+                var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, actionProcessingTimestampToUse, bidsForSiteYear, dropsForSiteYear);
                 actionProcessingSetsMade.Add(actionProcessingSetToMake);
 
                 var bidsByLeague = bidsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
@@ -147,28 +150,65 @@ public class ProcessSetCleanupMigration : IScript
         throw new InvalidOperationException("ProcessSetCleanup is not ready to be marked as done yet.");
     }
 
-    private static ActionProcessingSetEntity CreateActionProcessingSetEntity(int siteYear, LocalDate date, IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
+    private static ActionProcessingSetEntity CreateActionProcessingSetEntity(int siteYear, LocalDate date, Instant actionProcessingTimeToUse,
+        IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
     {
-        var timeToUse = bids.Select(x => x.Timestamp).Concat(drops.Select(x => x.Timestamp)).OrderBy(x => x).First();
-
-        string namePrefix = siteYear switch
-        {
-            2019 => "",
-        };
+        string namePrefix = GetActionProcessingSetNamePrefix(siteYear, date, bids, drops);
 
         var actionProcessingSetToMake = new ActionProcessingSetEntity()
         {
             ProcessSetID = Guid.NewGuid(),
-            ProcessName = "",
-            ProcessTime = timeToUse
+            ProcessName = $"{namePrefix} ({date})",
+            ProcessTime = actionProcessingTimeToUse
         };
 
         return actionProcessingSetToMake;
     }
 
-    private static List<T> GetEntitiesUpToTimestamp<T>(ILookup<LocalDate, T> lookup, Instant upToInstant, LocalDate previousProcessDate) where T : ITimestampEntity
+    private static string GetActionProcessingSetNamePrefix(int siteYear, LocalDate date,
+        IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
     {
-        return new List<T>();
+        if (siteYear == 2019)
+        {
+            if (drops.Any())
+            {
+                throw new Exception("Drops didn't exist in 2019");
+            }
+
+            return "Bid Processing";
+        }
+
+        if (siteYear == 2020)
+        {
+            if (date.DayOfWeek == IsoDayOfWeek.Sunday && drops.Any())
+            {
+                return "Drop Processing";
+            }
+
+            if (date.DayOfWeek == IsoDayOfWeek.Monday && bids.Any())
+            {
+                return "Bid Processing";
+            }
+
+            throw new Exception($"Unclear processing set for {date}");
+        }
+
+        return "Drop/Bid Processing";
+    }
+
+    private static List<T> GetEntitiesUpToTimestamp<T>(ILookup<LocalDate, T> lookup, LocalDate processingDate,
+        Instant actionProcessingInstant, LocalDate previousProcessDate, Instant previousProcessInstant)
+        where T : ITimestampEntity
+    {
+        var entitiesForRelevantDates = new List<T>();
+        var datesBetween = new DateInterval(previousProcessDate, processingDate);
+        foreach (var dateToPull in datesBetween)
+        {
+            entitiesForRelevantDates.AddRange(lookup[dateToPull]);
+        }
+
+        var filteredEntities = entitiesForRelevantDates.Where(x => x.Timestamp > previousProcessInstant && x.Timestamp <= actionProcessingInstant).ToList();
+        return filteredEntities;
     }
 }
 
