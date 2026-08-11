@@ -1,15 +1,12 @@
 using System.Data;
-using System.Diagnostics;
 using Dapper;
 using DbUp.Engine;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL;
-using FantasyCritic.MySQL.Entities;
 using MySqlConnector;
 using NodaTime;
 
@@ -125,19 +122,26 @@ public class ProcessSetCleanupMigration : IScript
                 var dropsForSiteYear = dropsByLeagueYear.GetValueOrDefault(siteYear, new List<DropRequestWithLeagueYearEntity>());
 
                 var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, actionProcessingTimestampToUse, actionsOnDate, bidsForSiteYear, dropsForSiteYear);
-                actionProcessingSetsMade.Add(actionProcessingSetToMake);
 
+                List<PickupBidWithLeagueYearEntity> pickupBidsToUpdate = new List<PickupBidWithLeagueYearEntity>();
                 var bidsByLeague = bidsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
                 foreach (var bidsForLeague in bidsByLeague)
                 {
                     var actions = actionsLeagueLookup[bidsForLeague.Key];
                 }
 
+                List<DropRequestWithLeagueYearEntity> dropsToUpdate = new List<DropRequestWithLeagueYearEntity>();
                 var dropsByLeague = dropsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
                 foreach (var dropsForLeague in dropsByLeague)
                 {
                     var actions = actionsLeagueLookup[dropsForLeague.Key];
 
+                }
+
+                if (pickupBidsToUpdate.Any() || dropsToUpdate.Any())
+                {
+                    await UpdateDropsAndBids(connection, pickupBidsToUpdate, dropsToUpdate);
+                    actionProcessingSetsMade.Add(actionProcessingSetToMake);
                 }
             }
 
@@ -157,22 +161,47 @@ public class ProcessSetCleanupMigration : IScript
         throw new InvalidOperationException("ProcessSetCleanup is not ready to be marked as done yet.");
     }
 
+    private async Task UpdateDropsAndBids(MySqlConnection connection, List<PickupBidWithLeagueYearEntity> bidsToUpdate, List<DropRequestWithLeagueYearEntity> dropsToUpdate)
+    {
+        var transaction = await connection.BeginTransactionAsync();
+
+        if (bidsToUpdate.Any())
+        {
+            string bidUpdateSql = """
+                                  UPDATE tbl_league_pickupbid UPDATE ProcessSetID = @ProcessSetID, Outcome = @Outcome WHERE BidID = @BidID;
+                                  """;
+            await connection.ExecuteAsync(bidUpdateSql, bidsToUpdate, transaction);
+        }
+
+
+        if (dropsToUpdate.Any())
+        {
+            string dropUpdateSql = """
+                                  UPDATE tbl_league_droprequest UPDATE ProcessSetID = @ProcessSetID WHERE DropRequestID = @DropRequestID;
+                                  """;
+            await connection.ExecuteAsync(dropUpdateSql, dropsToUpdate, transaction);
+        }
+
+        await transaction.CommitAsync();
+    }
+
     private static ActionProcessingSetEntity CreateActionProcessingSetEntity(int siteYear, LocalDate date, Instant actionProcessingTimeToUse,
         IReadOnlyList<LeagueActionWithLeagueYearEntity> actions, IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
     {
-        string namePrefix = GetActionProcessingSetNamePrefix(siteYear, date, actions, bids, drops);
+        (string namePrefix, ActionProcessingSetType type) = GetActionProcessingSetNamePrefix(siteYear, date, actions, bids, drops);
 
         var actionProcessingSetToMake = new ActionProcessingSetEntity()
         {
             ProcessSetID = Guid.NewGuid(),
             ProcessName = $"{namePrefix} ({date})",
-            ProcessTime = actionProcessingTimeToUse
+            ProcessTime = actionProcessingTimeToUse,
+            ActionProcessingSetType = type
         };
 
         return actionProcessingSetToMake;
     }
 
-    private static string GetActionProcessingSetNamePrefix(int siteYear, LocalDate date,
+    private static (string Prefix, ActionProcessingSetType Type) GetActionProcessingSetNamePrefix(int siteYear, LocalDate date,
         IReadOnlyList<LeagueActionWithLeagueYearEntity> actions, 
         IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
     {
@@ -183,7 +212,7 @@ public class ProcessSetCleanupMigration : IScript
                 throw new Exception("Drops didn't exist in 2019");
             }
 
-            return "Bid Processing";
+            return ("Bid Processing", ActionProcessingSetType.Bids);
         }
 
         var theDayICombinedDropsAndBids = new LocalDate(2020, 12, 19);
@@ -191,18 +220,18 @@ public class ProcessSetCleanupMigration : IScript
         {
             if (date.DayOfWeek == IsoDayOfWeek.Sunday && drops.Any())
             {
-                return "Drop Processing";
+                return ("Drop Processing", ActionProcessingSetType.Drops);
             }
 
             if (date.DayOfWeek == IsoDayOfWeek.Monday && bids.Any())
             {
-                return "Bid Processing";
+                return ("Bid Processing", ActionProcessingSetType.Bids);
             }
 
             throw new Exception($"Unclear processing set for {date}");
         }
 
-        return "Drop/Bid Processing";
+        return ("Drop/Bid Processing", ActionProcessingSetType.All);
     }
 
     private static List<T> GetEntitiesUpToTimestamp<T>(ILookup<LocalDate, T> lookup, LocalDate processingDate,
@@ -219,6 +248,21 @@ public class ProcessSetCleanupMigration : IScript
         var filteredEntities = entitiesForRelevantDates.Where(x => x.Timestamp > previousProcessInstant && x.Timestamp <= actionProcessingInstant).ToList();
         return filteredEntities;
     }
+}
+
+public enum ActionProcessingSetType
+{
+    Bids,
+    Drops,
+    All
+}
+
+internal class ActionProcessingSetEntity
+{
+    public Guid ProcessSetID { get; set; }
+    public Instant ProcessTime { get; set; }
+    public string ProcessName { get; set; } = null!;
+    public ActionProcessingSetType ActionProcessingSetType { get; set; }
 }
 
 internal interface ITimestampEntity
