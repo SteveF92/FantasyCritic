@@ -1,4 +1,5 @@
 using System.Data;
+using System.Security.Cryptography;
 using Dapper;
 using DbUp.Engine;
 using FantasyCritic.Lib.DependencyInjection;
@@ -48,6 +49,8 @@ public class ProcessSetCleanupMigration : IScript
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_repositoryConfiguration, userStore, masterGameRepo, combinedDataRepo);
 
         var actionProcessingSets = await fantasyCriticRepo.GetActionProcessingSets();
+        var masterGames = await masterGameRepo.GetMasterGames();
+        var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
 
         var connection = new MySqlConnection(_repositoryConfiguration.ConnectionString);
         await connection.OpenAsync();
@@ -91,6 +94,10 @@ public class ProcessSetCleanupMigration : IScript
 
         Instant previousProcessInstant = Instant.MinValue;
         LocalDate previousProcessDate = LocalDate.MinIsoValue;
+
+        List<PickupBidWithLeagueYearEntity> pickupBidsToUpdate = new List<PickupBidWithLeagueYearEntity>();
+        List<DropRequestWithLeagueYearEntity> dropsToUpdate = new List<DropRequestWithLeagueYearEntity>();
+
         foreach (var date in datesWithUnassignedActions)
         {
             if (date == new LocalDate(2019, 12, 10))
@@ -123,16 +130,13 @@ public class ProcessSetCleanupMigration : IScript
 
                 var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, actionProcessingTimestampToUse, actionsOnDate, bidsForSiteYear, dropsForSiteYear);
 
-                List<PickupBidWithLeagueYearEntity> pickupBidsToUpdate = new List<PickupBidWithLeagueYearEntity>();
-                List<DropRequestWithLeagueYearEntity> dropsToUpdate = new List<DropRequestWithLeagueYearEntity>();
-
                 if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Bids)
                 {
                     var bidsByLeague = bidsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
                     foreach (var bidsForLeague in bidsByLeague)
                     {
                         var actions = actionsLeagueLookup[bidsForLeague.Key].ToList();
-                        var processedBidsForLeague = GetProcessedBids(actionProcessingSetToMake, bidsForLeague.ToList(), actions);
+                        var processedBidsForLeague = GetProcessedBids(actionProcessingSetToMake, bidsForLeague.ToList(), actions, masterGameDictionary);
                         pickupBidsToUpdate.AddRange(processedBidsForLeague);
                     }
                 }
@@ -142,15 +146,13 @@ public class ProcessSetCleanupMigration : IScript
                     var dropsByLeague = dropsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
                     foreach (var dropsForLeague in dropsByLeague)
                     {
-                        var actions = actionsLeagueLookup[dropsForLeague.Key];
-                        var processedDropsForLeague = GetProcessedDrops(actionProcessingSetToMake, dropsForLeague.ToList(), actions);
+                        var processedDropsForLeague = GetProcessedDrops(actionProcessingSetToMake, dropsForLeague.ToList());
                         dropsToUpdate.AddRange(processedDropsForLeague);
                     }
                 }
 
                 if (pickupBidsToUpdate.Any() || dropsToUpdate.Any())
                 {
-                    await UpdateDropsAndBids(connection, pickupBidsToUpdate, dropsToUpdate);
                     actionProcessingSetsMade.Add(actionProcessingSetToMake);
                 }
             }
@@ -164,6 +166,7 @@ public class ProcessSetCleanupMigration : IScript
             previousProcessInstant = actionProcessingSetsMade.First().ProcessTime;
         }
 
+        //await UpdateDropsAndBids(connection, pickupBidsToUpdate, dropsToUpdate);
 
         // Unconditional throw so this never gets journaled as applied while under development —
         // safe to re-run against a local/refreshable DB as many times as needed. Remove this once
@@ -172,17 +175,42 @@ public class ProcessSetCleanupMigration : IScript
     }
 
     private List<PickupBidWithLeagueYearEntity> GetProcessedBids(ActionProcessingSetEntity actionProcessingSetToMake,
-        List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions)
+        List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions,
+        Dictionary<Guid, MasterGame> masterGameDictionary)
     {
-        List<PickupBidWithLeagueYearEntity> pickupBidsToUpdate = new List<PickupBidWithLeagueYearEntity>();
-        return pickupBidsToUpdate;
+        foreach (var bid in bids)
+        {
+            var masterGame = masterGameDictionary[bid.MasterGameID];
+            var actionsForPublisher = actions.Where(x => x.PublisherID == bid.PublisherID).ToList();
+            var allBidsForGame = bids.Where(x => x.MasterGameID == masterGame.MasterGameID).ToList();
+
+            bid.ProcessSetID = actionProcessingSetToMake.ProcessSetID;
+            bid.Outcome = GetOutcomeString(bid, allBidsForGame, actionsForPublisher);
+        }
+
+        return bids;
+    }
+
+    private string GetOutcomeString(PickupBidWithLeagueYearEntity bid, List<PickupBidWithLeagueYearEntity> allBidsForGame, List<LeagueActionWithLeagueYearEntity> actionsForPublisher)
+    {
+        //TODO we must construct the outcome string. Find all the possible outcome strings, and try to make heuristics for them
+        if (bid.Successful == true && allBidsForGame.Count == 1)
+        {
+            return "No competing bids for this game.";
+        }
+
+        throw new Exception("Unknown situation");
     }
 
     private List<DropRequestWithLeagueYearEntity> GetProcessedDrops(ActionProcessingSetEntity actionProcessingSetToMake, 
-        List<DropRequestWithLeagueYearEntity> drops, IEnumerable<LeagueActionWithLeagueYearEntity> actions)
+        List<DropRequestWithLeagueYearEntity> drops)
     {
-        List<DropRequestWithLeagueYearEntity> dropsToUpdate = new List<DropRequestWithLeagueYearEntity>();
-        return dropsToUpdate;
+        foreach (var drop in drops)
+        {
+            drop.ProcessSetID = actionProcessingSetToMake.ProcessSetID;
+        }
+
+        return drops;
     }
 
     private async Task UpdateDropsAndBids(MySqlConnection connection, List<PickupBidWithLeagueYearEntity> bidsToUpdate, List<DropRequestWithLeagueYearEntity> dropsToUpdate)
@@ -192,7 +220,7 @@ public class ProcessSetCleanupMigration : IScript
         if (bidsToUpdate.Any())
         {
             string bidUpdateSql = """
-                                  UPDATE tbl_league_pickupbid UPDATE ProcessSetID = @ProcessSetID, Outcome = @Outcome WHERE BidID = @BidID;
+                                  UPDATE tbl_league_pickupbid SET ProcessSetID = @ProcessSetID, Outcome = @Outcome WHERE BidID = @BidID;
                                   """;
             await connection.ExecuteAsync(bidUpdateSql, bidsToUpdate, transaction);
         }
@@ -201,7 +229,7 @@ public class ProcessSetCleanupMigration : IScript
         if (dropsToUpdate.Any())
         {
             string dropUpdateSql = """
-                                  UPDATE tbl_league_droprequest UPDATE ProcessSetID = @ProcessSetID WHERE DropRequestID = @DropRequestID;
+                                  UPDATE tbl_league_droprequest SET ProcessSetID = @ProcessSetID WHERE DropRequestID = @DropRequestID;
                                   """;
             await connection.ExecuteAsync(dropUpdateSql, dropsToUpdate, transaction);
         }
