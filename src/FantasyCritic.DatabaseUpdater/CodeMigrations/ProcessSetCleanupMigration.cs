@@ -96,7 +96,13 @@ public class ProcessSetCleanupMigration : IScript
         LocalDate previousProcessDate = LocalDate.MinIsoValue;
         foreach (var date in datesWithUnassignedActions)
         {
-            var actionsOnDate = actionsByDate[date].ToList();
+            if (date == new LocalDate(2019, 12, 10))
+            {
+                //I know this is just a test processing set, skip it.
+                continue;
+            }
+
+            var actionsOnDate = actionsByDate[date].OrderBy(x => x.Timestamp).ToList();
             var actionsLeagueLookup = actionsOnDate.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
 
             var actionProcessingTimestampToUse = actionsOnDate.OrderBy(x => x.Timestamp).First().Timestamp;
@@ -115,9 +121,10 @@ public class ProcessSetCleanupMigration : IScript
 
             foreach (var siteYear in siteYears)
             {
-                var bidsForSiteYear = bidsByLeagueYear[siteYear];
-                var dropsForSiteYear = dropsByLeagueYear[siteYear];
-                var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, actionProcessingTimestampToUse, bidsForSiteYear, dropsForSiteYear);
+                var bidsForSiteYear = bidsByLeagueYear.GetValueOrDefault(siteYear, new List<PickupBidWithLeagueYearEntity>());
+                var dropsForSiteYear = dropsByLeagueYear.GetValueOrDefault(siteYear, new List<DropRequestWithLeagueYearEntity>());
+
+                var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, actionProcessingTimestampToUse, actionsOnDate, bidsForSiteYear, dropsForSiteYear);
                 actionProcessingSetsMade.Add(actionProcessingSetToMake);
 
                 var bidsByLeague = bidsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
@@ -151,9 +158,9 @@ public class ProcessSetCleanupMigration : IScript
     }
 
     private static ActionProcessingSetEntity CreateActionProcessingSetEntity(int siteYear, LocalDate date, Instant actionProcessingTimeToUse,
-        IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
+        IReadOnlyList<LeagueActionWithLeagueYearEntity> actions, IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
     {
-        string namePrefix = GetActionProcessingSetNamePrefix(siteYear, date, bids, drops);
+        string namePrefix = GetActionProcessingSetNamePrefix(siteYear, date, actions, bids, drops);
 
         var actionProcessingSetToMake = new ActionProcessingSetEntity()
         {
@@ -166,6 +173,7 @@ public class ProcessSetCleanupMigration : IScript
     }
 
     private static string GetActionProcessingSetNamePrefix(int siteYear, LocalDate date,
+        IReadOnlyList<LeagueActionWithLeagueYearEntity> actions, 
         IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
     {
         if (siteYear == 2019)
@@ -178,7 +186,8 @@ public class ProcessSetCleanupMigration : IScript
             return "Bid Processing";
         }
 
-        if (siteYear == 2020)
+        var theDayICombinedDropsAndBids = new LocalDate(2020, 12, 19);
+        if (siteYear == 2020 && date < theDayICombinedDropsAndBids)
         {
             if (date.DayOfWeek == IsoDayOfWeek.Sunday && drops.Any())
             {
