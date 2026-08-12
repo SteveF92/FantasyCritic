@@ -72,11 +72,8 @@ public class ProcessSetCleanupMigration : IScript
                            );
                            """;
         var allActionEntities = (await connection.QueryAsync<LeagueActionWithLeagueYearEntity>(actionSql)).ToList();
-        var guid = new Guid("3df66183-8586-4350-83c6-ff97c5f374d4");
-        var actionsForBadLeague = allActionEntities.Where(x => x.LeagueID == guid).ToList();
         var actionsByDate = allActionEntities.ToLookup(x => x.Timestamp.ToEasternDate());
         var datesWithUnassignedActions = allActionEntities.Select(x => x.Timestamp.ToEasternDate()).Distinct().OrderBy(x => x).ToList();
-
 
         string bidSql = """
                         SELECT tbl_league_pickupbid.*, tbl_league_publisher.LeagueID, tbl_league_publisher.Year, tbl_league_publisher.PublisherName, tbl_mastergame.GameName 
@@ -130,15 +127,19 @@ public class ProcessSetCleanupMigration : IScript
 
             foreach (var siteYear in siteYears)
             {
+                if (siteYear == 2019 && date == new LocalDate(2019, 12, 22))
+                {
+                    //This shouldn't actually be here, it's drop processing for 2020.
+                    continue;
+                }
                 var leagueYearDictionary = await GetLeagueYearDictionaryForYear(siteYear);
                 var bidsForSiteYear = bidsByLeagueYear.GetValueOrDefault(siteYear, new List<PickupBidWithLeagueYearEntity>());
                 var dropsForSiteYear = dropsByLeagueYear.GetValueOrDefault(siteYear, new List<DropRequestWithLeagueYearEntity>());
 
                 var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, actionProcessingTimestampToUse, actionsOnDate, bidsForSiteYear, dropsForSiteYear);
-
                 if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Bids)
                 {
-                    var bidsByLeague = bidsToInclude.Where(x => x.Year == siteYear).GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
+                    var bidsByLeague = bidsForSiteYear.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
                     foreach (var bidsForLeague in bidsByLeague)
                     {
                         var actionsForLeague = actionsLeagueLookup[bidsForLeague.Key].ToList();
@@ -150,7 +151,7 @@ public class ProcessSetCleanupMigration : IScript
 
                 if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Drops)
                 {
-                    var dropsByLeague = dropsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
+                    var dropsByLeague = dropsForSiteYear.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
                     foreach (var dropsForLeague in dropsByLeague)
                     {
                         var processedDropsForLeague = GetProcessedDrops(actionProcessingSetToMake, dropsForLeague.ToList());
@@ -178,6 +179,7 @@ public class ProcessSetCleanupMigration : IScript
         // Unconditional throw so this never gets journaled as applied while under development —
         // safe to re-run against a local/refreshable DB as many times as needed. Remove this once
         // the logic above is verified and you're ready to let it complete for real.
+        possibleActionDescriptions = possibleActionDescriptions.Distinct().ToList();
         throw new InvalidOperationException("ProcessSetCleanup is not ready to be marked as done yet.");
     }
 
@@ -299,68 +301,17 @@ public class ProcessSetCleanupMigration : IScript
         throw new Exception("Unknown situation");
     }
 
-    //private static Dictionary<string, List<string>> OldGameNames = new Dictionary<string, List<string>>()
-    //{
-    //    {"Animal Crossing: New Horizons", ["Animal Crossing"]},
-    //    {"Pokémon Sword and Shield", ["Pokemon Gen 8"]},
-    //    {"Star Wars: Jedi Fallen Order", ["Star Wars Jedi: Fallen Order"]},
-    //    {"Dying Light 2: Stay Human", ["Dying Light 2"]},
-    //    {"Warcraft III: Reforged", ["Warcraft 3: Reforged"]},
-    //    {"Metroid Prime 4: Beyond", ["Metroid Prime 4"]},
-    //};
-
     private static HashSet<string> unmatchedGames = new HashSet<string>();
+    private static List<string> possibleActionDescriptions = new List<string>();
 
     private static List<BidActionPair> GetBidActionPairs(List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions)
     {
-        Dictionary<string, List<string>> OldGameNames = new Dictionary<string, List<string>>()
-        {
-            {"Animal Crossing: New Horizons", ["Animal Crossing"]},
-            {"Pokémon Sword and Shield", ["Pokemon Gen 8"]},
-            {"Star Wars: Jedi Fallen Order", ["Star Wars Jedi: Fallen Order", "Star Wars:Jedi Fallen Order"]},
-            {"Dying Light 2: Stay Human", ["Dying Light 2"]},
-            {"Warcraft III: Reforged", ["Warcraft 3: Reforged"]},
-            {"Metroid Prime 4: Beyond", ["Metroid Prime 4"]},
-            {"Skull and Bones", ["Skull & Bones"]},
-            {"Final Fantasy VII Remake", ["Final Fantasy 7 Remake"]},
-            {"Little Town Hero", ["Town"]},
-            {"APE OUT", ["Ape Out"]},
-            {"The Dark Pictures: Man of Medan", ["Man of Medan"]},
-            {"Marvel Ultimate Alliance 3: The Black Order", ["Marvel Ultimate Alliance 3"]},
-            {"The Settlers: New Allies", ["The Settlers"]},
-            {"SteamWorld Quest: Hand of Gilgamech", ["Steamworld Quest"]},
-            {"Call of Duty: Modern Warfare (2019)", ["Call of Duty 2019"]},
-            {"Dragon Ball Z Kakarot", ["Dragon Ball ‘Project Z’"]},
-            {"Super Mario Maker 2", ["Super Mario Maker 2 (Unannounced)"]},
-            {"Pikmin 4", ["Pikmin 4 (Unannounced)"]},
-            {"Celeste: Farewell", ["Celeste DLC"]},
-            {"Dead By Daylight (Switch)", ["Dead By Daylight"]},
-            {"Chicory: A Colorful Tale", ["Drawdog"]},
-            {"Trine 4: The Nightmare Prince", ["Trine 4"]},
-            {"Solar Ash", ["Solar Ash Kingdom"]},
-            {"GRID Autosport (Switch)", ["GRID Autosport"]},
-            {"The Red Lantern", ["Red Lantern"]},
-            {"Persona 5 Royal", ["Persona 5 The Royal"]},
-            {"Power Rangers: Battle for the Grid", ["Power Raners: Battle for the Grid"]},
-            {"Watch Dogs: Legion", ["Watch Dogs 3 (Unannounced)"]},
-            {"ULTRABUGS", ["Vlambeer Arcade with ULTRABUGS"]},
-            {"Shantae and the Seven Sirens (Console/PC)", ["Shantae 5"]},
-            {"Darkwood (Console)", ["Darkwood"]},
-            {"Splitgate", ["Splitgate Arena Warfare "]},
-            {"XXX", ["XXX"]},
-        };
-
-        if (!actions.Any())
-        {
-
-        }
-
         var bidActionPairs = new List<BidActionPair>();
 
         foreach (var bid in bids)
         {
             List<string> possibleGameNames = [bid.GameName];
-            if (OldGameNames.TryGetValue(bid.GameName, out var oldNames))
+            if (ProcessSetCleanupResources.OldGameNameMappings.TryGetValue(bid.GameName, out var oldNames))
             {
                 possibleGameNames.AddRange(oldNames);
             }
@@ -371,6 +322,7 @@ public class ProcessSetCleanupMigration : IScript
             {
                 bidActionPairs.Add(new BidActionPair(bid, actions[0]));
                 unmatchedGames.Add(bid.GameName);
+                possibleActionDescriptions.AddRange(actions.Select(x => x.Description));
                 continue;
                 //throw new Exception("Unmatched action.");
             }
