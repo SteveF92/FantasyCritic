@@ -2,7 +2,7 @@ namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 
 internal static class ProcessSetCleanupResources
 {
-    public static Dictionary<string, List<string>> OldGameNameMappings = new Dictionary<string, List<string>>()
+    public static Dictionary<string, List<string>> OldGameNameMappings => new Dictionary<string, List<string>>()
         {
             {"Animal Crossing: New Horizons", ["Animal Crossing"]},
             {"Pokémon Sword and Shield", ["Pokemon Gen 8"]},
@@ -19,7 +19,7 @@ internal static class ProcessSetCleanupResources
             {"The Settlers: New Allies", ["The Settlers"]},
             {"SteamWorld Quest: Hand of Gilgamech", ["Steamworld Quest"]},
             {"Call of Duty: Modern Warfare (2019)", ["Call of Duty 2019"]},
-            {"Dragon Ball Z Kakarot", ["Dragon Ball ‘Project Z’"]},
+            {"Dragon Ball Z Kakarot", ["Dragon Ball ‘Project Z’", "Dragonball Z Kakarot"]},
             {"Super Mario Maker 2", ["Super Mario Maker 2 (Unannounced)"]},
             {"Pikmin 4", ["Pikmin 4 (Unannounced)"]},
             {"Celeste: Farewell", ["Celeste DLC"]},
@@ -33,7 +33,7 @@ internal static class ProcessSetCleanupResources
             {"Power Rangers: Battle for the Grid", ["Power Raners: Battle for the Grid"]},
             {"Watch Dogs: Legion", ["Watch Dogs 3 (Unannounced)"]},
             {"ULTRABUGS", ["Vlambeer Arcade with ULTRABUGS"]},
-            {"Shantae and the Seven Sirens (Console/PC)", ["Shantae 5"]},
+            {"Shantae and the Seven Sirens (Console/PC)", ["Shantae 5", "Shantae and the Seven Sirens"]},
             {"Darkwood (Console)", ["Darkwood"]},
             {"Splitgate", ["Splitgate Arena Warfare "]},
             { "HuniePop 2: Double Date", ["HuniePop 2"] },
@@ -42,7 +42,7 @@ internal static class ProcessSetCleanupResources
             { "Disney Tsum Tsum Festival", ["Disney Tsum Tsum"] },
             { "The Witcher 3: Wild Hunt (Switch)", ["The Witcher 3: Wild Hunt ( Switch )"] },
             { "Spirit Hunter: NG", ["NG"] },
-            { "Medal of Honor: Above and Beyond", [] }, // no old names found in the actions data
+            { "Medal of Honor: Above and Beyond", ["Untitled Respawn Oculus VR FPS"] }, // no old names found in the actions data
             { "One Finger Death Punch 2 (Switch)", ["One Finger Death Punch 2"] },
             { "Paper Beast", ["Paper Beasts"] },
             { "The Legend of Zelda: Tears of the Kingdom", ["The Legend of Zelda: Breath of the Wild 2"] },
@@ -68,7 +68,7 @@ internal static class ProcessSetCleanupResources
             { "Paper Mario: The Origami King", ["Paper Mario Sequel (Unannounced)"] },
             { "Demon's Souls (2020)", ["Demon Souls Remake", "Demon Souls Remake (Unannounced) "] },
             { "Sakura Wars", ["Project Sakura Wars"] },
-            { "Deltarune Chapter 2", [] }, // no old names found in the actions data
+            { "Deltarune Chapter 2", ["Deltarune"] }, // no old names found in the actions data
             { "Grand Theft Auto VI", ["Grand Theft Auto 6 (Unannounced)"] },
             { "Metroid Dread", ["Rumored 2D Metroid Sequel (Unannounced)"] },
             { "Gran Turismo 7", ["Gran Turismo Sequel (Unannounced)"] },
@@ -231,15 +231,17 @@ internal static class ProcessSetCleanupResources
             { "Mortal Kombat 1", ["Mortal Kombat 12 (Unannounced)"] },
 
             // ---- Flagged for review: uncertain matches ----
-            { "Amnesia: Rebirth", [] }, // plausibly Rebirth, but "Next Frictional Game" could mean a different Frictional project
-            { "Unannounced Mainline 3D Mario Platformer", [] }, // "Super Mario Odyssey 2 (Unannounced)" may also belong here
-            { "Football Manager 2022", [] }, // "Football Manager 2021" / "Football Manager (2021)" look like FM21 (a different game) — verify
-            { "Silent Hill f", [] }, // could instead refer to the Silent Hill 2 remake or Townfall
-            { "Assassin's Creed Infinity", [] }, // could instead refer to AC Mirage
-            { "The Last of Us Part I", ["The Last of Us \"\"Remake\""] }, // source string looks like a CSV-escaping artifact of: The Last of Us "Remake"
-            { "gen ATLAS", [] }, // no plausible match found
-            { "Ashigaru: The Last Shogun", [] }, // possibly "Next Gilson B Pontes Game"? could not verify
-            { "OD (Hideo Kojima Game)", [] }, // could instead refer to Death Stranding 2
-            { "WRC Generations", [] }, // could instead be WRC 10/11 or EA Sports WRC
+            { "Amnesia: Rebirth", ["Next Frictional Game"] }, // plausibly Rebirth, but "Next Frictional Game" could mean a different Frictional project
+            { "Unannounced Mainline 3D Mario Platformer", ["Unannounced 3D Mario", "Super Mario Odyssey 2 (Unannounced)"] }, // "Super Mario Odyssey 2 (Unannounced)" may also belong here
+            { "Football Manager 2022", ["Football Manager (2021)"] }, // "Football Manager 2021" / "Football Manager (2021)" look like FM21 (a different game) — verify
+            { "Silent Hill f", ["Unannounced New Silent Hill"] }, // could instead refer to the Silent Hill 2 remake or Townfall
+            { "Assassin's Creed Infinity", ["Unannounced Next Assassin's Creed"] }, // could instead refer to AC Mirage
+            { "The Last of Us Part I", ["""
+                                        The Last of Us "Remake"
+                                        """] }, // source string looks like a CSV-escaping artifact of: The Last of Us "Remake"
+            { "gen ATLAS", ["GenDesign's Untitled New Game"] }, // no plausible match found
+            { "Ashigaru: The Last Shogun", ["Next Gilson B Pontes Game"] }, // possibly "Next Gilson B Pontes Game"? could not verify
+            { "OD (Hideo Kojima Game)", ["Unannounced Hideo Kojima Title"] }, // could instead refer to Death Stranding 2
+            { "WRC Generations", ["Unannounced World Rally Championship Game"] }, // could instead be WRC 10/11 or EA Sports WRC
         };
 }

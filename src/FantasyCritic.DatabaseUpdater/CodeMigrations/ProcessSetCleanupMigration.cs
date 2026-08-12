@@ -179,7 +179,6 @@ public class ProcessSetCleanupMigration : IScript
         // Unconditional throw so this never gets journaled as applied while under development —
         // safe to re-run against a local/refreshable DB as many times as needed. Remove this once
         // the logic above is verified and you're ready to let it complete for real.
-        possibleActionDescriptions = possibleActionDescriptions.Distinct().ToList();
         throw new InvalidOperationException("ProcessSetCleanup is not ready to be marked as done yet.");
     }
 
@@ -301,9 +300,6 @@ public class ProcessSetCleanupMigration : IScript
         throw new Exception("Unknown situation");
     }
 
-    private static HashSet<string> unmatchedGames = new HashSet<string>();
-    private static List<string> possibleActionDescriptions = new List<string>();
-
     private static List<BidActionPair> GetBidActionPairs(List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions)
     {
         var bidActionPairs = new List<BidActionPair>();
@@ -320,11 +316,7 @@ public class ProcessSetCleanupMigration : IScript
             var matchingActionForPublisher = matchingActionsForGame.FirstOrDefault(x => x.PublisherID == bid.PublisherID);
             if (matchingActionForPublisher is null)
             {
-                bidActionPairs.Add(new BidActionPair(bid, actions[0]));
-                unmatchedGames.Add(bid.GameName);
-                possibleActionDescriptions.AddRange(actions.Select(x => x.Description));
-                continue;
-                //throw new Exception("Unmatched action.");
+                throw new Exception("Unmatched action.");
             }
             bidActionPairs.Add(new BidActionPair(bid, matchingActionForPublisher));
         }
