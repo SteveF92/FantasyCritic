@@ -29,6 +29,7 @@ namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 public class ProcessSetCleanupMigration : IScript
 {
     private readonly RepositoryConfiguration _repositoryConfiguration;
+    private IFantasyCriticRepo _fantasyCriticRepo;
 
     public ProcessSetCleanupMigration(RepositoryConfiguration repositoryConfiguration)
     {
@@ -47,9 +48,9 @@ public class ProcessSetCleanupMigration : IScript
         IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(_repositoryConfiguration);
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_repositoryConfiguration, userStore, _repositoryConfiguration.Clock);
         ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(_repositoryConfiguration, userStore);
-        IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(_repositoryConfiguration, userStore, masterGameRepo, combinedDataRepo);
+        _fantasyCriticRepo = new MySQLFantasyCriticRepo(_repositoryConfiguration, userStore, masterGameRepo, combinedDataRepo);
 
-        var actionProcessingSets = await fantasyCriticRepo.GetActionProcessingSets();
+        var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
         var masterGames = await masterGameRepo.GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
 
@@ -71,6 +72,8 @@ public class ProcessSetCleanupMigration : IScript
                            );
                            """;
         var allActionEntities = (await connection.QueryAsync<LeagueActionWithLeagueYearEntity>(actionSql)).ToList();
+        var guid = new Guid("3df66183-8586-4350-83c6-ff97c5f374d4");
+        var actionsForBadLeague = allActionEntities.Where(x => x.LeagueID == guid).ToList();
         var actionsByDate = allActionEntities.ToLookup(x => x.Timestamp.ToEasternDate());
         var datesWithUnassignedActions = allActionEntities.Select(x => x.Timestamp.ToEasternDate()).Distinct().OrderBy(x => x).ToList();
 
@@ -127,6 +130,7 @@ public class ProcessSetCleanupMigration : IScript
 
             foreach (var siteYear in siteYears)
             {
+                var leagueYearDictionary = await GetLeagueYearDictionaryForYear(siteYear);
                 var bidsForSiteYear = bidsByLeagueYear.GetValueOrDefault(siteYear, new List<PickupBidWithLeagueYearEntity>());
                 var dropsForSiteYear = dropsByLeagueYear.GetValueOrDefault(siteYear, new List<DropRequestWithLeagueYearEntity>());
 
@@ -134,11 +138,12 @@ public class ProcessSetCleanupMigration : IScript
 
                 if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Bids)
                 {
-                    var bidsByLeague = bidsToInclude.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
+                    var bidsByLeague = bidsToInclude.Where(x => x.Year == siteYear).GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
                     foreach (var bidsForLeague in bidsByLeague)
                     {
                         var actionsForLeague = actionsLeagueLookup[bidsForLeague.Key].ToList();
-                        var processedBidsForLeague = GetProcessedBids(actionProcessingSetToMake, bidsForLeague.ToList(), actionsForLeague, masterGameDictionary);
+                        var leagueYear = leagueYearDictionary[bidsForLeague.Key.LeagueID];
+                        var processedBidsForLeague = GetProcessedBids(actionProcessingSetToMake, bidsForLeague.ToList(), actionsForLeague, masterGameDictionary, leagueYear);
                         pickupBidsToUpdate.AddRange(processedBidsForLeague);
                     }
                 }
@@ -176,9 +181,24 @@ public class ProcessSetCleanupMigration : IScript
         throw new InvalidOperationException("ProcessSetCleanup is not ready to be marked as done yet.");
     }
 
+    private Dictionary<int, Dictionary<Guid, LeagueYear>> _leagueYearDictionaries = new Dictionary<int, Dictionary<Guid, LeagueYear>>();
+
+    private async Task<Dictionary<Guid, LeagueYear>> GetLeagueYearDictionaryForYear(int year)
+    {
+        if (_leagueYearDictionaries.TryGetValue(year, out var dictionary))
+        {
+            return dictionary;
+        }
+
+        var leagueYears = await _fantasyCriticRepo.GetLeagueYears(year, true);
+        var leagueYearDictionary = leagueYears.ToDictionary(x => x.League.LeagueID);
+        _leagueYearDictionaries.Add(year, leagueYearDictionary);
+        return leagueYearDictionary;
+    }
+
     private List<PickupBidWithLeagueYearEntity> GetProcessedBids(ActionProcessingSetEntity actionProcessingSetToMake,
         List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actionsForLeague,
-        Dictionary<Guid, MasterGame> masterGameDictionary)
+        Dictionary<Guid, MasterGame> masterGameDictionary, LeagueYear leagueYear)
     {
         foreach (var bid in bids)
         {
@@ -186,21 +206,178 @@ public class ProcessSetCleanupMigration : IScript
             var allBidsForGame = bids.Where(x => x.MasterGameID == masterGame.MasterGameID).ToList();
 
             bid.ProcessSetID = actionProcessingSetToMake.ProcessSetID;
-            bid.Outcome = GetOutcomeString(bid, allBidsForGame, actionsForLeague);
+            bid.Outcome = GetOutcomeString(bid, allBidsForGame, actionsForLeague, leagueYear);
         }
 
         return bids;
     }
 
-    private string GetOutcomeString(PickupBidWithLeagueYearEntity bid, List<PickupBidWithLeagueYearEntity> allBidsForGame, List<LeagueActionWithLeagueYearEntity> actionsForLeague)
+    private static string GetOutcomeString(PickupBidWithLeagueYearEntity bid, List<PickupBidWithLeagueYearEntity> allBidsForGame,
+        List<LeagueActionWithLeagueYearEntity> actionsForLeague, LeagueYear leagueYear)
     {
-        //TODO we must construct the outcome string. Find all the possible outcome strings, and try to make heuristics for them
-        if (bid.Successful == true && allBidsForGame.Count == 1)
+        var bidActionPairs = GetBidActionPairs(allBidsForGame, actionsForLeague);
+        var thisPair = bidActionPairs.Single(x => x.Bid.BidID == bid.BidID);
+        var otherBidActionPairs = bidActionPairs.Where(x => x.Bid.BidID != bid.BidID).ToList();
+        var validOtherBids = otherBidActionPairs.Where(x => x.IsValidBid).ToList();
+
+        if (bid.Successful == true && !validOtherBids.Any())
         {
             return "No competing bids for this game.";
         }
 
+        if ((thisPair.Action.Description ?? "").EndsWith("Failure reason: Publisher was outbid."))
+        {
+            return "Publisher was outbid.";
+        }
+
+        if ((thisPair.Action.Description ?? "").EndsWith("Failure reason: No roster spots available."))
+        {
+            return "No roster spots available.";
+        }
+
+        if (otherBidActionPairs.All(x => x.Bid.BidAmount < bid.BidAmount))
+        {
+            return "This bid was the highest bid.";
+        }
+
+        //Confidence: mid, the minimum bid amount could have changes.
+        if (bid.Successful == false && leagueYear.Options.MinimumBidAmount < bid.BidAmount)
+        {
+            return "Bid is below the minimum bid amount.";
+        }
+
+        if (true)
+        {
+            return "Bid lost on tiebreakers.";
+        }
+
+        if (true)
+        {
+            return "Game is no longer eligible: XXX";
+        }
+
+        if (true)
+        {
+            return "No competing bids for this game.";
+        }
+
+        if (true)
+        {
+            return "No eligible roster spots available. Attempted to conditionally drop game: XXX but failed because: XXX";
+        }
+
+        if (true)
+        {
+            return "No eligible roster spots available.";
+        }
+
+        if (true)
+        {
+            return "No roster spots available. Attempted to conditionally drop game: XXX but failed because: XXX";
+        }
+
+        if (true)
+        {
+            return "Not enough budget.";
+        }
+
+        if (true)
+        {
+            return "This bid was placed earliest.";
+        }
+
+        if (true)
+        {
+            return "This publisher has the lowest projected points. (Not including this game)";
+        }
+
+        if (true)
+        {
+            return "You cannot have multiple bids for the same game. This bid has been ignored.";
+        }
+
         throw new Exception("Unknown situation");
+    }
+
+    //private static Dictionary<string, List<string>> OldGameNames = new Dictionary<string, List<string>>()
+    //{
+    //    {"Animal Crossing: New Horizons", ["Animal Crossing"]},
+    //    {"Pokémon Sword and Shield", ["Pokemon Gen 8"]},
+    //    {"Star Wars: Jedi Fallen Order", ["Star Wars Jedi: Fallen Order"]},
+    //    {"Dying Light 2: Stay Human", ["Dying Light 2"]},
+    //    {"Warcraft III: Reforged", ["Warcraft 3: Reforged"]},
+    //    {"Metroid Prime 4: Beyond", ["Metroid Prime 4"]},
+    //};
+
+    private static HashSet<string> unmatchedGames = new HashSet<string>();
+
+    private static List<BidActionPair> GetBidActionPairs(List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions)
+    {
+        Dictionary<string, List<string>> OldGameNames = new Dictionary<string, List<string>>()
+        {
+            {"Animal Crossing: New Horizons", ["Animal Crossing"]},
+            {"Pokémon Sword and Shield", ["Pokemon Gen 8"]},
+            {"Star Wars: Jedi Fallen Order", ["Star Wars Jedi: Fallen Order", "Star Wars:Jedi Fallen Order"]},
+            {"Dying Light 2: Stay Human", ["Dying Light 2"]},
+            {"Warcraft III: Reforged", ["Warcraft 3: Reforged"]},
+            {"Metroid Prime 4: Beyond", ["Metroid Prime 4"]},
+            {"Skull and Bones", ["Skull & Bones"]},
+            {"Final Fantasy VII Remake", ["Final Fantasy 7 Remake"]},
+            {"Little Town Hero", ["Town"]},
+            {"APE OUT", ["Ape Out"]},
+            {"The Dark Pictures: Man of Medan", ["Man of Medan"]},
+            {"Marvel Ultimate Alliance 3: The Black Order", ["Marvel Ultimate Alliance 3"]},
+            {"The Settlers: New Allies", ["The Settlers"]},
+            {"SteamWorld Quest: Hand of Gilgamech", ["Steamworld Quest"]},
+            {"Call of Duty: Modern Warfare (2019)", ["Call of Duty 2019"]},
+            {"Dragon Ball Z Kakarot", ["Dragon Ball ‘Project Z’"]},
+            {"Super Mario Maker 2", ["Super Mario Maker 2 (Unannounced)"]},
+            {"Pikmin 4", ["Pikmin 4 (Unannounced)"]},
+            {"Celeste: Farewell", ["Celeste DLC"]},
+            {"Dead By Daylight (Switch)", ["Dead By Daylight"]},
+            {"Chicory: A Colorful Tale", ["Drawdog"]},
+            {"Trine 4: The Nightmare Prince", ["Trine 4"]},
+            {"Solar Ash", ["Solar Ash Kingdom"]},
+            {"GRID Autosport (Switch)", ["GRID Autosport"]},
+            {"The Red Lantern", ["Red Lantern"]},
+            {"Persona 5 Royal", ["Persona 5 The Royal"]},
+            {"Power Rangers: Battle for the Grid", ["Power Raners: Battle for the Grid"]},
+            {"Watch Dogs: Legion", ["Watch Dogs 3 (Unannounced)"]},
+            {"ULTRABUGS", ["Vlambeer Arcade with ULTRABUGS"]},
+            {"Shantae and the Seven Sirens (Console/PC)", ["Shantae 5"]},
+            {"Darkwood (Console)", ["Darkwood"]},
+            {"Splitgate", ["Splitgate Arena Warfare "]},
+            {"XXX", ["XXX"]},
+        };
+
+        if (!actions.Any())
+        {
+
+        }
+
+        var bidActionPairs = new List<BidActionPair>();
+
+        foreach (var bid in bids)
+        {
+            List<string> possibleGameNames = [bid.GameName];
+            if (OldGameNames.TryGetValue(bid.GameName, out var oldNames))
+            {
+                possibleGameNames.AddRange(oldNames);
+            }
+
+            var matchingActionsForGame = actions.Where(x => possibleGameNames.Any(y => x.Description.Contains($"'{y}'"))).ToList();
+            var matchingActionForPublisher = matchingActionsForGame.FirstOrDefault(x => x.PublisherID == bid.PublisherID);
+            if (matchingActionForPublisher is null)
+            {
+                bidActionPairs.Add(new BidActionPair(bid, actions[0]));
+                unmatchedGames.Add(bid.GameName);
+                continue;
+                //throw new Exception("Unmatched action.");
+            }
+            bidActionPairs.Add(new BidActionPair(bid, matchingActionForPublisher));
+        }
+
+        return bidActionPairs;
     }
 
     private List<DropRequestWithLeagueYearEntity> GetProcessedDrops(ActionProcessingSetEntity actionProcessingSetToMake, 
@@ -307,6 +484,32 @@ public enum ActionProcessingSetType
     Bids,
     Drops,
     All
+}
+
+internal record BidActionPair(PickupBidWithLeagueYearEntity Bid, LeagueActionWithLeagueYearEntity Action)
+{
+    public bool IsValidBid
+    {
+        get
+        {
+            if (Action is null)
+            {
+                return true;
+            }
+
+            if (Action.Description.EndsWith("Failure reason: No roster spots available."))
+            {
+                return false;
+            }
+
+            if (Action.Description.EndsWith("Failure reason: No roster spots available."))
+            {
+                return false;
+            }
+
+            return true;
+        }
+    }
 }
 
 internal class ActionProcessingSetEntity
