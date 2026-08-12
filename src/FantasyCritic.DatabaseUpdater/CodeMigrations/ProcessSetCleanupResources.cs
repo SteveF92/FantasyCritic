@@ -42,7 +42,7 @@ internal static class ProcessSetCleanupResources
             { "Disney Tsum Tsum Festival", ["Disney Tsum Tsum"] },
             { "The Witcher 3: Wild Hunt (Switch)", ["The Witcher 3: Wild Hunt ( Switch )"] },
             { "Spirit Hunter: NG", ["NG"] },
-            { "Medal of Honor: Above and Beyond", ["Untitled Respawn Oculus VR FPS"] }, // no old names found in the actions data
+            { "Medal of Honor: Above and Beyond", ["Untitled Respawn Oculus VR FPS"] },
             { "One Finger Death Punch 2 (Switch)", ["One Finger Death Punch 2"] },
             { "Paper Beast", ["Paper Beasts"] },
             { "The Legend of Zelda: Tears of the Kingdom", ["The Legend of Zelda: Breath of the Wild 2"] },
@@ -68,7 +68,7 @@ internal static class ProcessSetCleanupResources
             { "Paper Mario: The Origami King", ["Paper Mario Sequel (Unannounced)"] },
             { "Demon's Souls (2020)", ["Demon Souls Remake", "Demon Souls Remake (Unannounced) "] },
             { "Sakura Wars", ["Project Sakura Wars"] },
-            { "Deltarune Chapter 2", ["Deltarune"] }, // no old names found in the actions data
+            { "Deltarune Chapter 2", ["Deltarune"] },
             { "Grand Theft Auto VI", ["Grand Theft Auto 6 (Unannounced)"] },
             { "Metroid Dread", ["Rumored 2D Metroid Sequel (Unannounced)"] },
             { "Gran Turismo 7", ["Gran Turismo Sequel (Unannounced)"] },
@@ -229,19 +229,17 @@ internal static class ProcessSetCleanupResources
             { "The Wreck", ["The Wreck "] },
             { "The Last Worker", ["The Last Worker "] },
             { "Mortal Kombat 1", ["Mortal Kombat 12 (Unannounced)"] },
-
-            // ---- Flagged for review: uncertain matches ----
-            { "Amnesia: Rebirth", ["Next Frictional Game"] }, // plausibly Rebirth, but "Next Frictional Game" could mean a different Frictional project
-            { "Unannounced Mainline 3D Mario Platformer", ["Unannounced 3D Mario", "Super Mario Odyssey 2 (Unannounced)"] }, // "Super Mario Odyssey 2 (Unannounced)" may also belong here
-            { "Football Manager 2022", ["Football Manager (2021)"] }, // "Football Manager 2021" / "Football Manager (2021)" look like FM21 (a different game) — verify
-            { "Silent Hill f", ["Unannounced New Silent Hill"] }, // could instead refer to the Silent Hill 2 remake or Townfall
-            { "Assassin's Creed Infinity", ["Unannounced Next Assassin's Creed"] }, // could instead refer to AC Mirage
+            { "Amnesia: Rebirth", ["Next Frictional Game"] },
+            { "Unannounced Mainline 3D Mario Platformer", ["Unannounced 3D Mario", "Super Mario Odyssey 2 (Unannounced)"] },
+            { "Football Manager 2022", ["Football Manager (2021)"] },
+            { "Silent Hill f", ["Unannounced New Silent Hill"] },
+            { "Assassin's Creed Infinity", ["Unannounced Next Assassin's Creed"] },
             { "The Last of Us Part I", ["""
                                         The Last of Us "Remake"
-                                        """] }, // source string looks like a CSV-escaping artifact of: The Last of Us "Remake"
-            { "gen ATLAS", ["GenDesign's Untitled New Game"] }, // no plausible match found
-            { "Ashigaru: The Last Shogun", ["Next Gilson B Pontes Game"] }, // possibly "Next Gilson B Pontes Game"? could not verify
-            { "OD (Hideo Kojima Game)", ["Unannounced Hideo Kojima Title"] }, // could instead refer to Death Stranding 2
-            { "WRC Generations", ["Unannounced World Rally Championship Game"] }, // could instead be WRC 10/11 or EA Sports WRC
+                                        """] },
+            { "gen ATLAS", ["GenDesign's Untitled New Game"] },
+            { "Ashigaru: The Last Shogun", ["Next Gilson B Pontes Game"] },
+            { "OD (Hideo Kojima Game)", ["Unannounced Hideo Kojima Title"] },
+            { "WRC Generations", ["Unannounced World Rally Championship Game"] },
         };
 }
