@@ -241,6 +241,7 @@ public class ProcessSetCleanupMigration : IScript
             return "This bid was the highest bid.";
         }
 
+        //TODO continue through this
         //Confidence: mid, the minimum bid amount could have changes.
         if (bid.Successful == false && leagueYear.Options.MinimumBidAmount < bid.BidAmount)
         {
