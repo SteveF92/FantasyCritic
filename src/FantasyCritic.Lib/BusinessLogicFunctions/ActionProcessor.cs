@@ -436,14 +436,14 @@ public class ActionProcessor
         if (bidsForGame.Count() == 1)
         {
             var singleBid = bidsForGame.First();
-            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "No competing bids for this game.", _systemWideValues, _currentDate);
+            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "No competing bids for this game.", _systemWideValues);
         }
 
         var bestBids = bidsForGame.WhereMax(x => x.PickupBid.BidAmount).ToList();
         if (bestBids.Count == 1)
         {
             var singleBid = bestBids.Single();
-            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was the highest bid.", _systemWideValues, _currentDate);
+            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was the highest bid.", _systemWideValues);
         }
 
         IEnumerable<ValidPickupBid> remainingGamesAfterTiebreaks;
@@ -453,14 +453,14 @@ public class ActionProcessor
             if (bestBidsByProjectedScore.Count == 1)
             {
                 var singleBid = bestBidsByProjectedScore.Single();
-                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game)", _systemWideValues, _currentDate);
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game)", _systemWideValues);
             }
 
             var bestBidsByBidTime = bestBidsByProjectedScore.WhereMin(x => x.PickupBid.Timestamp).ToList();
             if (bestBidsByBidTime.Count == 1)
             {
                 var singleBid = bestBidsByBidTime.Single();
-                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was placed earliest. (Projected points were tied)", _systemWideValues, _currentDate);
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was placed earliest. (Projected points were tied)", _systemWideValues);
             }
 
             remainingGamesAfterTiebreaks = bestBidsByBidTime;
@@ -471,14 +471,14 @@ public class ActionProcessor
             if (bestBidsByBidTime.Count == 1)
             {
                 var singleBid = bestBidsByBidTime.Single();
-                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was placed earliest.", _systemWideValues, _currentDate);
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was placed earliest.", _systemWideValues);
             }
 
             var bestBidsByProjectedScore = bestBidsByBidTime.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(leagueYear, _systemWideValues)).ToList();
             if (bestBidsByProjectedScore.Count == 1)
             {
                 var singleBid = bestBidsByProjectedScore.Single();
-                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied)", _systemWideValues, _currentDate);
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied)", _systemWideValues);
             }
 
             remainingGamesAfterTiebreaks = bestBidsByProjectedScore;
@@ -492,7 +492,7 @@ public class ActionProcessor
         if (bestBidsByDraftPosition.Count == 1)
         {
             var singleBid = bestBidsByDraftPosition.Single();
-            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher had the latest draft position (Projected points and Bid placement time were tied)", _systemWideValues, _currentDate);
+            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher had the latest draft position (Projected points and Bid placement time were tied)", _systemWideValues);
         }
 
         throw new Exception($"Inconceivable tie situation for game: {masterGame.GameName} for league year: {leagueYear}");
