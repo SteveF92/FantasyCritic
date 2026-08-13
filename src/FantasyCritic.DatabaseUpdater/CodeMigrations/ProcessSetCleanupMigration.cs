@@ -1,9 +1,6 @@
 using System.Data;
-using System.Security.Cryptography;
-using Amazon.Lambda.Model;
 using Dapper;
 using DbUp.Engine;
-using Discord;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Enums;
@@ -11,7 +8,6 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL;
-using MathNet.Numerics.Statistics;
 using MySqlConnector;
 using NodaTime;
 
@@ -53,7 +49,6 @@ public class ProcessSetCleanupMigration : IScript
         ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(_repositoryConfiguration, userStore);
         _fantasyCriticRepo = new MySQLFantasyCriticRepo(_repositoryConfiguration, userStore, masterGameRepo, combinedDataRepo);
 
-        var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
         var masterGames = await masterGameRepo.GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
 
@@ -139,7 +134,7 @@ public class ProcessSetCleanupMigration : IScript
                 var bidsForSiteYear = bidsByLeagueYear.GetValueOrDefault(siteYear, new List<PickupBidWithLeagueYearEntity>());
                 var dropsForSiteYear = dropsByLeagueYear.GetValueOrDefault(siteYear, new List<DropRequestWithLeagueYearEntity>());
 
-                var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, actionProcessingTimestampToUse, actionsOnDate, bidsForSiteYear, dropsForSiteYear);
+                var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, actionProcessingTimestampToUse, bidsForSiteYear, dropsForSiteYear);
                 if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Bids)
                 {
                     var bidsByLeague = bidsForSiteYear.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
@@ -177,12 +172,9 @@ public class ProcessSetCleanupMigration : IScript
             previousProcessInstant = actionProcessingSetsMade.First().ProcessTime;
         }
 
-        //await UpdateDropsAndBids(connection, pickupBidsToUpdate, dropsToUpdate);
+        await UpdateDropsAndBids(connection, pickupBidsToUpdate, dropsToUpdate);
 
-        // Unconditional throw so this never gets journaled as applied while under development —
-        // safe to re-run against a local/refreshable DB as many times as needed. Remove this once
-        // the logic above is verified and you're ready to let it complete for real.
-        throw new InvalidOperationException("ProcessSetCleanup is not ready to be marked as done yet.");
+        return string.Empty;
     }
 
     private Dictionary<int, Dictionary<Guid, LeagueYear>> _leagueYearDictionaries = new Dictionary<int, Dictionary<Guid, LeagueYear>>();
@@ -248,17 +240,22 @@ public class ProcessSetCleanupMigration : IScript
 
         if (thisPair.Action.Description.EndsWith("Failure reason: Publisher was outbid."))
         {
-            return thisPair.Action.GetTrimmedDescription("Failure reason: ");
+            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
         }
 
         if (thisPair.Action.Description.EndsWith("Failure reason: No roster spots available."))
         {
-            return thisPair.Action.GetTrimmedDescription("Failure reason: ");
+            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
         }
 
         if (thisPair.Action.Description.EndsWith("Failure reason: Not enough budget."))
         {
-            return thisPair.Action.GetTrimmedDescription("Failure reason: ");
+            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
+        }
+
+        if (bid.ConditionalDropMasterGameID.HasValue && thisPair.Action.Description.Contains("Attempted to conditionally drop"))
+        {
+            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
         }
 
         if (bid.Successful == false && validOtherBids.Any(x => x.Bid.BidAmount == bid.BidAmount))
@@ -290,27 +287,12 @@ public class ProcessSetCleanupMigration : IScript
 
         if (thisPair.Action.Description.Contains("Failure reason: Game is no longer eligible"))
         {
-            return thisPair.Action.GetTrimmedDescription("Failure reason: ");
+            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
         }
 
         if (thisPair.Action.Description.Contains("Failure reason: No roster spots available"))
         {
-            return thisPair.Action.GetTrimmedDescription("Failure reason: ");
-        }
-
-        if (true)
-        {
-            return "No eligible roster spots available.";
-        }
-
-        if (true)
-        {
-            return "No eligible roster spots available. Attempted to conditionally drop game: XXX but failed because: XXX";
-        }
-
-        if (true)
-        {
-            return "No roster spots available. Attempted to conditionally drop game: XXX but failed because: XXX";
+            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
         }
 
         throw new Exception("Unknown situation");
@@ -377,9 +359,9 @@ public class ProcessSetCleanupMigration : IScript
     }
 
     private static ActionProcessingSetEntity CreateActionProcessingSetEntity(int siteYear, LocalDate date, Instant actionProcessingTimeToUse,
-        IReadOnlyList<LeagueActionWithLeagueYearEntity> actions, IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
+        IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
     {
-        (string namePrefix, ActionProcessingSetType type) = GetActionProcessingSetNamePrefix(siteYear, date, actions, bids, drops);
+        (string namePrefix, ActionProcessingSetType type) = GetActionProcessingSetNamePrefix(siteYear, date, bids, drops);
 
         var actionProcessingSetToMake = new ActionProcessingSetEntity()
         {
@@ -393,7 +375,7 @@ public class ProcessSetCleanupMigration : IScript
     }
 
     private static (string Prefix, ActionProcessingSetType Type) GetActionProcessingSetNamePrefix(int siteYear, LocalDate date,
-        IReadOnlyList<LeagueActionWithLeagueYearEntity> actions, IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
+        IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
     {
         if (siteYear == 2019)
         {
@@ -505,19 +487,24 @@ internal class LeagueActionWithLeagueYearEntity : ITimestampEntity
         return $"{ActionType}|{PublisherName}|{Description}";
     }
 
-    public string GetTrimmedDescription(string startFromSubstring)
+    public string GetTrimmedDescription(string startFromSubstring, bool includePrefix)
     {
         var indexOf = Description.IndexOf(startFromSubstring);
         if (indexOf == -1)
         {
             return Description;
         }
+
+        if (includePrefix)
+        {
+            return Description.Substring(indexOf);
+        }
         return Description.Substring(indexOf + startFromSubstring.Length);
     }
 
     public bool SuccessMatchesBid(PickupBidWithLeagueYearEntity bid)
     {
-        return bid.Successful == Description.StartsWith("Acquired game");
+        return bid.Successful == Description.StartsWith("Acquired");
     }
 }
 
