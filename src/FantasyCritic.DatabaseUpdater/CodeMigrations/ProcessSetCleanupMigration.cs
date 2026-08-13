@@ -1,14 +1,17 @@
 using System.Data;
 using System.Security.Cryptography;
+using Amazon.Lambda.Model;
 using Dapper;
 using DbUp.Engine;
 using Discord;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain;
+using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL;
+using MathNet.Numerics.Statistics;
 using MySqlConnector;
 using NodaTime;
 
@@ -219,53 +222,80 @@ public class ProcessSetCleanupMigration : IScript
         var bidActionPairs = GetBidActionPairs(allBidsForGame, actionsForLeague);
         var thisPair = bidActionPairs.Single(x => x.Bid.BidID == bid.BidID);
         var otherBidActionPairs = bidActionPairs.Where(x => x.Bid.BidID != bid.BidID).ToList();
-        var validOtherBids = otherBidActionPairs.Where(x => x.IsValidBid).ToList();
+        var usersBidsForThisGame = bidActionPairs
+            .Where(x => x.Bid.PublisherID == thisPair.Bid.PublisherID &&
+                        x.Bid.MasterGameID == thisPair.Bid.MasterGameID)
+            .OrderByDescending(x => x.Bid.Successful)
+            .ThenByDescending(x => x.Bid.BidAmount)
+            .ThenBy(x => x.Bid.Priority)
+            .ToList();
+        var usersBestBidForThisGame = usersBidsForThisGame.First();
+        var usersOtherBidsForThisGame = usersBidsForThisGame.Where(x => x.Bid.BidID != usersBestBidForThisGame.Bid.BidID).ToList();
+        if (usersOtherBidsForThisGame.Select(x => x.Bid.BidID).Contains(bid.BidID))
+        {
+            return "You cannot have multiple bids for the same game. This bid has been ignored.";
+        }
+
+        var validOtherBids = otherBidActionPairs
+            .Where(x => x.IsValidBid(usersOtherBidsForThisGame
+                .Select(y => y.Bid.BidID).Contains(x.Bid.BidID)))
+            .ToList();
 
         if (bid.Successful == true && !validOtherBids.Any())
         {
             return "No competing bids for this game.";
         }
 
-        if ((thisPair.Action.Description ?? "").EndsWith("Failure reason: Publisher was outbid."))
+        if (thisPair.Action.Description.EndsWith("Failure reason: Publisher was outbid."))
         {
-            return "Publisher was outbid.";
+            return thisPair.Action.GetTrimmedDescription("Failure reason: ");
         }
 
-        if ((thisPair.Action.Description ?? "").EndsWith("Failure reason: No roster spots available."))
+        if (thisPair.Action.Description.EndsWith("Failure reason: No roster spots available."))
         {
-            return "No roster spots available.";
+            return thisPair.Action.GetTrimmedDescription("Failure reason: ");
         }
 
-        if (otherBidActionPairs.All(x => x.Bid.BidAmount < bid.BidAmount))
+        if (thisPair.Action.Description.EndsWith("Failure reason: Not enough budget."))
         {
-            return "This bid was the highest bid.";
+            return thisPair.Action.GetTrimmedDescription("Failure reason: ");
         }
 
-        //TODO continue through this
-        //Confidence: mid, the minimum bid amount could have changes.
-        if (bid.Successful == false && leagueYear.Options.MinimumBidAmount < bid.BidAmount)
-        {
-            return "Bid is below the minimum bid amount.";
-        }
-
-        if (true)
+        if (bid.Successful == false && validOtherBids.Any(x => x.Bid.BidAmount == bid.BidAmount))
         {
             return "Bid lost on tiebreakers.";
         }
 
-        if (true)
+        if (bid.Successful == false && thisPair.Action.Description.Contains("Failure reason: Bid is below the minimum bid amount."))
         {
-            return "Game is no longer eligible: XXX";
+            return "Bid is below the minimum bid amount.";
         }
 
-        if (true)
+        if (bid.Successful == true && validOtherBids.All(x => x.Bid.BidAmount < bid.BidAmount))
         {
-            return "No competing bids for this game.";
+            return "This bid was the highest bid.";
         }
 
-        if (true)
+        if (bid.Successful == true && validOtherBids.All(x => x.Bid.BidAmount <= bid.BidAmount))
         {
-            return "No eligible roster spots available. Attempted to conditionally drop game: XXX but failed because: XXX";
+            if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.LowestProjectedPoints))
+            {
+                return "This publisher has the lowest projected points. (Not including this game)";
+            }
+            if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.EarliestBid))
+            {
+                return "This bid was placed earliest.";
+            }
+        }
+
+        if (thisPair.Action.Description.Contains("Failure reason: Game is no longer eligible"))
+        {
+            return thisPair.Action.GetTrimmedDescription("Failure reason: ");
+        }
+
+        if (thisPair.Action.Description.Contains("Failure reason: No roster spots available"))
+        {
+            return thisPair.Action.GetTrimmedDescription("Failure reason: ");
         }
 
         if (true)
@@ -275,27 +305,12 @@ public class ProcessSetCleanupMigration : IScript
 
         if (true)
         {
+            return "No eligible roster spots available. Attempted to conditionally drop game: XXX but failed because: XXX";
+        }
+
+        if (true)
+        {
             return "No roster spots available. Attempted to conditionally drop game: XXX but failed because: XXX";
-        }
-
-        if (true)
-        {
-            return "Not enough budget.";
-        }
-
-        if (true)
-        {
-            return "This bid was placed earliest.";
-        }
-
-        if (true)
-        {
-            return "This publisher has the lowest projected points. (Not including this game)";
-        }
-
-        if (true)
-        {
-            return "You cannot have multiple bids for the same game. This bid has been ignored.";
         }
 
         throw new Exception("Unknown situation");
@@ -314,7 +329,8 @@ public class ProcessSetCleanupMigration : IScript
             }
 
             var matchingActionsForGame = actions.Where(x => possibleGameNames.Any(y => x.Description.Contains($"'{y}'"))).ToList();
-            var matchingActionForPublisher = matchingActionsForGame.FirstOrDefault(x => x.PublisherID == bid.PublisherID);
+            var matchingActionsForPublisher = matchingActionsForGame.Where(x => x.PublisherID == bid.PublisherID).ToList();
+            var matchingActionForPublisher = matchingActionsForPublisher.FirstOrDefault(x => x.SuccessMatchesBid(bid));
             if (matchingActionForPublisher is null)
             {
                 throw new Exception("Unmatched action.");
@@ -433,27 +449,24 @@ public enum ActionProcessingSetType
 
 internal record BidActionPair(PickupBidWithLeagueYearEntity Bid, LeagueActionWithLeagueYearEntity Action)
 {
-    public bool IsValidBid
+    public bool IsValidBid(bool isDuplicateBid)
     {
-        get
+        if (isDuplicateBid)
         {
-            if (Action is null)
-            {
-                return true;
-            }
-
-            if (Action.Description.EndsWith("Failure reason: No roster spots available."))
-            {
-                return false;
-            }
-
-            if (Action.Description.EndsWith("Failure reason: No roster spots available."))
-            {
-                return false;
-            }
-
-            return true;
+            return false;
         }
+
+        if (Action.Description.EndsWith("Failure reason: No roster spots available."))
+        {
+            return false;
+        }
+
+        if (Action.Description.EndsWith("Failure reason: Not enough budget."))
+        {
+            return false;
+        }
+
+        return true;
     }
 }
 
@@ -490,6 +503,21 @@ internal class LeagueActionWithLeagueYearEntity : ITimestampEntity
     public override string ToString()
     {
         return $"{ActionType}|{PublisherName}|{Description}";
+    }
+
+    public string GetTrimmedDescription(string startFromSubstring)
+    {
+        var indexOf = Description.IndexOf(startFromSubstring);
+        if (indexOf == -1)
+        {
+            return Description;
+        }
+        return Description.Substring(indexOf + startFromSubstring.Length);
+    }
+
+    public bool SuccessMatchesBid(PickupBidWithLeagueYearEntity bid)
+    {
+        return bid.Successful == Description.StartsWith("Acquired game");
     }
 }
 
