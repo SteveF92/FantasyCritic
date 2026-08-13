@@ -95,6 +95,7 @@ public class ProcessSetCleanupMigration : IScript
         Instant previousProcessInstant = Instant.MinValue;
         LocalDate previousProcessDate = LocalDate.MinIsoValue;
 
+        List<ActionProcessingSetEntity> actionProcessingSetsToInsert = new List<ActionProcessingSetEntity>();
         List<PickupBidWithLeagueYearEntity> pickupBidsToUpdate = new List<PickupBidWithLeagueYearEntity>();
         List<DropRequestWithLeagueYearEntity> dropsToUpdate = new List<DropRequestWithLeagueYearEntity>();
 
@@ -168,11 +169,12 @@ public class ProcessSetCleanupMigration : IScript
                 continue;
             }
 
+            actionProcessingSetsToInsert.AddRange(actionProcessingSetsMade);
             previousProcessDate = date;
             previousProcessInstant = actionProcessingSetsMade.First().ProcessTime;
         }
 
-        await UpdateDropsAndBids(connection, pickupBidsToUpdate, dropsToUpdate);
+        await UpdateDropsAndBids(connection, actionProcessingSetsToInsert, pickupBidsToUpdate, dropsToUpdate);
 
         return string.Empty;
     }
@@ -334,9 +336,15 @@ public class ProcessSetCleanupMigration : IScript
         return drops;
     }
 
-    private async Task UpdateDropsAndBids(MySqlConnection connection, List<PickupBidWithLeagueYearEntity> bidsToUpdate, List<DropRequestWithLeagueYearEntity> dropsToUpdate)
+    private async Task UpdateDropsAndBids(MySqlConnection connection, List<ActionProcessingSetEntity> actionProcessingSetsToInsert, 
+        List<PickupBidWithLeagueYearEntity> bidsToUpdate, List<DropRequestWithLeagueYearEntity> dropsToUpdate)
     {
         var transaction = await connection.BeginTransactionAsync();
+
+        if (actionProcessingSetsToInsert.Any())
+        {
+            await connection.BulkInsertAsync(actionProcessingSetsToInsert, "tbl_meta_actionprocessingset", 500, transaction);
+        }
 
         if (bidsToUpdate.Any())
         {
