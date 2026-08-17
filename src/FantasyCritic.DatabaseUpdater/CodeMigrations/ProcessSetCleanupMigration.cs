@@ -131,6 +131,8 @@ public class ProcessSetCleanupMigration : IScript
         List<ActionProcessingSetEntity> actionProcessingSetsToInsert = new List<ActionProcessingSetEntity>();
         List<PickupBidWithLeagueYearEntity> pickupBidsToUpdate = new List<PickupBidWithLeagueYearEntity>();
         List<DropRequestWithLeagueYearEntity> dropsToUpdate = new List<DropRequestWithLeagueYearEntity>();
+        HashSet<Guid> deliberatelySkippedBidIDs = new HashSet<Guid>();
+        HashSet<Guid> deliberatelySkippedDropIDs = new HashSet<Guid>();
 
         foreach (var date in datesWithUnassignedActions)
         {
@@ -168,14 +170,17 @@ public class ProcessSetCleanupMigration : IScript
 
             foreach (var siteYear in siteYears)
             {
+                var bidsForSiteYear = bidsByLeagueYear.GetValueOrDefault(siteYear, new List<PickupBidWithLeagueYearEntity>());
+                var dropsForSiteYear = dropsByLeagueYear.GetValueOrDefault(siteYear, new List<DropRequestWithLeagueYearEntity>());
                 if (siteYear == 2019 && date == new LocalDate(2019, 12, 22))
                 {
                     //This shouldn't actually be here, it's drop processing for 2020.
+                    deliberatelySkippedBidIDs.UnionWith(bidsForSiteYear.Select(x => x.BidID));
+                    deliberatelySkippedDropIDs.UnionWith(dropsForSiteYear.Select(x => x.DropRequestID));
                     continue;
                 }
+
                 var leagueYearDictionary = await GetLeagueYearDictionaryForYear(siteYear);
-                var bidsForSiteYear = bidsByLeagueYear.GetValueOrDefault(siteYear, new List<PickupBidWithLeagueYearEntity>());
-                var dropsForSiteYear = dropsByLeagueYear.GetValueOrDefault(siteYear, new List<DropRequestWithLeagueYearEntity>());
 
                 List<ActionProcessingSetEntity> actionProcessingSetsOnDate = GetActionProcessingSetsOnDate(siteYear, date, bidActionProcessingTimestampToUse.ToInstant(), dropActionProcessingTimestampToUse.ToInstant(), bidsForSiteYear, dropsForSiteYear);
                 foreach (var actionProcessingSetToMake in actionProcessingSetsOnDate)
@@ -232,10 +237,27 @@ public class ProcessSetCleanupMigration : IScript
             actionProcessingSetsToInsert.AddRange(actionProcessingSetsMade);
         }
 
+        VerifyEverythingWasAssigned(allBidEntities, allDropEntities, deliberatelySkippedBidIDs, deliberatelySkippedDropIDs);
         await UpdateDropsAndBids(connection, actionProcessingSetsToInsert, pickupBidsToUpdate, dropsToUpdate);
 
         throw new Exception();
         return string.Empty;
+    }
+
+    private static void VerifyEverythingWasAssigned(IReadOnlyList<PickupBidWithLeagueYearEntity> allBidEntities,
+        IReadOnlyList<DropRequestWithLeagueYearEntity> allDropEntities, HashSet<Guid> deliberatelySkippedBidIDs, HashSet<Guid> deliberatelySkippedDropIDs)
+    {
+        var unassignedBids = allBidEntities.Where(x => x.ProcessSetID is null && !deliberatelySkippedBidIDs.Contains(x.BidID)).ToList();
+        var unassignedDrops = allDropEntities.Where(x => x.ProcessSetID is null && !deliberatelySkippedDropIDs.Contains(x.DropRequestID)).ToList();
+        if (!unassignedBids.Any() && !unassignedDrops.Any())
+        {
+            return;
+        }
+
+        var bidDates = string.Join(", ", unassignedBids.Select(x => x.Timestamp.ToEasternDate()).Distinct().OrderBy(x => x));
+        var dropDates = string.Join(", ", unassignedDrops.Select(x => x.Timestamp.ToEasternDate()).Distinct().OrderBy(x => x));
+        throw new Exception($"{unassignedBids.Count} bids and {unassignedDrops.Count} drops were never assigned to a process set. " +
+                            $"Bid dates: [{bidDates}]. Drop dates: [{dropDates}].");
     }
 
     private List<ActionProcessingSetEntity> GetActionProcessingSetsOnDate(int siteYear, LocalDate date, Instant bidActionProcessingTimestampToUse, Instant dropActionProcessingTimestampToUse,
