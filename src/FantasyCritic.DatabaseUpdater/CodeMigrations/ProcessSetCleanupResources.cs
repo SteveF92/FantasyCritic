@@ -2,7 +2,7 @@ namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 
 internal static class ProcessSetCleanupResources
 {
-    public static Dictionary<string, List<string>> OldGameNameMappings => new Dictionary<string, List<string>>()
+    public static Dictionary<string, List<string>> OldGameNameMappings { get; } = new Dictionary<string, List<string>>()
         {
             {"Animal Crossing: New Horizons", ["Animal Crossing"]},
             {"Pokémon Sword and Shield", ["Pokemon Gen 8"]},
