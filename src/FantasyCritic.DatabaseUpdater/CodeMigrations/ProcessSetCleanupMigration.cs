@@ -105,7 +105,7 @@ public class ProcessSetCleanupMigration : IScript
                         JOIN tbl_mastergame on tbl_mastergame.MasterGameID = tbl_league_pickupbid.MasterGameID
                         WHERE ProcessSetId IS NULL AND Successful IS NOT NULL;
                         """;
-        var allBidEntities = await connection.QueryAsync<PickupBidWithLeagueYearEntity>(bidSql);
+        var allBidEntities = (await connection.QueryAsync<PickupBidWithLeagueYearEntity>(bidSql)).ToList();
         var bidsByDate = allBidEntities.ToLookup(x => x.Timestamp.ToEasternDate());
 
         string dropSql = """
@@ -114,8 +114,14 @@ public class ProcessSetCleanupMigration : IScript
                          JOIN tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_droprequest.PublisherID
                          WHERE ProcessSetId IS NULL AND Successful IS NOT NULL;
                          """;
-        var allDropEntities = await connection.QueryAsync<DropRequestWithLeagueYearEntity>(dropSql);
+        var allDropEntities = (await connection.QueryAsync<DropRequestWithLeagueYearEntity>(dropSql)).ToList();
         var dropsByDate = allDropEntities.ToLookup(x => x.Timestamp.ToEasternDate());
+
+        if (!allBidEntities.Any() && !allDropEntities.Any())
+        {
+            //Either this already ran and the journal insert didn't stick, or this database never had the old data.
+            return string.Empty;
+        }
 
         ZonedDateTime previousBidProcessInstant = new LocalDateTime(2017, 2, 1, 12, 0, 0).InZoneStrictly(TimeExtensions.EasternTimeZone);
         LocalDate previousBidProcessDate = new LocalDate(2017, 2, 1);
