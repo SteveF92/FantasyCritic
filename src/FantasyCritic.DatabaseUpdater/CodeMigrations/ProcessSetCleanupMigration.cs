@@ -28,11 +28,17 @@ namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 public class ProcessSetCleanupMigration : IScript
 {
     private readonly RepositoryConfiguration _repositoryConfiguration;
-    private IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IMasterGameRepo _masterGameRepo;
 
     public ProcessSetCleanupMigration(RepositoryConfiguration repositoryConfiguration)
     {
         _repositoryConfiguration = repositoryConfiguration;
+
+        IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(repositoryConfiguration);
+        _masterGameRepo = new MySQLMasterGameRepo(repositoryConfiguration, userStore, repositoryConfiguration.Clock);
+        ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(repositoryConfiguration, userStore);
+        _fantasyCriticRepo = new MySQLFantasyCriticRepo(repositoryConfiguration, userStore, _masterGameRepo, combinedDataRepo);
     }
 
     public string ProvideScript(Func<IDbCommand> dbCommandFactory)
@@ -44,12 +50,7 @@ public class ProcessSetCleanupMigration : IScript
 
     private async Task<string> ProvideScriptAsync(Func<IDbCommand> dbCommandFactory)
     {
-        IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(_repositoryConfiguration);
-        IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(_repositoryConfiguration, userStore, _repositoryConfiguration.Clock);
-        ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(_repositoryConfiguration, userStore);
-        _fantasyCriticRepo = new MySQLFantasyCriticRepo(_repositoryConfiguration, userStore, masterGameRepo, combinedDataRepo);
-
-        var masterGames = await masterGameRepo.GetMasterGames();
+        var masterGames = await _masterGameRepo.GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
         var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
 
