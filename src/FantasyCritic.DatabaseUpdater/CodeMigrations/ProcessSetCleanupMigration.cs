@@ -27,6 +27,8 @@ namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 /// </summary>
 public class ProcessSetCleanupMigration : IScript
 {
+    private const string FailureReasonPrefix = "Failure reason: ";
+
     private readonly RepositoryConfiguration _repositoryConfiguration;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
@@ -325,96 +327,50 @@ public class ProcessSetCleanupMigration : IScript
     {
         var bidActionPairs = GetBidActionPairs(allBidsForGame, actionsForLeague);
         var thisPair = bidActionPairs.Single(x => x.Bid.BidID == bid.BidID);
-        var otherBidActionPairs = bidActionPairs.Where(x => x.Bid.BidID != bid.BidID).ToList();
-        var usersBidsForThisGame = bidActionPairs
-            .Where(x => x.Bid.PublisherID == thisPair.Bid.PublisherID &&
-                        x.Bid.MasterGameID == thisPair.Bid.MasterGameID)
-            .OrderByDescending(x => x.Bid.Successful)
-            .ThenByDescending(x => x.Bid.BidAmount)
-            .ThenBy(x => x.Bid.Priority)
-            .ToList();
-        var usersBestBidForThisGame = usersBidsForThisGame.First();
-        var usersOtherBidsForThisGame = usersBidsForThisGame.Where(x => x.Bid.BidID != usersBestBidForThisGame.Bid.BidID).ToList();
-        if (usersOtherBidsForThisGame.Select(x => x.Bid.BidID).Contains(bid.BidID))
+
+        //A failed bid's outcome was stored verbatim as the failure reason on its action, so there is nothing to infer.
+        if (bid.Successful == false)
         {
-            return "You cannot have multiple bids for the same game. This bid has been ignored.";
+            if (!thisPair.Action.Description.Contains(FailureReasonPrefix))
+            {
+                throw new Exception($"Failed bid {bid.BidID} has no failure reason: {thisPair.Action.Description}");
+            }
+
+            return thisPair.Action.GetTrimmedDescription(FailureReasonPrefix, false);
         }
 
-        var validOtherBids = otherBidActionPairs
-            .Where(x => x.IsValidBid(usersOtherBidsForThisGame
-                .Select(y => y.Bid.BidID).Contains(x.Bid.BidID)))
-            .ToList();
-
-        if (bid.BidID.ToString() == "907dacab-e1fe-4a70-9103-8c114c6490eb")
-        {
-            //This is a weird case where two master games that were later merged were both bid on.
-            //Star Wars: Squadrons and Project Maverick (Unannounced Star Wars)
-            return "No competing bids for this game.";
-        }
-
-        if (bid.Successful == true && !validOtherBids.Any())
+        if (ProcessSetCleanupResources.BidsWithNoRealCompetition.Contains(bid.BidID))
         {
             return "No competing bids for this game.";
         }
 
-        if (thisPair.Action.Description.EndsWith("Failure reason: Publisher was outbid."))
+        var validOtherBids = bidActionPairs.Where(x => x.Bid.BidID != bid.BidID && x.WasAValidBid()).ToList();
+        if (!validOtherBids.Any())
         {
-            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
+            return "No competing bids for this game.";
         }
 
-        if (thisPair.Action.Description.EndsWith("Failure reason: No roster spots available."))
-        {
-            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
-        }
-
-        if (thisPair.Action.Description.EndsWith("Failure reason: Not enough budget."))
-        {
-            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
-        }
-
-        if (bid.ConditionalDropMasterGameID.HasValue && thisPair.Action.Description.Contains("Attempted to conditionally drop"))
-        {
-            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
-        }
-
-        if (bid.Successful == false && validOtherBids.Any(x => x.Bid.BidAmount == bid.BidAmount))
-        {
-            return "Bid lost on tiebreakers.";
-        }
-
-        if (bid.Successful == false && thisPair.Action.Description.Contains("Failure reason: Bid is below the minimum bid amount."))
-        {
-            return "Bid is below the minimum bid amount.";
-        }
-
-        if (bid.Successful == true && validOtherBids.All(x => x.Bid.BidAmount < bid.BidAmount))
+        if (validOtherBids.All(x => x.Bid.BidAmount < bid.BidAmount))
         {
             return "This bid was the highest bid.";
         }
 
-        if (bid.Successful == true && validOtherBids.All(x => x.Bid.BidAmount <= bid.BidAmount))
+        if (validOtherBids.Any(x => x.Bid.BidAmount > bid.BidAmount))
         {
-            if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.LowestProjectedPoints))
-            {
-                return "This publisher has the lowest projected points. (Not including this game)";
-            }
-            if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.EarliestBid))
-            {
-                return "This bid was placed earliest.";
-            }
+            throw new Exception($"Bid {bid.BidID} won despite a higher valid bid existing.");
         }
 
-        if (thisPair.Action.Description.Contains("Failure reason: Game is no longer eligible"))
+        if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.LowestProjectedPoints))
         {
-            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
+            return "This publisher has the lowest projected points. (Not including this game)";
         }
 
-        if (thisPair.Action.Description.Contains("Failure reason: No roster spots available"))
+        if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.EarliestBid))
         {
-            return thisPair.Action.GetTrimmedDescription("Failure reason: ", false);
+            return "This bid was placed earliest.";
         }
 
-        throw new Exception("Unknown situation");
+        throw new Exception($"Unknown tiebreak system '{leagueYear.Options.TiebreakSystem}' for bid {bid.BidID}.");
     }
 
     private static List<BidActionPair> GetBidActionPairs(List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions)
@@ -568,24 +524,19 @@ public enum ActionProcessingSetType
 
 internal record BidActionPair(PickupBidWithLeagueYearEntity Bid, LeagueActionWithLeagueYearEntity Action)
 {
-    public bool IsValidBid(bool isDuplicateBid)
+    /// <summary>
+    /// Whether this bid made it as far as the auction. Only bids that passed validation got that far, and the auction
+    /// only ever rejected them for one of these two reasons, so this is an exact reconstruction of the valid bid set.
+    /// </summary>
+    public bool WasAValidBid()
     {
-        if (isDuplicateBid)
+        if (Bid.Successful == true)
         {
-            return false;
+            return true;
         }
 
-        if (Action.Description.EndsWith("Failure reason: No roster spots available."))
-        {
-            return false;
-        }
-
-        if (Action.Description.EndsWith("Failure reason: Not enough budget."))
-        {
-            return false;
-        }
-
-        return true;
+        return Action.Description.EndsWith("Failure reason: Publisher was outbid.")
+               || Action.Description.EndsWith("Failure reason: Bid lost on tiebreakers.");
     }
 }
 

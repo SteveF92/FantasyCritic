@@ -2,6 +2,13 @@ namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 
 internal static class ProcessSetCleanupResources
 {
+    //'Star Wars: Squadrons' and 'Project Maverick (Unannounced Star Wars)' were separate master games when these bids were
+    //placed and were merged afterwards, so the bid looks contested but wasn't.
+    public static IReadOnlySet<Guid> BidsWithNoRealCompetition { get; } = new HashSet<Guid>
+    {
+        Guid.Parse("907dacab-e1fe-4a70-9103-8c114c6490eb")
+    };
+
     public static Dictionary<string, List<string>> OldGameNameMappings { get; } = new Dictionary<string, List<string>>()
         {
             {"Animal Crossing: New Horizons", ["Animal Crossing"]},
