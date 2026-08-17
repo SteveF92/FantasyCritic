@@ -116,8 +116,10 @@ public class ProcessSetCleanupMigration : IScript
         var allDropEntities = await connection.QueryAsync<DropRequestWithLeagueYearEntity>(dropSql);
         var dropsByDate = allDropEntities.ToLookup(x => x.Timestamp.ToEasternDate());
 
-        Instant previousProcessInstant = Instant.MinValue;
-        LocalDate previousProcessDate = LocalDate.MinIsoValue;
+        ZonedDateTime previousBidProcessInstant = new LocalDateTime(2017, 2, 1, 12, 0, 0).InZoneStrictly(TimeExtensions.EasternTimeZone);
+        LocalDate previousBidProcessDate = LocalDate.MinIsoValue;
+        ZonedDateTime previousDropProcessInstant = new LocalDateTime(2017, 2, 1, 12, 0, 0).InZoneStrictly(TimeExtensions.EasternTimeZone);
+        LocalDate previousDropProcessDate = LocalDate.MinIsoValue;
 
         List<ActionProcessingSetEntity> actionProcessingSetsToInsert = new List<ActionProcessingSetEntity>();
         List<PickupBidWithLeagueYearEntity> pickupBidsToUpdate = new List<PickupBidWithLeagueYearEntity>();
@@ -134,10 +136,27 @@ public class ProcessSetCleanupMigration : IScript
             var actionsOnDate = actionsByDate[date].OrderBy(x => x.Timestamp).ToList();
             var actionsLeagueLookup = actionsOnDate.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
 
-            var actionProcessingTimestampToUse = actionsOnDate.OrderBy(x => x.Timestamp).First().Timestamp;
+            var bidActionProcessingTimestampToUse = actionsOnDate.Where(x => x.Timestamp.ToEasternDate() == date && x.ActionType.Contains("Pickup")).OrderBy(x => x.Timestamp).FirstOrDefault()?.Timestamp.InZone(TimeExtensions.EasternTimeZone);
+            var dropActionProcessingTimestampToUse = actionsOnDate.Where(x => x.Timestamp.ToEasternDate() == date && x.ActionType.Contains("Drop")).OrderBy(x => x.Timestamp).FirstOrDefault()?.Timestamp.InZone(TimeExtensions.EasternTimeZone);
+            if (bidActionProcessingTimestampToUse is null)
+            {
+                if (actionsOnDate.Any(x => x.ActionType.Contains("Pickup")))
+                {
+                    throw new Exception("Could not find pickup timestamp");
+                }
+                bidActionProcessingTimestampToUse = dropActionProcessingTimestampToUse;
+            }
+            if (dropActionProcessingTimestampToUse is null)
+            {
+                if (actionsOnDate.Any(x => x.ActionType.Contains("Drop")))
+                {
+                    throw new Exception("Could not find drop timestamp");
+                }
+                dropActionProcessingTimestampToUse = bidActionProcessingTimestampToUse;
+            }
 
-            var bidsToInclude = GetEntitiesUpToTimestamp(bidsByDate, date, actionProcessingTimestampToUse, previousProcessDate, previousProcessInstant);
-            var dropsToInclude = GetEntitiesUpToTimestamp(dropsByDate, date, actionProcessingTimestampToUse, previousProcessDate, previousProcessInstant);
+            var bidsToInclude = GetEntitiesUpToTimestamp(bidsByDate, date, bidActionProcessingTimestampToUse.Value, previousBidProcessDate, previousBidProcessInstant);
+            var dropsToInclude = GetEntitiesUpToTimestamp(dropsByDate, date, dropActionProcessingTimestampToUse.Value, previousDropProcessDate, previousDropProcessInstant);
             if (!bidsToInclude.Any() && !dropsToInclude.Any())
             {
                 throw new Exception($"Invalid Date {date}");
@@ -159,33 +178,47 @@ public class ProcessSetCleanupMigration : IScript
                 var bidsForSiteYear = bidsByLeagueYear.GetValueOrDefault(siteYear, new List<PickupBidWithLeagueYearEntity>());
                 var dropsForSiteYear = dropsByLeagueYear.GetValueOrDefault(siteYear, new List<DropRequestWithLeagueYearEntity>());
 
-                var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, actionProcessingTimestampToUse, bidsForSiteYear, dropsForSiteYear);
-                if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Bids)
+                List<ActionProcessingSetEntity> actionProcessingSetsOnDate = GetActionProcessingSetsOnDate(siteYear, date, bidActionProcessingTimestampToUse.Value.ToInstant(), dropActionProcessingTimestampToUse.Value.ToInstant(), bidsForSiteYear, dropsForSiteYear);
+                foreach (var actionProcessingSetToMake in actionProcessingSetsOnDate)
                 {
-                    var bidsByLeague = bidsForSiteYear.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
-                    foreach (var bidsForLeague in bidsByLeague)
+                    if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Bids)
                     {
-                        var actionsForLeague = actionsLeagueLookup[bidsForLeague.Key].ToList();
-                        var leagueYear = leagueYearDictionary[bidsForLeague.Key.LeagueID];
-                        var processedBidsForLeague = GetProcessedBids(actionProcessingSetToMake, bidsForLeague.ToList(), actionsForLeague, masterGameDictionary, leagueYear);
-                        pickupBidsToUpdate.AddRange(processedBidsForLeague);
+                        var bidsByLeague = bidsForSiteYear.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
+                        foreach (var bidsForLeague in bidsByLeague)
+                        {
+                            var actionsForLeague = actionsLeagueLookup[bidsForLeague.Key].ToList();
+                            var leagueYear = leagueYearDictionary[bidsForLeague.Key.LeagueID];
+                            var processedBidsForLeague = GetProcessedBids(actionProcessingSetToMake, bidsForLeague.ToList(), actionsForLeague, masterGameDictionary, leagueYear);
+                            pickupBidsToUpdate.AddRange(processedBidsForLeague);
+                        }
+                    }
+
+                    if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Drops)
+                    {
+                        var dropsByLeague = dropsForSiteYear.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
+                        foreach (var dropsForLeague in dropsByLeague)
+                        {
+                            var processedDropsForLeague = GetProcessedDrops(actionProcessingSetToMake, dropsForLeague.ToList());
+                            dropsToUpdate.AddRange(processedDropsForLeague);
+                        }
+                    }
+
+                    if (pickupBidsToUpdate.Any() || dropsToUpdate.Any())
+                    {
+                        actionProcessingSetsMade.Add(actionProcessingSetToMake);
                     }
                 }
+            }
 
-                if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Drops)
-                {
-                    var dropsByLeague = dropsForSiteYear.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
-                    foreach (var dropsForLeague in dropsByLeague)
-                    {
-                        var processedDropsForLeague = GetProcessedDrops(actionProcessingSetToMake, dropsForLeague.ToList());
-                        dropsToUpdate.AddRange(processedDropsForLeague);
-                    }
-                }
-
-                if (pickupBidsToUpdate.Any() || dropsToUpdate.Any())
-                {
-                    actionProcessingSetsMade.Add(actionProcessingSetToMake);
-                }
+            if (actionProcessingSetsMade.Any(x => x.ActionProcessingSetType == ActionProcessingSetType.All || x.ActionProcessingSetType == ActionProcessingSetType.Bids))
+            {
+                previousBidProcessDate = date;
+                previousBidProcessInstant = actionProcessingSetsMade.First(x => x.ActionProcessingSetType == ActionProcessingSetType.All || x.ActionProcessingSetType == ActionProcessingSetType.Bids).ProcessTime.InZone(TimeExtensions.EasternTimeZone);
+            }
+            if (actionProcessingSetsMade.Any(x => x.ActionProcessingSetType == ActionProcessingSetType.All || x.ActionProcessingSetType == ActionProcessingSetType.Drops))
+            {
+                previousDropProcessDate = date;
+                previousDropProcessInstant = actionProcessingSetsMade.First(x => x.ActionProcessingSetType == ActionProcessingSetType.All || x.ActionProcessingSetType == ActionProcessingSetType.Drops).ProcessTime.InZone(TimeExtensions.EasternTimeZone);
             }
 
             if (!actionProcessingSetsMade.Any())
@@ -194,14 +227,41 @@ public class ProcessSetCleanupMigration : IScript
             }
 
             actionProcessingSetsToInsert.AddRange(actionProcessingSetsMade);
-            previousProcessDate = date;
-            previousProcessInstant = actionProcessingSetsMade.First().ProcessTime;
         }
 
         await UpdateDropsAndBids(connection, actionProcessingSetsToInsert, pickupBidsToUpdate, dropsToUpdate);
 
         throw new Exception();
         return string.Empty;
+    }
+
+    private List<ActionProcessingSetEntity> GetActionProcessingSetsOnDate(int siteYear, LocalDate date, Instant bidActionProcessingTimestampToUse, Instant dropActionProcessingTimestampToUse,
+        IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
+    {
+        if (date == new LocalDate(2020, 8, 31))
+        {
+            //Special case when I processed drops after midnight
+            return
+            [
+                new ActionProcessingSetEntity()
+                {
+                    ProcessSetID = Guid.NewGuid(),
+                    ProcessName = $"Bid Processing ({date})",
+                    ProcessTime = dropActionProcessingTimestampToUse,
+                    ActionProcessingSetType = ActionProcessingSetType.Drops
+                },
+                new ActionProcessingSetEntity()
+                {
+                    ProcessSetID = Guid.NewGuid(),
+                    ProcessName = $"Drop Processing ({date})",
+                    ProcessTime = bidActionProcessingTimestampToUse,
+                    ActionProcessingSetType = ActionProcessingSetType.Bids
+                },
+            ];
+        }
+
+        var actionProcessingSetToMake = CreateActionProcessingSetEntity(siteYear, date, bidActionProcessingTimestampToUse, dropActionProcessingTimestampToUse, bids, drops);
+        return [actionProcessingSetToMake];
     }
 
     private Dictionary<int, Dictionary<Guid, LeagueYear>> _leagueYearDictionaries = new Dictionary<int, Dictionary<Guid, LeagueYear>>();
@@ -325,8 +385,15 @@ public class ProcessSetCleanupMigration : IScript
         throw new Exception("Unknown situation");
     }
 
+    private static HashSet<string> unknownGameNames = new HashSet<string>();
+    private static HashSet<string> possibleDescriptions = new HashSet<string>();
+
     private static List<BidActionPair> GetBidActionPairs(List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions)
     {
+        if (!actions.Any())
+        {
+            throw new Exception();
+        }
         var bidActionPairs = new List<BidActionPair>();
 
         foreach (var bid in bids)
@@ -342,7 +409,9 @@ public class ProcessSetCleanupMigration : IScript
             var matchingActionForPublisher = matchingActionsForPublisher.FirstOrDefault(x => x.SuccessMatchesBid(bid));
             if (matchingActionForPublisher is null)
             {
-                throw new Exception("Unmatched action.");
+                unknownGameNames.Add(bid.GameName);
+                possibleDescriptions = possibleDescriptions.Concat(actions.Select(x => x.Description)).ToHashSet();
+                matchingActionForPublisher = actions[0];
             }
             bidActionPairs.Add(new BidActionPair(bid, matchingActionForPublisher));
         }
@@ -370,7 +439,7 @@ public class ProcessSetCleanupMigration : IScript
         {
             if (actionProcessingSetsToInsert.Any())
             {
-                await connection.BulkInsertAsync(actionProcessingSetsToInsert, "tbl_meta_actionprocessingset", 500, transaction, ["ActionProcessingSetType"]);
+                await connection.BulkInsertAsync(actionProcessingSetsToInsert, "tbl_meta_actionprocessingset", 500, transaction, ["ActionProcessingSetType", "EasternDateTime"]);
             }
 
             if (bidsToUpdate.Any())
@@ -399,7 +468,7 @@ public class ProcessSetCleanupMigration : IScript
         }
     }
 
-    private static ActionProcessingSetEntity CreateActionProcessingSetEntity(int siteYear, LocalDate date, Instant actionProcessingTimeToUse,
+    private static ActionProcessingSetEntity CreateActionProcessingSetEntity(int siteYear, LocalDate date, Instant bidActionProcessingTimestampToUse, Instant dropActionProcessingTimestampToUse,
         IReadOnlyList<PickupBidWithLeagueYearEntity> bids, IReadOnlyList<DropRequestWithLeagueYearEntity> drops)
     {
         (string namePrefix, ActionProcessingSetType type) = GetActionProcessingSetNamePrefix(siteYear, date, bids, drops);
@@ -408,7 +477,7 @@ public class ProcessSetCleanupMigration : IScript
         {
             ProcessSetID = Guid.NewGuid(),
             ProcessName = $"{namePrefix} ({date})",
-            ProcessTime = actionProcessingTimeToUse,
+            ProcessTime = (type == ActionProcessingSetType.All || type == ActionProcessingSetType.Bids) ? bidActionProcessingTimestampToUse : dropActionProcessingTimestampToUse,
             ActionProcessingSetType = type
         };
 
@@ -448,7 +517,7 @@ public class ProcessSetCleanupMigration : IScript
     }
 
     private static List<T> GetEntitiesUpToTimestamp<T>(ILookup<LocalDate, T> lookup, LocalDate processingDate,
-        Instant actionProcessingInstant, LocalDate previousProcessDate, Instant previousProcessInstant)
+        ZonedDateTime actionProcessingInstant, LocalDate previousProcessDate, ZonedDateTime previousProcessInstant)
         where T : ITimestampEntity
     {
         var entitiesForRelevantDates = new List<T>();
@@ -458,7 +527,7 @@ public class ProcessSetCleanupMigration : IScript
             entitiesForRelevantDates.AddRange(lookup[dateToPull]);
         }
 
-        var filteredEntities = entitiesForRelevantDates.Where(x => x.Timestamp > previousProcessInstant && x.Timestamp <= actionProcessingInstant).ToList();
+        var filteredEntities = entitiesForRelevantDates.Where(x => x.Timestamp > previousProcessInstant.ToInstant() && x.Timestamp <= actionProcessingInstant.ToInstant()).ToList();
         return filteredEntities;
     }
 }
@@ -499,6 +568,7 @@ internal class ActionProcessingSetEntity
     public Instant ProcessTime { get; set; }
     public string ProcessName { get; set; } = null!;
     public ActionProcessingSetType ActionProcessingSetType { get; set; }
+    public string EasternDateTime => ProcessTime.ToEasternDateTime().ToString();
 
     public override string ToString()
     {
@@ -522,6 +592,7 @@ internal class LeagueActionWithLeagueYearEntity : ITimestampEntity
     public int Year { get; init; }
 
     public string PublisherName { get; init; }
+    public string EasternDateTime => Timestamp.ToEasternDateTime().ToString();
 
     public override string ToString()
     {
@@ -570,6 +641,7 @@ internal class PickupBidWithLeagueYearEntity : ITimestampEntity
 
     public string PublisherName { get; set; }
     public string GameName { get; set; }
+    public string EasternDateTime => Timestamp.ToEasternDateTime().ToString();
 
     public override string ToString()
     {
