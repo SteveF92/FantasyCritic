@@ -320,6 +320,13 @@ public class ProcessSetCleanupMigration : IScript
                 .Select(y => y.Bid.BidID).Contains(x.Bid.BidID)))
             .ToList();
 
+        if (bid.BidID.ToString() == "907dacab-e1fe-4a70-9103-8c114c6490eb")
+        {
+            //This is a weird case where two master games that were later merged were both bid on.
+            //Star Wars: Squadrons and Project Maverick (Unannounced Star Wars)
+            return "No competing bids for this game.";
+        }
+
         if (bid.Successful == true && !validOtherBids.Any())
         {
             return "No competing bids for this game.";
