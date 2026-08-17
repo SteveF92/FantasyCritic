@@ -137,27 +137,19 @@ public class ProcessSetCleanupMigration : IScript
             var actionsOnDate = actionsByDate[date].OrderBy(x => x.Timestamp).ToList();
             var actionsLeagueLookup = actionsOnDate.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
 
-            var bidActionProcessingTimestampToUse = actionsOnDate.Where(x => x.Timestamp.ToEasternDate() == date && x.ActionType.Contains("Pickup")).OrderBy(x => x.Timestamp).FirstOrDefault()?.Timestamp.InZone(TimeExtensions.EasternTimeZone);
-            var dropActionProcessingTimestampToUse = actionsOnDate.Where(x => x.Timestamp.ToEasternDate() == date && x.ActionType.Contains("Drop")).OrderBy(x => x.Timestamp).FirstOrDefault()?.Timestamp.InZone(TimeExtensions.EasternTimeZone);
-            if (bidActionProcessingTimestampToUse is null)
+            //A date can have only pickups or only drops, in which case both windows close at the same moment.
+            Instant? firstPickupActionTime = actionsOnDate.Where(x => x.ActionType.Contains("Pickup")).Select(x => (Instant?)x.Timestamp).Min();
+            Instant? firstDropActionTime = actionsOnDate.Where(x => x.ActionType.Contains("Drop")).Select(x => (Instant?)x.Timestamp).Min();
+            if (firstPickupActionTime is null && firstDropActionTime is null)
             {
-                if (actionsOnDate.Any(x => x.ActionType.Contains("Pickup")))
-                {
-                    throw new Exception("Could not find pickup timestamp");
-                }
-                bidActionProcessingTimestampToUse = dropActionProcessingTimestampToUse;
-            }
-            if (dropActionProcessingTimestampToUse is null)
-            {
-                if (actionsOnDate.Any(x => x.ActionType.Contains("Drop")))
-                {
-                    throw new Exception("Could not find drop timestamp");
-                }
-                dropActionProcessingTimestampToUse = bidActionProcessingTimestampToUse;
+                throw new Exception($"No pickup or drop actions on {date}");
             }
 
-            var bidsToInclude = GetEntitiesUpToTimestamp(bidsByDate, date, bidActionProcessingTimestampToUse.Value, previousBidProcessDate, previousBidProcessInstant);
-            var dropsToInclude = GetEntitiesUpToTimestamp(dropsByDate, date, dropActionProcessingTimestampToUse.Value, previousDropProcessDate, previousDropProcessInstant);
+            var bidActionProcessingTimestampToUse = (firstPickupActionTime ?? firstDropActionTime!.Value).InZone(TimeExtensions.EasternTimeZone);
+            var dropActionProcessingTimestampToUse = (firstDropActionTime ?? firstPickupActionTime!.Value).InZone(TimeExtensions.EasternTimeZone);
+
+            var bidsToInclude = GetEntitiesUpToTimestamp(bidsByDate, date, bidActionProcessingTimestampToUse, previousBidProcessDate, previousBidProcessInstant);
+            var dropsToInclude = GetEntitiesUpToTimestamp(dropsByDate, date, dropActionProcessingTimestampToUse, previousDropProcessDate, previousDropProcessInstant);
             if (!bidsToInclude.Any() && !dropsToInclude.Any())
             {
                 throw new Exception($"Invalid Date {date}");
@@ -179,7 +171,7 @@ public class ProcessSetCleanupMigration : IScript
                 var bidsForSiteYear = bidsByLeagueYear.GetValueOrDefault(siteYear, new List<PickupBidWithLeagueYearEntity>());
                 var dropsForSiteYear = dropsByLeagueYear.GetValueOrDefault(siteYear, new List<DropRequestWithLeagueYearEntity>());
 
-                List<ActionProcessingSetEntity> actionProcessingSetsOnDate = GetActionProcessingSetsOnDate(siteYear, date, bidActionProcessingTimestampToUse.Value.ToInstant(), dropActionProcessingTimestampToUse.Value.ToInstant(), bidsForSiteYear, dropsForSiteYear);
+                List<ActionProcessingSetEntity> actionProcessingSetsOnDate = GetActionProcessingSetsOnDate(siteYear, date, bidActionProcessingTimestampToUse.ToInstant(), dropActionProcessingTimestampToUse.ToInstant(), bidsForSiteYear, dropsForSiteYear);
                 foreach (var actionProcessingSetToMake in actionProcessingSetsOnDate)
                 {
                     List<PickupBidWithLeagueYearEntity> pickupBidsInThisSet = new List<PickupBidWithLeagueYearEntity>();
