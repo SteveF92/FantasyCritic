@@ -385,9 +385,6 @@ public class ProcessSetCleanupMigration : IScript
         throw new Exception("Unknown situation");
     }
 
-    private static HashSet<string> unknownGameNames = new HashSet<string>();
-    private static HashSet<string> possibleDescriptions = new HashSet<string>();
-
     private static List<BidActionPair> GetBidActionPairs(List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions)
     {
         if (!actions.Any())
@@ -409,9 +406,7 @@ public class ProcessSetCleanupMigration : IScript
             var matchingActionForPublisher = matchingActionsForPublisher.FirstOrDefault(x => x.SuccessMatchesBid(bid));
             if (matchingActionForPublisher is null)
             {
-                unknownGameNames.Add(bid.GameName);
-                possibleDescriptions = possibleDescriptions.Concat(actions.Select(x => x.Description)).ToHashSet();
-                matchingActionForPublisher = actions[0];
+                throw new Exception("Cannot match game");
             }
             bidActionPairs.Add(new BidActionPair(bid, matchingActionForPublisher));
         }
