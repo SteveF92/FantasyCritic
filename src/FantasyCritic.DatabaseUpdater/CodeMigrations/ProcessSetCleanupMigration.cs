@@ -117,9 +117,9 @@ public class ProcessSetCleanupMigration : IScript
         var dropsByDate = allDropEntities.ToLookup(x => x.Timestamp.ToEasternDate());
 
         ZonedDateTime previousBidProcessInstant = new LocalDateTime(2017, 2, 1, 12, 0, 0).InZoneStrictly(TimeExtensions.EasternTimeZone);
-        LocalDate previousBidProcessDate = LocalDate.MinIsoValue;
+        LocalDate previousBidProcessDate = new LocalDate(2017, 2, 1);
         ZonedDateTime previousDropProcessInstant = new LocalDateTime(2017, 2, 1, 12, 0, 0).InZoneStrictly(TimeExtensions.EasternTimeZone);
-        LocalDate previousDropProcessDate = LocalDate.MinIsoValue;
+        LocalDate previousDropProcessDate = new LocalDate(2017, 2, 1);
 
         List<ActionProcessingSetEntity> actionProcessingSetsToInsert = new List<ActionProcessingSetEntity>();
         List<PickupBidWithLeagueYearEntity> pickupBidsToUpdate = new List<PickupBidWithLeagueYearEntity>();
@@ -181,6 +181,8 @@ public class ProcessSetCleanupMigration : IScript
                 List<ActionProcessingSetEntity> actionProcessingSetsOnDate = GetActionProcessingSetsOnDate(siteYear, date, bidActionProcessingTimestampToUse.Value.ToInstant(), dropActionProcessingTimestampToUse.Value.ToInstant(), bidsForSiteYear, dropsForSiteYear);
                 foreach (var actionProcessingSetToMake in actionProcessingSetsOnDate)
                 {
+                    List<PickupBidWithLeagueYearEntity> pickupBidsInThisSet = new List<PickupBidWithLeagueYearEntity>();
+                    List<DropRequestWithLeagueYearEntity> dropsInThisSet = new List<DropRequestWithLeagueYearEntity>();
                     if (actionProcessingSetToMake.ActionProcessingSetType is ActionProcessingSetType.All or ActionProcessingSetType.Bids)
                     {
                         var bidsByLeague = bidsForSiteYear.GroupBy(x => new LeagueYearKey(x.LeagueID, x.Year));
@@ -189,7 +191,7 @@ public class ProcessSetCleanupMigration : IScript
                             var actionsForLeague = actionsLeagueLookup[bidsForLeague.Key].ToList();
                             var leagueYear = leagueYearDictionary[bidsForLeague.Key.LeagueID];
                             var processedBidsForLeague = GetProcessedBids(actionProcessingSetToMake, bidsForLeague.ToList(), actionsForLeague, masterGameDictionary, leagueYear);
-                            pickupBidsToUpdate.AddRange(processedBidsForLeague);
+                            pickupBidsInThisSet.AddRange(processedBidsForLeague);
                         }
                     }
 
@@ -199,13 +201,15 @@ public class ProcessSetCleanupMigration : IScript
                         foreach (var dropsForLeague in dropsByLeague)
                         {
                             var processedDropsForLeague = GetProcessedDrops(actionProcessingSetToMake, dropsForLeague.ToList());
-                            dropsToUpdate.AddRange(processedDropsForLeague);
+                            dropsInThisSet.AddRange(processedDropsForLeague);
                         }
                     }
 
-                    if (pickupBidsToUpdate.Any() || dropsToUpdate.Any())
+                    if (pickupBidsInThisSet.Any() || dropsInThisSet.Any())
                     {
                         actionProcessingSetsMade.Add(actionProcessingSetToMake);
+                        pickupBidsToUpdate.AddRange(pickupBidsInThisSet);
+                        dropsToUpdate.AddRange(dropsInThisSet);
                     }
                 }
             }
@@ -246,14 +250,14 @@ public class ProcessSetCleanupMigration : IScript
                 new ActionProcessingSetEntity()
                 {
                     ProcessSetID = Guid.NewGuid(),
-                    ProcessName = $"Bid Processing ({date})",
+                    ProcessName = $"Drop Processing ({date})",
                     ProcessTime = dropActionProcessingTimestampToUse,
                     ActionProcessingSetType = ActionProcessingSetType.Drops
                 },
                 new ActionProcessingSetEntity()
                 {
                     ProcessSetID = Guid.NewGuid(),
-                    ProcessName = $"Drop Processing ({date})",
+                    ProcessName = $"Bid Processing ({date})",
                     ProcessTime = bidActionProcessingTimestampToUse,
                     ActionProcessingSetType = ActionProcessingSetType.Bids
                 },
