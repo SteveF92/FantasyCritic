@@ -51,9 +51,33 @@ public class ProcessSetCleanupMigration : IScript
 
         var masterGames = await masterGameRepo.GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
+        var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
 
         var connection = new MySqlConnection(_repositoryConfiguration.ConnectionString);
         await connection.OpenAsync();
+
+
+        //For repeatability in testing
+        var epoch = new ZonedDateTime(new LocalDateTime(2022, 2, 13, 0, 0 ,0), DateTimeZone.Utc, new Offset()).ToInstant();
+        var newlyCreatedActionProcessingSets = actionProcessingSets.Where(x => x.ProcessTime < epoch).ToList();
+        var processSetParam = new
+        {
+            processSetIDs = newlyCreatedActionProcessingSets.Select(x => x.ProcessSetID).ToList()
+        };
+
+        var undoTransaction = await connection.BeginTransactionAsync();
+        try
+        {
+            await connection.ExecuteAsync("UPDATE tbl_league_pickupbid SET ProcessSetId = NULL, Outcome = NULL WHERE ProcessSetId IN @processSetIDs;", processSetParam, transaction: undoTransaction);
+            await connection.ExecuteAsync("UPDATE tbl_league_droprequest SET ProcessSetId = NULL WHERE ProcessSetId IN @processSetIDs;", processSetParam, transaction: undoTransaction);
+            await connection.ExecuteAsync("DELETE FROM tbl_meta_actionprocessingset WHERE ProcessSetId IN @processSetIDs;", processSetParam, transaction: undoTransaction);
+            await undoTransaction.CommitAsync();
+        }
+        catch (Exception e)
+        {
+            await undoTransaction.RollbackAsync();
+            throw;
+        }
 
         string actionSql = """
                            SELECT tbl_league_action.*, tbl_league_publisher.LeagueID, tbl_league_publisher.Year , tbl_league_publisher.PublisherName
@@ -176,6 +200,7 @@ public class ProcessSetCleanupMigration : IScript
 
         await UpdateDropsAndBids(connection, actionProcessingSetsToInsert, pickupBidsToUpdate, dropsToUpdate);
 
+        throw new Exception();
         return string.Empty;
     }
 
@@ -341,29 +366,37 @@ public class ProcessSetCleanupMigration : IScript
     {
         var transaction = await connection.BeginTransactionAsync();
 
-        if (actionProcessingSetsToInsert.Any())
+        try
         {
-            await connection.BulkInsertAsync(actionProcessingSetsToInsert, "tbl_meta_actionprocessingset", 500, transaction);
-        }
+            if (actionProcessingSetsToInsert.Any())
+            {
+                await connection.BulkInsertAsync(actionProcessingSetsToInsert, "tbl_meta_actionprocessingset", 500, transaction, ["ActionProcessingSetType"]);
+            }
 
-        if (bidsToUpdate.Any())
+            if (bidsToUpdate.Any())
+            {
+                string bidUpdateSql = """
+                                      UPDATE tbl_league_pickupbid SET ProcessSetID = @ProcessSetID, Outcome = @Outcome WHERE BidID = @BidID;
+                                      """;
+                await connection.ExecuteAsync(bidUpdateSql, bidsToUpdate, transaction);
+            }
+
+            if (dropsToUpdate.Any())
+            {
+                string dropUpdateSql = """
+                                       UPDATE tbl_league_droprequest SET ProcessSetID = @ProcessSetID WHERE DropRequestID = @DropRequestID;
+                                       """;
+                await connection.ExecuteAsync(dropUpdateSql, dropsToUpdate, transaction);
+            }
+
+            await transaction.CommitAsync();
+        }
+        catch (Exception e)
         {
-            string bidUpdateSql = """
-                                  UPDATE tbl_league_pickupbid SET ProcessSetID = @ProcessSetID, Outcome = @Outcome WHERE BidID = @BidID;
-                                  """;
-            await connection.ExecuteAsync(bidUpdateSql, bidsToUpdate, transaction);
+            await transaction.RollbackAsync();
+            Console.WriteLine(e);
+            throw;
         }
-
-
-        if (dropsToUpdate.Any())
-        {
-            string dropUpdateSql = """
-                                  UPDATE tbl_league_droprequest SET ProcessSetID = @ProcessSetID WHERE DropRequestID = @DropRequestID;
-                                  """;
-            await connection.ExecuteAsync(dropUpdateSql, dropsToUpdate, transaction);
-        }
-
-        await transaction.CommitAsync();
     }
 
     private static ActionProcessingSetEntity CreateActionProcessingSetEntity(int siteYear, LocalDate date, Instant actionProcessingTimeToUse,
