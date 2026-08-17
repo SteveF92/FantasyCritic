@@ -597,7 +597,7 @@ internal class LeagueActionWithLeagueYearEntity : ITimestampEntity
     public Guid LeagueID { get; init; }
     public int Year { get; init; }
 
-    public string PublisherName { get; init; }
+    public required string PublisherName { get; init; }
     public string EasternDateTime => Timestamp.ToEasternDateTime().ToString();
 
     public override string ToString()
@@ -645,8 +645,8 @@ internal class PickupBidWithLeagueYearEntity : ITimestampEntity
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
 
-    public string PublisherName { get; set; }
-    public string GameName { get; set; }
+    public string PublisherName { get; set; } = null!;
+    public string GameName { get; set; } = null!;
     public string EasternDateTime => Timestamp.ToEasternDateTime().ToString();
 
     public override string ToString()
