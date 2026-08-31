@@ -84,7 +84,7 @@ public class ProcessSetCleanupMigration : IScript
                            SELECT tbl_league_action.*, tbl_league_publisher.LeagueID, tbl_league_publisher.Year , tbl_league_publisher.PublisherName
                            FROM tbl_league_action 
                            JOIN tbl_league_publisher on tbl_league_publisher.PublisherID = tbl_league_action.PublisherID
-                           WHERE tbl_league_action.Timestamp <= '2022-02-06 00:27:19' AND ActionType IN
+                           WHERE tbl_league_action.Timestamp <= '2022-02-07 00:00:00' AND ActionType IN
                            (
                            'Pickup Successful',
                            'Pickup Failed',
