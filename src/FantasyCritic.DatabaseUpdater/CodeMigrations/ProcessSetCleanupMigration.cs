@@ -524,7 +524,7 @@ public class ProcessSetCleanupMigration : IScript
             return ("Bid Processing", ActionProcessingSetType.Bids);
         }
 
-        var theDayICombinedDropsAndBids = new LocalDate(2020, 12, 19);
+        var theDayICombinedDropsAndBids = new LocalDate(2020, 12, 13);
         if (siteYear == 2020 && date < theDayICombinedDropsAndBids)
         {
             if (date.DayOfWeek == IsoDayOfWeek.Sunday && drops.Any())
