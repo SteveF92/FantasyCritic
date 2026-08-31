@@ -233,6 +233,7 @@ internal static class ProcessSetCleanupResources
             { "Unannounced Mainline 3D Mario Platformer", ["Unannounced 3D Mario", "Super Mario Odyssey 2 (Unannounced)"] },
             { "Football Manager 2022", ["Football Manager (2021)"] },
             { "Silent Hill f", ["Unannounced New Silent Hill"] },
+            { "Gwent: Rogue Mage", ["Project Golden Nekker"] },
             { "Assassin's Creed Infinity", ["Unannounced Next Assassin's Creed"] },
             { "The Last of Us Part I", ["""
                                         The Last of Us "Remake"
