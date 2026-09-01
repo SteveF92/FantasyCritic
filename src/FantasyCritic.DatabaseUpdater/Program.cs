@@ -73,6 +73,7 @@ public class Program
                     .WithScripts(GetRunAlwaysScripts(idempotentScriptsPath))
                     // Run-once, journaled code migrations
                     .WithScript("2026-08-09_002_processSetCleanup.cs", new ProcessSetCleanupMigration(repositoryConfiguration, logger.ForContext<ProcessSetCleanupMigration>()))
+                    .WithScript("2026-08-31_001_topBidsAndDropsBackfill.cs", new TopBidsAndDropsBackfillMigration(repositoryConfiguration))
                     .WithExecutionTimeout(TimeSpan.FromMinutes(30))
                     .LogTo(loggerFactory)
                     .Build();
