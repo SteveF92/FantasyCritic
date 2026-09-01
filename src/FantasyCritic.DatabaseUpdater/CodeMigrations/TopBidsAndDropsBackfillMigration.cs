@@ -5,6 +5,7 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL;
+using Serilog;
 
 namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 
@@ -15,9 +16,12 @@ public class TopBidsAndDropsBackfillMigration : IScript
 {
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
+    private readonly ILogger _logger;
 
-    public TopBidsAndDropsBackfillMigration(RepositoryConfiguration repositoryConfiguration)
+    public TopBidsAndDropsBackfillMigration(RepositoryConfiguration repositoryConfiguration, ILogger logger)
     {
+        _logger = logger;
+
         IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(repositoryConfiguration);
         _masterGameRepo = new MySQLMasterGameRepo(repositoryConfiguration, userStore, repositoryConfiguration.Clock);
         ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(repositoryConfiguration, userStore);
@@ -31,18 +35,35 @@ public class TopBidsAndDropsBackfillMigration : IScript
 
     private async Task<string> ProvideScriptAsync()
     {
+        _logger.Information("Starting TopBidsAndDropsBackfillMigration.");
+
         var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
         var weeks = TopBidsAndDropsFunctions.GetActionProcessingWeeks(actionProcessingSets);
         var existingProcessDates = (await _masterGameRepo.GetProcessingDatesForTopBidsAndDrops()).ToHashSet();
         var weeksToBackfill = weeks.Where(week => !existingProcessDates.Contains(week.ProcessDate)).ToList();
 
+        _logger.Information(
+            "Found {TotalWeekCount} action processing weeks; {ExistingWeekCount} already cached, {WeeksToBackfillCount} to backfill.",
+            weeks.Count,
+            existingProcessDates.Count,
+            weeksToBackfill.Count);
+
         if (weeksToBackfill.Count == 0)
         {
+            _logger.Information("All action processing weeks already have top bids and drops; nothing to do.");
             return string.Empty;
         }
 
-        foreach (var week in weeksToBackfill)
+        for (var weekIndex = 0; weekIndex < weeksToBackfill.Count; weekIndex++)
         {
+            var week = weeksToBackfill[weekIndex];
+            _logger.Information(
+                "Backfilling week {WeekIndex}/{WeekCount}: {ProcessDate} ({ProcessingSetCount} processing sets)...",
+                weekIndex + 1,
+                weeksToBackfill.Count,
+                week.ProcessDate,
+                week.ProcessingSets.Count);
+
             var bidsAndDrops = await _fantasyCriticRepo.GetPickupBidsAndDropsForProcessingSets(week.ProcessingSets);
             var yearsInGroup = bidsAndDrops.Bids.Select(x => x.LeagueYear.Key.Year).Concat(bidsAndDrops.Drops.Select(x => x.LeagueYear.Key.Year)).Distinct().ToList();
 
@@ -55,8 +76,16 @@ public class TopBidsAndDropsBackfillMigration : IScript
 
             var topBidsAndDrops = TopBidsAndDropsFunctions.CalculateTopBidsAndDrops(week.ProcessDate, bidsAndDrops, yearsInGroup, allMasterGameYears);
             await _fantasyCriticRepo.InsertTopBidsAndDrops(topBidsAndDrops);
+
+            _logger.Information(
+                "Inserted {GameCount} top bids and drops rows for {ProcessDate} ({BidCount} bids, {DropCount} drops).",
+                topBidsAndDrops.Count,
+                week.ProcessDate,
+                bidsAndDrops.Bids.Count,
+                bidsAndDrops.Drops.Count);
         }
 
+        _logger.Information("TopBidsAndDropsBackfillMigration completed successfully. Backfilled {WeekCount} weeks.", weeksToBackfill.Count);
         return string.Empty;
     }
 }

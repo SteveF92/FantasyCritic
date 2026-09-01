@@ -73,7 +73,7 @@ public class Program
                     .WithScripts(GetRunAlwaysScripts(idempotentScriptsPath))
                     // Run-once, journaled code migrations
                     .WithScript("2026-08-09_002_processSetCleanup.cs", new ProcessSetCleanupMigration(repositoryConfiguration, logger.ForContext<ProcessSetCleanupMigration>()))
-                    .WithScript("2026-08-31_001_topBidsAndDropsBackfill.cs", new TopBidsAndDropsBackfillMigration(repositoryConfiguration))
+                    .WithScript("2026-08-31_001_topBidsAndDropsBackfill.cs", new TopBidsAndDropsBackfillMigration(repositoryConfiguration, logger.ForContext<TopBidsAndDropsBackfillMigration>()))
                     .WithExecutionTimeout(TimeSpan.FromMinutes(30))
                     .LogTo(loggerFactory)
                     .Build();
@@ -82,7 +82,7 @@ public class Program
 
             if (!result.Successful)
             {
-                logger.Error($"Database update could not be completed.", result.Error);
+                logger.Error(result.Error, "Database update could not be completed.");
                 return -1;
             }
 
