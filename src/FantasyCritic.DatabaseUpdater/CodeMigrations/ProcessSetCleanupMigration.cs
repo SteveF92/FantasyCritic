@@ -28,6 +28,11 @@ public class ProcessSetCleanupMigration : IScript
 {
     private const string FailureReasonPrefix = "Failure reason: ";
 
+    private readonly List<string> _tiebreakDiagnostics = new();
+    private readonly List<string> _conflictDiagnostics = new();
+    private readonly List<string> _selfCompetitionDiagnostics = new();
+    private readonly HashSet<string> _unmatchedGameDiagnostics = new();
+
     private readonly RepositoryConfiguration _repositoryConfiguration;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
@@ -238,6 +243,30 @@ public class ProcessSetCleanupMigration : IScript
             actionProcessingSetsToInsert.AddRange(actionProcessingSetsMade);
         }
 
+        Console.WriteLine($"TIEBREAK DIAGNOSTICS: {_tiebreakDiagnostics.Count} winning bids were decided by a tie at the top bid amount.");
+        foreach (var tiebreakDiagnostic in _tiebreakDiagnostics)
+        {
+            Console.WriteLine(tiebreakDiagnostic);
+        }
+
+        Console.WriteLine($"CONFLICT DIAGNOSTICS: {_conflictDiagnostics.Count} winning bids were beaten by a higher valid bid in the same run.");
+        foreach (var conflictDiagnostic in _conflictDiagnostics)
+        {
+            Console.WriteLine(conflictDiagnostic);
+        }
+
+        Console.WriteLine($"SELF-COMPETITION DIAGNOSTICS: {_selfCompetitionDiagnostics.Count} winning bids competed against another bid from the same publisher.");
+        foreach (var selfCompetitionDiagnostic in _selfCompetitionDiagnostics)
+        {
+            Console.WriteLine(selfCompetitionDiagnostic);
+        }
+
+        Console.WriteLine($"UNMATCHED GAME DIAGNOSTICS: {_unmatchedGameDiagnostics.Count} bids could not be matched to a league action.");
+        foreach (var unmatchedGameDiagnostic in _unmatchedGameDiagnostics)
+        {
+            Console.WriteLine(unmatchedGameDiagnostic);
+        }
+
         VerifyEverythingWasAssigned(allBidEntities, allDropEntities, deliberatelySkippedBidIDs, deliberatelySkippedDropIDs);
         await UpdateDropsAndBids(connection, actionProcessingSetsToInsert, pickupBidsToUpdate, dropsToUpdate);
 
@@ -321,11 +350,15 @@ public class ProcessSetCleanupMigration : IScript
         return bids;
     }
 
-    private static string GetOutcomeString(PickupBidWithLeagueYearEntity bid, List<PickupBidWithLeagueYearEntity> allBidsForGame,
+    private string GetOutcomeString(PickupBidWithLeagueYearEntity bid, List<PickupBidWithLeagueYearEntity> allBidsForGame,
         List<LeagueActionWithLeagueYearEntity> actionsForLeague, LeagueYear leagueYear)
     {
         var bidActionPairs = GetBidActionPairs(allBidsForGame, actionsForLeague);
-        var thisPair = bidActionPairs.Single(x => x.Bid.BidID == bid.BidID);
+        var thisPair = bidActionPairs.SingleOrDefault(x => x.Bid.BidID == bid.BidID);
+        if (thisPair is null)
+        {
+            return "UNMATCHED-DIAGNOSTIC-PLACEHOLDER";
+        }
 
         //A failed bid's outcome was stored verbatim as the failure reason on its action, so there is nothing to infer.
         if (bid.Successful == false)
@@ -344,6 +377,13 @@ public class ProcessSetCleanupMigration : IScript
         }
 
         var validOtherBids = bidActionPairs.Where(x => x.Bid.BidID != bid.BidID && x.WasAValidBid()).ToList();
+        var selfCompetingBids = validOtherBids.Where(x => x.Bid.PublisherID == bid.PublisherID).ToList();
+        if (selfCompetingBids.Any())
+        {
+            _selfCompetitionDiagnostics.Add($"{leagueYear.Key} | '{bid.GameName}' | {bid.BidID} ${bid.BidAmount} ({bid.PublisherName}) | Against itself: " +
+                                            string.Join(", ", selfCompetingBids.Select(x => $"{x.Bid.BidID} ${x.Bid.BidAmount}")));
+        }
+
         if (!validOtherBids.Any())
         {
             return "No competing bids for this game.";
@@ -354,10 +394,17 @@ public class ProcessSetCleanupMigration : IScript
             return "This bid was the highest bid.";
         }
 
-        if (validOtherBids.Any(x => x.Bid.BidAmount > bid.BidAmount))
+        var higherBids = validOtherBids.Where(x => x.Bid.BidAmount > bid.BidAmount).ToList();
+        if (higherBids.Any())
         {
-            throw new Exception($"Bid {bid.BidID} won despite a higher valid bid existing.");
+            _conflictDiagnostics.Add($"{leagueYear.Key} | '{bid.GameName}' | Won: {bid.BidID} ${bid.BidAmount} ({bid.PublisherName}) | Beaten by: " +
+                                     string.Join(", ", higherBids.Select(x => $"${x.Bid.BidAmount} ({x.Bid.PublisherName}){(x.Bid.PublisherID == bid.PublisherID ? " SAME-PUBLISHER" : "")}")));
+            return "No competing bids for this game.";
         }
+
+        var tiedBids = validOtherBids.Where(x => x.Bid.BidAmount == bid.BidAmount).ToList();
+        _tiebreakDiagnostics.Add($"{leagueYear.Key} | '{bid.GameName}' | ${bid.BidAmount} | Winner: {bid.PublisherName} @ {bid.EasternDateTime} | " +
+                                 $"Tied with: {string.Join(", ", tiedBids.Select(x => $"{x.Bid.PublisherName} @ {x.Bid.EasternDateTime}"))}");
 
         //A configurable tiebreak system did not exist until 2022-03-03, which is after everything this migration
         //touches. Until then the processor always broke ties on lowest projected points, so the league year's current
@@ -365,7 +412,7 @@ public class ProcessSetCleanupMigration : IScript
         return "This publisher has the lowest projected points. (Not including this game)";
     }
 
-    private static List<BidActionPair> GetBidActionPairs(List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions)
+    private List<BidActionPair> GetBidActionPairs(List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions)
     {
         if (!actions.Any())
         {
@@ -386,7 +433,9 @@ public class ProcessSetCleanupMigration : IScript
             var matchingActionForPublisher = matchingActionsForPublisher.FirstOrDefault(x => x.SuccessMatchesBid(bid));
             if (matchingActionForPublisher is null)
             {
-                throw new Exception("Cannot match game");
+                _unmatchedGameDiagnostics.Add($"'{bid.GameName}' | {bid.LeagueID} {bid.Year} | {bid.BidID} ${bid.BidAmount} ({bid.PublisherName}) | placed {bid.EasternDateTime} | successful={bid.Successful} | " +
+                                              $"candidate actions for publisher: {string.Join(" ~~ ", matchingActionsForGame.Where(x => x.PublisherID == bid.PublisherID).Select(x => x.Description))}");
+                continue;
             }
             bidActionPairs.Add(new BidActionPair(bid, matchingActionForPublisher));
         }
