@@ -270,7 +270,6 @@ public class ProcessSetCleanupMigration : IScript
         VerifyEverythingWasAssigned(allBidEntities, allDropEntities, deliberatelySkippedBidIDs, deliberatelySkippedDropIDs);
         await UpdateDropsAndBids(connection, actionProcessingSetsToInsert, pickupBidsToUpdate, dropsToUpdate);
 
-        throw new Exception();
         return string.Empty;
     }
 
