@@ -65,7 +65,7 @@ public class ProcessSetCleanupMigration : IScript
 
 
         //For repeatability in testing
-        var epoch = new ZonedDateTime(new LocalDateTime(2022, 2, 13, 0, 0 ,0), DateTimeZone.Utc, new Offset()).ToInstant();
+        var epoch = new ZonedDateTime(new LocalDateTime(2022, 2, 11, 0, 0 ,0), DateTimeZone.Utc, new Offset()).ToInstant();
         var newlyCreatedActionProcessingSets = actionProcessingSets.Where(x => x.ProcessTime < epoch).ToList();
         var processSetParam = new
         {
