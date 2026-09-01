@@ -237,7 +237,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return stats.Select(x => x.ToDomain()).ToList();
     }
 
-    private async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForPublishers(IReadOnlySet<Guid> publisherIDs)
+    private async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForPublishers(IReadOnlySet<Guid> publisherIDs, bool includeDeleted)
     {
         const string sql = "select distinct Year from tbl_league_publisher where PublisherID in @publisherIDs";
         var queryObject = new
@@ -251,7 +251,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<LeagueYear> requestedLeagueYears = [];
         foreach (var year in yearsForPublishers)
         {
-            var allLeagueYears = await GetLeagueYears(year);
+            var allLeagueYears = await GetLeagueYears(year, includeDeleted);
             var leagueYearsWithOneOfThesePublishers = allLeagueYears.Where(x => x.Publishers.Select(y => y.PublisherID).Intersect(publisherIDs).Any());
             requestedLeagueYears.AddRange(leagueYearsWithOneOfThesePublishers);
         }
@@ -747,7 +747,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var allPublisherIDs = allBidPublisherIDs.Concat(allDropRequestPublisherIDs).ToHashSet();
 
         _userStore.ClearUserCache();
-        var allLeagueYearsForPublishers = await GetLeagueYearsForPublishers(allPublisherIDs);
+        var allLeagueYearsForPublishers = await GetLeagueYearsForPublishers(allPublisherIDs, true);
 
         var leagueYearDictionary = allLeagueYearsForPublishers.ToDictionary(x => x.Key);
         var publisherDictionary = allLeagueYearsForPublishers.SelectMany(x => x.Publishers).ToDictionary(x => x.PublisherID);
