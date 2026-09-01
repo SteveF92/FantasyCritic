@@ -3,7 +3,6 @@ using Dapper;
 using DbUp.Engine;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain;
-using FantasyCritic.Lib.Enums;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
@@ -360,17 +359,10 @@ public class ProcessSetCleanupMigration : IScript
             throw new Exception($"Bid {bid.BidID} won despite a higher valid bid existing.");
         }
 
-        if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.LowestProjectedPoints))
-        {
-            return "This publisher has the lowest projected points. (Not including this game)";
-        }
-
-        if (leagueYear.Options.TiebreakSystem.Equals(TiebreakSystem.EarliestBid))
-        {
-            return "This bid was placed earliest.";
-        }
-
-        throw new Exception($"Unknown tiebreak system '{leagueYear.Options.TiebreakSystem}' for bid {bid.BidID}.");
+        //A configurable tiebreak system did not exist until 2022-03-03, which is after everything this migration
+        //touches. Until then the processor always broke ties on lowest projected points, so the league year's current
+        //TiebreakSystem says nothing about what actually happened here.
+        return "This publisher has the lowest projected points. (Not including this game)";
     }
 
     private static List<BidActionPair> GetBidActionPairs(List<PickupBidWithLeagueYearEntity> bids, List<LeagueActionWithLeagueYearEntity> actions)
