@@ -59,6 +59,8 @@ public class ProcessSetCleanupMigration : IScript
 
     private async Task<string> ProvideScriptAsync(Func<IDbCommand> dbCommandFactory)
     {
+        _logger.Information("Starting ProcessSetCleanupMigration.");
+
         var masterGames = await _masterGameRepo.GetMasterGames();
         var masterGameDictionary = masterGames.ToDictionary(x => x.MasterGameID);
         var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
@@ -82,8 +84,9 @@ public class ProcessSetCleanupMigration : IScript
             await connection.ExecuteAsync("UPDATE tbl_league_droprequest SET ProcessSetId = NULL WHERE ProcessSetId IN @processSetIDs;", processSetParam, transaction: undoTransaction);
             await connection.ExecuteAsync("DELETE FROM tbl_meta_actionprocessingset WHERE ProcessSetId IN @processSetIDs;", processSetParam, transaction: undoTransaction);
             await undoTransaction.CommitAsync();
+            _logger.Information("Rolled back {ProcessSetCount} pre-epoch action processing sets before rebuild.", newlyCreatedActionProcessingSets.Count);
         }
-        catch (Exception e)
+        catch (Exception)
         {
             await undoTransaction.RollbackAsync();
             throw;
@@ -129,8 +132,16 @@ public class ProcessSetCleanupMigration : IScript
         if (!allBidEntities.Any() && !allDropEntities.Any())
         {
             //Either this already ran and the journal insert didn't stick, or this database never had the old data.
+            _logger.Information("No unassigned bids or drops found; nothing to do.");
             return string.Empty;
         }
+
+        _logger.Information(
+            "Loaded {ActionCount} actions, {BidCount} bids, and {DropCount} drops across {DateCount} processing dates.",
+            allActionEntities.Count,
+            allBidEntities.Count,
+            allDropEntities.Count,
+            datesWithUnassignedActions.Count);
 
         ZonedDateTime previousBidProcessInstant = new LocalDateTime(2017, 2, 1, 12, 0, 0).InZoneStrictly(TimeExtensions.EasternTimeZone);
         LocalDate previousBidProcessDate = new LocalDate(2017, 2, 1);
@@ -246,6 +257,12 @@ public class ProcessSetCleanupMigration : IScript
             actionProcessingSetsToInsert.AddRange(actionProcessingSetsMade);
         }
 
+        _logger.Information(
+            "Rebuilt {ProcessSetCount} action processing sets covering {BidCount} bids and {DropCount} drops.",
+            actionProcessingSetsToInsert.Count,
+            pickupBidsToUpdate.Count,
+            dropsToUpdate.Count);
+
         _logger.Information("TIEBREAK DIAGNOSTICS: {TiebreakCount} winning bids were decided by a tie at the top bid amount.", _tiebreakDiagnostics.Count);
         foreach (var tiebreakDiagnostic in _tiebreakDiagnostics)
         {
@@ -273,6 +290,7 @@ public class ProcessSetCleanupMigration : IScript
         VerifyEverythingWasAssigned(allBidEntities, allDropEntities, deliberatelySkippedBidIDs, deliberatelySkippedDropIDs);
         await UpdateDropsAndBids(connection, actionProcessingSetsToInsert, pickupBidsToUpdate, dropsToUpdate);
 
+        _logger.Information("ProcessSetCleanupMigration completed successfully.");
         return string.Empty;
     }
 
@@ -485,6 +503,11 @@ public class ProcessSetCleanupMigration : IScript
             }
 
             await transaction.CommitAsync();
+            _logger.Information(
+                "Persisted {ProcessSetCount} action processing sets, {BidCount} bid updates, and {DropCount} drop updates.",
+                actionProcessingSetsToInsert.Count,
+                bidsToUpdate.Count,
+                dropsToUpdate.Count);
         }
         catch (Exception e)
         {
