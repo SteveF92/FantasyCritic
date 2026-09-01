@@ -529,7 +529,12 @@ public class AdminService
     public async Task UpdateTopBidsAndDrops()
     {
         var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
-        var standardBidProcessingRuns = actionProcessingSets.Where(x => x.ProcessName.StartsWith("Drop/Bid Processing")).OrderByDescending(x => x.ProcessTime).ToList();
+        var standardBidProcessingRuns = actionProcessingSets
+            .Where(x => x.ProcessName.StartsWith("Drop/Bid Processing")
+                        || x.ProcessName.StartsWith("Drop Processing")
+                        || x.ProcessName.StartsWith("Bid Processing"))
+            .OrderByDescending(x => x.ProcessTime).ToList();
+
         if (standardBidProcessingRuns.Count == 0)
         {
             return;
