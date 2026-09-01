@@ -72,7 +72,7 @@ public class Program
                     // Run-always scripts (e.g., views / stored procedures)
                     .WithScripts(GetRunAlwaysScripts(idempotentScriptsPath))
                     // Run-once, journaled code migrations
-                    .WithScript("2026-08-09_002_processSetCleanup.cs", new ProcessSetCleanupMigration(repositoryConfiguration))
+                    .WithScript("2026-08-09_002_processSetCleanup.cs", new ProcessSetCleanupMigration(repositoryConfiguration, logger.ForContext<ProcessSetCleanupMigration>()))
                     .WithExecutionTimeout(TimeSpan.FromMinutes(30))
                     .LogTo(loggerFactory)
                     .Build();

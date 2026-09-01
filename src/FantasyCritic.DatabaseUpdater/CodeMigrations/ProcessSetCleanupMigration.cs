@@ -9,6 +9,7 @@ using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL;
 using MySqlConnector;
 using NodaTime;
+using Serilog;
 
 namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 
@@ -36,10 +37,12 @@ public class ProcessSetCleanupMigration : IScript
     private readonly RepositoryConfiguration _repositoryConfiguration;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
+    private readonly ILogger _logger;
 
-    public ProcessSetCleanupMigration(RepositoryConfiguration repositoryConfiguration)
+    public ProcessSetCleanupMigration(RepositoryConfiguration repositoryConfiguration, ILogger logger)
     {
         _repositoryConfiguration = repositoryConfiguration;
+        _logger = logger;
 
         IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(repositoryConfiguration);
         _masterGameRepo = new MySQLMasterGameRepo(repositoryConfiguration, userStore, repositoryConfiguration.Clock);
@@ -243,28 +246,28 @@ public class ProcessSetCleanupMigration : IScript
             actionProcessingSetsToInsert.AddRange(actionProcessingSetsMade);
         }
 
-        Console.WriteLine($"TIEBREAK DIAGNOSTICS: {_tiebreakDiagnostics.Count} winning bids were decided by a tie at the top bid amount.");
+        _logger.Information("TIEBREAK DIAGNOSTICS: {TiebreakCount} winning bids were decided by a tie at the top bid amount.", _tiebreakDiagnostics.Count);
         foreach (var tiebreakDiagnostic in _tiebreakDiagnostics)
         {
-            Console.WriteLine(tiebreakDiagnostic);
+            _logger.Information("{TiebreakDiagnostic}", tiebreakDiagnostic);
         }
 
-        Console.WriteLine($"CONFLICT DIAGNOSTICS: {_conflictDiagnostics.Count} winning bids were beaten by a higher valid bid in the same run.");
+        _logger.Information("CONFLICT DIAGNOSTICS: {ConflictCount} winning bids were beaten by a higher valid bid in the same run.", _conflictDiagnostics.Count);
         foreach (var conflictDiagnostic in _conflictDiagnostics)
         {
-            Console.WriteLine(conflictDiagnostic);
+            _logger.Information("{ConflictDiagnostic}", conflictDiagnostic);
         }
 
-        Console.WriteLine($"SELF-COMPETITION DIAGNOSTICS: {_selfCompetitionDiagnostics.Count} winning bids competed against another bid from the same publisher.");
+        _logger.Information("SELF-COMPETITION DIAGNOSTICS: {SelfCompetitionCount} winning bids competed against another bid from the same publisher.", _selfCompetitionDiagnostics.Count);
         foreach (var selfCompetitionDiagnostic in _selfCompetitionDiagnostics)
         {
-            Console.WriteLine(selfCompetitionDiagnostic);
+            _logger.Information("{SelfCompetitionDiagnostic}", selfCompetitionDiagnostic);
         }
 
-        Console.WriteLine($"UNMATCHED GAME DIAGNOSTICS: {_unmatchedGameDiagnostics.Count} bids could not be matched to a league action.");
+        _logger.Information("UNMATCHED GAME DIAGNOSTICS: {UnmatchedGameCount} bids could not be matched to a league action.", _unmatchedGameDiagnostics.Count);
         foreach (var unmatchedGameDiagnostic in _unmatchedGameDiagnostics)
         {
-            Console.WriteLine(unmatchedGameDiagnostic);
+            _logger.Information("{UnmatchedGameDiagnostic}", unmatchedGameDiagnostic);
         }
 
         VerifyEverythingWasAssigned(allBidEntities, allDropEntities, deliberatelySkippedBidIDs, deliberatelySkippedDropIDs);
@@ -486,7 +489,7 @@ public class ProcessSetCleanupMigration : IScript
         catch (Exception e)
         {
             await transaction.RollbackAsync();
-            Console.WriteLine(e);
+            _logger.Error(e, "Failed to update drops and bids during ProcessSetCleanupMigration.");
             throw;
         }
     }
