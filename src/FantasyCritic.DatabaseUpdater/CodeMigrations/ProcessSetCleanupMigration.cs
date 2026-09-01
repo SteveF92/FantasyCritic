@@ -525,8 +525,9 @@ public enum ActionProcessingSetType
 internal record BidActionPair(PickupBidWithLeagueYearEntity Bid, LeagueActionWithLeagueYearEntity Action)
 {
     /// <summary>
-    /// Whether this bid made it as far as the auction. Only bids that passed validation got that far, and the auction
-    /// only ever rejected them for one of these two reasons, so this is an exact reconstruction of the valid bid set.
+    /// Whether this bid made it as far as the auction. Only bids that passed validation got that far, and for
+    /// everything this migration touches the auction only ever rejected them with this one message, so this is an
+    /// exact reconstruction of the valid bid set. ("Bid lost on tiebreakers." was not added until 2023.)
     /// </summary>
     public bool WasAValidBid()
     {
@@ -535,8 +536,7 @@ internal record BidActionPair(PickupBidWithLeagueYearEntity Bid, LeagueActionWit
             return true;
         }
 
-        return Action.Description.EndsWith("Failure reason: Publisher was outbid.")
-               || Action.Description.EndsWith("Failure reason: Bid lost on tiebreakers.");
+        return Action.Description.EndsWith("Failure reason: Publisher was outbid.");
     }
 }
 
