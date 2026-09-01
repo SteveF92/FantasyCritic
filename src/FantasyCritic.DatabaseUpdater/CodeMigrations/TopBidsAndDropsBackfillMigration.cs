@@ -5,6 +5,7 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.MySQL;
+using NodaTime;
 using Serilog;
 
 namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
@@ -22,10 +23,17 @@ public class TopBidsAndDropsBackfillMigration : IScript
     {
         _logger = logger;
 
-        IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(repositoryConfiguration);
-        _masterGameRepo = new MySQLMasterGameRepo(repositoryConfiguration, userStore, repositoryConfiguration.Clock);
-        ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(repositoryConfiguration, userStore);
-        _fantasyCriticRepo = new MySQLFantasyCriticRepo(repositoryConfiguration, userStore, _masterGameRepo, combinedDataRepo);
+        var longRunningConfig = repositoryConfiguration with
+        {
+            ConnectionString = ConnectionStringUtilities.WithDefaultCommandTimeout(
+                repositoryConfiguration.ConnectionString,
+                Duration.FromMinutes(10))
+        };
+
+        IFantasyCriticUserStore userStore = new MySQLFantasyCriticUserStore(longRunningConfig);
+        _masterGameRepo = new MySQLMasterGameRepo(longRunningConfig, userStore, longRunningConfig.Clock);
+        ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(longRunningConfig, userStore);
+        _fantasyCriticRepo = new MySQLFantasyCriticRepo(longRunningConfig, userStore, _masterGameRepo, combinedDataRepo);
     }
 
     public string ProvideScript(Func<IDbCommand> dbCommandFactory)
