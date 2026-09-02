@@ -90,6 +90,7 @@ public class TopBidsAndDropsBackfillMigration : IScript
 
             var topBidsAndDrops = TopBidsAndDropsFunctions.CalculateTopBidsAndDrops(week.ProcessDate, bidsAndDrops, yearsInGroup, allMasterGameYears);
             await _fantasyCriticRepo.InsertTopBidsAndDrops(topBidsAndDrops);
+            existingProcessDates.Add(week.ProcessDate);
 
             _logger.Information(
                 "Inserted {GameCount} top bids and drops rows for {ProcessDate} ({BidCount} bids, {DropCount} drops).",

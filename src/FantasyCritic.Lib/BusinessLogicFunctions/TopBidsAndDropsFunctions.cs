@@ -33,7 +33,18 @@ public static class TopBidsAndDropsFunctions
             weeks.Add(new ActionProcessingWeek(weekEndingSet.ProcessTime.ToEasternDate(), processingSetsToInclude));
         }
 
-        return weeks;
+        // Multiple bid/drop week-ending runs on the same Eastern calendar day share one cache row
+        // (ProcessDate, MasterGameID, Year). Merge their processing sets into a single week.
+        return weeks
+            .GroupBy(week => week.ProcessDate)
+            .OrderBy(group => group.Key)
+            .Select(group => new ActionProcessingWeek(
+                group.Key,
+                group.SelectMany(week => week.ProcessingSets)
+                    .DistinctBy(set => set.ProcessSetID)
+                    .OrderBy(set => set.ProcessTime)
+                    .ToList()))
+            .ToList();
     }
 
     public static IReadOnlyList<TopBidsAndDropsGame> CalculateTopBidsAndDrops(LocalDate processDate, BidsAndDropsSet bidsAndDrops, IEnumerable<int> relevantYears, IReadOnlyList<MasterGameYear> masterGameYears)
