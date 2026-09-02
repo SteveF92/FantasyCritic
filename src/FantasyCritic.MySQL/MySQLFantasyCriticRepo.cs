@@ -237,7 +237,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return stats.Select(x => x.ToDomain()).ToList();
     }
 
-    private async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForPublishers(IReadOnlySet<Guid> publisherIDs)
+    private async Task<IReadOnlyList<LeagueYear>> GetLeagueYearsForPublishers(IReadOnlySet<Guid> publisherIDs, bool includeDeleted, IDictionary<int, IReadOnlyList<LeagueYear>>? leagueYearCache = null)
     {
         const string sql = "select distinct Year from tbl_league_publisher where PublisherID in @publisherIDs";
         var queryObject = new
@@ -251,7 +251,20 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<LeagueYear> requestedLeagueYears = [];
         foreach (var year in yearsForPublishers)
         {
-            var allLeagueYears = await GetLeagueYears(year);
+            IReadOnlyList<LeagueYear> allLeagueYears;
+            if (leagueYearCache is not null && leagueYearCache.TryGetValue(year, out var cachedLeagueYears))
+            {
+                allLeagueYears = cachedLeagueYears;
+            }
+            else
+            {
+                allLeagueYears = await GetLeagueYears(year, includeDeleted);
+                if (leagueYearCache is not null)
+                {
+                    leagueYearCache[year] = allLeagueYears;
+                }
+            }
+
             var leagueYearsWithOneOfThesePublishers = allLeagueYears.Where(x => x.Publishers.Select(y => y.PublisherID).Intersect(publisherIDs).Any());
             requestedLeagueYears.AddRange(leagueYearsWithOneOfThesePublishers);
         }
@@ -727,7 +740,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return domain;
     }
 
-    public async Task<BidsAndDropsSet> GetPickupBidsAndDropsForProcessingSets(IEnumerable<ActionProcessingSetMetadata> processingSetsToInclude)
+    public async Task<BidsAndDropsSet> GetPickupBidsAndDropsForProcessingSets(IEnumerable<ActionProcessingSetMetadata> processingSetsToInclude, IDictionary<int, IReadOnlyList<LeagueYear>>? leagueYearCache = null)
     {
         var processSetIDs = processingSetsToInclude.Select(x => x.ProcessSetID).ToList();
 
@@ -747,7 +760,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var allPublisherIDs = allBidPublisherIDs.Concat(allDropRequestPublisherIDs).ToHashSet();
 
         _userStore.ClearUserCache();
-        var allLeagueYearsForPublishers = await GetLeagueYearsForPublishers(allPublisherIDs);
+        var allLeagueYearsForPublishers = await GetLeagueYearsForPublishers(allPublisherIDs, true, leagueYearCache);
 
         var leagueYearDictionary = allLeagueYearsForPublishers.ToDictionary(x => x.Key);
         var publisherDictionary = allLeagueYearsForPublishers.SelectMany(x => x.Publishers).ToDictionary(x => x.PublisherID);

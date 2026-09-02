@@ -1,7 +1,6 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
-using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Extensions;
@@ -523,34 +522,44 @@ public class AdminService
         var leagueActionSets = results.GetLeagueActionSets();
         await _discordPushService.SendActionProcessingSummary(leagueActionSets);
 
-        await UpdateTopBidsAndDrops();
+        await UpdateTopBidsAndDropsForMostRecentWeek();
     }
 
-    public async Task UpdateTopBidsAndDrops()
+    public async Task UpdateTopBidsAndDropsForMostRecentWeek()
     {
         var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
-        var standardBidProcessingRuns = actionProcessingSets.Where(x => x.ProcessName.StartsWith("Drop/Bid Processing")).OrderByDescending(x => x.ProcessTime).ToList();
-        if (standardBidProcessingRuns.Count == 0)
+        var weeks = TopBidsAndDropsFunctions.GetActionProcessingWeeks(actionProcessingSets);
+        if (weeks.Count == 0)
         {
             return;
         }
 
-        var mostRecentBidRun = standardBidProcessingRuns[0];
-        Instant endRange = mostRecentBidRun.ProcessTime;
-        Instant startRange;
-        if (standardBidProcessingRuns.Count > 1)
+        var mostRecentWeek = weeks.Last();
+        await UpdateTopBidsAndDropsForWeek(mostRecentWeek);
+    }
+
+    public async Task UpdateTopBidsAndDropsForWeek(LocalDate processDate)
+    {
+        var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
+        var week = TopBidsAndDropsFunctions.GetActionProcessingWeeks(actionProcessingSets)
+            .SingleOrDefault(x => x.ProcessDate == processDate);
+        if (week is null)
         {
-            startRange = standardBidProcessingRuns[1].ProcessTime;
-        }
-        else
-        {
-            startRange = Instant.MinValue;
+            return;
         }
 
-        var processingSetsToInclude = actionProcessingSets.Where(x => x.ProcessTime > startRange && x.ProcessTime <= endRange).ToList();
-        var bidsAndDrops = await _fantasyCriticRepo.GetPickupBidsAndDropsForProcessingSets(processingSetsToInclude);
-        var processDate = mostRecentBidRun.ProcessTime.ToEasternDate();
+        await UpdateTopBidsAndDropsForWeek(week);
+    }
 
+    private async Task UpdateTopBidsAndDropsForWeek(ActionProcessingWeek week)
+    {
+        var existingProcessDates = await _masterGameRepo.GetProcessingDatesForTopBidsAndDrops();
+        if (existingProcessDates.Contains(week.ProcessDate))
+        {
+            return;
+        }
+
+        var bidsAndDrops = await _fantasyCriticRepo.GetPickupBidsAndDropsForProcessingSets(week.ProcessingSets);
         var yearsInGroup = bidsAndDrops.Bids.Select(x => x.LeagueYear.Key.Year).Concat(bidsAndDrops.Drops.Select(x => x.LeagueYear.Key.Year)).Distinct().ToList();
 
         var allMasterGameYears = new List<MasterGameYear>();
@@ -560,59 +569,8 @@ public class AdminService
             allMasterGameYears.AddRange(masterGameYears);
         }
 
-        var topBidsAndDrops = CalculateTopBidsAndDrops(processDate, bidsAndDrops, yearsInGroup, allMasterGameYears);
+        var topBidsAndDrops = TopBidsAndDropsFunctions.CalculateTopBidsAndDrops(week.ProcessDate, bidsAndDrops, yearsInGroup, allMasterGameYears);
         await _fantasyCriticRepo.InsertTopBidsAndDrops(topBidsAndDrops);
-    }
-
-    private static IReadOnlyList<TopBidsAndDropsGame> CalculateTopBidsAndDrops(LocalDate processDate, BidsAndDropsSet bidsAndDrops, IEnumerable<int> relevantYears, IReadOnlyList<MasterGameYear> masterGameYears)
-    {
-        List<TopBidsAndDropsGame> results = [];
-        foreach (var year in relevantYears)
-        {
-            var masterGameYearDictionaryForYear = masterGameYears.Where(x => x.Year == year).ToDictionary(x => x.MasterGame);
-            var standardBidsForYear = bidsAndDrops.Bids.Where(x => !x.CounterPick && x.LeagueYear.Year == year).ToList();
-            var counterPickBidsForYear = bidsAndDrops.Bids.Where(x => x.CounterPick && x.LeagueYear.Year == year).ToList();
-            var dropsForYear = bidsAndDrops.Drops.Where(x => x.LeagueYear.Year == year).ToList();
-
-            var standardBidsByMasterGame = standardBidsForYear.GroupToDictionary(x => x.MasterGame);
-            var counterPickBidsByMasterGame = counterPickBidsForYear.GroupToDictionary(x => x.MasterGame);
-            var dropsByMasterGame = dropsForYear.GroupToDictionary(x => x.MasterGame);
-            var allMasterGames = standardBidsByMasterGame.Keys.Concat(counterPickBidsByMasterGame.Keys).Concat(dropsByMasterGame.Keys).Distinct().ToList();
-
-            foreach (var masterGame in allMasterGames)
-            {
-                var standardBidsForMasterGame = standardBidsByMasterGame.GetValueOrDefault(masterGame, new List<PickupBid>());
-                var counterPickBidsForMasterGame = counterPickBidsByMasterGame.GetValueOrDefault(masterGame, new List<PickupBid>());
-                var dropsForMasterGame = dropsByMasterGame.GetValueOrDefault(masterGame, new List<DropRequest>());
-                var masterGameYear = masterGameYearDictionaryForYear[masterGame];
-
-                var result = new TopBidsAndDropsGame
-                {
-                    ProcessDate = processDate,
-                    MasterGameYear = masterGameYear,
-
-                    TotalStandardBidCount = standardBidsForMasterGame.Count,
-                    SuccessfulStandardBids = standardBidsForMasterGame.Count(x => x.Successful.HasValue && x.Successful.Value),
-                    FailedStandardBids = standardBidsForMasterGame.Count(x => x.Successful.HasValue && !x.Successful.Value),
-                    TotalStandardBidLeagues = standardBidsForMasterGame.Select(x => x.LeagueYear.Key).Distinct().Count(),
-                    TotalStandardBidAmount = (int)standardBidsForMasterGame.Sum(x => x.BidAmount),
-
-                    TotalCounterPickBidCount = counterPickBidsForMasterGame.Count,
-                    SuccessfulCounterPickBids = counterPickBidsForMasterGame.Count(x => x.Successful.HasValue && x.Successful.Value),
-                    FailedCounterPickBids = counterPickBidsForMasterGame.Count(x => x.Successful.HasValue && !x.Successful.Value),
-                    TotalCounterPickBidLeagues = counterPickBidsForMasterGame.Select(x => x.LeagueYear.Key).Distinct().Count(),
-                    TotalCounterPickBidAmount = (int)counterPickBidsForMasterGame.Sum(x => x.BidAmount),
-
-                    TotalDropCount = dropsForMasterGame.Count,
-                    SuccessfulDrops = dropsForMasterGame.Count(x => x.Successful.HasValue && x.Successful.Value),
-                    FailedDrops = dropsForMasterGame.Count(x => x.Successful.HasValue && !x.Successful.Value),
-                };
-
-                results.Add(result);
-            }
-        }
-
-        return results;
     }
 
     public async Task ProcessSpecialAuctions()

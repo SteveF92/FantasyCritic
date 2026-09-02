@@ -10,4 +10,13 @@ public static class ConnectionStringUtilities
         };
         return builder.ConnectionString;
     }
+
+    public static string WithDefaultCommandTimeout(string originalConnectionString, Duration commandTimeout)
+    {
+        var builder = new MySqlConnectionStringBuilder(originalConnectionString)
+        {
+            DefaultCommandTimeout = (uint)commandTimeout.TotalSeconds
+        };
+        return builder.ConnectionString;
+    }
 }

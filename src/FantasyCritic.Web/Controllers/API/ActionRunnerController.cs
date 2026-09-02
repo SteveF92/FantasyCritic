@@ -184,7 +184,7 @@ public class ActionRunnerController : FantasyCriticController
     [HttpPost]
     public async Task<IActionResult> UpdateTopBidsAndDrops()
     {
-        await _adminService.UpdateTopBidsAndDrops();
+        await _adminService.UpdateTopBidsAndDropsForMostRecentWeek();
         return Ok();
     }
 }
