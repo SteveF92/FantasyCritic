@@ -15,6 +15,7 @@ public interface IReadOnlyFantasyCriticUserStore
         CancellationToken cancellationToken);
     Task<SupportTicket?> GetSupportTicket(Guid supportTicketID);
     Task<SupportTicket?> GetActiveSupportTicket(Guid userID);
+    Task<IReadOnlyList<SupportTicket>> GetClosedSupportTickets(Guid userID, int limit);
     Task<IReadOnlyList<SupportTicket>> GetAllActiveSupportTickets();
     Task<int> GetActiveSupportTicketCount();
     Task<IReadOnlyList<FantasyCriticUser>> SearchUsersForSupport(SupportUserSearchKind searchKind, string searchValue);

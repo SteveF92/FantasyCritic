@@ -70,6 +70,25 @@ else
     </div>
 }
 
+@if (Model.ResolvedSupportTickets.Count > 0)
+{
+    <h4 class="mt-4">Resolved tickets</h4>
+    @foreach (var ticket in Model.ResolvedSupportTickets)
+    {
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="small text-muted mb-2">
+                    Opened @ticket.OpenedAtDisplay · Closed @ticket.ClosedAtDisplay
+                </div>
+                <h5 class="card-title">Your issue</h5>
+                <p class="card-text">@ticket.IssueDescription</p>
+                <h5 class="card-title">Resolution</h5>
+                <p class="card-text">@ticket.ResolutionDisplay</p>
+            </div>
+        </div>
+    }
+}
+
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

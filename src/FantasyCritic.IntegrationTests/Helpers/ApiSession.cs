@@ -159,6 +159,12 @@ public sealed class ApiSession : IDisposable
             new StringContent(json, Encoding.UTF8, "application/json"));
     }
 
+    public Task<HttpResponseMessage> PostFormAsync(string path, Dictionary<string, string> formFields)
+        => _client.PostAsync(path, new FormUrlEncodedContent(formFields));
+
+    public async Task<string> GetPageAntiForgeryTokenAsync(string path)
+        => await GetAntiForgeryTokenAsync(path);
+
     /// <summary>
     /// POSTs <paramref name="body"/> as JSON and deserializes the response body.
     /// Throws if the response is not 2xx.

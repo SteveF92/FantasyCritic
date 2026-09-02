@@ -1,6 +1,8 @@
 #nullable disable
 
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
@@ -9,6 +11,9 @@ namespace FantasyCritic.Web.Pages.Account.Manage;
 
 public class SupportTicketModel : PageModel
 {
+    private const int ClosedSupportTicketsDisplayLimit = 20;
+    private const string EmptyResolutionNotesMessage = "No resolution notes provided.";
+
     private readonly FantasyCriticUserManager _userManager;
 
     public SupportTicketModel(FantasyCriticUserManager userManager)
@@ -22,6 +27,7 @@ public class SupportTicketModel : PageModel
     public string SupportVerificationCode { get; set; }
     public bool CanUserEditOrCloseTicket { get; set; }
     public bool HasActiveSupportTicket { get; set; }
+    public IReadOnlyList<ResolvedSupportTicketDisplay> ResolvedSupportTickets { get; set; } = [];
 
     [BindProperty]
     public InputModel Input { get; set; }
@@ -30,6 +36,14 @@ public class SupportTicketModel : PageModel
     {
         [Display(Name = "What do you need help with?")]
         public string IssueDescription { get; set; }
+    }
+
+    public sealed class ResolvedSupportTicketDisplay
+    {
+        public string OpenedAtDisplay { get; init; } = string.Empty;
+        public string ClosedAtDisplay { get; init; } = string.Empty;
+        public string IssueDescription { get; init; } = string.Empty;
+        public string ResolutionDisplay { get; init; } = string.Empty;
     }
 
     public async Task<IActionResult> OnGetAsync()
@@ -171,5 +185,26 @@ public class SupportTicketModel : PageModel
 
         Input ??= new InputModel();
         Input.IssueDescription = supportTicket?.IssueDescription ?? string.Empty;
+
+        var closedTickets = await _userManager.GetClosedSupportTickets(user.Id, ClosedSupportTicketsDisplayLimit);
+        ResolvedSupportTickets = closedTickets.Select(ToDisplay).ToList();
+    }
+
+    private static ResolvedSupportTicketDisplay ToDisplay(SupportTicket ticket)
+    {
+        return new ResolvedSupportTicketDisplay
+        {
+            OpenedAtDisplay = FormatInstant(ticket.OpenedAt),
+            ClosedAtDisplay = FormatInstant(ticket.ClosedAt!.Value),
+            IssueDescription = ticket.IssueDescription,
+            ResolutionDisplay = string.IsNullOrWhiteSpace(ticket.ResolutionNotes)
+                ? EmptyResolutionNotesMessage
+                : ticket.ResolutionNotes.Trim(),
+        };
+    }
+
+    private static string FormatInstant(Instant instant)
+    {
+        return instant.ToEasternDateTime().ToString("MMMM d, yyyy h:mm tt", CultureInfo.InvariantCulture);
     }
 }

@@ -143,6 +143,11 @@ public class FantasyCriticUserManager : UserManager<FantasyCriticUser>
         return _userStore.GetActiveSupportTicket(userID);
     }
 
+    public Task<IReadOnlyList<SupportTicket>> GetClosedSupportTickets(Guid userID, int limit)
+    {
+        return _userStore.GetClosedSupportTickets(userID, limit);
+    }
+
     public Task<SupportTicket> UpdateSupportTicketIssue(SupportTicket supportTicket, string issueDescription)
     {
         return _userStore.UpdateSupportTicketIssue(supportTicket, issueDescription);

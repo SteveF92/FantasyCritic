@@ -760,6 +760,36 @@ public sealed class MySQLFantasyCriticUserStore : IFantasyCriticUserStore
         return entity.ToDomain(user);
     }
 
+    public async Task<IReadOnlyList<SupportTicket>> GetClosedSupportTickets(Guid userID, int limit)
+    {
+        const string sql = @"select * from tbl_user_supportticket
+                             where UserID = @userID and ClosedAt is not null
+                             order by ClosedAt desc
+                             limit @limit;";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        var entities = (await connection.QueryAsync<SupportTicketEntity>(sql, new { userID, limit })).ToList();
+        if (entities.Count == 0)
+        {
+            return new List<SupportTicket>();
+        }
+
+        var users = await GetUsers([userID]);
+        var user = users.SingleOrDefault();
+        if (user is null)
+        {
+            return new List<SupportTicket>();
+        }
+
+        List<SupportTicket> results = new List<SupportTicket>(entities.Count);
+        foreach (var entity in entities)
+        {
+            results.Add(entity.ToDomain(user));
+        }
+
+        return results;
+    }
+
     public async Task<IReadOnlyList<SupportTicket>> GetAllActiveSupportTickets()
     {
         const string sql = @"select * from tbl_user_supportticket 
