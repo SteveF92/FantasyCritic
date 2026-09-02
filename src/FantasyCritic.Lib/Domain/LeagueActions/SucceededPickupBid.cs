@@ -2,7 +2,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions;
 
 public class SucceededPickupBid : IProcessedBid
 {
-    public SucceededPickupBid(PickupBid pickupBid, int slotNumber, string outcome, SystemWideValues systemWideValues, LocalDate currentDate)
+    public SucceededPickupBid(PickupBid pickupBid, int slotNumber, string outcome, SystemWideValues systemWideValues)
     {
         PickupBid = pickupBid;
         SlotNumber = slotNumber;
@@ -15,7 +15,7 @@ public class SucceededPickupBid : IProcessedBid
     public string Outcome { get; }
     public decimal ProjectedPointsAtTimeOfBid { get; }
 
-    public override string ToString() => PickupBid.ToString() + "|" + Outcome;
+    public override string ToString() => PickupBid + "|" + Outcome;
 
     public PickupBid ToFlatBid(Guid processSetID)
     {

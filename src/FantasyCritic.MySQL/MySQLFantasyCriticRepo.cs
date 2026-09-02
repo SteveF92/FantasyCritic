@@ -1944,18 +1944,15 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             year
         };
 
-        string sql = "select tbl_league_publisher.* from tbl_league_publisher " +
-                     "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
-                     "where tbl_league_publisher.Year = @year and tbl_league.IsDeleted = 0;";
+        string sql =
+            """
+            select tbl_league_publisher.* from tbl_league_publisher
+            join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID)
+            where tbl_league_publisher.Year = @year and tbl_league.IsDeleted = 0;
+            """;
+            
 
-        if (includeDeleted)
-        {
-            sql = "select tbl_league_publisher.* from tbl_league_publisher " +
-                  "join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID) " +
-                  "where tbl_league_publisher.Year = @year;";
-        }
-
-        const string draftPublisherSql =
+        string draftPublisherSql =
             """
             SELECT dp.* FROM tbl_league_draftpublisher dp
             JOIN tbl_league_draft d ON dp.DraftID = d.DraftID
@@ -1964,12 +1961,56 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             WHERE p.Year = @year AND tbl_league.IsDeleted = 0;
             """;
 
-        const string draftSql =
+        string draftSql =
             """
             SELECT d.* FROM tbl_league_draft d
             JOIN tbl_league ON tbl_league.LeagueID = d.LeagueID
             WHERE d.Year = @year AND tbl_league.IsDeleted = 0;
             """;
+
+        string draftPickSkipSql =
+            """
+            SELECT ps.* FROM tbl_league_draftpickskip ps
+            JOIN tbl_league_draft d ON ps.DraftID = d.DraftID
+            JOIN tbl_league_publisher p ON p.PublisherID = ps.PublisherID
+            JOIN tbl_league ON tbl_league.LeagueID = p.LeagueID
+            WHERE p.Year = @year AND tbl_league.IsDeleted = 0;
+            """;
+
+        if (includeDeleted)
+        {
+            sql =
+                """
+                select tbl_league_publisher.* from tbl_league_publisher
+                join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID)
+                where tbl_league_publisher.Year = @year;
+                """;
+
+            draftPublisherSql =
+                """
+                SELECT dp.* FROM tbl_league_draftpublisher dp
+                JOIN tbl_league_draft d ON dp.DraftID = d.DraftID
+                JOIN tbl_league_publisher p ON p.PublisherID = dp.PublisherID
+                JOIN tbl_league ON tbl_league.LeagueID = p.LeagueID
+                WHERE p.Year = @year;
+                """;
+
+            draftSql =
+                """
+                SELECT d.* FROM tbl_league_draft d
+                JOIN tbl_league ON tbl_league.LeagueID = d.LeagueID
+                WHERE d.Year = @year;
+                """;
+
+            draftPickSkipSql =
+                """
+                SELECT ps.* FROM tbl_league_draftpickskip ps
+                JOIN tbl_league_draft d ON ps.DraftID = d.DraftID
+                JOIN tbl_league_publisher p ON p.PublisherID = ps.PublisherID
+                JOIN tbl_league ON tbl_league.LeagueID = p.LeagueID
+                WHERE p.Year = @year;
+                """;
+        }
 
         await using var connection = new MySqlConnection(_connectionString);
         var publisherEntities = await connection.QueryAsync<PublisherEntity>(sql, query);
@@ -1980,14 +2021,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var draftEntities = await connection.QueryAsync<LeagueDraftEntity>(draftSql, query);
         var draftPublisherEntities = await connection.QueryAsync<LeagueDraftPublisherEntity>(draftPublisherSql, query);
-        const string draftPickSkipSql =
-            """
-            SELECT ps.* FROM tbl_league_draftpickskip ps
-            JOIN tbl_league_draft d ON ps.DraftID = d.DraftID
-            JOIN tbl_league_publisher p ON p.PublisherID = ps.PublisherID
-            JOIN tbl_league ON tbl_league.LeagueID = p.LeagueID
-            WHERE p.Year = @year AND tbl_league.IsDeleted = 0;
-            """;
+
         var draftPickSkipEntities = await connection.QueryAsync<DraftPickSkipEntity>(draftPickSkipSql, query);
         var draftNumberByDraftID = draftEntities.ToDictionary(x => x.DraftID, x => x.DraftNumber);
         var pickSkipLookup = draftPickSkipEntities.ToLookup(x => (x.DraftID, x.PublisherID));
