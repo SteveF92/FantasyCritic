@@ -62,6 +62,12 @@ public class TopBidsAndDropsBackfillMigration : IScript
             return string.Empty;
         }
 
+        // GetPickupBidsAndDropsForProcessingSets loads league years per-publisher-year internally; that lookup
+        // is expensive (many queries) and, across dozens/hundreds of weeks in this backfill, is repeatedly done
+        // for the same years. Sharing a cache across the loop (opt-in via the optional parameter) avoids redoing
+        // that work for years already seen in an earlier week, without affecting the normal single-week call path.
+        Dictionary<int, IReadOnlyList<LeagueYear>> leagueYearCache = [];
+
         for (var weekIndex = 0; weekIndex < weeksToBackfill.Count; weekIndex++)
         {
             var week = weeksToBackfill[weekIndex];
@@ -72,7 +78,7 @@ public class TopBidsAndDropsBackfillMigration : IScript
                 week.ProcessDate,
                 week.ProcessingSets.Count);
 
-            var bidsAndDrops = await _fantasyCriticRepo.GetPickupBidsAndDropsForProcessingSets(week.ProcessingSets);
+            var bidsAndDrops = await _fantasyCriticRepo.GetPickupBidsAndDropsForProcessingSets(week.ProcessingSets, leagueYearCache);
             var yearsInGroup = bidsAndDrops.Bids.Select(x => x.LeagueYear.Key.Year).Concat(bidsAndDrops.Drops.Select(x => x.LeagueYear.Key.Year)).Distinct().ToList();
 
             var allMasterGameYears = new List<MasterGameYear>();
