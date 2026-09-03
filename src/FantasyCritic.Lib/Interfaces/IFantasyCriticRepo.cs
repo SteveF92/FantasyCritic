@@ -97,6 +97,7 @@ public interface IFantasyCriticRepo
 
     Task<BidsAndDropsSet> GetPickupBidsAndDropsForProcessingSets(IEnumerable<ActionProcessingSetMetadata> processingSetsToInclude);
     Task InsertTopBidsAndDrops(IReadOnlyList<TopBidsAndDropsGame> topBidsAndDrops);
+    Task ReplaceTopBidsAndDropsForProcessDate(LocalDate processDate, IReadOnlyList<TopBidsAndDropsGame> topBidsAndDrops);
 
     Task<IReadOnlyList<QueuedGame>> GetQueuedGames(Publisher publisher);
     Task QueueGame(QueuedGame queuedGame);

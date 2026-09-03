@@ -686,7 +686,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears)
     {
-        const string sql = "select * from vw_league_droprequest where Year = @year and Successful IS NOT NULL";
+        const string sql = "select * from vw_league_droprequest where Year = @year and Successful IS NOT NULL and IsDeleted = 0";
         var queryObject = new
         {
             year
@@ -794,6 +794,19 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
 
+        await connection.BulkInsertAsync(entities, "tbl_caching_topbidsanddrops", 500, transaction);
+
+        await transaction.CommitAsync();
+    }
+
+    public async Task ReplaceTopBidsAndDropsForProcessDate(LocalDate processDate, IReadOnlyList<TopBidsAndDropsGame> topBidsAndDrops)
+    {
+        var entities = topBidsAndDrops.Select(x => new TopBidsAndDropsEntity(x)).ToList();
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync("DELETE FROM tbl_caching_topbidsanddrops WHERE ProcessDate = @processDate;", new { processDate }, transaction);
         await connection.BulkInsertAsync(entities, "tbl_caching_topbidsanddrops", 500, transaction);
 
         await transaction.CommitAsync();

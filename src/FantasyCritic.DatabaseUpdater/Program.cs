@@ -74,6 +74,7 @@ public class Program
                     // Run-once, journaled code migrations
                     .WithScript("2026-08-09_002_processSetCleanup.cs", new ProcessSetCleanupMigration(repositoryConfiguration, logger.ForContext<ProcessSetCleanupMigration>()))
                     .WithScript("2026-08-31_001_topBidsAndDropsBackfill.cs", new TopBidsAndDropsBackfillMigration(repositoryConfiguration, logger.ForContext<TopBidsAndDropsBackfillMigration>()))
+                    .WithScript("2026-09-02_001_topBidsAndDropsRecompute.cs", new TopBidsAndDropsRecomputeMigration(repositoryConfiguration, logger.ForContext<TopBidsAndDropsRecomputeMigration>()))
                     .WithExecutionTimeout(TimeSpan.FromMinutes(30))
                     .LogTo(loggerFactory)
                     .Build();

@@ -53,9 +53,10 @@ public static class TopBidsAndDropsFunctions
         foreach (var year in relevantYears)
         {
             var masterGameYearDictionaryForYear = masterGameYears.Where(x => x.Year == year).ToDictionary(x => x.MasterGame);
-            var standardBidsForYear = bidsAndDrops.Bids.Where(x => !x.CounterPick && x.LeagueYear.Year == year).ToList();
-            var counterPickBidsForYear = bidsAndDrops.Bids.Where(x => x.CounterPick && x.LeagueYear.Year == year).ToList();
-            var dropsForYear = bidsAndDrops.Drops.Where(x => x.LeagueYear.Year == year).ToList();
+            // Test/custom-rules leagues should never affect any published stats, top bids and drops included.
+            var standardBidsForYear = bidsAndDrops.Bids.Where(x => x.LeagueYear.League.AffectsStats && !x.CounterPick && x.LeagueYear.Year == year).ToList();
+            var counterPickBidsForYear = bidsAndDrops.Bids.Where(x => x.LeagueYear.League.AffectsStats && x.CounterPick && x.LeagueYear.Year == year).ToList();
+            var dropsForYear = bidsAndDrops.Drops.Where(x => x.LeagueYear.League.AffectsStats && x.LeagueYear.Year == year).ToList();
 
             var standardBidsByMasterGame = standardBidsForYear.GroupToDictionary(x => x.MasterGame);
             var counterPickBidsByMasterGame = counterPickBidsForYear.GroupToDictionary(x => x.MasterGame);
