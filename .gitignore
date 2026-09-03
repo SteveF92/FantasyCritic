@@ -275,3 +275,6 @@ src/FantasyCritic.Web/ClientApp/src/api/generated/
 
 # Superpowers SDD scratch files
 .superpowers/
+
+# One-off dev scratch scripts/output (not part of the product)
+.scratch/
