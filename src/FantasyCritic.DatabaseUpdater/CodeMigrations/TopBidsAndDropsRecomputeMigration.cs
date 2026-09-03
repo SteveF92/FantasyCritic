@@ -21,6 +21,11 @@ namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 ///
 /// Each week's old rows are deleted and its new rows inserted together in one transaction, rather than wiping
 /// the whole table up front, so a partial failure only affects whichever week was mid-flight, not every week.
+///
+/// GetPickupBidsAndDropsForProcessingSets loads league years per-publisher-year internally; that lookup is
+/// expensive (many queries) and, across the many weeks in a year, would otherwise redo that work for every
+/// week. A cache shared across the loop (opt-in via the optional parameter) avoids redoing that work for years
+/// already seen in an earlier week, without affecting the normal single-week call path used elsewhere.
 /// </summary>
 public class TopBidsAndDropsRecomputeMigration : IScript
 {
@@ -64,6 +69,8 @@ public class TopBidsAndDropsRecomputeMigration : IScript
             return string.Empty;
         }
 
+        Dictionary<int, IReadOnlyList<LeagueYear>> leagueYearCache = [];
+
         for (var weekIndex = 0; weekIndex < weeks.Count; weekIndex++)
         {
             var week = weeks[weekIndex];
@@ -74,7 +81,7 @@ public class TopBidsAndDropsRecomputeMigration : IScript
                 week.ProcessDate,
                 week.ProcessingSets.Count);
 
-            var bidsAndDrops = await _fantasyCriticRepo.GetPickupBidsAndDropsForProcessingSets(week.ProcessingSets);
+            var bidsAndDrops = await _fantasyCriticRepo.GetPickupBidsAndDropsForProcessingSets(week.ProcessingSets, leagueYearCache);
             var yearsInGroup = bidsAndDrops.Bids.Select(x => x.LeagueYear.Key.Year).Concat(bidsAndDrops.Drops.Select(x => x.LeagueYear.Key.Year)).Distinct().ToList();
 
             var allMasterGameYears = new List<MasterGameYear>();

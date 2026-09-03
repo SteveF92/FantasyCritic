@@ -95,7 +95,7 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<DropRequest>> GetProcessedDropRequests(int year, IReadOnlyList<LeagueYear> allLeagueYears);
     Task<DropRequest?> GetDropRequest(Guid dropRequestID);
 
-    Task<BidsAndDropsSet> GetPickupBidsAndDropsForProcessingSets(IEnumerable<ActionProcessingSetMetadata> processingSetsToInclude);
+    Task<BidsAndDropsSet> GetPickupBidsAndDropsForProcessingSets(IEnumerable<ActionProcessingSetMetadata> processingSetsToInclude, IDictionary<int, IReadOnlyList<LeagueYear>>? leagueYearCache = null);
     Task InsertTopBidsAndDrops(IReadOnlyList<TopBidsAndDropsGame> topBidsAndDrops);
     Task ReplaceTopBidsAndDropsForProcessDate(LocalDate processDate, IReadOnlyList<TopBidsAndDropsGame> topBidsAndDrops);
 
