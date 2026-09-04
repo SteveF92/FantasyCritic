@@ -34,7 +34,15 @@ Written September 2026.
   We do not want backward-compatible (expand/contract) migrations. This means we never
   need two web instances serving at once, which keeps ECS cheap and simple.
 - **Integration tests do not run in CI.** Solo developer, six-minute run, not worth the
-  compute. Unit tests and build verification do run.
+  compute. Build and unit tests run on every pull request and before every deploy.
+- **This is not a pager site.** Users can wait if the site is down for a while. Alerting is
+  a backlog item, not a phase.
+- **Snapshots are already a habit.** `FantasyCritic.RdsSnapshotManager` creates production
+  snapshots, restores them to beta with scrubbing, and publishes dumps to S3 and Google
+  Cloud. Nothing major happens without a snapshot first, and production has been rolled
+  back from one at least once. The pipeline can automate the pre-migration snapshot so the
+  habit does not depend on remembering.
+- **Cost alerts already exist** in AWS Budgets.
 - **Windows hosting is dead.** `UpdateSite.ps1` and Windows log paths are leftovers.
 - **The Discord push service stays in the web app.** Only the command-handling bot moves
   to its own process. Both use the same bot token; Discord permits multiple gateway
@@ -98,6 +106,10 @@ The original todo list had 18 items. Consolidated:
 **Goal:** No SDK, runtime, Node, git, or NSwag on the production server. Deploys happen
 from a push, not an SSH session.
 
+**Pull request checks.** A separate workflow on every pull request: `dotnet tool restore`,
+regenerate NSwag clients, build, run unit tests. No integration tests. This is the check
+that runs on contributor PRs before they are reviewed.
+
 **Build.** A workflow triggered on push to `production` (and manually via
 `workflow_dispatch` with an environment input for beta):
 
@@ -113,6 +125,11 @@ execute a slimmed deploy script on the instance: stop service, run migrator from
 bundle, swap folders, start service. No inbound port is opened; SSH stays locked to a
 personal IP or can be closed. The SSM agent ships with Ubuntu AMIs and the instance already
 has an IAM role (for Secrets Manager); it needs the SSM managed policy added.
+
+**Pre-migration snapshot.** Before running the migrator, the pipeline calls
+`CreateDBSnapshot` on the production instance (the same call `RdsSnapshotManager` makes)
+and waits for it to become available. This turns an existing manual habit into a guarantee.
+Skip it for beta deploys.
 
 **Beta.** The manual workflow can `aws ec2 start-instances` the beta box, wait for SSM to
 report it online, deploy, and leave it running.
@@ -302,6 +319,28 @@ serves the SPA from S3 behind CloudFront.
 
 Almost no infrastructure work remains here. That is the point of the sequence.
 
+**Decisions to make before writing any Vue 3.** The stack choices (TypeScript, Pinia,
+Vue Router 4, a bootstrap-vue replacement, Vitest, possibly Playwright) appear nowhere else
+in this plan and the UI library choice is the one that cannot be changed later. Also decide
+the migration unit: a whole parallel site on `new.*`, or a strangler approach where one
+CloudFront distribution routes path patterns to the Vue 3 bucket page by page under the
+same URL. The strangler version is more genuinely incremental and avoids maintaining two
+front ends for a long time. A per-user "try the new site" flag in the database makes either
+cutover far less stressful than a DNS swap.
+
+---
+
+## Sequencing note: when to start the client work
+
+Vue 2 has been end-of-life since December 2023 and bootstrap-vue is stuck there with it.
+That is the only item in this plan with an external clock, and as written it sits behind
+six infrastructure phases. Phases 7a and 7b depend on **no** infrastructure phase and could
+start the week after Phase 1 ships.
+
+Decision deferred: complete the first few infrastructure phases, then decide whether to
+alternate infra and client phases from that point. The failure mode to avoid is the
+well-known one where infrastructure absorbs two years and the rewrite never starts.
+
 ---
 
 ## Hard dependencies
@@ -323,6 +362,23 @@ Almost no infrastructure work remains here. That is the point of the sequence.
 | 7c, 8 (S3 + CloudFront) | a few dollars |
 
 All within the $350 ceiling with room to spare.
+
+## Backlog: hygiene items with no phase of their own
+
+Cheap items that belong somewhere in the sequence but do not justify a phase. Pick them up
+when a nearby phase makes them convenient.
+
+- **Health endpoint.** ASP.NET health checks at `/health`. Needed by the ALB in Phase 5 and
+  ECS in Phase 6; harmless to add in Phase 1.
+- **Alerting (low priority).** An external uptime check against the health endpoint posting
+  to Discord, and a Loki alert on error-level logs from `FantasyCritic.*`. Not a pager;
+  a notification.
+- **Dependency and vulnerability scanning.** Dependabot or Renovate for NuGet and npm,
+  `dotnet list package --vulnerable` and `npm audit` in the PR workflow, and ECR basic image
+  scanning (free) once images exist in Phase 3.
+- **Terraform state** goes in an S3 backend with locking and never in the repository.
+  Relevant the moment Phase 5 starts.
+- **Remove Windows leftovers.** `UpdateSite.ps1` and the Windows branches of `LoggingPaths`.
 
 ## Open questions before Phase 1
 
