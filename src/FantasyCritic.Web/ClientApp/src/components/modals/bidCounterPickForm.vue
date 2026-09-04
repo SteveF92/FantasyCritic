@@ -32,7 +32,7 @@
 
           <div v-show="counterPickInvalid" class="alert alert-warning" role="alert">Unfortunately, you cannot make a counter pick bid for a game that is not linked to a master game.</div>
 
-          <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="isBusy || counterPickInvalid" @click="bidGame">{{ bidButtonText }}</b-button>
+          <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="!canPlaceCounterPickBid" @click="bidGame">{{ bidButtonText }}</b-button>
           <div v-if="bidResult && !bidResult.success" class="alert alert-danger bid-error">
             <h3 class="alert-heading">Error!</h3>
             <ul>
@@ -64,6 +64,9 @@ export default {
   computed: {
     formIsValid() {
       return !!this.bidCounterPick;
+    },
+    canPlaceCounterPickBid() {
+      return this.formIsValid && !this.publisherSlotsAreFilled && !this.isBusy && !this.counterPickInvalid;
     },
     publisherSlotsAreFilled() {
       let userGames = this.userPublisher.games;

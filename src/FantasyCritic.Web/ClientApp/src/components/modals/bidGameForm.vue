@@ -11,7 +11,7 @@
     <div v-else class="alert alert-info">You are bidding on a game in a Special Auction.</div>
 
     <div v-if="publisherSlotsAreFilled" class="alert alert-warning">
-      Warning! You have already filled all of your game slots. You can still make bids, but you must drop a game first. You have two options:
+      Warning! You have already filled all of your game slots. To place a bid you must have a conditional drop on this bid or a pending drop request. You have two options:
       <ul>
         <li>Use the conditional drop option on this form to drop a game only if this bid succeeds.</li>
         <li>Use the normal "drop a game" option to drop a game no matter what. The drop will process before any bids so it will work as long as it is a valid drop.</li>
@@ -116,7 +116,7 @@
           </label>
         </div>
 
-        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="requestIsBusy" @click="bidGame">Place Bid</b-button>
+        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="!canPlaceBid" @click="bidGame">Place Bid</b-button>
         <div v-if="bidResult && !bidResult.success" class="alert bid-error" :class="{ 'alert-danger': !bidResult.showAsWarning, 'alert-warning': bidResult.showAsWarning }">
           <h3 v-if="bidResult.showAsWarning" class="alert-heading">Warning!</h3>
           <h3 v-else class="alert-heading">Error!</h3>
@@ -174,6 +174,18 @@ export default {
   computed: {
     formIsValid() {
       return !!this.bidMasterGame;
+    },
+    hasBidSlotAcquisitionPath() {
+      if (!this.publisherSlotsAreFilled) {
+        return true;
+      }
+      if (this.conditionalDrop) {
+        return true;
+      }
+      return this.currentDrops.length > 0;
+    },
+    canPlaceBid() {
+      return this.formIsValid && this.hasBidSlotAcquisitionPath && !this.requestIsBusy;
     },
     publisherSlotsAreFilled() {
       let userGames = this.userPublisher.games;

@@ -1,5 +1,8 @@
 <template>
   <b-modal id="currentDropsForm" ref="currentDropsFormRef" title="My Pending Drop Requests" @hidden="clearData">
+    <div v-show="errorInfo" class="alert alert-danger" role="alert">
+      {{ errorInfo }}
+    </div>
     <table class="table table-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">
@@ -34,7 +37,8 @@ export default {
   mixins: [LeagueMixin],
   data() {
     return {
-      dropToCancel: null
+      dropToCancel: null,
+      errorInfo: null
     };
   },
   created() {
@@ -42,6 +46,7 @@ export default {
   },
   methods: {
     confirmCancelDrop(drop) {
+      this.errorInfo = null;
       this.dropToCancel = drop;
       this.$bvModal.show('confirm-cancel-drop-modal');
     },
@@ -56,10 +61,13 @@ export default {
           this.notifyAction('Drop Request for ' + this.dropToCancel.masterGame.gameName + ' was cancelled.');
           this.clearData();
         })
-        .catch(() => {});
+        .catch((error) => {
+          this.errorInfo = error.response?.data || 'Failed to cancel drop request.';
+        });
     },
     clearData() {
       this.dropToCancel = null;
+      this.errorInfo = null;
     }
   }
 };

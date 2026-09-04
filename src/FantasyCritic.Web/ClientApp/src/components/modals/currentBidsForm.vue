@@ -68,10 +68,16 @@
       <div v-if="!bidBeingEdited.counterPick" class="form-group">
         <label for="conditionalDrop" class="control-label">Conditional Drop</label>
         <b-form-select v-model="conditionalDrop">
+          <template #first>
+            <option :value="null">None</option>
+          </template>
           <option v-for="publisherGame in droppableGames" :key="publisherGame.publisherGameID" :value="publisherGame">
             {{ publisherGame.gameName }}
           </option>
         </b-form-select>
+        <div v-if="!editHasBidSlotAcquisitionPath" class="alert alert-warning" role="alert">
+          You have no open roster spots. Add a conditional drop to this bid or place a pending drop request before saving.
+        </div>
       </div>
       <div v-if="leagueYear.settings.hasSpecialSlots" class="form-check">
         <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
@@ -80,7 +86,7 @@
           <font-awesome-icon v-b-popover.hover.focus="allowIneligibleText" icon="info-circle" />
         </label>
       </div>
-      <b-button variant="primary" class="full-width-button" :disabled="isBusy" @click="editBid">Edit Bid</b-button>
+      <b-button variant="primary" class="full-width-button" :disabled="isBusy || !editHasBidSlotAcquisitionPath" @click="editBid">Edit Bid</b-button>
       <div v-if="editBidResult && !editBidResult.success" class="alert alert-danger bid-error">
         <h3 class="alert-heading">Error!</h3>
         <ul>
@@ -121,19 +127,27 @@ export default {
       conditionalDrop: null,
       editBidResult: null,
       isBusy: false,
-      defaultCondtionalDrop: {
-        value: null,
-        gameName: '<No conditional drop>'
-      },
       allowIneligibleSlot: false,
       bidToCancel: null
     };
   },
   computed: {
     droppableGames() {
-      let list = this.userPublisher.games.filter((x) => !x.counterPick);
-      list.unshift(this.defaultCondtionalDrop);
-      return list;
+      return this.userPublisher.games.filter((x) => !x.counterPick);
+    },
+    editHasBidSlotAcquisitionPath() {
+      if (!this.bidBeingEdited || this.bidBeingEdited.counterPick) {
+        return true;
+      }
+      const standardGameSlots = this.leagueYear.settings.standardGames;
+      const userStandardGames = this.userPublisher.games.filter((x) => !x.counterPick);
+      if (userStandardGames.length < standardGameSlots) {
+        return true;
+      }
+      if (this.conditionalDrop) {
+        return true;
+      }
+      return this.currentDrops.length > 0;
     },
     allowIneligibleText() {
       return {

@@ -93,6 +93,15 @@ public class GameAcquisitionService
             return new ClaimResult(new List<ClaimError>() { new ClaimError("You cannot have two active bids for the same game.", false) }, null);
         }
 
+        IReadOnlyList<DropRequest> activeDropRequests =
+            await _fantasyCriticRepo.GetActiveDropRequests(leagueYear, publisher);
+
+        if (!BidSlotPathFunctions.HasBidSlotAcquisitionPath(
+                publisher, leagueYear, counterPick, conditionalDropPublisherGame, activeDropRequests))
+        {
+            return new ClaimResult(new ClaimError(BidSlotPathFunctions.NoSlotPathError, false));
+        }
+
         bool counterPickedGameIsManualWillNotRelease = false;
         if (counterPick)
         {
@@ -296,6 +305,15 @@ public class GameAcquisitionService
             validDropSlot = conditionalDropPublisherGame.SlotNumber;
         }
 
+        IReadOnlyList<DropRequest> activeDropRequests =
+            await _fantasyCriticRepo.GetActiveDropRequests(bid.LeagueYear, bid.Publisher);
+
+        if (!BidSlotPathFunctions.HasBidSlotAcquisitionPath(
+                bid.Publisher, bid.LeagueYear, bid.CounterPick, conditionalDropPublisherGame, activeDropRequests))
+        {
+            return new ClaimResult(new ClaimError(BidSlotPathFunctions.NoSlotPathError, false));
+        }
+
         var currentDate = _clock.GetToday();
         var allTags = await _masterGameRepo.GetMasterGameTags();
         MasterGameWithEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame, currentDate);
@@ -366,6 +384,17 @@ public class GameAcquisitionService
         if (dropRequest.Successful != null)
         {
             return Result.Failure("Drop request has already been processed");
+        }
+
+        IReadOnlyList<PickupBid> activeBids =
+            await _fantasyCriticRepo.GetActivePickupBids(dropRequest.LeagueYear, dropRequest.Publisher);
+        IReadOnlyList<DropRequest> activeDropRequests =
+            await _fantasyCriticRepo.GetActiveDropRequests(dropRequest.LeagueYear, dropRequest.Publisher);
+
+        if (BidSlotPathFunctions.WouldBlockDropRemoval(
+                dropRequest.Publisher, dropRequest.LeagueYear, dropRequest, activeDropRequests, activeBids))
+        {
+            return Result.Failure(BidSlotPathFunctions.DropRemovalBlockedError);
         }
 
         await _fantasyCriticRepo.RemoveDropRequest(dropRequest);
