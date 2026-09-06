@@ -1,0 +1,292 @@
+name: Deploy
+
+# Manual only. Pick the branch or tag in the "Run workflow" dialog — that ref is what gets
+# built and shipped. Nothing deploys on a push.
+#
+# Everything is built here on a GitHub runner and published self-contained, so the target
+# instance needs no .NET SDK, no .NET runtime, no Node, no git, and no NSwag.
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: Target environment
+        type: choice
+        options: [production, beta]
+        default: production
+        required: true
+      skip_snapshot:
+        description: Skip the pre-migration RDS snapshot (production only; use sparingly)
+        type: boolean
+        default: false
+      skip_migrations:
+        description: Skip the database migrator entirely (front-end-only redeploys)
+        type: boolean
+        default: false
+
+concurrency:
+  # One deploy at a time per environment. Never cancel one in flight — it may be mid-migration.
+  group: deploy-${{ inputs.environment }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+  id-token: write # Required to mint the OIDC token that the AWS role trusts.
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  deploy:
+    name: Deploy to ${{ inputs.environment }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+
+    # Resolves the per-environment variables below, and is the hook for adding a required
+    # reviewer to production later without touching this file.
+    environment: ${{ inputs.environment }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-build
+
+      - name: Build and test
+        uses: ./.github/actions/build-and-test
+
+      # ----------------------------------------------------------------------------------
+      # Publish
+      # ----------------------------------------------------------------------------------
+
+      - name: Compute release id
+        id: release
+        run: |
+          release_id="$(date -u +%Y%m%d-%H%M%S)-${GITHUB_SHA:0:7}"
+          echo "id=$release_id" >> "$GITHUB_OUTPUT"
+          echo "Release id: $release_id"
+
+      - name: Publish Web
+        # --self-contained is the whole point: it takes the .NET install off the server,
+        # which is the thing that broke twice and forced server rebuilds.
+        # This also triggers the PublishRunVite target, which runs the Vite production build.
+        run: >-
+          dotnet publish src/FantasyCritic.Web/FantasyCritic.Web.csproj
+          -c Release
+          -r linux-x64
+          --self-contained true
+          -o bundle/web
+
+      - name: Publish DatabaseUpdater
+        run: >-
+          dotnet publish src/FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj
+          -c Release
+          -r linux-x64
+          --self-contained true
+          -o bundle/dbup
+
+      - name: Assemble bundle
+        env:
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+          TARGET_ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          set -euo pipefail
+          cp deploy/deploy.sh bundle/deploy.sh
+          chmod +x bundle/deploy.sh bundle/web/FantasyCritic.Web bundle/dbup/FantasyCritic.DatabaseUpdater
+          {
+            echo "release_id=$RELEASE_ID"
+            echo "environment=$TARGET_ENVIRONMENT"
+            echo "git_sha=$GITHUB_SHA"
+            echo "git_ref=$GITHUB_REF"
+            echo "built_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+            echo "run_url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          } > bundle/RELEASE
+          tar -czf release.tar.gz -C bundle .
+          ls -lh release.tar.gz
+
+      # ----------------------------------------------------------------------------------
+      # AWS
+      # ----------------------------------------------------------------------------------
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: gha-deploy-${{ github.run_id }}
+
+      - name: Start instance and wait for SSM
+        # The beta box is normally powered off. Production is always on, so this is a no-op
+        # there beyond confirming SSM answers before we try to run anything.
+        env:
+          INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
+        run: |
+          set -euo pipefail
+          state="$(aws ec2 describe-instances --instance-ids "$INSTANCE_ID" \
+            --query 'Reservations[0].Instances[0].State.Name' --output text)"
+          echo "Instance state: $state"
+          if [ "$state" != "running" ]; then
+            echo "Starting $INSTANCE_ID..."
+            aws ec2 start-instances --instance-ids "$INSTANCE_ID" >/dev/null
+            aws ec2 wait instance-running --instance-ids "$INSTANCE_ID"
+          fi
+
+          echo "Waiting for the SSM agent to report online..."
+          for attempt in $(seq 1 60); do
+            ping_status="$(aws ssm describe-instance-information \
+              --filters "Key=InstanceIds,Values=$INSTANCE_ID" \
+              --query 'InstanceInformationList[0].PingStatus' --output text 2>/dev/null || echo None)"
+            if [ "$ping_status" = "Online" ]; then
+              echo "SSM online after $attempt attempt(s)."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::SSM agent did not come online for $INSTANCE_ID within 10 minutes."
+          exit 1
+
+      - name: Upload bundle to S3
+        id: upload
+        env:
+          BUCKET: ${{ vars.RELEASE_BUCKET }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+          TARGET_ENVIRONMENT: ${{ inputs.environment }}
+        run: |
+          set -euo pipefail
+          key="releases/$TARGET_ENVIRONMENT/$RELEASE_ID.tar.gz"
+          aws s3 cp release.tar.gz "s3://$BUCKET/$key"
+          echo "s3_uri=s3://$BUCKET/$key" >> "$GITHUB_OUTPUT"
+
+      - name: Create pre-migration RDS snapshot
+        if: inputs.environment == 'production' && !inputs.skip_snapshot && !inputs.skip_migrations
+        env:
+          DB_INSTANCE: ${{ vars.RDS_INSTANCE_IDENTIFIER }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+        run: |
+          set -euo pipefail
+          # RDS snapshot identifiers allow letters, digits and hyphens, and must start with a
+          # letter. Release ids are already in that alphabet; strip anything else defensively.
+          snapshot_id="predeploy-$(printf '%s' "$RELEASE_ID" | tr -cd '[:alnum:]-')"
+          echo "Creating snapshot $snapshot_id of $DB_INSTANCE..."
+          aws rds create-db-snapshot \
+            --db-instance-identifier "$DB_INSTANCE" \
+            --db-snapshot-identifier "$snapshot_id" \
+            --tags "Key=CreatedBy,Value=github-actions" "Key=Release,Value=$RELEASE_ID" >/dev/null
+          echo "Waiting for it to become available (usually the slowest step in the run)..."
+          aws rds wait db-snapshot-available --db-snapshot-identifier "$snapshot_id"
+          echo "Snapshot $snapshot_id is available."
+          echo "Pre-migration snapshot: \`$snapshot_id\`" >> "$GITHUB_STEP_SUMMARY"
+
+      # ----------------------------------------------------------------------------------
+      # Run the deploy on the instance
+      # ----------------------------------------------------------------------------------
+
+      - name: Run deploy via SSM
+        env:
+          INSTANCE_ID: ${{ vars.EC2_INSTANCE_ID }}
+          S3_URI: ${{ steps.upload.outputs.s3_uri }}
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+          SKIP_MIGRATIONS: ${{ inputs.skip_migrations }}
+        run: |
+          set -euo pipefail
+
+          # SSM runs these as root. The deploy script itself travels inside the bundle, so
+          # the instance never needs a checkout of this repository.
+          commands=$(jq -n \
+            --arg s3_uri "$S3_URI" \
+            --arg release_id "$RELEASE_ID" \
+            --arg skip_migrations "$SKIP_MIGRATIONS" \
+            '[
+              "set -euo pipefail",
+              "RELEASE_ID=" + $release_id,
+              "RELEASE_DIR=/opt/fantasy-critic/releases/$RELEASE_ID",
+              "rm -rf \"$RELEASE_DIR\"",
+              "mkdir -p \"$RELEASE_DIR\"",
+              "aws s3 cp " + $s3_uri + " /tmp/$RELEASE_ID.tar.gz",
+              "tar -xzf /tmp/$RELEASE_ID.tar.gz -C \"$RELEASE_DIR\"",
+              "rm -f /tmp/$RELEASE_ID.tar.gz",
+              "chmod +x \"$RELEASE_DIR/deploy.sh\"",
+              "FC_SKIP_MIGRATIONS=" + $skip_migrations + " \"$RELEASE_DIR/deploy.sh\""
+            ]')
+
+          parameters=$(jq -n --argjson c "$commands" '{commands: $c, executionTimeout: ["3600"]}')
+
+          command_id=$(aws ssm send-command \
+            --instance-ids "$INSTANCE_ID" \
+            --document-name AWS-RunShellScript \
+            --comment "Deploy $RELEASE_ID" \
+            --timeout-seconds 600 \
+            --parameters "$parameters" \
+            --query 'Command.CommandId' --output text)
+
+          echo "SSM command: $command_id"
+          echo "Waiting for it to finish..."
+
+          status=Pending
+          for _ in $(seq 1 240); do
+            sleep 10
+            status=$(aws ssm get-command-invocation \
+              --command-id "$command_id" --instance-id "$INSTANCE_ID" \
+              --query 'Status' --output text 2>/dev/null || echo Pending)
+            case "$status" in
+              Success|Failed|Cancelled|TimedOut) break ;;
+            esac
+            echo "  ...$status"
+          done
+
+          echo "::group::Deploy script output"
+          aws ssm get-command-invocation \
+            --command-id "$command_id" --instance-id "$INSTANCE_ID" \
+            --query 'StandardOutputContent' --output text || true
+          echo "::endgroup::"
+
+          stderr=$(aws ssm get-command-invocation \
+            --command-id "$command_id" --instance-id "$INSTANCE_ID" \
+            --query 'StandardErrorContent' --output text || true)
+          if [ -n "$stderr" ] && [ "$stderr" != "None" ]; then
+            echo "::group::Deploy script stderr"
+            echo "$stderr"
+            echo "::endgroup::"
+          fi
+
+          if [ "$status" != "Success" ]; then
+            echo "::error::Deploy finished with status $status. The site may still be stopped — the output above prints the rollback command."
+            exit 1
+          fi
+          echo "Deploy succeeded."
+
+      - name: Verify the site is answering
+        if: ${{ vars.SITE_URL != '' }}
+        run: |
+          set -euo pipefail
+          url="${{ vars.SITE_URL }}/health"
+          echo "Probing $url from outside AWS..."
+          for attempt in $(seq 1 20); do
+            code=$(curl -sS -o /dev/null -w '%{http_code}' --max-time 10 "$url" || echo 000)
+            if [ "$code" = "200" ]; then
+              echo "Healthy after $attempt attempt(s)."
+              exit 0
+            fi
+            echo "  ...HTTP $code"
+            sleep 10
+          done
+          echo "::error::$url never returned 200, even though the deploy script reported success. Check nginx and DNS."
+          exit 1
+
+      - name: Summary
+        if: always()
+        env:
+          RELEASE_ID: ${{ steps.release.outputs.id }}
+        run: |
+          {
+            echo "### Deploy to ${{ inputs.environment }}"
+            echo
+            echo "| | |"
+            echo "|---|---|"
+            echo "| Release | \`$RELEASE_ID\` |"
+            echo "| Ref | \`${{ github.ref_name }}\` |"
+            echo "| Commit | \`${GITHUB_SHA:0:7}\` |"
+            echo "| Migrations | ${{ inputs.skip_migrations && 'skipped' || 'run' }} |"
+            echo "| Result | ${{ job.status }} |"
+          } >> "$GITHUB_STEP_SUMMARY"

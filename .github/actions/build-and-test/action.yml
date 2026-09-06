@@ -1,0 +1,63 @@
+name: Build and unit test
+description: >-
+  Builds the Web project, regenerates both NSwag clients from its OpenAPI surface, builds
+  the rest of the solution against them, and runs the unit tests. Integration tests are
+  deliberately not run here — they need a MySQL container and take about six minutes.
+
+inputs:
+  configuration:
+    description: MSBuild configuration.
+    required: false
+    default: Release
+
+runs:
+  using: composite
+  steps:
+    - name: Create log directory
+      # LoggingPaths hard-codes /var/log/fantasy-critic on Linux, and the unit test fixture
+      # configures Serilog file sinks against it.
+      shell: bash
+      run: |
+        sudo mkdir -p /var/log/fantasy-critic
+        sudo chown -R "$(id -u):$(id -g)" /var/log/fantasy-critic
+
+    - name: Restore solution
+      shell: bash
+      run: dotnet restore src/FantasyCritic.slnx
+
+    - name: Build Web
+      # Must precede client generation: nswag.json runs with noBuild, so it reads the
+      # already-compiled Web assembly to produce the OpenAPI document.
+      shell: bash
+      run: dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj -c ${{ inputs.configuration }} --no-restore
+
+    - name: Generate API clients
+      # Both generated clients are gitignored, so CI has to produce them the same way the
+      # server used to. The C# client is what makes FantasyCritic.IntegrationTests compile.
+      shell: bash
+      env:
+        NSWAG_CONFIGURATION: ${{ inputs.configuration }}
+      run: scripts/regenerate-api-client.sh
+
+    - name: Build solution
+      shell: bash
+      run: dotnet build src/FantasyCritic.slnx -c ${{ inputs.configuration }} --no-restore
+
+    - name: Unit tests
+      shell: bash
+      run: >-
+        dotnet test src/FantasyCritic.Test/FantasyCritic.Test.csproj
+        -c ${{ inputs.configuration }}
+        --no-build
+        --logger "console;verbosity=normal"
+        --logger "trx;LogFileName=unit-tests.trx"
+        --results-directory ${{ github.workspace }}/test-results
+
+    - name: Upload test results
+      if: always()
+      uses: actions/upload-artifact@v4
+      with:
+        name: unit-test-results-${{ github.run_id }}-${{ github.run_attempt }}
+        path: test-results/
+        if-no-files-found: ignore
+        retention-days: 14

@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Discord;
@@ -26,10 +26,12 @@ using FantasyCritic.Postmark;
 using FantasyCritic.Web.Authorization;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.OpenApi;
+using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.DataProtection.Repositories;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
@@ -38,6 +40,7 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime.Serialization.SystemTextJson;
 using NSwag;
 using Serilog;
@@ -81,6 +84,9 @@ public static class HostingExtensions
         services.AddSingleton<IDiscordFormatter, DiscordFormatter>();
         services.AddSingleton<RoleHandler>();
         services.AddSingleton<DiscordPushService>();
+
+        services.AddHealthChecks()
+            .AddCheck<DatabaseHealthCheck>("database", tags: [DatabaseHealthCheck.ReadyTag]);
 
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
@@ -349,6 +355,20 @@ public static class HostingExtensions
         {
             app.UseForwardedHeaders();
         }
+
+        // Health probes run before HTTPS redirection so that a plain-HTTP request from the
+        // deploy script (or, later, an ALB target group) gets an answer instead of a 307.
+        // /health is liveness only: it runs no checks and just proves the process is serving.
+        app.UseHealthChecks("/health", new HealthCheckOptions
+        {
+            Predicate = _ => false
+        });
+
+        // /health/ready additionally proves the database is reachable.
+        app.UseHealthChecks("/health/ready", new HealthCheckOptions
+        {
+            Predicate = registration => registration.Tags.Contains(DatabaseHealthCheck.ReadyTag)
+        });
 
         if (env.IsDevelopment())
         {

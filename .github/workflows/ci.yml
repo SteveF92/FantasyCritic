@@ -1,0 +1,84 @@
+name: CI
+
+# Builds and tests every push to main and every pull request (including forks).
+# This does not deploy anything — see deploy.yml for that.
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+  DOTNET_SKIP_FIRST_TIME_EXPERIENCE: true
+
+jobs:
+  build:
+    name: Build and test
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-build
+
+      - name: Build and test
+        uses: ./.github/actions/build-and-test
+
+      - name: Check formatting and lint
+        # Runs after the build so the generated clients exist; `dotnet format style`
+        # needs a compilable solution.
+        run: scripts/format.sh --check
+
+  vulnerability-scan:
+    name: Dependency vulnerabilities
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    # Advisory only. A newly-published advisory against a transitive package should not
+    # block a pull request; it should show up in the job summary and get looked at.
+    continue-on-error: true
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup-build
+        with:
+          install-client-packages: 'false'
+
+      - name: Restore
+        run: dotnet restore src/FantasyCritic.slnx
+
+      - name: NuGet vulnerabilities
+        run: |
+          set -o pipefail
+          {
+            echo "## NuGet"
+            echo
+            echo '```'
+            dotnet list src/FantasyCritic.slnx package --vulnerable --include-transitive 2>&1 | tee /tmp/nuget-vulns.txt
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+          if grep -q "has the following vulnerable packages" /tmp/nuget-vulns.txt; then
+            echo "::warning::Vulnerable NuGet packages found. See the job summary."
+          fi
+
+      - name: npm vulnerabilities
+        working-directory: src/FantasyCritic.Web/ClientApp
+        run: |
+          {
+            echo "## npm"
+            echo
+            echo '```'
+            npm audit --audit-level=high || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

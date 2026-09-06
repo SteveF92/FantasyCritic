@@ -110,8 +110,14 @@ from a push, not an SSH session.
 regenerate NSwag clients, build, run unit tests. No integration tests. This is the check
 that runs on contributor PRs before they are reviewed.
 
-**Build.** A workflow triggered on push to `production` (and manually via
-`workflow_dispatch` with an environment input for beta):
+**Trigger: manual only.** `workflow_dispatch` with an `environment` input
+(`production` / `beta`); the ref is chosen in the Run workflow dialog. Decided against a
+push-to-`production` trigger — nothing should deploy as a side effect of a push. The
+`environment` input maps to a GitHub Environment, which is both where the per-environment
+variables live and what the AWS role's OIDC trust policy is scoped to, so a fork's pull
+request can never reach AWS.
+
+**Build.** The deploy workflow:
 
 1. `dotnet tool restore`, build Web, regenerate NSwag clients (`scripts/regenerate-api-client.sh`).
 2. Run unit tests.
@@ -131,14 +137,21 @@ has an IAM role (for Secrets Manager); it needs the SSM managed policy added.
 and waits for it to become available. This turns an existing manual habit into a guarantee.
 Skip it for beta deploys.
 
-**Beta.** The manual workflow can `aws ec2 start-instances` the beta box, wait for SSM to
-report it online, deploy, and leave it running.
+**Beta.** The workflow calls `aws ec2 start-instances` on the beta box, waits for SSM to
+report it online, deploys, and leaves it running. No trigger on the `beta` branch — that
+would boot a normally-off instance on every push.
 
 **Notes.**
 
 - Keep `linuxUpdateSite.sh` working as a fallback for the first few deploys.
 - If the repo is public, GitHub Actions minutes are free. Unit tests should run regardless.
 - Serilog file logs are unchanged in this phase.
+- Releases land in `/opt/fantasy-critic/releases/<id>` with a `current` symlink that systemd
+  points at, so rollback is a symlink swap rather than rebuilding an old commit on the box.
+- The health endpoint from the backlog is folded in here, since the deploy script needs
+  something real to poll after restarting the service. `/health` is liveness only;
+  `/health/ready` also checks MySQL.
+- Setup runbook: [deployment-phase-1-setup.md](deployment-phase-1-setup.md).
 
 **Cost:** ~$0. S3 storage for bundles is pennies.
 
@@ -368,8 +381,9 @@ All within the $350 ceiling with room to spare.
 Cheap items that belong somewhere in the sequence but do not justify a phase. Pick them up
 when a nearby phase makes them convenient.
 
-- **Health endpoint.** ASP.NET health checks at `/health`. Needed by the ALB in Phase 5 and
-  ECS in Phase 6; harmless to add in Phase 1.
+- ~~**Health endpoint.**~~ Done in Phase 1. `/health` is liveness only (runs no checks) so
+  a database blip never pulls the instance out of an ALB target group in Phase 5;
+  `/health/ready` additionally proves MySQL is reachable.
 - **Alerting (low priority).** An external uptime check against the health endpoint posting
   to Discord, and a Loki alert on error-level logs from `FantasyCritic.*`. Not a pager;
   a notification.
@@ -380,7 +394,13 @@ when a nearby phase makes them convenient.
   Relevant the moment Phase 5 starts.
 - **Remove Windows leftovers.** `UpdateSite.ps1` and the Windows branches of `LoggingPaths`.
 
-## Open questions before Phase 1
+## Answers to the pre-Phase-1 questions
 
-- Current EC2 instance type (drives the Phase 6 compute decision).
-- Is DNS on Route 53? (Drives Phase 5 import scope.)
+- **Current EC2 instance type: `t3.large`** (2 vCPU, 8 GB). On-demand that is roughly
+  $60/month, or about $38 with a one-year no-upfront Savings Plan. This sets the bar for the
+  Phase 6 compute decision: Fargate at 1 vCPU / 2 GB for web plus the worker and bot lands
+  near $60/month, so ECS-on-EC2 on the same instance class is the cheaper of the two and
+  Fargate is closer to break-even than to the "+$60" worst case in the table above.
+- **DNS is on Route 53.** The hosted zone is therefore in scope for the Phase 5 Terraform
+  import, and the Phase 5 ACM certificate can use DNS validation with automatic record
+  creation.
