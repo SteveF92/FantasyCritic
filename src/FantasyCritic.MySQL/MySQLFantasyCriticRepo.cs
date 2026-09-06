@@ -847,9 +847,21 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     public async Task QueueGame(QueuedGame queuedGame)
     {
         var entity = new QueuedGameEntity(queuedGame);
-        const string sql = "insert into tbl_league_publisherqueue(PublisherID,MasterGameID,`Ranking`) VALUES (@PublisherID,@MasterGameID,@Ranking);";
+        const string sql = "insert into tbl_league_publisherqueue(PublisherID,MasterGameID,`Ranking`,Notes) VALUES (@PublisherID,@MasterGameID,@Ranking,@Notes);";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, entity);
+    }
+
+    public async Task SetQueuedGameNotes(QueuedGame queuedGame, string? notes)
+    {
+        const string sql = "update tbl_league_publisherqueue set Notes = @notes where PublisherID = @publisherID AND MasterGameID = @masterGameID;";
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, new
+        {
+            notes,
+            publisherID = queuedGame.Publisher.PublisherID,
+            masterGameID = queuedGame.MasterGame.MasterGameID
+        });
     }
 
     public async Task RemoveQueuedGame(QueuedGame queuedGame)

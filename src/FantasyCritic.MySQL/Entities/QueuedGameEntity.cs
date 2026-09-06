@@ -12,14 +12,16 @@ public class QueuedGameEntity
         PublisherID = domain.Publisher.PublisherID;
         MasterGameID = domain.MasterGame.MasterGameID;
         Ranking = domain.Rank;
+        Notes = domain.Notes;
     }
 
     public Guid PublisherID { get; set; }
     public Guid MasterGameID { get; set; }
     public int Ranking { get; set; }
+    public string? Notes { get; set; }
 
     public QueuedGame ToDomain(Publisher publisher, MasterGame masterGame)
     {
-        return new QueuedGame(publisher, masterGame, Ranking);
+        return new QueuedGame(publisher, masterGame, Ranking, Notes);
     }
 }

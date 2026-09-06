@@ -174,7 +174,7 @@ public class GameAcquisitionService
         }
 
         var nextRank = queuedGames.Count + 1;
-        QueuedGame queuedGame = new QueuedGame(publisher, masterGame, nextRank);
+        QueuedGame queuedGame = new QueuedGame(publisher, masterGame, nextRank, null);
         await _fantasyCriticRepo.QueueGame(queuedGame);
 
         return claimResult;

@@ -103,6 +103,7 @@ public interface IFantasyCriticRepo
     Task QueueGame(QueuedGame queuedGame);
     Task RemoveQueuedGame(QueuedGame queuedGame);
     Task SetQueueRankings(IReadOnlyList<KeyValuePair<QueuedGame, int>> queueRanks);
+    Task SetQueuedGameNotes(QueuedGame queuedGame, string? notes);
 
     Task AddLeagueAction(LeagueAction action);
     Task AddLeagueManagerAction(LeagueManagerAction action);
