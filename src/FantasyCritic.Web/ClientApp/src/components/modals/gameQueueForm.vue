@@ -78,7 +78,7 @@
           <th scope="col" class="game-column">Release Date</th>
           <th scope="col">Hype Factor</th>
           <th scope="col">Ranking</th>
-          <th scope="col" class="notes-column">Notes</th>
+          <th scope="col">Notes</th>
           <th scope="col">Status</th>
           <th scope="col"></th>
         </tr>
@@ -94,17 +94,10 @@
           <td>{{ queuedGame.masterGame.dateAdjustedHypeFactor | score(1) }}</td>
           <td>{{ queuedGame.rank }}</td>
           <td class="notes-cell">
-            <div v-if="editingNotesFor === queuedGame.masterGame.masterGameID">
-              <b-form-textarea v-model="notesInEdit" rows="3" :maxlength="maximumNotesLength"></b-form-textarea>
-              <div class="notes-edit-buttons">
-                <b-button variant="secondary" size="sm" @click="cancelEditingNotes">Cancel</b-button>
-                <b-button variant="primary" size="sm" @click="saveNotes(queuedGame)">Save</b-button>
-              </div>
-            </div>
-            <div v-else class="notes-display">
+            <div class="notes-display">
               <span v-if="queuedGame.notes" class="notes-text">{{ queuedGame.notes }}</span>
               <span v-else class="no-notes">No notes</span>
-              <b-button variant="secondary" size="sm" title="Edit notes" @click="startEditingNotes(queuedGame)">
+              <b-button :variant="queuedGame.notes ? 'info' : 'secondary'" size="sm" title="Edit notes" @click="startEditingNotes(queuedGame)">
                 <font-awesome-icon icon="pen" />
               </b-button>
             </div>
@@ -118,6 +111,10 @@
         </tr>
       </draggable>
     </table>
+    <b-modal id="editWatchlistNotesModal" :title="notesModalTitle" ok-title="Save Notes" @ok="saveNotes" @hidden="clearNotesData">
+      <b-form-textarea v-model="notesInEdit" rows="8" :maxlength="maximumNotesLength"></b-form-textarea>
+      <div class="notes-length">{{ notesInEdit.length }} / {{ maximumNotesLength }}</div>
+    </b-modal>
     <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Set Rankings" @click="setQueueRankings" />
     </template>
@@ -155,7 +152,7 @@ export default {
       isBusy: false,
       selectedSlotIndex: 0,
       selectedOtherPublisher: null,
-      editingNotesFor: null,
+      gameToEditNotes: null,
       notesInEdit: '',
       maximumNotesLength: 1000
     };
@@ -163,6 +160,9 @@ export default {
   computed: {
     otherPublishers() {
       return this.leagueYear.allPublishersForUser.filter((p) => p.publisherID !== this.userPublisher.publisherID);
+    },
+    notesModalTitle() {
+      return this.gameToEditNotes ? 'Notes: ' + this.gameToEditNotes.masterGame.gameName : 'Notes';
     }
   },
   async created() {
@@ -274,22 +274,22 @@ export default {
       this.initializeDesiredRankings();
     },
     startEditingNotes(queuedGame) {
-      this.editingNotesFor = queuedGame.masterGame.masterGameID;
+      this.gameToEditNotes = queuedGame;
       this.notesInEdit = queuedGame.notes ?? '';
+      this.$bvModal.show('editWatchlistNotesModal');
     },
-    cancelEditingNotes() {
-      this.editingNotesFor = null;
+    clearNotesData() {
+      this.gameToEditNotes = null;
       this.notesInEdit = '';
     },
-    async saveNotes(queuedGame) {
+    async saveNotes() {
       const model = {
         publisherID: this.userPublisher.publisherID,
-        masterGameID: queuedGame.masterGame.masterGameID,
+        masterGameID: this.gameToEditNotes.masterGame.masterGameID,
         notes: this.notesInEdit
       };
 
       await axios.post('/api/league/SetQueuedGameNotes', model);
-      this.cancelEditingNotes();
       await this.notifyAction('Watchlist notes saved.');
       this.initializeDesiredRankings();
     },
@@ -304,7 +304,7 @@ export default {
       this.initializeDesiredRankings();
     },
     clearAllData() {
-      this.cancelEditingNotes();
+      this.clearNotesData();
       this.clearQueueData();
       this.searchGameName = null;
       this.possibleMasterGames = [];
@@ -351,23 +351,23 @@ export default {
   font-size: 12px;
 }
 
-.notes-column {
-  min-width: 200px;
-}
-
 .notes-cell {
-  vertical-align: top;
+  vertical-align: middle;
+  max-width: 250px;
 }
 
 .notes-display {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: 5px;
 }
 
 .notes-text {
-  white-space: pre-wrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
   overflow-wrap: anywhere;
 }
 
@@ -375,10 +375,22 @@ export default {
   font-style: italic;
 }
 
-.notes-edit-buttons {
-  display: flex;
-  justify-content: flex-end;
-  gap: 5px;
+/* The watchlist table is already crowded, so below the bootstrap 'md' breakpoint
+   the notes preview drops out and the button color carries the has-notes signal. */
+@media only screen and (max-width: 767px) {
+  .notes-text,
+  .no-notes {
+    display: none;
+  }
+
+  .notes-display {
+    justify-content: center;
+  }
+}
+
+.notes-length {
   margin-top: 5px;
+  text-align: right;
+  font-size: 12px;
 }
 </style>
