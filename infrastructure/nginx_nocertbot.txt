@@ -2,7 +2,11 @@ server {
     listen 80;
     listen [::]:80;
     server_name   fantasycritic.games *.fantasycritic.games;
-    
+
+    # Serves /var/www/maintenance/maintenance.html for 502/503, and whenever the flag file
+    # /var/www/maintenance.on exists. See infrastructure/nginx_maintenance.conf.
+    include /etc/nginx/maintenance.conf;
+
     location ~* /api/admin/ {
         include /etc/nginx/api_proxy.conf;
         

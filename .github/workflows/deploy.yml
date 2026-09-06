@@ -93,7 +93,11 @@ jobs:
         run: |
           set -euo pipefail
           cp deploy/deploy.sh bundle/deploy.sh
-          chmod +x bundle/deploy.sh bundle/web/FantasyCritic.Web bundle/dbup/FantasyCritic.DatabaseUpdater
+          # The maintenance page travels with the release, so changing its wording is an
+          # ordinary deploy rather than a file copied onto the box by hand.
+          cp deploy/maintenance.sh bundle/maintenance.sh
+          cp infrastructure/maintenance.html bundle/maintenance.html
+          chmod +x bundle/deploy.sh bundle/maintenance.sh bundle/web/FantasyCritic.Web bundle/dbup/FantasyCritic.DatabaseUpdater
           # The site reads this file at startup and shows it in the admin console, so keep the
           # keys in sync with BuildInfoReader in the web project.
           {

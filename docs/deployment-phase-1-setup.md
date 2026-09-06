@@ -416,8 +416,9 @@ container and about six minutes, which the roadmap rules out for a solo project.
 
 ## Deferred to later phases
 
-- **Maintenance page** during the stop/migrate/start window — Phase 2. Right now users get
-  nginx's 502 for those couple of minutes, same as today.
+- ~~**Maintenance page**~~ — done in Phase 2, see
+  [deployment-phase-2-setup.md](deployment-phase-2-setup.md). `deploy.sh` now raises it before
+  stopping the service and lowers it once the new release is healthy.
 - **IMDSv2 hop limit** — only matters once the app runs in a container reaching the instance
   role, i.e. Phase 3.
 - **Terraform** — Phase 5. Everything created above is a candidate for import then; the S3

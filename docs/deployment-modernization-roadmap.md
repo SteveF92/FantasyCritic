@@ -160,13 +160,22 @@ would boot a normally-off instance on every push.
 **Goal:** Users see a real page during the stop/migrate/start window instead of a bad
 gateway error.
 
-- nginx `error_page 502 503` serves a static maintenance page from the host.
-- A flag file (e.g. `/var/www/maintenance.on`) that nginx checks lets the deploy script
-  (or a human) force the page for planned work.
-- The deploy script from Phase 1 touches and removes the flag.
+- nginx `error_page 502 503 =503` serves a static maintenance page from the host. The `=503`
+  matters: without it the deploy window serves the page under a 502, which search engines
+  treat less kindly than the 503 that actually describes the situation.
+- A flag file (`/var/www/maintenance.on`) that nginx checks lets the deploy script (or a
+  human) force the page for planned work. It is tested per request, so toggling it needs no
+  nginx reload.
+- The deploy script from Phase 1 raises the flag before stopping the service and lowers it
+  once the new release answers `/health`. Every failure path leaves it raised.
+- The page is a single self-contained file with no external stylesheet, script, font or
+  image — everything it would fetch is exactly what is unavailable when it is being shown.
+  It ships inside the release bundle, so its wording cannot drift from the repository.
 
 This is small enough to ride along with Phase 1 but is the first thing users notice, so it
 deserves its own deploy.
+
+Setup runbook: [deployment-phase-2-setup.md](deployment-phase-2-setup.md).
 
 **Cost:** $0.
 
@@ -241,8 +250,9 @@ metrics unless they turn out useful. Do not use Aspire for deployment.
   group only accepts traffic from the ALB. certbot leaves the server.
 - The instance becomes a launch template with user-data that installs Docker and pulls the
   compose file from S3.
-- The maintenance page moves to an ALB fixed-response listener rule the deploy script
-  toggles.
+- The maintenance page moves to an ALB listener rule the deploy script enables and disables,
+  replacing the nginx flag file from Phase 2. A fixed response caps out at 1024 bytes, so the
+  rule either serves a minimal page or redirects to the Phase 2 page on S3.
 - ECR, S3 buckets, and the GitHub OIDC role from Phase 1 also become Terraform.
 
 Every resource here carries forward into ECS. Only the launch template gets replaced.

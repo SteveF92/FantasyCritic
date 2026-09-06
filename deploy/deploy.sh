@@ -10,10 +10,14 @@
 # Layout it maintains:
 #
 #   /opt/fantasy-critic/
-#     releases/<release-id>/   web/  dbup/  deploy.sh  RELEASE
+#     releases/<release-id>/   web/  dbup/  deploy.sh  maintenance.sh  maintenance.html  RELEASE
 #     current -> releases/<release-id>
 #
 # systemd points at /opt/fantasy-critic/current/web, so a rollback is a symlink swap.
+#
+# The maintenance page is raised before the service stops and lowered once the new release
+# is healthy, so the stop/migrate/start window shows a branded page rather than a bad
+# gateway. Any failure below deliberately leaves it raised.
 #
 # Environment:
 #   FC_SKIP_MIGRATIONS=true   skip the database migrator (front-end-only redeploys)
@@ -31,6 +35,7 @@ readonly KEEP_RELEASES="${FC_KEEP_RELEASES:-5}"
 RELEASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly RELEASE_DIR
 readonly RELEASE_ID="$(basename "$RELEASE_DIR")"
+readonly MAINTENANCE="$RELEASE_DIR/maintenance.sh"
 
 log() {
     printf '[%s] %s\n' "$(date -u +%H:%M:%S)" "$*"
@@ -47,6 +52,10 @@ fi
 
 if [ ! -x "$RELEASE_DIR/web/FantasyCritic.Web" ]; then
     fail "No web binary at $RELEASE_DIR/web/FantasyCritic.Web — the bundle is incomplete."
+fi
+
+if [ ! -f "$RELEASE_DIR/maintenance.html" ] || [ ! -f "$MAINTENANCE" ]; then
+    fail "No maintenance page in the bundle — refusing to deploy without one."
 fi
 
 log "Deploying release $RELEASE_ID"
@@ -72,6 +81,8 @@ To roll back:
   ln -sfnT $RELEASES_DIR/$PREVIOUS_RELEASE $CURRENT_LINK
   systemctl start $SERVICE
 
+  $MAINTENANCE off
+
 Note that this rolls back code only. If the migrator ran, restore the pre-deploy RDS
 snapshot as well.
 HINT
@@ -91,6 +102,12 @@ log "ASPNETCORE_ENVIRONMENT=$ASPNETCORE_ENVIRONMENT"
 # ------------------------------------------------------------------------------------------
 # Migrations are deliberately not expand/contract compatible, so the app must be down before
 # the schema changes. A few minutes of downtime is the accepted trade.
+
+# The page has to be installed from this release before it is raised, so that editing it is
+# an ordinary code change that ships with a deploy rather than a file hand-copied to the box.
+chmod +x "$MAINTENANCE"
+"$MAINTENANCE" install
+"$MAINTENANCE" on
 
 log "Stopping $SERVICE"
 systemctl stop "$SERVICE"
@@ -157,6 +174,8 @@ if [ "$healthy" != "true" ]; then
 fi
 
 log "Healthy."
+
+"$MAINTENANCE" off
 
 # ------------------------------------------------------------------------------------------
 # Prune
