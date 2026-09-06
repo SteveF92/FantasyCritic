@@ -13,6 +13,33 @@ inputs:
 runs:
   using: composite
   steps:
+    # The Verify fixtures under src/FantasyCritic.Test/TestData are LFS-backed CSVs, about
+    # 135 MB of them. actions/checkout leaves pointer files behind by default, and the test
+    # fixtures then parse "version https://git-lfs.github.com/spec/v1" as CSV and fail.
+    #
+    # Caching the objects rather than passing `lfs: true` to checkout keeps repeat runs off
+    # GitHub's LFS bandwidth quota. A plain LFS checkout would pull all 135 MB on every run
+    # of every pull request, and LFS starts refusing downloads outright once the quota is
+    # spent — which would look like this same failure, but intermittently.
+    - name: List LFS objects
+      shell: bash
+      run: git lfs ls-files --long | cut -d' ' -f1 | sort > .lfs-assets-id
+
+    - name: Restore LFS cache
+      uses: actions/cache@v4
+      with:
+        path: .git/lfs
+        key: lfs-${{ hashFiles('.lfs-assets-id') }}
+        # A partial hit still saves most of the download: `git lfs pull` below fetches only
+        # whatever the cached set is missing.
+        restore-keys: lfs-
+
+    - name: Check out LFS objects
+      shell: bash
+      run: |
+        git lfs pull
+        rm -f .lfs-assets-id
+
     - name: Create log directory
       # LoggingPaths hard-codes /var/log/fantasy-critic on Linux, and the unit test fixture
       # configures Serilog file sinks against it.
