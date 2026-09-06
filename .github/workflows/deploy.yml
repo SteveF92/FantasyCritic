@@ -216,7 +216,7 @@ jobs:
             '[
               "set -eu",
               "export PATH=\"$PATH:/usr/local/bin:/snap/bin\"",
-              "command -v aws >/dev/null 2>&1 || { echo \"ERROR: aws CLI not on PATH ($PATH). Install it: sudo snap install aws-cli --classic\" >&2; exit 127; }",
+              "command -v aws >/dev/null 2>&1 || { echo \"ERROR: aws CLI not on PATH ($PATH). Install it into /usr/local/bin with the official AWS installer; the aws-cli snap is not reachable from SSM\" >&2; exit 127; }",
               "RELEASE_ID=" + $release_id,
               "RELEASE_DIR=/opt/fantasy-critic/releases/$RELEASE_ID",
               "rm -rf \"$RELEASE_DIR\"",
