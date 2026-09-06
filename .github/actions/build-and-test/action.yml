@@ -37,7 +37,7 @@ runs:
       shell: bash
       env:
         NSWAG_CONFIGURATION: ${{ inputs.configuration }}
-      run: scripts/regenerate-api-client.sh
+      run: bash scripts/regenerate-api-client.sh
 
     - name: Build solution
       shell: bash

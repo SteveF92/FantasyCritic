@@ -38,7 +38,7 @@ jobs:
       - name: Check formatting and lint
         # Runs after the build so the generated clients exist; `dotnet format style`
         # needs a compilable solution.
-        run: scripts/format.sh --check
+        run: bash scripts/format.sh --check
 
   vulnerability-scan:
     name: Dependency vulnerabilities
