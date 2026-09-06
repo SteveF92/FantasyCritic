@@ -1,4 +1,4 @@
-using System.Net;
+﻿using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Discord;
@@ -294,6 +294,7 @@ public static class HostingExtensions
         services.AddSingleton<IXmlRepository, MySQLXmlRepository>();
         var serviceProvider = services.BuildServiceProvider();
         services.AddDataProtection()
+            .SetApplicationName($"FantasyCritic-{environment.EnvironmentName}")
             .AddKeyManagementOptions(options => options.XmlRepository = serviceProvider.GetService<IXmlRepository>());
 
         services.AddHsts(options =>
