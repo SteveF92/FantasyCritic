@@ -1,2 +1,6 @@
 /*
 !/src
+
+# NSwag-generated client: machine-written, gitignored, and regenerated on every build, so
+# there is nothing to hand-format. ESLint skips it for the same reason (eslint.config.mjs).
+/src/api/generated/
