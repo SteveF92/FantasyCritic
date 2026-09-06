@@ -1520,6 +1520,7 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpPost]
+    [ProducesResponseType<QueueResultViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -1608,6 +1609,37 @@ public class LeagueController : BaseLeagueController
         }
 
         Result result = await _publisherService.SetQueueRankings(queueRanks);
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> SetQueuedGameNotes([FromBody] SetQueuedGameNotesRequest request)
+    {
+        var publisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow, RequiredRelationship.BePublisher, RequiredYearStatus.AnyYearNotFinished);
+        if (publisherRecord.FailedResult is not null)
+        {
+            return publisherRecord.FailedResult;
+        }
+        var validResult = publisherRecord.ValidResult!;
+        var publisher = validResult.Publisher;
+
+        var queuedGames = await _publisherService.GetQueuedGames(publisher);
+        var thisQueuedGame = queuedGames.SingleOrDefault(x => x.MasterGame.MasterGameID == request.MasterGameID);
+        if (thisQueuedGame is null)
+        {
+            return BadRequest();
+        }
+
+        Result result = await _publisherService.SetQueuedGameNotes(thisQueuedGame, request.Notes);
         if (result.IsFailure)
         {
             return BadRequest(result.Error);

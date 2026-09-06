@@ -177,6 +177,23 @@ public class PublisherService
         return Result.Success();
     }
 
+    public async Task<Result> SetQueuedGameNotes(QueuedGame queuedGame, string? notes)
+    {
+        var trimmedNotes = notes?.Trim();
+        if (string.IsNullOrEmpty(trimmedNotes))
+        {
+            trimmedNotes = null;
+        }
+
+        if (trimmedNotes is not null && trimmedNotes.Length > QueuedGame.MaximumNotesLength)
+        {
+            return Result.Failure($"Notes cannot be longer than {QueuedGame.MaximumNotesLength} characters.");
+        }
+
+        await _fantasyCriticRepo.SetQueuedGameNotes(queuedGame, trimmedNotes);
+        return Result.Success();
+    }
+
     public async Task<IReadOnlyList<MinimalPublisher>> GetMinimalPublishersForUser(Guid? userID, int year)
     {
         if (!userID.HasValue)

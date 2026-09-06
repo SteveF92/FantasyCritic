@@ -78,6 +78,7 @@
           <th scope="col" class="game-column">Release Date</th>
           <th scope="col">Hype Factor</th>
           <th scope="col">Ranking</th>
+          <th scope="col" class="notes-column">Notes</th>
           <th scope="col">Status</th>
           <th scope="col"></th>
         </tr>
@@ -92,6 +93,22 @@
           </td>
           <td>{{ queuedGame.masterGame.dateAdjustedHypeFactor | score(1) }}</td>
           <td>{{ queuedGame.rank }}</td>
+          <td class="notes-cell">
+            <div v-if="editingNotesFor === queuedGame.masterGame.masterGameID">
+              <b-form-textarea v-model="notesInEdit" rows="3" :maxlength="maximumNotesLength"></b-form-textarea>
+              <div class="notes-edit-buttons">
+                <b-button variant="secondary" size="sm" @click="cancelEditingNotes">Cancel</b-button>
+                <b-button variant="primary" size="sm" @click="saveNotes(queuedGame)">Save</b-button>
+              </div>
+            </div>
+            <div v-else class="notes-display">
+              <span v-if="queuedGame.notes" class="notes-text">{{ queuedGame.notes }}</span>
+              <span v-else class="no-notes">No notes</span>
+              <b-button variant="secondary" size="sm" title="Edit notes" @click="startEditingNotes(queuedGame)">
+                <font-awesome-icon icon="pen" />
+              </b-button>
+            </div>
+          </td>
           <td>
             <statusBadge :possible-master-game="queuedGame"></statusBadge>
           </td>
@@ -137,7 +154,10 @@ export default {
       showingOtherLeagueWatchlist: false,
       isBusy: false,
       selectedSlotIndex: 0,
-      selectedOtherPublisher: null
+      selectedOtherPublisher: null,
+      editingNotesFor: null,
+      notesInEdit: '',
+      maximumNotesLength: 1000
     };
   },
   computed: {
@@ -253,6 +273,26 @@ export default {
       await this.notifyAction('Watchlist reordered.');
       this.initializeDesiredRankings();
     },
+    startEditingNotes(queuedGame) {
+      this.editingNotesFor = queuedGame.masterGame.masterGameID;
+      this.notesInEdit = queuedGame.notes ?? '';
+    },
+    cancelEditingNotes() {
+      this.editingNotesFor = null;
+      this.notesInEdit = '';
+    },
+    async saveNotes(queuedGame) {
+      const model = {
+        publisherID: this.userPublisher.publisherID,
+        masterGameID: queuedGame.masterGame.masterGameID,
+        notes: this.notesInEdit
+      };
+
+      await axios.post('/api/league/SetQueuedGameNotes', model);
+      this.cancelEditingNotes();
+      await this.notifyAction('Watchlist notes saved.');
+      this.initializeDesiredRankings();
+    },
     async removeQueuedGame(game) {
       const model = {
         publisherID: this.userPublisher.publisherID,
@@ -264,6 +304,7 @@ export default {
       this.initializeDesiredRankings();
     },
     clearAllData() {
+      this.cancelEditingNotes();
       this.clearQueueData();
       this.searchGameName = null;
       this.possibleMasterGames = [];
@@ -308,5 +349,36 @@ export default {
 .publisher-name {
   font-style: italic;
   font-size: 12px;
+}
+
+.notes-column {
+  min-width: 200px;
+}
+
+.notes-cell {
+  vertical-align: top;
+}
+
+.notes-display {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.notes-text {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.no-notes {
+  font-style: italic;
+}
+
+.notes-edit-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 5px;
+  margin-top: 5px;
 }
 </style>

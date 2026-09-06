@@ -6,12 +6,14 @@ public class QueuedGameViewModel
     {
         MasterGame = new MasterGameYearViewModel(masterGameYear, currentDate);
         Rank = queuedGame.Rank;
+        Notes = queuedGame.Notes;
         Taken = taken;
         AlreadyOwned = alreadyOwned;
     }
 
     public MasterGameYearViewModel MasterGame { get; }
     public int Rank { get; }
+    public string? Notes { get; }
     public bool Taken { get; }
     public bool AlreadyOwned { get; }
     public bool IsAvailable => !Taken && !AlreadyOwned;
