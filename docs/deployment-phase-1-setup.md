@@ -249,6 +249,19 @@ aws --version || {
 }
 ```
 
+Verifying this over SSH is not sufficient, and this bit me on the first beta deploy. SSM Run
+Command uses a *non-login* shell, so it never sources `/etc/profile.d/apps-bin-path.sh` and
+`/snap/bin` is not on its PATH — `aws` works perfectly when you SSH in and is invisible to
+the deploy. The workflow now prepends `/usr/local/bin` and `/snap/bin` itself and fails with
+an explicit message if `aws` is still missing, so this should be handled. To check the way
+the deploy actually sees it:
+
+```bash
+aws ssm send-command --instance-ids <INSTANCE_ID>   --document-name AWS-RunShellScript   --parameters 'commands=["command -v aws || echo NOT-ON-PATH; echo PATH=$PATH"]'   --query 'Command.CommandId' --output text
+# then, with that id:
+aws ssm get-command-invocation --command-id <ID> --instance-id <INSTANCE_ID>   --query StandardOutputContent --output text
+```
+
 **b. Directory layout.**
 
 ```bash

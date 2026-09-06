@@ -202,6 +202,11 @@ jobs:
           # deploy.sh has a bash shebang and is executed directly, so it keeps full bash
           # semantics; only these bootstrap lines are constrained.
           #
+          # PATH is also minimal here — an SSM shell is not a login shell, so it never sources
+          # /etc/profile.d/apps-bin-path.sh and /snap/bin is absent. The AWS CLI installed as a
+          # snap (or into /usr/local/bin by the official installer) is therefore invisible even
+          # though it works fine over SSH. deploy.sh inherits this PATH.
+          #
           # The deploy script travels inside the bundle, so the instance never needs a
           # checkout of this repository.
           commands=$(jq -n \
@@ -210,6 +215,8 @@ jobs:
             --arg skip_migrations "$SKIP_MIGRATIONS" \
             '[
               "set -eu",
+              "export PATH=\"$PATH:/usr/local/bin:/snap/bin\"",
+              "command -v aws >/dev/null 2>&1 || { echo \"ERROR: aws CLI not on PATH ($PATH). Install it: sudo snap install aws-cli --classic\" >&2; exit 127; }",
               "RELEASE_ID=" + $release_id,
               "RELEASE_DIR=/opt/fantasy-critic/releases/$RELEASE_ID",
               "rm -rf \"$RELEASE_DIR\"",
