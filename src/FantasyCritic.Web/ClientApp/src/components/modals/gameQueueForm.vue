@@ -71,7 +71,7 @@
     <h3 class="text-black">Current Watchlist</h3>
     <label>Drag and drop to change order.</label>
     <div class="table-responsive">
-      <table class="table table-sm table-bordered table-striped">
+      <table class="table table-sm table-bordered table-striped watchlist-table">
         <thead>
           <tr class="bg-primary">
             <th scope="col"></th>
@@ -89,26 +89,30 @@
               <font-awesome-icon icon="bars" size="lg" />
               <span class="handle-rank">{{ queuedGame.rank }}</span>
             </td>
-            <td><masterGamePopover :master-game="queuedGame.masterGame"></masterGamePopover></td>
-            <td>
+            <td class="game-cell"><masterGamePopover :master-game="queuedGame.masterGame"></masterGamePopover></td>
+            <td data-label="Release Date">
               <span>{{ queuedGame.masterGame.estimatedReleaseDate }}</span>
               <span v-show="queuedGame.masterGame.isReleased">(Released)</span>
             </td>
-            <td class="hype-column">{{ queuedGame.masterGame.dateAdjustedHypeFactor | score(1) }}</td>
-            <td class="notes-cell">
+            <td class="hype-column" data-label="Hype Factor">{{ queuedGame.masterGame.dateAdjustedHypeFactor | score(1) }}</td>
+            <td class="notes-cell" data-label="Notes">
               <div class="notes-display">
                 <span v-if="queuedGame.notes" class="notes-text">{{ queuedGame.notes }}</span>
                 <span v-else class="no-notes">No notes</span>
                 <b-button :variant="queuedGame.notes ? 'info' : 'secondary'" size="sm" title="Edit notes" @click="startEditingNotes(queuedGame)">
                   <font-awesome-icon icon="pen" />
+                  <span class="button-label">Edit Notes</span>
                 </b-button>
               </div>
             </td>
-            <td>
+            <td data-label="Status">
               <statusBadge :possible-master-game="queuedGame"></statusBadge>
             </td>
             <td class="select-cell">
-              <b-button variant="danger" size="sm" @click="removeQueuedGame(queuedGame)">Remove</b-button>
+              <b-button variant="danger" size="sm" title="Remove from watchlist" @click="removeQueuedGame(queuedGame)">
+                <font-awesome-icon icon="minus-circle" class="remove-icon" />
+                <span class="button-label">Remove</span>
+              </b-button>
             </td>
           </tr>
         </draggable>
@@ -399,9 +403,19 @@ export default {
   font-style: italic;
 }
 
+/* Both action buttons carry an icon and a text label, and each width shows
+   whichever of the two it has room for. */
+.remove-icon {
+  display: none;
+}
+
+.notes-display .button-label {
+  display: none;
+}
+
 /* The watchlist table is already crowded, so below the bootstrap 'lg' breakpoint
-   hype factor drops out, and the notes preview goes with it — the button color
-   is then what signals which games have notes. */
+   hype factor drops out, the notes preview goes with it — the button color is
+   then what signals which games have notes — and Remove shrinks to its icon. */
 @media only screen and (max-width: 991px) {
   .hype-column,
   .notes-text,
@@ -411,6 +425,112 @@ export default {
 
   .notes-display {
     justify-content: center;
+  }
+
+  .select-cell .button-label {
+    display: none;
+  }
+
+  .remove-icon {
+    display: inline-block;
+  }
+}
+
+/* Below 'md' there is no width left to take away, so each row stops being a row
+   and becomes a card: headers off, cells stacked, and every cell labelled by the
+   header it lost. Vertical space is cheap here, so the notes preview and both
+   button labels come back. */
+@media only screen and (max-width: 767px) {
+  .watchlist-table thead {
+    display: none;
+  }
+
+  /* Flex so the two action cells can be ordered below the game's details,
+     rather than Notes splitting them the way the column order would. */
+  .watchlist-table tr {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 10px;
+    border: 1px solid #6c757d;
+  }
+
+  .watchlist-table td.notes-cell {
+    order: 1;
+  }
+
+  .watchlist-table td.select-cell {
+    order: 2;
+  }
+
+  .watchlist-table td {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    border: none;
+    border-bottom: 1px solid rgba(128, 128, 128, 0.3);
+  }
+
+  .watchlist-table td:last-child {
+    border-bottom: none;
+  }
+
+  .watchlist-table td[data-label]::before {
+    content: attr(data-label);
+    font-weight: bold;
+    white-space: nowrap;
+    text-align: left;
+  }
+
+  /* Nothing is competing for width in a card, so hype factor earns its line back. */
+  .watchlist-table td.hype-column {
+    display: flex;
+  }
+
+  .watchlist-table td.handle,
+  .watchlist-table td.game-cell {
+    justify-content: flex-start;
+  }
+
+  .watchlist-table td.game-cell {
+    font-size: 16px;
+    font-weight: bold;
+  }
+
+  .watchlist-table td.notes-cell {
+    flex-direction: column;
+    align-items: stretch;
+    max-width: none;
+  }
+
+  .notes-display {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+
+  .watchlist-table .notes-text,
+  .watchlist-table .no-notes {
+    display: -webkit-box;
+    -webkit-line-clamp: 4;
+    -webkit-box-orient: vertical;
+  }
+
+  .select-cell .button-label,
+  .notes-display .button-label {
+    display: inline;
+    margin-left: 6px;
+  }
+
+  .remove-icon {
+    display: none;
+  }
+
+  /* Comfortable tap targets, and nothing to line up with, so both go full width. */
+  .notes-display .btn,
+  .select-cell .btn {
+    width: 100%;
+    padding: 8px 12px;
   }
 }
 
