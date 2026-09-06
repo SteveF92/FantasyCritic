@@ -195,14 +195,21 @@ jobs:
         run: |
           set -euo pipefail
 
-          # SSM runs these as root. The deploy script itself travels inside the bundle, so
-          # the instance never needs a checkout of this repository.
+          # SSM runs these as root, and AWS-RunShellScript executes them with /bin/sh —
+          # which is dash on Ubuntu, not bash. So "set -eu" here, never "set -euo pipefail":
+          # pipefail is a bash builtin, and dash aborts with "Illegal option -o pipefail"
+          # before running anything at all. There are no pipes below, so -eu is enough.
+          # deploy.sh has a bash shebang and is executed directly, so it keeps full bash
+          # semantics; only these bootstrap lines are constrained.
+          #
+          # The deploy script travels inside the bundle, so the instance never needs a
+          # checkout of this repository.
           commands=$(jq -n \
             --arg s3_uri "$S3_URI" \
             --arg release_id "$RELEASE_ID" \
             --arg skip_migrations "$SKIP_MIGRATIONS" \
             '[
-              "set -euo pipefail",
+              "set -eu",
               "RELEASE_ID=" + $release_id,
               "RELEASE_DIR=/opt/fantasy-critic/releases/$RELEASE_ID",
               "rm -rf \"$RELEASE_DIR\"",
