@@ -241,52 +241,12 @@ aws ssm describe-instance-information \
 Do this on **beta first**, then production. Beta has to be powered on for this.
 
 **a. AWS CLI.** The deploy script downloads its own bundle from S3, so the CLI must exist on
-the box. **Use the official installer, not the snap:**
+the box. Run this on **both** instances — `aws` working from your own workstation says
+nothing about what is on the server:
 
 ```bash
-sudo apt-get install -y unzip
-curl -fsSL "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o /tmp/awscliv2.zip
-cd /tmp && unzip -q -o awscliv2.zip && sudo ./aws/install --update
-/usr/local/bin/aws --version
+aws --version || sudo snap install aws-cli --classic
 ```
-
-Do this on **both** instances. It is easy to skip because `aws` works from your own
-workstation, but that says nothing about what is on the server.
-
-`snap install aws-cli --classic` looks like the easier option and does not work here. On
-Ubuntu the SSM agent is itself a strictly-confined snap, and a confined snap cannot reliably
-invoke another snap's `/snap/bin` wrapper. The result is maddening to diagnose: `snap list`
-shows aws-cli installed, `aws --version` works over SSH, `/snap/bin` is on the PATH the
-deploy reports — and `command -v aws` still fails inside SSM. The official installer puts a
-plain binary at `/usr/local/bin/aws` with no snap involvement at all.
-
-Two failure modes look almost identical, and the workflow's error message tells them apart.
-It fails with `ERROR: aws CLI not on PATH (...)` naming the PATH it searched:
-
-1. **`/snap/bin` or `/usr/local/bin` missing from that list** — a PATH problem. SSM Run
-   Command uses a *non-login* shell, so it never sources `/etc/profile.d/apps-bin-path.sh`.
-   The workflow prepends both directories itself, so this should not happen.
-2. **Both directories present and it still failed** — the CLI is not installed where SSM can
-   reach it. Run the installer above.
-
-To check the way the deploy actually sees it, rather than the way SSH does:
-
-```bash
-aws ssm send-command --instance-ids <INSTANCE_ID> --document-name AWS-RunShellScript --parameters 'commands=["command -v aws; aws --version; echo PATH=$PATH"]' --query 'Command.CommandId' --output text
-```
-
-Then, with the command id it returns — wait a few seconds first, and do **not** narrow this
-with `--query StandardOutputContent`:
-
-```bash
-aws ssm get-command-invocation --command-id <ID> --instance-id <INSTANCE_ID>
-```
-
-Querying only the output is a trap. It comes back empty both when the command failed and
-when it simply has not finished dispatching yet, which makes a working setup and a broken
-one look identical. `Status` and `ResponseCode` are the fields that actually answer the
-question. Use `;` rather than `&&` between the remote commands for the same reason — with
-`&&`, a failure in the first command silently suppresses everything after it.
 
 **b. Directory layout.**
 
