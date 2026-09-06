@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="gameQueueForm" ref="gameQueueFormRef" size="lg" title="My Watchlist" @hidden="clearAllData" @show="onOpen">
+  <b-modal id="gameQueueForm" ref="gameQueueFormRef" size="xl" title="My Watchlist" @hidden="clearAllData" @show="onOpen">
     <div class="form-group">
       <h3 class="text-black">Add Game to Watchlist</h3>
       <form class="form-horizontal" role="form" @submit.prevent="searchGame">
@@ -70,47 +70,50 @@
     <hr />
     <h3 class="text-black">Current Watchlist</h3>
     <label>Drag and drop to change order.</label>
-    <table class="table table-sm table-responsive-sm table-bordered table-striped">
-      <thead>
-        <tr class="bg-primary">
-          <th scope="col"></th>
-          <th scope="col" class="game-column">Game</th>
-          <th scope="col" class="game-column">Release Date</th>
-          <th scope="col">Hype Factor</th>
-          <th scope="col">Ranking</th>
-          <th scope="col">Notes</th>
-          <th scope="col">Status</th>
-          <th scope="col"></th>
-        </tr>
-      </thead>
-      <draggable v-model="desiredQueueRanks" tag="tbody" handle=".handle">
-        <tr v-for="queuedGame in desiredQueueRanks" :key="queuedGame.rank">
-          <td scope="row" class="handle"><font-awesome-icon icon="bars" size="lg" /></td>
-          <td><masterGamePopover :master-game="queuedGame.masterGame"></masterGamePopover></td>
-          <td>
-            <span>{{ queuedGame.masterGame.estimatedReleaseDate }}</span>
-            <span v-show="queuedGame.masterGame.isReleased">(Released)</span>
-          </td>
-          <td>{{ queuedGame.masterGame.dateAdjustedHypeFactor | score(1) }}</td>
-          <td>{{ queuedGame.rank }}</td>
-          <td class="notes-cell">
-            <div class="notes-display">
-              <span v-if="queuedGame.notes" class="notes-text">{{ queuedGame.notes }}</span>
-              <span v-else class="no-notes">No notes</span>
-              <b-button :variant="queuedGame.notes ? 'info' : 'secondary'" size="sm" title="Edit notes" @click="startEditingNotes(queuedGame)">
-                <font-awesome-icon icon="pen" />
-              </b-button>
-            </div>
-          </td>
-          <td>
-            <statusBadge :possible-master-game="queuedGame"></statusBadge>
-          </td>
-          <td class="select-cell">
-            <b-button variant="danger" size="sm" @click="removeQueuedGame(queuedGame)">Remove</b-button>
-          </td>
-        </tr>
-      </draggable>
-    </table>
+    <div class="table-responsive">
+      <table class="table table-sm table-bordered table-striped">
+        <thead>
+          <tr class="bg-primary">
+            <th scope="col"></th>
+            <th scope="col" class="game-column">Game</th>
+            <th scope="col" class="game-column">Release Date</th>
+            <th scope="col" class="hype-column">Hype Factor</th>
+            <th scope="col">Notes</th>
+            <th scope="col">Status</th>
+            <th scope="col"></th>
+          </tr>
+        </thead>
+        <draggable v-model="desiredQueueRanks" tag="tbody" handle=".handle">
+          <tr v-for="queuedGame in desiredQueueRanks" :key="queuedGame.rank">
+            <td scope="row" class="handle">
+              <font-awesome-icon icon="bars" size="lg" />
+              <span class="handle-rank">{{ queuedGame.rank }}</span>
+            </td>
+            <td><masterGamePopover :master-game="queuedGame.masterGame"></masterGamePopover></td>
+            <td>
+              <span>{{ queuedGame.masterGame.estimatedReleaseDate }}</span>
+              <span v-show="queuedGame.masterGame.isReleased">(Released)</span>
+            </td>
+            <td class="hype-column">{{ queuedGame.masterGame.dateAdjustedHypeFactor | score(1) }}</td>
+            <td class="notes-cell">
+              <div class="notes-display">
+                <span v-if="queuedGame.notes" class="notes-text">{{ queuedGame.notes }}</span>
+                <span v-else class="no-notes">No notes</span>
+                <b-button :variant="queuedGame.notes ? 'info' : 'secondary'" size="sm" title="Edit notes" @click="startEditingNotes(queuedGame)">
+                  <font-awesome-icon icon="pen" />
+                </b-button>
+              </div>
+            </td>
+            <td>
+              <statusBadge :possible-master-game="queuedGame"></statusBadge>
+            </td>
+            <td class="select-cell">
+              <b-button variant="danger" size="sm" @click="removeQueuedGame(queuedGame)">Remove</b-button>
+            </td>
+          </tr>
+        </draggable>
+      </table>
+    </div>
     <b-modal id="editWatchlistNotesModal" :title="notesModalTitle" ok-title="Save Notes" @ok="saveNotes" @hidden="clearNotesData">
       <b-form-textarea v-model="notesInEdit" rows="8" :maxlength="maximumNotesLength"></b-form-textarea>
       <div class="notes-length">{{ notesInEdit.length }} / {{ maximumNotesLength }}</div>
@@ -351,9 +354,30 @@ export default {
   font-size: 12px;
 }
 
+.handle {
+  white-space: nowrap;
+}
+
+.handle-rank {
+  margin-left: 6px;
+  font-weight: bold;
+}
+
 .notes-cell {
   vertical-align: middle;
   max-width: 250px;
+}
+
+/* Without a floor, auto table layout crushes these two columns down to a few
+   characters and pushes the rest of the table into a horizontal scroll. */
+@media only screen and (min-width: 992px) {
+  .game-column {
+    min-width: 115px;
+  }
+
+  .notes-cell {
+    min-width: 140px;
+  }
 }
 
 .notes-display {
@@ -375,9 +399,11 @@ export default {
   font-style: italic;
 }
 
-/* The watchlist table is already crowded, so below the bootstrap 'md' breakpoint
-   the notes preview drops out and the button color carries the has-notes signal. */
-@media only screen and (max-width: 767px) {
+/* The watchlist table is already crowded, so below the bootstrap 'lg' breakpoint
+   hype factor drops out, and the notes preview goes with it — the button color
+   is then what signals which games have notes. */
+@media only screen and (max-width: 991px) {
+  .hype-column,
   .notes-text,
   .no-notes {
     display: none;
