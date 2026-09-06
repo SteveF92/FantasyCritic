@@ -107,7 +107,7 @@ public class SupportTicketResolvedHistoryTests : IntegrationTestBase
     private static async Task OpenSupportTicketViaRazorPageAsync(ApiSession session, string issueDescription)
     {
         var getResponse = await session.GetAsync(SupportTicketPath);
-        var html = await getResponse.Content.ReadAsStringAsync();
+        _ = await getResponse.Content.ReadAsStringAsync();
         Assert.That(getResponse.StatusCode, Is.EqualTo(HttpStatusCode.OK));
 
         var token = await session.GetPageAntiForgeryTokenAsync(SupportTicketPath);

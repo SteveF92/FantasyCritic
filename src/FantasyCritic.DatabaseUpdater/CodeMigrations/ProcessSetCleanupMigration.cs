@@ -70,7 +70,7 @@ public class ProcessSetCleanupMigration : IScript
 
 
         //For repeatability in testing
-        var epoch = new ZonedDateTime(new LocalDateTime(2022, 2, 11, 0, 0 ,0), DateTimeZone.Utc, new Offset()).ToInstant();
+        var epoch = new ZonedDateTime(new LocalDateTime(2022, 2, 11, 0, 0, 0), DateTimeZone.Utc, new Offset()).ToInstant();
         var newlyCreatedActionProcessingSets = actionProcessingSets.Where(x => x.ProcessTime < epoch).ToList();
         var processSetParam = new
         {
@@ -339,7 +339,7 @@ public class ProcessSetCleanupMigration : IScript
         return [actionProcessingSetToMake];
     }
 
-    private Dictionary<int, Dictionary<Guid, LeagueYear>> _leagueYearDictionaries = new Dictionary<int, Dictionary<Guid, LeagueYear>>();
+    private readonly Dictionary<int, Dictionary<Guid, LeagueYear>> _leagueYearDictionaries = new Dictionary<int, Dictionary<Guid, LeagueYear>>();
 
     private async Task<Dictionary<Guid, LeagueYear>> GetLeagueYearDictionaryForYear(int year)
     {
@@ -463,7 +463,7 @@ public class ProcessSetCleanupMigration : IScript
         return bidActionPairs;
     }
 
-    private List<DropRequestWithLeagueYearEntity> GetProcessedDrops(ActionProcessingSetEntity actionProcessingSetToMake, 
+    private List<DropRequestWithLeagueYearEntity> GetProcessedDrops(ActionProcessingSetEntity actionProcessingSetToMake,
         List<DropRequestWithLeagueYearEntity> drops)
     {
         foreach (var drop in drops)
@@ -474,7 +474,7 @@ public class ProcessSetCleanupMigration : IScript
         return drops;
     }
 
-    private async Task UpdateDropsAndBids(MySqlConnection connection, List<ActionProcessingSetEntity> actionProcessingSetsToInsert, 
+    private async Task UpdateDropsAndBids(MySqlConnection connection, List<ActionProcessingSetEntity> actionProcessingSetsToInsert,
         List<PickupBidWithLeagueYearEntity> bidsToUpdate, List<DropRequestWithLeagueYearEntity> dropsToUpdate)
     {
         var transaction = await connection.BeginTransactionAsync();

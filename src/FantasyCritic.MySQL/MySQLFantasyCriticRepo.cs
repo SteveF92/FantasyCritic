@@ -1977,7 +1977,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             join tbl_league on (tbl_league.LeagueID = tbl_league_publisher.LeagueID)
             where tbl_league_publisher.Year = @year and tbl_league.IsDeleted = 0;
             """;
-            
+
 
         string draftPublisherSql =
             """

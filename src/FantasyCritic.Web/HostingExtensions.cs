@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using Discord;
@@ -40,7 +40,6 @@ using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime.Serialization.SystemTextJson;
 using NSwag;
 using Serilog;
