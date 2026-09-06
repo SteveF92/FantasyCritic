@@ -124,6 +124,11 @@ log "Pointing $CURRENT_LINK at $RELEASE_ID"
 chmod +x "$RELEASE_DIR/web/FantasyCritic.Web"
 ln -sfnT "$RELEASE_DIR" "$CURRENT_LINK"
 
+# Stamp when this release went live. The site reads RELEASE at startup and shows it in the admin
+# console, so this has to be written before the service starts. Appending rather than rewriting
+# means a re-run of this script leaves a history in the file; the app takes the last value.
+echo "deployed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$RELEASE_DIR/RELEASE"
+
 # ------------------------------------------------------------------------------------------
 # Start
 # ------------------------------------------------------------------------------------------

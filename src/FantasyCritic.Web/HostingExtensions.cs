@@ -87,6 +87,9 @@ public static class HostingExtensions
         services.AddHealthChecks()
             .AddCheck<DatabaseHealthCheck>("database", tags: [DatabaseHealthCheck.ReadyTag]);
 
+        //Read once at startup: the RELEASE file cannot change without a new deploy, which restarts the process.
+        services.AddSingleton<BuildInfo>(_ => BuildInfoReader.Read(environment.ContentRootPath));
+
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IFantasyCriticRoleStore, MySQLFantasyCriticRoleStore>();

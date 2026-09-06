@@ -34,13 +34,14 @@ public class AdminController : FantasyCriticController
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IConfiguration _configuration;
+    private readonly BuildInfo _buildInfo;
 
     private const string IntegrationTestModeConfigKey = "IntegrationTestMode";
 
     public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
-        IFantasyCriticRepo fantasyCriticRepo, IConfiguration configuration)
+        IFantasyCriticRepo fantasyCriticRepo, IConfiguration configuration, BuildInfo buildInfo)
         : base(userManager)
     {
         _adminService = adminService;
@@ -55,6 +56,13 @@ public class AdminController : FantasyCriticController
         _masterGameRepo = masterGameRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
         _configuration = configuration;
+        _buildInfo = buildInfo;
+    }
+
+    [HttpGet]
+    public ActionResult<BuildInfoViewModel> BuildInfo()
+    {
+        return new BuildInfoViewModel(_buildInfo);
     }
 
     [HttpPost]

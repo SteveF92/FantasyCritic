@@ -94,11 +94,15 @@ jobs:
           set -euo pipefail
           cp deploy/deploy.sh bundle/deploy.sh
           chmod +x bundle/deploy.sh bundle/web/FantasyCritic.Web bundle/dbup/FantasyCritic.DatabaseUpdater
+          # The site reads this file at startup and shows it in the admin console, so keep the
+          # keys in sync with BuildInfoReader in the web project.
           {
             echo "release_id=$RELEASE_ID"
             echo "environment=$TARGET_ENVIRONMENT"
             echo "git_sha=$GITHUB_SHA"
             echo "git_ref=$GITHUB_REF"
+            echo "commit_date=$(git log -1 --format=%cI)"
+            echo "commit_url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/commit/$GITHUB_SHA"
             echo "built_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)"
             echo "run_url=$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
           } > bundle/RELEASE

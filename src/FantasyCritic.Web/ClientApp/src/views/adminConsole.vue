@@ -95,6 +95,53 @@
           <b-button variant="warning" @click="takePostAction('ActionRunner', 'SnapshotDatabase')">Snapshot Database</b-button>
         </div>
       </div>
+
+      <div v-if="isAdmin">
+        <h2>Build</h2>
+        <div v-if="buildInfoError" class="alert alert-danger">Could not load build info: {{ buildInfoError }}</div>
+        <div v-else-if="buildInfo">
+          <div v-if="buildInfo.isLocalBuild" class="alert alert-info">No release file found, so this is a local build. Deployed instances get one from the deploy pipeline.</div>
+          <table class="table table-sm table-bordered w-auto">
+            <tbody>
+              <tr v-if="buildInfo.commitHash">
+                <th>Commit</th>
+                <td>
+                  <a v-if="buildInfo.commitUrl" :href="buildInfo.commitUrl" target="_blank" rel="noopener">{{ buildInfo.shortCommitHash }}</a>
+                  <span v-else>{{ buildInfo.shortCommitHash }}</span>
+                  <span v-if="gitRefName" class="text-muted">({{ gitRefName }})</span>
+                </td>
+              </tr>
+              <tr v-if="buildInfo.commitDate">
+                <th>Commit date</th>
+                <td>{{ buildInfo.commitDate | dateTime }}</td>
+              </tr>
+              <tr v-if="buildInfo.deployedAt">
+                <th>Deployed</th>
+                <td>{{ buildInfo.deployedAt | dateTime }}</td>
+              </tr>
+              <tr>
+                <th>Running since</th>
+                <td>{{ buildInfo.processStartedAt | dateTime }}</td>
+              </tr>
+              <tr v-if="buildInfo.builtAt">
+                <th>Built</th>
+                <td>{{ buildInfo.builtAt | dateTime }}</td>
+              </tr>
+              <tr v-if="buildInfo.releaseID">
+                <th>Release</th>
+                <td>
+                  {{ buildInfo.releaseID }}
+                  <span v-if="buildInfo.deployedEnvironment" class="text-muted">({{ buildInfo.deployedEnvironment }})</span>
+                </td>
+              </tr>
+              <tr v-if="buildInfo.buildRunUrl">
+                <th>Build log</th>
+                <td><a :href="buildInfo.buildRunUrl" target="_blank" rel="noopener">GitHub Actions run</a></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
     </div>
 
     <b-table v-if="recentSnapshots" :items="recentSnapshots" striped bordered responsive></b-table>
@@ -130,6 +177,8 @@
 import axios from 'axios';
 import { mapGetters } from 'vuex';
 
+import { adminClient } from '@/api/clients';
+
 export default {
   data() {
     return {
@@ -145,7 +194,9 @@ export default {
       mergeIntoMasterGameID: null,
       resendConfirmationUserID: null,
       showGrantSuperDrops: false,
-      superDropConfirmation: null
+      superDropConfirmation: null,
+      buildInfo: null,
+      buildInfoError: null
     };
   },
   computed: {
@@ -158,12 +209,32 @@ export default {
     },
     supportTicketCount() {
       return this.adminTaskCounts ? this.adminTaskCounts.supportTicketCount : null;
+    },
+    gitRefName() {
+      if (!this.buildInfo || !this.buildInfo.gitRef) {
+        return null;
+      }
+
+      return this.buildInfo.gitRef.replace(/^refs\/(heads|tags)\//, '');
     }
   },
   async created() {
     await this.$store.dispatch('fetchAdminTaskCounts');
+    await this.fetchBuildInfo();
   },
   methods: {
+    async fetchBuildInfo() {
+      //The endpoint is admin only, so don't bother calling it for fact checkers or action runners.
+      if (!this.isAdmin) {
+        return;
+      }
+
+      try {
+        this.buildInfo = await adminClient.buildInfo();
+      } catch (error) {
+        this.buildInfoError = error;
+      }
+    },
     async takePostAction(controller, endPoint) {
       this.lastJobFailed = false;
       this.jobAttempted = endPoint;
