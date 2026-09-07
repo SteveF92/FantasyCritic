@@ -1,11 +1,11 @@
 name: Set up build toolchain
 description: >-
   Installs the .NET SDK, Node, and the repo's local dotnet tools (NSwag), and optionally
-  restores ClientApp packages. Assumes the repo is already checked out.
+  restores client app packages. Assumes the repo is already checked out.
 
 inputs:
   install-client-packages:
-    description: Run `npm ci` in ClientApp. Needed to build or lint the SPA.
+    description: Run `npm ci` in the client app. Needed to build or lint the SPA.
     required: false
     default: 'true'
 
@@ -22,14 +22,14 @@ runs:
       with:
         node-version: '22'
         cache: npm
-        cache-dependency-path: src/FantasyCritic.Web/ClientApp/package-lock.json
+        cache-dependency-path: src/FantasyCritic.ClientAppVue2/package-lock.json
 
     - name: Restore dotnet tools
       shell: bash
       run: dotnet tool restore
 
-    - name: Restore ClientApp packages
+    - name: Restore client app packages
       if: inputs.install-client-packages == 'true'
       shell: bash
-      working-directory: src/FantasyCritic.Web/ClientApp
+      working-directory: src/FantasyCritic.ClientAppVue2
       run: npm ci

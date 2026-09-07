@@ -56,7 +56,7 @@
       "typeStyle": "Interface",
       "exportTypes": true,
       "importRequiredTypes": true,
-      "output": "../FantasyCritic.Web/ClientApp/src/api/generated/FantasyCriticClients.ts"
+      "output": "../FantasyCritic.ClientAppVue2/src/api/generated/FantasyCriticClients.ts"
     }
   }
 }

@@ -27,7 +27,7 @@ NSWAG_VERSION=$(dotnet tool run nswag -- version 2>&1 | head -1)
 echo "NSwag version: $NSWAG_VERSION"
 echo "Output:"
 echo "  $CLIENT_DIR/Generated/FantasyCriticClients.cs"
-echo "  $REPO_ROOT/src/FantasyCritic.Web/ClientApp/src/api/generated/FantasyCriticClients.ts"
+echo "  $REPO_ROOT/src/FantasyCritic.ClientAppVue2/src/api/generated/FantasyCriticClients.ts"
 echo ""
 echo "Generating..."
 

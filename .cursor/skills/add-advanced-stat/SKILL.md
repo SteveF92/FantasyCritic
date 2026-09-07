@@ -77,7 +77,7 @@ If your stat only needs game data, return `List<MasterGameYearViewModel>` direct
 
 ## Step 4 — Frontend (2 files)
 
-**A. Create `src/FantasyCritic.Web/ClientApp/src/components/gameStats/myNewStatPanel.vue`**
+**A. Create `src/FantasyCritic.ClientAppVue2/src/components/gameStats/myNewStatPanel.vue`**
 
 Use `mostDreamsDashedPanel.vue` as your template. Key structure:
 - `created()` fetches from your new endpoint
@@ -85,7 +85,7 @@ Use `mostDreamsDashedPanel.vue` as your template. Key structure:
 - `b-table` with `masterGamePopover` for the game name cell, `masterGameTagBadge` for tags
 - If you need `supportedYears`, add `mixins: [BasicMixin]`
 
-**B. Register in [`advancedGameStats.vue`](src/FantasyCritic.Web/ClientApp/src/views/advancedGameStats.vue)**
+**B. Register in [`advancedGameStats.vue`](src/FantasyCritic.ClientAppVue2/src/views/advancedGameStats.vue)**
 
 Add to `sections` array and `v-else-if` block:
 ```js

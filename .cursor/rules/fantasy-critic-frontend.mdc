@@ -1,10 +1,10 @@
 ---
-description: Vue SPA conventions under FantasyCritic.Web/ClientApp
-globs: "**/ClientApp/**/*.{vue,ts,js}"
+description: Vue SPA conventions under FantasyCritic.ClientAppVue2
+globs: "**/FantasyCritic.ClientAppVue2/**/*.{vue,ts,js}"
 alwaysApply: false
 ---
 
-# Client app (`FantasyCritic.Web/ClientApp`)
+# Client app (`FantasyCritic.ClientAppVue2`)
 
 ## Stack
 

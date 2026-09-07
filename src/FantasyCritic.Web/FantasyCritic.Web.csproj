@@ -8,7 +8,10 @@
     <Company>Fantasy Critic</Company>
     <Description>Fantasy football for video games</Description>
     <UserSecretsId>785d062a-8464-48af-81ba-ab28edd03b1d</UserSecretsId>
-    <SpaRoot>ClientApp\</SpaRoot>
+    <!-- The SPA lives outside this project's directory. Normalize so consumers that write
+         SpaRoot out verbatim (the SpaProxy's spa.proxy.json) get a clean absolute path
+         rather than one with an unresolved '..' segment in the middle. -->
+    <SpaRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '..', 'FantasyCritic.ClientAppVue2'))</SpaRoot>
     <SpaProxyServerUrl>https://localhost:44477</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
   </PropertyGroup>
@@ -58,13 +61,6 @@
     <ProjectReference Include="..\FantasyCritic.Postmark\FantasyCritic.Postmark.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <!-- Don't publish the SPA source files, but do show them in the project files list -->
-    <Content Remove="$(SpaRoot)**" />
-    <None Remove="$(SpaRoot)**" />
-    <None Include="$(SpaRoot)**" Exclude="$(SpaRoot)node_modules\**" />
-  </ItemGroup>
-
   <Target Name="DebugEnsureNodeEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(SpaRoot)node_modules') ">
     <!-- Ensure Node.js is installed -->
     <Exec Command="node --version" ContinueOnError="true">
@@ -82,7 +78,7 @@
 
     <!-- Include the newly-built files in the publish output -->
     <ItemGroup>
-      <DistFiles Include="$(SpaRoot)dist\**; $(SpaRoot)dist-server\**" />
+      <DistFiles Include="$(SpaRoot)dist/**; $(SpaRoot)dist-server/**" />
       <ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
         <RelativePath>wwwroot\%(RecursiveDir)%(FileName)%(Extension)</RelativePath>
         <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>

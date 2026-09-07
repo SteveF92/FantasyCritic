@@ -309,10 +309,18 @@ Must precede Phase 7c.
 
 **Goal:** The Vue code is its own top-level project with its own build.
 
-- Move `src/FantasyCritic.Web/ClientApp` to a dedicated project directory.
+- `src/FantasyCritic.Web/ClientApp` became `src/FantasyCritic.ClientAppVue2`, a sibling of
+  every other project. The `Vue2` suffix leaves an obvious slot for the Vue 3 project that
+  Phase 8 introduces alongside it.
 - Web still copies the build output into `wwwroot` at publish time, so nothing changes at
-  runtime.
-- Update the NSwag TypeScript output path and the Format/lint scripts.
+  runtime. `SpaRoot` now points across the directory boundary at `../FantasyCritic.ClientAppVue2/`,
+  which is enough for both the `PublishRunVite` target and the dev-time SpaProxy.
+- Because the SPA now sits outside the Web project's directory, the SDK's default globs no
+  longer see it, so the `Content Remove` / `None Include` block that existed to keep those
+  globs in check is gone rather than repointed.
+- Updated with it: the NSwag TypeScript output path, the Format/lint scripts, the two
+  `.gitignore` entries for `dist/` and the generated client, and the CI workflow's npm cache
+  key and working directories.
 
 ### Phase 7c: api / www split; CloudFront arrives
 

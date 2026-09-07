@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Applies all deterministic formatting rules for FantasyCritic (C# and ClientApp).
+    Applies all deterministic formatting rules for FantasyCritic (C# and the Vue client app).
 
 .DESCRIPTION
     Runs dotnet format whitespace against src/.editorconfig (indent, EOL, final newline,
@@ -33,7 +33,7 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $srcDir = Join-Path $repoRoot "src"
 $solution = Join-Path $srcDir "FantasyCritic.slnx"
-$clientAppDir = Join-Path $srcDir "FantasyCritic.Web\ClientApp"
+$clientAppDir = Join-Path $srcDir "FantasyCritic.ClientAppVue2"
 $formatTarget = if ($Check) { "FormatCheck" } else { "Format" }
 
 function Invoke-Step {
@@ -112,11 +112,11 @@ Invoke-Step "C# test-project analyzers (NUnit2045, dotnet msbuild -t:FormatAnaly
 }
 
 if (-not (Test-Path (Join-Path $clientAppDir "node_modules"))) {
-    throw "ClientApp dependencies not installed. Run:`n  cd src/FantasyCritic.Web/ClientApp`n  npm install"
+    throw "Client app dependencies not installed. Run:`n  cd src/FantasyCritic.ClientAppVue2`n  npm install"
 }
 
 if ($Check) {
-    Invoke-Step "ClientApp (prettier --check)" {
+    Invoke-Step "Client app (prettier --check)" {
         Push-Location $clientAppDir
         try {
             npm run format:check
@@ -126,7 +126,7 @@ if ($Check) {
         }
     }
 
-    Invoke-Step "ClientApp (eslint)" {
+    Invoke-Step "Client app (eslint)" {
         Push-Location $clientAppDir
         try {
             npm run lint:check
@@ -137,7 +137,7 @@ if ($Check) {
     }
 }
 else {
-    Invoke-Step "ClientApp (prettier)" {
+    Invoke-Step "Client app (prettier)" {
         Push-Location $clientAppDir
         try {
             npm run format
@@ -147,7 +147,7 @@ else {
         }
     }
 
-    Invoke-Step "ClientApp (eslint --fix)" {
+    Invoke-Step "Client app (eslint --fix)" {
         Push-Location $clientAppDir
         try {
             npm run lint

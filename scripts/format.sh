@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Applies all deterministic formatting rules for FantasyCritic (C# and ClientApp).
+# Applies all deterministic formatting rules for FantasyCritic (C# and the Vue client app).
 #
 # Usage:
 #   # From repo root:
@@ -19,7 +19,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SRC_DIR="$REPO_ROOT/src"
 SOLUTION="$SRC_DIR/FantasyCritic.slnx"
-CLIENT_APP_DIR="$SRC_DIR/FantasyCritic.Web/ClientApp"
+CLIENT_APP_DIR="$SRC_DIR/FantasyCritic.ClientAppVue2"
 
 run_step() {
     local label="$1"
@@ -64,8 +64,8 @@ else
 fi
 
 if [[ ! -d "$CLIENT_APP_DIR/node_modules" ]]; then
-    echo "ERROR: ClientApp dependencies not installed. Run:" >&2
-    echo "  cd src/FantasyCritic.Web/ClientApp" >&2
+    echo "ERROR: Client app dependencies not installed. Run:" >&2
+    echo "  cd src/FantasyCritic.ClientAppVue2" >&2
     echo "  npm install" >&2
     exit 1
 fi
@@ -73,14 +73,14 @@ fi
 if [[ "$CHECK" -eq 1 ]]; then
     (
         cd "$CLIENT_APP_DIR"
-        run_step "ClientApp (prettier --check)" npm run format:check
-        run_step "ClientApp (eslint)" npm run lint:check
+        run_step "Client app (prettier --check)" npm run format:check
+        run_step "Client app (eslint)" npm run lint:check
     )
 else
     (
         cd "$CLIENT_APP_DIR"
-        run_step "ClientApp (prettier)" npm run format
-        run_step "ClientApp (eslint --fix)" npm run lint
+        run_step "Client app (prettier)" npm run format
+        run_step "Client app (eslint --fix)" npm run lint
     )
 fi
 

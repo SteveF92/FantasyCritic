@@ -10,7 +10,8 @@ EXPOSE 8081
 
 # This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
-# Node.js + npm for ClientApp publish (see PublishRunWebpack in FantasyCritic.Web.csproj)
+# Node.js + npm for the client app publish (see PublishRunVite in FantasyCritic.Web.csproj,
+# which builds ../FantasyCritic.ClientAppVue2 into wwwroot)
 RUN apt-get update \
     && apt-get install -y --no-install-recommends ca-certificates curl \
     && curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \

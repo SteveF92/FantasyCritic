@@ -38,12 +38,12 @@ dotnet test src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.cs
 dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
 scripts/Regenerate-ApiClient.ps1
 
-# Format everything (C# editorconfig + NUnit analyzer + ClientApp Prettier/ESLint)
+# Format everything (C# editorconfig + NUnit analyzer + client app Prettier/ESLint)
 scripts/Format.ps1          # apply
 scripts/Format.ps1 -Check   # verify only (CI-style)
 ```
 
-ClientApp (`src/FantasyCritic.Web/ClientApp`): `npm install` first; `npm run lint` / `npm run format` for JS-only passes; `npm run client` runs the SPA standalone against the production API.
+Client app (`src/FantasyCritic.ClientAppVue2`): `npm install` first; `npm run lint` / `npm run format` for JS-only passes; `npm run client` runs the SPA standalone against the production API.
 
 ## Architecture
 
@@ -68,7 +68,7 @@ Integration tests and the Vue client both consume clients generated from the Ope
 
 ### Frontend
 
-Vue 2.7 (Options API — match the file you're editing) + Vite + Bootstrap 4/bootstrap-vue + Vuex + Luxon + axios. Generated TS client at `ClientApp/src/api/generated/` with hand-written singletons in `ClientApp/src/api/clients.ts`.
+Vue 2.7 (Options API — match the file you're editing) + Vite + Bootstrap 4/bootstrap-vue + Vuex + Luxon + axios. Generated TS client at `src/FantasyCritic.ClientAppVue2/src/api/generated/` with hand-written singletons in `src/FantasyCritic.ClientAppVue2/src/api/clients.ts`.
 
 ## C# conventions
 

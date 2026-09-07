@@ -36,7 +36,7 @@ alwaysApply: true
 
 ## Frontend
 
-- Browser UI lives under **`FantasyCritic.Web/ClientApp`**. See **`fantasy-critic-frontend.mdc`** for stack conventions.
+- Browser UI lives under **`FantasyCritic.ClientAppVue2`**. See **`fantasy-critic-frontend.mdc`** for stack conventions.
 
 ## Time in domain
 
