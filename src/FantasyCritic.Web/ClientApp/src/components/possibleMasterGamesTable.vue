@@ -69,6 +69,15 @@ export default {
     };
   },
   computed: {
+    /**
+     * The league's bidding system. League page modals are the only consumers of this component, so the league store is
+     * always the one populated - note that Vuex nests module state under the module key.
+     *
+     * @returns {string|undefined} The pickup system value, or undefined outside a league page.
+     */
+    pickupSystem() {
+      return this.$store.state.league.leagueYear?.settings?.pickupSystem;
+    },
     rows() {
       return this.possibleGames.length;
     },
@@ -115,23 +124,22 @@ export default {
       }
     },
     /**
-     * Retrieves the next open bidding time based on the league's pickup system.
+     * Retrieves the next open bidding time based on the league's bidding system.
      * - If the pickup system is "SecretBidding", returns the next bid lock time.
-     * - For "SemiPublicBidding" and "SemiPublicBiddingSecretCounterPicks", returns the next public bidding time.
-     * Utilizes Vuex store getters and state to determine the appropriate time.
+     * - For every public bidding system, returns the next public bidding time, since that reveal is the point after which
+     *   you can no longer freely bid on a game that nobody else has bid on.
      *
      * @returns {Date} The next relevant bidding time as a Date object.
      */
     retrieveNextOpenBiddingTime() {
       const bidTimes = this.$store.getters.bidTimes;
-      const pickupSystem = this.$store.state.leagueYear?.options?.pickupSystem;
-      if (pickupSystem === 'SecretBidding') {
+      if (this.pickupSystem === 'SecretBidding') {
         return new Date(bidTimes.nextBidLockTime);
       }
       return new Date(bidTimes.nextPublicBiddingTime);
     },
     /**
-     * Calculates the following open bidding time based on the league's pickup system.
+     * Calculates the following open bidding time based on the league's bidding system.
      * - Retrieves the next open bidding time using `retrieveNextOpenBiddingTime()`.
      * - Determines the interval in days: 7 for "SecretBidding", 14 otherwise.
      * - Returns a new Date object representing the next open bidding time plus the interval.
@@ -140,8 +148,7 @@ export default {
      */
     retrieveFollowingOpenBiddingTime() {
       const nextBidTime = this.retrieveNextOpenBiddingTime();
-      const pickupSystem = this.$store.state.leagueYear?.options?.pickupSystem;
-      const intervalDays = pickupSystem === 'SecretBidding' ? 7 : 14;
+      const intervalDays = this.pickupSystem === 'SecretBidding' ? 7 : 14;
 
       return new Date(nextBidTime.getTime() + intervalDays * 24 * 60 * 60 * 1000);
     }
