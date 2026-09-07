@@ -324,6 +324,27 @@
       </template>
     </collapseCard>
     <collapseCard>
+      <template #header>How are counter picks handled in the public bidding system?</template>
+      <template #body>
+        <p>Leagues using the public bidding system also choose how counter picks are handled within it. There are three options:</p>
+        <ul>
+          <li>
+            <strong>Public Counter Picks:</strong>
+            Counter Pick bids are made visible on Thursday just like standard bids. After that point, further counter pick bids can only be placed on those games.
+          </li>
+          <li>
+            <strong>Secret Counter Picks:</strong>
+            Counter Pick bids are exempt from the public bidding system and remain secret throughout the week.
+          </li>
+          <li>
+            <strong>Semi-Public Counter Picks:</strong>
+            A middle ground between the previous two options. On Thursday, if at least one counter pick bid was placed, then that will be announced, and players can continue placing counter pick bids
+            until the bids process.
+          </li>
+        </ul>
+      </template>
+    </collapseCard>
+    <collapseCard>
       <template #header>What games are eligible?</template>
       <template #body>
         Same rules as during the draft. The system will warn you if you try to bid on a game that has already been released or already has reviews, but be aware that the game also must be eligible at

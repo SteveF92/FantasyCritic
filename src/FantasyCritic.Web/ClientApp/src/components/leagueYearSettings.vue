@@ -48,13 +48,6 @@
       <div v-show="gameMode !== 'One Shot'">
         <hr />
         <h3>Bidding Settings</h3>
-        <div class="alert alert-info">
-          Choosing the "public bidding" option can help balance leagues where some players are more engaged/invested than others. You can read more about it on the
-          <a href="/faq#bidding-system" target="_blank" class="text-secondary">FAQ page</a>
-          .
-          <br />
-          If you want to keep playing the standard way, with fully secret bidding, you can chose the "secret bidding" option.
-        </div>
 
         <div v-if="!isStandardLeague">
           <b-form-checkbox v-model="internalValue.enableBids">
@@ -63,8 +56,35 @@
           </b-form-checkbox>
         </div>
 
-        <label for="pickupSystem" class="control-label">Bidding System</label>
-        <b-form-select id="pickupSystem" v-model="internalValue.pickupSystem" :options="possibleLeagueOptions.pickupSystems" :disabled="!internalValue.enableBids"></b-form-select>
+        <div class="alert alert-info">
+          Choosing the "public bidding" option can help balance leagues where some players are more engaged/invested than others. You can read more about it on the
+          <a href="/faq#bidding-system" target="_blank" class="text-secondary">FAQ page</a>
+          .
+          <br />
+          If you want to keep playing the standard way, with fully secret bidding, you can chose the "secret bidding" option.
+        </div>
+
+        <div class="form-group">
+          <label for="biddingMode" class="control-label">Bidding System</label>
+          <b-form-select id="biddingMode" v-model="biddingMode" :options="biddingModeOptions" :disabled="!internalValue.enableBids"></b-form-select>
+        </div>
+
+        <div v-if="publicBiddingSelected" class="form-group">
+          <label for="counterPickHandling" class="control-label">Counter Pick Bids</label>
+          <p>The options below allow you to choose how counter picks are handled within the public bidding system.</p>
+          <b-form-select id="counterPickHandling" v-model="counterPickHandling" :options="counterPickHandlingOptions" :disabled="!internalValue.enableBids"></b-form-select>
+
+          <div class="counter-pick-handling-description">
+            <p v-if="counterPickHandling === 'SemiPublicBidding'">
+              Counter Pick bids are made visible on Thursday just like standard bids. After that point, further counter pick bids can only be placed on those games.
+            </p>
+            <p v-else-if="counterPickHandling === 'SemiPublicBiddingSecretCounterPicks'">Counter Pick bids are exempt from the public bidding system and remain secret throughout the week.</p>
+            <p v-else-if="counterPickHandling === 'SemiPublicBiddingSemiPublicCounterPicks'">
+              A middle ground between the previous two options. On Thursday, if at least one counter pick bid was placed, then that will be announced, and players can continue placing counter pick
+              bids until the bids process.
+            </p>
+          </div>
+        </div>
 
         <div class="form-group">
           <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
@@ -295,6 +315,21 @@ import LeagueTagSelector from '@/components/leagueTagSelector.vue';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
 import { computeSpecialSlots } from '@/utilities/leagueCreationPresets';
 
+const SECRET_BIDDING = 'SecretBidding';
+
+// Not a pickup system of its own - just the first-level answer that opens the counter pick question below it.
+const PUBLIC_BIDDING = 'PublicBidding';
+
+// The pickup systems that count as public bidding, labelled by how they treat counter picks rather than by their full
+// readable names, which all start with "Public Bidding" and read badly as answers to a question about counter picks.
+const COUNTER_PICK_HANDLING_OPTIONS = [
+  { value: 'SemiPublicBidding', text: 'Public Counter Picks' },
+  { value: 'SemiPublicBiddingSecretCounterPicks', text: 'Secret Counter Picks' },
+  { value: 'SemiPublicBiddingSemiPublicCounterPicks', text: 'Semi-Public Counter Picks' }
+];
+
+const DEFAULT_COUNTER_PICK_HANDLING = 'SemiPublicBiddingSecretCounterPicks';
+
 export default {
   components: {
     LeagueTagSelector,
@@ -314,10 +349,43 @@ export default {
   },
   data() {
     return {
-      internalValue: null
+      internalValue: null,
+      // Remembered so that toggling to secret bidding and back doesn't silently discard the counter pick choice.
+      lastCounterPickHandling: DEFAULT_COUNTER_PICK_HANDLING
     };
   },
   computed: {
+    biddingModeOptions() {
+      return [
+        { value: SECRET_BIDDING, text: 'Secret Bidding' },
+        { value: PUBLIC_BIDDING, text: 'Public Bidding' }
+      ];
+    },
+    counterPickHandlingOptions() {
+      const availableSystems = new Set((this.possibleLeagueOptions?.pickupSystems ?? []).map((x) => x.value));
+      return COUNTER_PICK_HANDLING_OPTIONS.filter((option) => availableSystems.has(option.value));
+    },
+    publicBiddingSelected() {
+      return this.biddingMode === PUBLIC_BIDDING;
+    },
+    // The two selects are a presentation of one underlying setting - pickupSystem is still the only thing sent to the server.
+    biddingMode: {
+      get() {
+        return this.internalValue.pickupSystem === SECRET_BIDDING ? SECRET_BIDDING : PUBLIC_BIDDING;
+      },
+      set(mode) {
+        this.internalValue.pickupSystem = mode === SECRET_BIDDING ? SECRET_BIDDING : this.lastCounterPickHandling;
+      }
+    },
+    counterPickHandling: {
+      get() {
+        return this.internalValue.pickupSystem;
+      },
+      set(pickupSystem) {
+        this.lastCounterPickHandling = pickupSystem;
+        this.internalValue.pickupSystem = pickupSystem;
+      }
+    },
     isStandardLeague() {
       return this.gameMode === 'Standard' && !this.isMultiDraft;
     },
@@ -353,6 +421,9 @@ export default {
   },
   created() {
     this.internalValue = structuredClone(this.value);
+    if (this.internalValue.pickupSystem !== SECRET_BIDDING) {
+      this.lastCounterPickHandling = this.internalValue.pickupSystem;
+    }
     if (this.isStandardLeague) {
       this.internalValue.enableBids = true;
     }
@@ -419,5 +490,9 @@ label {
 .clearable-date {
   display: flex;
   gap: 5px;
+}
+
+.counter-pick-handling-description {
+  margin-top: 10px;
 }
 </style>
