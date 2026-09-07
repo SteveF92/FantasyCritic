@@ -58,7 +58,7 @@
               <ul class="actions-list">
                 <li v-b-modal="'gameQueueForm'" class="fake-link action">Watchlist</li>
                 <li v-if="biddingAllowed" v-b-modal="'bidGameForm'" class="fake-link action">Make a Bid</li>
-                <li v-if="counterPickBiddingAllowed" v-b-modal="'bidCounterPickForm'" class="fake-link action">Make a Counter Pick Bid</li>
+                <li v-if="biddingAllowed" v-b-modal="'bidCounterPickForm'" class="fake-link action">Make a Counter Pick Bid</li>
                 <li v-if="biddingAllowed" v-b-modal="'currentBidsForm'" class="fake-link action">My Current Bids</li>
                 <li v-if="tradesAllowed" v-b-modal="'proposeTradeForm'" class="fake-link action">Propose a Trade</li>
                 <li v-if="tradesAllowed" v-b-modal="'activeTradesModal'" class="fake-link action">Active Trades</li>

@@ -11,9 +11,7 @@
       Games that have already released, or are confirmed not to release this year are not available to be counterpicked.
     </p>
 
-    <div v-if="!counterPickBiddingAllowed" class="alert alert-warning">
-      Counter pick bids are closed for this week. Nothing was being counter picked when bids were revealed, and placing one now would change what your league was shown.
-    </div>
+    <div v-if="!counterPickBiddingAllowed" class="alert alert-warning">No counter pick bids were placed before bids were revealed, so counter pick bidding is closed for this week.</div>
 
     <div v-if="publisherSlotsAreFilled" class="alert alert-danger">You have already filled all of your counter pick slots!</div>
 

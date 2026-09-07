@@ -25,8 +25,8 @@
     <div v-if="anyHiddenCounterPickBids" class="alert alert-warning hidden-counter-pick-alert" role="alert">
       <span class="badge tag-badge counter-pick-badge">CPK</span>
       <span>
-        <strong>At least one game is being counter picked.</strong>
-        Your league hides which game that is until bids process, so this is only a heads up that it's happening.
+        <strong>At least one game has a counter pick bid placed upon it.</strong>
+        You are free to place additional counter pick bids until they process. The names of the games with counter pick bids placed will not be revealed until bids process.
       </span>
     </div>
   </div>

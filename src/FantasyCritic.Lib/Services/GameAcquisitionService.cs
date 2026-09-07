@@ -360,22 +360,18 @@ public class GameAcquisitionService
             return true;
         }
 
+        if (counterPick && leagueYear.Options.PickupSystem.CounterPickBidsAreUnaffectedByPublicBidding)
+        {
+            return true;
+        }
+
         bool bidWasPlacedDuringPublicBidWindow = WasBidPlacedDuringPublicBiddingWindow(leagueYear, bidTimestamp);
         if (bidWasPlacedDuringPublicBidWindow)
         {
             return true;
         }
 
-        if (leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBidding))
-        {
-            return false;
-        }
-
-        if (counterPick && leagueYear.Options.PickupSystem.CounterPickBidsAreUnaffectedByPublicBidding)
-        {
-            return true;
-        }
-
+        //At this point, this is a bid placed before bids were revealed, and cannot be cancelled.
         return false;
     }
 
@@ -487,7 +483,7 @@ public class GameAcquisitionService
                 return Result.Success();
             }
 
-            return Result.Failure("Nothing was being counter picked when bids were revealed, so counter pick bidding is closed for this week. Placing one now would change what your league was shown.");
+            return Result.Failure("No counter pick bids were placed before bids were revealed, so counter pick bidding is closed for this week.");
         }
 
         if (publicBiddingSet.MasterGames.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame))

@@ -672,15 +672,21 @@ public class DiscordPushService
             {
                 var gameMessages = publicBiddingSet.MasterGames.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
                 finalMessage = string.Join("\n", gameMessages);
+                if (publicBiddingSet.AnyHiddenCounterPickBids)
+                {
+                    finalMessage += $"\n{DiscordSharedMessageUtilities.HiddenCounterPickMessage}";
+                }
             }
             else
             {
-                finalMessage = "There were no standard bids this week.";
-            }
-
-            if (publicBiddingSet.AnyHiddenCounterPickBids)
-            {
-                finalMessage += $"\n{DiscordSharedMessageUtilities.HiddenCounterPickMessage}";
+                if (publicBiddingSet.AnyHiddenCounterPickBids)
+                {
+                    finalMessage = "There were no standard bids this week, however, at least one game is being counter picked. Which game or games it is remains hidden until bids process.";
+                }
+                else
+                {
+                    finalMessage = "There were no bids this week.";
+                }
             }
 
             if (finalMessage.Length > 4096)

@@ -64,15 +64,23 @@
                         </tr>
                     }
                 </table>
+                @if (leagueYear.AnyHiddenCounterPickBids)
+                {
+                    <p><strong>At least one game is being counter picked.</strong> Which game or games it is remains hidden until bids process.</p>
+                }
             }
             else
             {
-                <p>No standard bids in this league this week.</p>
+                @if (leagueYear.AnyHiddenCounterPickBids)
+                {
+                    <p>No standard bids in this league this week, however, <strong>at least one game is being counter picked.</strong> Which game or games it is remains hidden until bids process.</p>
+                }
+                else
+                {
+                    <p>No bids in this league this week.</p>
+                }
             }
-            @if (leagueYear.AnyHiddenCounterPickBids)
-            {
-                <p><strong>At least one game is being counter picked.</strong> Which game it is stays hidden until bids process.</p>
-            }
+
         </div>
     }
 }
