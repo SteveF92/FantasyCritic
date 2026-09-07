@@ -1,0 +1,56 @@
+<Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.6578810">
+
+  <!--
+    JavaScript Project System (JSPS) wrapper around the Vue 2 client.
+
+    This exists so the client app is a first-class project in the solution: Solution
+    Explorer shows it, the npm scripts and dependencies get their own nodes, and it can be
+    referenced from FantasyCritic.Web via MSBuild. It deliberately does NOT take over the
+    production build - see ShouldRunBuildScript below.
+
+    Property reference:
+    https://learn.microsoft.com/en-us/visualstudio/javascript/javascript-project-system-msbuild-reference
+  -->
+
+  <PropertyGroup>
+    <!-- Where `npm run build` (vite.build.config.js) writes the production bundle.
+         FantasyCritic.Web's PublishRunVite target globs this into wwwroot. -->
+    <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
+
+    <!-- `npm start` runs the prestart dev-cert bootstrap and then vite on port 44477,
+         which is the port SpaProxyServerUrl in FantasyCritic.Web.csproj expects. -->
+    <StartupCommand>npm start</StartupCommand>
+    <BuildCommand>npm run build</BuildCommand>
+    <PublishCommand>npm run build</PublishCommand>
+
+    <!--
+      JSPS runs `npm install` on every Restore and Build by default. This repo commits a
+      package-lock.json and CI already runs `npm ci`, so a floating `npm install` on every
+      build would silently drift the lock file and slow every backend build. There is no
+      built-in way to make JSPS use `npm ci` (dotnet/sdk#42171), so dependency installation
+      is handled by the EnsureNodeModules target below instead.
+    -->
+    <ShouldRunNpmInstall>false</ShouldRunNpmInstall>
+
+    <!--
+      Do not run `npm run build` on every Build. A full vite build is ~15 seconds and the
+      bundle is only actually needed when producing publish output, which PublishRunVite in
+      FantasyCritic.Web.csproj drives. Leaving this true would put a 15-second vite build in
+      front of every `dotnet build`, including the unit-test job that never touches the SPA.
+    -->
+    <ShouldRunBuildScript>false</ShouldRunBuildScript>
+  </PropertyGroup>
+
+  <!--
+    Deterministic dependency install: `npm ci` honours package-lock.json exactly and errors
+    if the lock and manifest disagree. Skipped when node_modules is already present so the
+    inner development loop stays fast; delete node_modules to force a clean install.
+  -->
+  <Target Name="EnsureNodeModules"
+          BeforeTargets="Build"
+          Condition="!Exists('$(MSBuildProjectDirectory)/node_modules')">
+    <Message Importance="high" Text="Installing client dependencies (npm ci)..." />
+    <Exec WorkingDirectory="$(MSBuildProjectDirectory)" Command="npm ci" />
+  </Target>
+
+</Project>
