@@ -19,8 +19,15 @@
         </template>
       </b-table>
     </div>
-    <div v-else>
+    <div v-else-if="!anyHiddenCounterPickBids">
       <div class="alert alert-info" role="alert">There are no games being bid upon this week.</div>
+    </div>
+    <div v-if="anyHiddenCounterPickBids" class="alert alert-warning hidden-counter-pick-alert" role="alert">
+      <span class="badge tag-badge counter-pick-badge">CPK</span>
+      <span>
+        <strong>At least one game is being counter picked.</strong>
+        Your league hides which game that is until bids process, so this is only a heads up that it's happening.
+      </span>
     </div>
   </div>
 </template>
@@ -62,6 +69,9 @@ export default {
       }
 
       return this.leagueYear.publicBiddingGames.masterGames;
+    },
+    anyHiddenCounterPickBids() {
+      return !!this.leagueYear.publicBiddingGames?.anyHiddenCounterPickBids;
     }
   },
   methods: {
@@ -107,6 +117,11 @@ export default {
   background-color: #aa1e1e;
   color: white;
   margin-right: 8px;
+}
+
+.hidden-counter-pick-alert {
+  display: flex;
+  align-items: baseline;
 }
 
 .bid-will-fail {

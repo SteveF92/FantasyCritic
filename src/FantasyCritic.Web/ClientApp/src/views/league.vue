@@ -218,7 +218,8 @@ export default {
       return mostRecentMessage;
     },
     showPublicRevealCountdown() {
-      if (!this.leagueYear || (this.leagueYear.settings.pickupSystem !== 'SemiPublicBidding' && this.leagueYear.settings.pickupSystem !== 'SemiPublicBiddingSecretCounterPicks')) {
+      const publicBiddingSystems = ['SemiPublicBidding', 'SemiPublicBiddingSecretCounterPicks', 'SemiPublicBiddingSemiPublicCounterPicks'];
+      if (!this.leagueYear || !publicBiddingSystems.includes(this.leagueYear.settings.pickupSystem)) {
         return false;
       }
 

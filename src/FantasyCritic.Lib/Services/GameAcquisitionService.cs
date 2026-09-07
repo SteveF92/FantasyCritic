@@ -371,7 +371,7 @@ public class GameAcquisitionService
             return false;
         }
 
-        if (counterPick && leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
+        if (counterPick && leagueYear.Options.PickupSystem.CounterPickBidsAreUnaffectedByPublicBidding)
         {
             return true;
         }
@@ -428,22 +428,20 @@ public class GameAcquisitionService
         var currentDate = _clock.GetToday();
         var dateOfPotentialAcquisition = _clock.GetNextBidTime().ToEasternDate();
 
-        var bidsToCount = activeBidsForLeague;
-        if (leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
+        var pickupSystem = leagueYear.Options.PickupSystem;
+        var specialAuctionGames = activeSpecialAuctions.Select(x => x.MasterGameYear.MasterGame).ToHashSet();
+        var bidsToShow = activeBidsForLeague.Where(x => !specialAuctionGames.Contains(x.MasterGame)).ToList();
+
+        var visibleBids = bidsToShow;
+        if (pickupSystem.CounterPickGamesAreHiddenDuringPublicBidding)
         {
-            bidsToCount = bidsToCount.Where(x => !x.CounterPick).ToList();
+            visibleBids = visibleBids.Where(x => !x.CounterPick).ToList();
         }
 
-        var specialAuctionGames = activeSpecialAuctions.Select(x => x.MasterGameYear.MasterGame).ToHashSet();
-        var distinctBids = bidsToCount.DistinctBy(x => x.MasterGame).OrderBy(x => x.MasterGame.GameName);
+        var distinctBids = visibleBids.DistinctBy(x => x.MasterGame).OrderBy(x => x.MasterGame.GameName);
         List<PublicBiddingMasterGame> masterGameYears = [];
         foreach (var bid in distinctBids)
         {
-            if (specialAuctionGames.Contains(bid.MasterGame))
-            {
-                continue;
-            }
-
             var masterGameYear = masterGameYearDictionary[bid.MasterGame.MasterGameID];
             var claimResult = GameEligibilityFunctions.GetGenericSlotMasterGameErrors(leagueYear, bid.MasterGame, false, currentDate, dateOfPotentialAcquisition,
                 bid.CounterPick, false, false, false);
@@ -451,27 +449,53 @@ public class GameAcquisitionService
         }
 
         var publicBidTime = GetCurrentWeekPublicBidTime();
-        return new PublicBiddingSet(masterGameYears, publicBidTime);
+        return new PublicBiddingSet(masterGameYears, publicBidTime, AnyHiddenCounterPickBids(pickupSystem, bidsToShow));
     }
 
-    public bool PublicBidIsValid(LeagueYear leagueYear, MasterGame masterGame, bool counterPick, IReadOnlyList<PublicBiddingMasterGame>? publicBiddingMasterGames, IEnumerable<SpecialAuction> activeSpecialAuctions)
+    /// <summary>
+    /// Answers the single yes/no question the semi-public counter pick system reveals: is anything at all being counter picked?
+    /// Nothing else about those bids - not which games, not how many - leaves this method, so there is nothing for a publisher to
+    /// work backwards from.
+    /// </summary>
+    private static bool AnyHiddenCounterPickBids(PickupSystem pickupSystem, IEnumerable<PickupBid> activeBidsForLeague)
+        => pickupSystem.RevealsWhetherAnyCounterPicksExist && activeBidsForLeague.Any(x => x.CounterPick);
+
+    public Result ValidatePublicBid(LeagueYear leagueYear, MasterGame masterGame, bool counterPick, PublicBiddingSet? publicBiddingSet, IEnumerable<SpecialAuction> activeSpecialAuctions)
     {
-        if (publicBiddingMasterGames is null)
+        if (publicBiddingSet is null)
         {
-            return true;
+            return Result.Success();
         }
 
-        if (counterPick && leagueYear.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
+        var pickupSystem = leagueYear.Options.PickupSystem;
+        if (counterPick && pickupSystem.CounterPickBidsAreUnaffectedByPublicBidding)
         {
-            return true;
+            return Result.Success();
         }
 
         if (activeSpecialAuctions.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame))
         {
-            return true;
+            return Result.Success();
         }
 
-        return publicBiddingMasterGames.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame);
+        if (counterPick && pickupSystem.RevealsWhetherAnyCounterPicksExist)
+        {
+            //The league was told only whether anything is being counter picked. While that answer is already "yes", one more counter
+            //pick bid cannot change it, so bidding stays open. While it is "no", any counter pick bid at all would flip it.
+            if (publicBiddingSet.AnyHiddenCounterPickBids)
+            {
+                return Result.Success();
+            }
+
+            return Result.Failure("Nothing was being counter picked when bids were revealed, so counter pick bidding is closed for this week. Placing one now would change what your league was shown.");
+        }
+
+        if (publicBiddingSet.MasterGames.Select(x => x.MasterGameYear.MasterGame).Contains(masterGame))
+        {
+            return Result.Success();
+        }
+
+        return Result.Failure("During the public bidding window, you can only bid on a game that is already being bid on by at least one player.");
     }
 
     public async Task<IReadOnlyList<LeagueYearPublicBiddingSet>> GetPublicBiddingGames(int year)
@@ -490,13 +514,14 @@ public class GameAcquisitionService
                 continue;
             }
 
-            var bidsToCount = activeBidsForLeague.Value;
-            if (activeBidsForLeague.Key.Options.PickupSystem.Equals(PickupSystem.SemiPublicBiddingSecretCounterPicks))
+            var pickupSystem = activeBidsForLeague.Key.Options.PickupSystem;
+            var visibleBids = activeBidsForLeague.Value;
+            if (pickupSystem.CounterPickGamesAreHiddenDuringPublicBidding)
             {
-                bidsToCount = bidsToCount.Where(x => !x.CounterPick).ToList();
+                visibleBids = visibleBids.Where(x => !x.CounterPick).ToList();
             }
 
-            var distinctBids = bidsToCount.DistinctBy(x => x.MasterGame).OrderBy(x => x.MasterGame.GameName);
+            var distinctBids = visibleBids.DistinctBy(x => x.MasterGame).OrderBy(x => x.MasterGame.GameName);
             List<PublicBiddingMasterGame> masterGameYears = [];
             foreach (var bid in distinctBids)
             {
@@ -506,7 +531,8 @@ public class GameAcquisitionService
                 masterGameYears.Add(new PublicBiddingMasterGame(masterGameYear, bid.CounterPick, claimResult));
             }
 
-            publicBiddingSets.Add(new LeagueYearPublicBiddingSet(activeBidsForLeague.Key, masterGameYears));
+            publicBiddingSets.Add(new LeagueYearPublicBiddingSet(activeBidsForLeague.Key, masterGameYears,
+                AnyHiddenCounterPickBids(pickupSystem, activeBidsForLeague.Value)));
         }
 
         return publicBiddingSets;

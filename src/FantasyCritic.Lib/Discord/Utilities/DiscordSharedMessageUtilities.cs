@@ -264,6 +264,11 @@ public static class DiscordSharedMessageUtilities
         return $"**{drop.Publisher.GetPublisherAndUserDisplayName()}**: {drop.MasterGame.GameName} (Drop {statusMessage})";
     }
 
+    /// <summary>
+    /// Shown when a league's system reveals that counter picking is happening without revealing which games are involved.
+    /// </summary>
+    public const string HiddenCounterPickMessage = "🎯 **At least one game is being counter picked.** Which game it is stays hidden until bids process.";
+
     public static string BuildPublicBidGameMessage(PublicBiddingMasterGame publicBid)
     {
         var gameMessage = "";

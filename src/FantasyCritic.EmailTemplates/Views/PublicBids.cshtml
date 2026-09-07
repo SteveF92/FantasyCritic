@@ -67,7 +67,11 @@
             }
             else
             {
-                <p>No bids in this league this week.</p>
+                <p>No standard bids in this league this week.</p>
+            }
+            @if (leagueYear.AnyHiddenCounterPickBids)
+            {
+                <p><strong>At least one game is being counter picked.</strong> Which game it is stays hidden until bids process.</p>
             }
         </div>
     }

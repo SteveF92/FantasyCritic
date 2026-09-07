@@ -148,6 +148,21 @@ let leagueMixin = {
     biddingAllowed() {
       return this.firstDraftFinished && !this.activeDraft && this.leagueYear.enableBids;
     },
+    counterPickBiddingAllowed() {
+      if (!this.biddingAllowed) {
+        return false;
+      }
+
+      const publicBiddingGames = this.leagueYear.publicBiddingGames;
+      if (this.leagueYear.settings.pickupSystem !== 'SemiPublicBiddingSemiPublicCounterPicks' || !publicBiddingGames) {
+        return true;
+      }
+
+      // The reveal told the league only whether anything is being counter picked. While that answer is already 'yes',
+      // another counter pick bid can't change it, so bidding stays open. While it's 'no', any counter pick bid would
+      // flip it, so bidding is closed for the rest of the week.
+      return publicBiddingGames.anyHiddenCounterPickBids;
+    },
     tradesAllowed() {
       return this.firstDraftFinished && !this.activeDraft && this.leagueYear.settings.tradingSystem !== 'NoTrades';
     },

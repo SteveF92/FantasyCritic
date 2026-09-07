@@ -921,10 +921,10 @@ public class LeagueController : BaseLeagueController
 
         var activeSpecialAuctions = await _gameAcquisitionService.GetActiveSpecialAuctionsForLeague(leagueYear);
         var publicBiddingGames = await _gameAcquisitionService.GetPublicBiddingGames(leagueYear, activeSpecialAuctions);
-        bool publicBidIsValid = _gameAcquisitionService.PublicBidIsValid(leagueYear, masterGame, request.CounterPick, publicBiddingGames?.MasterGames, activeSpecialAuctions);
-        if (!publicBidIsValid)
+        var publicBidResult = _gameAcquisitionService.ValidatePublicBid(leagueYear, masterGame, request.CounterPick, publicBiddingGames, activeSpecialAuctions);
+        if (publicBidResult.IsFailure)
         {
-            return BadRequest("During the public bidding window, you can only bid on a game that is already being bid on by at least one player.");
+            return BadRequest(publicBidResult.Error);
         }
 
         var gameIsSpecialAuctionGame = activeSpecialAuctions.Any(x => x.MasterGameYear.MasterGame.MasterGameID == request.MasterGameID);
@@ -1302,6 +1302,7 @@ public class LeagueController : BaseLeagueController
     }
 
     [HttpGet]
+    [ProducesResponseType<List<PossibleMasterGameYearViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

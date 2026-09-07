@@ -82,7 +82,7 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
             return;
         }
 
-        if (!publicBiddingGames.MasterGames.Any())
+        if (!publicBiddingGames.MasterGames.Any() && !publicBiddingGames.AnyHiddenCounterPickBids)
         {
             await FollowupAsync(embed: _discordFormatter.BuildRegularEmbedWithUserFooter(
                 "No Public Bids",
@@ -92,6 +92,11 @@ public class PublicBidsCommand : InteractionModuleBase<SocketInteractionContext>
         }
 
         var gameMessages = publicBiddingGames.MasterGames.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
+        if (publicBiddingGames.AnyHiddenCounterPickBids)
+        {
+            gameMessages.Add(DiscordSharedMessageUtilities.HiddenCounterPickMessage);
+        }
+
         var finalMessage = string.Join("\n", gameMessages);
         var bidProcessingDate = _clock.GetNextBidTime().ToEasternDate();
         var header = $"Public Bids (Week ending {bidProcessingDate:MMMM dd, yyyy})";

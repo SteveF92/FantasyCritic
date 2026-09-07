@@ -667,15 +667,20 @@ public class DiscordPushService
 
             string finalMessage;
 
-            var anyBids = publicBiddingSet.MasterGames.Any();
-            if (anyBids)
+            var anyBids = publicBiddingSet.MasterGames.Any() || publicBiddingSet.AnyHiddenCounterPickBids;
+            if (publicBiddingSet.MasterGames.Any())
             {
                 var gameMessages = publicBiddingSet.MasterGames.Select(DiscordSharedMessageUtilities.BuildPublicBidGameMessage).ToList();
                 finalMessage = string.Join("\n", gameMessages);
             }
             else
             {
-                finalMessage = "There were no bids this week.";
+                finalMessage = "There were no standard bids this week.";
+            }
+
+            if (publicBiddingSet.AnyHiddenCounterPickBids)
+            {
+                finalMessage += $"\n{DiscordSharedMessageUtilities.HiddenCounterPickMessage}";
             }
 
             if (finalMessage.Length > 4096)
