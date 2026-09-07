@@ -26,6 +26,13 @@ COPY ["FantasyCritic.EmailTemplates/FantasyCritic.EmailTemplates.csproj", "Fanta
 COPY ["FantasyCritic.FakeRepo/FantasyCritic.FakeRepo.csproj", "FantasyCritic.FakeRepo/"]
 COPY ["FantasyCritic.MySQL/FantasyCritic.MySQL.csproj", "FantasyCritic.MySQL/"]
 COPY ["FantasyCritic.Postmark/FantasyCritic.Postmark.csproj", "FantasyCritic.Postmark/"]
+# FantasyCritic.Web references the client .esproj, and the JavaScript SDK reads
+# package.json during evaluation to generate package.g.props. Without these the
+# restore layer silently resolves nothing for that reference -- restore still exits 0
+# and the implicit restore during build picks it up after "COPY . ." below, which
+# defeats the point of restoring against project files alone.
+COPY ["FantasyCritic.ClientAppVue2/FantasyCritic.ClientAppVue2.esproj", "FantasyCritic.ClientAppVue2/"]
+COPY ["FantasyCritic.ClientAppVue2/package.json", "FantasyCritic.ClientAppVue2/package-lock.json", "FantasyCritic.ClientAppVue2/"]
 RUN dotnet restore "./FantasyCritic.Web/FantasyCritic.Web.csproj"
 COPY . .
 WORKDIR "/src/FantasyCritic.Web"
