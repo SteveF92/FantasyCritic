@@ -81,7 +81,8 @@
             <p v-else-if="counterPickHandling === 'SemiPublicBiddingSecretCounterPicks'">Counter Pick bids are exempt from the public bidding system and remain secret throughout the week.</p>
             <p v-else-if="counterPickHandling === 'SemiPublicBiddingSemiPublicCounterPicks'">
               A middle ground between the previous two options. On Thursday, if at least one counter pick bid was placed, then that will be announced, and players can continue placing counter pick
-              bids until the bids process.
+              bids until the bids process. If no counter pick bids are placed before the Thursday reveal, then no counter pick bids can be placed for the rest of the week until bids process on
+              Saturday night.
             </p>
           </div>
         </div>

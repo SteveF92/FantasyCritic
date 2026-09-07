@@ -339,7 +339,8 @@
           <li>
             <strong>Semi-Public Counter Picks:</strong>
             A middle ground between the previous two options. On Thursday, if at least one counter pick bid was placed, then that will be announced, and players can continue placing counter pick bids
-            until the bids process.
+            until the bids process. If no counter pick bids are placed before the Thursday reveal, then no counter pick bids can be placed for the rest of the week until bids process on Saturday
+            night.
           </li>
         </ul>
       </template>
