@@ -10,6 +10,7 @@ public interface IMasterGameRepo
     void ClearMasterGameCache();
     void ClearMasterGameYearCache();
     Task<IReadOnlyList<MasterGame>> GetMasterGames();
+    Task<IReadOnlyDictionary<Guid, MasterGame>> GetMasterGameDictionary();
     Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year);
     Task<MasterGame?> GetMasterGame(Guid masterGameID);
     Task<MasterGameYear?> GetMasterGameYear(Guid masterGameID, int year);

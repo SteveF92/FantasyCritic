@@ -35,6 +35,12 @@ public class FakeMasterGameRepo : IMasterGameRepo
         return Task.FromResult<IReadOnlyList<MasterGame>>(_masterGames);
     }
 
+    public Task<IReadOnlyDictionary<Guid, MasterGame>> GetMasterGameDictionary()
+    {
+        IReadOnlyDictionary<Guid, MasterGame> dictionary = _masterGames.ToDictionary(x => x.MasterGameID);
+        return Task.FromResult(dictionary);
+    }
+
     public Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year)
     {
         var masterGameYears = _masterGames.Select(x => new MasterGameYear(x, year)).ToList();

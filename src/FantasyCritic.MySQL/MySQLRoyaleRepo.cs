@@ -124,12 +124,15 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
         var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
 
+        //masterGameYearResults comes from tbl_caching_mastergameyear, which lags tbl_mastergame between cache refreshes, so we must get the most up to date info from the root table.
+        var freshMasterGames = await _masterGameRepo.GetMasterGameDictionary();
+
         var masterGameYearDictionary = new Dictionary<Guid, MasterGameYear>();
         foreach (var entity in masterGameYearResults)
         {
             var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
             var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
-            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser).OverlayFreshMasterGame(freshMasterGames);
             masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
         }
 
@@ -207,12 +210,15 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
         var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
 
+        //masterGameYearResults comes from tbl_caching_mastergameyear, which lags tbl_mastergame between cache refreshes, so we must get the most up to date info from the root table.
+        var freshMasterGames = await _masterGameRepo.GetMasterGameDictionary();
+
         var masterGameYearDictionary = new Dictionary<Guid, MasterGameYear>();
         foreach (var entity in masterGameYearResults)
         {
             var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
             var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
-            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser).OverlayFreshMasterGame(freshMasterGames);
             masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
         }
 
@@ -764,12 +770,15 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         var masterGameTagLookup = masterGameTagResults.ToLookup(x => x.MasterGameID);
         var masterSubGames = masterSubGameResults.Select(x => x.ToDomain()).ToList();
 
+        //masterGameYearResults comes from tbl_caching_mastergameyear, which lags tbl_mastergame between cache refreshes, so we must get the most up to date info from the root table.
+        var freshMasterGames = await _masterGameRepo.GetMasterGameDictionary();
+
         var masterGameYearDictionary = new Dictionary<Guid, MasterGameYear>();
         foreach (var entity in masterGameYearResults)
         {
             var tags = masterGameTagLookup[entity.MasterGameID].Select(x => possibleTags[x.TagName]).ToList();
             var addedByUser = new VeryMinimalFantasyCriticUser(entity.AddedByUserID, entity.AddedByUserDisplayName);
-            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser);
+            MasterGameYear domain = entity.ToDomain(masterSubGames.Where(sub => sub.MasterGameID == entity.MasterGameID), tags, addedByUser).OverlayFreshMasterGame(freshMasterGames);
             masterGameYearDictionary.Add(domain.MasterGame.MasterGameID, domain);
         }
 

@@ -73,6 +73,16 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return masterGames;
     }
 
+    public async Task<IReadOnlyDictionary<Guid, MasterGame>> GetMasterGameDictionary()
+    {
+        if (_masterGamesCache is null)
+        {
+            await GetMasterGames();
+        }
+
+        return _masterGamesCache!;
+    }
+
     public async Task<IReadOnlyList<MasterGameYear>> GetMasterGameYears(int year)
     {
         if (_masterGameYearsCache.ContainsKey(year))
@@ -138,10 +148,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
     /// </summary>
     private async Task<MasterGameYear> OverlayFreshMasterGame(MasterGameYear masterGameYear)
     {
-        var freshMasterGame = await GetMasterGame(masterGameYear.MasterGame.MasterGameID);
-        return freshMasterGame != null
-            ? masterGameYear.WithNewMasterGame(freshMasterGame)
-            : masterGameYear;
+        var freshMasterGames = await GetMasterGameDictionary();
+        return masterGameYear.OverlayFreshMasterGame(freshMasterGames);
     }
 
     private async Task<IReadOnlyList<MasterGameYear>> OverlayFreshMasterGames(IReadOnlyList<MasterGameYear> masterGameYears)
@@ -151,26 +159,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             return masterGameYears;
         }
 
-        if (_masterGamesCache is null)
-        {
-            await GetMasterGames();
-        }
-
-        var overlaid = new List<MasterGameYear>(masterGameYears.Count);
-        foreach (var masterGameYear in masterGameYears)
-        {
-            var masterGameID = masterGameYear.MasterGame.MasterGameID;
-            if (_masterGamesCache!.TryGetValue(masterGameID, out var freshMasterGame))
-            {
-                overlaid.Add(masterGameYear.WithNewMasterGame(freshMasterGame));
-            }
-            else
-            {
-                overlaid.Add(masterGameYear);
-            }
-        }
-
-        return overlaid;
+        var freshMasterGames = await GetMasterGameDictionary();
+        return masterGameYears.OverlayFreshMasterGames(freshMasterGames);
     }
 
     public async Task<MasterGameYearWithStatistics?> GetMasterGameYearWithStatistics(Guid masterGameID, int year)
