@@ -60,16 +60,48 @@ jobs:
 
       - name: NuGet vulnerabilities
         run: |
-          set -o pipefail
+          # `dotnet list package` can no longer read the solution: it misidentifies the
+          # JavaScript project (.esproj) as a packages.config project, reports that, and
+          # stops -- silently skipping every project that sorts after it. So scan the C#
+          # projects one at a time.
+          #
+          # The list comes from the solution rather than from `find` so it cannot drift:
+          # a project added to the solution is scanned automatically, and a stray .csproj
+          # left on disk but not in the solution is not. Paths are relative to the solution
+          # directory and use the host separator, hence the src/ prefix and the backslash
+          # replacement (a no-op on Linux, correct on Windows for local testing).
+          : > /tmp/nuget-vulns.txt
+          scan_failed=0
+          scanned=0
+          while IFS= read -r proj; do
+            proj="src/${proj//\\//}"
+            scanned=$((scanned + 1))
+            if ! dotnet list "$proj" package --vulnerable --include-transitive >> /tmp/nuget-vulns.txt 2>&1; then
+              scan_failed=1
+            fi
+          done < <(dotnet sln src/FantasyCritic.slnx list | grep '\.csproj$')
+
+          # An empty list would otherwise sail through as a clean scan, which is the exact
+          # failure this step is meant to stop having.
+          if [ "$scanned" -eq 0 ]; then
+            echo "::error::No projects were scanned - could not read the project list from the solution."
+            exit 1
+          fi
+          echo "Scanned $scanned project(s)."
+
           {
             echo "## NuGet"
             echo
             echo '```'
-            dotnet list src/FantasyCritic.slnx package --vulnerable --include-transitive 2>&1 | tee /tmp/nuget-vulns.txt
+            cat /tmp/nuget-vulns.txt
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
+
           if grep -q "has the following vulnerable packages" /tmp/nuget-vulns.txt; then
             echo "::warning::Vulnerable NuGet packages found. See the job summary."
+          fi
+          if [ "$scan_failed" -ne 0 ]; then
+            echo "::warning::At least one project could not be scanned. See the job summary."
           fi
 
       - name: npm vulnerabilities
