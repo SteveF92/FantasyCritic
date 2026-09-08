@@ -37,6 +37,7 @@ using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.StaticAssets;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -405,20 +406,6 @@ public static class HostingExtensions
             .AddRedirectToWww()
         );
 
-        app.UseStaticFiles(new StaticFileOptions
-        {
-            OnPrepareResponse = (context) =>
-            {
-                // Cache for other static files (like JS, CSS, images)
-                var headers = context.Context.Response.GetTypedHeaders();
-                headers.CacheControl = new CacheControlHeaderValue
-                {
-                    Public = true,
-                    MaxAge = TimeSpan.FromDays(365) // Cache static assets for 1 year
-                };
-            }
-        });
-
         app.UseSerilogRequestLogging(options =>
         {
             options.EnrichDiagnosticContext = (diagnosticContext, httpContext) =>
@@ -453,6 +440,31 @@ public static class HostingExtensions
 
         app.UseAuthentication();
         app.UseAuthorization();
+
+        // The assets under /assets are safe to cache for a long time.
+        app.Use(async (context, next) =>
+        {
+            // Routing has already run, so an /assets path that did not match a static asset
+            // is the SPA fallback and must keep its no-store headers.
+            var isStaticAsset = context.GetEndpoint()?.Metadata.GetMetadata<StaticAssetDescriptor>() is not null;
+            if (isStaticAsset && context.Request.Path.StartsWithSegments("/assets"))
+            {
+                context.Response.OnStarting(() =>
+                {
+                    if (context.Response.StatusCode == StatusCodes.Status200OK)
+                    {
+                        context.Response.Headers.CacheControl = "public, max-age=31536000, immutable";
+                    }
+
+                    return Task.CompletedTask;
+                });
+            }
+
+            await next();
+        });
+
+        // Using MapStaticAssets instead of UseStaticFiles lets us send compressed responses for our static files.
+        app.MapStaticAssets();
 
         app.MapControllers();
         app.MapRazorPages();
