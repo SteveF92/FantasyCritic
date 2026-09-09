@@ -44,7 +44,8 @@ readonly KEEP_RELEASES="${FC_KEEP_RELEASES:-10}"
 
 RELEASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly RELEASE_DIR
-readonly RELEASE_ID="$(basename "$RELEASE_DIR")"
+RELEASE_ID="$(basename "$RELEASE_DIR")"
+readonly RELEASE_ID
 readonly MAINTENANCE="$RELEASE_DIR/maintenance.sh"
 
 log() {
