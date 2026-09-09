@@ -62,3 +62,13 @@
 *.verified.txt text eol=lf
 *.verified.xml text eol=lf
 *.verified.json text eol=lf
+###############################################################################
+# Shell scripts must be LF, always.
+#
+# `* text=auto` above plus core.autocrlf=true gives a Windows checkout CRLF copies
+# of these, and every consumer of them is Linux: the Dockerfiles run
+# scripts/regenerate-api-client.sh during the image build, and deploy/*.sh runs on
+# the instance. bash reads the trailing \r as part of the command and fails with
+# "$'\r': command not found" on the first line it matters.
+###############################################################################
+*.sh text eol=lf

@@ -1,0 +1,38 @@
+name: Build image
+description: >-
+  Builds one of the repository's container images and optionally pushes it to ECR. Assumes
+  docker/setup-buildx-action has already run, and — when pushing — that the ECR login has too.
+
+inputs:
+  dockerfile:
+    description: Path to the Dockerfile, relative to the repository root.
+    required: true
+  tags:
+    description: Newline-separated list of fully qualified image tags to build.
+    required: true
+  push:
+    description: Push to the registry. False builds only, which is what CI does on main.
+    required: false
+    default: 'false'
+  cache-scope:
+    description: >-
+      GitHub Actions cache scope. Each image needs its own or they evict each other, since
+      they share almost no layers.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - uses: docker/build-push-action@v6
+      with:
+        # The repository root, always. The web image runs NSwag during the build and the tool
+        # manifest lives in .config/, above src/. See src/FantasyCritic.Web/Dockerfile.
+        context: .
+        file: ${{ inputs.dockerfile }}
+        push: ${{ inputs.push }}
+        tags: ${{ inputs.tags }}
+        cache-from: type=gha,scope=${{ inputs.cache-scope }}
+        cache-to: type=gha,mode=max,scope=${{ inputs.cache-scope }}
+        # Attestations turn a push into a multi-manifest index, which ECR's console and basic
+        # scanning both report on awkwardly. Nothing here consumes them.
+        provenance: false

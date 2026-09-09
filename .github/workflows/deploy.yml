@@ -3,8 +3,11 @@ name: Deploy
 # Manual only. Pick the branch or tag in the "Run workflow" dialog — that ref is what gets
 # built and shipped. Nothing deploys on a push.
 #
-# Everything is built here on a GitHub runner and published self-contained, so the target
-# instance needs no .NET SDK, no .NET runtime, no Node, no git, and no NSwag.
+# As of Phase 3 the deploy artifact is three container images in ECR. The bundle that travels
+# through S3 to the instance is now only the deploy script, the compose file, the maintenance
+# page and the release metadata — a few kilobytes rather than a few hundred megabytes.
+#
+# The target instance needs Docker, the AWS CLI, nginx and curl. No .NET, no Node, no git.
 
 on:
   workflow_dispatch:
@@ -42,7 +45,7 @@ jobs:
   deploy:
     name: Deploy to ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    timeout-minutes: 60
+    timeout-minutes: 90
 
     # Resolves the per-environment variables below, and is the hook for adding a required
     # reviewer to production later without touching this file.
@@ -53,11 +56,14 @@ jobs:
 
       - uses: ./.github/actions/setup-build
 
+      # Runs before anything is built into an image or pushed anywhere. The images repeat this
+      # build inside Docker, which is the price of the Dockerfile being the single definition
+      # of the artifact; the tests are what this step is actually here for.
       - name: Build and test
         uses: ./.github/actions/build-and-test
 
       # ----------------------------------------------------------------------------------
-      # Publish
+      # AWS
       # ----------------------------------------------------------------------------------
 
       - name: Compute release id
@@ -67,24 +73,50 @@ jobs:
           echo "id=$release_id" >> "$GITHUB_OUTPUT"
           echo "Release id: $release_id"
 
-      - name: Publish Web
-        # --self-contained is the whole point: it takes the .NET install off the server,
-        # which is the thing that broke twice and forced server rebuilds.
-        # This also triggers the PublishRunVite target, which runs the Vite production build.
-        run: >-
-          dotnet publish src/FantasyCritic.Web/FantasyCritic.Web.csproj
-          -c Release
-          -r linux-x64
-          --self-contained true
-          -o bundle/web
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
+          aws-region: ${{ vars.AWS_REGION }}
+          role-session-name: gha-deploy-${{ github.run_id }}
 
-      - name: Publish DatabaseUpdater
-        run: >-
-          dotnet publish src/FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj
-          -c Release
-          -r linux-x64
-          --self-contained true
-          -o bundle/dbup
+      - name: Log in to ECR
+        id: ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      # ----------------------------------------------------------------------------------
+      # Images
+      # ----------------------------------------------------------------------------------
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build and push web image
+        uses: ./.github/actions/build-image
+        with:
+          dockerfile: src/FantasyCritic.Web/Dockerfile
+          tags: ${{ steps.ecr.outputs.registry }}/fantasycritic-web:${{ steps.release.outputs.id }}
+          push: 'true'
+          cache-scope: web
+
+      - name: Build and push database-updater image
+        uses: ./.github/actions/build-image
+        with:
+          dockerfile: src/FantasyCritic.DatabaseUpdater/Dockerfile
+          tags: ${{ steps.ecr.outputs.registry }}/fantasycritic-database-updater:${{ steps.release.outputs.id }}
+          push: 'true'
+          cache-scope: database-updater
+
+      - name: Build and push discord-bot image
+        uses: ./.github/actions/build-image
+        with:
+          dockerfile: src/FantasyCritic.DiscordBot/Dockerfile
+          tags: ${{ steps.ecr.outputs.registry }}/fantasycritic-discord-bot:${{ steps.release.outputs.id }}
+          push: 'true'
+          cache-scope: discord-bot
+
+      # ----------------------------------------------------------------------------------
+      # Bundle
+      # ----------------------------------------------------------------------------------
 
       - name: Assemble bundle
         env:
@@ -92,12 +124,16 @@ jobs:
           TARGET_ENVIRONMENT: ${{ inputs.environment }}
         run: |
           set -euo pipefail
+          mkdir -p bundle
           cp deploy/deploy.sh bundle/deploy.sh
-          # The maintenance page travels with the release, so changing its wording is an
-          # ordinary deploy rather than a file copied onto the box by hand.
+          # The compose file and the maintenance page travel with the release, so changing
+          # either is an ordinary deploy rather than a file copied onto the box by hand. The
+          # old release directories are kept on the instance, which is what makes a rollback
+          # able to restore the compose file it was deployed with.
+          cp infrastructure/docker-compose-production.yaml bundle/docker-compose.yaml
           cp deploy/maintenance.sh bundle/maintenance.sh
           cp infrastructure/maintenance.html bundle/maintenance.html
-          chmod +x bundle/deploy.sh bundle/maintenance.sh bundle/web/FantasyCritic.Web bundle/dbup/FantasyCritic.DatabaseUpdater
+          chmod +x bundle/deploy.sh bundle/maintenance.sh
           # The site reads this file at startup and shows it in the admin console, so keep the
           # keys in sync with BuildInfoReader in the web project.
           {
@@ -112,17 +148,6 @@ jobs:
           } > bundle/RELEASE
           tar -czf release.tar.gz -C bundle .
           ls -lh release.tar.gz
-
-      # ----------------------------------------------------------------------------------
-      # AWS
-      # ----------------------------------------------------------------------------------
-
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ vars.AWS_ROLE_ARN }}
-          aws-region: ${{ vars.AWS_REGION }}
-          role-session-name: gha-deploy-${{ github.run_id }}
 
       - name: Start instance and wait for SSM
         # The beta box is normally powered off. Production is always on, so this is a no-op
@@ -221,6 +246,7 @@ jobs:
               "set -eu",
               "export PATH=\"$PATH:/usr/local/bin:/snap/bin\"",
               "command -v aws >/dev/null 2>&1 || { echo \"ERROR: aws CLI not found on PATH ($PATH). Install it on this host: sudo snap install aws-cli --classic, or the official installer into /usr/local/bin\" >&2; exit 127; }",
+              "command -v docker >/dev/null 2>&1 || { echo \"ERROR: docker not found on PATH ($PATH). See docs/deployment-phase-3-setup.md\" >&2; exit 127; }",
               "RELEASE_ID=" + $release_id,
               "RELEASE_DIR=/opt/fantasy-critic/releases/$RELEASE_ID",
               "rm -rf \"$RELEASE_DIR\"",
@@ -229,7 +255,7 @@ jobs:
               "tar -xzf /tmp/$RELEASE_ID.tar.gz -C \"$RELEASE_DIR\"",
               "rm -f /tmp/$RELEASE_ID.tar.gz",
               "chmod +x \"$RELEASE_DIR/deploy.sh\"",
-              "FC_SKIP_MIGRATIONS=" + $skip_migrations + " \"$RELEASE_DIR/deploy.sh\""
+              "FC_IMAGE_TAG=" + $release_id + " FC_SKIP_MIGRATIONS=" + $skip_migrations + " \"$RELEASE_DIR/deploy.sh\""
             ]')
 
           parameters=$(jq -n --argjson c "$commands" '{commands: $c, executionTimeout: ["3600"]}')
@@ -307,6 +333,7 @@ jobs:
             echo "| | |"
             echo "|---|---|"
             echo "| Release | \`$RELEASE_ID\` |"
+            echo "| Image tag | \`$RELEASE_ID\` |"
             echo "| Ref | \`${{ github.ref_name }}\` |"
             echo "| Commit | \`${GITHUB_SHA:0:7}\` |"
             echo "| Migrations | ${{ inputs.skip_migrations && 'skipped' || 'run' }} |"

@@ -184,20 +184,45 @@ Setup runbook: [deployment-phase-2-setup.md](deployment-phase-2-setup.md).
 **Goal:** The deploy artifact is a container image. The server is Ubuntu + Docker + nginx +
 certbot + SSM agent, and nothing else.
 
-- CI builds the Web and DatabaseUpdater images (Dockerfiles already exist) and pushes to ECR.
-- A production compose file on the server mirrors the existing complete compose:
-  `docker compose run --rm database-updater`, then `docker compose up -d web`.
-- nginx and certbot stay on the host for now.
-- Deploy is the same SSM path with a different script: pull, run migrator, up.
+- CI builds the Web, DatabaseUpdater and DiscordBot images and pushes to ECR.
+- `infrastructure/docker-compose-production.yaml` ships in the release bundle and lands on the
+  server: `docker compose run --rm database-updater`, then `docker compose up -d web discord-bot`.
+- nginx and certbot stay on the host for now. The web container publishes `127.0.0.1:5000`,
+  which is exactly where `api_proxy.conf` already pointed, so nginx and the Phase 2
+  maintenance snippet needed no changes at all.
+- Deploy is the same SSM path with a different script: pull, stop, migrate, up. The bundle
+  went from ~300 MB to a few kilobytes — it is now only the script, the compose file, the
+  maintenance page and the release metadata.
+- systemd is gone. `restart: unless-stopped` plus `systemctl enable docker` is what survives a
+  reboot, and `infrastructure/fantasy-critic.service` was deleted.
 
-**Gotchas.**
+**Build decision: one Dockerfile per image, building from source, context = repository root.**
+Publishing in CI and shipping a runtime-only image over the output is faster per run but
+leaves two definitions of the artifact to drift. The root context is required regardless,
+because the image has to run NSwag and the tool manifest lives in `.config/`.
+
+**Gotchas — all three were real.**
 
 - Containers reaching the instance IAM role through IMDSv2 fail with the default hop limit
   of 1. Raise the hop limit to 2 or use host networking.
-- File logs become ephemeral. Loki already has everything, so drop the file sinks or
-  bind-mount the log directory.
-- The Web Dockerfile currently bakes a dev connection string as a default env var. Remove
-  it or make sure production overrides it.
+- File logs become ephemeral. The log directory is bind-mounted and must be owned by uid 1654,
+  the non-root user in the Microsoft images, or the Serilog file sinks write nothing.
+- The Web Dockerfile baked a dev connection string as a default env var. Removed: a
+  production misconfiguration should fail loudly, not connect somewhere wrong.
+
+**Two things this phase found rather than fixed as planned.**
+
+- **The Web Dockerfile could not build from a clean checkout.** The NSwag-generated TypeScript
+  client the Vue app imports is gitignored, and the image never generated it. Earlier local
+  verification passed only because Docker's build context includes gitignored files that
+  happen to exist on disk. The Dockerfile now generates both clients between building Web and
+  running vite, and `.dockerignore` excludes the generated output so the build cannot
+  accidentally consume a developer's copy again.
+- **`scripts/*.sh` were CRLF in a Windows checkout.** `* text=auto` plus `core.autocrlf=true`
+  did that, and every consumer of those scripts is Linux. `.gitattributes` now pins `*.sh` to
+  LF.
+
+Setup runbook: [deployment-phase-3-setup.md](deployment-phase-3-setup.md).
 
 **Cost:** ECR storage, a few cents.
 
@@ -206,19 +231,31 @@ certbot + SSM agent, and nothing else.
 **Goal:** The command-handling bot runs in its own process. The web app keeps the push
 service.
 
-- Rewrite `FantasyCritic.DiscordBot` onto the .NET generic host with a shared DI
-  registration extension in Lib (so Web, Bot, and later Worker register the same services
-  the same way), Secrets Manager config loading, and the Loki sink.
+- `FantasyCritic.DiscordBot` rewritten onto the .NET generic host, with Secrets Manager config
+  loading and the Loki sink. Its host is built with `ValidateOnBuild`, so a missing
+  registration fails at startup instead of the first time a user runs the command that needs it.
+- The shared DI registrations live in a new **`FantasyCritic.Hosting`** project, not in Lib as
+  originally sketched: the point is sharing the *repository* registrations, and Lib cannot
+  reference `FantasyCritic.MySQL` without inverting the existing dependency. Hosting also owns
+  the configuration chain and the Serilog setup that had been copied per host.
 - Web drops `DiscordHostedService` and the scoped `DiscordSocketClient` / `DiscordBotService`
-  registrations. `DiscordPushService` stays in Web on the same token.
-- Add a Bot Dockerfile and compose service.
+  registrations. `DiscordPushService` stays in Web on the same token — it builds its own
+  `DiscordSocketClient` in its constructor rather than taking the DI one, so it was always a
+  separate gateway session and the split does not touch it.
+- Bot Dockerfile and compose service added.
+
+**What the old project turned out to be.** `FantasyCritic.DiscordBot` had drifted further than
+"stale": it never registered `FantasyCriticService`, which `GameSearchingService` depends on,
+so several of its own commands could only ever have thrown at the point somebody ran them.
+That is the drift `FantasyCritic.Hosting` and `ValidateOnBuild` exist to prevent.
 
 ### Phase 4b: Hangfire worker
 
 **Goal:** Scheduled tasks and long-running admin actions run in a dedicated worker process.
 The web app enqueues and reports status.
 
-- New `FantasyCritic.Worker` project hosts the Hangfire server.
+- New `FantasyCritic.Worker` project hosts the Hangfire server. Its service registrations go in
+  `FantasyCritic.Hosting` alongside `AddFantasyCriticCore`, which Phase 4a introduced.
 - Web hosts the Hangfire client and dashboard (behind admin authorization).
 - The `IScheduledTask` cron classes become Hangfire recurring jobs.
 - Admin console buttons (`adminConsole.vue`) enqueue jobs and poll state instead of holding
@@ -405,9 +442,9 @@ when a nearby phase makes them convenient.
 - **Alerting (low priority).** An external uptime check against the health endpoint posting
   to Discord, and a Loki alert on error-level logs from `FantasyCritic.*`. Not a pager;
   a notification.
-- **Dependency and vulnerability scanning.** Dependabot or Renovate for NuGet and npm,
-  `dotnet list package --vulnerable` and `npm audit` in the PR workflow, and ECR basic image
-  scanning (free) once images exist in Phase 3.
+- **Dependency and vulnerability scanning.** Dependabot or Renovate for NuGet and npm are still
+  open. `dotnet list package --vulnerable` and `npm audit` run in the PR workflow, and ~~ECR
+  basic image scanning~~ is enabled on all three repositories as of Phase 3.
 - **Terraform state** goes in an S3 backend with locking and never in the repository.
   Relevant the moment Phase 5 starts.
 - **Remove Windows leftovers.** `UpdateSite.ps1` and the Windows branches of `LoggingPaths`.

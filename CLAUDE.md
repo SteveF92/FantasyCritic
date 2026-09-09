@@ -38,6 +38,13 @@ dotnet test src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.cs
 dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
 scripts/Regenerate-ApiClient.ps1
 
+# Container images. Build from the REPOSITORY ROOT — the web image runs NSwag during the
+# build and the tool manifest lives in .config/, above src/.
+docker build -f src/FantasyCritic.Web/Dockerfile -t fantasycritic-web .
+
+# Full local stack (MySQL + migrator + seed + web); add --profile bot for the Discord bot
+docker compose -f infrastructure/docker-compose-complete.yaml up
+
 # Format everything (C# editorconfig + NUnit analyzer + client app Prettier/ESLint)
 scripts/Format.ps1          # apply
 scripts/Format.ps1 -Check   # verify only (CI-style)
@@ -55,10 +62,11 @@ Client app (`src/FantasyCritic.ClientAppVue2`): `npm install` first; `npm run li
 | **FantasyCritic.MySQL** | Dapper repositories (`*Repo`) implementing Lib interfaces. Row types under `Entities/` end in `Entity`. |
 | **FantasyCritic.Web** | API controllers (`Controllers/API/`), Web-owned `ViewModel`/`Request`/`Response` models, SignalR `UpdateHub` (live draft updates), and hosts the Vue SPA. Uses System.Text.Json + NodaTime serialization; shared `JsonSerializerOptions` come from `FantasyCriticJsonOptions` in Lib. |
 | **FantasyCritic.Lib/SharedSerialization** | The *deliberate* home for Entity/ViewModel shapes shared across projects. Not legacy — but only for types that genuinely cross project boundaries. |
+| **FantasyCritic.Hosting** | The DI registrations, configuration chain (appsettings → user secrets → Secrets Manager → env vars) and Serilog setup shared by every host. `AddFantasyCriticCore` is where a new repository or domain service gets registered — put it there, not in one host's startup, or the hosts drift. References Lib + MySQL + AWS. |
+| **FantasyCritic.DiscordBot** | The Discord *command* gateway, its own process and container. The web app keeps `DiscordPushService` (notifications out) on the same bot token. Exactly one container may run the command bot. |
 | **FantasyCritic.FakeRepo** | In-memory repository doubles for unit tests. |
 | **FantasyCritic.DatabaseUpdater** | DbUp migrations. Schema changes happen **only** here: new scripts in `Scripts/Sequential/` with the next dated filename. Never hand-edit the DB. |
 | **FantasyCritic.ApiClient** | NSwag-generated C# client (gitignored output) used by integration tests. |
-| **FantasyCritic.DiscordBot** | Standalone bot host; the actual command/push logic lives in Lib. |
 
 Satellite console tools: LocalDatabaseTool (seeds dev DB from prod data), RdsSnapshotManager (import prod snapshots), MasterGameUpdater, BetaSync, DBUtility, TestDataScrubber. Supporting libs: AWS (Secrets Manager/S3), Postmark + EmailTemplates (email), OpenCritic/Patreon/GG clients inside Lib.
 

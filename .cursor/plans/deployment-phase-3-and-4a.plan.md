@@ -233,3 +233,57 @@ runbook, strike the "ECR basic image scanning" backlog item, and note under Phas
 - Site answers on `127.0.0.1:5000/health` and `/health/ready` from inside the compose network.
 - Discord: a slash command is handled exactly once (bot container), and a push notification
   still arrives (web container).
+
+---
+
+## Outcome
+
+Shipped as planned, with these deviations and additions.
+
+**Found during the work, not planned for:**
+
+- **`scripts/*.sh` were CRLF in a Windows checkout.** `* text=auto` plus `core.autocrlf=true`
+  produced them, and every consumer is Linux — the image build runs
+  `scripts/regenerate-api-client.sh`, and `deploy/*.sh` runs on the instance. bash reads the
+  trailing `\r` as part of the command (`$'\r': command not found`). `.gitattributes` now pins
+  `*.sh` to `eol=lf`, and the working tree copies were renormalized.
+- **`docker-compose-complete.yaml` would not start at all.** `web` declared a dependency on a
+  `master-game-updater` service that no longer exists under that name; compose refuses to run
+  on an unresolvable dependency. Repointed at `local-database-tool`, which is what it was
+  renamed to.
+- **The bot and LocalDatabaseTool cannot use the `dotnet/runtime` base image.**
+  `Razor.Templating.Core` in Lib puts a `Microsoft.AspNetCore.App` framework reference in
+  every dependent's `runtimeconfig.json`, so the slimmer image fails at startup rather than at
+  first use. Both stay on `aspnet`.
+- **`FantasyCritic.DiscordBot` was worse than stale.** It never registered
+  `FantasyCriticService`, which `GameSearchingService` depends on, so several of its own
+  commands could only have thrown when run. Hence `ValidateOnBuild` on the new host.
+
+**Deliberately not done:**
+
+- `DiscordHostedService` keeps its service scope. The plan said to drop it as pointless under a
+  singleton registration, but leaving it preserves exactly today's resolution behaviour and
+  keeps a seam for giving each interaction its own scope later, which is a real fix worth
+  making on its own rather than as a side effect of this one.
+- `FantasyCritic.DatabaseUpdater` keeps its own logging setup. It needs an `ILoggerFactory` for
+  DbUp, so folding it into `FantasyCriticLogging` is a different shape of change; the migrator
+  is not somewhere to take incidental risk.
+- `linuxUpdateSite.sh` and `UpdateSite.ps1` are still in the repository. Removing the Windows
+  leftovers is its own backlog item.
+
+**Verified:**
+
+- Solution builds with zero warnings; 2261 unit tests pass; `scripts/Format.ps1 -Check` clean.
+- All three images build from the repository root.
+- **The clean-checkout test.** `.dockerignore` excludes both generated clients, and the build
+  stage of the web image still contains a 590 KB `FantasyCriticClients.ts` and a 1.8 MB
+  `FantasyCriticClients.cs`, with vite transforming 778 modules against them. This is the
+  failure the phase existed to fix.
+- The migrator container ran a real upgrade against MySQL to "Upgrade successful".
+- The web container answers `/health` **and** `/health/ready` (which proves the database
+  connection), serves the SPA, and still negotiates brotli with `immutable` caching on the
+  fingerprinted bundle — Phase 3 did not undo `MapStaticAssets`.
+- The bot container exits 1 with a clear message when no token is configured, and with a token
+  present builds its whole graph under `ValidateOnBuild` and reaches Discord, which rejects
+  only the deliberately fake token.
+- Both compose files pass `docker compose config`; all workflow and action YAML parses.

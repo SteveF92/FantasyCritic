@@ -40,6 +40,42 @@ jobs:
         # needs a compilable solution.
         run: bash scripts/format.sh --check
 
+  images:
+    name: Container images
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    # Pushes to main and manual runs only. These build the whole application a second time
+    # inside Docker, so putting them on every pull request would roughly double PR time for
+    # files that change rarely. Running them here still catches a broken Dockerfile before a
+    # deploy rather than during one, which is the failure this job exists to prevent: the web
+    # image regenerates the NSwag TypeScript client the Vue build imports, and that file is
+    # gitignored, so it is only ever exercised properly on a clean checkout.
+    if: github.event_name != 'pull_request'
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: web
+            dockerfile: src/FantasyCritic.Web/Dockerfile
+          - name: database-updater
+            dockerfile: src/FantasyCritic.DatabaseUpdater/Dockerfile
+          - name: discord-bot
+            dockerfile: src/FantasyCritic.DiscordBot/Dockerfile
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: docker/setup-buildx-action@v3
+
+      - name: Build ${{ matrix.name }}
+        uses: ./.github/actions/build-image
+        with:
+          dockerfile: ${{ matrix.dockerfile }}
+          tags: fantasycritic-${{ matrix.name }}:ci
+          push: 'false'
+          cache-scope: ${{ matrix.name }}
+
   vulnerability-scan:
     name: Dependency vulnerabilities
     runs-on: ubuntu-latest

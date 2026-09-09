@@ -1,0 +1,50 @@
+# Build context for every image in this repository. The context is the repository root
+# (the NSwag tool manifest lives in .config/ and the generation script in scripts/, both
+# outside src/), so this file has to keep the large and the misleading out of it.
+#
+# "Misleading" is the important half. Docker sends gitignored files that happen to exist on
+# disk, so a developer's locally-generated API client would be copied into the image and the
+# build would appear to succeed on a machine where a clean checkout fails. The generated
+# clients and the client bundle are therefore excluded here on purpose: every image build
+# regenerates them.
+
+# Version control and editor state
+**/.git
+**/.gitignore
+**/.gitattributes
+**/.vs
+**/.vscode
+**/.idea
+**/.classpath
+**/.project
+**/.settings
+**/.toolstarget
+**/*.*proj.user
+
+# Build output
+**/bin
+**/obj
+**/dist
+**/node_modules
+**/npm-debug.log
+src/FantasyCritic.ClientAppVue2/src/api/generated
+src/FantasyCritic.ApiClient/Generated
+
+# Test fixtures: ~135 MB of LFS-backed CSVs that no image runs.
+src/FantasyCritic.Test/TestData
+
+# Not part of any image
+**/.env
+**/azds.yaml
+**/charts
+**/secrets.dev.yaml
+**/values.dev.yaml
+**/Dockerfile*
+**/docker-compose*
+.cursor
+.github
+deploy
+docs
+infrastructure
+LICENSE
+README.md

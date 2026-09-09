@@ -1,30 +1,38 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# The DbUp migrator, run as a one-off job before the web app starts. Build from the
+# REPOSITORY ROOT:
+#
+#   docker build -f src/FantasyCritic.DatabaseUpdater/Dockerfile .
 
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
 WORKDIR /app
 
 
-# This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj", "FantasyCritic.DatabaseUpdater/"]
-COPY ["FantasyCritic.AWS/FantasyCritic.AWS.csproj", "FantasyCritic.AWS/"]
-COPY ["FantasyCritic.Lib/FantasyCritic.Lib.csproj", "FantasyCritic.Lib/"]
-RUN dotnet restore "./FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj"
+COPY ["src/FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj", "src/FantasyCritic.DatabaseUpdater/"]
+COPY ["src/FantasyCritic.AWS/FantasyCritic.AWS.csproj", "src/FantasyCritic.AWS/"]
+COPY ["src/FantasyCritic.Lib/FantasyCritic.Lib.csproj", "src/FantasyCritic.Lib/"]
+COPY ["src/FantasyCritic.MySQL/FantasyCritic.MySQL.csproj", "src/FantasyCritic.MySQL/"]
+RUN dotnet restore "src/FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj"
 COPY . .
-WORKDIR "/src/FantasyCritic.DatabaseUpdater"
-RUN dotnet build "./FantasyCritic.DatabaseUpdater.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "src/FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj" -c $BUILD_CONFIGURATION --no-restore
 
-# This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./FantasyCritic.DatabaseUpdater.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "src/FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+
 FROM base AS final
 WORKDIR /app
+# Scripts/**/*.sql is copied to the output by the project file, so GetScriptsRoot() finds
+# /app/Scripts. Compose can still bind-mount over it during development to pick up new SQL
+# without rebuilding.
 COPY --from=publish /app/publish .
+
+USER root
+RUN mkdir -p /var/log/fantasy-critic/databaseupdater && chown -R $APP_UID /var/log/fantasy-critic
+USER $APP_UID
+
 ENTRYPOINT ["dotnet", "FantasyCritic.DatabaseUpdater.dll"]

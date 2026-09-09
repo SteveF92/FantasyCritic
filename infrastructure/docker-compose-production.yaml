@@ -1,0 +1,59 @@
+# The deployed stack. Ships inside the release bundle and lands on the instance as
+# /opt/fantasy-critic/docker-compose.yaml, next to the .env file that supplies every variable
+# below. Used on both the production and beta instances — they differ only by that .env.
+#
+# There is no MySQL service here: the database is RDS. There are no secrets here either. Each
+# process loads the environment's JSON blob from AWS Secrets Manager at startup, which is why
+# only AWS__region and the environment name need to be set. That requires the containers to
+# reach the instance IAM role through IMDSv2, which needs the instance metadata hop limit
+# raised to 2 — the single most likely first-deploy failure. See the Phase 3 runbook.
+#
+# Deploying is deploy/deploy.sh. By hand:
+#   cd /opt/fantasy-critic
+#   docker compose pull
+#   docker compose run --rm database-updater
+#   docker compose up -d web discord-bot
+
+name: fantasy-critic
+
+services:
+  # Run as a one-off job before the app starts, never as a long-running service. Migrations
+  # are deliberately not expand/contract compatible, so the web app must be down first.
+  database-updater:
+    image: ${ECR_REGISTRY}/fantasycritic-database-updater:${IMAGE_TAG}
+    restart: "no"
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      AWS__region: ${AWS_REGION}
+    volumes:
+      - /var/log/fantasy-critic:/var/log/fantasy-critic
+
+  web:
+    image: ${ECR_REGISTRY}/fantasycritic-web:${IMAGE_TAG}
+    restart: unless-stopped
+    # Bound to loopback: nginx on the host reverse-proxies to it (infrastructure/api_proxy.conf
+    # already points at 127.0.0.1:5000), and nothing else should reach Kestrel directly. Keeping
+    # the port means nginx and the Phase 2 maintenance snippet need no changes at all.
+    ports:
+      - "127.0.0.1:5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ASPNETCORE_URLS: http://+:8080
+      AWS__region: ${AWS_REGION}
+    volumes:
+      - /var/log/fantasy-critic:/var/log/fantasy-critic
+      # The admin console reports which release is live. The file is written by the deploy
+      # script rather than baked into the image, because deploy.sh appends deployed_at to it
+      # after the image was built.
+      - /opt/fantasy-critic/RELEASE:/app/RELEASE:ro
+
+  # Slash commands only. The web app keeps DiscordPushService on the same bot token, so this
+  # must stay at exactly one replica — two would answer every command twice.
+  discord-bot:
+    image: ${ECR_REGISTRY}/fantasycritic-discord-bot:${IMAGE_TAG}
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      AWS__region: ${AWS_REGION}
+    volumes:
+      - /var/log/fantasy-critic:/var/log/fantasy-critic
