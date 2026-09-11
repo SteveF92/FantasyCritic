@@ -25,6 +25,7 @@
   <Project Path="FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj" />
   <Project Path="FantasyCritic.DiscordBot/FantasyCritic.DiscordBot.csproj" />
   <Project Path="FantasyCritic.EmailTemplates/FantasyCritic.EmailTemplates.csproj" />
+  <Project Path="FantasyCritic.Hosting/FantasyCritic.Hosting.csproj" />
   <Project Path="FantasyCritic.Lib/FantasyCritic.Lib.csproj" />
   <Project Path="FantasyCritic.MySQL/FantasyCritic.MySQL.csproj" />
   <Project Path="FantasyCritic.Web/FantasyCritic.Web.csproj" />

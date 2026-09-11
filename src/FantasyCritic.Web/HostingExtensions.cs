@@ -1,23 +1,14 @@
 using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using Discord;
-using Discord.Interactions;
-using Discord.WebSocket;
-using DiscordDotNetUtilities;
-using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.AWS;
 using FantasyCritic.EmailTemplates;
-using FantasyCritic.Lib.BackgroundServices;
+using FantasyCritic.Hosting;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Discord.Handlers;
-using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
-using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.Lib.Services;
@@ -61,29 +52,10 @@ public static class HostingExtensions
         var rdsInstanceName = configuration["AWS:rdsInstanceName"]!;
         var postmarkAPIKey = configuration["Postmark:apiKey"]!;
         var openCriticAPIKey = configuration["OpenCritic:apiKey"]!;
-        var baseAddress = configuration["BaseAddress"]!;
-        var discordBotToken = configuration["BotToken"]!;
 
-        IClock clock = SystemClock.Instance;
-
-        // Add application services.
-        services.AddHttpClient();
-        services.AddTransient<IClock>(_ => clock);
-
-        //MySQL Repos
-        string connectionString = configuration.GetConnectionString("DefaultConnection")!;
-
-        var repoConfiguration = new RepositoryConfiguration(connectionString, clock);
-        var patreonConfig = new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["PatreonService:CampaignID"]!);
-        var environmentConfig = new EnvironmentConfiguration(baseAddress, environment.IsProduction());
-        var discordConfiguration = new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId"));
-        services.AddSingleton<RepositoryConfiguration>(_ => repoConfiguration);
-        services.AddSingleton<PatreonConfig>(_ => patreonConfig);
-        services.AddSingleton<EnvironmentConfiguration>(_ => environmentConfig);
-        services.AddSingleton<FantasyCriticDiscordConfiguration>(_ => discordConfiguration);
-        services.AddSingleton<IDiscordFormatter, DiscordFormatter>();
-        services.AddSingleton<RoleHandler>();
-        services.AddSingleton<DiscordPushService>();
+        //Repositories, domain services and the Discord push service. Shared with the bot process
+        //(and, later, the Hangfire worker) so the three hosts cannot drift apart.
+        services.AddFantasyCriticCore(configuration, environment);
 
         services.AddHealthChecks()
             .AddCheck<DatabaseHealthCheck>("database", tags: [DatabaseHealthCheck.ReadyTag]);
@@ -91,40 +63,10 @@ public static class HostingExtensions
         //Read once at startup: the RELEASE file cannot change without a new deploy, which restarts the process.
         services.AddSingleton<BuildInfo>(_ => BuildInfoReader.Read(environment.ContentRootPath));
 
-        services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
-        services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
-        services.AddScoped<IFantasyCriticRoleStore, MySQLFantasyCriticRoleStore>();
-        services.AddScoped<IUserStore<FantasyCriticUser>, MySQLFantasyCriticUserStore>();
-        services.AddScoped<IRoleStore<FantasyCriticRole>, MySQLFantasyCriticRoleStore>();
-
-        services.AddScoped<IMasterGameRepo, MySQLMasterGameRepo>();
-        services.AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>();
-        services.AddScoped<ICombinedDataRepo, MySQLCombinedDataRepo>();
-        services.AddScoped<IRoyaleRepo, MySQLRoyaleRepo>();
-        services.AddScoped<IConferenceRepo, MySQLConferenceRepo>();
-        services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
-        services.AddScoped<IDiscordRepo, MySQLDiscordRepo>();
-        services.AddScoped<IDailyStatsRepo, MySQLDailyStatsRepo>();
+        //Web-only services
         services.AddScoped<IEmailBuilder, RazorEmailBuilder>();
-
-        services.AddScoped<PatreonService>();
-        services.AddScoped<IHypeFactorService, HypeFactorService>();
-
         services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
-        services.AddScoped<FantasyCriticUserManager>();
-        services.AddScoped<FantasyCriticRoleManager>();
-        services.AddScoped<GameAcquisitionService>();
-        services.AddScoped<LeagueMemberService>();
-        services.AddScoped<PublisherService>();
-        services.AddScoped<InterLeagueService>();
-        services.AddScoped<DraftService>();
-        services.AddScoped<GameSearchingService>();
-        services.AddScoped<TradeService>();
-        services.AddScoped<FantasyCriticService>();
-        services.AddScoped<RoyaleService>();
-        services.AddScoped<ConferenceService>();
         services.AddScoped<EmailSendingService>();
-        services.AddScoped<AllTimeStatsService>();
 
         //Email Services
         //services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
@@ -160,25 +102,6 @@ public static class HostingExtensions
             {
                 args.SetObserved();
             });
-        }
-
-        if (!string.IsNullOrWhiteSpace(discordBotToken) && discordBotToken != "secret")
-        {
-            //Discord request service
-            DiscordSocketConfig socketConfig = new()
-            {
-                GatewayIntents = GatewayIntents.AllUnprivileged
-            };
-            var fantasyCriticSettings = new FantasyCriticSettings
-            {
-                BaseAddress = baseAddress
-            };
-            services.AddSingleton(socketConfig);
-            services.AddSingleton(fantasyCriticSettings);
-            services.AddScoped<DiscordSocketClient>();
-            services.AddScoped(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()));
-            services.AddScoped<DiscordBotService>();
-            services.AddHostedService<DiscordHostedService>();
         }
 
         services.AddAuthorization(options =>
@@ -228,20 +151,7 @@ public static class HostingExtensions
             });
         });
 
-        services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(options =>
-            {
-                options.SignIn.RequireConfirmedAccount = false;
-                const string letters = "abcdefghijklmnopqrstuvwxyz";
-                const string numbers = "0123456789";
-                const string specials = "-._@+ ";
-                options.User.AllowedUserNameCharacters = letters + letters.ToUpper() + numbers + specials;
-                options.Password.RequiredLength = 10;
-                options.Password.RequireDigit = false;
-                options.Password.RequireLowercase = false;
-                options.Password.RequireNonAlphanumeric = false;
-                options.Password.RequireUppercase = false;
-                options.Password.RequiredUniqueChars = 5;
-            })
+        services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(FantasyCriticIdentityOptions.Configure)
             .AddSignInManager<FantasyCriticSignInManager>()
             .AddUserManager<FantasyCriticUserManager>()
             .AddRoleManager<FantasyCriticRoleManager>()
