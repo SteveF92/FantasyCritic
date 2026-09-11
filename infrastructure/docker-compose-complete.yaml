@@ -77,8 +77,6 @@ services:
         condition: service_healthy
       database-updater:
         condition: service_completed_successfully
-      # Was `master-game-updater`, a service this file has not defined since that one was
-      # renamed — compose refuses to start at all on a dependency it cannot resolve.
       local-database-tool:
         condition: service_completed_successfully
     environment:

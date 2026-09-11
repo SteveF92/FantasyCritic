@@ -1,4 +1,7 @@
+using System;
+using System.IO;
 using System.Reflection;
+using System.Threading.Tasks;
 using FantasyCritic.AWS;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
@@ -11,11 +14,15 @@ public static class FantasyCriticConfigurationLoader
 
     public static async Task<IConfigurationRoot> Load(IHostEnvironment environment)
     {
-        var userSecretsAssembly = Assembly.GetExecutingAssembly();
         var builder = new ConfigurationBuilder()
             .SetBasePath(environment.ContentRootPath)
-            .AddJsonFile("appsettings.json")
-            .AddUserSecrets(userSecretsAssembly, true);
+            .AddJsonFile("appsettings.json");
+
+        var userSecretsAssembly = Assembly.GetEntryAssembly();
+        if (userSecretsAssembly is not null)
+        {
+            builder.AddUserSecrets(userSecretsAssembly, true);
+        }
 
         if (!environment.IsDevelopment())
         {

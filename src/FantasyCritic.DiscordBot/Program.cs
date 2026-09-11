@@ -15,7 +15,13 @@ public static class Program
     public static async Task<int> Main()
     {
         var loggingPaths = LoggingPaths.DiscordBot;
-        var builder = Host.CreateApplicationBuilder();
+
+        var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
+        {
+            EnvironmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                              ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            ContentRootPath = AppContext.BaseDirectory
+        });
 
         Log.Logger = CreateLogger(loggingPaths, builder.Environment, configuration: null);
 

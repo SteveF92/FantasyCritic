@@ -9,7 +9,6 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
-using Serilog.Sinks.Grafana.Loki;
 
 namespace FantasyCritic.Web;
 
