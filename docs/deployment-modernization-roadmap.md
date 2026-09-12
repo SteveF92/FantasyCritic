@@ -222,7 +222,8 @@ because the image has to run NSwag and the tool manifest lives in `.config/`.
   did that, and every consumer of those scripts is Linux. `.gitattributes` now pins `*.sh` to
   LF.
 
-Setup runbook: [deployment-phase-3-setup.md](deployment-phase-3-setup.md).
+Setup runbook: [deployment-phase-3-setup.md](deployment-phase-3-setup.md). Day-to-day
+commands: [operations.md](operations.md).
 
 **Cost:** ECR storage, a few cents.
 

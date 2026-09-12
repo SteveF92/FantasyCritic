@@ -380,6 +380,9 @@ it (`aws ssm start-session --target <PROD_INSTANCE_ID>`).
 
 ## Operating it afterwards
 
+> Superseded by [operations.md](operations.md) once an instance has been converted to
+> Docker. What follows describes the systemd stack.
+
 ### Deploying
 
 Actions → **Deploy** → Run workflow. Pick the branch or tag; that ref is what gets built.

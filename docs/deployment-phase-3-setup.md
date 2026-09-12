@@ -1,62 +1,46 @@
-# Phase 3 setup: Docker on the box
+# Phase 3 setup: converting an instance to Docker
 
-One-time setup that has to happen **before** the first containerized deploy. This is the
-AWS-console and SSH half of
+Everything that has to be true on an EC2 instance before its first containerized deploy, in
+the order it has to be true. This is the AWS-console and SSH half of
 [Phase 3](deployment-modernization-roadmap.md#phase-3-docker-on-the-box) and
-[Phase 4a](deployment-modernization-roadmap.md#phase-4a-discord-bot-as-its-own-container);
-the repository half is already committed.
+[Phase 4a](deployment-modernization-roadmap.md#phase-4a-discord-bot-as-its-own-container); the
+repository half is already committed.
 
-Placeholders, continuing from the [Phase 1 runbook](deployment-phase-1-setup.md):
+Day-to-day commands after this is done live in [operations.md](operations.md).
+
+**Part 1 is account-wide and happens once.** If beta is already running containers, skip to
+Part 2.
 
 | Placeholder | Meaning |
 |---|---|
 | `<ACCOUNT_ID>` | AWS account id |
 | `<REGION>` | `us-east-1` |
 | `<REGISTRY>` | `<ACCOUNT_ID>.dkr.ecr.<REGION>.amazonaws.com` |
-| `<BUCKET>` | The release bucket from Phase 1 |
-| `<PROD_INSTANCE_ID>` / `<BETA_INSTANCE_ID>` | The two EC2 instance ids |
+| `<INSTANCE_ID>` | The EC2 instance being converted |
+
+## What you end up with
+
+Ubuntu, Docker, nginx, certbot and the SSM agent on the box, and nothing else. Three images
+come from ECR: `web` and `discord-bot` run as services, `database-updater` runs as a one-off
+job during deploys. nginx keeps terminating TLS and proxying to `127.0.0.1:5000`, exactly as
+before.
 
 ---
 
-## What this replaces
-
-| Before (Phase 1 and 2) | After |
-|---|---|
-| A ~300 MB self-contained publish bundle in S3 | Three images in ECR; the bundle is a few kilobytes |
-| `systemd` runs `FantasyCritic.Web` from `current/web` | `docker compose up -d` runs `web` and `discord-bot` |
-| Rollback is a symlink swap | Rollback is re-running the previous release's `deploy.sh` |
-| The web process also runs the Discord command gateway | A separate `discord-bot` container does |
-| The box needs the .NET runtime shipped inside every bundle | The box needs Docker and nothing language-specific |
-
-nginx, certbot and the SSM deploy path are unchanged. The web container publishes
-`127.0.0.1:5000`, which is exactly where `api_proxy.conf` was already pointing.
-
-The Phase 2 maintenance page keeps working, and `deploy.sh` now installs
-`/etc/nginx/maintenance.conf` itself on every deploy so that snippet can no longer drift or
-go missing. The one-line `include` in the site file is still per-instance — see step 6.
-
----
+# Part 1 — account-wide, once
 
 ## 1. ECR repositories
 
-Three, one per image. Scan-on-push is free and closes a backlog item.
-
 ```bash
-for repo in fantasycritic-web fantasycritic-database-updater fantasycritic-discord-bot; do
-  aws ecr create-repository \
-    --repository-name "$repo" \
-    --region <REGION> \
-    --image-scanning-configuration scanOnPush=true \
-    --image-tag-mutability IMMUTABLE
-done
+for repo in fantasycritic-web fantasycritic-database-updater fantasycritic-discord-bot; do aws ecr create-repository --repository-name "$repo" --region <REGION> --image-scanning-configuration scanOnPush=true --image-tag-mutability IMMUTABLE; done
 ```
 
-`IMMUTABLE` is deliberate: release tags are unique timestamps, and a tag that cannot be
-overwritten means the tag recorded in `/opt/fantasy-critic/.env` always names the exact image
-that was deployed.
+`IMMUTABLE` means the tag recorded in `/opt/fantasy-critic/.env` always names the exact image
+that was deployed. Beta and production share these repositories, so an image tested on beta
+goes to production without being rebuilt.
 
-Images are a few hundred megabytes each and every deploy pushes three, so each repository
-needs a lifecycle policy or the bill grows quietly:
+Every deploy pushes three images of a few hundred megabytes, so add a lifecycle policy. Save
+this as `ecr-lifecycle.json`:
 
 ```json
 {
@@ -76,18 +60,13 @@ needs a lifecycle policy or the bill grows quietly:
 ```
 
 ```bash
-for repo in fantasycritic-web fantasycritic-database-updater fantasycritic-discord-bot; do
-  aws ecr put-lifecycle-policy --repository-name "$repo" \
-    --lifecycle-policy-text file://ecr-lifecycle.json --region <REGION>
-done
+for repo in fantasycritic-web fantasycritic-database-updater fantasycritic-discord-bot; do aws ecr put-lifecycle-policy --repository-name "$repo" --lifecycle-policy-text file://ecr-lifecycle.json --region <REGION>; done
 ```
-
-Beta and production share these repositories. Tags are unique per run, so nothing collides,
-and an image that has been tested on beta can be deployed to production without rebuilding.
 
 ## 2. IAM
 
-**The deploy role** (the one GitHub assumes via OIDC, from Phase 1) needs to push:
+**The deploy role** — the one GitHub assumes via OIDC — needs to push. If beta and production
+use separate roles, both need this:
 
 ```json
 {
@@ -121,337 +100,226 @@ and an image that has been tested on beta can be deployed to production without 
 }
 ```
 
-**The instance role** needs to pull. `ecr:GetAuthorizationToken` on `*` plus
-`ecr:BatchGetImage`, `ecr:GetDownloadUrlForLayer` and `ecr:BatchCheckLayerAvailability` on the
-three repository ARNs. The managed policy `AmazonEC2ContainerRegistryReadOnly` covers this if
-you would rather not write it out.
+**Each instance role** needs to pull — attach the managed policy
+`AmazonEC2ContainerRegistryReadOnly`.
 
-## 3. Raise the IMDSv2 hop limit — do not skip this
+Nothing changes in GitHub. The registry address comes from `aws-actions/amazon-ecr-login`,
+which derives it from the assumed role's account.
 
-Containers reach the instance IAM role through the instance metadata service. With the default
-PUT response hop limit of 1, a packet from inside a container has already used its hop getting
-out of the container network, so the metadata request is dropped. **Every process would then
-fail at startup**, because all three load their configuration from Secrets Manager.
+---
+
+# Part 2 — on the instance
+
+## 3. Raise the IMDSv2 hop limit
+
+Containers reach the instance IAM role through the instance metadata service. At the default
+hop limit of 1, a request from inside a container has already spent its hop leaving the
+container network and is dropped. Since all three processes load their configuration from
+Secrets Manager, every one of them then fails at startup. This is the most likely reason for a
+first deploy to fail.
 
 ```bash
-aws ec2 modify-instance-metadata-options \
-  --instance-id <PROD_INSTANCE_ID> \
-  --http-put-response-hop-limit 2 \
-  --http-tokens required \
-  --http-endpoint enabled \
-  --region <REGION>
+aws ec2 modify-instance-metadata-options --instance-id <INSTANCE_ID> --http-put-response-hop-limit 2 --http-tokens required --http-endpoint enabled --region <REGION>
 ```
 
-Repeat for `<BETA_INSTANCE_ID>`. Verify from inside a container on the box:
+Verify from inside a container on the box. This must print the instance role's assumed-role
+ARN rather than timing out:
 
 ```bash
 docker run --rm public.ecr.aws/aws-cli/aws-cli sts get-caller-identity
 ```
 
-That should print the instance role's assumed-role ARN. If it times out, the hop limit did not
-take effect.
-
-## 4. Install Docker on both instances
+## 4. Install Docker
 
 ```bash
-sudo apt-get update
-sudo apt-get install -y ca-certificates curl
-sudo install -m 0755 -d /etc/apt/keyrings
-sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-sudo chmod a+r /etc/apt/keyrings/docker.asc
-echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
-  https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
-  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
-sudo apt-get update
-sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+sudo apt-get update && sudo apt-get install -y ca-certificates curl
+```
+
+```bash
+sudo install -m 0755 -d /etc/apt/keyrings && sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && sudo chmod a+r /etc/apt/keyrings/docker.asc
+```
+
+```bash
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+
+```bash
+sudo apt-get update && sudo apt-get install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+```
+
+```bash
 sudo systemctl enable --now docker
 ```
 
-`systemctl enable docker` is what makes `restart: unless-stopped` bring the site back after a
-reboot. There is no application systemd unit any more.
+`systemctl enable docker` is what brings the site back after a reboot — there is no
+application systemd unit.
 
-Cap the log driver so container logs cannot fill the disk — Loki is the real destination:
+Cap the log driver so container logs cannot fill the disk. Create `/etc/docker/daemon.json`
+containing:
 
-```bash
-sudo tee /etc/docker/daemon.json > /dev/null <<'JSON'
+```json
 {
   "log-driver": "json-file",
   "log-opts": { "max-size": "20m", "max-file": "3" }
 }
-JSON
+```
+
+```bash
 sudo systemctl restart docker
 ```
 
-## 5. Prepare `/opt/fantasy-critic`
+## 5. Create `/opt/fantasy-critic/.env`
 
-The compose file, `RELEASE`, and the release directories are written by `deploy.sh`. Only the
-env file has to exist first, because it holds the things the pipeline does not know: which
-environment this box is, and which registry to pull from.
-
-**Production:**
+`deploy.sh` writes everything else in this directory. Only the env file has to exist first,
+because it holds the two things the pipeline cannot know: which environment this box is, and
+which registry to pull from.
 
 ```bash
 sudo mkdir -p /opt/fantasy-critic/releases
-sudo tee /opt/fantasy-critic/.env > /dev/null <<'ENV'
+```
+
+Create `/opt/fantasy-critic/.env` containing:
+
+```
 ASPNETCORE_ENVIRONMENT=Production
 AWS_REGION=us-east-1
 ECR_REGISTRY=<REGISTRY>
 IMAGE_TAG=
-ENV
+```
+
+```bash
 sudo chmod 600 /opt/fantasy-critic/.env
 ```
 
-**Beta** is identical except `ASPNETCORE_ENVIRONMENT=Staging` — which is what `Program.cs` maps
-to the `beta` secret in Secrets Manager.
+Beta is identical except `ASPNETCORE_ENVIRONMENT=Staging`, which is what selects the `beta`
+secret in Secrets Manager.
 
-`IMAGE_TAG` is left empty; the first deploy fills it in and every deploy after that rewrites
-it. It is also what a rollback reads to name the previous release.
+Leave `IMAGE_TAG` empty. Every deploy rewrites it, and a rollback reads it to name the
+previous release.
 
-## 6. Add the nginx `include` line
+## 6. Log directory ownership
 
-The maintenance page has two halves, and only one of them is automatic.
-
-`deploy.sh` installs `/etc/nginx/maintenance.conf` from the release bundle on every deploy,
-validates it with `nginx -t`, reverts and aborts if it does not parse, and reloads nginx only
-when the file actually changed. So the snippet itself tracks the repository and needs nothing
-from you.
-
-The **`include` line** does not, because it lives in the certbot-managed site file whose shape
-differs per instance. Add it once, inside the TLS server block, above the `location` blocks:
-
-```nginx
-server {
-    listen 443 ssl http2;
-    server_name beta.fantasycritic.games www.beta.fantasycritic.games;
-
-    include /etc/nginx/maintenance.conf;      # <-- add this
-
-    location / {
-        ...
-```
-
-Find the file with:
+The containers run as the .NET images' non-root user, uid **1654**, and Serilog writes rolling
+files to `/var/log/fantasy-critic`, which the compose file bind-mounts. A bind mount takes the
+host's ownership, so without this the file sinks write nothing:
 
 ```bash
-sudo grep -rln "server_name .*fantasycritic.games" /etc/nginx/sites-enabled/ /etc/nginx/conf.d/
+sudo mkdir -p /var/log/fantasy-critic && sudo chown -R 1654 /var/log/fantasy-critic
 ```
 
-Then:
+Loki receives everything regardless; these files are the local copy you read over SSH.
+
+## 7. Add the nginx `include` line
+
+`deploy.sh` installs `/etc/nginx/maintenance.conf` from the release bundle, validates it with
+`nginx -t`, and reloads nginx when it changes. The one thing it cannot do is edit the
+certbot-managed site file, so add a single line there by hand.
+
+Open the site config. It is in `/etc/nginx/sites-available/`, named after whatever is linked
+from `/etc/nginx/sites-enabled/` — or in `/etc/nginx/conf.d/` if `sites-enabled` is empty.
+Find this line:
+
+```nginx
+    listen 443 ssl http2; # managed by Certbot
+```
+
+and add one line directly underneath it:
+
+```nginx
+    include /etc/nginx/maintenance.conf;
+```
+
+It only has to be inside that same `server { ... }` block, which it will be. Leave the port-80
+server block alone if it only redirects to HTTPS; if it proxies to the app, give it the same
+line.
 
 ```bash
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
-Leave the plain `:80` block alone if it only redirects to HTTPS.
+If `nginx -t` fails, the line landed in the wrong place. Nothing changes on the live site until
+the reload, so a bad edit cannot take the site down.
 
-**Until this line exists, nothing else in the maintenance path does anything** — a stopped
-`web` serves a bare 502 and the flag file is inert. `deploy.sh` prints a loud warning on every
-deploy while it is missing, and the quickest check by hand reports all three halves at once:
-
-```bash
-sudo /opt/fantasy-critic/maintenance.sh status
-```
-
-```
-Maintenance page: OFF
-Page installed:    /var/www/maintenance/maintenance.html
-nginx include:     NO — nothing includes /etc/nginx/maintenance.conf, so neither the flag above
-                   nor a stopped app will show this page
-```
-
-Prove it end to end after the first deploy by stopping the site and expecting a **503**
-carrying the branded page, not a 502:
-
-```bash
-cd /opt/fantasy-critic && sudo docker compose stop web
-```
-
-```bash
-curl -sk -o /dev/null -w 'status=%{http_code} bytes=%{size_download}
-' https://<HOST>/
-```
-
-## 7. Log directory ownership
-
-The containers run as the .NET images' non-root user (uid **1654**) and Serilog writes rolling
-files to `/var/log/fantasy-critic`, which the compose file bind-mounts. A bind mount takes the
-host's ownership, so without this the file sinks silently write nothing:
-
-```bash
-sudo mkdir -p /var/log/fantasy-critic
-sudo chown -R 1654 /var/log/fantasy-critic
-```
-
-Loki still receives everything regardless; these files are the local copy you read over SSH
-when Grafana is not to hand.
+Until this line exists, a stopped `web` container serves a bad gateway instead of the
+maintenance page, and the maintenance flag does nothing at all. `deploy.sh` prints a loud
+warning on every deploy while it is missing.
 
 ## 8. Retire the systemd unit
 
-Do this **immediately before** the first containerized deploy, not earlier — until then the
-Phase 1 path is still what is serving the site.
+Do this **immediately before** the first containerized deploy — until then it is what serves
+the site.
 
 ```bash
 sudo systemctl disable --now fantasy-critic.service
-sudo rm /etc/systemd/system/fantasy-critic.service
-sudo systemctl daemon-reload
 ```
-
-`infrastructure/fantasy-critic.service` has been deleted from the repository along with it. If
-the first deploy goes badly and you need the old path back, the unit file is recoverable from
-git history and the Phase 1 release directories are still on the box:
 
 ```bash
-git show 65b173fd8:infrastructure/fantasy-critic.service
+sudo rm /etc/systemd/system/fantasy-critic.service && sudo systemctl daemon-reload
 ```
 
-## 9. GitHub configuration
-
-Phase 1 already set `AWS_ROLE_ARN`, `AWS_REGION`, `EC2_INSTANCE_ID`, `RELEASE_BUCKET`,
-`RDS_INSTANCE_IDENTIFIER` and `SITE_URL` per environment. Phase 3 adds nothing: the registry
-comes from `aws-actions/amazon-ecr-login`, which derives it from the assumed role's account.
-
-## 10. First deploy
-
-Deploy to **beta** first. It exercises the whole path — ECR pull, hop limit, log ownership, the
-env file — against a box nobody is using.
-
-```
-Actions → Deploy → Run workflow → environment: beta
-```
-
-Then production. During the run, watch for:
-
-- `Logging in to <REGISTRY>` — if this fails, the instance role cannot pull.
-- `Running database migrator` — this is the container that proves Secrets Manager works from
-  inside Docker, i.e. that step 3 took effect.
-- `Healthy.` — the web container answered `127.0.0.1:5000/health`.
-
-Afterwards, confirm both long-running containers are up and that only one bot is answering:
-
-```bash
-cd /opt/fantasy-critic && sudo docker compose ps
-```
-
-Run a slash command in Discord and check it is answered exactly once, and confirm a push
-notification still arrives (they come from the web container, not the bot).
-
-## 11. Strip the box
-
-Once a containerized deploy has held for a few days:
-
-```bash
-# The .NET runtime, if it was ever installed as a package.
-sudo apt-get purge -y 'dotnet*' 'aspnetcore*' && sudo apt-get autoremove -y
-
-# Phase 1 release directories, which held ~300 MB each.
-sudo find /opt/fantasy-critic/releases -maxdepth 2 -name web -type d -printf '%h\n' \
-  | xargs -r sudo rm -rf
-```
-
-Node, git and the NSwag tool left with Phase 1 and should already be gone.
+If the first deploy goes badly, the unit file is recoverable with
+`git show 65b173fd8:infrastructure/fantasy-critic.service`, and the pre-Phase-3 release
+directories are still under `/opt/fantasy-critic/releases/`.
 
 ---
 
-## Operating it afterwards
+# Part 3 — deploy and verify
 
-### Deploying
+## 9. Deploy
 
-Unchanged: Actions → **Deploy** → Run workflow, pick the ref and the environment.
-
-### Rolling back
-
-Every release directory keeps its own `deploy.sh` and the compose file it shipped with, so a
-rollback restores both:
-
-```bash
-ls /opt/fantasy-critic/releases
-sudo FC_SKIP_MIGRATIONS=true /opt/fantasy-critic/releases/<previous-id>/deploy.sh
+```
+Actions → Deploy → Run workflow → Use workflow from: <ref> → environment: production
 ```
 
-`FC_SKIP_MIGRATIONS=true` matters: the migrator only rolls forward. If the failed deploy ran
-migrations, restore the pre-deploy RDS snapshot as well — the workflow names it in the run
-summary.
+The branch selector defaults to the repository's default branch, and the workflow that runs is
+the one on the ref you pick. Choose it deliberately.
 
-### Starting and stopping
+Three lines in the run are worth watching:
 
-All of these run from `/opt/fantasy-critic`, where Compose finds `docker-compose.yaml` and
-`.env`. The project is `fantasy-critic` and the two long-running services are `web` and
-`discord-bot`.
+| Line | Proves |
+|---|---|
+| `Logging in to <REGISTRY>` | the instance role can pull |
+| `Running database migrator` | Secrets Manager works from inside a container, so step 3 took effect |
+| `Healthy.` | `web` answered `127.0.0.1:5000/health` |
+
+## 10. Verify
 
 ```bash
 cd /opt/fantasy-critic && sudo docker compose ps
 ```
 
-```bash
-cd /opt/fantasy-critic && sudo docker compose stop web
-```
-
-```bash
-cd /opt/fantasy-critic && sudo docker compose start web
-```
-
-Substitute `discord-bot` for the bot, name both to act on both, or `restart` in place of
-`stop`/`start`. To pick up an edited compose file or `.env`, recreate rather than restart:
-
-```bash
-cd /opt/fantasy-critic && sudo docker compose up -d --force-recreate web discord-bot
-```
-
-Two things to know:
-
-- **Always name the services.** A bare `docker compose up -d` is safe only because
-  `database-updater` sits behind a profile; naming them is the habit that keeps it safe if that
-  ever changes.
-- **`restart: unless-stopped` means a container you stopped by hand stays stopped** across a
-  reboot or a Docker restart. That is what you want for planned work, but nothing will bring it
-  back for you.
-
-Stopping `web` shows the maintenance page on its own: nginx gets a connection refused and
-`error_page 502 503 =503` maps it to the branded page. That only holds if step 6 was done.
-
-### Reading logs
-
-```bash
-cd /opt/fantasy-critic && sudo docker compose logs -f web
-```
-
-```bash
-cd /opt/fantasy-critic && sudo docker compose logs -f discord-bot
-```
-
-```bash
-sudo tail -f /var/log/fantasy-critic/web/log-my.txt
-```
-
-### Forcing the maintenance page for planned work
-
-The script and the page are installed at fixed paths by every deploy, so this needs no release
-id:
-
-```bash
-sudo /opt/fantasy-critic/maintenance.sh on
-```
-
-```bash
-sudo /opt/fantasy-critic/maintenance.sh off
-```
+`web` and `discord-bot` up. `database-updater` will not be listed — it is a job, not a service.
 
 ```bash
 sudo /opt/fantasy-critic/maintenance.sh status
 ```
 
-`status` reports both whether the flag is raised and whether the page is actually installed,
-which is the quicker of the two halves to get wrong.
-
-### Running the migrator on its own
+All three lines should be healthy, in particular `nginx include: /etc/nginx/maintenance.conf`.
 
 ```bash
-cd /opt/fantasy-critic && sudo docker compose run --rm database-updater
+curl -sS -o /dev/null -w 'ready=%{http_code}\n' http://127.0.0.1:5000/health/ready
 ```
 
-That works despite the `migrate` profile — explicitly targeting a profiled service enables its
-profile. Take a snapshot first, and stop `web` first if the migration is not backward
-compatible, which by the project's own convention it is not.
+`200` proves the database connection, not merely that the process is serving.
+
+Then load the site in a browser, run a Discord slash command and confirm it is answered exactly
+once, and confirm a push notification still arrives — those come from the `web` container, not
+the bot.
+
+## 11. Strip the box
+
+Once the containerized deploy has held for a few days:
+
+```bash
+sudo apt-get purge -y 'dotnet*' 'aspnetcore*' && sudo apt-get autoremove -y
+```
+
+```bash
+sudo find /opt/fantasy-critic/releases -maxdepth 2 -name web -type d -printf '%h\n' | xargs -r sudo rm -rf
+```
+
+The second command removes pre-Phase-3 release directories, which held a few hundred megabytes
+each. Node, git and the NSwag tool should already be gone.
 
 ---
 
@@ -460,6 +328,6 @@ compatible, which by the project's own convention it is not.
 - **nginx and certbot stay on the host.** They leave in Phase 5, when the ALB terminates TLS.
 - **The maintenance page stays an nginx flag file.** It becomes an ALB listener rule in Phase 5.
 - **`/opt/fantasy-critic/.env` stays hand-written.** Phase 5's launch template writes it from
-  user-data, and Phase 6 drops it entirely for task definitions.
+  user-data; Phase 6 drops it for task definitions.
 - **The instance is still hand-configured.** Everything above is what Phase 5 turns into
-  Terraform and user-data.
+  Terraform.
