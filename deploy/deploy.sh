@@ -173,8 +173,11 @@ else
     : > "$RELEASE_FILE"
 fi
 
+# --profile migrate is what makes this pull the migrator image too. A plain `pull` only covers
+# services with no profile, which would leave the migrator to download later — during the
+# downtime window, which is the one place this script tries never to do slow work.
 log "Pulling images tagged $IMAGE_TAG"
-compose pull --quiet
+compose --profile migrate pull --quiet
 
 # ------------------------------------------------------------------------------------------
 # Stop

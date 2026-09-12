@@ -22,6 +22,14 @@ services:
   database-updater:
     image: ${ECR_REGISTRY}/fantasycritic-database-updater:${IMAGE_TAG}
     restart: "no"
+    # Behind a profile so that a bare `docker compose up -d` cannot run migrations. Without it
+    # the migrator is an ordinary service and that command starts it against the live database
+    # while the site is up, which is the most expensive typo available on this box. Explicitly
+    # targeting it still works and does not need the profile named:
+    #   docker compose run --rm database-updater
+    # Anything that pulls images, though, does need it — a plain `pull` silently skips profiled
+    # services, which would move the migrator's download inside the downtime window.
+    profiles: [migrate]
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       AWS__region: ${AWS_REGION}
