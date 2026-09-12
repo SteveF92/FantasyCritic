@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 #
-# Maintenance page control. Ships inside the release bundle alongside the page itself and
-# deploy.sh, so on the instance this is:
+# Maintenance page control. Ships inside the release bundle alongside the page itself, and
+# deploy.sh installs both to fixed paths, so on the instance this is:
 #
-#   sudo /opt/fantasy-critic/current/maintenance.sh on
-#   sudo /opt/fantasy-critic/current/maintenance.sh off
-#   /opt/fantasy-critic/current/maintenance.sh status
+#   sudo /opt/fantasy-critic/maintenance.sh on
+#   sudo /opt/fantasy-critic/maintenance.sh off
+#   /opt/fantasy-critic/maintenance.sh status
+#
+# `install` copies the page from whatever directory this script is sitting in, so the two
+# files have to stay together.
 #
 # deploy.sh calls `install` and `on` before stopping the service and `off` once the new
 # release reports healthy. The other reason to use it is planned work: turn the page on by

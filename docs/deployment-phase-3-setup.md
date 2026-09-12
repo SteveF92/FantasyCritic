@@ -28,9 +28,12 @@ Placeholders, continuing from the [Phase 1 runbook](deployment-phase-1-setup.md)
 | The web process also runs the Discord command gateway | A separate `discord-bot` container does |
 | The box needs the .NET runtime shipped inside every bundle | The box needs Docker and nothing language-specific |
 
-nginx, certbot, the Phase 2 maintenance page, and the SSM deploy path are all unchanged. The
-web container publishes `127.0.0.1:5000`, which is exactly where `api_proxy.conf` was already
-pointing.
+nginx, certbot and the SSM deploy path are unchanged. The web container publishes
+`127.0.0.1:5000`, which is exactly where `api_proxy.conf` was already pointing.
+
+The Phase 2 maintenance page is unchanged **as code**, but its nginx half was a manual,
+per-instance step, so confirm it was actually done on the instance you are converting — see
+step 6 below. It is easy to assume "unchanged" means "present".
 
 ---
 
@@ -204,7 +207,37 @@ to the `beta` secret in Secrets Manager.
 `IMAGE_TAG` is left empty; the first deploy fills it in and every deploy after that rewrites
 it. It is also what a rollback reads to name the previous release.
 
-## 6. Log directory ownership
+## 6. Confirm the Phase 2 nginx include is on this instance
+
+The maintenance page has two halves. `maintenance.sh` ships in every release and handles the
+flag file and the HTML. The half that turns a stopped container into that page lives in nginx,
+and installing it was a **manual, per-instance step** in
+[Phase 2](deployment-phase-2-setup.md) — so an instance that was powered off when Phase 2 went
+out does not have it, and nothing in this phase adds it.
+
+Without it, stopping `web` serves a bare 502 instead of the page, and raising the flag does
+nothing at all. Check:
+
+```bash
+sudo nginx -T 2>/dev/null | grep -n maintenance
+```
+
+Expect to see both the `include` line and the `location = /__maintenance.html` block. Nothing
+back means it was never installed; do [Phase 2 steps 2 and 3](deployment-phase-2-setup.md) on
+this instance, then:
+
+```bash
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+Prove it end to end after the first deploy by stopping the site and expecting a **503**
+carrying the branded page, not a 502:
+
+```bash
+cd /opt/fantasy-critic && sudo docker compose stop web
+```
+
+## 7. Log directory ownership
 
 The containers run as the .NET images' non-root user (uid **1654**) and Serilog writes rolling
 files to `/var/log/fantasy-critic`, which the compose file bind-mounts. A bind mount takes the
@@ -218,7 +251,7 @@ sudo chown -R 1654 /var/log/fantasy-critic
 Loki still receives everything regardless; these files are the local copy you read over SSH
 when Grafana is not to hand.
 
-## 7. Retire the systemd unit
+## 8. Retire the systemd unit
 
 Do this **immediately before** the first containerized deploy, not earlier — until then the
 Phase 1 path is still what is serving the site.
@@ -237,13 +270,13 @@ git history and the Phase 1 release directories are still on the box:
 git show 65b173fd8:infrastructure/fantasy-critic.service
 ```
 
-## 8. GitHub configuration
+## 9. GitHub configuration
 
 Phase 1 already set `AWS_ROLE_ARN`, `AWS_REGION`, `EC2_INSTANCE_ID`, `RELEASE_BUCKET`,
 `RDS_INSTANCE_IDENTIFIER` and `SITE_URL` per environment. Phase 3 adds nothing: the registry
 comes from `aws-actions/amazon-ecr-login`, which derives it from the assumed role's account.
 
-## 9. First deploy
+## 10. First deploy
 
 Deploy to **beta** first. It exercises the whole path — ECR pull, hop limit, log ownership, the
 env file — against a box nobody is using.
@@ -268,7 +301,7 @@ cd /opt/fantasy-critic && sudo docker compose ps
 Run a slash command in Discord and check it is answered exactly once, and confirm a push
 notification still arrives (they come from the web container, not the bot).
 
-## 10. Strip the box
+## 11. Strip the box
 
 Once a containerized deploy has held for a few days:
 
@@ -305,23 +338,76 @@ sudo FC_SKIP_MIGRATIONS=true /opt/fantasy-critic/releases/<previous-id>/deploy.s
 migrations, restore the pre-deploy RDS snapshot as well — the workflow names it in the run
 summary.
 
+### Starting and stopping
+
+All of these run from `/opt/fantasy-critic`, where Compose finds `docker-compose.yaml` and
+`.env`. The project is `fantasy-critic` and the two long-running services are `web` and
+`discord-bot`.
+
+```bash
+cd /opt/fantasy-critic && sudo docker compose ps
+```
+
+```bash
+cd /opt/fantasy-critic && sudo docker compose stop web
+```
+
+```bash
+cd /opt/fantasy-critic && sudo docker compose start web
+```
+
+Substitute `discord-bot` for the bot, name both to act on both, or `restart` in place of
+`stop`/`start`. To pick up an edited compose file or `.env`, recreate rather than restart:
+
+```bash
+cd /opt/fantasy-critic && sudo docker compose up -d --force-recreate web discord-bot
+```
+
+Two things to know:
+
+- **Always name the services.** A bare `docker compose up -d` is safe only because
+  `database-updater` sits behind a profile; naming them is the habit that keeps it safe if that
+  ever changes.
+- **`restart: unless-stopped` means a container you stopped by hand stays stopped** across a
+  reboot or a Docker restart. That is what you want for planned work, but nothing will bring it
+  back for you.
+
+Stopping `web` shows the maintenance page on its own: nginx gets a connection refused and
+`error_page 502 503 =503` maps it to the branded page. That only holds if step 6 was done.
+
 ### Reading logs
 
 ```bash
-cd /opt/fantasy-critic
-sudo docker compose logs -f web
-sudo docker compose logs -f discord-bot
+cd /opt/fantasy-critic && sudo docker compose logs -f web
+```
+
+```bash
+cd /opt/fantasy-critic && sudo docker compose logs -f discord-bot
+```
+
+```bash
 sudo tail -f /var/log/fantasy-critic/web/log-my.txt
 ```
 
 ### Forcing the maintenance page for planned work
 
-Unchanged from Phase 2, and the script still ships in every release:
+The script and the page are installed at fixed paths by every deploy, so this needs no release
+id:
 
 ```bash
-sudo /opt/fantasy-critic/releases/<current-id>/maintenance.sh on
-sudo /opt/fantasy-critic/releases/<current-id>/maintenance.sh off
+sudo /opt/fantasy-critic/maintenance.sh on
 ```
+
+```bash
+sudo /opt/fantasy-critic/maintenance.sh off
+```
+
+```bash
+sudo /opt/fantasy-critic/maintenance.sh status
+```
+
+`status` reports both whether the flag is raised and whether the page is actually installed,
+which is the quicker of the two halves to get wrong.
 
 ### Running the migrator on its own
 
@@ -329,8 +415,9 @@ sudo /opt/fantasy-critic/releases/<current-id>/maintenance.sh off
 cd /opt/fantasy-critic && sudo docker compose run --rm database-updater
 ```
 
-Take a snapshot first, and stop `web` first if the migration is not backward compatible —
-which, by the project's own convention, it is not.
+That works despite the `migrate` profile — explicitly targeting a profiled service enables its
+profile. Take a snapshot first, and stop `web` first if the migration is not backward
+compatible, which by the project's own convention it is not.
 
 ---
 

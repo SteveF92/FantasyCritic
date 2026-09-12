@@ -6,6 +6,8 @@ is already committed; this is the nginx edit on each box.
 
 Do it on **beta first**, then production.
 
+Because this is a per-instance edit rather than anything the pipeline carries, an instance that was powered off when this went out silently does not have it — and the symptom only shows up the next time something stops the app. Phase 3's runbook has a check for exactly that.
+
 ---
 
 ## What changes
@@ -49,10 +51,13 @@ config reads it yet, so the window looks exactly like it does now.
 Afterwards, confirm the page landed:
 
 ```bash
-/opt/fantasy-critic/current/maintenance.sh status
+/opt/fantasy-critic/maintenance.sh status
 ```
 
 ## 2. Install the nginx snippet
+
+This is the half that lives on the box rather than in the repository, and the half an
+instance can silently be missing.
 
 ```bash
 sudo cp nginx_maintenance.conf /etc/nginx/maintenance.conf
@@ -91,14 +96,14 @@ sudo nginx -t && sudo systemctl reload nginx
 With the site up:
 
 ```bash
-sudo /opt/fantasy-critic/current/maintenance.sh on
+sudo /opt/fantasy-critic/maintenance.sh on
 curl -si https://www.fantasycritic.games/ | head -5   # 503, Retry-After: 300
 ```
 
 Load it in a browser too — that is the only way to catch a page that renders wrong. Then:
 
 ```bash
-sudo /opt/fantasy-critic/current/maintenance.sh off
+sudo /opt/fantasy-critic/maintenance.sh off
 curl -si https://www.fantasycritic.games/health | head -1   # 200
 ```
 
