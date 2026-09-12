@@ -22,6 +22,7 @@ set -euo pipefail
 readonly FLAG=/var/www/maintenance.on
 readonly PAGE_DIR=/var/www/maintenance
 readonly PAGE="$PAGE_DIR/maintenance.html"
+readonly SNIPPET=/etc/nginx/maintenance.conf
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
@@ -87,6 +88,19 @@ case "${1:-}" in
             echo "Page installed:    $PAGE"
         else
             echo "Page installed:    NO — $PAGE is missing, nginx would serve a bare 503"
+        fi
+
+        # The half that is easiest to be missing without noticing: the file can be present and
+        # still not loaded by any server block, in which case nothing above has any effect.
+        if ! command -v nginx >/dev/null 2>&1; then
+            echo "nginx include:     unknown (no nginx on PATH)"
+        elif [ "$(id -u)" -ne 0 ]; then
+            echo "nginx include:     unknown (re-run with sudo; reading the config needs root)"
+        elif nginx -T 2>/dev/null | grep -q "configuration file $SNIPPET"; then
+            echo "nginx include:     $SNIPPET"
+        else
+            echo "nginx include:     NO — nothing includes $SNIPPET, so neither the flag above"
+            echo "                   nor a stopped app will show this page"
         fi
         ;;
 

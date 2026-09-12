@@ -56,8 +56,9 @@ Afterwards, confirm the page landed:
 
 ## 2. Install the nginx snippet
 
-This is the half that lives on the box rather than in the repository, and the half an
-instance can silently be missing.
+As of Phase 3 `deploy.sh` installs this file from the release bundle on every deploy, so on
+any instance that has had a containerized deploy it is already there and already matches the
+repository. Do this by hand only on a box that has not.
 
 ```bash
 sudo cp nginx_maintenance.conf /etc/nginx/maintenance.conf

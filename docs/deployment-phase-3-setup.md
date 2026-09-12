@@ -31,9 +31,9 @@ Placeholders, continuing from the [Phase 1 runbook](deployment-phase-1-setup.md)
 nginx, certbot and the SSM deploy path are unchanged. The web container publishes
 `127.0.0.1:5000`, which is exactly where `api_proxy.conf` was already pointing.
 
-The Phase 2 maintenance page is unchanged **as code**, but its nginx half was a manual,
-per-instance step, so confirm it was actually done on the instance you are converting — see
-step 6 below. It is easy to assume "unchanged" means "present".
+The Phase 2 maintenance page keeps working, and `deploy.sh` now installs
+`/etc/nginx/maintenance.conf` itself on every deploy so that snippet can no longer drift or
+go missing. The one-line `include` in the site file is still per-instance — see step 6.
 
 ---
 
@@ -207,27 +207,56 @@ to the `beta` secret in Secrets Manager.
 `IMAGE_TAG` is left empty; the first deploy fills it in and every deploy after that rewrites
 it. It is also what a rollback reads to name the previous release.
 
-## 6. Confirm the Phase 2 nginx include is on this instance
+## 6. Add the nginx `include` line
 
-The maintenance page has two halves. `maintenance.sh` ships in every release and handles the
-flag file and the HTML. The half that turns a stopped container into that page lives in nginx,
-and installing it was a **manual, per-instance step** in
-[Phase 2](deployment-phase-2-setup.md) — so an instance that was powered off when Phase 2 went
-out does not have it, and nothing in this phase adds it.
+The maintenance page has two halves, and only one of them is automatic.
 
-Without it, stopping `web` serves a bare 502 instead of the page, and raising the flag does
-nothing at all. Check:
+`deploy.sh` installs `/etc/nginx/maintenance.conf` from the release bundle on every deploy,
+validates it with `nginx -t`, reverts and aborts if it does not parse, and reloads nginx only
+when the file actually changed. So the snippet itself tracks the repository and needs nothing
+from you.
 
-```bash
-sudo nginx -T 2>/dev/null | grep -n maintenance
+The **`include` line** does not, because it lives in the certbot-managed site file whose shape
+differs per instance. Add it once, inside the TLS server block, above the `location` blocks:
+
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name beta.fantasycritic.games www.beta.fantasycritic.games;
+
+    include /etc/nginx/maintenance.conf;      # <-- add this
+
+    location / {
+        ...
 ```
 
-Expect to see both the `include` line and the `location = /__maintenance.html` block. Nothing
-back means it was never installed; do [Phase 2 steps 2 and 3](deployment-phase-2-setup.md) on
-this instance, then:
+Find the file with:
+
+```bash
+sudo grep -rln "server_name .*fantasycritic.games" /etc/nginx/sites-enabled/ /etc/nginx/conf.d/
+```
+
+Then:
 
 ```bash
 sudo nginx -t && sudo systemctl reload nginx
+```
+
+Leave the plain `:80` block alone if it only redirects to HTTPS.
+
+**Until this line exists, nothing else in the maintenance path does anything** — a stopped
+`web` serves a bare 502 and the flag file is inert. `deploy.sh` prints a loud warning on every
+deploy while it is missing, and the quickest check by hand reports all three halves at once:
+
+```bash
+sudo /opt/fantasy-critic/maintenance.sh status
+```
+
+```
+Maintenance page: OFF
+Page installed:    /var/www/maintenance/maintenance.html
+nginx include:     NO — nothing includes /etc/nginx/maintenance.conf, so neither the flag above
+                   nor a stopped app will show this page
 ```
 
 Prove it end to end after the first deploy by stopping the site and expecting a **503**
@@ -235,6 +264,11 @@ carrying the branded page, not a 502:
 
 ```bash
 cd /opt/fantasy-critic && sudo docker compose stop web
+```
+
+```bash
+curl -sk -o /dev/null -w 'status=%{http_code} bytes=%{size_download}
+' https://<HOST>/
 ```
 
 ## 7. Log directory ownership

@@ -133,6 +133,9 @@ jobs:
           cp infrastructure/docker-compose-production.yaml bundle/docker-compose.yaml
           cp deploy/maintenance.sh bundle/maintenance.sh
           cp infrastructure/maintenance.html bundle/maintenance.html
+          # deploy.sh installs this to /etc/nginx/maintenance.conf, so the snippet on the box
+          # tracks the repository instead of being a copy pasted there once by hand.
+          cp infrastructure/nginx_maintenance.conf bundle/nginx_maintenance.conf
           chmod +x bundle/deploy.sh bundle/maintenance.sh
           # The site reads this file at startup and shows it in the admin console, so keep the
           # keys in sync with BuildInfoReader in the web project.

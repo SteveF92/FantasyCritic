@@ -21,6 +21,10 @@
 #     maintenance.html           sudo /opt/fantasy-critic/maintenance.sh on|off|status
 #     releases/<release-id>/   the extracted bundle, kept so an old release can redeploy itself
 #
+# It also installs /etc/nginx/maintenance.conf from the bundle, so that snippet tracks the
+# repository. The one `include` line in the certbot-managed site file stays manual; this script
+# warns loudly when nothing loads the snippet.
+#
 # Rolling back is running the previous release's copy of this script, which puts back both its
 # image tag and its compose file:
 #
@@ -41,6 +45,7 @@ readonly RELEASES_DIR="$APP_ROOT/releases"
 readonly COMPOSE_FILE="$APP_ROOT/docker-compose.yaml"
 readonly ENV_FILE="$APP_ROOT/.env"
 readonly RELEASE_FILE="$APP_ROOT/RELEASE"
+readonly NGINX_SNIPPET=/etc/nginx/maintenance.conf
 readonly HEALTH_URL=http://127.0.0.1:5000/health
 readonly KEEP_RELEASES="${FC_KEEP_RELEASES:-10}"
 
@@ -65,6 +70,85 @@ fail() {
 
 compose() {
     docker compose --project-directory "$APP_ROOT" -f "$COMPOSE_FILE" "$@"
+}
+
+# Keeps /etc/nginx/maintenance.conf in step with the repository.
+#
+# This used to be a copy someone pasted onto the box once, which meant an instance that was
+# powered off when Phase 2 went out silently never got it — and the only symptom was a bad
+# gateway instead of the maintenance page, months later, during a deploy. Shipping it in the
+# bundle makes the snippet a code change like any other.
+#
+# The `include` line in the site file stays manual: that file is certbot-managed and its shape
+# differs per instance, so this reports on it rather than editing it.
+install_nginx_snippet() {
+    if ! command -v nginx >/dev/null 2>&1; then
+        log "No nginx on this host; skipping the maintenance snippet."
+        return 0
+    fi
+
+    local source="$RELEASE_DIR/nginx_maintenance.conf"
+    if [ ! -f "$source" ]; then
+        log "WARNING: this bundle has no nginx_maintenance.conf; leaving $NGINX_SNIPPET as it is."
+        return 0
+    fi
+
+    if [ -f "$NGINX_SNIPPET" ] && cmp -s "$source" "$NGINX_SNIPPET"; then
+        log "nginx maintenance snippet already matches this release."
+    else
+        log "Installing $NGINX_SNIPPET"
+        local backup=""
+        if [ -f "$NGINX_SNIPPET" ]; then
+            backup="$NGINX_SNIPPET.deploy-backup"
+            cp -p "$NGINX_SNIPPET" "$backup"
+        fi
+        install -m 644 "$source" "$NGINX_SNIPPET"
+
+        # A snippet that does not parse would take the site down at the next reload — including
+        # a reload nobody remembers doing, weeks later. Validate here, put the old one back if
+        # it fails, and stop before anything else is touched.
+        if ! nginx -t >/dev/null 2>&1; then
+            # Capture why while the bad file is still in place. Running `nginx -t` after the
+            # revert would report the restored config as fine, immediately above an error
+            # saying it failed.
+            local nginx_error
+            nginx_error="$(nginx -t 2>&1 || true)"
+            if [ -n "$backup" ]; then
+                mv -f "$backup" "$NGINX_SNIPPET"
+            else
+                rm -f "$NGINX_SNIPPET"
+            fi
+            printf '%s\n' "$nginx_error" >&2
+            fail "The nginx maintenance snippet in this release fails 'nginx -t'. Reverted; the site has not been touched."
+        fi
+        rm -f "$backup"
+        systemctl reload nginx
+        log "nginx reloaded."
+    fi
+
+    # `nginx -T` prints a "# configuration file <path>:" header for every file it actually
+    # loads, so this is asking whether a server block really includes it, not whether it exists.
+    if nginx -T 2>/dev/null | grep -q "configuration file $NGINX_SNIPPET"; then
+        log "nginx includes the maintenance snippet."
+        return 0
+    fi
+
+    cat >&2 <<WARN
+
+  ======================================================================
+  WARNING: no server block includes $NGINX_SNIPPET
+
+  The file is installed and valid, but nothing loads it, so this deploy
+  will show a bad gateway instead of the maintenance page.
+
+  Add this line inside the TLS server block, above the location blocks:
+
+      include $NGINX_SNIPPET;
+
+  then: sudo nginx -t && sudo systemctl reload nginx
+  ======================================================================
+
+WARN
 }
 
 # `docker compose ps --status` is too new to rely on across compose plugin versions, so ask
@@ -170,6 +254,10 @@ install -m 644 "$RELEASE_DIR/docker-compose.yaml" "$COMPOSE_FILE"
 # copy that shipped with the release it is rolling back to.
 install -m 755 "$RELEASE_DIR/maintenance.sh" "$MAINTENANCE"
 install -m 644 "$RELEASE_DIR/maintenance.html" "$APP_ROOT/maintenance.html"
+
+# Before the page is needed, and before anything is stopped: a failure here must not leave the
+# site down.
+install_nginx_snippet
 
 if grep -qE '^IMAGE_TAG=' "$ENV_FILE"; then
     sed -i -E "s|^IMAGE_TAG=.*|IMAGE_TAG=$IMAGE_TAG|" "$ENV_FILE"
