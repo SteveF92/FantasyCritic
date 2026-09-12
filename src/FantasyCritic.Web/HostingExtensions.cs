@@ -1,4 +1,3 @@
-using System.Net;
 using System.Runtime.InteropServices;
 using System.Text.Json;
 using FantasyCritic.AWS;
@@ -242,8 +241,9 @@ public static class HostingExtensions
         {
             services.Configure<ForwardedHeadersOptions>(options =>
             {
-                options.KnownProxies.Add(IPAddress.Parse("127.0.0.1"));
                 options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
+                options.KnownIPNetworks.Clear();
+                options.KnownProxies.Clear();
             });
         }
 
