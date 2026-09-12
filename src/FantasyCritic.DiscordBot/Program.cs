@@ -1,101 +1,86 @@
-using System.Reflection;
-using Discord;
-using Discord.Interactions;
-using Discord.WebSocket;
-using DiscordDotNetUtilities;
-using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.Hosting;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Discord.Handlers;
-using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Services;
-using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.DapperTypeMaps;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using NodaTime;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 
 namespace FantasyCritic.DiscordBot;
 
-public class Program
+public static class Program
 {
-    private readonly ServiceProvider _serviceProvider;
-    private readonly DiscordSocketConfig _socketConfig = new()
+    public static async Task<int> Main()
     {
-        GatewayIntents = GatewayIntents.AllUnprivileged
-    };
+        var loggingPaths = LoggingPaths.DiscordBot;
 
-    public Program()
-    {
-        ConfigureLogging();
+        var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
+        {
+            EnvironmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
+                              ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            ContentRootPath = AppContext.BaseDirectory
+        });
 
-        var configuration = new ConfigurationBuilder()
-            .SetBasePath(Directory.GetCurrentDirectory())
-            .AddJsonFile("appsettings.json")
-            .AddUserSecrets(Assembly.GetExecutingAssembly(), true)
-            .Build();
+        Log.Logger = CreateLogger(loggingPaths, builder.Environment, configuration: null);
 
-        var fantasyCriticSettings = configuration.GetSection("FantasyCriticSettings").Get<FantasyCriticSettings>()!;
-        ulong? devDiscordServerID = configuration.GetValue<ulong?>("DevDiscordServerId");
+        try
+        {
+            DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
+            Log.Information("Starting Discord bot in {EnvironmentName} mode.", builder.Environment.EnvironmentName);
 
-        var fantasyCriticDiscordConfiguration = new FantasyCriticDiscordConfiguration(configuration.GetValue<string>("BotToken")!, fantasyCriticSettings.BaseAddress, true, devDiscordServerID);
+            var configuration = await FantasyCriticConfigurationLoader.Load(builder.Environment);
 
-        var repositoryConfiguration = new RepositoryConfiguration(configuration["ConnectionString"]!, SystemClock.Instance);
+            //Loki credentials live in the secret store, so the real logger cannot be built until now.
+            Log.Logger = CreateLogger(loggingPaths, builder.Environment, configuration);
 
-        _serviceProvider = new ServiceCollection()
-            .AddSingleton(configuration)
-            .AddSingleton(fantasyCriticSettings)
-            .AddSingleton(fantasyCriticDiscordConfiguration)
-            .AddSingleton(_socketConfig)
-            .AddTransient<IClock>(_ => SystemClock.Instance)
-            .AddSingleton<DiscordSocketClient>()
-            .AddSingleton(x => new InteractionService(x.GetRequiredService<DiscordSocketClient>()))
-            .AddSingleton<DiscordBotService>()
-            .AddSingleton(repositoryConfiguration)
-            .AddScoped<IDiscordRepo, MySQLDiscordRepo>()
-            .AddScoped<DiscordPushService>()
-            .AddScoped<IMasterGameRepo, MySQLMasterGameRepo>()
-            .AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>()
-            .AddScoped<IUserStore<FantasyCriticUser>, MySQLFantasyCriticUserStore>()
-            .AddScoped<IFantasyCriticRepo, MySQLFantasyCriticRepo>()
-            .AddScoped<ICombinedDataRepo, MySQLCombinedDataRepo>()
-            .AddScoped<IConferenceRepo, MySQLConferenceRepo>()
-            .AddScoped<ConferenceService>()
-            .AddScoped<InterLeagueService>()
-            .AddScoped<PublisherService>()
-            .AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>()
-            .AddScoped<GameSearchingService>()
-            .AddScoped<GameAcquisitionService>()
-            .AddScoped<IDiscordFormatter, DiscordFormatter>()
-            .AddScoped<RoleHandler>()
-            .BuildServiceProvider();
+            var botToken = configuration["BotToken"];
+            if (string.IsNullOrWhiteSpace(botToken) || botToken == "secret")
+            {
+                Log.Fatal("No Discord bot token is configured.");
+                return 1;
+            }
+
+            builder.ConfigureContainer(new DefaultServiceProviderFactory(new ServiceProviderOptions
+            {
+                ValidateOnBuild = true,
+                ValidateScopes = true
+            }));
+
+            builder.Configuration.AddConfiguration(configuration);
+            builder.Logging.ClearProviders();
+            builder.Logging.AddSerilog(Log.Logger);
+
+            builder.Services.AddFantasyCriticCore(configuration, builder.Environment);
+            builder.Services.AddFantasyCriticIdentityCore();
+            builder.Services.AddFantasyCriticDiscordBot(configuration);
+
+            await builder.Build().RunAsync();
+            return 0;
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Discord bot terminated unexpectedly");
+            return 1;
+        }
+        finally
+        {
+            await Log.CloseAndFlushAsync();
+        }
     }
 
-    public static async Task Main(string[] args)
+    private static Serilog.Core.Logger CreateLogger(LoggingPaths loggingPaths, IHostEnvironment environment, IConfiguration? configuration)
     {
-        DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
-        await new Program().RunAsync();
-    }
+        var loggerConfiguration = FantasyCriticLogging
+            .CreateConfiguration(loggingPaths, LogEventLevel.Information)
+            .WriteToApplicationLogFile(loggingPaths);
 
-    public async Task RunAsync()
-    {
-        await _serviceProvider
-            .GetRequiredService<DiscordBotService>()
-            .InitializeBotAsync();
-        await Task.Delay(Timeout.Infinite);
-    }
+        if (configuration is not null && !environment.IsDevelopment())
+        {
+            loggerConfiguration = loggerConfiguration.WriteToGrafanaLoki(environment, configuration);
+        }
 
-    private static void ConfigureLogging()
-    {
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            .Enrich.FromLogContext()
-            .WriteTo.Console()
-            .CreateLogger();
+        return loggerConfiguration.CreateLogger();
     }
 }

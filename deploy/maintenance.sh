@@ -1,11 +1,14 @@
 #!/usr/bin/env bash
 #
-# Maintenance page control. Ships inside the release bundle alongside the page itself and
-# deploy.sh, so on the instance this is:
+# Maintenance page control. Ships inside the release bundle alongside the page itself, and
+# deploy.sh installs both to fixed paths, so on the instance this is:
 #
-#   sudo /opt/fantasy-critic/current/maintenance.sh on
-#   sudo /opt/fantasy-critic/current/maintenance.sh off
-#   /opt/fantasy-critic/current/maintenance.sh status
+#   sudo /opt/fantasy-critic/maintenance.sh on
+#   sudo /opt/fantasy-critic/maintenance.sh off
+#   /opt/fantasy-critic/maintenance.sh status
+#
+# `install` copies the page from whatever directory this script is sitting in, so the two
+# files have to stay together.
 #
 # deploy.sh calls `install` and `on` before stopping the service and `off` once the new
 # release reports healthy. The other reason to use it is planned work: turn the page on by
@@ -19,6 +22,7 @@ set -euo pipefail
 readonly FLAG=/var/www/maintenance.on
 readonly PAGE_DIR=/var/www/maintenance
 readonly PAGE="$PAGE_DIR/maintenance.html"
+readonly SNIPPET=/etc/nginx/maintenance.conf
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly SCRIPT_DIR
@@ -84,6 +88,19 @@ case "${1:-}" in
             echo "Page installed:    $PAGE"
         else
             echo "Page installed:    NO — $PAGE is missing, nginx would serve a bare 503"
+        fi
+
+        # The half that is easiest to be missing without noticing: the file can be present and
+        # still not loaded by any server block, in which case nothing above has any effect.
+        if ! command -v nginx >/dev/null 2>&1; then
+            echo "nginx include:     unknown (no nginx on PATH)"
+        elif [ "$(id -u)" -ne 0 ]; then
+            echo "nginx include:     unknown (re-run with sudo; reading the config needs root)"
+        elif nginx -T 2>/dev/null | grep -q "configuration file $SNIPPET"; then
+            echo "nginx include:     $SNIPPET"
+        else
+            echo "nginx include:     NO — nothing includes $SNIPPET, so neither the flag above"
+            echo "                   nor a stopped app will show this page"
         fi
         ;;
 

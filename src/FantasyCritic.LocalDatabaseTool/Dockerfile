@@ -1,29 +1,28 @@
-# See https://aka.ms/customizecontainer to learn how to customize your debug container and how Visual Studio uses this Dockerfile to build your images for faster debugging.
+# Seeds a development database with game data. Development only — this image is not deployed.
+# Build from the REPOSITORY ROOT:
+#
+#   docker build -f src/FantasyCritic.LocalDatabaseTool/Dockerfile .
 
-# This stage is used when running from VS in fast mode (Default for Debug configuration)
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
 WORKDIR /app
 
 
-# This stage is used to build the service project
 FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
-COPY ["FantasyCritic.LocalDatabaseTool/FantasyCritic.LocalDatabaseTool.csproj", "FantasyCritic.LocalDatabaseTool/"]
-COPY ["FantasyCritic.Lib/FantasyCritic.Lib.csproj", "FantasyCritic.Lib/"]
-COPY ["FantasyCritic.MySQL/FantasyCritic.MySQL.csproj", "FantasyCritic.MySQL/"]
-RUN dotnet restore "./FantasyCritic.LocalDatabaseTool/FantasyCritic.LocalDatabaseTool.csproj"
+COPY ["src/FantasyCritic.LocalDatabaseTool/FantasyCritic.LocalDatabaseTool.csproj", "src/FantasyCritic.LocalDatabaseTool/"]
+COPY ["src/FantasyCritic.Lib/FantasyCritic.Lib.csproj", "src/FantasyCritic.Lib/"]
+COPY ["src/FantasyCritic.MySQL/FantasyCritic.MySQL.csproj", "src/FantasyCritic.MySQL/"]
+RUN dotnet restore "src/FantasyCritic.LocalDatabaseTool/FantasyCritic.LocalDatabaseTool.csproj"
 COPY . .
-WORKDIR "/src/FantasyCritic.LocalDatabaseTool"
-RUN dotnet build "./FantasyCritic.LocalDatabaseTool.csproj" -c $BUILD_CONFIGURATION -o /app/build
+RUN dotnet build "src/FantasyCritic.LocalDatabaseTool/FantasyCritic.LocalDatabaseTool.csproj" -c $BUILD_CONFIGURATION --no-restore
 
-# This stage is used to publish the service project to be copied to the final stage
 FROM build AS publish
 ARG BUILD_CONFIGURATION=Release
-RUN dotnet publish "./FantasyCritic.LocalDatabaseTool.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+RUN dotnet publish "src/FantasyCritic.LocalDatabaseTool/FantasyCritic.LocalDatabaseTool.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
 
-# This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
+
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .

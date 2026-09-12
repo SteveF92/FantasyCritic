@@ -262,8 +262,16 @@ write them):
 ls -ld /var/log/fantasy-critic /var/lib/fantasy-critic
 ```
 
-**d. systemd unit.** Compare the current unit against
-[`infrastructure/fantasy-critic.service`](../infrastructure/fantasy-critic.service):
+**d. systemd unit.** Phase 3 replaced systemd with Docker Compose and deleted
+`infrastructure/fantasy-critic.service`; if you are setting up from scratch today, follow
+[the Phase 3 runbook](deployment-phase-3-setup.md) instead of this step. The template is still
+recoverable if you need the Phase 1 path back:
+
+```bash
+git show 65b173fd8:infrastructure/fantasy-critic.service
+```
+
+Compare the current unit against it:
 
 ```bash
 systemctl cat fantasy-critic.service
@@ -371,6 +379,9 @@ it (`aws ssm start-session --target <PROD_INSTANCE_ID>`).
 ---
 
 ## Operating it afterwards
+
+> Superseded by [operations.md](operations.md) once an instance has been converted to
+> Docker. What follows describes the systemd stack.
 
 ### Deploying
 
