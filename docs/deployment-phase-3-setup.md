@@ -215,6 +215,17 @@ Loki receives everything regardless; these files are the local copy you read ove
 `nginx -t`, and reloads nginx when it changes. The one thing it cannot do is edit the
 certbot-managed site file, so add a single line there by hand.
 
+**Check whether it is already there first** — an instance that went through Phase 2 has it
+already, and a second copy in the same `server` block fails `nginx -t` with
+`duplicate location "/__maintenance.html"`:
+
+```bash
+sudo grep -rn "maintenance.conf" /etc/nginx/
+```
+
+One `include` line per server block that proxies to the app. If you already have it, skip to
+step 8.
+
 Open the site config. It is in `/etc/nginx/sites-available/`, named after whatever is linked
 from `/etc/nginx/sites-enabled/` — or in `/etc/nginx/conf.d/` if `sites-enabled` is empty.
 Find this line:
@@ -229,9 +240,9 @@ and add one line directly underneath it:
     include /etc/nginx/maintenance.conf;
 ```
 
-It only has to be inside that same `server { ... }` block, which it will be. Leave the port-80
-server block alone if it only redirects to HTTPS; if it proxies to the app, give it the same
-line.
+It only has to be inside that same `server { ... }` block, which it will be — and only once,
+even though there are usually two `listen` lines. Leave the port-80 server block alone if it
+only redirects to HTTPS; if it proxies to the app, give it its own single copy.
 
 ```bash
 sudo nginx -t && sudo systemctl reload nginx
