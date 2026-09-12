@@ -17,6 +17,8 @@
 #     docker-compose.yaml      installed from the release being deployed
 #     .env                     environment + registry + IMAGE_TAG (created during setup)
 #     RELEASE                  bind-mounted into the web container, read by the admin console
+#     maintenance.sh           fixed path, so raising the page by hand needs no release id:
+#     maintenance.html           sudo /opt/fantasy-critic/maintenance.sh on|off|status
 #     releases/<release-id>/   the extracted bundle, kept so an old release can redeploy itself
 #
 # Rolling back is running the previous release's copy of this script, which puts back both its
@@ -46,7 +48,11 @@ RELEASE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly RELEASE_DIR
 RELEASE_ID="$(basename "$RELEASE_DIR")"
 readonly RELEASE_ID
-readonly MAINTENANCE="$RELEASE_DIR/maintenance.sh"
+# Installed to a fixed path next to the compose file, rather than used from the release
+# directory, so that turning the page on by hand does not mean first working out which release
+# is live. maintenance.sh copies the page from whatever directory it is sitting in, so the two
+# files travel together.
+readonly MAINTENANCE="$APP_ROOT/maintenance.sh"
 
 log() {
     printf '[%s] %s\n' "$(date -u +%H:%M:%S)" "$*"
@@ -90,7 +96,7 @@ IMAGE_TAG="${FC_IMAGE_TAG:-}"
 readonly IMAGE_TAG
 
 [ -f "$RELEASE_DIR/docker-compose.yaml" ] || fail "No docker-compose.yaml in the bundle at $RELEASE_DIR."
-[ -f "$RELEASE_DIR/maintenance.html" ] && [ -f "$MAINTENANCE" ] \
+[ -f "$RELEASE_DIR/maintenance.html" ] && [ -f "$RELEASE_DIR/maintenance.sh" ] \
     || fail "No maintenance page in the bundle — refusing to deploy without one."
 [ -f "$ENV_FILE" ] || fail "$ENV_FILE does not exist. It is created once during Phase 3 setup; see docs/deployment-phase-3-setup.md."
 
@@ -141,7 +147,7 @@ HINT
         cat >&2 <<HINT
 
 To roll back, put IMAGE_TAG=$PREVIOUS_TAG back in $ENV_FILE and run:
-  cd $APP_ROOT && docker compose up -d web discord-bot && ./maintenance.sh off
+  cd $APP_ROOT && docker compose up -d web discord-bot && $MAINTENANCE off
 HINT
     fi
 }
@@ -157,6 +163,13 @@ aws ecr get-login-password --region "$AWS_REGION" \
     | docker login --username AWS --password-stdin "$ECR_REGISTRY" >/dev/null
 
 install -m 644 "$RELEASE_DIR/docker-compose.yaml" "$COMPOSE_FILE"
+
+# The maintenance page and its script go to fixed paths so a human never has to look up the
+# live release id to raise the page. They are installed from this release, so editing the
+# wording stays an ordinary code change that ships with a deploy, and a rollback puts back the
+# copy that shipped with the release it is rolling back to.
+install -m 755 "$RELEASE_DIR/maintenance.sh" "$MAINTENANCE"
+install -m 644 "$RELEASE_DIR/maintenance.html" "$APP_ROOT/maintenance.html"
 
 if grep -qE '^IMAGE_TAG=' "$ENV_FILE"; then
     sed -i -E "s|^IMAGE_TAG=.*|IMAGE_TAG=$IMAGE_TAG|" "$ENV_FILE"
@@ -185,9 +198,8 @@ compose --profile migrate pull --quiet
 # Migrations are deliberately not expand/contract compatible, so the app must be down before
 # the schema changes. A few minutes of downtime is the accepted trade.
 
-# The page has to be installed from this release before it is raised, so that editing it is
-# an ordinary code change that ships with a deploy rather than a file hand-copied to the box.
-chmod +x "$MAINTENANCE"
+# Copies the page into the directory nginx serves it from, then raises the flag. Both files
+# were put at their fixed paths above, so this is already this release's wording.
 "$MAINTENANCE" install
 "$MAINTENANCE" on
 
