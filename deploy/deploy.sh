@@ -34,7 +34,7 @@
 # healthy. Any failure below deliberately leaves it raised.
 #
 # Environment:
-#   FC_IMAGE_TAG=<tag>        required; the ECR tag to deploy (the release id)
+#   FC_IMAGE_TAG=<tag>        the ECR tag to deploy; defaults to this release directory's name
 #   FC_SKIP_MIGRATIONS=true   skip the database migrator (front-end-only redeploys, rollbacks)
 #   FC_KEEP_RELEASES=<n>      how many old release directories to retain (default 10)
 
@@ -175,8 +175,11 @@ docker compose version >/dev/null 2>&1 || fail "the docker compose plugin is not
 command -v aws >/dev/null 2>&1 || fail "the AWS CLI is not on PATH ($PATH)."
 command -v curl >/dev/null 2>&1 || fail "curl is not installed on this host."
 
-IMAGE_TAG="${FC_IMAGE_TAG:-}"
-[ -n "$IMAGE_TAG" ] || fail "FC_IMAGE_TAG is not set. It should be the release id that was pushed to ECR."
+# Defaults to this release's own id. The release directory is named after it and the images
+# were pushed under it, so a rollback — which is just running an older release's copy of this
+# script — needs nothing passed in. The workflow still sets it explicitly.
+IMAGE_TAG="${FC_IMAGE_TAG:-$RELEASE_ID}"
+[ -n "$IMAGE_TAG" ] || fail "Could not work out which image tag to deploy."
 readonly IMAGE_TAG
 
 [ -f "$RELEASE_DIR/docker-compose.yaml" ] || fail "No docker-compose.yaml in the bundle at $RELEASE_DIR."
