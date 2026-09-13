@@ -61,6 +61,7 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IPatreonTokensRepo, MySQLPatreonTokensRepo>();
         services.AddScoped<IDiscordRepo, MySQLDiscordRepo>();
         services.AddScoped<IDailyStatsRepo, MySQLDailyStatsRepo>();
+        services.AddScoped<IJobRepo, MySQLJobRepo>();
 
         //Domain services
         services.AddScoped<PatreonService>();
