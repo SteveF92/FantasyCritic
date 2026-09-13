@@ -45,7 +45,6 @@ public class Worker : BackgroundService
                     continue;
                 }
 
-                //No delay after a job, so a backlog drains one after another.
                 await RunJob(nextJob, stoppingToken);
             }
             catch (OperationCanceledException) when (stoppingToken.IsCancellationRequested)
@@ -95,9 +94,11 @@ public class Worker : BackgroundService
         var jobRepo = scope.ServiceProvider.GetRequiredService<IJobRepo>();
 
         var incompleteJobs = await jobRepo.GetIncompleteJobs();
-        return incompleteJobs
+        var queuedJobs = incompleteJobs
             .Where(x => x.Status.Equals(FantasyCriticJobStatus.Queued))
-            .MinBy(x => x.CreatedAt);
+            .ToList();
+        var runnableJobs = queuedJobs.Where(x => x.CheckJobRunnable()).ToList();
+        return runnableJobs.MinBy(x => x.CreatedAt);
     }
 
     private async Task RunJob(FantasyCriticJob job, CancellationToken stoppingToken)
