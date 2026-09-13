@@ -29,4 +29,5 @@
   <Project Path="FantasyCritic.Lib/FantasyCritic.Lib.csproj" />
   <Project Path="FantasyCritic.MySQL/FantasyCritic.MySQL.csproj" />
   <Project Path="FantasyCritic.Web/FantasyCritic.Web.csproj" />
+  <Project Path="FantasyCritic.Worker/FantasyCritic.Worker.csproj" Id="cdd352b8-31cb-4c3e-a392-2d8003583c11" />
 </Solution>

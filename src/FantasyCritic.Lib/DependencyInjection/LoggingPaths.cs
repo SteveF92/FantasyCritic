@@ -10,6 +10,7 @@ public class LoggingPaths
     public static LoggingPaths WebApplication => new LoggingPaths("web");
     public static LoggingPaths DatabaseUpdater => new LoggingPaths("databaseupdater");
     public static LoggingPaths DiscordBot => new LoggingPaths("discordbot");
+    public static LoggingPaths Worker => new LoggingPaths("worker");
     public static LoggingPaths UnitTests => new LoggingPaths("tests");
 
     private LoggingPaths(string appName)
