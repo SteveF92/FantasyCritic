@@ -255,6 +255,10 @@ That is the drift `FantasyCritic.Hosting` and `ValidateOnBuild` exist to prevent
 **Goal:** Scheduled tasks and long-running admin actions run in a dedicated worker process.
 The web app enqueues and reports status.
 
+> **Superseded in planning.** The "verify before committing" check below failed: every MySQL
+> storage adapter for Hangfire is unmaintained. The phase now uses Cronos plus our own runner.
+> Plan: [deployment-phase-4b-plan.md](deployment-phase-4b-plan.md).
+
 - New `FantasyCritic.Worker` project hosts the Hangfire server. Its service registrations go in
   `FantasyCritic.Hosting` alongside `AddFantasyCriticCore`, which Phase 4a introduced.
 - Web hosts the Hangfire client and dashboard (behind admin authorization).
