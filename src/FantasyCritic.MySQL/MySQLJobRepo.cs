@@ -47,6 +47,12 @@ public class MySQLJobRepo : IJobRepo
         throw new NotImplementedException();
     }
 
+    public async Task<bool> CancelQueuedJob(FantasyCriticJob job, string reason, Instant cancellationTime)
+    {
+        //Conditional on Status = 'Queued', so it can't race the runner's claim. Reason goes in DetailedStatus.
+        throw new NotImplementedException();
+    }
+
     public async Task CancelInProgressJob(FantasyCriticJob job, Instant cancellationTime)
     {
         throw new NotImplementedException();

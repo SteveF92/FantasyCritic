@@ -92,13 +92,37 @@ public class Worker : BackgroundService
     {
         await using var scope = _serviceProvider.CreateAsyncScope();
         var jobRepo = scope.ServiceProvider.GetRequiredService<IJobRepo>();
+        var clock = scope.ServiceProvider.GetRequiredService<IClock>();
 
         var incompleteJobs = await jobRepo.GetIncompleteJobs();
-        var queuedJobs = incompleteJobs
-            .Where(x => x.Status.Equals(FantasyCriticJobStatus.Queued))
-            .ToList();
-        var runnableJobs = queuedJobs.Where(x => x.CheckJobRunnable()).ToList();
-        return runnableJobs.MinBy(x => x.CreatedAt);
+        var queuedJobs = incompleteJobs.Where(x => x.Status.Equals(FantasyCriticJobStatus.Queued)).ToList();
+
+        //Enqueueing already refuses these, so one only turns up if its RunType changed while it waited.
+        //Settle it now, or it sits Queued and runs whenever the type is next re-enabled.
+        foreach (var job in queuedJobs.Where(x => !x.AllowedByRunType))
+        {
+            try
+            {
+                await CancelDisallowedJob(job, jobRepo, clock);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Failed to cancel job {Job}, which its RunType no longer allows.", job);
+            }
+        }
+
+        return queuedJobs.Where(x => x.AllowedByRunType).MinBy(x => x.CreatedAt);
+    }
+
+    private async Task CancelDisallowedJob(FantasyCriticJob job, IJobRepo jobRepo, IClock clock)
+    {
+        var runKind = job.IsCronRun ? "cron" : "manual";
+        var reason = $"Cancelled before starting: the job type's RunType changed to {job.RunType}, which does not allow {runKind} runs.";
+        var cancelled = await jobRepo.CancelQueuedJob(job, reason, clock.GetCurrentInstant());
+        if (cancelled)
+        {
+            _logger.LogWarning("Cancelled job {Job}: RunType {RunType} does not allow {RunKind} runs.", job, job.RunType, runKind);
+        }
     }
 
     private async Task RunJob(FantasyCriticJob job, CancellationToken stoppingToken)

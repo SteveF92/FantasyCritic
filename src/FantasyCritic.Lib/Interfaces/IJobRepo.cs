@@ -11,5 +11,6 @@ public interface IJobRepo
     Task UpdateDetailedStatusForJob(FantasyCriticJob job, string detailedStatus);
     Task ErrorJob(FantasyCriticJob job, Exception error, Instant startTime);
     Task<bool> CancelJob(FantasyCriticJob job, Instant cancellationTime);
+    Task<bool> CancelQueuedJob(FantasyCriticJob job, string reason, Instant cancellationTime);
     Task CancelInProgressJob(FantasyCriticJob job, Instant cancellationTime);
 }

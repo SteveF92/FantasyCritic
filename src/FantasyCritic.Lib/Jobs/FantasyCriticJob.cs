@@ -32,24 +32,10 @@ public class FantasyCriticJob
     public Instant? StartedAt { get; }
     public Instant? FinishedAt { get; }
 
-    public bool CheckJobRunnable()
-    {
-        var jobIsManual = CreatedByUser is not null;
-        var jobIsCron = !jobIsManual;
+    //The scheduler always sets ScheduledFor and manual runs never do, so it identifies cron runs regardless of who enqueued them.
+    public bool IsCronRun => ScheduledFor is not null;
 
-        if (jobIsManual && !RunType.AllowsManual)
-        {
-            return false;
-        }
-
-        if (jobIsCron && !RunType.AllowsCron)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
+    public bool AllowedByRunType => IsCronRun ? RunType.AllowsCron : RunType.AllowsManual;
 
     public override string ToString()
     {

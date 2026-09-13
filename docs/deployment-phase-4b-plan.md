@@ -314,12 +314,19 @@ There is nothing to go stale across processes and no invalidation to design. (It
    key means another instance got there first; that is success, not failure.
 5. **`JobRunnerHostedService`** — poll for `Queued`, claim with a conditional update, run one at
    a time, write status transitions, and heartbeat while running so a killed runner's rows can be
-   swept. It does not watch for cancellation; the canceller trips its token from outside.
+   swept. It does not watch for cancellation; the canceller trips its token from outside. Before
+   picking, it re-checks each queued job against its type's *current* `RunType`
+   (`FantasyCriticJob.AllowedByRunType`, cron-ness read from `ScheduledFor`) and cancels any it no
+   longer allows, recording why in `DetailedStatus`. Otherwise a job queued before its type was set
+   to `Disabled` sits `Queued` and runs the moment the type is re-enabled.
 6. **`JobCancellerHostedService`** — poll for `Cancelling`, settle never-started jobs directly and
    trip the token for in-flight ones. Needs the shared in-flight token registry it and the runner
    both hold.
-7. **`JobService.Enqueue(jobType, user)` returning `Result<Guid>`** — the single place the
-   `RunType` check happens, so twenty controller actions cannot each forget it.
+7. **`JobService.Enqueue(jobType, user)` returning `Result<Guid>`** — the single place manual runs
+   check `RunType.AllowsManual`, so twenty controller actions cannot each forget it. The scheduler
+   checks `AllowsCron` the same way. Both read the same properties the runner re-checks, so the
+   enqueue-time and run-time checks cannot disagree; the runner's check exists only to catch a
+   `RunType` changed while a job waited.
 8. **Controller actions per job.** Deliberately *not* a single `POST /api/jobs/{name}`: the three
    admin roles are not hierarchical (`Admin` alone satisfies neither `FactChecker` nor
    `ActionRunner`, which is why `FactCheckerOrAdmin` exists), so one endpoint could not carry the
