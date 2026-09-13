@@ -20,7 +20,6 @@ CREATE TABLE IF NOT EXISTS `tbl_job` (
   `JobType` varchar(100) NOT NULL,
   `CreatedByUserID` char(36) DEFAULT NULL,
   `Status` varchar(50) NOT NULL,
-  `DependsOnJobID` char(36) DEFAULT NULL,
   `DetailedStatus` text,
   `ErrorMessage` text,
   `CreatedAt` timestamp NOT NULL,
@@ -46,6 +45,7 @@ CREATE TABLE IF NOT EXISTS `tbl_job_status` (
 -- Dumping data for table fantasycritic-fromsnapshot.tbl_job_status: ~6 rows (approximately)
 INSERT INTO `tbl_job_status` (`Status`) VALUES
 	('Cancelled'),
+	('CancelledInProgress'),
 	('Cancelling'),
 	('Complete'),
 	('Error'),
