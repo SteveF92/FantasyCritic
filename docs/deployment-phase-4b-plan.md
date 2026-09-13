@@ -19,8 +19,8 @@ Written September 2026. The schema is committed; everything else is ahead of us.
 | Quartz.NET as the fallback | Quartz considered and rejected; Cronos is a better cron than Quartz's cron |
 | Budget time for master game cache invalidation | Not a real problem. See below. |
 
-Two processes become three: **Web**, **DiscordBot**, **Worker**. The worker hosts two hosted
-services — a scheduler and a runner — that communicate only through the database.
+Two processes become three: **Web**, **DiscordBot**, **Worker**. The worker hosts three hosted
+services — a scheduler, a runner and a canceller — coordinating through `tbl_job`.
 
 ---
 
@@ -117,6 +117,7 @@ Web          existing site + one controller action per manually-runnable job
 DiscordBot   command gateway (Phase 4a)
 Worker       JobSchedulerHostedService  — Cronos decides what is due, INSERTs
              JobRunnerHostedService     — polls for Queued rows, executes them
+             JobCancellerHostedService  — polls for Cancelling rows, resolves them
 ```
 
 A separate `JobScheduler` container was considered and rejected. Both halves would sit at
@@ -124,10 +125,63 @@ desired count 1, so the split buys no independent scaling — the only reason th
 — while doubling the silent-failure surface in a system whose alerting is still a backlog item,
 and doubling the per-deploy service ceremony.
 
-They are nonetheless written as if they were separate processes: **they communicate only through
-`tbl_job`, never in-process.** Splitting them later is moving one `AddHostedService` line into a
-new `Program.cs`. The trigger for doing so would be wanting jobs to run concurrently, and even
-that is better served by N worker loops inside the runner.
+The scheduler and the runner are nonetheless written as if they were separate processes:
+**they communicate only through `tbl_job`, never in-process.** Splitting them later is moving one
+`AddHostedService` line into a new `Program.cs`. The trigger for doing so would be wanting jobs to
+run concurrently, and even that is better served by N worker loops inside the runner.
+
+The canceller is the deliberate exception, for reasons below.
+
+### Cancellation
+
+`JobCancellerHostedService` owns the `Cancelling` status. It polls for rows in that state every
+few seconds and resolves each one of two ways:
+
+- **Never started** — set `Cancelled`, done.
+- **Genuinely in progress** — trip the `CancellationTokenSource` for that job and stop there. The
+  running code observes the token, unwinds, and the runner writes `CancelledInProgress`. The
+  canceller never writes a terminal status for a job that started.
+
+It is separate from the runner because the runner is *busy* — it may be minutes into
+`ProcessActions` and in no position to poll for cancel requests. Watching from outside is what
+makes cancellation prompt.
+
+**The API always writes `Cancelling`, never `Cancelled` directly.** Between reading "this job is
+still queued" and writing "cancelled", the runner can pick it up and start it. Routing every
+request through `Cancelling` and letting one component resolve it makes that a single-writer
+decision instead of a race.
+
+The same race then exists inside the canceller, and conditional updates close it. Both
+transitions are conditional updates on the same row, so exactly one wins and nothing needs
+locking:
+
+```sql
+-- canceller, the "never started" path
+UPDATE tbl_job SET Status = 'Cancelled', FinishedAt = NOW(6)
+WHERE JobID = ? AND Status = 'Cancelling' AND StartedAt IS NULL;
+
+-- runner, claiming a job
+UPDATE tbl_job SET Status = 'Running', StartedAt = NOW(6)
+WHERE JobID = ? AND Status = 'Queued';
+```
+
+Zero rows affected on the canceller's update means the job started underneath it — fall through
+to the token path on the next tick. Zero rows on the runner's means it was cancelled before it
+began, and the runner drops it.
+
+**This is the one place the worker's halves are coupled in-process.** A `CancellationTokenSource`
+cannot cross a process boundary, so the canceller needs the runner's registry of in-flight
+tokens. The row is the signal; the token is a local effect. Two consequences:
+
+- The canceller travels with the runner. If the scheduler is ever split into its own container,
+  the canceller does not go with it.
+- With more than one runner, each needs its own canceller and `tbl_job` needs an owning-runner
+  column, so a canceller only trips tokens for jobs it holds. At desired count 1 that column is
+  unnecessary.
+
+**Known limitation:** a job that ignores its cancellation token sits in `Cancelling` indefinitely.
+That is visible in the console rather than hidden, and the stale-heartbeat sweep still catches a
+runner that dies outright. No hard timeout is planned.
 
 ---
 
@@ -258,28 +312,31 @@ There is nothing to go stale across processes and no invalidation to design. (It
 4. **`JobSchedulerHostedService`** — for each type whose `RunType` allows cron, compute the next
    occurrence from `MAX(ScheduledFor)` (falling back to now on first run) and insert. Duplicate
    key means another instance got there first; that is success, not failure.
-5. **`JobRunnerHostedService`** — poll for `Queued`, run one at a time, write status transitions,
-   heartbeat while running so a killed runner's rows can be swept, and re-read its own row to
-   observe `Cancelling`.
-6. **`JobService.Enqueue(jobType, user)` returning `Result<Guid>`** — the single place the
+5. **`JobRunnerHostedService`** — poll for `Queued`, claim with a conditional update, run one at
+   a time, write status transitions, and heartbeat while running so a killed runner's rows can be
+   swept. It does not watch for cancellation; the canceller trips its token from outside.
+6. **`JobCancellerHostedService`** — poll for `Cancelling`, settle never-started jobs directly and
+   trip the token for in-flight ones. Needs the shared in-flight token registry it and the runner
+   both hold.
+7. **`JobService.Enqueue(jobType, user)` returning `Result<Guid>`** — the single place the
    `RunType` check happens, so twenty controller actions cannot each forget it.
-7. **Controller actions per job.** Deliberately *not* a single `POST /api/jobs/{name}`: the three
+8. **Controller actions per job.** Deliberately *not* a single `POST /api/jobs/{name}`: the three
    admin roles are not hierarchical (`Admin` alone satisfies neither `FactChecker` nor
    `ActionRunner`, which is why `FactCheckerOrAdmin` exists), so one endpoint could not carry the
    right policy. Per-action endpoints also let the console call the generated client instead of
    building URLs by string concatenation. Each needs
    `[ProducesResponseType<T>(StatusCodes.Status200OK)]` or NSwag generates `Task` and the client
    cannot return an ID to poll.
-8. **Admin console changes** — render the button grid from `tbl_job_type` using `DisplayName`,
+9. **Admin console changes** — render the button grid from `tbl_job_type` using `DisplayName`,
    `Category` and `Severity`, enqueue and poll rather than holding a request open, and show
    recent runs.
-9. **Startup reconciliation.** A `RunType` of `Cron` with no expression in code is inert and
+10. **Startup reconciliation.** A `RunType` of `Cron` with no expression in code is inert and
    deserves only a warning. A handler registered in code with **no row in `tbl_job_type`** should
    fail at startup — the FK rejects every insert, so the job can never run and nobody finds out
    until they press the button.
-10. **Delete** `Scheduling/Lib/Cron` (845 lines), `SchedulerHostedService`, `SchedulerExtensions`,
+11. **Delete** `Scheduling/Lib/Cron` (845 lines), `SchedulerHostedService`, `SchedulerExtensions`,
     the `IsTimeToNotify` guards, and `AddScheduler` from `HostingExtensions`.
-11. **Remove the 300s nginx overrides** for `/api/admin`, `/api/factchecker` and
+12. **Remove the 300s nginx overrides** for `/api/admin`, `/api/factchecker` and
     `/api/actionrunner` in `nginx_nocertbot.txt`, once no admin request runs long.
 
 ---
