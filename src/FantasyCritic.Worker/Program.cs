@@ -43,6 +43,7 @@ public static class Program
 
             builder.Services.AddFantasyCriticCore(configuration, builder.Environment);
             builder.Services.AddFantasyCriticIdentityCore();
+            builder.Services.AddScoped<JobRunner>();
             builder.Services.AddHostedService<Worker>();
             builder.Services.AddHostedService<Scheduler>();
 

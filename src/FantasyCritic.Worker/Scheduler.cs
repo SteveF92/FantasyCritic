@@ -3,10 +3,12 @@ namespace FantasyCritic.Worker;
 public class Scheduler : BackgroundService
 {
     private readonly ILogger<Scheduler> _logger;
+    private readonly IServiceProvider _serviceProvider;
 
-    public Scheduler(ILogger<Scheduler> logger)
+    public Scheduler(ILogger<Scheduler> logger, IServiceProvider serviceProvider)
     {
         _logger = logger;
+        _serviceProvider = serviceProvider;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
