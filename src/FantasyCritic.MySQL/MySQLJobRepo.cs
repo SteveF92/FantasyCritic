@@ -22,7 +22,7 @@ public class MySQLJobRepo : IJobRepo
         throw new NotImplementedException();
     }
 
-    public async Task StartJob(FantasyCriticJob job, Instant startTime)
+    public async Task<bool> StartJob(FantasyCriticJob job, Instant startTime)
     {
         throw new NotImplementedException();
     }
@@ -42,7 +42,7 @@ public class MySQLJobRepo : IJobRepo
         throw new NotImplementedException();
     }
 
-    public async Task CancelJob(FantasyCriticJob job, Instant cancellationTime)
+    public async Task<bool> CancelJob(FantasyCriticJob job, Instant cancellationTime)
     {
         throw new NotImplementedException();
     }
