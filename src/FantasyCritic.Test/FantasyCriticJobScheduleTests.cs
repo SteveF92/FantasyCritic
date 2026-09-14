@@ -78,6 +78,41 @@ public class FantasyCriticJobScheduleTests
         });
     }
 
+    [Test]
+    public void IsActiveAt_IsAlwaysTrueWithoutACalendarGuard()
+    {
+        var schedule = FantasyCriticJobSchedule.Cron("*/10 * * * *");
+
+        Assert.That(schedule.IsActiveAt(Instant.FromUtc(2026, 1, 1, 0, 0)), Is.True);
+    }
+
+    [Test]
+    public void WithCalendarGuard_KeepsTheExpressionAndLeavesTheOriginalUnguarded()
+    {
+        var original = FantasyCriticJobSchedule.Cron("*/10 * * * *");
+        var guarded = original.WithCalendarGuard(_ => false);
+        var slot = Instant.FromUtc(2026, 1, 1, 0, 0);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(guarded.Expression, Is.EqualTo(original.Expression));
+            Assert.That(guarded.IsActiveAt(slot), Is.False);
+            Assert.That(original.IsActiveAt(slot), Is.True);
+        });
+    }
+
+    //September 1st midnight Eastern is 04:00 UTC, during daylight saving time.
+    [TestCase(2026, 9, 1, 3, 50, false)]
+    [TestCase(2026, 9, 1, 4, 0, true)]
+    [TestCase(2026, 12, 31, 12, 0, true)]
+    [TestCase(2027, 1, 1, 12, 0, false)]
+    public void GrantSuperDropsSchedule_IsActiveFromSeptemberFirstEastern(int year, int month, int day, int utcHour, int utcMinute, bool expectedActive)
+    {
+        var schedule = Registry.Schedules[FantasyCriticJobType.GrantSuperDrops];
+
+        Assert.That(schedule.IsActiveAt(Instant.FromUtc(year, month, day, utcHour, utcMinute)), Is.EqualTo(expectedActive));
+    }
+
     //If the cron and the site's "next public reveal" display ever disagree, this fails instead of a post going out at the wrong time.
     [TestCase("PushPublicBiddingMessages")]
     [TestCase("SendPublicBiddingEmails")]

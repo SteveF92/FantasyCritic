@@ -104,6 +104,13 @@ public class Scheduler : BackgroundService
             return;
         }
 
+        //Before the misfire check, so a slot skipped on purpose is never reported as missed.
+        if (!schedule.IsActiveAt(slot.Value))
+        {
+            _logger.LogDebug("Slot {ScheduledFor} for {JobType} is outside its calendar guard; not enqueued.", slot.Value, jobType);
+            return;
+        }
+
         var lateness = now - slot.Value;
         if (lateness > MisfireThreshold)
         {
