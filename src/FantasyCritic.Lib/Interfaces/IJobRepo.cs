@@ -6,6 +6,11 @@ public interface IJobRepo
 {
     Task<IReadOnlyList<FantasyCriticJob>> GetRecentJobs(int count);
     Task<IReadOnlyList<FantasyCriticJob>> GetIncompleteJobs();
+    Task<IReadOnlyList<FantasyCriticJobTypeWithRunType>> GetJobTypeRunTypes();
+    Task<IReadOnlyDictionary<FantasyCriticJobType, Instant>> GetLastScheduledTimes();
+
+    /// <returns>False if a job for the same scheduled slot already exists. Manual jobs have no slot, so they always return true.</returns>
+    Task<bool> CreateJob(FantasyCriticJob job);
     Task<bool> StartJob(FantasyCriticJob job, Instant startTime);
     Task CompleteJob(FantasyCriticJob job, Instant finishTime);
     Task UpdateDetailedStatusForJob(FantasyCriticJob job, string detailedStatus);

@@ -61,6 +61,90 @@ public class MySQLJobRepo : IJobRepo
         return entities.Select(x => x.ToDomain()).ToList();
     }
 
+    public async Task<IReadOnlyList<FantasyCriticJobTypeWithRunType>> GetJobTypeRunTypes()
+    {
+        const string sql = "SELECT Name, RunType FROM tbl_job_type;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var rows = await connection.QueryAsync<JobTypeRunTypeEntity>(sql);
+
+        //A row with no matching type in code is skipped rather than thrown on: it can never be enqueued, so it has nothing to schedule.
+        var jobTypeRunTypes = new List<FantasyCriticJobTypeWithRunType>();
+        foreach (var row in rows)
+        {
+            var jobType = FantasyCriticJobType.TryFromValue(row.Name);
+            var runType = FantasyCriticJobRunType.TryFromValue(row.RunType);
+            if (jobType is not null && runType is not null)
+            {
+                jobTypeRunTypes.Add(new FantasyCriticJobTypeWithRunType(jobType, runType));
+            }
+        }
+
+        return jobTypeRunTypes;
+    }
+
+    public async Task<IReadOnlyDictionary<FantasyCriticJobType, Instant>> GetLastScheduledTimes()
+    {
+        //Answered from UQ_tbl_job_scheduledslot (JobType, ScheduledFor) without reading rows.
+        const string sql =
+            """
+            SELECT JobType, MAX(ScheduledFor) AS LastScheduledFor
+            FROM tbl_job
+            WHERE ScheduledFor IS NOT NULL
+            GROUP BY JobType;
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var rows = await connection.QueryAsync<LastScheduledJobEntity>(sql);
+
+        var lastScheduledTimes = new Dictionary<FantasyCriticJobType, Instant>();
+        foreach (var row in rows)
+        {
+            var jobType = FantasyCriticJobType.TryFromValue(row.JobType);
+            if (jobType is not null)
+            {
+                lastScheduledTimes[jobType] = row.LastScheduledFor;
+            }
+        }
+
+        return lastScheduledTimes;
+    }
+
+    public async Task<bool> CreateJob(FantasyCriticJob job)
+    {
+        const string sql =
+            """
+            INSERT INTO tbl_job (JobID, JobType, CreatedByUserID, Status, DetailedStatus, ErrorMessage, ScheduledFor, CreatedAt, StartedAt, FinishedAt)
+            VALUES (@jobID, @jobType, @createdByUserID, @status, @detailedStatus, @errorMessage, @scheduledFor, @createdAt, @startedAt, @finishedAt);
+            """;
+
+        var parameters = new
+        {
+            jobID = job.JobID,
+            jobType = job.Type.Value,
+            createdByUserID = job.CreatedByUser?.UserID,
+            status = job.Status.Value,
+            detailedStatus = job.DetailedStatus,
+            errorMessage = job.ErrorMessage,
+            scheduledFor = job.ScheduledFor,
+            createdAt = job.CreatedAt,
+            startedAt = job.StartedAt,
+            finishedAt = job.FinishedAt
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        try
+        {
+            await connection.ExecuteAsync(sql, parameters);
+            return true;
+        }
+        catch (MySqlException ex) when (ex.ErrorCode == MySqlErrorCode.DuplicateKeyEntry && job.ScheduledFor is not null)
+        {
+            //UQ_tbl_job_scheduledslot: another scheduler, or this one before a restart, already enqueued this slot.
+            return false;
+        }
+    }
+
     public async Task<bool> StartJob(FantasyCriticJob job, Instant startTime)
     {
         const string sql =
