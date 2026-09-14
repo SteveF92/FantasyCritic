@@ -1,18 +1,11 @@
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using FantasyCritic.AWS;
-using FantasyCritic.EmailTemplates;
 using FantasyCritic.Hosting;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Scheduling;
 using FantasyCritic.Lib.Scheduling.Lib;
-using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
-using FantasyCritic.Postmark;
 using FantasyCritic.Web.Authorization;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.OpenApi;
@@ -35,7 +28,6 @@ using NodaTime.Serialization.SystemTextJson;
 using NSwag;
 using Serilog;
 using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
-using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 
 namespace FantasyCritic.Web;
 
@@ -48,42 +40,19 @@ public static class HostingExtensions
 
         Log.Information($"Startup: Running in {environment} mode.");
 
-        var rdsInstanceName = configuration["AWS:rdsInstanceName"]!;
-        var postmarkAPIKey = configuration["Postmark:apiKey"]!;
-        var openCriticAPIKey = configuration["OpenCritic:apiKey"]!;
-
         //Repositories, domain services and the Discord push service. Shared with the bot process
-        //(and, later, the Hangfire worker) so the three hosts cannot drift apart.
+        //and the worker so the three hosts cannot drift apart.
         services.AddFantasyCriticCore(configuration, environment);
+
+        //Shared with the worker, whose job handlers call the same services the admin actions do.
+        services.AddFantasyCriticAdminServices(configuration);
+        services.AddFantasyCriticEmail(configuration);
 
         services.AddHealthChecks()
             .AddCheck<DatabaseHealthCheck>("database", tags: [DatabaseHealthCheck.ReadyTag]);
 
         //Read once at startup: the RELEASE file cannot change without a new deploy, which restarts the process.
         services.AddSingleton<BuildInfo>(_ => BuildInfoReader.Read(environment.ContentRootPath));
-
-        //Web-only services
-        services.AddScoped<IEmailBuilder, RazorEmailBuilder>();
-        services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
-        services.AddScoped<EmailSendingService>();
-
-        //Email Services
-        //services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
-        //services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
-        services.AddScoped<IEmailSender>(_ => new PostmarkEmailSender(postmarkAPIKey, "admin@fantasycritic.games"));
-
-        services.AddScoped<AdminService>();
-
-        services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
-        {
-            client.BaseAddress = new Uri("https://opencritic-api.p.rapidapi.com/");
-            client.DefaultRequestHeaders.Add("X-RapidAPI-Key", openCriticAPIKey);
-            client.DefaultRequestHeaders.Add("X-RapidAPI-Host", "opencritic-api.p.rapidapi.com");
-        });
-        services.AddHttpClient<IGGService, GGService>(client =>
-        {
-            client.BaseAddress = new Uri("https://api.ggapp.io/");
-        });
 
         if (!environment.IsDevelopment())
         {
@@ -247,7 +216,6 @@ public static class HostingExtensions
             });
         }
 
-        services.AddRazorTemplating();
         services.AddSession();
         services.AddOpenApiDocument(settings =>
         {

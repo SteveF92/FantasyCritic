@@ -1,18 +1,24 @@
+using System;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.AWS;
+using FantasyCritic.EmailTemplates;
 using FantasyCritic.Lib.BackgroundServices;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Discord.Handlers;
 using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
+using FantasyCritic.Postmark;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -84,6 +90,52 @@ public static class ServiceCollectionExtensions
         //constructor, so it must be a singleton no matter which host it is running in.
         services.AddSingleton<IDiscordFormatter, DiscordFormatter>();
         services.AddSingleton<DiscordPushService>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// <see cref="AdminService"/> and the external systems behind it: OpenCritic, GG and RDS snapshots.
+    /// Registered by Web, which calls it from controller actions, and by the worker, whose job handlers
+    /// call it. Needs <see cref="AddFantasyCriticCore"/> and <see cref="AddFantasyCriticIdentityCore"/>
+    /// (or Web's own Identity registration).
+    /// </summary>
+    public static IServiceCollection AddFantasyCriticAdminServices(this IServiceCollection services, IConfiguration configuration)
+    {
+        var rdsInstanceName = configuration["AWS:rdsInstanceName"]!;
+        var openCriticAPIKey = configuration["OpenCritic:apiKey"]!;
+
+        services.AddScoped<AdminService>();
+        services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
+
+        services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
+        {
+            client.BaseAddress = new Uri("https://opencritic-api.p.rapidapi.com/");
+            client.DefaultRequestHeaders.Add("X-RapidAPI-Key", openCriticAPIKey);
+            client.DefaultRequestHeaders.Add("X-RapidAPI-Host", "opencritic-api.p.rapidapi.com");
+        });
+        services.AddHttpClient<IGGService, GGService>(client =>
+        {
+            client.BaseAddress = new Uri("https://api.ggapp.io/");
+        });
+
+        return services;
+    }
+
+    /// <summary>
+    /// Outbound email: Razor templates rendered and sent through Postmark. Registered by Web and by the
+    /// worker, which sends the public bidding emails.
+    /// </summary>
+    public static IServiceCollection AddFantasyCriticEmail(this IServiceCollection services, IConfiguration configuration)
+    {
+        var postmarkAPIKey = configuration["Postmark:apiKey"]!;
+
+        services.AddRazorTemplating();
+        services.AddScoped<IEmailBuilder, RazorEmailBuilder>();
+        //services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
+        //services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
+        services.AddScoped<IEmailSender>(_ => new PostmarkEmailSender(postmarkAPIKey, "admin@fantasycritic.games"));
+        services.AddScoped<EmailSendingService>();
 
         return services;
     }

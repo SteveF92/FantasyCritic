@@ -44,6 +44,8 @@ public static class Program
 
             builder.Services.AddFantasyCriticCore(configuration, builder.Environment);
             builder.Services.AddFantasyCriticIdentityCore();
+            builder.Services.AddFantasyCriticAdminServices(configuration);
+            builder.Services.AddFantasyCriticEmail(configuration);
             builder.Services.AddFantasyCriticJobHandlers();
             builder.Services.AddHostedService<Worker>();
             builder.Services.AddHostedService<Scheduler>();
