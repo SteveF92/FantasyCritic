@@ -1,11 +1,21 @@
+using FantasyCritic.Lib.Services;
+
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class RecalculateLastSeasonWinnersJobHandler : IFantasyCriticJobHandler
 {
+    private readonly AdminService _adminService;
+
+    public RecalculateLastSeasonWinnersJobHandler(AdminService adminService)
+    {
+        _adminService = adminService;
+    }
+
     public static FantasyCriticJobType JobType => FantasyCriticJobType.RecalculateLastSeasonWinners;
 
-    public Task Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
+    public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await _adminService.RecalculateWinners();
+        return Result.Success();
     }
 }

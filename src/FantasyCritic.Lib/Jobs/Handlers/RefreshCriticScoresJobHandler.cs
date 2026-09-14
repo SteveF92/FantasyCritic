@@ -1,11 +1,21 @@
+using FantasyCritic.Lib.Services;
+
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class RefreshCriticScoresJobHandler : IFantasyCriticJobHandler
 {
+    private readonly AdminService _adminService;
+
+    public RefreshCriticScoresJobHandler(AdminService adminService)
+    {
+        _adminService = adminService;
+    }
+
     public static FantasyCriticJobType JobType => FantasyCriticJobType.RefreshCriticScores;
 
-    public Task Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
+    public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await _adminService.RefreshCriticInfo();
+        return Result.Success();
     }
 }

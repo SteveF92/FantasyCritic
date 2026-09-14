@@ -1,11 +1,21 @@
+using FantasyCritic.Lib.Services;
+
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class SnapshotDatabaseJobHandler : IFantasyCriticJobHandler
 {
+    private readonly AdminService _adminService;
+
+    public SnapshotDatabaseJobHandler(AdminService adminService)
+    {
+        _adminService = adminService;
+    }
+
     public static FantasyCriticJobType JobType => FantasyCriticJobType.SnapshotDatabase;
 
-    public Task Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
+    public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException();
+        await _adminService.SnapshotDatabase();
+        return Result.Success();
     }
 }
