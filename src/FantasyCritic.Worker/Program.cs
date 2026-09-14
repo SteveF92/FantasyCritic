@@ -1,5 +1,6 @@
 using FantasyCritic.Hosting;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Jobs;
 using FantasyCritic.MySQL.DapperTypeMaps;
 using Serilog;
 using Serilog.Events;
@@ -43,6 +44,7 @@ public static class Program
 
             builder.Services.AddFantasyCriticCore(configuration, builder.Environment);
             builder.Services.AddFantasyCriticIdentityCore();
+            builder.Services.AddFantasyCriticJobHandlers();
             builder.Services.AddScoped<JobRunner>();
             builder.Services.AddHostedService<Worker>();
             builder.Services.AddHostedService<Scheduler>();
