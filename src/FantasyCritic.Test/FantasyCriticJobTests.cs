@@ -45,7 +45,7 @@ public class FantasyCriticJobTests
 
     private static FantasyCriticJob CreateJob(FantasyCriticJobRunType runType, IMinimalFantasyCriticUser? createdByUser, Instant? scheduledFor)
     {
-        return new FantasyCriticJob(Guid.NewGuid(), FantasyCriticJobType.ExpireTrades, runType, createdByUser, FantasyCriticJobStatus.Queued,
+        return new FantasyCriticJob(Guid.NewGuid(), new FantasyCriticJobTypeWithRunType(FantasyCriticJobType.ExpireTrades, runType), createdByUser, FantasyCriticJobStatus.Queued,
             null, null, scheduledFor, CreatedAt, null, null);
     }
 }

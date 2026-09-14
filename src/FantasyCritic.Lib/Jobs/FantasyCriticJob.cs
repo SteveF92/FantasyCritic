@@ -4,12 +4,11 @@ namespace FantasyCritic.Lib.Jobs;
 
 public class FantasyCriticJob
 {
-    public FantasyCriticJob(Guid jobID, FantasyCriticJobType type, FantasyCriticJobRunType runType, IMinimalFantasyCriticUser? createdByUser, FantasyCriticJobStatus status,
+    public FantasyCriticJob(Guid jobID, FantasyCriticJobTypeWithRunType jobTypeWithRunType, IMinimalFantasyCriticUser? createdByUser, FantasyCriticJobStatus status,
         string? detailedStatus, string? errorMessage, Instant? scheduledFor, Instant createdAt, Instant? startedAt, Instant? finishedAt)
     {
         JobID = jobID;
-        Type = type;
-        RunType = runType;
+        JobTypeWithRunType = jobTypeWithRunType;
         CreatedByUser = createdByUser;
         Status = status;
         DetailedStatus = detailedStatus;
@@ -21,8 +20,9 @@ public class FantasyCriticJob
     }
 
     public Guid JobID { get; }
-    public FantasyCriticJobType Type { get; }
-    public FantasyCriticJobRunType RunType { get; }
+    public FantasyCriticJobTypeWithRunType JobTypeWithRunType { get; }
+    public FantasyCriticJobType Type => JobTypeWithRunType.JobType;
+    public FantasyCriticJobRunType RunType => JobTypeWithRunType.RunType;
     public IMinimalFantasyCriticUser? CreatedByUser { get; }
     public FantasyCriticJobStatus Status { get; }
     public string? DetailedStatus { get; }

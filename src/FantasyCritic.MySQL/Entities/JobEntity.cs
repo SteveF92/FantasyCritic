@@ -30,7 +30,10 @@ internal class JobEntity
             createdByUser = new MinimalFantasyCriticUser(CreatedByUserID.Value, CreatedByUserDisplayName!, CreatedByUserEmailAddress!);
         }
 
-        return new FantasyCriticJob(JobID, FantasyCriticJobType.FromValue(JobType), FantasyCriticJobRunType.FromValue(RunType), createdByUser,
-            FantasyCriticJobStatus.FromValue(Status), DetailedStatus, ErrorMessage, ScheduledFor, CreatedAt, StartedAt, FinishedAt);
+        var jobTypeWithRunType = new FantasyCriticJobTypeWithRunType(FantasyCriticJobType.FromValue(JobType),
+            FantasyCriticJobRunType.FromValue(RunType));
+
+        return new FantasyCriticJob(JobID, jobTypeWithRunType, createdByUser, FantasyCriticJobStatus.FromValue(Status),
+            DetailedStatus, ErrorMessage, ScheduledFor, CreatedAt, StartedAt, FinishedAt);
     }
 }
