@@ -2,7 +2,6 @@ namespace FantasyCritic.Lib.Jobs;
 
 public class FantasyCriticJobType : TypeSafeEnum<FantasyCriticJobType>
 {
-
     // Define values here.
     public static readonly FantasyCriticJobType ExpireTrades = new FantasyCriticJobType("ExpireTrades");
     public static readonly FantasyCriticJobType FullDataRefresh = new FantasyCriticJobType("FullDataRefresh");
@@ -29,6 +28,7 @@ public class FantasyCriticJobType : TypeSafeEnum<FantasyCriticJobType>
     public static readonly FantasyCriticJobType UpdateTopBidsAndDrops = new FantasyCriticJobType("UpdateTopBidsAndDrops");
 
     // Constructor is private: values are defined within this class only!
+    //Handlers, and the schedules of cron handlers, are in FantasyCriticJobRegistry. The database owns whether each may run (tbl_job_type.RunType).
     private FantasyCriticJobType(string value)
         : base(value)
     {
