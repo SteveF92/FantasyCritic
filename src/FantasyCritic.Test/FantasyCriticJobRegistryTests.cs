@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Jobs;
 using Microsoft.Extensions.DependencyInjection;
 using NUnit.Framework;
@@ -47,20 +48,21 @@ public class FantasyCriticJobRegistryTests
         Assert.That(exception!.Message, Does.Contain(nameof(CronExpireTradesHandler)));
     }
 
+    //Checks the registrations rather than resolving them: handlers need the whole application graph, which the worker's ValidateOnBuild checks at startup.
     [Test]
-    public void AddFantasyCriticJobHandlers_ResolvesEachJobTypeToItsOwnHandler()
+    public void AddFantasyCriticJobHandlers_RegistersEachHandlerScopedUnderItsJobType()
     {
         var services = new ServiceCollection().AddFantasyCriticJobHandlers();
-        using var provider = services.BuildServiceProvider(new ServiceProviderOptions { ValidateOnBuild = true, ValidateScopes = true });
-        using var scope = provider.CreateScope();
+        var registry = FantasyCriticJobRegistry.Create();
 
-        var registry = provider.GetRequiredService<FantasyCriticJobRegistry>();
         Assert.Multiple(() =>
         {
             foreach (var definition in registry.Definitions)
             {
-                var handler = scope.ServiceProvider.GetRequiredKeyedService<IJobHandler>(definition.JobType);
-                Assert.That(handler.GetType(), Is.EqualTo(definition.HandlerType), definition.JobType.Value);
+                var descriptors = services.Where(x => x.IsKeyedService && x.ServiceType == typeof(IJobHandler) && definition.JobType.Equals(x.ServiceKey)).ToList();
+                Assert.That(descriptors, Has.Count.EqualTo(1), definition.JobType.Value);
+                Assert.That(descriptors.Select(x => (x.KeyedImplementationType, x.Lifetime)), Is.EqualTo(new[] { (definition.HandlerType, ServiceLifetime.Scoped) }),
+                    definition.JobType.Value);
             }
         });
     }
@@ -68,13 +70,13 @@ public class FantasyCriticJobRegistryTests
     public class SecondProcessActionsHandler : IFantasyCriticJobHandler
     {
         public static FantasyCriticJobType JobType => FantasyCriticJobType.ProcessActions;
-        public Task Run(FantasyCriticJobContext context, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken) => Task.FromResult(Result.Success());
     }
 
     public class CronExpireTradesHandler : IFantasyCriticCronJobHandler
     {
         public static FantasyCriticJobType JobType => FantasyCriticJobType.ExpireTrades;
         public static FantasyCriticJobSchedule Schedule => FantasyCriticJobSchedule.EveryTenMinutes;
-        public Task Run(FantasyCriticJobContext context, CancellationToken cancellationToken) => Task.CompletedTask;
+        public Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken) => Task.FromResult(Result.Success());
     }
 }

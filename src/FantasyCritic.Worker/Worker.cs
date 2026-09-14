@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Jobs;
 using NodaTime;
@@ -153,13 +154,16 @@ public class Worker : BackgroundService
 
             _logger.LogInformation("Starting job {Job}.", job);
 
-            var handler = _serviceProvider.GetRequiredKeyedService<IJobHandler>(job.Type);
             var context = new FantasyCriticJobContext(job, jobRepo);
             var cancelledInProgress = false;
             Exception? jobError = null;
+            Result result = Result.Success();
             try
             {
-                await handler.Run(context, jobCancellationSource.Token);
+                //From the job's own scope, not the root provider: handlers and everything they depend on are scoped to one run.
+                //Resolved inside this try so a handler that can't be constructed is recorded as Error rather than left Running.
+                var handler = scope.ServiceProvider.GetRequiredKeyedService<IJobHandler>(job.Type);
+                result = await handler.Run(context, jobCancellationSource.Token);
             }
             catch (OperationCanceledException) when (jobCancellationSource.IsCancellationRequested)
             {
@@ -179,8 +183,14 @@ public class Worker : BackgroundService
             }
             else if (jobError is not null)
             {
-                await jobRepo.ErrorJob(job, jobError, clock.GetCurrentInstant());
+                //ToString rather than Message: the stack trace and inner exceptions are what make a failed job diagnosable from the console.
+                await jobRepo.ErrorJob(job, jobError.ToString(), clock.GetCurrentInstant());
                 _logger.LogError(jobError, "Job {Job} failed.", job);
+            }
+            else if (result.IsFailure)
+            {
+                await jobRepo.ErrorJob(job, result.Error, clock.GetCurrentInstant());
+                _logger.LogWarning("Job {Job} refused to run: {Reason}", job, result.Error);
             }
             else
             {

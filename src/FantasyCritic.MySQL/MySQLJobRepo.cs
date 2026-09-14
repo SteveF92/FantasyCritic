@@ -179,10 +179,8 @@ public class MySQLJobRepo : IJobRepo
         await connection.ExecuteAsync(sql, new { jobID = job.JobID, detailedStatus });
     }
 
-    public async Task ErrorJob(FantasyCriticJob job, Exception error, Instant finishTime)
+    public async Task ErrorJob(FantasyCriticJob job, string errorMessage, Instant finishTime)
     {
-        //ToString rather than Message: the stack trace and inner exceptions are what make a failed job diagnosable from the console.
-        var errorMessage = error.ToString();
         if (errorMessage.Length > MaxErrorMessageLength)
         {
             errorMessage = errorMessage[..MaxErrorMessageLength];
