@@ -122,12 +122,13 @@ public static class TimeExtensions
         return dateTime.InZoneStrictly(nyc).ToInstant();
     }
 
-    public static bool ShouldGrantSuperDrops(this IClock clock)
+    public static bool ShouldGrantSuperDrops(this IClock clock) => clock.GetCurrentInstant().ShouldGrantSuperDrops();
+
+    public static bool ShouldGrantSuperDrops(this Instant instant)
     {
-        var now = clock.GetCurrentInstant();
-        var date = now.ToEasternDate();
+        var date = instant.ToEasternDate();
         var superDropsGrantTime = GetSuperDropsGrantTime(date.Year);
-        return now >= superDropsGrantTime;
+        return instant >= superDropsGrantTime;
     }
 
     public static bool IsBidLockWindow(this IClock clock)

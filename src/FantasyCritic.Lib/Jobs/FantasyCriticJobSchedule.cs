@@ -7,16 +7,19 @@ namespace FantasyCritic.Lib.Jobs;
 //Cronos works in DateTime and TimeZoneInfo; this is the one place that converts, so callers deal only in Instants.
 public class FantasyCriticJobSchedule
 {
+
     //Cronos needs a TimeZoneInfo, which NodaTime can't produce, so the zone is looked up by the same IANA ID as TimeExtensions.EasternTimeZone.
     //A container image without tzdata fails here, loudly, rather than scheduling in the wrong zone.
     private static readonly TimeZoneInfo EasternTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(TimeExtensions.EasternTimeZone.Id);
 
     private readonly CronExpression _cronExpression;
+    private readonly Func<Instant, bool>? _calendarGuard;
 
-    private FantasyCriticJobSchedule(string expression)
+    private FantasyCriticJobSchedule(string expression, Func<Instant, bool>? calendarGuard)
     {
         Expression = expression;
         _cronExpression = CronExpression.Parse(expression);
+        _calendarGuard = calendarGuard;
     }
 
     public string Expression { get; }
@@ -24,7 +27,13 @@ public class FantasyCriticJobSchedule
     public static readonly FantasyCriticJobSchedule EveryTenMinutes = Cron("*/10 * * * *");
     public static readonly FantasyCriticJobSchedule Hourly = Cron("0 * * * *");
 
-    public static FantasyCriticJobSchedule Cron(string expression) => new(expression);
+    public static FantasyCriticJobSchedule Cron(string expression) => new(expression, null);
+    //For a slot cron can't express, like "every ten minutes, but only from September 1st". A slot the guard rejects is never enqueued,
+    //so it leaves no do-nothing row. The guard is given the slot, not the current time, and must depend on nothing else:
+    //the scheduler may evaluate the same slot more than once, and every evaluation has to agree.
+    public FantasyCriticJobSchedule WithCalendarGuard(Func<Instant, bool> calendarGuard) => new(Expression, calendarGuard);
+
+    public bool IsActiveAt(Instant slot) => _calendarGuard?.Invoke(slot) ?? true;
 
     //Derived from the same constants that drive the site's "next reveal" display, so the two cannot disagree.
     public static FantasyCriticJobSchedule Weekly(IsoDayOfWeek dayOfWeek, LocalTime timeOfDay)
@@ -36,7 +45,7 @@ public class FantasyCriticJobSchedule
 
         //Cron counts Sunday as 0; IsoDayOfWeek counts it as 7.
         var cronDayOfWeek = (int)dayOfWeek % 7;
-        return new FantasyCriticJobSchedule($"{timeOfDay.Minute} {timeOfDay.Hour} * * {cronDayOfWeek}");
+        return new FantasyCriticJobSchedule($"{timeOfDay.Minute} {timeOfDay.Hour} * * {cronDayOfWeek}", null);
     }
 
     public Instant GetNextOccurrence(Instant after)
