@@ -152,12 +152,14 @@ public class Worker : BackgroundService
             }
 
             _logger.LogInformation("Starting job {Job}.", job);
-            var jobRunner = scope.ServiceProvider.GetRequiredService<JobRunner>();
+
+            var handler = _serviceProvider.GetRequiredKeyedService<IJobHandler>(job.Type);
+            var context = new FantasyCriticJobContext(job, jobRepo);
             var cancelledInProgress = false;
             Exception? jobError = null;
             try
             {
-                await jobRunner.RunJob(job, jobCancellationSource.Token);
+                await handler.Run(context, jobCancellationSource.Token);
             }
             catch (OperationCanceledException) when (jobCancellationSource.IsCancellationRequested)
             {
