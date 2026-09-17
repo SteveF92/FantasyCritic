@@ -83,33 +83,6 @@ public class MySQLJobRepo : IJobRepo
         return jobTypeRunTypes;
     }
 
-    public async Task<IReadOnlyDictionary<FantasyCriticJobType, Instant>> GetLastScheduledTimes()
-    {
-        //Answered from UQ_tbl_job_scheduledslot (JobType, ScheduledFor) without reading rows.
-        const string sql =
-            """
-            SELECT JobType, MAX(ScheduledFor) AS LastScheduledFor
-            FROM tbl_job
-            WHERE ScheduledFor IS NOT NULL
-            GROUP BY JobType;
-            """;
-
-        await using var connection = new MySqlConnection(_connectionString);
-        var rows = await connection.QueryAsync<LastScheduledJobEntity>(sql);
-
-        var lastScheduledTimes = new Dictionary<FantasyCriticJobType, Instant>();
-        foreach (var row in rows)
-        {
-            var jobType = FantasyCriticJobType.TryFromValue(row.JobType);
-            if (jobType is not null)
-            {
-                lastScheduledTimes[jobType] = row.LastScheduledFor;
-            }
-        }
-
-        return lastScheduledTimes;
-    }
-
     public async Task<bool> CreateJob(FantasyCriticJob job)
     {
         const string sql =
