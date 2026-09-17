@@ -6,7 +6,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class ProcessActionsJobHandler : IFantasyCriticJobHandler
 {
-    private static readonly IReadOnlyList<IsoDayOfWeek> ProcessingDays = [IsoDayOfWeek.Saturday, IsoDayOfWeek.Sunday];
+    private static readonly IReadOnlyList<IsoDayOfWeek> AcceptableProcessingDays = [IsoDayOfWeek.Saturday, IsoDayOfWeek.Sunday];
 
     private readonly InterLeagueService _interLeagueService;
     private readonly AdminService _adminService;
@@ -25,7 +25,6 @@ internal class ProcessActionsJobHandler : IFantasyCriticJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        //The same preconditions the action runner's endpoint enforces.
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
         if (!systemWideSettings.ActionProcessingMode)
         {
@@ -33,15 +32,20 @@ internal class ProcessActionsJobHandler : IFantasyCriticJobHandler
         }
 
         var today = _clock.GetToday();
-        if (_environmentConfiguration.IsProduction && !ProcessingDays.Contains(today.DayOfWeek))
+        if (_environmentConfiguration.IsProduction && !AcceptableProcessingDays.Contains(today.DayOfWeek))
         {
             return Result.Failure($"You probably didn't mean to process pickups on a {today.DayOfWeek}.");
         }
 
         var systemWideValues = await _interLeagueService.GetSystemWideValues();
         var supportedYears = await _interLeagueService.GetSupportedYears();
-        foreach (var supportedYear in supportedYears.Where(x => x.OpenForPlay && !x.Finished))
+        foreach (var supportedYear in supportedYears)
         {
+            if (supportedYear.Finished || !supportedYear.OpenForPlay)
+            {
+                continue;
+            }
+
             await context.UpdateDetailedStatus($"Processing actions for {supportedYear.Year}.");
             await _adminService.ProcessActions(systemWideValues, supportedYear.Year);
         }
