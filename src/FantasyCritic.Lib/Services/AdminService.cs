@@ -353,12 +353,10 @@ public class AdminService
         return _rdsManager.GetRecentSnapshots();
     }
 
-    public async Task SetTimeFlags()
+    public async Task RunEndOfYearRollover()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();
-
-        var now = _clock.GetCurrentInstant();
-        var nycNow = now.InZone(TimeExtensions.EasternTimeZone);
+        var nycNow = _clock.GetCurrentInstant().InZone(TimeExtensions.EasternTimeZone);
 
         foreach (var supportedYear in supportedYears)
         {
@@ -381,7 +379,13 @@ public class AdminService
                 await _discordPushService.SendFinalYearStandings(leagueYears, nycNow.Date);
             }
         }
+    }
 
+    public async Task AdvanceRoyaleQuarters()
+    {
+        var nycNow = _clock.GetCurrentInstant().InZone(TimeExtensions.EasternTimeZone);
+
+        //Finish any quarters whose end date has passed.
         var supportedQuarters = await _royaleService.GetYearQuarters();
         foreach (var supportedQuarter in supportedQuarters)
         {
@@ -398,52 +402,17 @@ public class AdminService
             }
         }
 
+        //Calculate winners for any finished quarters that don't have one yet. This reloads the quarters, so it sees the ones just finished above.
+        await RecalculateRoyaleWinners();
+
+        //Start the next quarter as we approach it.
         supportedQuarters = await _royaleService.GetYearQuarters();
-        foreach (var supportedQuarter in supportedQuarters)
-        {
-            bool readyToCalculateWinners = supportedQuarter.Finished && supportedQuarter.WinningUser is null;
-            if (!readyToCalculateWinners)
-            {
-                continue;
-            }
-
-            await _royaleService.CalculateRoyaleWinnerForQuarter(supportedQuarter);
-        }
-
         var latestQuarter = supportedQuarters.WhereMax(x => x.YearQuarter).Single();
         var nextQuarter = latestQuarter.YearQuarter.NextQuarter;
         var dayToStartNextQuarter = nextQuarter.FirstDateOfQuarter.Minus(Period.FromDays(15));
         if (nycNow.Date > dayToStartNextQuarter)
         {
             await _royaleService.StartNewQuarter(nextQuarter);
-        }
-
-        var dayOfWeek = nycNow.DayOfWeek;
-        var timeOfDay = nycNow.TimeOfDay;
-        var earliestTimeToSetActionProcessingOn = new LocalTime(19, 59);
-        var latestTimeToSetActionProcessingOn = new LocalTime(20, 59);
-        if (dayOfWeek == TimeExtensions.ActionProcessingDay && timeOfDay > earliestTimeToSetActionProcessingOn && timeOfDay < latestTimeToSetActionProcessingOn)
-        {
-            _logger.Information($"Automatically setting action processing mode = true because date/time is: {nycNow}");
-            await _interLeagueService.SetActionProcessingMode(true);
-            _logger.Information("Snapshotting database");
-            await _rdsManager.SnapshotRDS(now);
-        }
-
-        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-        if (systemWideSettings.ActionProcessingMode)
-        {
-            var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
-            if (actionProcessingSets.Any())
-            {
-                var mostRecentSet = actionProcessingSets.Where(x => x.ProcessName.StartsWith("Drop/Bid Processing")).MaxBy(x => x.ProcessTime)!;
-                var timeSinceMostRecentProcessing = now - mostRecentSet.ProcessTime;
-                if (timeSinceMostRecentProcessing < Duration.FromHours(4))
-                {
-                    //If last processing was less than 4 hours ago, turn action processing mode off.
-                    await _interLeagueService.SetActionProcessingMode(false);
-                }
-            }
         }
     }
 

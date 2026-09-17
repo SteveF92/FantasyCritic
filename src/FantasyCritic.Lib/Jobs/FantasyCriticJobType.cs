@@ -22,7 +22,8 @@ public class FantasyCriticJobType : TypeSafeEnum<FantasyCriticJobType>
     public static readonly FantasyCriticJobType RefreshGGInfo = new FantasyCriticJobType("RefreshGGInfo");
     public static readonly FantasyCriticJobType RefreshPatreonInfo = new FantasyCriticJobType("RefreshPatreonInfo");
     public static readonly FantasyCriticJobType SendReleasingThisWeekUpdate = new FantasyCriticJobType("SendReleasingThisWeekUpdate");
-    public static readonly FantasyCriticJobType SetTimeFlags = new FantasyCriticJobType("SetTimeFlags");
+    public static readonly FantasyCriticJobType EndOfYearRollover = new FantasyCriticJobType("EndOfYearRollover");
+    public static readonly FantasyCriticJobType AdvanceRoyaleQuarters = new FantasyCriticJobType("AdvanceRoyaleQuarters");
     public static readonly FantasyCriticJobType SnapshotDatabase = new FantasyCriticJobType("SnapshotDatabase");
     public static readonly FantasyCriticJobType UpdateDailyPublisherStatistics = new FantasyCriticJobType("UpdateDailyPublisherStatistics");
     public static readonly FantasyCriticJobType UpdateFantasyPoints = new FantasyCriticJobType("UpdateFantasyPoints");

@@ -20,6 +20,8 @@ public class FantasyCriticJobRegistry
 
     //The one list of handlers. Adding a job type means adding a class and a line here; Validate fails startup if either is forgotten.
     public static FantasyCriticJobRegistry Create() => new FantasyCriticJobRegistry([
+            FantasyCriticJobDefinition.ForCron<AdvanceRoyaleQuartersJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<EndOfYearRolloverJobHandler>(),
             FantasyCriticJobDefinition.ForCron<ExpireTradesJobHandler>(),
             FantasyCriticJobDefinition.ForCron<FullDataRefreshJobHandler>(),
             FantasyCriticJobDefinition.ForCron<GrantSuperDropsJobHandler>(),
@@ -39,8 +41,6 @@ public class FantasyCriticJobRegistry
             FantasyCriticJobDefinition.For<SendPublicBiddingDiscordMessagesJobHandler>(),
             FantasyCriticJobDefinition.For<SendPublicBiddingEmailsJobHandler>(),
             FantasyCriticJobDefinition.ForCron<SendReleasingThisWeekUpdateJobHandler>(),
-
-            FantasyCriticJobDefinition.ForCron<SetTimeFlagsJobHandler>(),
             FantasyCriticJobDefinition.For<SnapshotDatabaseJobHandler>(),
             FantasyCriticJobDefinition.ForCron<UpdateDailyPublisherStatisticsJobHandler>(),
             FantasyCriticJobDefinition.For<UpdateFantasyPointsJobHandler>(),
