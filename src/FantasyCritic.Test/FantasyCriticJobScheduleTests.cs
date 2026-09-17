@@ -31,6 +31,19 @@ public class FantasyCriticJobScheduleTests
         Assert.Throws<ArgumentException>(() => FantasyCriticJobSchedule.Weekly(IsoDayOfWeek.Thursday, new LocalTime(20, 0, 30)));
     }
 
+    [Test]
+    public void NamedSchedules_HaveTheExpectedExpressions()
+    {
+        Assert.Multiple(() =>
+        {
+            Assert.That(FantasyCriticJobSchedule.EveryTenMinutes.Expression, Is.EqualTo("*/10 * * * *"));
+            Assert.That(FantasyCriticJobSchedule.Hourly.Expression, Is.EqualTo("0 * * * *"));
+            Assert.That(FantasyCriticJobSchedule.EveryTwoHours.Expression, Is.EqualTo("0 */2 * * *"));
+            Assert.That(FantasyCriticJobSchedule.AtTenPmEastern.Expression, Is.EqualTo("0 22 * * *"));
+            Assert.That(FantasyCriticJobSchedule.AtOnePastMidnightEastern.Expression, Is.EqualTo("1 0 * * *"));
+        });
+    }
+
     //The point of evaluating in America/New_York: the same 20:00 local is a different UTC hour either side of DST.
     [TestCase(2026, 7, 16, 0)]
     [TestCase(2026, 1, 15, 1)]
@@ -54,36 +67,11 @@ public class FantasyCriticJobScheduleTests
     }
 
     [Test]
-    public void GetLatestOccurrence_CollapsesMissedSlotsIntoTheMostRecent()
-    {
-        var schedule = FantasyCriticJobSchedule.Cron("*/10 * * * *");
-        var lastScheduled = Instant.FromUtc(2026, 9, 13, 10, 0);
-        var now = Instant.FromUtc(2026, 9, 13, 11, 25);
-
-        Assert.That(schedule.GetLatestOccurrence(lastScheduled, now), Is.EqualTo(Instant.FromUtc(2026, 9, 13, 11, 20)));
-    }
-
-    [Test]
-    public void GetLatestOccurrence_ExcludesTheLastScheduledSlotAndIncludesNow()
-    {
-        var schedule = FantasyCriticJobSchedule.Cron("*/10 * * * *");
-        var lastScheduled = Instant.FromUtc(2026, 9, 13, 10, 0);
-
-        Assert.Multiple(() =>
-        {
-            Assert.That(schedule.GetLatestOccurrence(lastScheduled, Instant.FromUtc(2026, 9, 13, 10, 9, 59)), Is.Null);
-            Assert.That(schedule.GetLatestOccurrence(lastScheduled, Instant.FromUtc(2026, 9, 13, 10, 10)), Is.EqualTo(Instant.FromUtc(2026, 9, 13, 10, 10)));
-            Assert.That(schedule.GetLatestOccurrence(lastScheduled, lastScheduled), Is.Null);
-            Assert.That(schedule.GetLatestOccurrence(lastScheduled, Instant.FromUtc(2026, 9, 13, 9, 0)), Is.Null);
-        });
-    }
-
-    [Test]
-    public void IsActiveAt_IsAlwaysTrueWithoutACalendarGuard()
+    public void GetNextOccurrence_IsNeverNullWithoutACalendarGuard()
     {
         var schedule = FantasyCriticJobSchedule.Cron("*/10 * * * *");
 
-        Assert.That(schedule.IsActiveAt(Instant.FromUtc(2026, 1, 1, 0, 0)), Is.True);
+        Assert.That(schedule.GetNextOccurrence(Instant.FromUtc(2026, 1, 1, 0, 0)), Is.EqualTo(Instant.FromUtc(2026, 1, 1, 0, 10)));
     }
 
     [Test]
@@ -91,26 +79,48 @@ public class FantasyCriticJobScheduleTests
     {
         var original = FantasyCriticJobSchedule.Cron("*/10 * * * *");
         var guarded = original.WithCalendarGuard(_ => false);
-        var slot = Instant.FromUtc(2026, 1, 1, 0, 0);
+        var after = Instant.FromUtc(2026, 1, 1, 0, 0);
 
         Assert.Multiple(() =>
         {
             Assert.That(guarded.Expression, Is.EqualTo(original.Expression));
-            Assert.That(guarded.IsActiveAt(slot), Is.False);
-            Assert.That(original.IsActiveAt(slot), Is.True);
+            Assert.That(guarded.GetNextOccurrence(after), Is.Null);
+            Assert.That(original.GetNextOccurrence(after), Is.EqualTo(Instant.FromUtc(2026, 1, 1, 0, 10)));
         });
     }
 
-    //September 1st midnight Eastern is 04:00 UTC, during daylight saving time.
-    [TestCase(2026, 9, 1, 3, 50, false)]
-    [TestCase(2026, 9, 1, 4, 0, true)]
+    [Test]
+    public void WithCalendarGuard_IsGivenTheOccurrenceNotTheStartingInstant()
+    {
+        var after = Instant.FromUtc(2026, 1, 1, 0, 0);
+        var expectedOccurrence = Instant.FromUtc(2026, 1, 1, 0, 10);
+        var guardedInstants = new List<Instant>();
+        var schedule = FantasyCriticJobSchedule.EveryTenMinutes.WithCalendarGuard(x =>
+        {
+            guardedInstants.Add(x);
+            return true;
+        });
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(schedule.GetNextOccurrence(after), Is.EqualTo(expectedOccurrence));
+            Assert.That(guardedInstants, Is.EqualTo(new[] { expectedOccurrence }));
+        });
+    }
+
+    //September 1st midnight Eastern is 04:00 UTC, during daylight saving time. Each case starts ten minutes before the slot being guarded.
+    [TestCase(2026, 9, 1, 3, 40, false)]
+    [TestCase(2026, 9, 1, 3, 50, true)]
     [TestCase(2026, 12, 31, 12, 0, true)]
     [TestCase(2027, 1, 1, 12, 0, false)]
     public void GrantSuperDropsSchedule_IsActiveFromSeptemberFirstEastern(int year, int month, int day, int utcHour, int utcMinute, bool expectedActive)
     {
         var schedule = Registry.Schedules[FantasyCriticJobType.GrantSuperDrops];
+        var after = Instant.FromUtc(year, month, day, utcHour, utcMinute);
 
-        Assert.That(schedule.IsActiveAt(Instant.FromUtc(year, month, day, utcHour, utcMinute)), Is.EqualTo(expectedActive));
+        var next = schedule.GetNextOccurrence(after);
+
+        Assert.That(next, expectedActive ? Is.EqualTo(after + Duration.FromMinutes(10)) : Is.Null);
     }
 
     //If the cron and the site's "next public reveal" display ever disagree, this fails instead of a post going out at the wrong time.
@@ -134,14 +144,16 @@ public class FantasyCriticJobScheduleTests
 
         foreach (var now in InstantsAcrossAYear())
         {
-            var next = schedule.GetNextOccurrence(now).ToEasternDateTime();
-            Assert.That((next.DayOfWeek, next.TimeOfDay), Is.EqualTo((TimeExtensions.ReleasingThisWeekNewsDay, TimeExtensions.ReleasingThisWeekNewsTime)),
+            var next = schedule.GetNextOccurrence(now);
+            Assert.That(next, Is.Not.Null, $"No occurrence after {now}");
+            var nextEastern = next!.Value.ToEasternDateTime();
+            Assert.That((nextEastern.DayOfWeek, nextEastern.TimeOfDay), Is.EqualTo((TimeExtensions.ReleasingThisWeekNewsDay, TimeExtensions.ReleasingThisWeekNewsTime)),
                 $"Disagreement at {now}");
         }
     }
 
     [Test]
-    public void OnlyTheConvertedTaskJobTypesHaveSchedules()
+    public void OnlyTheCronJobTypesHaveSchedules()
     {
         var scheduled = Registry.Schedules.ToDictionary(x => x.Key.Value, x => x.Value.Expression);
 

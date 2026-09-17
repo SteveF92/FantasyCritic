@@ -122,8 +122,6 @@ public static class TimeExtensions
         return dateTime.InZoneStrictly(nyc).ToInstant();
     }
 
-    public static bool ShouldGrantSuperDrops(this IClock clock) => clock.GetCurrentInstant().ShouldGrantSuperDrops();
-
     public static bool ShouldGrantSuperDrops(this Instant instant)
     {
         var date = instant.ToEasternDate();

@@ -3,13 +3,9 @@ using FantasyCritic.Lib.Extensions;
 
 namespace FantasyCritic.Lib.Jobs;
 
-//A cron expression evaluated in America/New_York, because the rules of Fantasy Critic are, whatever the servers run.
-//Cronos works in DateTime and TimeZoneInfo; this is the one place that converts, so callers deal only in Instants.
 public class FantasyCriticJobSchedule
 {
-
     //Cronos needs a TimeZoneInfo, which NodaTime can't produce, so the zone is looked up by the same IANA ID as TimeExtensions.EasternTimeZone.
-    //A container image without tzdata fails here, loudly, rather than scheduling in the wrong zone.
     private static readonly TimeZoneInfo EasternTimeZoneInfo = TimeZoneInfo.FindSystemTimeZoneById(TimeExtensions.EasternTimeZone.Id);
 
     private readonly CronExpression _cronExpression;
@@ -26,18 +22,13 @@ public class FantasyCriticJobSchedule
 
     public static readonly FantasyCriticJobSchedule EveryTenMinutes = Cron("*/10 * * * *");
     public static readonly FantasyCriticJobSchedule Hourly = Cron("0 * * * *");
+    public static readonly FantasyCriticJobSchedule EveryTwoHours = Cron("0 */2 * * *");
+    public static readonly FantasyCriticJobSchedule AtTenPmEastern = Cron("0 22 * * *");
+    public static readonly FantasyCriticJobSchedule AtOnePastMidnightEastern = Cron("1 0 * * *");
 
-    public static FantasyCriticJobSchedule Cron(string expression) => new(expression, null);
-    //For a slot cron can't express, like "every ten minutes, but only from September 1st". A slot the guard rejects is never enqueued,
-    //so it leaves no do-nothing row. The guard is given the slot, not the current time, and must depend on nothing else:
-    //the scheduler may evaluate the same slot more than once, and every evaluation has to agree.
-    public FantasyCriticJobSchedule WithCalendarGuard(Func<Instant, bool> calendarGuard) => new(Expression, calendarGuard);
-
-    public bool IsActiveAt(Instant slot) => _calendarGuard?.Invoke(slot) ?? true;
-
-    //Derived from the same constants that drive the site's "next reveal" display, so the two cannot disagree.
     public static FantasyCriticJobSchedule Weekly(IsoDayOfWeek dayOfWeek, LocalTime timeOfDay)
     {
+        //We could do this with plain cron, but this allows us to align with the constants in the TimeExtensions file.
         if (timeOfDay.Second != 0 || timeOfDay.NanosecondOfSecond != 0)
         {
             throw new ArgumentException($"A cron schedule can only express whole minutes, not {timeOfDay}.", nameof(timeOfDay));
@@ -48,34 +39,27 @@ public class FantasyCriticJobSchedule
         return new FantasyCriticJobSchedule($"{timeOfDay.Minute} {timeOfDay.Hour} * * {cronDayOfWeek}", null);
     }
 
-    public Instant GetNextOccurrence(Instant after)
+    public static FantasyCriticJobSchedule Cron(string expression) => new(expression, null);
+
+    //Used for more complex cases like Grant Super Drops, which needs to only start happening after September 1st
+    public FantasyCriticJobSchedule WithCalendarGuard(Func<Instant, bool> calendarGuard) => new(Expression, calendarGuard);
+
+    public override string ToString() => Expression;
+
+    public Instant? GetNextOccurrence(Instant after)
     {
         var next = _cronExpression.GetNextOccurrence(after.ToDateTimeUtc(), EasternTimeZoneInfo);
         if (next is null)
         {
-            //Only possible for an expression that can never fire again, which none of ours are.
             throw new InvalidOperationException($"Cron expression '{Expression}' has no occurrence after {after}.");
         }
 
-        return Instant.FromDateTimeUtc(next.Value);
-    }
-
-    //The most recent occurrence in (after, upTo], or null if none has come due. Missed occurrences before it are deliberately skipped:
-    //a worker that was down for a day should run a ten-minute job once, not 144 times.
-    public Instant? GetLatestOccurrence(Instant after, Instant upTo)
-    {
-        if (upTo <= after)
+        var nextOccurrence = Instant.FromDateTimeUtc(next.Value);
+        if (_calendarGuard is not null && !_calendarGuard.Invoke(nextOccurrence))
         {
             return null;
         }
 
-        var latest = _cronExpression
-            .GetOccurrencesDescending(upTo.ToDateTimeUtc(), after.ToDateTimeUtc(), EasternTimeZoneInfo, fromInclusive: true, toInclusive: false)
-            .Select(x => (DateTime?)x)
-            .FirstOrDefault();
-
-        return latest.HasValue ? Instant.FromDateTimeUtc(latest.Value) : null;
+        return nextOccurrence;
     }
-
-    public override string ToString() => Expression;
 }
