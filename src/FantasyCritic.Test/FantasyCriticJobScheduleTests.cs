@@ -162,10 +162,12 @@ public class FantasyCriticJobScheduleTests
             ["ProcessSpecialAuctions"] = "*/10 * * * *",
             ["GrantSuperDrops"] = "0 * * * *",
             ["RefreshPatreonInfo"] = "0 * * * *",
-            ["SetTimeFlags"] = "0 * * * *",
             ["FullDataRefresh"] = "0 */2 * * *",
             ["UpdateDailyPublisherStatistics"] = "0 22 * * *",
             ["PushGameReleaseMessages"] = "1 0 * * *",
+            ["EndOfYearRollover"] = "1 0 * * *",
+            ["AdvanceRoyaleQuarters"] = "1 0 * * *",
+            ["PrepareForActionProcessing"] = "0 20 * * 6",
             ["SendAllPublicBiddingMessages"] = "0 20 * * 4",
             ["SendReleasingThisWeekUpdate"] = "0 20 * * 0",
         }));
