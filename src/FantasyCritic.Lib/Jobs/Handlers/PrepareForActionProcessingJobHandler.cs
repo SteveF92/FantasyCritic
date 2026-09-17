@@ -1,11 +1,14 @@
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
-internal class PrepareForActionProcessingJobHandler : IFantasyCriticJobHandler
+internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandler
 {
     private readonly InterLeagueService _interLeagueService;
     private readonly AdminService _adminService;
+
+    public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(TimeExtensions.ActionProcessingDay, TimeExtensions.ActionProcessingTime);
 
     public PrepareForActionProcessingJobHandler(InterLeagueService interLeagueService, AdminService adminService)
     {
@@ -25,4 +28,5 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticJobHandler
         await context.UpdateDetailedStatus("Action processing mode on. Database snapshot started.");
         return Result.Success();
     }
+
 }
