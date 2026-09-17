@@ -622,10 +622,8 @@ public class AdminService
         var leagueYearsWithSuperDrops = allLeagueYears.Where(x => x.IsFirstDraftFinished && x.Options.GrantSuperDrops).ToList();
 
         var allLeagueActions = await _fantasyCriticRepo.GetLeagueActions(currentDate.Year);
-        var allSuperDropActions = allLeagueActions.Where(x => x.Description.Contains("super drop", StringComparison.InvariantCultureIgnoreCase)).ToList();
         var automatedGrantActions = allLeagueActions.Where(x => x.ActionType == "Granted Super Drop");
-        var manualGrantActions = new List<LeagueAction>();
-        var publishersAlreadyGranted = automatedGrantActions.Concat(manualGrantActions).Select(x => x.Publisher.PublisherID).ToHashSet();
+        var publishersAlreadyGranted = automatedGrantActions.Select(x => x.Publisher.PublisherID).ToHashSet();
 
         List<Publisher> publishersToGrantSuperDrop = [];
         List<LeagueAction> superDropActions = [];

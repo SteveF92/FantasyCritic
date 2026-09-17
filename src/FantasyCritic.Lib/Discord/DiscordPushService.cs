@@ -715,7 +715,11 @@ public class DiscordPushService
             }
         }
 
-        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+        var failedMessageCount = await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+        if (failedMessageCount > 0)
+        {
+            throw new InvalidOperationException($"Failed to send {failedMessageCount} public bidding Discord message(s).");
+        }
     }
 
     public async Task SendReleasingThisWeekUpdate(IReadOnlyList<MasterGameYear> masterGameYears, int year)
