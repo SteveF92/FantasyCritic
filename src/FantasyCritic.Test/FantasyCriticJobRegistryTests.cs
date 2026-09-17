@@ -61,6 +61,15 @@ public class FantasyCriticJobRegistryTests
     }
 
     [Test]
+    public void GetDueJobsToDeferTo_FullDataRefreshDefersToEndOfYearRolloverWhenBothAreDue()
+    {
+        var registry = FantasyCriticJobRegistry.Create();
+        var due = new HashSet<FantasyCriticJobType> { FantasyCriticJobType.FullDataRefresh, FantasyCriticJobType.EndOfYearRollover };
+
+        Assert.That(registry.GetDueJobsToDeferTo(FantasyCriticJobType.FullDataRefresh, due), Is.EqualTo(new[] { FantasyCriticJobType.EndOfYearRollover }));
+    }
+
+    [Test]
     public void GetDueJobsToDeferTo_IsEmptyWhenNothingItDefersToIsDue()
     {
         var registry = FantasyCriticJobRegistry.Create();

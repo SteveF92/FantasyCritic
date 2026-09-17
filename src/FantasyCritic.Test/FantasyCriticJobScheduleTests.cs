@@ -165,12 +165,29 @@ public class FantasyCriticJobScheduleTests
             ["FullDataRefresh"] = "0 */2 * * *",
             ["UpdateDailyPublisherStatistics"] = "0 22 * * *",
             ["PushGameReleaseMessages"] = "1 0 * * *",
-            ["EndOfYearRollover"] = "1 0 * * *",
+            ["EndOfYearRollover"] = "0 0 1 1 *",
             ["AdvanceRoyaleQuarters"] = "1 0 * * *",
             ["PrepareForActionProcessing"] = "0 20 * * 6",
             ["SendAllPublicBiddingMessages"] = "0 20 * * 4",
             ["SendReleasingThisWeekUpdate"] = "0 20 * * 0",
         }));
+    }
+
+    //FullDataRefresh only skips in favor of the rollover when both are due in one scheduler wake, so their slots must coincide exactly.
+    [TestCase(2026, 12, 31, 12)]
+    [TestCase(2026, 7, 1, 0)]
+    public void EndOfYearRollover_SharesASlotWithFullDataRefreshAtMidnightOnJanuaryFirst(int year, int month, int day, int utcHour)
+    {
+        var rollover = Registry.Schedules[FantasyCriticJobType.EndOfYearRollover];
+        var refresh = Registry.Schedules[FantasyCriticJobType.FullDataRefresh];
+        var januaryFirstMidnightEastern = Instant.FromUtc(2027, 1, 1, 5, 0);
+        var justBeforeMidnight = januaryFirstMidnightEastern - Duration.FromMinutes(1);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(rollover.GetNextOccurrence(Instant.FromUtc(year, month, day, utcHour, 0)), Is.EqualTo(januaryFirstMidnightEastern));
+            Assert.That(refresh.GetNextOccurrence(justBeforeMidnight), Is.EqualTo(januaryFirstMidnightEastern));
+        });
     }
 
     //A 61-minute step walks through every minute-of-hour and hour-of-day across both DST transitions. The exact slots, winter and summer,

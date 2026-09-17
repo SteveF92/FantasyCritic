@@ -39,8 +39,8 @@ public class FantasyCriticJobRegistry
 
     private static Dictionary<FantasyCriticJobType, IReadOnlyList<FantasyCriticJobType>> CreateSkipWhenDue() => new()
     {
-        //Prepare refreshes data itself, after action processing mode is on.
-        { FantasyCriticJobType.FullDataRefresh, [FantasyCriticJobType.PrepareForActionProcessing] },
+        //Prepare refreshes data itself, after action processing mode is on. The rollover refreshes critic info itself, before finishing the year.
+        { FantasyCriticJobType.FullDataRefresh, [FantasyCriticJobType.PrepareForActionProcessing, FantasyCriticJobType.EndOfYearRollover] },
     };
 
     //The one list of handlers. Adding a job type means adding a class and a line here; Validate fails startup if either is forgotten.

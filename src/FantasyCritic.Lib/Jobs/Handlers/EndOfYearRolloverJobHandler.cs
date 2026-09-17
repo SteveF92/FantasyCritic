@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class EndOfYearRolloverJobHandler : IFantasyCriticCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.EndOfYearRollover;
-    public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.AtOnePastMidnightEastern;
+    public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Cron("0 0 1 1 *");
 
     private readonly AdminService _adminService;
 
