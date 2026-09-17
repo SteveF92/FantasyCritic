@@ -53,12 +53,6 @@ public class Scheduler : BackgroundService
                     throw new Exception($"Job Type {jobType} not found in database.");
                 }
 
-                if (!jobTypeFromDatabase.RunType.AllowsCron)
-                {
-                    _logger.LogWarning("Cron scheduling is disabled for job type {JobType}.", jobType);
-                    continue;
-                }
-
                 if (!_nextScheduledOccurrencePerJobType.TryGetValue(jobType, out var nextScheduledOccurrenceForJobType))
                 {
                     _logger.LogDebug("Nothing to queue for {JobType}", jobType);
@@ -69,6 +63,13 @@ public class Scheduler : BackgroundService
                 if (!shouldSchedule)
                 {
                     _logger.LogDebug("We have not reached the next scheduled time for {JobType}, which is {NextJobTime}. Nothing to do.", jobType, nextScheduledOccurrenceForJobType);
+                    continue;
+                }
+
+                if (!jobTypeFromDatabase.RunType.AllowsCron)
+                {
+                    _logger.LogWarning("Skipped slot {ScheduledFor} for {JobType}: it has a cron schedule in code, but its RunType {RunType} does not allow cron.",
+                        nextScheduledOccurrenceForJobType, jobType, jobTypeFromDatabase.RunType);
                     continue;
                 }
 
