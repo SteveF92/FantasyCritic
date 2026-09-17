@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -12,6 +13,8 @@ namespace FantasyCritic.Test;
 [TestFixture]
 public class FantasyCriticJobRegistryTests
 {
+    private static readonly IReadOnlyDictionary<FantasyCriticJobType, IReadOnlyList<FantasyCriticJobType>> SkipWhenDue = FantasyCriticJobRegistry.Create().SkipWhenDue;
+
     [Test]
     public void Create_RegistersExactlyOneHandlerForEveryJobType()
     {
@@ -25,7 +28,7 @@ public class FantasyCriticJobRegistryTests
     {
         var definitions = FantasyCriticJobRegistry.Create().Definitions.Where(x => !x.JobType.Equals(FantasyCriticJobType.ProcessActions));
 
-        var exception = Assert.Throws<InvalidOperationException>(() => new FantasyCriticJobRegistry(definitions));
+        var exception = Assert.Throws<InvalidOperationException>(() => new FantasyCriticJobRegistry(definitions, SkipWhenDue));
         Assert.That(exception!.Message, Does.Contain("ProcessActions"));
     }
 
@@ -34,7 +37,7 @@ public class FantasyCriticJobRegistryTests
     {
         var definitions = FantasyCriticJobRegistry.Create().Definitions.Append(FantasyCriticJobDefinition.For<SecondProcessActionsHandler>());
 
-        var exception = Assert.Throws<InvalidOperationException>(() => new FantasyCriticJobRegistry(definitions));
+        var exception = Assert.Throws<InvalidOperationException>(() => new FantasyCriticJobRegistry(definitions, SkipWhenDue));
         Assert.That(exception!.Message, Does.Contain("ProcessActions"));
     }
 
@@ -44,9 +47,66 @@ public class FantasyCriticJobRegistryTests
         var definitions = FantasyCriticJobRegistry.Create().Definitions
             .Select(x => x.JobType.Equals(FantasyCriticJobType.ExpireTrades) ? FantasyCriticJobDefinition.For<CronExpireTradesHandler>() : x);
 
-        var exception = Assert.Throws<InvalidOperationException>(() => new FantasyCriticJobRegistry(definitions));
+        var exception = Assert.Throws<InvalidOperationException>(() => new FantasyCriticJobRegistry(definitions, SkipWhenDue));
         Assert.That(exception!.Message, Does.Contain(nameof(CronExpireTradesHandler)));
     }
+
+    [Test]
+    public void GetDueJobsToDeferTo_FullDataRefreshDefersToPrepareForActionProcessingWhenBothAreDue()
+    {
+        var registry = FantasyCriticJobRegistry.Create();
+        var due = new HashSet<FantasyCriticJobType> { FantasyCriticJobType.FullDataRefresh, FantasyCriticJobType.PrepareForActionProcessing };
+
+        Assert.That(registry.GetDueJobsToDeferTo(FantasyCriticJobType.FullDataRefresh, due), Is.EqualTo(new[] { FantasyCriticJobType.PrepareForActionProcessing }));
+    }
+
+    [Test]
+    public void GetDueJobsToDeferTo_IsEmptyWhenNothingItDefersToIsDue()
+    {
+        var registry = FantasyCriticJobRegistry.Create();
+        var due = new HashSet<FantasyCriticJobType> { FantasyCriticJobType.FullDataRefresh, FantasyCriticJobType.ExpireTrades };
+
+        Assert.That(registry.GetDueJobsToDeferTo(FantasyCriticJobType.FullDataRefresh, due), Is.Empty);
+    }
+
+    [Test]
+    public void GetDueJobsToDeferTo_IsEmptyForAJobWithoutAnEntry()
+    {
+        var registry = FantasyCriticJobRegistry.Create();
+        var due = new HashSet<FantasyCriticJobType> { FantasyCriticJobType.ExpireTrades, FantasyCriticJobType.PrepareForActionProcessing };
+
+        Assert.That(registry.GetDueJobsToDeferTo(FantasyCriticJobType.ExpireTrades, due), Is.Empty);
+    }
+
+    [Test]
+    public void Constructor_RejectsASkipWhenDueEntryNamingAJobWithoutASchedule()
+    {
+        var skipWhenDue = WithEntry(FantasyCriticJobType.ExpireTrades, FantasyCriticJobType.ProcessActions);
+
+        var exception = Assert.Throws<InvalidOperationException>(() => new FantasyCriticJobRegistry(FantasyCriticJobRegistry.Create().Definitions, skipWhenDue));
+        Assert.That(exception!.Message, Does.Contain("ProcessActions"));
+    }
+
+    [Test]
+    public void Constructor_RejectsAJobSkippingInFavorOfItself()
+    {
+        var skipWhenDue = WithEntry(FantasyCriticJobType.ExpireTrades, FantasyCriticJobType.ExpireTrades);
+
+        var exception = Assert.Throws<InvalidOperationException>(() => new FantasyCriticJobRegistry(FantasyCriticJobRegistry.Create().Definitions, skipWhenDue));
+        Assert.That(exception!.Message, Does.Contain("ExpireTrades"));
+    }
+
+    [Test]
+    public void Constructor_RejectsAChainOfSkipWhenDueEntries()
+    {
+        var skipWhenDue = WithEntry(FantasyCriticJobType.PrepareForActionProcessing, FantasyCriticJobType.ExpireTrades);
+
+        var exception = Assert.Throws<InvalidOperationException>(() => new FantasyCriticJobRegistry(FantasyCriticJobRegistry.Create().Definitions, skipWhenDue));
+        Assert.That(exception!.Message, Does.Contain("PrepareForActionProcessing"));
+    }
+
+    private static Dictionary<FantasyCriticJobType, IReadOnlyList<FantasyCriticJobType>> WithEntry(FantasyCriticJobType jobType, FantasyCriticJobType deferTo) =>
+        new(SkipWhenDue) { [jobType] = [deferTo] };
 
     //Checks the registrations rather than resolving them: handlers need the whole application graph, which the worker's ValidateOnBuild checks at startup.
     [Test]
