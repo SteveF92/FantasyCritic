@@ -68,7 +68,8 @@ public static class Program
     {
         var loggerConfiguration = FantasyCriticLogging
             .CreateConfiguration(loggingPaths, LogEventLevel.Information)
-            .WriteToApplicationLogFile(loggingPaths);
+            .WriteToApplicationLogFile(loggingPaths)
+            .WriteToFlowLogFiles(loggingPaths, WorkerLogging.Flows);
 
         if (configuration is not null && !environment.IsDevelopment())
         {

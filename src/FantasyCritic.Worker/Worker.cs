@@ -34,6 +34,7 @@ public class Worker : BackgroundService
 
     private async Task JobRunnerLoop(CancellationToken stoppingToken)
     {
+        using var flowScope = _logger.BeginFlowScope(WorkerLogging.JobRunnerFlow);
         while (!stoppingToken.IsCancellationRequested)
         {
             FantasyCriticJob? nextJob = null;
@@ -56,6 +57,7 @@ public class Worker : BackgroundService
             {
                 if (nextJob is not null)
                 {
+                    using var jobScope = _logger.BeginJobScope(nextJob);
                     _logger.LogError(ex, "Job runner loop failed while handling job {Job}.", nextJob);
                 }
                 else
@@ -70,6 +72,7 @@ public class Worker : BackgroundService
 
     private async Task JobCancellationLoop(CancellationToken stoppingToken)
     {
+        using var flowScope = _logger.BeginFlowScope(WorkerLogging.CancellerFlow);
         while (!stoppingToken.IsCancellationRequested)
         {
             try
@@ -102,6 +105,7 @@ public class Worker : BackgroundService
         //Settle it now, or it sits Queued and runs whenever the type is next re-enabled.
         foreach (var job in queuedJobs.Where(x => !x.AllowedByRunType))
         {
+            using var jobScope = _logger.BeginJobScope(job);
             try
             {
                 await CancelDisallowedJob(job, jobRepo, clock);
@@ -128,6 +132,9 @@ public class Worker : BackgroundService
 
     private async Task RunJob(FantasyCriticJob job, CancellationToken stoppingToken)
     {
+        //Covers the handler too, so its logs carry the JobID without the handler doing anything.
+        using var jobScope = _logger.BeginJobScope(job);
+
         //Linked to the stopping token so a shutdown cancels the running job the same way an admin request does.
         using var jobCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
 
@@ -160,8 +167,6 @@ public class Worker : BackgroundService
             Result result = Result.Success();
             try
             {
-                //From the job's own scope, not the root provider: handlers and everything they depend on are scoped to one run.
-                //Resolved inside this try so a handler that can't be constructed is recorded as Error rather than left Running.
                 var handler = scope.ServiceProvider.GetRequiredKeyedService<IJobHandler>(job.Type);
                 result = await handler.Run(context, jobCancellationSource.Token);
             }
@@ -171,11 +176,9 @@ public class Worker : BackgroundService
             }
             catch (Exception ex)
             {
-                //Includes an OperationCanceledException we didn't ask for, such as an HTTP timeout.
                 jobError = ex;
             }
 
-            //Status writes stay outside the try above, so failing to record a success is never recorded as the job failing.
             if (cancelledInProgress)
             {
                 await jobRepo.CancelInProgressJob(job, clock.GetCurrentInstant());
@@ -183,7 +186,6 @@ public class Worker : BackgroundService
             }
             else if (jobError is not null)
             {
-                //ToString rather than Message: the stack trace and inner exceptions are what make a failed job diagnosable from the console.
                 await jobRepo.ErrorJob(job, jobError.ToString(), clock.GetCurrentInstant());
                 _logger.LogError(jobError, "Job {Job} failed.", job);
             }
@@ -214,6 +216,8 @@ public class Worker : BackgroundService
         var cancellingJobs = incompleteJobs.Where(x => x.Status.Equals(FantasyCriticJobStatus.Cancelling));
         foreach (var job in cancellingJobs)
         {
+            using var jobScope = _logger.BeginJobScope(job);
+
             //One job failing to cancel shouldn't hold up the others.
             try
             {

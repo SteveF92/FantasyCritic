@@ -14,6 +14,8 @@ public static class FantasyCriticLogging
 {
     public const string OutputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}.{Method}) {Message}{NewLine}{Exception}";
 
+    //For a process that runs several independent loops. Set through a log scope; events carrying it also get their own file and a Loki label.
+    public const string FlowProperty = "Flow";
 
     public static LoggerConfiguration CreateConfiguration(LoggingPaths loggingPaths, LogEventLevel microsoftMinimumLevel)
     {
@@ -39,6 +41,21 @@ public static class FantasyCriticLogging
                 })
                 .WriteTo.File(loggingPaths.MyLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: OutputTemplate);
         });
+    }
+
+    public static LoggerConfiguration WriteToFlowLogFiles(this LoggerConfiguration loggerConfiguration, LoggingPaths loggingPaths, IEnumerable<string> flows)
+    {
+        foreach (var flow in flows)
+        {
+            loggerConfiguration = loggerConfiguration.WriteTo.Logger(config =>
+            {
+                config.Filter
+                    .ByIncludingOnly(logEvent => logEvent.Properties.GetValueOrDefault(FlowProperty) is ScalarValue { Value: string eventFlow } && eventFlow == flow)
+                    .WriteTo.File(loggingPaths.GetFlowLogPath(flow), rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: OutputTemplate);
+            });
+        }
+
+        return loggerConfiguration;
     }
 
     public static LoggerConfiguration WriteToGrafanaLoki(this LoggerConfiguration loggerConfiguration, IHostEnvironment environment, IConfiguration configuration)
@@ -69,7 +86,9 @@ public static class FantasyCriticLogging
                 Password = lokiApiToken
             },
             labels: lokiLabels,
-            propertiesAsLabels: ["SourceContext"]);
+            //Only low-cardinality properties belong here: each distinct label value is its own Loki stream.
+            //High-cardinality ones like JobID stay in the JSON line, queryable with | json.
+            propertiesAsLabels: ["SourceContext", FlowProperty]);
 
     }
 }
