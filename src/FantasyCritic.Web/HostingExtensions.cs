@@ -3,8 +3,6 @@ using System.Text.Json;
 using FantasyCritic.Hosting;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Scheduling;
-using FantasyCritic.Lib.Scheduling.Lib;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.Authorization;
 using FantasyCritic.Web.Hubs;
@@ -53,24 +51,6 @@ public static class HostingExtensions
 
         //Read once at startup: the RELEASE file cannot change without a new deploy, which restarts the process.
         services.AddSingleton<BuildInfo>(_ => BuildInfoReader.Read(environment.ContentRootPath));
-
-        if (!environment.IsDevelopment())
-        {
-            //Add scheduled tasks & scheduler
-            services.AddSingleton<IScheduledTask, RefreshDataTask>();
-            services.AddSingleton<IScheduledTask, TimeFlagsTask>();
-            services.AddSingleton<IScheduledTask, PatreonUpdateTask>();
-            services.AddSingleton<IScheduledTask, PublicBiddingNotificationTask>();
-            services.AddSingleton<IScheduledTask, ProcessSpecialAuctionsTask>();
-            services.AddSingleton<IScheduledTask, GrantSuperDropsTask>();
-            services.AddSingleton<IScheduledTask, ExpireTradesTask>();
-            services.AddSingleton<IScheduledTask, GameReleaseNotificationTask>();
-            services.AddSingleton<IScheduledTask, ReleasingThisWeekNotificationTask>();
-            services.AddScheduler((_, args) =>
-            {
-                args.SetObserved();
-            });
-        }
 
         services.AddAuthorization(options =>
         {
