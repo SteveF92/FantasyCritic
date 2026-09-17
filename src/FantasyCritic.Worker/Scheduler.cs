@@ -11,7 +11,7 @@ public class Scheduler : BackgroundService
     private readonly ILogger<Scheduler> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly IClock _clock;
-    private readonly IReadOnlyDictionary<FantasyCriticJobType, FantasyCriticJobSchedule> _schedules;
+    private readonly FantasyCriticJobRegistry _jobRegistry;
     private readonly Dictionary<FantasyCriticJobType, Instant> _nextScheduledOccurrencePerJobType;
 
     public Scheduler(ILogger<Scheduler> logger, IServiceProvider serviceProvider, IClock clock, FantasyCriticJobRegistry jobRegistry)
@@ -19,7 +19,7 @@ public class Scheduler : BackgroundService
         _logger = logger;
         _serviceProvider = serviceProvider;
         _clock = clock;
-        _schedules = jobRegistry.Schedules;
+        _jobRegistry = jobRegistry;
         _nextScheduledOccurrencePerJobType = new Dictionary<FantasyCriticJobType, Instant>();
     }
 
@@ -45,7 +45,9 @@ public class Scheduler : BackgroundService
             var schedulingInstant = _clock.GetCurrentInstant();
             var updatedJobTypes = await jobRepo.GetJobTypeRunTypes();
 
-            foreach (var (jobType, schedule) in _schedules)
+            //Decide everything that is due before enqueueing anything, because whether a job runs can depend on what else is due.
+            var dueSlots = new List<DueSlot>();
+            foreach (var (jobType, schedule) in _jobRegistry.Schedules)
             {
                 var jobTypeFromDatabase = updatedJobTypes.SingleOrDefault(x => x.JobType.Equals(jobType));
                 if (jobTypeFromDatabase is null)
@@ -73,19 +75,34 @@ public class Scheduler : BackgroundService
                     continue;
                 }
 
-                var job = new FantasyCriticJob(Guid.NewGuid(), jobTypeFromDatabase, createdByUser: null, FantasyCriticJobStatus.Queued,
-                    detailedStatus: null, errorMessage: null, scheduledFor: nextScheduledOccurrenceForJobType, createdAt: schedulingInstant, startedAt: null, finishedAt: null);
+                dueSlots.Add(new DueSlot(jobTypeFromDatabase, schedule, nextScheduledOccurrenceForJobType));
+            }
+
+            var dueJobTypes = dueSlots.Select(x => x.JobType.JobType).ToHashSet();
+            foreach (var dueSlot in dueSlots)
+            {
+                var jobType = dueSlot.JobType.JobType;
+                var dueJobsToDeferTo = _jobRegistry.GetDueJobsToDeferTo(jobType, dueJobTypes);
+                if (dueJobsToDeferTo.Any())
+                {
+                    _logger.LogInformation("Skipped slot {ScheduledFor} for {JobType}: deferring to {DueJobTypes}, due in the same wake.",
+                        dueSlot.ScheduledFor, jobType, string.Join(", ", dueJobsToDeferTo));
+                    continue;
+                }
+
+                var job = new FantasyCriticJob(Guid.NewGuid(), dueSlot.JobType, createdByUser: null, FantasyCriticJobStatus.Queued,
+                    detailedStatus: null, errorMessage: null, scheduledFor: dueSlot.ScheduledFor, createdAt: schedulingInstant, startedAt: null, finishedAt: null);
                 using var jobScope = _logger.BeginJobScope(job);
 
                 var created = await jobRepo.CreateJob(job);
                 if (created)
                 {
-                    _logger.LogInformation("Enqueued job {Job} for scheduled slot {ScheduledFor} ({Schedule}).", job, nextScheduledOccurrenceForJobType, schedule);
+                    _logger.LogInformation("Enqueued job {Job} for scheduled slot {ScheduledFor} ({Schedule}).", job, dueSlot.ScheduledFor, dueSlot.Schedule);
                 }
                 else
                 {
                     //Another scheduler got there first, such as the old container during a deploy overlap. The slot is enqueued, which is all that matters.
-                    _logger.LogWarning("Slot {ScheduledFor} for {JobType} was already enqueued - probably a deployment overlap.", nextScheduledOccurrenceForJobType, jobType);
+                    _logger.LogWarning("Slot {ScheduledFor} for {JobType} was already enqueued - probably a deployment overlap.", dueSlot.ScheduledFor, jobType);
                 }
             }
 
@@ -102,7 +119,7 @@ public class Scheduler : BackgroundService
 
     private void CalculateNextOccurrenceTimes(Instant schedulingInstant)
     {
-        foreach (var (jobType, schedule) in _schedules)
+        foreach (var (jobType, schedule) in _jobRegistry.Schedules)
         {
             Instant? nextOccurrence = schedule.GetNextOccurrence(schedulingInstant);
             if (nextOccurrence.HasValue)
@@ -115,4 +132,6 @@ public class Scheduler : BackgroundService
             }
         }
     }
+
+    private record DueSlot(FantasyCriticJobTypeWithRunType JobType, FantasyCriticJobSchedule Schedule, Instant ScheduledFor);
 }
