@@ -1,18 +1,21 @@
 using FantasyCritic.Lib.Services;
+using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class FullDataRefreshJobHandler : IFantasyCriticCronJobHandler
 {
-    private readonly AdminService _adminService;
+    public static FantasyCriticJobType JobType => FantasyCriticJobType.FullDataRefresh;
+    public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.EveryTwoHours;
 
-    public FullDataRefreshJobHandler(AdminService adminService)
+    private readonly AdminService _adminService;
+    private readonly ILogger<FullDataRefreshJobHandler> _logger;
+
+    public FullDataRefreshJobHandler(AdminService adminService, ILogger<FullDataRefreshJobHandler> logger)
     {
         _adminService = adminService;
+        _logger = logger;
     }
-
-    public static FantasyCriticJobType JobType => FantasyCriticJobType.FullDataRefresh;
-    public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Cron("0 */2 * * *");
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {

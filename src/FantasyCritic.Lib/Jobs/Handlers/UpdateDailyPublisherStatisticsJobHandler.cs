@@ -1,18 +1,21 @@
 using FantasyCritic.Lib.Services;
+using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class UpdateDailyPublisherStatisticsJobHandler : IFantasyCriticCronJobHandler
 {
-    private readonly AdminService _adminService;
+    public static FantasyCriticJobType JobType => FantasyCriticJobType.UpdateDailyPublisherStatistics;
+    public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.AtTenPmEastern;
 
-    public UpdateDailyPublisherStatisticsJobHandler(AdminService adminService)
+    private readonly AdminService _adminService;
+    private readonly ILogger<UpdateDailyPublisherStatisticsJobHandler> _logger;
+
+    public UpdateDailyPublisherStatisticsJobHandler(AdminService adminService, ILogger<UpdateDailyPublisherStatisticsJobHandler> logger)
     {
         _adminService = adminService;
+        _logger = logger;
     }
-
-    public static FantasyCriticJobType JobType => FantasyCriticJobType.UpdateDailyPublisherStatistics;
-    public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Cron("0 22 * * *");
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {

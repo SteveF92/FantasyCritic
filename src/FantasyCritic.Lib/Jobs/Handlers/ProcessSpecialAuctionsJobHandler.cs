@@ -1,18 +1,21 @@
 using FantasyCritic.Lib.Services;
+using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class ProcessSpecialAuctionsJobHandler : IFantasyCriticCronJobHandler
 {
-    private readonly AdminService _adminService;
-
-    public ProcessSpecialAuctionsJobHandler(AdminService adminService)
-    {
-        _adminService = adminService;
-    }
-
     public static FantasyCriticJobType JobType => FantasyCriticJobType.ProcessSpecialAuctions;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.EveryTenMinutes;
+
+    private readonly AdminService _adminService;
+    private readonly ILogger<ProcessSpecialAuctionsJobHandler> _logger;
+
+    public ProcessSpecialAuctionsJobHandler(AdminService adminService, ILogger<ProcessSpecialAuctionsJobHandler> logger)
+    {
+        _adminService = adminService;
+        _logger = logger;
+    }
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
