@@ -108,27 +108,26 @@ public class FantasyCriticJobScheduleTests
         });
     }
 
-    //September 1st midnight Eastern is 04:00 UTC, during daylight saving time. Each case starts ten minutes before the slot being guarded.
-    [TestCase(2026, 9, 1, 3, 40, false)]
-    [TestCase(2026, 9, 1, 3, 50, true)]
-    [TestCase(2026, 12, 31, 12, 0, true)]
-    [TestCase(2027, 1, 1, 12, 0, false)]
-    public void GrantSuperDropsSchedule_IsActiveFromSeptemberFirstEastern(int year, int month, int day, int utcHour, int utcMinute, bool expectedActive)
+    //September 1st midnight Eastern is 04:00 UTC, during daylight saving time. Each case starts one hour before the slot being guarded.
+    [TestCase(2026, 9, 1, 2, false)]
+    [TestCase(2026, 9, 1, 3, true)]
+    [TestCase(2026, 12, 31, 12, true)]
+    [TestCase(2027, 1, 1, 12, false)]
+    public void GrantSuperDropsSchedule_IsActiveFromSeptemberFirstEastern(int year, int month, int day, int utcHour, bool expectedActive)
     {
         var schedule = Registry.Schedules[FantasyCriticJobType.GrantSuperDrops];
-        var after = Instant.FromUtc(year, month, day, utcHour, utcMinute);
+        var after = Instant.FromUtc(year, month, day, utcHour, 0);
 
         var next = schedule.GetNextOccurrence(after);
 
-        Assert.That(next, expectedActive ? Is.EqualTo(after + Duration.FromMinutes(10)) : Is.Null);
+        Assert.That(next, expectedActive ? Is.EqualTo(after + Duration.FromHours(1)) : Is.Null);
     }
 
     //If the cron and the site's "next public reveal" display ever disagree, this fails instead of a post going out at the wrong time.
-    [TestCase("PushPublicBiddingMessages")]
-    [TestCase("SendPublicBiddingEmails")]
-    public void PublicBiddingSchedules_MatchNextPublicRevealTime(string jobTypeName)
+    [Test]
+    public void PublicBiddingSchedule_MatchesNextPublicRevealTime()
     {
-        var schedule = Registry.Schedules[FantasyCriticJobType.FromValue(jobTypeName)];
+        var schedule = Registry.Schedules[FantasyCriticJobType.SendAllPublicBiddingMessages];
 
         foreach (var now in InstantsAcrossAYear())
         {
@@ -161,14 +160,13 @@ public class FantasyCriticJobScheduleTests
         {
             ["ExpireTrades"] = "*/10 * * * *",
             ["ProcessSpecialAuctions"] = "*/10 * * * *",
-            ["GrantSuperDrops"] = "*/10 * * * *",
+            ["GrantSuperDrops"] = "0 * * * *",
             ["RefreshPatreonInfo"] = "0 * * * *",
             ["SetTimeFlags"] = "0 * * * *",
             ["FullDataRefresh"] = "0 */2 * * *",
             ["UpdateDailyPublisherStatistics"] = "0 22 * * *",
-            ["PushGameReleaseMessages"] = "0 0 * * *",
-            ["PushPublicBiddingMessages"] = "0 20 * * 4",
-            ["SendPublicBiddingEmails"] = "0 20 * * 4",
+            ["PushGameReleaseMessages"] = "1 0 * * *",
+            ["SendAllPublicBiddingMessages"] = "0 20 * * 4",
             ["SendReleasingThisWeekUpdate"] = "0 20 * * 0",
         }));
     }
