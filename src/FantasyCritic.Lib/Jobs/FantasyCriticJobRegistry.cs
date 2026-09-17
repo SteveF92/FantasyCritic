@@ -19,32 +19,33 @@ public class FantasyCriticJobRegistry
     public IReadOnlyDictionary<FantasyCriticJobType, FantasyCriticJobSchedule> Schedules { get; }
 
     //The one list of handlers. Adding a job type means adding a class and a line here; Validate fails startup if either is forgotten.
-    public static FantasyCriticJobRegistry Create() => new(
-    [
-        FantasyCriticJobDefinition.ForCron<ExpireTradesJobHandler>(),
-        FantasyCriticJobDefinition.ForCron<FullDataRefreshJobHandler>(),
-        FantasyCriticJobDefinition.ForCron<GrantSuperDropsJobHandler>(),
-        FantasyCriticJobDefinition.For<MakeSlotsConsistentJobHandler>(),
-        FantasyCriticJobDefinition.For<PrepareForActionProcessingJobHandler>(),
-        FantasyCriticJobDefinition.For<ProcessActionsJobHandler>(),
-        FantasyCriticJobDefinition.ForCron<ProcessSpecialAuctionsJobHandler>(),
-        FantasyCriticJobDefinition.ForCron<PushGameReleaseMessagesJobHandler>(),
-        FantasyCriticJobDefinition.ForCron<PushPublicBiddingMessagesJobHandler>(),
-        FantasyCriticJobDefinition.For<RecalculateLastSeasonWinnersJobHandler>(),
-        FantasyCriticJobDefinition.For<RecalculateRoyaleWinnersJobHandler>(),
-        FantasyCriticJobDefinition.For<RecomputeRulesBasedRoyaleGroupsJobHandler>(),
-        FantasyCriticJobDefinition.For<RefreshCachesJobHandler>(),
-        FantasyCriticJobDefinition.For<RefreshCriticScoresJobHandler>(),
-        FantasyCriticJobDefinition.For<RefreshGGInfoJobHandler>(),
-        FantasyCriticJobDefinition.ForCron<RefreshPatreonInfoJobHandler>(),
-        FantasyCriticJobDefinition.ForCron<SendPublicBiddingEmailsJobHandler>(),
-        FantasyCriticJobDefinition.ForCron<SendReleasingThisWeekUpdateJobHandler>(),
-        FantasyCriticJobDefinition.ForCron<SetTimeFlagsJobHandler>(),
-        FantasyCriticJobDefinition.For<SnapshotDatabaseJobHandler>(),
-        FantasyCriticJobDefinition.ForCron<UpdateDailyPublisherStatisticsJobHandler>(),
-        FantasyCriticJobDefinition.For<UpdateFantasyPointsJobHandler>(),
-        FantasyCriticJobDefinition.For<UpdateTopBidsAndDropsJobHandler>(),
-    ]);
+    public static FantasyCriticJobRegistry Create() => new FantasyCriticJobRegistry([
+            FantasyCriticJobDefinition.ForCron<ExpireTradesJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<FullDataRefreshJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<GrantSuperDropsJobHandler>(),
+            FantasyCriticJobDefinition.For<MakeSlotsConsistentJobHandler>(),
+            FantasyCriticJobDefinition.For<PrepareForActionProcessingJobHandler>(),
+            FantasyCriticJobDefinition.For<ProcessActionsJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<ProcessSpecialAuctionsJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<PushGameReleaseMessagesJobHandler>(),
+            FantasyCriticJobDefinition.For<RecalculateLastSeasonWinnersJobHandler>(),
+            FantasyCriticJobDefinition.For<RecalculateRoyaleWinnersJobHandler>(),
+            FantasyCriticJobDefinition.For<RecomputeRulesBasedRoyaleGroupsJobHandler>(),
+            FantasyCriticJobDefinition.For<RefreshCachesJobHandler>(),
+            FantasyCriticJobDefinition.For<RefreshCriticScoresJobHandler>(),
+            FantasyCriticJobDefinition.For<RefreshGGInfoJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<RefreshPatreonInfoJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<SendAllPublicBiddingMessagesJobHandler>(),
+            FantasyCriticJobDefinition.For<SendPublicBiddingDiscordMessagesJobHandler>(),
+            FantasyCriticJobDefinition.For<SendPublicBiddingEmailsJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<SendReleasingThisWeekUpdateJobHandler>(),
+
+            FantasyCriticJobDefinition.ForCron<SetTimeFlagsJobHandler>(),
+            FantasyCriticJobDefinition.For<SnapshotDatabaseJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<UpdateDailyPublisherStatisticsJobHandler>(),
+            FantasyCriticJobDefinition.For<UpdateFantasyPointsJobHandler>(),
+            FantasyCriticJobDefinition.For<UpdateTopBidsAndDropsJobHandler>(),
+        ]);
 
     private static void Validate(IReadOnlyList<FantasyCriticJobDefinition> definitions)
     {

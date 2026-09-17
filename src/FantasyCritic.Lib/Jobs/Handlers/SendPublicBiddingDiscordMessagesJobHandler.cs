@@ -1,27 +1,28 @@
+using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
-internal class SendPublicBiddingEmailsJobHandler : IFantasyCriticJobHandler
+internal class SendPublicBiddingDiscordMessagesJobHandler : IFantasyCriticJobHandler
 {
-    public static FantasyCriticJobType JobType => FantasyCriticJobType.SendPublicBiddingEmails;
+    public static FantasyCriticJobType JobType => FantasyCriticJobType.SendPublicBiddingDiscordMessages;
 
     private readonly InterLeagueService _interLeagueService;
+    private readonly DiscordPushService _discordPushService;
     private readonly GameAcquisitionService _gameAcquisitionService;
-    private readonly EmailSendingService _emailSendingService;
 
-    public SendPublicBiddingEmailsJobHandler(InterLeagueService interLeagueService,
-        GameAcquisitionService gameAcquisitionService, EmailSendingService emailSendingService)
+    public SendPublicBiddingDiscordMessagesJobHandler(InterLeagueService interLeagueService,
+        DiscordPushService discordPushService, GameAcquisitionService gameAcquisitionService)
     {
         _interLeagueService = interLeagueService;
+        _discordPushService = discordPushService;
         _gameAcquisitionService = gameAcquisitionService;
-        _emailSendingService = emailSendingService;
     }
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         var publicBiddingSets = await PublicBiddingJobUtilities.GetPublicBiddingSets(_interLeagueService, _gameAcquisitionService);
-        await _emailSendingService.SendPublicBidEmails(publicBiddingSets);
+        await _discordPushService.SendPublicBiddingSummary(publicBiddingSets);
         return Result.Success();
     }
 }

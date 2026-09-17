@@ -11,7 +11,9 @@ public class FantasyCriticJobType : TypeSafeEnum<FantasyCriticJobType>
     public static readonly FantasyCriticJobType ProcessActions = new FantasyCriticJobType("ProcessActions");
     public static readonly FantasyCriticJobType ProcessSpecialAuctions = new FantasyCriticJobType("ProcessSpecialAuctions");
     public static readonly FantasyCriticJobType PushGameReleaseMessages = new FantasyCriticJobType("PushGameReleaseMessages");
-    public static readonly FantasyCriticJobType PushPublicBiddingMessages = new FantasyCriticJobType("PushPublicBiddingMessages");
+    public static readonly FantasyCriticJobType SendPublicBiddingDiscordMessages = new FantasyCriticJobType("SendPublicBiddingDiscordMessages");
+    public static readonly FantasyCriticJobType SendPublicBiddingEmails = new FantasyCriticJobType("SendPublicBiddingEmails");
+    public static readonly FantasyCriticJobType SendAllPublicBiddingMessages = new FantasyCriticJobType("SendAllPublicBiddingMessages");
     public static readonly FantasyCriticJobType RecalculateLastSeasonWinners = new FantasyCriticJobType("RecalculateLastSeasonWinners");
     public static readonly FantasyCriticJobType RecalculateRoyaleWinners = new FantasyCriticJobType("RecalculateRoyaleWinners");
     public static readonly FantasyCriticJobType RecomputeRulesBasedRoyaleGroups = new FantasyCriticJobType("RecomputeRulesBasedRoyaleGroups");
@@ -19,7 +21,6 @@ public class FantasyCriticJobType : TypeSafeEnum<FantasyCriticJobType>
     public static readonly FantasyCriticJobType RefreshCriticScores = new FantasyCriticJobType("RefreshCriticScores");
     public static readonly FantasyCriticJobType RefreshGGInfo = new FantasyCriticJobType("RefreshGGInfo");
     public static readonly FantasyCriticJobType RefreshPatreonInfo = new FantasyCriticJobType("RefreshPatreonInfo");
-    public static readonly FantasyCriticJobType SendPublicBiddingEmails = new FantasyCriticJobType("SendPublicBiddingEmails");
     public static readonly FantasyCriticJobType SendReleasingThisWeekUpdate = new FantasyCriticJobType("SendReleasingThisWeekUpdate");
     public static readonly FantasyCriticJobType SetTimeFlags = new FantasyCriticJobType("SetTimeFlags");
     public static readonly FantasyCriticJobType SnapshotDatabase = new FantasyCriticJobType("SnapshotDatabase");
