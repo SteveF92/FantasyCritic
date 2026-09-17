@@ -20,12 +20,16 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandl
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        //Mode first, so nothing changes between the snapshot and processing.
+        //Mode first, so nothing changes between the refresh, the snapshot, and processing.
+        //The scheduler skips FullDataRefresh's own slot in this wake, since this is the refresh.
         await _interLeagueService.SetActionProcessingMode(true);
-        await context.UpdateDetailedStatus("Action processing mode on. Snapshotting database.");
+        await context.UpdateDetailedStatus("Action processing mode on. Refreshing data.");
+
+        await _adminService.FullDataRefresh();
+        await context.UpdateDetailedStatus("Action processing mode on. Data refreshed. Snapshotting database.");
 
         await _adminService.SnapshotDatabase();
-        await context.UpdateDetailedStatus("Action processing mode on. Database snapshot started.");
+        await context.UpdateDetailedStatus("Action processing mode on. Data refreshed. Database snapshot started.");
         return Result.Success();
     }
 
