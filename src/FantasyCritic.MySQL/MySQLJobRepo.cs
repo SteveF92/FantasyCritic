@@ -75,15 +75,6 @@ public class MySQLJobRepo : IJobRepo
         return entities.Select(x => x.ToDomain()).ToList();
     }
 
-    public async Task<IReadOnlyList<FantasyCriticJob>> GetRecentJobs(int count)
-    {
-        var sql = $"{JobSelectSQL} ORDER BY tbl_job.CreatedAt DESC LIMIT @count;";
-
-        await using var connection = new MySqlConnection(_connectionString);
-        var entities = await connection.QueryAsync<JobEntity>(sql, new { count });
-        return entities.Select(x => x.ToDomain()).ToList();
-    }
-
     public async Task<IReadOnlyList<FantasyCriticJob>> GetIncompleteJobs()
     {
         var sql = $"{JobSelectSQL} WHERE tbl_job.Status IN @statuses ORDER BY tbl_job.CreatedAt;";

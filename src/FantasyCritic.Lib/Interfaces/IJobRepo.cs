@@ -7,7 +7,6 @@ public interface IJobRepo
 {
     Task<FantasyCriticJob?> GetJob(Guid jobID);
     Task<IReadOnlyList<FantasyCriticJob>> GetJobs(int page, int count, FantasyCriticJobType? jobType);
-    Task<IReadOnlyList<FantasyCriticJob>> GetRecentJobs(int count);
     Task<IReadOnlyList<FantasyCriticJob>> GetIncompleteJobs();
     Task<IReadOnlyList<FantasyCriticJobTypeWithRunType>> GetJobTypeRunTypes();
 
