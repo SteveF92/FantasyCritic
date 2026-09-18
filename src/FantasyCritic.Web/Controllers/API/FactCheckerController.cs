@@ -263,32 +263,24 @@ public class FactCheckerController : BaseJobQueuingController
     public Task<ActionResult<FantasyCriticJobViewModel>> FullDataRefresh() => EnqueueJob(FantasyCriticJobType.FullDataRefresh);
 
     [HttpPost]
-    public async Task<IActionResult> RefreshCriticInfo()
-    {
-        await _adminService.RefreshCriticInfo();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> RefreshCriticInfo() => EnqueueJob(FantasyCriticJobType.RefreshCriticScores);
 
     [HttpPost]
-    public async Task<IActionResult> RefreshGGInfo()
-    {
-        await _adminService.RefreshGGInfo(true);
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> RefreshGGInfo() => EnqueueJob(FantasyCriticJobType.RefreshGGInfo);
 
     [HttpPost]
-    public async Task<IActionResult> UpdateFantasyPoints()
-    {
-        await _adminService.UpdateFantasyPoints();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> UpdateFantasyPoints() => EnqueueJob(FantasyCriticJobType.UpdateFantasyPoints);
 
     [HttpPost]
-    public async Task<IActionResult> RefreshCaches()
-    {
-        await _adminService.RefreshCaches();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> RefreshCaches() => EnqueueJob(FantasyCriticJobType.RefreshCaches);
 
     [HttpPost]
     public IActionResult ClearMasterGameEditDiscordQueue()

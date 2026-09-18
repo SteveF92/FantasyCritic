@@ -116,11 +116,9 @@ public class ActionRunnerController : BaseJobQueuingController
     }
 
     [HttpPost]
-    public async Task<IActionResult> ProcessSpecialAuctions()
-    {
-        await _adminService.ProcessSpecialAuctions();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> ProcessSpecialAuctions() => EnqueueJob(FantasyCriticJobType.ProcessSpecialAuctions);
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -139,11 +137,9 @@ public class ActionRunnerController : BaseJobQueuingController
     }
 
     [HttpPost]
-    public async Task<IActionResult> SnapshotDatabase()
-    {
-        await _adminService.SnapshotDatabase();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> SnapshotDatabase() => EnqueueJob(FantasyCriticJobType.SnapshotDatabase);
 
     [HttpGet]
     public async Task<ActionResult<List<DatabaseSnapshotInfoViewModel>>> GetRecentDatabaseSnapshots()
@@ -155,9 +151,7 @@ public class ActionRunnerController : BaseJobQueuingController
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateTopBidsAndDrops()
-    {
-        await _adminService.UpdateTopBidsAndDropsForMostRecentWeek();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> UpdateTopBidsAndDrops() => EnqueueJob(FantasyCriticJobType.UpdateTopBidsAndDrops);
 }
