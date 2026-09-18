@@ -1,40 +1,26 @@
-using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class ProcessActionsJobHandler : IFantasyCriticJobHandler
 {
-    private static readonly IReadOnlyList<IsoDayOfWeek> AcceptableProcessingDays = [IsoDayOfWeek.Saturday, IsoDayOfWeek.Sunday];
-
     private readonly InterLeagueService _interLeagueService;
     private readonly AdminService _adminService;
-    private readonly EnvironmentConfiguration _environmentConfiguration;
-    private readonly IClock _clock;
 
-    public ProcessActionsJobHandler(InterLeagueService interLeagueService, AdminService adminService, EnvironmentConfiguration environmentConfiguration, IClock clock)
+    public ProcessActionsJobHandler(InterLeagueService interLeagueService, AdminService adminService)
     {
         _interLeagueService = interLeagueService;
         _adminService = adminService;
-        _environmentConfiguration = environmentConfiguration;
-        _clock = clock;
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.ProcessActions;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-        if (!systemWideSettings.ActionProcessingMode)
+        var canProcessActions = await _adminService.CanProcessActions();
+        if (canProcessActions.IsFailure)
         {
-            return Result.Failure("Turn on action processing mode first.");
-        }
-
-        var today = _clock.GetToday();
-        if (_environmentConfiguration.IsProduction && !AcceptableProcessingDays.Contains(today.DayOfWeek))
-        {
-            return Result.Failure($"You probably didn't mean to process pickups on a {today.DayOfWeek}.");
+            return canProcessActions;
         }
 
         var systemWideValues = await _interLeagueService.GetSystemWideValues();

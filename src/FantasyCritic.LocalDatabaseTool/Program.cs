@@ -131,7 +131,8 @@ public static class Program
         IHypeFactorService hypeFactorService = new HypeFactorService(masterGameRepo, interLeagueService);
 
         return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
-            openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, discordPushService, discordRepo, dailyStatsRepo);
+            openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, discordPushService, discordRepo, dailyStatsRepo,
+            new EnvironmentConfiguration(_baseAddress, IsProduction: false));
     }
 
     private static async Task UpdateSupportedYears()

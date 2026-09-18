@@ -2,13 +2,14 @@ using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -25,13 +26,13 @@ public class ActionRunnerController : FantasyCriticController
     private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly GameAcquisitionService _gameAcquisitionService;
-    private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly EmailSendingService _emailSendingService;
     private readonly DiscordPushService _discordPushService;
+    private readonly IJobRepo _jobRepo;
 
     public ActionRunnerController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<ActionRunnerController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
-        IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService)
+        EmailSendingService emailSendingService, DiscordPushService discordPushService, IJobRepo jobRepo)
         : base(userManager)
     {
         _adminService = adminService;
@@ -40,9 +41,9 @@ public class ActionRunnerController : FantasyCriticController
         _interLeagueService = interLeagueService;
         _logger = logger;
         _gameAcquisitionService = gameAcquisitionService;
-        _webHostEnvironment = webHostEnvironment;
         _emailSendingService = emailSendingService;
         _discordPushService = discordPushService;
+        _jobRepo = jobRepo;
     }
 
     [HttpGet]
@@ -105,41 +106,33 @@ public class ActionRunnerController : FantasyCriticController
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ProcessActions()
+    public async Task<ActionResult<FantasyCriticJobViewModel>> ProcessActions()
     {
-        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-        if (!systemWideSettings.ActionProcessingMode)
+        var canProcessActions = await _adminService.CanProcessActions();
+        if (canProcessActions.IsFailure)
         {
-            return BadRequest("Turn on action processing mode first.");
+            return BadRequest(canProcessActions.Error);
         }
 
-        var isProduction = string.Equals(_webHostEnvironment.EnvironmentName, "PRODUCTION", StringComparison.OrdinalIgnoreCase);
-        var today = _clock.GetCurrentInstant().ToEasternDate();
-        var acceptableDays = new List<IsoDayOfWeek>
+        //The worker runs jobs one at a time, so a second press would process actions again as soon as the first run finished.
+        var incompleteJobs = await _jobRepo.GetIncompleteJobs();
+        var existingJob = incompleteJobs.FirstOrDefault(x => x.Type.Equals(FantasyCriticJobType.ProcessActions));
+        if (existingJob is not null)
         {
-            IsoDayOfWeek.Saturday,
-            IsoDayOfWeek.Sunday
-        };
-        if (!acceptableDays.Contains(today.DayOfWeek) && isProduction)
-        {
-            return BadRequest($"You probably didn't mean to process pickups on a {today.DayOfWeek}");
+            return BadRequest($"Actions are already being processed (job is {existingJob.Status.Value}).");
         }
 
-        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        foreach (var supportedYear in supportedYears)
+        var currentUser = await GetCurrentUserOrThrow();
+        var result = await _jobRepo.EnqueueJob(FantasyCriticJobType.ProcessActions, currentUser, _clock.GetCurrentInstant());
+        if (result.IsFailure)
         {
-            if (supportedYear.Finished || !supportedYear.OpenForPlay)
-            {
-                continue;
-            }
-
-            await _adminService.ProcessActions(systemWideValues, supportedYear.Year);
+            return BadRequest(result.Error);
         }
 
-        return Ok();
+        _logger.LogInformation("{User} queued job {Job}.", currentUser.UserName, result.Value);
+        return new FantasyCriticJobViewModel(result.Value);
     }
 
     [HttpPost]

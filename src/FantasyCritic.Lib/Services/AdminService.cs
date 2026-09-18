@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
@@ -18,6 +19,7 @@ namespace FantasyCritic.Lib.Services;
 public class AdminService
 {
     private static readonly ILogger _logger = Log.ForContext<AdminService>();
+    private static readonly IReadOnlyList<IsoDayOfWeek> AcceptableActionProcessingDays = [IsoDayOfWeek.Saturday, IsoDayOfWeek.Sunday];
 
     private readonly IRDSManager _rdsManager;
     private readonly RoyaleService _royaleService;
@@ -34,10 +36,12 @@ public class AdminService
     private readonly IGGService _ggService;
     private readonly PatreonService _patreonService;
     private readonly IClock _clock;
+    private readonly EnvironmentConfiguration _environmentConfiguration;
 
     public AdminService(FantasyCriticService fantasyCriticService, FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
         InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, PatreonService patreonService, IClock clock, IRDSManager rdsManager,
-        RoyaleService royaleService, IHypeFactorService hypeFactorService, DiscordPushService discordPushService, IDiscordRepo discordRepo, IDailyStatsRepo dailyStatsRepo)
+        RoyaleService royaleService, IHypeFactorService hypeFactorService, DiscordPushService discordPushService, IDiscordRepo discordRepo, IDailyStatsRepo dailyStatsRepo,
+        EnvironmentConfiguration environmentConfiguration)
     {
         _fantasyCriticService = fantasyCriticService;
         _userManager = userManager;
@@ -54,6 +58,7 @@ public class AdminService
         _discordPushService = discordPushService;
         _discordRepo = discordRepo;
         _dailyStatsRepo = dailyStatsRepo;
+        _environmentConfiguration = environmentConfiguration;
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
@@ -475,6 +480,24 @@ public class AdminService
         var actionProcessor = new ActionProcessor(systemWideValues, processingTime, currentDate, masterGameYearDictionary, allTags);
         FinalizedActionProcessingResults results = actionProcessor.ProcessSpecialAuctions(specialAuctionSets);
         return results;
+    }
+
+    //Checked when the button is pressed, for immediate feedback, and again when the job runs, since either can change while it waits in the queue.
+    public async Task<Result> CanProcessActions()
+    {
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        if (!systemWideSettings.ActionProcessingMode)
+        {
+            return Result.Failure("Turn on action processing mode first.");
+        }
+
+        var today = _clock.GetToday();
+        if (_environmentConfiguration.IsProduction && !AcceptableActionProcessingDays.Contains(today.DayOfWeek))
+        {
+            return Result.Failure($"You probably didn't mean to process pickups on a {today.DayOfWeek}.");
+        }
+
+        return Result.Success();
     }
 
     public async Task ProcessActions(SystemWideValues systemWideValues, int year)
