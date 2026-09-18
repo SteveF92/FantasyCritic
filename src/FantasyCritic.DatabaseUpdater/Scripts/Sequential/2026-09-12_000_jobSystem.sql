@@ -95,14 +95,18 @@ CREATE TABLE IF NOT EXISTS `tbl_job` (
   `CreatedAt` timestamp(6) NOT NULL,
   `StartedAt` timestamp(6) NULL DEFAULT NULL,
   `FinishedAt` timestamp(6) NULL DEFAULT NULL,
+  `CancelledAt` timestamp(6) NULL DEFAULT NULL,
+  `CancelledByUserID` char(36) DEFAULT NULL,
   PRIMARY KEY (`JobID`),
   UNIQUE KEY `UQ_tbl_job_scheduledslot` (`JobType`,`ScheduledFor`),
   KEY `FK_tbl_job_tbl_job_status` (`Status`),
   KEY `FK_tbl_job_tbl_user` (`CreatedByUserID`),
+  KEY `FK_tbl_job_tbl_user_cancelledby` (`CancelledByUserID`),
   KEY `IX_tbl_job_pollqueue` (`Status`,`CreatedAt`),
   CONSTRAINT `FK_tbl_job_tbl_job_status` FOREIGN KEY (`Status`) REFERENCES `tbl_job_status` (`Status`),
   CONSTRAINT `FK_tbl_job_tbl_job_type` FOREIGN KEY (`JobType`) REFERENCES `tbl_job_type` (`Name`),
-  CONSTRAINT `FK_tbl_job_tbl_user` FOREIGN KEY (`CreatedByUserID`) REFERENCES `tbl_user` (`UserID`)
+  CONSTRAINT `FK_tbl_job_tbl_user` FOREIGN KEY (`CreatedByUserID`) REFERENCES `tbl_user` (`UserID`),
+  CONSTRAINT `FK_tbl_job_tbl_user_cancelledby` FOREIGN KEY (`CancelledByUserID`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 INSERT INTO `tbl_user_role` (`RoleID`, `Name`, `NormalizedName`) VALUES (7, 'JobManager', 'JOBMANAGER');

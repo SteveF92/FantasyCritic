@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Jobs;
 using FantasyCritic.MySQL.Entities;
@@ -17,10 +18,13 @@ public class MySQLJobRepo : IJobRepo
                tbl_job_type.RunType,
                tbl_job_type.Severity,
                createdByUser.DisplayName AS CreatedByUserDisplayName,
-               createdByUser.EmailAddress AS CreatedByUserEmailAddress
+               createdByUser.EmailAddress AS CreatedByUserEmailAddress,
+               cancelledByUser.DisplayName AS CancelledByUserDisplayName,
+               cancelledByUser.EmailAddress AS CancelledByUserEmailAddress
         FROM tbl_job
         JOIN tbl_job_type ON tbl_job.JobType = tbl_job_type.Name
         LEFT JOIN tbl_user createdByUser ON tbl_job.CreatedByUserID = createdByUser.UserID
+        LEFT JOIN tbl_user cancelledByUser ON tbl_job.CancelledByUserID = cancelledByUser.UserID
         """;
 
     private static readonly IReadOnlyList<string> IncompleteStatuses =
@@ -60,13 +64,14 @@ public class MySQLJobRepo : IJobRepo
         return entity?.ToDomain();
     }
 
-    public async Task<IReadOnlyList<FantasyCriticJob>> GetJobs(int page, int count)
+    public async Task<IReadOnlyList<FantasyCriticJob>> GetJobs(int page, int count, FantasyCriticJobType? jobType)
     {
         var offset = (Math.Max(page, 1) - 1) * count;
-        var sql = $"{JobSelectSQL} ORDER BY tbl_job.CreatedAt DESC LIMIT @count OFFSET @offset;";
+        var whereClause = jobType is not null ? "WHERE tbl_job.JobType = @jobType" : "";
+        var sql = $"{JobSelectSQL} {whereClause} ORDER BY tbl_job.CreatedAt DESC LIMIT @count OFFSET @offset;";
 
         await using var connection = new MySqlConnection(_connectionString);
-        var entities = await connection.QueryAsync<JobEntity>(sql, new { count, offset });
+        var entities = await connection.QueryAsync<JobEntity>(sql, new { count, offset, jobType = jobType?.Value });
         return entities.Select(x => x.ToDomain()).ToList();
     }
 
@@ -240,13 +245,13 @@ public class MySQLJobRepo : IJobRepo
         await FinishStartedJob(job, FantasyCriticJobStatus.CancelledInProgress, cancellationTime, errorMessage: null);
     }
 
-    public async Task<bool> RequestCancellation(FantasyCriticJob job)
+    public async Task<bool> RequestCancellation(FantasyCriticJob job, IMinimalFantasyCriticUser cancelledByUser, Instant requestedAt)
     {
         //Conditional on Queued/Running so a job that already finished, or one already Cancelling, is left alone.
         //The worker's cancellation loop is what actually settles the job from here.
         const string sql =
             """
-            UPDATE tbl_job SET Status = @cancelling
+            UPDATE tbl_job SET Status = @cancelling, CancelledAt = @requestedAt, CancelledByUserID = @cancelledByUserID
             WHERE JobID = @jobID AND Status IN @cancellableStatuses;
             """;
 
@@ -254,7 +259,9 @@ public class MySQLJobRepo : IJobRepo
         {
             jobID = job.JobID,
             cancelling = FantasyCriticJobStatus.Cancelling.Value,
-            cancellableStatuses = CancellableStatuses
+            cancellableStatuses = CancellableStatuses,
+            requestedAt,
+            cancelledByUserID = cancelledByUser.UserID
         };
 
         await using var connection = new MySqlConnection(_connectionString);

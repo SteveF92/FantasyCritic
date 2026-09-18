@@ -29,14 +29,24 @@ public class JobManagerController : FantasyCriticController
     [HttpGet]
     [ProducesResponseType<List<FantasyCriticJobViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<List<FantasyCriticJobViewModel>>> GetJobs([FromQuery] int page, [FromQuery] int count)
+    public async Task<ActionResult<List<FantasyCriticJobViewModel>>> GetJobs([FromQuery] int page, [FromQuery] int count, [FromQuery] string? jobType)
     {
         if (page < 1 || count < 1)
         {
             return BadRequest("page and count must both be at least 1.");
         }
 
-        var jobs = await _jobRepo.GetJobs(page, count);
+        FantasyCriticJobType? parsedJobType = null;
+        if (!string.IsNullOrWhiteSpace(jobType))
+        {
+            parsedJobType = FantasyCriticJobType.TryFromValue(jobType);
+            if (parsedJobType is null)
+            {
+                return BadRequest($"Unknown job type '{jobType}'.");
+            }
+        }
+
+        var jobs = await _jobRepo.GetJobs(page, count, parsedJobType);
         return jobs.Select(x => new FantasyCriticJobViewModel(x)).ToList();
     }
 
@@ -58,10 +68,10 @@ public class JobManagerController : FantasyCriticController
             return BadRequest($"Job is {job.Status.Value}, which cannot be cancelled.");
         }
 
-        await _jobRepo.RequestCancellation(job);
-
         var currentUser = await GetCurrentUserOrThrow();
-        _logger.LogWarning("{User} requested cancellation of job {Job} at {Time}.", currentUser.UserName, job, _clock.GetCurrentInstant());
+        await _jobRepo.RequestCancellation(job, currentUser, _clock.GetCurrentInstant());
+
+        _logger.LogWarning("{User} requested cancellation of job {Job}.", currentUser.UserName, job);
 
         return Ok();
     }

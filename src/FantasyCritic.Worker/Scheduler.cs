@@ -91,7 +91,8 @@ public class Scheduler : BackgroundService
                 }
 
                 var job = new FantasyCriticJob(Guid.NewGuid(), dueSlot.JobType, createdByUser: null, FantasyCriticJobStatus.Queued,
-                    detailedStatus: null, errorMessage: null, scheduledFor: dueSlot.ScheduledFor, createdAt: schedulingInstant, startedAt: null, finishedAt: null);
+                    detailedStatus: null, errorMessage: null, scheduledFor: dueSlot.ScheduledFor, createdAt: schedulingInstant, startedAt: null, finishedAt: null,
+                    cancelledAt: null, cancelledByUser: null);
                 using var jobScope = _logger.BeginJobScope(job);
 
                 var created = await jobRepo.CreateJob(job);

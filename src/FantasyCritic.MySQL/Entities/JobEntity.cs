@@ -15,6 +15,8 @@ internal class JobEntity
     public Instant CreatedAt { get; set; }
     public Instant? StartedAt { get; set; }
     public Instant? FinishedAt { get; set; }
+    public Instant? CancelledAt { get; set; }
+    public Guid? CancelledByUserID { get; set; }
 
     //From tbl_job_type, so it is always the type's current RunType/Severity rather than the ones in force when the job was enqueued.
     public string RunType { get; set; } = null!;
@@ -22,6 +24,8 @@ internal class JobEntity
 
     public string? CreatedByUserDisplayName { get; set; }
     public string? CreatedByUserEmailAddress { get; set; }
+    public string? CancelledByUserDisplayName { get; set; }
+    public string? CancelledByUserEmailAddress { get; set; }
 
     public FantasyCriticJob ToDomain()
     {
@@ -31,10 +35,16 @@ internal class JobEntity
             createdByUser = new MinimalFantasyCriticUser(CreatedByUserID.Value, CreatedByUserDisplayName!, CreatedByUserEmailAddress!);
         }
 
+        MinimalFantasyCriticUser? cancelledByUser = null;
+        if (CancelledByUserID.HasValue)
+        {
+            cancelledByUser = new MinimalFantasyCriticUser(CancelledByUserID.Value, CancelledByUserDisplayName!, CancelledByUserEmailAddress!);
+        }
+
         var jobTypeWithRunType = new FantasyCriticJobTypeWithRunType(FantasyCriticJobType.FromValue(JobType),
             FantasyCriticJobRunType.FromValue(RunType), FantasyCriticJobSeverity.FromValue(Severity));
 
         return new FantasyCriticJob(JobID, jobTypeWithRunType, createdByUser, FantasyCriticJobStatus.FromValue(Status),
-            DetailedStatus, ErrorMessage, ScheduledFor, CreatedAt, StartedAt, FinishedAt);
+            DetailedStatus, ErrorMessage, ScheduledFor, CreatedAt, StartedAt, FinishedAt, CancelledAt, cancelledByUser);
     }
 }

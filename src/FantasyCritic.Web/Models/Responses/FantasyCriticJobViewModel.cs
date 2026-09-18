@@ -18,6 +18,8 @@ public class FantasyCriticJobViewModel
         CreatedAt = domain.CreatedAt;
         StartedAt = domain.StartedAt;
         FinishedAt = domain.FinishedAt;
+        CancelledAt = domain.CancelledAt;
+        CancelledByUserDisplayName = domain.CancelledByUser?.DisplayName;
     }
 
     public Guid JobID { get; }
@@ -32,4 +34,6 @@ public class FantasyCriticJobViewModel
     public Instant CreatedAt { get; }
     public Instant? StartedAt { get; }
     public Instant? FinishedAt { get; }
+    public Instant? CancelledAt { get; }
+    public string? CancelledByUserDisplayName { get; }
 }

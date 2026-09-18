@@ -5,7 +5,8 @@ namespace FantasyCritic.Lib.Jobs;
 public class FantasyCriticJob
 {
     public FantasyCriticJob(Guid jobID, FantasyCriticJobTypeWithRunType jobTypeWithRunType, IMinimalFantasyCriticUser? createdByUser, FantasyCriticJobStatus status,
-        string? detailedStatus, string? errorMessage, Instant? scheduledFor, Instant createdAt, Instant? startedAt, Instant? finishedAt)
+        string? detailedStatus, string? errorMessage, Instant? scheduledFor, Instant createdAt, Instant? startedAt, Instant? finishedAt,
+        Instant? cancelledAt, IMinimalFantasyCriticUser? cancelledByUser)
     {
         JobID = jobID;
         JobTypeWithRunType = jobTypeWithRunType;
@@ -17,6 +18,8 @@ public class FantasyCriticJob
         CreatedAt = createdAt;
         StartedAt = startedAt;
         FinishedAt = finishedAt;
+        CancelledAt = cancelledAt;
+        CancelledByUser = cancelledByUser;
     }
 
     public Guid JobID { get; }
@@ -32,6 +35,8 @@ public class FantasyCriticJob
     public Instant CreatedAt { get; }
     public Instant? StartedAt { get; }
     public Instant? FinishedAt { get; }
+    public Instant? CancelledAt { get; }
+    public IMinimalFantasyCriticUser? CancelledByUser { get; }
 
     //The scheduler always sets ScheduledFor and manual runs never do, so it identifies cron runs regardless of who enqueued them.
     public bool IsCronRun => ScheduledFor is not null;
