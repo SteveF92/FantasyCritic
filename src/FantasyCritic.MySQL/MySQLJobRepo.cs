@@ -15,6 +15,7 @@ public class MySQLJobRepo : IJobRepo
         """
         SELECT tbl_job.*,
                tbl_job_type.RunType,
+               tbl_job_type.Severity,
                createdByUser.DisplayName AS CreatedByUserDisplayName,
                createdByUser.EmailAddress AS CreatedByUserEmailAddress
         FROM tbl_job
@@ -29,6 +30,13 @@ public class MySQLJobRepo : IJobRepo
         FantasyCriticJobStatus.Cancelling.Value
     ];
 
+    //The statuses an external cancellation request can still act on. Anything past Cancelling is already settled.
+    private static readonly IReadOnlyList<string> CancellableStatuses =
+    [
+        FantasyCriticJobStatus.Queued.Value,
+        FantasyCriticJobStatus.Running.Value
+    ];
+
     //A started job is Running, or Cancelling if an admin asked to stop it. Either way the runner still owns it.
     private static readonly IReadOnlyList<string> StartedStatuses =
     [
@@ -41,6 +49,25 @@ public class MySQLJobRepo : IJobRepo
     public MySQLJobRepo(RepositoryConfiguration configuration)
     {
         _connectionString = configuration.ConnectionString;
+    }
+
+    public async Task<FantasyCriticJob?> GetJob(Guid jobID)
+    {
+        var sql = $"{JobSelectSQL} WHERE tbl_job.JobID = @jobID;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var entity = await connection.QuerySingleOrDefaultAsync<JobEntity>(sql, new { jobID });
+        return entity?.ToDomain();
+    }
+
+    public async Task<IReadOnlyList<FantasyCriticJob>> GetJobs(int page, int count)
+    {
+        var offset = (Math.Max(page, 1) - 1) * count;
+        var sql = $"{JobSelectSQL} ORDER BY tbl_job.CreatedAt DESC LIMIT @count OFFSET @offset;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = await connection.QueryAsync<JobEntity>(sql, new { count, offset });
+        return entities.Select(x => x.ToDomain()).ToList();
     }
 
     public async Task<IReadOnlyList<FantasyCriticJob>> GetRecentJobs(int count)
@@ -63,7 +90,7 @@ public class MySQLJobRepo : IJobRepo
 
     public async Task<IReadOnlyList<FantasyCriticJobTypeWithRunType>> GetJobTypeRunTypes()
     {
-        const string sql = "SELECT Name, RunType FROM tbl_job_type;";
+        const string sql = "SELECT Name, RunType, Severity FROM tbl_job_type;";
 
         await using var connection = new MySqlConnection(_connectionString);
         var rows = await connection.QueryAsync<JobTypeRunTypeEntity>(sql);
@@ -74,9 +101,10 @@ public class MySQLJobRepo : IJobRepo
         {
             var jobType = FantasyCriticJobType.TryFromValue(row.Name);
             var runType = FantasyCriticJobRunType.TryFromValue(row.RunType);
-            if (jobType is not null && runType is not null)
+            var severity = FantasyCriticJobSeverity.TryFromValue(row.Severity);
+            if (jobType is not null && runType is not null && severity is not null)
             {
-                jobTypeRunTypes.Add(new FantasyCriticJobTypeWithRunType(jobType, runType));
+                jobTypeRunTypes.Add(new FantasyCriticJobTypeWithRunType(jobType, runType, severity));
             }
         }
 
@@ -210,6 +238,28 @@ public class MySQLJobRepo : IJobRepo
     public async Task CancelInProgressJob(FantasyCriticJob job, Instant cancellationTime)
     {
         await FinishStartedJob(job, FantasyCriticJobStatus.CancelledInProgress, cancellationTime, errorMessage: null);
+    }
+
+    public async Task<bool> RequestCancellation(FantasyCriticJob job)
+    {
+        //Conditional on Queued/Running so a job that already finished, or one already Cancelling, is left alone.
+        //The worker's cancellation loop is what actually settles the job from here.
+        const string sql =
+            """
+            UPDATE tbl_job SET Status = @cancelling
+            WHERE JobID = @jobID AND Status IN @cancellableStatuses;
+            """;
+
+        var parameters = new
+        {
+            jobID = job.JobID,
+            cancelling = FantasyCriticJobStatus.Cancelling.Value,
+            cancellableStatuses = CancellableStatuses
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var rowsUpdated = await connection.ExecuteAsync(sql, parameters);
+        return rowsUpdated >= 1;
     }
 
     private async Task FinishStartedJob(FantasyCriticJob job, FantasyCriticJobStatus finalStatus, Instant finishTime, string? errorMessage)

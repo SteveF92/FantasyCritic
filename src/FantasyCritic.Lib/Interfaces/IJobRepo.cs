@@ -4,6 +4,8 @@ namespace FantasyCritic.Lib.Interfaces;
 
 public interface IJobRepo
 {
+    Task<FantasyCriticJob?> GetJob(Guid jobID);
+    Task<IReadOnlyList<FantasyCriticJob>> GetJobs(int page, int count);
     Task<IReadOnlyList<FantasyCriticJob>> GetRecentJobs(int count);
     Task<IReadOnlyList<FantasyCriticJob>> GetIncompleteJobs();
     Task<IReadOnlyList<FantasyCriticJobTypeWithRunType>> GetJobTypeRunTypes();
@@ -17,4 +19,7 @@ public interface IJobRepo
     Task<bool> CancelJob(FantasyCriticJob job, Instant cancellationTime);
     Task<bool> CancelQueuedJob(FantasyCriticJob job, string reason, Instant cancellationTime);
     Task CancelInProgressJob(FantasyCriticJob job, Instant cancellationTime);
+
+    /// <returns>False if the job was no longer Queued or Running (already resolved, or another request beat this one).</returns>
+    Task<bool> RequestCancellation(FantasyCriticJob job);
 }

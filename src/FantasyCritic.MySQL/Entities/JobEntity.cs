@@ -16,8 +16,9 @@ internal class JobEntity
     public Instant? StartedAt { get; set; }
     public Instant? FinishedAt { get; set; }
 
-    //From tbl_job_type, so it is always the type's current RunType rather than the one in force when the job was enqueued.
+    //From tbl_job_type, so it is always the type's current RunType/Severity rather than the ones in force when the job was enqueued.
     public string RunType { get; set; } = null!;
+    public string Severity { get; set; } = null!;
 
     public string? CreatedByUserDisplayName { get; set; }
     public string? CreatedByUserEmailAddress { get; set; }
@@ -31,7 +32,7 @@ internal class JobEntity
         }
 
         var jobTypeWithRunType = new FantasyCriticJobTypeWithRunType(FantasyCriticJobType.FromValue(JobType),
-            FantasyCriticJobRunType.FromValue(RunType));
+            FantasyCriticJobRunType.FromValue(RunType), FantasyCriticJobSeverity.FromValue(Severity));
 
         return new FantasyCriticJob(JobID, jobTypeWithRunType, createdByUser, FantasyCriticJobStatus.FromValue(Status),
             DetailedStatus, ErrorMessage, ScheduledFor, CreatedAt, StartedAt, FinishedAt);

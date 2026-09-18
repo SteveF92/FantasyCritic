@@ -1,3 +1,3 @@
 namespace FantasyCritic.Lib.Jobs;
 
-public record FantasyCriticJobTypeWithRunType(FantasyCriticJobType JobType, FantasyCriticJobRunType RunType);
+public record FantasyCriticJobTypeWithRunType(FantasyCriticJobType JobType, FantasyCriticJobRunType RunType, FantasyCriticJobSeverity Severity);

@@ -23,6 +23,7 @@ public class FantasyCriticJob
     public FantasyCriticJobTypeWithRunType JobTypeWithRunType { get; }
     public FantasyCriticJobType Type => JobTypeWithRunType.JobType;
     public FantasyCriticJobRunType RunType => JobTypeWithRunType.RunType;
+    public FantasyCriticJobSeverity Severity => JobTypeWithRunType.Severity;
     public IMinimalFantasyCriticUser? CreatedByUser { get; }
     public FantasyCriticJobStatus Status { get; }
     public string? DetailedStatus { get; }

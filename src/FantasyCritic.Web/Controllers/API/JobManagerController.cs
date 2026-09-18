@@ -1,7 +1,10 @@
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Jobs;
+using FantasyCritic.Web.Models.Requests.JobManager;
 using FantasyCritic.Web.Models.Responses;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
@@ -15,8 +18,7 @@ public class JobManagerController : FantasyCriticController
     private readonly ILogger _logger;
     private readonly IJobRepo _jobRepo;
 
-
-    public JobManagerController(IClock clock, ILogger<AdminController> logger, FantasyCriticUserManager userManager, IJobRepo jobRepo)
+    public JobManagerController(IClock clock, ILogger<JobManagerController> logger, FantasyCriticUserManager userManager, IJobRepo jobRepo)
         : base(userManager)
     {
         _clock = clock;
@@ -25,14 +27,42 @@ public class JobManagerController : FantasyCriticController
     }
 
     [HttpGet]
-    public Action<List<FantasyCriticJobViewModel>> GetJobs(int page, int count)
+    [ProducesResponseType<List<FantasyCriticJobViewModel>>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<List<FantasyCriticJobViewModel>>> GetJobs([FromQuery] int page, [FromQuery] int count)
     {
-        throw new NotImplementedException();
+        if (page < 1 || count < 1)
+        {
+            return BadRequest("page and count must both be at least 1.");
+        }
+
+        var jobs = await _jobRepo.GetJobs(page, count);
+        return jobs.Select(x => new FantasyCriticJobViewModel(x)).ToList();
     }
 
     [HttpPost]
-    public Task<ActionResult> CancelJob()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> CancelJob([FromBody] CancelJobRequest request)
     {
-        throw new NotImplementedException();
+        var job = await _jobRepo.GetJob(request.JobID);
+        if (job is null)
+        {
+            return NotFound();
+        }
+
+        var isCancellable = job.Status.Equals(FantasyCriticJobStatus.Queued) || job.Status.Equals(FantasyCriticJobStatus.Running);
+        if (!isCancellable)
+        {
+            return BadRequest($"Job is {job.Status.Value}, which cannot be cancelled.");
+        }
+
+        await _jobRepo.RequestCancellation(job);
+
+        var currentUser = await GetCurrentUserOrThrow();
+        _logger.LogWarning("{User} requested cancellation of job {Job} at {Time}.", currentUser.UserName, job, _clock.GetCurrentInstant());
+
+        return Ok();
     }
 }
