@@ -142,6 +142,29 @@ public class MySQLJobRepo : IJobRepo
         }
     }
 
+    public async Task<Result<FantasyCriticJob>> EnqueueJob(FantasyCriticJobType jobType, IMinimalFantasyCriticUser createdByUser, Instant createdAt)
+    {
+        var jobTypeRunTypes = await GetJobTypeRunTypes();
+        var jobTypeWithRunType = jobTypeRunTypes.SingleOrDefault(x => x.JobType.Equals(jobType));
+        if (jobTypeWithRunType is null)
+        {
+            throw new Exception($"Job Type {jobType} not found in database.");
+        }
+
+        if (!jobTypeWithRunType.RunType.AllowsManual)
+        {
+            return Result.Failure<FantasyCriticJob>($"{jobType} cannot be run manually: its RunType is {jobTypeWithRunType.RunType}.");
+        }
+
+        var job = new FantasyCriticJob(Guid.NewGuid(), jobTypeWithRunType, createdByUser, FantasyCriticJobStatus.Queued,
+            detailedStatus: null, errorMessage: null, scheduledFor: null, createdAt: createdAt, startedAt: null, finishedAt: null,
+            cancelledAt: null, cancelledByUser: null);
+
+        //A manual job has no scheduled slot, so the insert cannot collide.
+        await CreateJob(job);
+        return job;
+    }
+
     public async Task<bool> StartJob(FantasyCriticJob job, Instant startTime)
     {
         const string sql =

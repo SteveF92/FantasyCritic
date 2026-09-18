@@ -1,5 +1,7 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Lib.Utilities;
@@ -22,9 +24,11 @@ public class FactCheckerController : FantasyCriticController
     private readonly ILogger _logger;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly FantasyCriticService _fantasyCriticService;
+    private readonly IJobRepo _jobRepo;
 
     public FactCheckerController(AdminService adminService, IClock clock, InterLeagueService interLeagueService,
-        ILogger<FactCheckerController> logger, FantasyCriticUserManager userManager, LeagueMemberService leagueMemberService, FantasyCriticService fantasyCriticService)
+        ILogger<FactCheckerController> logger, FantasyCriticUserManager userManager, LeagueMemberService leagueMemberService, FantasyCriticService fantasyCriticService,
+        IJobRepo jobRepo)
         : base(userManager)
     {
         _adminService = adminService;
@@ -33,6 +37,7 @@ public class FactCheckerController : FantasyCriticController
         _logger = logger;
         _leagueMemberService = leagueMemberService;
         _fantasyCriticService = fantasyCriticService;
+        _jobRepo = jobRepo;
     }
 
     [HttpPost]
@@ -257,10 +262,18 @@ public class FactCheckerController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> FullDataRefresh()
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<FantasyCriticJobViewModel>> FullDataRefresh()
     {
-        await _adminService.FullDataRefresh();
-        return Ok();
+        var currentUser = await GetCurrentUserOrThrow();
+        var result = await _jobRepo.EnqueueJob(FantasyCriticJobType.FullDataRefresh, currentUser, _clock.GetCurrentInstant());
+        if (result.IsFailure)
+        {
+            return BadRequest(result.Error);
+        }
+
+        return new FantasyCriticJobViewModel(result.Value);
     }
 
     [HttpPost]

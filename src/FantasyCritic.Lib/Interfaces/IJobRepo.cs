@@ -12,6 +12,10 @@ public interface IJobRepo
 
     /// <returns>False if a job for the same scheduled slot already exists. Manual jobs have no slot, so they always return true.</returns>
     Task<bool> CreateJob(FantasyCriticJob job);
+
+    /// <summary>Queues a manual run. The single place manual runs check <see cref="FantasyCriticJobRunType.AllowsManual"/>.</summary>
+    /// <returns>Failure if the job type's RunType does not allow manual runs.</returns>
+    Task<Result<FantasyCriticJob>> EnqueueJob(FantasyCriticJobType jobType, IMinimalFantasyCriticUser createdByUser, Instant createdAt);
     Task<bool> StartJob(FantasyCriticJob job, Instant startTime);
     Task CompleteJob(FantasyCriticJob job, Instant finishTime);
     Task UpdateDetailedStatusForJob(FantasyCriticJob job, string detailedStatus);
