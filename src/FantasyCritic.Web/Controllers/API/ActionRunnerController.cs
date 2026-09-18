@@ -18,32 +18,28 @@ namespace FantasyCritic.Web.Controllers.API;
 
 [Route("api/[controller]/[action]")]
 [Authorize("ActionRunner")]
-public class ActionRunnerController : FantasyCriticController
+public class ActionRunnerController : BaseJobQueuingController
 {
     private readonly AdminService _adminService;
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly InterLeagueService _interLeagueService;
-    private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly EmailSendingService _emailSendingService;
     private readonly DiscordPushService _discordPushService;
-    private readonly IJobRepo _jobRepo;
 
     public ActionRunnerController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<ActionRunnerController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
         EmailSendingService emailSendingService, DiscordPushService discordPushService, IJobRepo jobRepo)
-        : base(userManager)
+        : base(userManager, jobRepo, clock)
     {
         _adminService = adminService;
         _fantasyCriticService = fantasyCriticService;
-        _clock = clock;
         _interLeagueService = interLeagueService;
         _logger = logger;
         _gameAcquisitionService = gameAcquisitionService;
         _emailSendingService = emailSendingService;
         _discordPushService = discordPushService;
-        _jobRepo = jobRepo;
     }
 
     [HttpGet]
@@ -116,23 +112,7 @@ public class ActionRunnerController : FantasyCriticController
             return BadRequest(canProcessActions.Error);
         }
 
-        //The worker runs jobs one at a time, so a second press would process actions again as soon as the first run finished.
-        var incompleteJobs = await _jobRepo.GetIncompleteJobs();
-        var existingJob = incompleteJobs.FirstOrDefault(x => x.Type.Equals(FantasyCriticJobType.ProcessActions));
-        if (existingJob is not null)
-        {
-            return BadRequest($"Actions are already being processed (job is {existingJob.Status.Value}).");
-        }
-
-        var currentUser = await GetCurrentUserOrThrow();
-        var result = await _jobRepo.EnqueueJob(FantasyCriticJobType.ProcessActions, currentUser, _clock.GetCurrentInstant());
-        if (result.IsFailure)
-        {
-            return BadRequest(result.Error);
-        }
-
-        _logger.LogInformation("{User} queued job {Job}.", currentUser.UserName, result.Value);
-        return new FantasyCriticJobViewModel(result.Value);
+        return await EnqueueJob(FantasyCriticJobType.ProcessActions);
     }
 
     [HttpPost]

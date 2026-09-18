@@ -160,8 +160,32 @@ public class MySQLJobRepo : IJobRepo
             detailedStatus: null, errorMessage: null, scheduledFor: null, createdAt: createdAt, startedAt: null, finishedAt: null,
             cancelledAt: null, cancelledByUser: null);
 
-        //A manual job has no scheduled slot, so the insert cannot collide.
-        await CreateJob(job);
+        //The worker runs jobs one at a time, so a second press would run the job again as soon as the first finished -
+        //double emails, or actions processed twice. The check is part of the insert so two presses can't both pass it.
+        const string sql =
+            """
+            INSERT INTO tbl_job (JobID, JobType, CreatedByUserID, Status, CreatedAt)
+            SELECT @jobID, @jobType, @createdByUserID, @queued, @createdAt FROM DUAL
+            WHERE NOT EXISTS (SELECT 1 FROM tbl_job WHERE JobType = @jobType AND Status IN @incompleteStatuses);
+            """;
+
+        var parameters = new
+        {
+            jobID = job.JobID,
+            jobType = jobType.Value,
+            createdByUserID = createdByUser.UserID,
+            queued = FantasyCriticJobStatus.Queued.Value,
+            createdAt,
+            incompleteStatuses = IncompleteStatuses
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var rowsInserted = await connection.ExecuteAsync(sql, parameters);
+        if (rowsInserted == 0)
+        {
+            return Result.Failure<FantasyCriticJob>($"{jobType} is already queued or running.");
+        }
+
         return job;
     }
 

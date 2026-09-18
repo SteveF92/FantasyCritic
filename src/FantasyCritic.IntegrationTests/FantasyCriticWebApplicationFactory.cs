@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.IO;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.DapperTypeMaps;
 using FantasyCritic.Web;
@@ -96,6 +97,9 @@ public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<P
             // already not registered (gated by !IsDevelopment()), but the Discord bot may still
             // be registered if a real BotToken came in via user secrets.
             services.RemoveAll<IHostedService>();
+
+            // There is no worker here, so tests run the jobs they queue with JobTestHelpers.
+            services.AddFantasyCriticJobHandlers();
         });
     }
 }

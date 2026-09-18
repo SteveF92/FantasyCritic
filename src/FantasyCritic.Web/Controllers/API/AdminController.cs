@@ -20,12 +20,11 @@ namespace FantasyCritic.Web.Controllers.API;
 
 [Route("api/[controller]/[action]")]
 [Authorize("Admin")]
-public class AdminController : FantasyCriticController
+public class AdminController : BaseJobQueuingController
 {
     private readonly AdminService _adminService;
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly InterLeagueService _interLeagueService;
-    private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly IWebHostEnvironment _webHostEnvironment;
@@ -41,12 +40,11 @@ public class AdminController : FantasyCriticController
     public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
-        IFantasyCriticRepo fantasyCriticRepo, IConfiguration configuration, BuildInfo buildInfo)
-        : base(userManager)
+        IFantasyCriticRepo fantasyCriticRepo, IConfiguration configuration, BuildInfo buildInfo, IJobRepo jobRepo)
+        : base(userManager, jobRepo, clock)
     {
         _adminService = adminService;
         _fantasyCriticService = fantasyCriticService;
-        _clock = clock;
         _interLeagueService = interLeagueService;
         _logger = logger;
         _gameAcquisitionService = gameAcquisitionService;

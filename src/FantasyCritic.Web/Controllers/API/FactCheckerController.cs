@@ -16,28 +16,24 @@ namespace FantasyCritic.Web.Controllers.API;
 
 [Route("api/[controller]/[action]")]
 [Authorize("FactChecker")]
-public class FactCheckerController : FantasyCriticController
+public class FactCheckerController : BaseJobQueuingController
 {
     private readonly AdminService _adminService;
     private readonly InterLeagueService _interLeagueService;
-    private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly FantasyCriticService _fantasyCriticService;
-    private readonly IJobRepo _jobRepo;
 
     public FactCheckerController(AdminService adminService, IClock clock, InterLeagueService interLeagueService,
-        ILogger<FactCheckerController> logger, FantasyCriticUserManager userManager, LeagueMemberService leagueMemberService, FantasyCriticService fantasyCriticService,
-        IJobRepo jobRepo)
-        : base(userManager)
+        ILogger<FactCheckerController> logger, FantasyCriticUserManager userManager, LeagueMemberService leagueMemberService,
+        FantasyCriticService fantasyCriticService, IJobRepo jobRepo)
+        : base(userManager, jobRepo, clock)
     {
         _adminService = adminService;
-        _clock = clock;
         _interLeagueService = interLeagueService;
         _logger = logger;
         _leagueMemberService = leagueMemberService;
         _fantasyCriticService = fantasyCriticService;
-        _jobRepo = jobRepo;
     }
 
     [HttpPost]
@@ -264,17 +260,7 @@ public class FactCheckerController : FantasyCriticController
     [HttpPost]
     [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<FantasyCriticJobViewModel>> FullDataRefresh()
-    {
-        var currentUser = await GetCurrentUserOrThrow();
-        var result = await _jobRepo.EnqueueJob(FantasyCriticJobType.FullDataRefresh, currentUser, _clock.GetCurrentInstant());
-        if (result.IsFailure)
-        {
-            return BadRequest(result.Error);
-        }
-
-        return new FantasyCriticJobViewModel(result.Value);
-    }
+    public Task<ActionResult<FantasyCriticJobViewModel>> FullDataRefresh() => EnqueueJob(FantasyCriticJobType.FullDataRefresh);
 
     [HttpPost]
     public async Task<IActionResult> RefreshCriticInfo()

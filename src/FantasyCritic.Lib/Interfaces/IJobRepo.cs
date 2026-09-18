@@ -14,7 +14,7 @@ public interface IJobRepo
     Task<bool> CreateJob(FantasyCriticJob job);
 
     /// <summary>Queues a manual run. The single place manual runs check <see cref="FantasyCriticJobRunType.AllowsManual"/>.</summary>
-    /// <returns>Failure if the job type's RunType does not allow manual runs.</returns>
+    /// <returns>Failure if the job type's RunType does not allow manual runs, or a job of the type is already queued, running or cancelling.</returns>
     Task<Result<FantasyCriticJob>> EnqueueJob(FantasyCriticJobType jobType, IMinimalFantasyCriticUser createdByUser, Instant createdAt);
     Task<bool> StartJob(FantasyCriticJob job, Instant startTime);
     Task CompleteJob(FantasyCriticJob job, Instant finishTime);
