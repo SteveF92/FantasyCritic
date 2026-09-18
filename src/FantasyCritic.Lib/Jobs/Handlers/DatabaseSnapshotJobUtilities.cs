@@ -10,10 +10,10 @@ internal static class DatabaseSnapshotJobUtilities
     //RDS accepts a snapshot request long before the snapshot is usable, and doesn't document when during "creating" the data is captured.
     //So a job that takes a snapshot waits for "available"; otherwise a completed job wouldn't mean the snapshot exists.
     //statusPrefix carries the earlier steps of a multi-step job, so each progress update still says what already finished.
-    public static async Task<string> SnapshotDatabaseAndWait(AdminService adminService, IClock clock, FantasyCriticJobContext context,
-        string statusPrefix, CancellationToken cancellationToken)
+    public static async Task SnapshotDatabaseAndWait(AdminService adminService, IClock clock, FantasyCriticJobContext context,
+        string snapshotName, string statusPrefix, CancellationToken cancellationToken)
     {
-        string snapshotName = await adminService.StartDatabaseSnapshot(cancellationToken);
+        await adminService.StartDatabaseSnapshot(snapshotName, cancellationToken);
         await context.UpdateDetailedStatus($"{statusPrefix}Snapshot {snapshotName} requested.");
 
         var deadline = clock.GetCurrentInstant().Plus(Timeout);
@@ -24,7 +24,7 @@ internal static class DatabaseSnapshotJobUtilities
             if (snapshot.Status == "available")
             {
                 await context.UpdateDetailedStatus($"{statusPrefix}Snapshot {snapshotName} available.");
-                return snapshotName;
+                return;
             }
 
             if (snapshot.Status != "creating")

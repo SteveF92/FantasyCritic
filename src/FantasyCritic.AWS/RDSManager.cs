@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.RDS;
 using Amazon.RDS.Model;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
@@ -22,32 +20,17 @@ public class RDSManager : IRDSManager
         _instanceName = instanceName;
     }
 
-    public async Task<string> SnapshotRDS(Instant snapshotTime, string? snapshotIdentifier, CancellationToken cancellationToken)
+    public async Task SnapshotRDS(string snapshotIdentifier, CancellationToken cancellationToken)
     {
+        var validation = RdsSnapshotIdentifierValidator.Validate(snapshotIdentifier);
+        if (validation.IsFailure)
+        {
+            throw new InvalidOperationException(validation.Error);
+        }
+
         using AmazonRDSClient rdsClient = new AmazonRDSClient();
-
-        string snapName;
-        if (snapshotIdentifier is null)
-        {
-            var date = snapshotTime.InZone(TimeExtensions.EasternTimeZone).LocalDateTime.Date;
-            var dateString = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            var random = Guid.NewGuid().ToString()[..1];
-            snapName = "adminsnap-" + dateString + "-" + random;
-        }
-        else
-        {
-            var validation = RdsSnapshotIdentifierValidator.Validate(snapshotIdentifier);
-            if (validation.IsFailure)
-            {
-                throw new InvalidOperationException(validation.Error);
-            }
-
-            snapName = snapshotIdentifier;
-        }
-
-        CreateDBSnapshotRequest request = new CreateDBSnapshotRequest(snapName, _instanceName);
+        CreateDBSnapshotRequest request = new CreateDBSnapshotRequest(snapshotIdentifier, _instanceName);
         await rdsClient.CreateDBSnapshotAsync(request, cancellationToken);
-        return snapName;
     }
 
     public async Task<DatabaseSnapshotInfo> GetSnapshot(string snapshotIdentifier, CancellationToken cancellationToken)

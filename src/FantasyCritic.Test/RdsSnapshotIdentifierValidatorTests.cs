@@ -6,7 +6,7 @@ namespace FantasyCritic.Test;
 [TestFixture]
 public class RdsSnapshotIdentifierValidatorTests
 {
-    [TestCase("adminsnap-2026-06-18-a")]
+    [TestCase("admin-snap-2026-06-18-143205")]
     [TestCase("manual-backup-1")]
     public void Validate_AcceptsValidIdentifiers(string identifier)
     {

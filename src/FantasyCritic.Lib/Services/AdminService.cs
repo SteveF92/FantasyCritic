@@ -348,10 +348,9 @@ public class AdminService
     }
 
     //Returns once RDS accepts the request, while the snapshot is still being created. Poll GetDatabaseSnapshot to know when it's usable.
-    public Task<string> StartDatabaseSnapshot(CancellationToken cancellationToken)
+    public Task StartDatabaseSnapshot(string snapshotName, CancellationToken cancellationToken)
     {
-        Instant time = _clock.GetCurrentInstant();
-        return _rdsManager.SnapshotRDS(time, null, cancellationToken);
+        return _rdsManager.SnapshotRDS(snapshotName, cancellationToken);
     }
 
     public Task<DatabaseSnapshotInfo> GetDatabaseSnapshot(string snapshotName, CancellationToken cancellationToken)

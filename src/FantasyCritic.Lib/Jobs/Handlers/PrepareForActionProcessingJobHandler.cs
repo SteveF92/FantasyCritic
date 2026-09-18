@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
@@ -33,7 +34,8 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandl
         await context.UpdateDetailedStatus("Action processing mode on. Data refreshed. Snapshotting database.");
         cancellationToken.ThrowIfCancellationRequested();
 
-        await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_adminService, _clock, context,
+        var snapshotName = DatabaseSnapshotNames.PreActionProcessing(_clock.GetCurrentInstant());
+        await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_adminService, _clock, context, snapshotName,
             "Action processing mode on. Data refreshed. ", cancellationToken);
         return Result.Success();
     }

@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
@@ -17,7 +18,8 @@ internal class SnapshotDatabaseJobHandler : IFantasyCriticJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_adminService, _clock, context, "", cancellationToken);
+        var snapshotName = DatabaseSnapshotNames.Admin(_clock.GetCurrentInstant());
+        await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_adminService, _clock, context, snapshotName, "", cancellationToken);
         return Result.Success();
     }
 }
