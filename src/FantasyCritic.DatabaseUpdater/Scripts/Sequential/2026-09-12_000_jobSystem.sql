@@ -105,6 +105,8 @@ CREATE TABLE IF NOT EXISTS `tbl_job` (
   CONSTRAINT `FK_tbl_job_tbl_user` FOREIGN KEY (`CreatedByUserID`) REFERENCES `tbl_user` (`UserID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
+INSERT INTO `tbl_user_role` (`RoleID`, `Name`, `NormalizedName`) VALUES (7, 'JobManager', 'JOBMANAGER');
+
 -- Dumping data for table tbl_job: ~0 rows (approximately)
 
 /*!40103 SET TIME_ZONE=IFNULL(@OLD_TIME_ZONE, 'system') */;

@@ -97,6 +97,13 @@ public static class HostingExtensions
                 policy.RequireAuthenticatedUser();
                 policy.RequireRole("ActionRunner");
             });
+
+            options.AddPolicy("JobManager", policy =>
+            {
+                policy.AddAuthenticationSchemes(IdentityConstants.ApplicationScheme);
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole("JobManager");
+            });
         });
 
         services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(FantasyCriticIdentityOptions.Configure)
