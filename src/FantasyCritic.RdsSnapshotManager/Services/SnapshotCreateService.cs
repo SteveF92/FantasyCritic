@@ -27,7 +27,7 @@ public sealed class SnapshotCreateService
         }
 
         var rdsManager = new RDSManager(instanceName);
-        string snapshotId = await rdsManager.SnapshotRDS(_clock.GetCurrentInstant(), customName);
+        string snapshotId = await rdsManager.SnapshotRDS(_clock.GetCurrentInstant(), customName, cancellationToken);
         await WaitUntilAvailable(rdsManager, snapshotId, cancellationToken);
         return Result.Success(snapshotId);
     }

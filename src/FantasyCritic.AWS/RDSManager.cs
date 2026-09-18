@@ -22,7 +22,7 @@ public class RDSManager : IRDSManager
         _instanceName = instanceName;
     }
 
-    public async Task<string> SnapshotRDS(Instant snapshotTime, string? snapshotIdentifier = null)
+    public async Task<string> SnapshotRDS(Instant snapshotTime, string? snapshotIdentifier, CancellationToken cancellationToken)
     {
         using AmazonRDSClient rdsClient = new AmazonRDSClient();
 
@@ -46,8 +46,20 @@ public class RDSManager : IRDSManager
         }
 
         CreateDBSnapshotRequest request = new CreateDBSnapshotRequest(snapName, _instanceName);
-        await rdsClient.CreateDBSnapshotAsync(request, CancellationToken.None);
+        await rdsClient.CreateDBSnapshotAsync(request, cancellationToken);
         return snapName;
+    }
+
+    public async Task<DatabaseSnapshotInfo> GetSnapshot(string snapshotIdentifier, CancellationToken cancellationToken)
+    {
+        using AmazonRDSClient rdsClient = new AmazonRDSClient();
+        DescribeDBSnapshotsRequest request = new DescribeDBSnapshotsRequest()
+        {
+            DBInstanceIdentifier = _instanceName,
+            DBSnapshotIdentifier = snapshotIdentifier
+        };
+        DescribeDBSnapshotsResponse snaps = await rdsClient.DescribeDBSnapshotsAsync(request, cancellationToken);
+        return ToDomain(snaps.DBSnapshots.Single());
     }
 
     public async Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentSnapshots()
@@ -60,12 +72,14 @@ public class RDSManager : IRDSManager
         DescribeDBSnapshotsResponse snaps = await rdsClient.DescribeDBSnapshotsAsync(request, CancellationToken.None);
         var orderedSnaps = snaps.DBSnapshots.OrderBy(x => x.PercentProgress).ThenByDescending(x => x.SnapshotCreateTime);
         var domainObjects = orderedSnaps
-            .Select(x =>
-                new DatabaseSnapshotInfo(x.DBSnapshotIdentifier,
-                    Instant.FromDateTimeUtc(x.SnapshotCreateTime ?? DateTime.MinValue),
-                    x.PercentProgress ?? 0,
-                    x.Status))
+            .Select(ToDomain)
             .ToList();
         return domainObjects;
     }
+
+    private static DatabaseSnapshotInfo ToDomain(DBSnapshot snapshot) =>
+        new DatabaseSnapshotInfo(snapshot.DBSnapshotIdentifier,
+            Instant.FromDateTimeUtc(snapshot.SnapshotCreateTime ?? DateTime.MinValue),
+            snapshot.PercentProgress ?? 0,
+            snapshot.Status);
 }
