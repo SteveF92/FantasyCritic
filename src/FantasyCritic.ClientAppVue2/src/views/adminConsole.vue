@@ -1,5 +1,5 @@
 <template>
-  <div class="col-md-10 offset-md-1 col-sm-12">
+  <div class="col-12">
     <div>
       <h1>Admin Console</h1>
       <div v-show="errorResponse" class="alert alert-danger">Request for '{{ jobAttempted }}' returned: {{ errorResponse }}</div>
@@ -9,7 +9,7 @@
       <div v-show="jobAttempted && !lastJobFailed && !isBusy && !lastQueuedJob" class="alert alert-success">'{{ jobAttempted }}' successfully run.</div>
 
       <div class="row">
-        <div class="col-12">
+        <div :class="hasRightColumn ? 'col-lg-5 col-md-12' : 'col-12'">
           <div v-if="isFactChecker" class="mb-3">
             <h4>Master Games</h4>
             <div>
@@ -155,52 +155,59 @@
             </div>
           </div>
         </div>
-      </div>
 
-      <div v-if="isAdmin">
-        <h4>Build</h4>
-        <div v-if="buildInfoError" class="alert alert-danger">Could not load build info: {{ buildInfoError }}</div>
-        <div v-else-if="buildInfo">
-          <div v-if="buildInfo.isLocalBuild" class="alert alert-info">No release file found, so this is a local build. Deployed instances get one from the deploy pipeline.</div>
-          <table class="table table-sm table-bordered w-auto">
-            <tbody>
-              <tr v-if="buildInfo.commitHash">
-                <th>Commit</th>
-                <td>
-                  <a v-if="buildInfo.commitUrl" :href="buildInfo.commitUrl" target="_blank" rel="noopener">{{ buildInfo.shortCommitHash }}</a>
-                  <span v-else>{{ buildInfo.shortCommitHash }}</span>
-                  <span v-if="gitRefName" class="text-muted">({{ gitRefName }})</span>
-                </td>
-              </tr>
-              <tr v-if="buildInfo.commitDate">
-                <th>Commit date</th>
-                <td>{{ buildInfo.commitDate | dateTime }}</td>
-              </tr>
-              <tr v-if="buildInfo.deployedAt">
-                <th>Deployed</th>
-                <td>{{ buildInfo.deployedAt | dateTime }}</td>
-              </tr>
-              <tr>
-                <th>Running since</th>
-                <td>{{ buildInfo.processStartedAt | dateTime }}</td>
-              </tr>
-              <tr v-if="buildInfo.builtAt">
-                <th>Built</th>
-                <td>{{ buildInfo.builtAt | dateTime }}</td>
-              </tr>
-              <tr v-if="buildInfo.releaseID">
-                <th>Release</th>
-                <td>
-                  {{ buildInfo.releaseID }}
-                  <span v-if="buildInfo.deployedEnvironment" class="text-muted">({{ buildInfo.deployedEnvironment }})</span>
-                </td>
-              </tr>
-              <tr v-if="buildInfo.buildRunUrl">
-                <th>Build log</th>
-                <td><a :href="buildInfo.buildRunUrl" target="_blank" rel="noopener">GitHub Actions run</a></td>
-              </tr>
-            </tbody>
-          </table>
+        <div v-if="hasRightColumn" class="col-lg-7 col-md-12">
+          <div v-if="isJobManager" class="mb-3">
+            <h4>Recent Jobs</h4>
+            <recent-jobs-table ref="jobsTable"></recent-jobs-table>
+          </div>
+
+          <div v-if="isAdmin">
+            <h4>Build</h4>
+            <div v-if="buildInfoError" class="alert alert-danger">Could not load build info: {{ buildInfoError }}</div>
+            <div v-else-if="buildInfo">
+              <div v-if="buildInfo.isLocalBuild" class="alert alert-info">No release file found, so this is a local build. Deployed instances get one from the deploy pipeline.</div>
+              <table class="table table-sm table-bordered w-auto">
+                <tbody>
+                  <tr v-if="buildInfo.commitHash">
+                    <th>Commit</th>
+                    <td>
+                      <a v-if="buildInfo.commitUrl" :href="buildInfo.commitUrl" target="_blank" rel="noopener">{{ buildInfo.shortCommitHash }}</a>
+                      <span v-else>{{ buildInfo.shortCommitHash }}</span>
+                      <span v-if="gitRefName" class="text-muted">({{ gitRefName }})</span>
+                    </td>
+                  </tr>
+                  <tr v-if="buildInfo.commitDate">
+                    <th>Commit date</th>
+                    <td>{{ buildInfo.commitDate | dateTime }}</td>
+                  </tr>
+                  <tr v-if="buildInfo.deployedAt">
+                    <th>Deployed</th>
+                    <td>{{ buildInfo.deployedAt | dateTime }}</td>
+                  </tr>
+                  <tr>
+                    <th>Running since</th>
+                    <td>{{ buildInfo.processStartedAt | dateTime }}</td>
+                  </tr>
+                  <tr v-if="buildInfo.builtAt">
+                    <th>Built</th>
+                    <td>{{ buildInfo.builtAt | dateTime }}</td>
+                  </tr>
+                  <tr v-if="buildInfo.releaseID">
+                    <th>Release</th>
+                    <td>
+                      {{ buildInfo.releaseID }}
+                      <span v-if="buildInfo.deployedEnvironment" class="text-muted">({{ buildInfo.deployedEnvironment }})</span>
+                    </td>
+                  </tr>
+                  <tr v-if="buildInfo.buildRunUrl">
+                    <th>Build log</th>
+                    <td><a :href="buildInfo.buildRunUrl" target="_blank" rel="noopener">GitHub Actions run</a></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -228,9 +235,11 @@ import { mapGetters } from 'vuex';
 import { ToggleButton } from 'vue-js-toggle-button';
 
 import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from '@/api/clients';
+import RecentJobsTable from '@/components/recentJobsTable.vue';
 
 export default {
   components: {
+    RecentJobsTable,
     ToggleButton
   },
   data() {
@@ -273,6 +282,10 @@ export default {
     supportTicketCount() {
       return this.adminTaskCounts ? this.adminTaskCounts.supportTicketCount : null;
     },
+    //Jobs are for job managers and build info is for admins. Anyone else gets the buttons at full width.
+    hasRightColumn() {
+      return this.isJobManager || this.isAdmin;
+    },
     superDropsConfirmed() {
       return this.superDropConfirmation === 'I want to grant super drops';
     },
@@ -312,8 +325,13 @@ export default {
     //For buttons that queue a background job. The call returns the queued FantasyCriticJobViewModel.
     async enqueueJob(label, call) {
       const job = await this.runAction(label, call);
-      if (job) {
-        this.lastQueuedJob = job;
+      if (!job) {
+        return;
+      }
+
+      this.lastQueuedJob = job;
+      if (this.$refs.jobsTable) {
+        await this.$refs.jobsTable.showLatest(job.jobID);
       }
     },
     //For the Other Jobs menu, where a stray click should not queue anything.
