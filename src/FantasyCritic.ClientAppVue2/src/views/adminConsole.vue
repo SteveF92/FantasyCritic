@@ -12,25 +12,25 @@
         <h2>Master Game Management</h2>
         <div>
           <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">
-            View master game requests
+            Requests
             <b-badge v-if="masterGameRequestCount" variant="danger" class="ml-1">{{ masterGameRequestCount }}</b-badge>
           </b-button>
           <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">
-            View master game change requests
+            Change requests
             <b-badge v-if="masterGameChangeRequestCount" variant="danger" class="ml-1">{{ masterGameChangeRequestCount }}</b-badge>
           </b-button>
-          <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new master game</b-button>
-          <b-button variant="warning" @click="showMergeMasterGame = true">Merge Master Games</b-button>
+          <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new</b-button>
+          <b-button variant="warning" @click="showMergeMasterGame = true">Merge</b-button>
         </div>
 
         <h2>Data Actions</h2>
         <div>
           <b-button variant="info" @click="takePostAction('FactChecker', 'FullDataRefresh')">Full Refresh</b-button>
-          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshCriticInfo')">Refresh Critic Scores</b-button>
-          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshGGInfo')">Refresh GG Info</b-button>
-          <b-button variant="info" @click="takePostAction('FactChecker', 'UpdateFantasyPoints')">Update Fantasy Points</b-button>
-          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshCaches')">Refresh Caches</b-button>
-          <b-button variant="warning" @click="takePostAction('FactChecker', 'ClearMasterGameEditDiscordQueue')">Clear Edit Game Discord Queue</b-button>
+          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshCriticInfo')">Critic Scores</b-button>
+          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshGGInfo')">GG Info</b-button>
+          <b-button variant="info" @click="takePostAction('FactChecker', 'UpdateFantasyPoints')">Fantasy Points</b-button>
+          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshCaches')">Caches</b-button>
+          <b-button variant="warning" @click="takePostAction('FactChecker', 'ClearMasterGameEditDiscordQueue')">Clear Edit Queue</b-button>
         </div>
         <div v-if="isAdmin">
           <h2>User Support Actions</h2>
@@ -45,16 +45,16 @@
 
           <h2>Site Content</h2>
           <div>
-            <b-button variant="info" :to="{ name: 'adminSiteAnnouncements' }">Manage site announcements</b-button>
+            <b-button variant="info" :to="{ name: 'adminSiteAnnouncements' }">Site announcements</b-button>
           </div>
         </div>
         <template v-if="isDevelopment">
           <h2>Discord Push Service</h2>
           <div>
-            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofScoreUpdate')">Send Spoof Score Update</b-button>
-            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofEditUpdate')">Send Spoof Edit Update</b-button>
-            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofNewUpdate')">Send Spoof NewGame Update</b-button>
-            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofReleasedUpdate')">Send Spoof Released Update</b-button>
+            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofScoreUpdate')">Spoof Score Update</b-button>
+            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofEditUpdate')">Spoof Edit Update</b-button>
+            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofNewUpdate')">Spoof NewGame Update</b-button>
+            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofReleasedUpdate')">Spoof Released Update</b-button>
             <b-button variant="danger" @click="takePostAction('Admin', 'SendReleasingThisWeekUpdate')">Send Releasing This Week Update</b-button>
           </div>
         </template>
@@ -63,8 +63,8 @@
       <div v-if="isActionRunner">
         <h2>Bids</h2>
         <div>
-          <b-button variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Action Processing Dry Run</b-button>
-          <b-button variant="info" href="/api/ActionRunner/ComparableActionProcessingDryRun">Comparable Action Processing Dry Run</b-button>
+          <b-button variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Dry Run</b-button>
+          <b-button variant="info" href="/api/ActionRunner/ComparableActionProcessingDryRun">Comparable Dry Run (CSV)</b-button>
           <b-button variant="warning" @click="takePostAction('ActionRunner', 'TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
           <b-button variant="info" @click="takePostAction('ActionRunner', 'TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
           <b-button variant="danger" @click="takePostAction('ActionRunner', 'ProcessActions')">Process Actions</b-button>
@@ -91,7 +91,7 @@
       <div v-if="isActionRunner">
         <h2>Database</h2>
         <div>
-          <b-button variant="info" @click="getRecentDatabaseSnapshots">Get Recent Database Snapshots</b-button>
+          <b-button variant="info" @click="getRecentDatabaseSnapshots">Show Snapshots</b-button>
           <b-button variant="warning" @click="takePostAction('ActionRunner', 'SnapshotDatabase')">Snapshot Database</b-button>
         </div>
       </div>
