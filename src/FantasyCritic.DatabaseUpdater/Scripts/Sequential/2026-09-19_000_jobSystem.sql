@@ -103,6 +103,8 @@ CREATE TABLE IF NOT EXISTS `tbl_job` (
   KEY `FK_tbl_job_tbl_user` (`CreatedByUserID`),
   KEY `FK_tbl_job_tbl_user_cancelledby` (`CancelledByUserID`),
   KEY `IX_tbl_job_pollqueue` (`Status`,`CreatedAt`),
+  -- The job console lists jobs newest first. Without an index that leads on CreatedAt, every page load sorts the whole table.
+  KEY `IX_tbl_job_createdat` (`CreatedAt`),
   CONSTRAINT `FK_tbl_job_tbl_job_status` FOREIGN KEY (`Status`) REFERENCES `tbl_job_status` (`Status`),
   CONSTRAINT `FK_tbl_job_tbl_job_type` FOREIGN KEY (`JobType`) REFERENCES `tbl_job_type` (`Name`),
   CONSTRAINT `FK_tbl_job_tbl_user` FOREIGN KEY (`CreatedByUserID`) REFERENCES `tbl_user` (`UserID`),
