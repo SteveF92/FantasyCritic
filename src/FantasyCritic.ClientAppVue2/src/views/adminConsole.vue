@@ -2,11 +2,11 @@
   <div class="col-md-10 offset-md-1 col-sm-12">
     <div>
       <h1>Admin Console</h1>
-      <div v-show="errorInfo" class="alert alert-danger">Request for '{{ jobAttempted }}' returned: {{ errorInfo }}</div>
-      <div v-show="errorResponse" class="alert alert-danger">{{ errorResponse }}</div>
+      <div v-show="errorResponse" class="alert alert-danger">Request for '{{ jobAttempted }}' returned: {{ errorResponse }}</div>
       <div v-show="lastJobFailed" class="alert alert-danger">'{{ jobAttempted }}' failed.</div>
       <div v-show="isBusy" class="alert alert-info">Request is processing...</div>
-      <div v-show="jobAttempted && !lastJobFailed && !isBusy" class="alert alert-success">'{{ jobAttempted }}' successfully run.</div>
+      <div v-show="jobAttempted && !lastJobFailed && !isBusy && lastQueuedJob" class="alert alert-success">'{{ jobAttempted }}' queued.</div>
+      <div v-show="jobAttempted && !lastJobFailed && !isBusy && !lastQueuedJob" class="alert alert-success">'{{ jobAttempted }}' successfully run.</div>
 
       <div class="row">
         <div class="col-12">
@@ -23,7 +23,9 @@
               </b-button>
               <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'masterGameCreator' }">Add new</b-button>
               <b-button size="sm" class="mr-1 mb-1" variant="warning" @click="showMergeMasterGame = true">Merge</b-button>
-              <b-button size="sm" class="mr-1 mb-1" variant="warning" @click="takePostAction('FactChecker', 'ClearMasterGameEditDiscordQueue')">Clear Edit Queue</b-button>
+              <b-button size="sm" class="mr-1 mb-1" variant="warning" :disabled="isBusy" @click="runAction('Clear Edit Game Discord Queue', () => factCheckerClient.clearMasterGameEditDiscordQueue())">
+                Clear Edit Queue
+              </b-button>
             </div>
             <div v-show="showMergeMasterGame" class="mt-2">
               <div class="form-group">
@@ -34,7 +36,7 @@
                 <label for="mergeIntoMasterGameID" class="control-label">Master Game ID (To Merge Into)</label>
                 <input v-model="mergeIntoMasterGameID" type="text" class="form-control form-control-sm input" />
               </div>
-              <b-button variant="danger" size="sm" @click="mergeMasterGame">Merge Games</b-button>
+              <b-button variant="danger" size="sm" :disabled="isBusy" @click="mergeMasterGame">Merge Games</b-button>
             </div>
           </div>
 
@@ -52,11 +54,13 @@
           <div v-if="isFactChecker" class="mb-3">
             <h4>Data Refresh Jobs</h4>
             <div>
-              <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('FactChecker', 'FullDataRefresh')">Full Refresh</b-button>
-              <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('FactChecker', 'RefreshCriticInfo')">Critic Scores</b-button>
-              <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('FactChecker', 'RefreshGGInfo')">GG Info</b-button>
-              <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('FactChecker', 'UpdateFantasyPoints')">Fantasy Points</b-button>
-              <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('FactChecker', 'RefreshCaches')">Caches</b-button>
+              <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="enqueueJob('Full Refresh', () => factCheckerClient.fullDataRefresh())">Full Refresh</b-button>
+              <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="enqueueJob('Refresh Critic Scores', () => factCheckerClient.refreshCriticInfo())">Critic Scores</b-button>
+              <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="enqueueJob('Refresh GG Info', () => factCheckerClient.refreshGGInfo())">GG Info</b-button>
+              <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="enqueueJob('Update Fantasy Points', () => factCheckerClient.updateFantasyPoints())">
+                Fantasy Points
+              </b-button>
+              <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="enqueueJob('Refresh Caches', () => factCheckerClient.refreshCaches())">Caches</b-button>
             </div>
           </div>
 
@@ -65,17 +69,23 @@
             <div>
               <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Dry Run</b-button>
               <b-button size="sm" class="mr-1 mb-1" variant="info" href="/api/ActionRunner/ComparableActionProcessingDryRun">Comparable Dry Run (CSV)</b-button>
-              <b-button size="sm" class="mr-1 mb-1" variant="warning" @click="takePostAction('ActionRunner', 'TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
-              <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('ActionRunner', 'TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
-              <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('ActionRunner', 'ProcessActions')">Process Actions</b-button>
+              <b-button size="sm" class="mr-1 mb-1" variant="warning" :disabled="isBusy" @click="runAction('Turn on action processing mode', () => actionRunnerClient.turnOnActionProcessingMode())">
+                Turn on action processing mode
+              </b-button>
+              <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="runAction('Turn off action processing mode', () => actionRunnerClient.turnOffActionProcessingMode())">
+                Turn off action processing mode
+              </b-button>
+              <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Process Actions', () => actionRunnerClient.processActions())">Process Actions</b-button>
             </div>
           </div>
 
           <div v-if="isActionRunner" class="mb-3">
             <h4>Database</h4>
             <div>
-              <b-button size="sm" class="mr-1 mb-1" variant="info" @click="getRecentDatabaseSnapshots">Show Snapshots</b-button>
-              <b-button size="sm" class="mr-1 mb-1" variant="warning" @click="takePostAction('ActionRunner', 'SnapshotDatabase')">Snapshot Database</b-button>
+              <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="getRecentDatabaseSnapshots">Show Snapshots</b-button>
+              <b-button size="sm" class="mr-1 mb-1" variant="warning" :disabled="isBusy" @click="enqueueJob('Snapshot Database', () => actionRunnerClient.snapshotDatabase())">
+                Snapshot Database
+              </b-button>
             </div>
             <b-table v-if="recentSnapshots" :items="recentSnapshots" class="mt-2" striped bordered responsive small></b-table>
           </div>
@@ -86,31 +96,59 @@
               <b-button v-if="isAdmin" size="sm" class="mr-1 mb-1" variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
 
               <template v-if="isDevelopment && isAdmin">
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendSpoofScoreUpdate')">Spoof Score Update</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendSpoofEditUpdate')">Spoof Edit Update</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendSpoofNewUpdate')">Spoof NewGame Update</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendSpoofReleasedUpdate')">Spoof Released Update</b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="runAction('Send Spoof Score Update', () => adminClient.sendSpoofScoreUpdate())">
+                  Spoof Score Update
+                </b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="runAction('Send Spoof Edit Update', () => adminClient.sendSpoofEditUpdate())">
+                  Spoof Edit Update
+                </b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="runAction('Send Spoof NewGame Update', () => adminClient.sendSpoofNewUpdate())">
+                  Spoof NewGame Update
+                </b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="runAction('Send Spoof Released Update', () => adminClient.sendSpoofReleasedUpdate())">
+                  Spoof Released Update
+                </b-button>
               </template>
 
               <template v-if="isActionRunner">
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('ActionRunner', 'ProcessSpecialAuctions')">Process Special Auctions</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('ActionRunner', 'UpdateTopBidsAndDrops')">Update Top Bids And Drops</b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Process Special Auctions', () => actionRunnerClient.processSpecialAuctions())">
+                  Process Special Auctions
+                </b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Update Top Bids And Drops', () => actionRunnerClient.updateTopBidsAndDrops())">
+                  Update Top Bids And Drops
+                </b-button>
               </template>
               <template v-if="isAdmin">
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendPublicBiddingEmails')">Send Public Bidding Emails</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'PushPublicBiddingDiscordMessages')">Push Public Bidding Messages</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendReleasingThisWeekUpdate')">Send Releasing This Week Update</b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Send Public Bidding Emails', () => adminClient.sendPublicBiddingEmails())">
+                  Send Public Bidding Emails
+                </b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Push Public Bidding Messages', () => adminClient.pushPublicBiddingDiscordMessages())">
+                  Push Public Bidding Messages
+                </b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Send Releasing This Week Update', () => adminClient.sendReleasingThisWeekUpdate())">
+                  Send Releasing This Week Update
+                </b-button>
 
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Make Slots Consistent', () => adminClient.makePublisherSlotsConsistent())">
+                  Make Slots Consistent
+                </b-button>
                 <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="showGrantSuperDrops = true">Grant Super Drops</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'ExpireTrades')">Expire Trades</b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Expire Trades', () => adminClient.expireTrades())">Expire Trades</b-button>
 
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'RecalculateWinners')">Recalculate Last Season Winners</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'RecalculateRoyaleWinners')">Recalculate Royale Winners</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('Admin', 'RecomputeRulesBasedRoyaleGroups')">Recompute Rules Based Royale Groups</b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Recalculate Last Season Winners', () => adminClient.recalculateWinners())">
+                  Recalculate Last Season Winners
+                </b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Recalculate Royale Winners', () => adminClient.recalculateRoyaleWinners())">
+                  Recalculate Royale Winners
+                </b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="enqueueJob('Recompute Rules Based Royale Groups', () => adminClient.recomputeRulesBasedRoyaleGroups())">
+                  Recompute Rules Based Royale Groups
+                </b-button>
 
-                <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('Admin', 'RefreshPatreonInfo')">Refresh Patreon</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('Admin', 'UpdateDailyPublisherStatistics')">Update Daily Publisher Statistics</b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="enqueueJob('Refresh Patreon', () => adminClient.refreshPatreonInfo())">Refresh Patreon</b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="enqueueJob('Update Daily Publisher Statistics', () => adminClient.updateDailyPublisherStatistics())">
+                  Update Daily Publisher Statistics
+                </b-button>
               </template>
             </div>
             <div v-show="showRecentConfirmationEmail" class="mt-2">
@@ -118,14 +156,14 @@
                 <label for="resendConfirmationUserID" class="control-label">User ID</label>
                 <input v-model="resendConfirmationUserID" type="text" class="form-control form-control-sm input" />
               </div>
-              <b-button variant="info" size="sm" @click="resendConfirmationEmail">Send Confirmation</b-button>
+              <b-button variant="info" size="sm" :disabled="isBusy" @click="resendConfirmationEmail">Send Confirmation</b-button>
             </div>
             <div v-show="showGrantSuperDrops" class="mt-2">
               <div class="form-group">
                 <label for="superDropConfirmation" class="control-label">Type 'I want to grant super drops'</label>
                 <input v-model="superDropConfirmation" type="text" class="form-control form-control-sm input" />
               </div>
-              <b-button variant="info" size="sm" @click="grantSuperDrops">Send Confirmation</b-button>
+              <b-button variant="info" size="sm" :disabled="isBusy" @click="grantSuperDrops">Send Confirmation</b-button>
             </div>
           </div>
         </div>
@@ -181,19 +219,18 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
 import { mapGetters } from 'vuex';
 
-import { adminClient } from '@/api/clients';
+import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from '@/api/clients';
 
 export default {
   data() {
     return {
       isBusy: false,
-      errorInfo: null,
       errorResponse: null,
       lastJobFailed: false,
       jobAttempted: '',
+      lastQueuedJob: null,
       recentSnapshots: null,
       showRecentConfirmationEmail: false,
       showMergeMasterGame: false,
@@ -208,6 +245,16 @@ export default {
   },
   computed: {
     ...mapGetters(['adminTaskCounts']),
+    //The template calls the clients directly. Computed rather than data so Vue does not try to make the singletons reactive.
+    actionRunnerClient() {
+      return actionRunnerClient;
+    },
+    adminClient() {
+      return adminClient;
+    },
+    factCheckerClient() {
+      return factCheckerClient;
+    },
     masterGameRequestCount() {
       return this.adminTaskCounts ? this.adminTaskCounts.masterGameRequestCount : null;
     },
@@ -242,20 +289,38 @@ export default {
         this.buildInfoError = error;
       }
     },
-    async takePostAction(controller, endPoint) {
+    //For buttons that queue a background job. The call returns the queued FantasyCriticJobViewModel.
+    async enqueueJob(label, call) {
+      const job = await this.runAction(label, call);
+      if (job) {
+        this.lastQueuedJob = job;
+      }
+    },
+    //For everything that still does its work inside the request.
+    async runAction(label, call) {
       this.lastJobFailed = false;
-      this.jobAttempted = endPoint;
+      this.errorResponse = null;
+      this.lastQueuedJob = null;
+      this.jobAttempted = label;
       this.isBusy = true;
 
       try {
-        await axios.post(`/api/${controller}/${endPoint}`);
+        return await call();
       } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
+        this.errorResponse = this.describeError(error);
         this.lastJobFailed = true;
+        return null;
       } finally {
         this.isBusy = false;
       }
+    },
+    describeError(error) {
+      //A 400 from the API carries its reason as a plain string body, e.g. "FullDataRefresh is already queued or running."
+      if (ApiException.isApiException(error) && error.response) {
+        return error.response;
+      }
+
+      return error.message || String(error);
     },
     async grantSuperDrops() {
       if (this.superDropConfirmation !== 'I want to grant super drops') {
@@ -264,62 +329,28 @@ export default {
 
       this.showGrantSuperDrops = false;
       this.superDropConfirmation = null;
-      await this.takePostAction('Admin', 'GrantSuperDrops');
+      await this.enqueueJob('Grant Super Drops', () => adminClient.grantSuperDrops());
     },
     async mergeMasterGame() {
-      this.lastJobFailed = false;
-      this.jobAttempted = 'Merge Master Games';
-      this.isBusy = true;
-
-      let request = {
+      const request = {
         removeMasterGameID: this.removeMasterGameID,
         mergeIntoMasterGameID: this.mergeIntoMasterGameID
       };
 
-      try {
-        await axios.post('/api/factchecker/MergeMasterGame', request);
-      } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
-        this.lastJobFailed = true;
-      } finally {
-        this.isBusy = false;
-      }
+      await this.runAction('Merge Master Games', () => factCheckerClient.mergeMasterGame(request));
     },
     async getRecentDatabaseSnapshots() {
-      this.lastJobFailed = false;
-      this.jobAttempted = 'Getting snapshots';
-      this.isBusy = true;
-
-      try {
-        const response = await axios.get('/api/ActionRunner/GetRecentDatabaseSnapshots');
-        this.recentSnapshots = response.data;
-      } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
-        this.lastJobFailed = true;
-      } finally {
-        this.isBusy = false;
+      const snapshots = await this.runAction('Getting snapshots', () => actionRunnerClient.getRecentDatabaseSnapshots());
+      if (snapshots) {
+        this.recentSnapshots = snapshots;
       }
     },
     async resendConfirmationEmail() {
-      this.lastJobFailed = false;
-      this.jobAttempted = 'Recent Confirmation Email';
-      this.isBusy = true;
-
-      let request = {
-        UserID: this.resendConfirmationUserID
+      const request = {
+        userID: this.resendConfirmationUserID
       };
 
-      try {
-        await axios.post('/api/admin/ResendConfirmationEmail', request);
-      } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
-        this.lastJobFailed = true;
-      } finally {
-        this.isBusy = false;
-      }
+      await this.runAction('Resend Confirmation Email', () => adminClient.resendConfirmationEmail(request));
     }
   }
 };
