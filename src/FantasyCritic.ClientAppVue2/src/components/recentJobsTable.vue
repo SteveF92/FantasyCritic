@@ -3,17 +3,17 @@
     <div v-show="errorResponse" class="alert alert-danger">{{ errorResponse }}</div>
 
     <div class="form-row align-items-end mb-2">
-      <div class="form-group col-md-4 mb-0">
+      <div class="form-group col-sm-5 mb-0">
         <label for="jobTypeFilter">Job type</label>
-        <select id="jobTypeFilter" v-model="jobTypeFilter" class="form-control" @change="changeFilter">
+        <select id="jobTypeFilter" v-model="jobTypeFilter" class="form-control form-control-sm" @change="changeFilter">
           <option :value="null">All types</option>
           <option v-for="jobType in jobTypes" :key="jobType" :value="jobType">{{ jobTypeDisplayName(jobType) }}</option>
         </select>
       </div>
-      <div class="form-group col-md-8 mb-0">
-        <b-button variant="info" :disabled="isBusy" @click="refresh">Refresh</b-button>
-        <b-button variant="secondary" :disabled="isBusy || page === 1" @click="newerPage">Newer</b-button>
-        <b-button variant="secondary" :disabled="isBusy || !mayHaveOlderPage" @click="olderPage">Older</b-button>
+      <div class="form-group col-sm-7 mb-0">
+        <b-button variant="info" size="sm" :disabled="isBusy" @click="refresh">Refresh</b-button>
+        <b-button variant="secondary" size="sm" :disabled="isBusy || page === 1" @click="newerPage">Newer</b-button>
+        <b-button variant="secondary" size="sm" :disabled="isBusy || !mayHaveOlderPage" @click="olderPage">Older</b-button>
         <span v-if="lastRefreshedAt" class="text-muted ml-2">Page {{ page }} &middot; refreshed {{ lastRefreshedAt.toLocaleString(DateTime.TIME_WITH_SECONDS) }}</span>
       </div>
     </div>
@@ -32,11 +32,10 @@
       </template>
       <template #cell(requestedBy)="row">{{ row.item.createdByUserDisplayName || 'Scheduler' }}</template>
       <template #cell(createdAt)="row">{{ formatTimestamp(row.item.createdAt) }}</template>
-      <template #cell(startedAt)="row">{{ formatTimestamp(row.item.startedAt) }}</template>
       <template #cell(duration)="row">{{ duration(row.item) }}</template>
       <template #cell(detail)="row">
         <font-awesome-icon v-if="isRunningSuspiciouslyLong(row.item)" icon="exclamation-triangle" class="text-warning mr-1" title="Running for over an hour. The worker may have died." />
-        <span class="d-inline-block text-truncate align-bottom" style="max-width: 20rem">{{ detailSummary(row.item) }}</span>
+        <span class="d-inline-block text-truncate align-bottom" style="max-width: 14rem">{{ detailSummary(row.item) }}</span>
       </template>
       <template #cell(actions)="row">
         <b-button v-if="isCancellable(row.item)" variant="danger" size="sm" :disabled="isBusy" @click="cancelJob(row.item)">Cancel</b-button>
@@ -50,15 +49,21 @@
           <dd class="col-sm-9">{{ row.item.runType }} ({{ row.item.severity }})</dd>
           <template v-if="row.item.scheduledFor">
             <dt class="col-sm-3">Scheduled for</dt>
-            <dd class="col-sm-9">{{ formatTimestamp(row.item.scheduledFor) }}</dd>
+            <dd class="col-sm-9">{{ formatFullTimestamp(row.item.scheduledFor) }}</dd>
+          </template>
+          <dt class="col-sm-3">Queued</dt>
+          <dd class="col-sm-9">{{ formatFullTimestamp(row.item.createdAt) }}</dd>
+          <template v-if="row.item.startedAt">
+            <dt class="col-sm-3">Started</dt>
+            <dd class="col-sm-9">{{ formatFullTimestamp(row.item.startedAt) }}</dd>
           </template>
           <template v-if="row.item.finishedAt">
             <dt class="col-sm-3">Finished</dt>
-            <dd class="col-sm-9">{{ formatTimestamp(row.item.finishedAt) }}</dd>
+            <dd class="col-sm-9">{{ formatFullTimestamp(row.item.finishedAt) }}</dd>
           </template>
           <template v-if="row.item.cancelledAt">
             <dt class="col-sm-3">Cancel requested</dt>
-            <dd class="col-sm-9">{{ formatTimestamp(row.item.cancelledAt) }} by {{ row.item.cancelledByUserDisplayName || 'the worker' }}</dd>
+            <dd class="col-sm-9">{{ formatFullTimestamp(row.item.cancelledAt) }} by {{ row.item.cancelledByUserDisplayName || 'the worker' }}</dd>
           </template>
           <template v-if="row.item.detailedStatus">
             <dt class="col-sm-3">Detailed status</dt>
@@ -139,7 +144,6 @@ export default {
         { key: 'status', label: 'Status', thClass: 'bg-primary' },
         { key: 'requestedBy', label: 'Requested by', thClass: 'bg-primary' },
         { key: 'createdAt', label: 'Queued', thClass: 'bg-primary' },
-        { key: 'startedAt', label: 'Started', thClass: 'bg-primary' },
         { key: 'duration', label: 'Duration', thClass: 'bg-primary' },
         { key: 'detail', label: 'Detail', thClass: 'bg-primary' },
         { key: 'actions', label: '', thClass: 'bg-primary' }
@@ -228,7 +232,15 @@ export default {
     isCancellable(job) {
       return cancellableStatuses.includes(job.status);
     },
+    //Compact, for the grid. The year and the exact second are in the detail row.
     formatTimestamp(value) {
+      if (!value) {
+        return '';
+      }
+
+      return DateTime.fromISO(value).toFormat('M/d h:mm a');
+    },
+    formatFullTimestamp(value) {
       if (!value) {
         return '';
       }
