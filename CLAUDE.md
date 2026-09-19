@@ -65,7 +65,7 @@ Client app (`src/FantasyCritic.ClientAppVue2`): `npm install` first; `npm run li
 | **FantasyCritic.Hosting** | The DI registrations, configuration chain (appsettings → user secrets → Secrets Manager → env vars) and Serilog setup shared by every host. `AddFantasyCriticCore` is where a new repository or domain service gets registered — put it there, not in one host's startup, or the hosts drift. References Lib + MySQL + AWS. |
 | **FantasyCritic.DiscordBot** | The Discord *command* gateway, its own process and container. The web app keeps `DiscordPushService` (notifications out) on the same bot token. Exactly one container may run the command bot. |
 | **FantasyCritic.FakeRepo** | In-memory repository doubles for unit tests. |
-| **FantasyCritic.DatabaseUpdater** | DbUp migrations. Schema changes happen **only** here: new scripts in `Scripts/Sequential/` with the next dated filename. Never hand-edit the DB. |
+| **FantasyCritic.DatabaseUpdater** | DbUp migrations. Schema changes happen **only** here: new scripts in `Scripts/Sequential/` with the next dated filename. Never hand-edit the DB. Every code migration needs a `Sequential/` prerequisites script sorted just before it that creates the procs/views it uses — see `.cursor/rules/fantasy-critic-architecture.mdc`. |
 | **FantasyCritic.ApiClient** | NSwag-generated C# client (gitignored output) used by integration tests. |
 
 Satellite console tools: LocalDatabaseTool (seeds dev DB from prod data), RdsSnapshotManager (import prod snapshots), MasterGameUpdater, BetaSync, DBUtility, TestDataScrubber. Supporting libs: AWS (Secrets Manager/S3), Postmark + EmailTemplates (email), OpenCritic/Patreon/GG clients inside Lib.

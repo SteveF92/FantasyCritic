@@ -10,6 +10,7 @@ alwaysApply: true
 - Add and evolve schema **only** through the **FantasyCritic.DatabaseUpdater** project (DbUp).
 - New scripts go under `src/FantasyCritic.DatabaseUpdater/Scripts/Sequential/` with the next dated sequential filename (match existing naming).
 - Do **not** hand-edit production DBs or add ad-hoc SQL outside this pipeline unless the user explicitly calls for an exception.
+- **Code migrations** (`CodeMigrations/`, registered in `Program.cs`) run interleaved with `Sequential/` scripts by name, but `Idempotent/` stored procedures and views only run **after all of them**. So every code migration gets a **prerequisites script** in `Sequential/`, named to sort immediately before it (e.g. `2026-08-31_000_topBidsAndDropsBackfillPrerequisites.sql` before `2026-08-31_001_topBidsAndDropsBackfill.cs`), that creates every stored procedure/view the migration can reach through the repos it calls — copied from `Idempotent/` as of that date. Without it, the migration fails on a fresh database.
 
 ## Where code belongs
 
