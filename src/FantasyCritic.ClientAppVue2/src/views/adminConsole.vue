@@ -66,15 +66,23 @@
 
           <div v-if="isActionRunner" class="mb-3">
             <h4>Action Processing</h4>
+            <div v-if="bidTimes" class="mb-2">
+              <toggle-button
+                v-model="actionProcessingModeSwitch"
+                class="toggle align-middle"
+                :sync="true"
+                :disabled="isBusy"
+                :labels="{ checked: 'On', unchecked: 'Off' }"
+                :css-colors="true"
+                :font-size="13"
+                :width="60"
+                :height="24"
+                @change="changeActionProcessingMode" />
+              <span class="ml-2 align-middle">Action processing mode</span>
+            </div>
             <div>
               <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Dry Run</b-button>
               <b-button size="sm" class="mr-1 mb-1" variant="info" href="/api/ActionRunner/ComparableActionProcessingDryRun">Comparable Dry Run (CSV)</b-button>
-              <b-button size="sm" class="mr-1 mb-1" variant="warning" :disabled="isBusy" @click="runAction('Turn on action processing mode', () => actionRunnerClient.turnOnActionProcessingMode())">
-                Turn on action processing mode
-              </b-button>
-              <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="runAction('Turn off action processing mode', () => actionRunnerClient.turnOffActionProcessingMode())">
-                Turn off action processing mode
-              </b-button>
               <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Process Actions', () => actionRunnerClient.processActions())">Process Actions</b-button>
             </div>
           </div>
@@ -217,10 +225,14 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
+import { ToggleButton } from 'vue-js-toggle-button';
 
 import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from '@/api/clients';
 
 export default {
+  components: {
+    ToggleButton
+  },
   data() {
     return {
       isBusy: false,
@@ -235,12 +247,13 @@ export default {
       mergeIntoMasterGameID: null,
       resendConfirmationUserID: null,
       superDropConfirmation: '',
+      actionProcessingModeSwitch: false,
       buildInfo: null,
       buildInfoError: null
     };
   },
   computed: {
-    ...mapGetters(['adminTaskCounts']),
+    ...mapGetters(['adminTaskCounts', 'bidTimes']),
     //The template calls the clients directly. Computed rather than data so Vue does not try to make the singletons reactive.
     actionRunnerClient() {
       return actionRunnerClient;
@@ -269,6 +282,14 @@ export default {
       }
 
       return this.buildInfo.gitRef.replace(/^refs\/(heads|tags)\//, '');
+    }
+  },
+  watch: {
+    bidTimes: {
+      immediate: true,
+      handler() {
+        this.syncActionProcessingModeSwitch();
+      }
     }
   },
   async created() {
@@ -334,6 +355,19 @@ export default {
       }
 
       return error.message || String(error);
+    },
+    syncActionProcessingModeSwitch() {
+      this.actionProcessingModeSwitch = !!this.bidTimes && this.bidTimes.actionProcessingMode;
+    },
+    async changeActionProcessingMode(event) {
+      const enabled = event.value;
+      const label = enabled ? 'Turn on action processing mode' : 'Turn off action processing mode';
+      const call = enabled ? () => actionRunnerClient.turnOnActionProcessingMode() : () => actionRunnerClient.turnOffActionProcessingMode();
+      await this.runAction(label, call);
+
+      //The server is the truth. If the request failed, this also puts the switch back where it was.
+      await this.$store.dispatch('fetchBasicData');
+      this.syncActionProcessingModeSwitch();
     },
     async grantSuperDrops() {
       if (!this.superDropsConfirmed) {
