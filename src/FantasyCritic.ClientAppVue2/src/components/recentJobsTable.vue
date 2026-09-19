@@ -54,6 +54,8 @@
       <template #cell(type)="row">
         {{ jobTypeDisplayName(row.item.type) }}
         <b-badge v-if="row.item.scheduledFor" variant="secondary" class="ml-1">cron</b-badge>
+        <b-button variant="link" size="sm" class="p-0 ml-2" :disabled="isBusy" @click="filterJobType('only', row.item.type)">only</b-button>
+        <b-button variant="link" size="sm" class="p-0 ml-1" :disabled="isBusy" @click="filterJobType('hide', row.item.type)">hide</b-button>
       </template>
       <template #cell(status)="row">
         <b-badge :variant="statusVariant(row.item.status)">
@@ -250,6 +252,16 @@ export default {
 
       const isSelected = selected.some((x) => x.value === value);
       return mode === 'only' ? !isSelected : isSelected;
+    },
+    //The links on each row. "only" narrows to that one type; "hide" adds the type to what is hidden.
+    async filterJobType(mode, jobType) {
+      const option = this.jobTypeOptions.find((x) => x.value === jobType) || { value: jobType, label: this.jobTypeDisplayName(jobType) };
+      const alreadyHiding = this.jobTypeMode === 'hide' && mode === 'hide';
+      const others = alreadyHiding ? this.selectedJobTypes.filter((x) => x.value !== jobType) : [];
+
+      this.jobTypeMode = mode;
+      this.selectedJobTypes = [...others, option];
+      await this.changeFilter();
     },
     async changeFilter() {
       this.page = 1;
