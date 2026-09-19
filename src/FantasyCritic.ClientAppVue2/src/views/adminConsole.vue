@@ -329,7 +329,7 @@ export default {
 
       this.lastQueuedJob = job;
       if (this.$refs.jobsTable) {
-        await this.$refs.jobsTable.showLatest(job.jobID);
+        await this.$refs.jobsTable.showLatest(job);
       }
     },
     //For the Other Jobs menu, where a stray click should not queue anything.

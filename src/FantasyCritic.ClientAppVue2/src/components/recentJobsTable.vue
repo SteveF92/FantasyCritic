@@ -2,23 +2,54 @@
   <div>
     <div v-show="errorResponse" class="alert alert-danger">{{ errorResponse }}</div>
 
-    <div class="form-row align-items-end mb-2">
-      <div class="form-group col-sm-5 mb-0">
-        <label for="jobTypeFilter">Job type</label>
-        <select id="jobTypeFilter" v-model="jobTypeFilter" class="form-control form-control-sm" @change="changeFilter">
-          <option :value="null">All types</option>
-          <option v-for="jobType in jobTypes" :key="jobType" :value="jobType">{{ jobTypeDisplayName(jobType) }}</option>
+    <div class="form-row align-items-end">
+      <div class="form-group col-sm-3 mb-1">
+        <label for="jobTypeMode">Job types</label>
+        <select id="jobTypeMode" v-model="jobTypeMode" class="form-control form-control-sm" @change="changeFilter">
+          <option value="only">Show only</option>
+          <option value="hide">Hide</option>
         </select>
       </div>
-      <div class="form-group col-sm-7 mb-0">
-        <b-button variant="info" size="sm" :disabled="isBusy" @click="refresh">Refresh</b-button>
-        <b-button variant="secondary" size="sm" :disabled="isBusy || page === 1" @click="newerPage">Newer</b-button>
-        <b-button variant="secondary" size="sm" :disabled="isBusy || !mayHaveOlderPage" @click="olderPage">Older</b-button>
-        <span v-if="lastRefreshedAt" class="text-muted ml-2">Page {{ page }} &middot; refreshed {{ lastRefreshedAt.toLocaleString(DateTime.TIME_WITH_SECONDS) }}</span>
+      <div class="form-group col-sm-9 mb-1">
+        <multiselect
+          v-model="selectedJobTypes"
+          placeholder="All job types"
+          label="label"
+          track-by="value"
+          :options="jobTypeOptions"
+          :multiple="true"
+          :close-on-select="false"
+          @input="changeFilter"></multiselect>
       </div>
     </div>
+    <div class="form-row align-items-end">
+      <div class="form-group col-sm-3 mb-1">
+        <label for="statusMode">Statuses</label>
+        <select id="statusMode" v-model="statusMode" class="form-control form-control-sm" @change="changeFilter">
+          <option value="only">Show only</option>
+          <option value="hide">Hide</option>
+        </select>
+      </div>
+      <div class="form-group col-sm-9 mb-1">
+        <multiselect
+          v-model="selectedStatuses"
+          placeholder="All statuses"
+          label="label"
+          track-by="value"
+          :options="statusOptions"
+          :multiple="true"
+          :close-on-select="false"
+          @input="changeFilter"></multiselect>
+      </div>
+    </div>
+    <div class="mb-2">
+      <b-button variant="info" size="sm" :disabled="isBusy" @click="refresh">Refresh</b-button>
+      <b-button variant="secondary" size="sm" :disabled="isBusy || page === 1" @click="newerPage">Newer</b-button>
+      <b-button variant="secondary" size="sm" :disabled="isBusy || !mayHaveOlderPage" @click="olderPage">Older</b-button>
+      <span v-if="lastRefreshedAt" class="text-muted ml-2">Page {{ page }} &middot; refreshed {{ lastRefreshedAt.toLocaleString(DateTime.TIME_WITH_SECONDS) }}</span>
+    </div>
 
-    <p v-if="jobs && !jobs.length" class="text-muted">No jobs yet.</p>
+    <p v-if="jobs && !jobs.length" class="text-muted">{{ hasFilters ? 'No jobs match these filters.' : 'No jobs yet.' }}</p>
     <b-table v-else-if="jobs" :items="jobs" :fields="fields" :tbody-tr-class="rowClass" striped bordered responsive small>
       <template #cell(type)="row">
         {{ jobTypeDisplayName(row.item.type) }}
@@ -82,10 +113,12 @@
 </template>
 <script>
 import { DateTime } from 'luxon';
+import Multiselect from 'vue-multiselect';
 
 import { ApiException, jobManagerClient } from '@/api/clients';
 
 //The values of FantasyCriticJobType. The API does not expose the list, so it lives here for the filter.
+//A type missing from this list can still be hidden or shown by the server; it just cannot be picked here.
 const jobTypes = [
   'AdvanceRoyaleQuarters',
   'EndOfYearRollover',
@@ -126,15 +159,28 @@ const statusVariants = {
   CancelledInProgress: 'warning'
 };
 
+//"RefreshGGInfo" -> "Refresh GG Info"
+function spaceOutWords(value) {
+  return value.replace(/([a-z])([A-Z])|([A-Z])([A-Z][a-z])/g, '$1$3 $2$4');
+}
+
 export default {
+  components: {
+    Multiselect
+  },
   data() {
     return {
       DateTime,
-      jobTypes,
+      jobTypeOptions: jobTypes.map((value) => ({ value, label: spaceOutWords(value) })),
+      statusOptions: Object.keys(statusVariants).map((value) => ({ value, label: spaceOutWords(value) })),
       jobs: null,
       page: 1,
       count: 10,
-      jobTypeFilter: null,
+      //Each filter is a list plus whether the list is what to show or what to hide. An empty list filters nothing.
+      jobTypeMode: 'only',
+      selectedJobTypes: [],
+      statusMode: 'only',
+      selectedStatuses: [],
       isBusy: false,
       errorResponse: null,
       lastRefreshedAt: null,
@@ -151,6 +197,9 @@ export default {
     };
   },
   computed: {
+    hasFilters() {
+      return this.selectedJobTypes.length > 0 || this.selectedStatuses.length > 0;
+    },
     mayHaveOlderPage() {
       return this.jobs && this.jobs.length === this.count;
     }
@@ -164,7 +213,16 @@ export default {
       this.errorResponse = null;
 
       try {
-        this.jobs = await jobManagerClient.getJobs(this.page, this.count, this.jobTypeFilter ? [this.jobTypeFilter] : null, null, null, null);
+        const jobTypeValues = this.selectedJobTypes.map((x) => x.value);
+        const statusValues = this.selectedStatuses.map((x) => x.value);
+        this.jobs = await jobManagerClient.getJobs(
+          this.page,
+          this.count,
+          this.jobTypeMode === 'only' ? jobTypeValues : null,
+          this.jobTypeMode === 'hide' ? jobTypeValues : null,
+          this.statusMode === 'only' ? statusValues : null,
+          this.statusMode === 'hide' ? statusValues : null
+        );
         this.lastRefreshedAt = DateTime.now();
       } catch (error) {
         this.errorResponse = this.describeError(error);
@@ -172,12 +230,26 @@ export default {
         this.isBusy = false;
       }
     },
-    //Jumps back to the newest jobs so a job the console just queued is on screen.
-    async showLatest(jobID) {
+    //Jumps back to the newest jobs so a job the console just queued is on screen. A filter is only dropped if it would hide that job.
+    async showLatest(job) {
       this.page = 1;
-      this.jobTypeFilter = null;
-      this.highlightedJobID = jobID;
+      this.highlightedJobID = job.jobID;
+      if (this.isHidden(job.type, this.jobTypeMode, this.selectedJobTypes)) {
+        this.selectedJobTypes = [];
+      }
+      if (this.isHidden(job.status, this.statusMode, this.selectedStatuses)) {
+        this.selectedStatuses = [];
+      }
+
       await this.refresh();
+    },
+    isHidden(value, mode, selected) {
+      if (selected.length === 0) {
+        return false;
+      }
+
+      const isSelected = selected.some((x) => x.value === value);
+      return mode === 'only' ? !isSelected : isSelected;
     },
     async changeFilter() {
       this.page = 1;
@@ -223,8 +295,7 @@ export default {
       return error.message || String(error);
     },
     jobTypeDisplayName(jobType) {
-      //"RefreshGGInfo" -> "Refresh GG Info"
-      return jobType.replace(/([a-z])([A-Z])|([A-Z])([A-Z][a-z])/g, '$1$3 $2$4');
+      return spaceOutWords(jobType);
     },
     statusVariant(status) {
       return statusVariants[status] || 'secondary';
@@ -300,3 +371,5 @@ export default {
   }
 };
 </script>
+
+<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
