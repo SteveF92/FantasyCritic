@@ -164,7 +164,7 @@ export default {
       this.errorResponse = null;
 
       try {
-        this.jobs = await jobManagerClient.getJobs(this.page, this.count, this.jobTypeFilter);
+        this.jobs = await jobManagerClient.getJobs(this.page, this.count, this.jobTypeFilter ? [this.jobTypeFilter] : null, null, null, null);
         this.lastRefreshedAt = DateTime.now();
       } catch (error) {
         this.errorResponse = this.describeError(error);

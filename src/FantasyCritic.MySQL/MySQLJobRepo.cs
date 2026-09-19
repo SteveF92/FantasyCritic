@@ -64,14 +64,36 @@ public class MySQLJobRepo : IJobRepo
         return entity?.ToDomain();
     }
 
-    public async Task<IReadOnlyList<FantasyCriticJob>> GetJobs(int page, int count, FantasyCriticJobType? jobType)
+    public async Task<IReadOnlyList<FantasyCriticJob>> GetJobs(int page, int count, FantasyCriticJobFilter filter)
     {
-        var offset = (Math.Max(page, 1) - 1) * count;
-        var whereClause = jobType is not null ? "WHERE tbl_job.JobType = @jobType" : "";
+        var parameters = new DynamicParameters();
+        parameters.Add("count", count);
+        parameters.Add("offset", (Math.Max(page, 1) - 1) * count);
+
+        //An empty list means "no restriction", so it adds no condition at all rather than an IN () that matches nothing.
+        var conditions = new List<string>();
+        void AddCondition(string column, string sqlOperator, string parameterName, IEnumerable<string> values)
+        {
+            var valueList = values.ToList();
+            if (valueList.Count == 0)
+            {
+                return;
+            }
+
+            conditions.Add($"{column} {sqlOperator} @{parameterName}");
+            parameters.Add(parameterName, valueList);
+        }
+
+        AddCondition("tbl_job.JobType", "IN", "jobTypes", filter.JobTypes.Select(x => x.Value));
+        AddCondition("tbl_job.JobType", "NOT IN", "excludedJobTypes", filter.ExcludedJobTypes.Select(x => x.Value));
+        AddCondition("tbl_job.Status", "IN", "statuses", filter.Statuses.Select(x => x.Value));
+        AddCondition("tbl_job.Status", "NOT IN", "excludedStatuses", filter.ExcludedStatuses.Select(x => x.Value));
+
+        var whereClause = conditions.Count > 0 ? $"WHERE {string.Join(" AND ", conditions)}" : "";
         var sql = $"{JobSelectSQL} {whereClause} ORDER BY tbl_job.CreatedAt DESC LIMIT @count OFFSET @offset;";
 
         await using var connection = new MySqlConnection(_connectionString);
-        var entities = await connection.QueryAsync<JobEntity>(sql, new { count, offset, jobType = jobType?.Value });
+        var entities = await connection.QueryAsync<JobEntity>(sql, parameters);
         return entities.Select(x => x.ToDomain()).ToList();
     }
 

@@ -29,24 +29,20 @@ public class JobManagerController : FantasyCriticController
     [HttpGet]
     [ProducesResponseType<List<FantasyCriticJobViewModel>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<List<FantasyCriticJobViewModel>>> GetJobs([FromQuery] int page, [FromQuery] int count, [FromQuery] string? jobType)
+    public async Task<ActionResult<List<FantasyCriticJobViewModel>>> GetJobs([FromQuery] GetJobsRequest request)
     {
-        if (page < 1 || count < 1)
+        if (request.Page < 1 || request.Count < 1)
         {
             return BadRequest("page and count must both be at least 1.");
         }
 
-        FantasyCriticJobType? parsedJobType = null;
-        if (!string.IsNullOrWhiteSpace(jobType))
+        var filter = request.ToDomain();
+        if (filter.IsFailure)
         {
-            parsedJobType = FantasyCriticJobType.TryFromValue(jobType);
-            if (parsedJobType is null)
-            {
-                return BadRequest($"Unknown job type '{jobType}'.");
-            }
+            return BadRequest(filter.Error);
         }
 
-        var jobs = await _jobRepo.GetJobs(page, count, parsedJobType);
+        var jobs = await _jobRepo.GetJobs(request.Page, request.Count, filter.Value);
         return jobs.Select(x => new FantasyCriticJobViewModel(x)).ToList();
     }
 

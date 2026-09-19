@@ -43,6 +43,7 @@ public sealed class ApiSession : IDisposable
         RoyaleGroup = new RoyaleGroupClient(baseUrl, _client);
         FactChecker = new FactCheckerClient(baseUrl, _client);
         ActionRunner = new ActionRunnerClient(baseUrl, _client);
+        JobManager = new JobManagerClient(baseUrl, _client);
     }
 
     public RoyaleClient Royale { get; }
@@ -57,6 +58,7 @@ public sealed class ApiSession : IDisposable
     public RoyaleGroupClient RoyaleGroup { get; }
     public FactCheckerClient FactChecker { get; }
     public ActionRunnerClient ActionRunner { get; }
+    public JobManagerClient JobManager { get; }
 
     /// <summary>
     /// POSTs to the /Account/Register Razor Page and then follows the confirmation

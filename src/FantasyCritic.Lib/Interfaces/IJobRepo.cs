@@ -6,7 +6,8 @@ namespace FantasyCritic.Lib.Interfaces;
 public interface IJobRepo
 {
     Task<FantasyCriticJob?> GetJob(Guid jobID);
-    Task<IReadOnlyList<FantasyCriticJob>> GetJobs(int page, int count, FantasyCriticJobType? jobType);
+    /// <summary>Newest first.</summary>
+    Task<IReadOnlyList<FantasyCriticJob>> GetJobs(int page, int count, FantasyCriticJobFilter filter);
     Task<IReadOnlyList<FantasyCriticJob>> GetIncompleteJobs();
     Task<IReadOnlyList<FantasyCriticJobTypeWithRunType>> GetJobTypeRunTypes();
 
