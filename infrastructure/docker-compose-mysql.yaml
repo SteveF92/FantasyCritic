@@ -1,3 +1,9 @@
+# MySQL, migrator and dev data seed only (no web app).
+#
+#   docker compose -f infrastructure/docker-compose-mysql.yaml up
+#
+# Build contexts are the repository root, not src/ — see src/FantasyCritic.DatabaseUpdater/Dockerfile
+# and infrastructure/docker-compose-complete.yaml for the same convention.
 
 services:
   mysql:
@@ -28,8 +34,8 @@ services:
   database-updater:
     container_name: fantasycritic-database-updater
     build:
-      context: ../src
-      dockerfile: FantasyCritic.DatabaseUpdater/Dockerfile
+      context: ..
+      dockerfile: src/FantasyCritic.DatabaseUpdater/Dockerfile
     restart: "no"
     depends_on:
       mysql:
@@ -46,8 +52,8 @@ services:
   local-database-tool:
     container_name: fantasycritic-local-database-tool
     build:
-      context: ../src
-      dockerfile: FantasyCritic.LocalDatabaseTool/Dockerfile
+      context: ..
+      dockerfile: src/FantasyCritic.LocalDatabaseTool/Dockerfile
     restart: "no"
     depends_on:
       database-updater:
