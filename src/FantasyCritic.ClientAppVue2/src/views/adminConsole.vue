@@ -9,95 +9,95 @@
       <div v-show="jobAttempted && !lastJobFailed && !isBusy" class="alert alert-success">'{{ jobAttempted }}' successfully run.</div>
 
       <div v-if="isFactChecker">
-        <h2>Master Game Management</h2>
+        <h4>Master Game Management</h4>
         <div>
-          <b-button variant="info" :to="{ name: 'activeMasterGameRequests' }">
+          <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'activeMasterGameRequests' }">
             Requests
             <b-badge v-if="masterGameRequestCount" variant="danger" class="ml-1">{{ masterGameRequestCount }}</b-badge>
           </b-button>
-          <b-button variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">
+          <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'activeMasterGameChangeRequests' }">
             Change requests
             <b-badge v-if="masterGameChangeRequestCount" variant="danger" class="ml-1">{{ masterGameChangeRequestCount }}</b-badge>
           </b-button>
-          <b-button variant="info" :to="{ name: 'masterGameCreator' }">Add new</b-button>
-          <b-button variant="warning" @click="showMergeMasterGame = true">Merge</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'masterGameCreator' }">Add new</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="warning" @click="showMergeMasterGame = true">Merge</b-button>
         </div>
 
-        <h2>Data Actions</h2>
+        <h4>Data Actions</h4>
         <div>
-          <b-button variant="info" @click="takePostAction('FactChecker', 'FullDataRefresh')">Full Refresh</b-button>
-          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshCriticInfo')">Critic Scores</b-button>
-          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshGGInfo')">GG Info</b-button>
-          <b-button variant="info" @click="takePostAction('FactChecker', 'UpdateFantasyPoints')">Fantasy Points</b-button>
-          <b-button variant="info" @click="takePostAction('FactChecker', 'RefreshCaches')">Caches</b-button>
-          <b-button variant="warning" @click="takePostAction('FactChecker', 'ClearMasterGameEditDiscordQueue')">Clear Edit Queue</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('FactChecker', 'FullDataRefresh')">Full Refresh</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('FactChecker', 'RefreshCriticInfo')">Critic Scores</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('FactChecker', 'RefreshGGInfo')">GG Info</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('FactChecker', 'UpdateFantasyPoints')">Fantasy Points</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('FactChecker', 'RefreshCaches')">Caches</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="warning" @click="takePostAction('FactChecker', 'ClearMasterGameEditDiscordQueue')">Clear Edit Queue</b-button>
         </div>
         <div v-if="isAdmin">
-          <h2>User Support Actions</h2>
+          <h4>User Support Actions</h4>
           <div>
-            <b-button variant="info" :to="{ name: 'adminSupportTickets' }">
+            <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'adminSupportTickets' }">
               Support tickets
               <b-badge v-if="supportTicketCount" variant="danger" class="ml-1">{{ supportTicketCount }}</b-badge>
             </b-button>
-            <b-button variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
-            <b-button variant="info" @click="takePostAction('Admin', 'RefreshPatreonInfo')">Refresh Patreon</b-button>
+            <b-button size="sm" class="mr-1 mb-1" variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
+            <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('Admin', 'RefreshPatreonInfo')">Refresh Patreon</b-button>
           </div>
 
-          <h2>Site Content</h2>
+          <h4>Site Content</h4>
           <div>
-            <b-button variant="info" :to="{ name: 'adminSiteAnnouncements' }">Site announcements</b-button>
+            <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'adminSiteAnnouncements' }">Site announcements</b-button>
           </div>
         </div>
         <template v-if="isDevelopment">
-          <h2>Discord Push Service</h2>
+          <h4>Discord Push Service</h4>
           <div>
-            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofScoreUpdate')">Spoof Score Update</b-button>
-            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofEditUpdate')">Spoof Edit Update</b-button>
-            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofNewUpdate')">Spoof NewGame Update</b-button>
-            <b-button variant="danger" @click="takePostAction('Admin', 'SendSpoofReleasedUpdate')">Spoof Released Update</b-button>
-            <b-button variant="danger" @click="takePostAction('Admin', 'SendReleasingThisWeekUpdate')">Send Releasing This Week Update</b-button>
+            <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendSpoofScoreUpdate')">Spoof Score Update</b-button>
+            <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendSpoofEditUpdate')">Spoof Edit Update</b-button>
+            <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendSpoofNewUpdate')">Spoof NewGame Update</b-button>
+            <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendSpoofReleasedUpdate')">Spoof Released Update</b-button>
+            <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendReleasingThisWeekUpdate')">Send Releasing This Week Update</b-button>
           </div>
         </template>
       </div>
 
       <div v-if="isActionRunner">
-        <h2>Bids</h2>
+        <h4>Bids</h4>
         <div>
-          <b-button variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Dry Run</b-button>
-          <b-button variant="info" href="/api/ActionRunner/ComparableActionProcessingDryRun">Comparable Dry Run (CSV)</b-button>
-          <b-button variant="warning" @click="takePostAction('ActionRunner', 'TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
-          <b-button variant="info" @click="takePostAction('ActionRunner', 'TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
-          <b-button variant="danger" @click="takePostAction('ActionRunner', 'ProcessActions')">Process Actions</b-button>
-          <b-button variant="danger" @click="takePostAction('ActionRunner', 'ProcessSpecialAuctions')">Process Special Auctions</b-button>
-          <b-button variant="danger" @click="takePostAction('ActionRunner', 'UpdateTopBidsAndDrops')">Update Top Bids And Drops</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Dry Run</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" href="/api/ActionRunner/ComparableActionProcessingDryRun">Comparable Dry Run (CSV)</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="warning" @click="takePostAction('ActionRunner', 'TurnOnActionProcessingMode')">Turn on action processing mode</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('ActionRunner', 'TurnOffActionProcessingMode')">Turn off action processing mode</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('ActionRunner', 'ProcessActions')">Process Actions</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('ActionRunner', 'ProcessSpecialAuctions')">Process Special Auctions</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('ActionRunner', 'UpdateTopBidsAndDrops')">Update Top Bids And Drops</b-button>
         </div>
       </div>
 
       <div v-if="isAdmin">
-        <h2>Other</h2>
+        <h4>Other</h4>
         <div>
-          <b-button variant="danger" @click="takePostAction('Admin', 'SendPublicBiddingEmails')">Send Public Bidding Emails</b-button>
-          <b-button variant="danger" @click="takePostAction('Admin', 'MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
-          <b-button variant="danger" @click="showGrantSuperDrops = true">Grant Super Drops</b-button>
-          <b-button variant="danger" @click="takePostAction('Admin', 'ExpireTrades')">Expire Trades</b-button>
-          <b-button variant="danger" @click="takePostAction('Admin', 'PushPublicBiddingDiscordMessages')">Push Public Bidding Messages</b-button>
-          <b-button variant="danger" @click="takePostAction('Admin', 'RecalculateWinners')">Recalculate Last Season Winners</b-button>
-          <b-button variant="danger" @click="takePostAction('Admin', 'RecalculateRoyaleWinners')">Recalculate Royale Winners</b-button>
-          <b-button variant="info" @click="takePostAction('Admin', 'RecomputeRulesBasedRoyaleGroups')">Recompute Rules Based Royale Groups</b-button>
-          <b-button variant="info" @click="takePostAction('Admin', 'UpdateDailyPublisherStatistics')">Update Daily Publisher Statistics</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'SendPublicBiddingEmails')">Send Public Bidding Emails</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'MakePublisherSlotsConsistent')">Make Slots Consistent</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="showGrantSuperDrops = true">Grant Super Drops</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'ExpireTrades')">Expire Trades</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'PushPublicBiddingDiscordMessages')">Push Public Bidding Messages</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'RecalculateWinners')">Recalculate Last Season Winners</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="takePostAction('Admin', 'RecalculateRoyaleWinners')">Recalculate Royale Winners</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('Admin', 'RecomputeRulesBasedRoyaleGroups')">Recompute Rules Based Royale Groups</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" @click="takePostAction('Admin', 'UpdateDailyPublisherStatistics')">Update Daily Publisher Statistics</b-button>
         </div>
       </div>
 
       <div v-if="isActionRunner">
-        <h2>Database</h2>
+        <h4>Database</h4>
         <div>
-          <b-button variant="info" @click="getRecentDatabaseSnapshots">Show Snapshots</b-button>
-          <b-button variant="warning" @click="takePostAction('ActionRunner', 'SnapshotDatabase')">Snapshot Database</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="info" @click="getRecentDatabaseSnapshots">Show Snapshots</b-button>
+          <b-button size="sm" class="mr-1 mb-1" variant="warning" @click="takePostAction('ActionRunner', 'SnapshotDatabase')">Snapshot Database</b-button>
         </div>
       </div>
 
       <div v-if="isAdmin">
-        <h2>Build</h2>
+        <h4>Build</h4>
         <div v-if="buildInfoError" class="alert alert-danger">Could not load build info: {{ buildInfoError }}</div>
         <div v-else-if="buildInfo">
           <div v-if="buildInfo.isLocalBuild" class="alert alert-info">No release file found, so this is a local build. Deployed instances get one from the deploy pipeline.</div>
@@ -149,27 +149,27 @@
     <div v-show="showMergeMasterGame">
       <div class="form-group">
         <label for="removeMasterGameID" class="control-label">Master Game ID (To Remove)</label>
-        <input v-model="removeMasterGameID" type="text" class="form-control input" />
+        <input v-model="removeMasterGameID" type="text" class="form-control form-control-sm input" />
       </div>
       <div class="form-group">
         <label for="mergeIntoMasterGameID" class="control-label">Master Game ID (To Merge Into)</label>
-        <input v-model="mergeIntoMasterGameID" type="text" class="form-control input" />
+        <input v-model="mergeIntoMasterGameID" type="text" class="form-control form-control-sm input" />
       </div>
-      <b-button variant="danger" @click="mergeMasterGame">Merge Games</b-button>
+      <b-button variant="danger" size="sm" @click="mergeMasterGame">Merge Games</b-button>
     </div>
     <div v-show="showRecentConfirmationEmail">
       <div class="form-group">
         <label for="resendConfirmationUserID" class="control-label">User ID</label>
-        <input v-model="resendConfirmationUserID" type="text" class="form-control input" />
+        <input v-model="resendConfirmationUserID" type="text" class="form-control form-control-sm input" />
       </div>
-      <b-button variant="info" @click="resendConfirmationEmail">Send Confirmation</b-button>
+      <b-button variant="info" size="sm" @click="resendConfirmationEmail">Send Confirmation</b-button>
     </div>
     <div v-show="showGrantSuperDrops">
       <div class="form-group">
         <label for="superDropConfirmation" class="control-label">Type 'I want to grant super drops'</label>
-        <input v-model="superDropConfirmation" type="text" class="form-control input" />
+        <input v-model="superDropConfirmation" type="text" class="form-control form-control-sm input" />
       </div>
-      <b-button variant="info" @click="grantSuperDrops">Send Confirmation</b-button>
+      <b-button variant="info" size="sm" @click="grantSuperDrops">Send Confirmation</b-button>
     </div>
   </div>
 </template>
