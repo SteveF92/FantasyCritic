@@ -252,7 +252,7 @@ snapshot. It may disappear once bid processing is automated.
 
 | Task | Today | After | Guard |
 |---|---|---|---|
-| `ExpireTradesTask` | `*/10 * * * *` | unchanged | none |
+| `ExpireTradesTask` | `*/10 * * * *` | `0 * * * *` (hourly is precise enough, and it keeps the job history readable) | none |
 | `ProcessSpecialAuctionsTask` | `*/10 * * * *` | unchanged | none |
 | `PatreonUpdateTask` | `0 */1 * * *` | unchanged | none |
 | `TimeFlagsTask` | `0 */1 * * *` | unchanged | none |

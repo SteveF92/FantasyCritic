@@ -158,7 +158,7 @@ public class FantasyCriticJobScheduleTests
 
         Assert.That(scheduled, Is.EquivalentTo(new Dictionary<string, string>
         {
-            ["ExpireTrades"] = "*/10 * * * *",
+            ["ExpireTrades"] = "0 * * * *",
             ["ProcessSpecialAuctions"] = "*/10 * * * *",
             ["GrantSuperDrops"] = "0 * * * *",
             ["RefreshPatreonInfo"] = "0 * * * *",
