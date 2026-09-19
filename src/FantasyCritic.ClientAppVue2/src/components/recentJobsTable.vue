@@ -151,6 +151,8 @@ const jobTypes = [
 
 const cancellableStatuses = ['Queued', 'Running'];
 
+const savedFiltersKey = 'adminConsole.jobFilters';
+
 const statusVariants = {
   Queued: 'secondary',
   Running: 'primary',
@@ -207,12 +209,14 @@ export default {
     }
   },
   async created() {
+    this.loadSavedFilters();
     await this.refresh();
   },
   methods: {
     async refresh() {
       this.isBusy = true;
       this.errorResponse = null;
+      this.saveFilters();
 
       try {
         const jobTypeValues = this.selectedJobTypes.map((x) => x.value);
@@ -244,6 +248,29 @@ export default {
       }
 
       await this.refresh();
+    },
+    //Filters are remembered per browser, so a type hidden today is still hidden tomorrow. Every refresh saves them, since every filter change refreshes.
+    saveFilters() {
+      const filters = {
+        jobTypeMode: this.jobTypeMode,
+        jobTypes: this.selectedJobTypes.map((x) => x.value),
+        statusMode: this.statusMode,
+        statuses: this.selectedStatuses.map((x) => x.value)
+      };
+      localStorage.setItem(savedFiltersKey, JSON.stringify(filters));
+    },
+    loadSavedFilters() {
+      const saved = localStorage.getItem(savedFiltersKey);
+      if (!saved) {
+        return;
+      }
+
+      //Values that no longer exist, such as a renamed job type, are dropped rather than sent to the server as a 400.
+      const filters = JSON.parse(saved);
+      this.jobTypeMode = filters.jobTypeMode === 'hide' ? 'hide' : 'only';
+      this.selectedJobTypes = this.jobTypeOptions.filter((x) => (filters.jobTypes || []).includes(x.value));
+      this.statusMode = filters.statusMode === 'hide' ? 'hide' : 'only';
+      this.selectedStatuses = this.statusOptions.filter((x) => (filters.statuses || []).includes(x.value));
     },
     isHidden(value, mode, selected) {
       if (selected.length === 0) {
