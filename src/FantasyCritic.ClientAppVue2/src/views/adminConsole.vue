@@ -132,7 +132,7 @@
                 <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Make Slots Consistent', () => adminClient.makePublisherSlotsConsistent())">
                   Make Slots Consistent
                 </b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" @click="showGrantSuperDrops = true">Grant Super Drops</b-button>
+                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="$bvModal.show('grantSuperDropsModal')">Grant Super Drops</b-button>
                 <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Expire Trades', () => adminClient.expireTrades())">Expire Trades</b-button>
 
                 <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Recalculate Last Season Winners', () => adminClient.recalculateWinners())">
@@ -157,13 +157,6 @@
                 <input v-model="resendConfirmationUserID" type="text" class="form-control form-control-sm input" />
               </div>
               <b-button variant="info" size="sm" :disabled="isBusy" @click="resendConfirmationEmail">Send Confirmation</b-button>
-            </div>
-            <div v-show="showGrantSuperDrops" class="mt-2">
-              <div class="form-group">
-                <label for="superDropConfirmation" class="control-label">Type 'I want to grant super drops'</label>
-                <input v-model="superDropConfirmation" type="text" class="form-control form-control-sm input" />
-              </div>
-              <b-button variant="info" size="sm" :disabled="isBusy" @click="grantSuperDrops">Send Confirmation</b-button>
             </div>
           </div>
         </div>
@@ -216,6 +209,23 @@
         </div>
       </div>
     </div>
+
+    <b-modal
+      id="grantSuperDropsModal"
+      title="Grant Super Drops"
+      :ok-disabled="!superDropsConfirmed"
+      ok-variant="danger"
+      ok-title="Queue job"
+      @ok="grantSuperDrops"
+      @hidden="superDropConfirmation = ''">
+      <p>This queues a job that grants super drops to every eligible publisher that has not already received them.</p>
+      <p>
+        If you are sure, type
+        <strong>I want to grant super drops</strong>
+        into the box below and click the button.
+      </p>
+      <input v-model="superDropConfirmation" type="text" class="form-control input" />
+    </b-modal>
   </div>
 </template>
 <script>
@@ -237,8 +247,7 @@ export default {
       removeMasterGameID: null,
       mergeIntoMasterGameID: null,
       resendConfirmationUserID: null,
-      showGrantSuperDrops: false,
-      superDropConfirmation: null,
+      superDropConfirmation: '',
       buildInfo: null,
       buildInfoError: null
     };
@@ -263,6 +272,9 @@ export default {
     },
     supportTicketCount() {
       return this.adminTaskCounts ? this.adminTaskCounts.supportTicketCount : null;
+    },
+    superDropsConfirmed() {
+      return this.superDropConfirmation === 'I want to grant super drops';
     },
     gitRefName() {
       if (!this.buildInfo || !this.buildInfo.gitRef) {
@@ -323,12 +335,10 @@ export default {
       return error.message || String(error);
     },
     async grantSuperDrops() {
-      if (this.superDropConfirmation !== 'I want to grant super drops') {
+      if (!this.superDropsConfirmed) {
         return;
       }
 
-      this.showGrantSuperDrops = false;
-      this.superDropConfirmation = null;
       await this.enqueueJob('Grant Super Drops', () => adminClient.grantSuperDrops());
     },
     async mergeMasterGame() {
