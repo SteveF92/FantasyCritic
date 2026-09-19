@@ -1,0 +1,2 @@
+ALTER TABLE `tbl_caching_mastergameyear`
+	MODIFY COLUMN `Notes` MEDIUMTEXT NULL DEFAULT NULL;
