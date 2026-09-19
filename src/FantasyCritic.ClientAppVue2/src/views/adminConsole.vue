@@ -95,61 +95,48 @@
             <div>
               <b-button v-if="isAdmin" size="sm" class="mr-1 mb-1" variant="info" @click="showRecentConfirmationEmail = true">Resend Confirmation Email</b-button>
 
-              <template v-if="isDevelopment && isAdmin">
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="runAction('Send Spoof Score Update', () => adminClient.sendSpoofScoreUpdate())">
-                  Spoof Score Update
-                </b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="runAction('Send Spoof Edit Update', () => adminClient.sendSpoofEditUpdate())">
-                  Spoof Edit Update
-                </b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="runAction('Send Spoof NewGame Update', () => adminClient.sendSpoofNewUpdate())">
-                  Spoof NewGame Update
-                </b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="runAction('Send Spoof Released Update', () => adminClient.sendSpoofReleasedUpdate())">
-                  Spoof Released Update
-                </b-button>
-              </template>
+              <b-dropdown v-if="isDevelopment && isAdmin" text="Discord Test Pushes" size="sm" variant="danger" class="mr-1 mb-1" :disabled="isBusy">
+                <b-dropdown-item-button @click="runAction('Send Spoof Score Update', () => adminClient.sendSpoofScoreUpdate())">Spoof Score Update</b-dropdown-item-button>
+                <b-dropdown-item-button @click="runAction('Send Spoof Edit Update', () => adminClient.sendSpoofEditUpdate())">Spoof Edit Update</b-dropdown-item-button>
+                <b-dropdown-item-button @click="runAction('Send Spoof NewGame Update', () => adminClient.sendSpoofNewUpdate())">Spoof NewGame Update</b-dropdown-item-button>
+                <b-dropdown-item-button @click="runAction('Send Spoof Released Update', () => adminClient.sendSpoofReleasedUpdate())">Spoof Released Update</b-dropdown-item-button>
+              </b-dropdown>
 
-              <template v-if="isActionRunner">
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Process Special Auctions', () => actionRunnerClient.processSpecialAuctions())">
-                  Process Special Auctions
-                </b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Update Top Bids And Drops', () => actionRunnerClient.updateTopBidsAndDrops())">
-                  Update Top Bids And Drops
-                </b-button>
-              </template>
-              <template v-if="isAdmin">
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Send Public Bidding Emails', () => adminClient.sendPublicBiddingEmails())">
-                  Send Public Bidding Emails
-                </b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Push Public Bidding Messages', () => adminClient.pushPublicBiddingDiscordMessages())">
-                  Push Public Bidding Messages
-                </b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Send Releasing This Week Update', () => adminClient.sendReleasingThisWeekUpdate())">
-                  Send Releasing This Week Update
-                </b-button>
+              <b-dropdown text="Other Jobs" size="sm" variant="secondary" class="mr-1 mb-1" :disabled="isBusy">
+                <template v-if="isActionRunner">
+                  <b-dropdown-header>Bids and auctions</b-dropdown-header>
+                  <b-dropdown-item-button @click="confirmOtherJob('Process Special Auctions', () => actionRunnerClient.processSpecialAuctions())">Process Special Auctions</b-dropdown-item-button>
+                  <b-dropdown-item-button @click="confirmOtherJob('Update Top Bids And Drops', () => actionRunnerClient.updateTopBidsAndDrops())">Update Top Bids And Drops</b-dropdown-item-button>
+                </template>
+                <template v-if="isAdmin">
+                  <b-dropdown-header>Notifications</b-dropdown-header>
+                  <b-dropdown-item-button @click="confirmOtherJob('Send Public Bidding Emails', () => adminClient.sendPublicBiddingEmails())">Send Public Bidding Emails</b-dropdown-item-button>
+                  <b-dropdown-item-button @click="confirmOtherJob('Push Public Bidding Messages', () => adminClient.pushPublicBiddingDiscordMessages())">
+                    Push Public Bidding Messages
+                  </b-dropdown-item-button>
+                  <b-dropdown-item-button @click="confirmOtherJob('Send Releasing This Week Update', () => adminClient.sendReleasingThisWeekUpdate())">
+                    Send Releasing This Week Update
+                  </b-dropdown-item-button>
 
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Make Slots Consistent', () => adminClient.makePublisherSlotsConsistent())">
-                  Make Slots Consistent
-                </b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="$bvModal.show('grantSuperDropsModal')">Grant Super Drops</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Expire Trades', () => adminClient.expireTrades())">Expire Trades</b-button>
+                  <b-dropdown-header>League maintenance</b-dropdown-header>
+                  <b-dropdown-item-button @click="confirmOtherJob('Make Slots Consistent', () => adminClient.makePublisherSlotsConsistent())">Make Slots Consistent</b-dropdown-item-button>
+                  <b-dropdown-item-button @click="$bvModal.show('grantSuperDropsModal')">Grant Super Drops</b-dropdown-item-button>
+                  <b-dropdown-item-button @click="confirmOtherJob('Expire Trades', () => adminClient.expireTrades())">Expire Trades</b-dropdown-item-button>
 
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Recalculate Last Season Winners', () => adminClient.recalculateWinners())">
-                  Recalculate Last Season Winners
-                </b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Recalculate Royale Winners', () => adminClient.recalculateRoyaleWinners())">
-                  Recalculate Royale Winners
-                </b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="enqueueJob('Recompute Rules Based Royale Groups', () => adminClient.recomputeRulesBasedRoyaleGroups())">
-                  Recompute Rules Based Royale Groups
-                </b-button>
+                  <b-dropdown-header>Winners and Royale</b-dropdown-header>
+                  <b-dropdown-item-button @click="confirmOtherJob('Recalculate Last Season Winners', () => adminClient.recalculateWinners())">Recalculate Last Season Winners</b-dropdown-item-button>
+                  <b-dropdown-item-button @click="confirmOtherJob('Recalculate Royale Winners', () => adminClient.recalculateRoyaleWinners())">Recalculate Royale Winners</b-dropdown-item-button>
+                  <b-dropdown-item-button @click="confirmOtherJob('Recompute Rules Based Royale Groups', () => adminClient.recomputeRulesBasedRoyaleGroups())">
+                    Recompute Rules Based Royale Groups
+                  </b-dropdown-item-button>
 
-                <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="enqueueJob('Refresh Patreon', () => adminClient.refreshPatreonInfo())">Refresh Patreon</b-button>
-                <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="enqueueJob('Update Daily Publisher Statistics', () => adminClient.updateDailyPublisherStatistics())">
-                  Update Daily Publisher Statistics
-                </b-button>
-              </template>
+                  <b-dropdown-header>Scheduled data</b-dropdown-header>
+                  <b-dropdown-item-button @click="confirmOtherJob('Refresh Patreon', () => adminClient.refreshPatreonInfo())">Refresh Patreon</b-dropdown-item-button>
+                  <b-dropdown-item-button @click="confirmOtherJob('Update Daily Publisher Statistics', () => adminClient.updateDailyPublisherStatistics())">
+                    Update Daily Publisher Statistics
+                  </b-dropdown-item-button>
+                </template>
+              </b-dropdown>
             </div>
             <div v-show="showRecentConfirmationEmail" class="mt-2">
               <div class="form-group">
@@ -307,6 +294,20 @@ export default {
       if (job) {
         this.lastQueuedJob = job;
       }
+    },
+    //For the Other Jobs menu, where a stray click should not queue anything.
+    async confirmOtherJob(label, call) {
+      const confirmed = await this.$bvModal.msgBoxConfirm(`Queue the '${label}' job?`, {
+        title: 'Queue Job',
+        okTitle: 'Queue job',
+        okVariant: 'danger',
+        cancelTitle: 'Cancel'
+      });
+      if (!confirmed) {
+        return;
+      }
+
+      await this.enqueueJob(label, call);
     },
     //For everything that still does its work inside the request.
     async runAction(label, call) {
