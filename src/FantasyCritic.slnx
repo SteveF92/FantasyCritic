@@ -20,7 +20,6 @@
   <Project Path="FantasyCritic.ApiClient/FantasyCritic.ApiClient.csproj" />
   <Project Path="FantasyCritic.ClientAppVue2/FantasyCritic.ClientAppVue2.esproj">
     <Build />
-    <Deploy />
   </Project>
   <Project Path="FantasyCritic.CommandLine/FantasyCritic.CommandLine.csproj" />
   <Project Path="FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj" />
