@@ -97,6 +97,14 @@
           <b-table v-if="recentSnapshots" :items="recentSnapshots" class="mt-2" striped bordered responsive small></b-table>
         </div>
 
+        <div v-if="isAdmin" class="mb-3">
+          <h4>Worker</h4>
+          <div>
+            <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="turnOffWorker">Turn Off Worker</b-button>
+            <b-button size="sm" class="mr-1 mb-1" variant="info" :disabled="isBusy" @click="turnOnWorker">Turn On Worker</b-button>
+          </div>
+        </div>
+
         <div v-if="isAdmin || isActionRunner" class="mb-3">
           <h4>Other Actions</h4>
           <div>
@@ -156,6 +164,11 @@
       </div>
 
       <div v-if="hasRightColumn" class="col-lg-7 col-md-12">
+        <div v-if="isAdmin" class="mb-3">
+          <h4>Services</h4>
+          <service-monitor ref="serviceMonitor"></service-monitor>
+        </div>
+
         <div v-if="isJobManager" class="mb-3">
           <h4>Recent Jobs</h4>
           <recent-jobs-table ref="jobsTable"></recent-jobs-table>
@@ -234,10 +247,12 @@ import { ToggleButton } from 'vue-js-toggle-button';
 
 import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from '@/api/clients';
 import RecentJobsTable from '@/components/recentJobsTable.vue';
+import ServiceMonitor from '@/components/serviceMonitor.vue';
 
 export default {
   components: {
     RecentJobsTable,
+    ServiceMonitor,
     ToggleButton
   },
   data() {
@@ -384,6 +399,28 @@ export default {
       //The server is the truth. If the request failed, this also puts the switch back where it was.
       await this.$store.dispatch('fetchBasicData');
       this.syncActionProcessingModeSwitch();
+    },
+    //Turning the worker off only stops it pulling new jobs. The service monitor shows it Draining, then Off.
+    async turnOffWorker() {
+      const confirmed = await this.$bvModal.msgBoxConfirm(
+        'The worker will finish the job it is running, then pick up nothing new until it is turned back on. Scheduled jobs keep queuing in the meantime and run when it is.',
+        {
+          title: 'Turn Off Worker',
+          okTitle: 'Turn off',
+          okVariant: 'danger',
+          cancelTitle: 'Cancel'
+        }
+      );
+      if (!confirmed) {
+        return;
+      }
+
+      await this.runAction('Turn Off Worker', () => adminClient.turnOffWorker());
+      await this.$refs.serviceMonitor.refresh();
+    },
+    async turnOnWorker() {
+      await this.runAction('Turn On Worker', () => adminClient.turnOnWorker());
+      await this.$refs.serviceMonitor.refresh();
     },
     async grantSuperDrops() {
       if (!this.superDropsConfirmed) {
