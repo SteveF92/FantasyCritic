@@ -223,7 +223,7 @@ hand, which stays stopped.
 | Bot restarting in a loop | It exits when no bot token is configured. Check `docker compose logs discord-bot` and the environment's secret. |
 | Nothing scheduled has happened, site fine | `worker` is down. `docker compose ps`, then `docker compose logs worker`. The site never notices. |
 | Admin console button sticks on "Queued" | Same thing: nothing is consuming the queue. The job will run whenever the worker comes back. |
-| A job is stuck "Running" and nothing is happening | The worker was killed mid-job. Nothing sweeps those rows yet, and cancelling from the console will not settle one either — the canceller only trips tokens a live worker holds. Until the sweep is built, finish the row by hand in `tbl_job`; while it sits there, that job type cannot be queued again. |
+| A job is stuck "Running" and nothing is happening | The worker was killed mid-job. Nothing sweeps those rows yet, and cancelling from the console will not settle one either — the canceller only trips tokens a live worker holds. Until the sweep is built, finish the row by hand in `tbl_job`. While it sits there the console's button for that job type refuses; cron runs of it are unaffected. |
 | Containers cannot start, Secrets Manager errors | The IMDSv2 hop limit has been reset to 1. See step 3 of the setup guide. |
 | Nothing in `/var/log/fantasy-critic` | The directory is not owned by uid 1654. |
 | Admin console shows no release info | `/opt/fantasy-critic/RELEASE` is missing, or Docker created it as a directory. |
