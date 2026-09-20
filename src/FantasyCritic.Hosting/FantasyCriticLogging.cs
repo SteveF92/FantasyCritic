@@ -23,6 +23,7 @@ public static class FantasyCriticLogging
         return new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", microsoftMinimumLevel)
             .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+            .MinimumLevel.Override("System.Net.Http", LogEventLevel.Warning)
             .Enrich.FromLogContext()
             .WriteTo.Console(standardErrorFromLevel: consoleToStandardError ? LogEventLevel.Verbose : null)
             .WriteTo.File(loggingPaths.AllLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: OutputTemplate)
