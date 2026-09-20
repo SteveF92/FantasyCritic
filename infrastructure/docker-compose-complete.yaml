@@ -154,9 +154,6 @@ services:
     build:
       context: ..
       dockerfile: src/FantasyCritic.Worker/Dockerfile
-    # Off by default, for the same reason as the bot. Start it deliberately:
-    #   docker compose -f infrastructure/docker-compose-complete.yaml --profile worker up
-    profiles: [worker]
     restart: unless-stopped
     depends_on:
       mysql:
