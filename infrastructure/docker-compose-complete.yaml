@@ -87,12 +87,8 @@ services:
       AllowedHosts: "*"
       # appsettings uses localhost:3307 for the host; in Compose the DB service is `mysql`.
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
-      Logging__LogLevel__Default: Trace
-      Logging__LogLevel__Microsoft: Warning
-      Logging__LogLevel__Microsoft.Hosting.Lifetime: Information
       AWS__rdsInstanceName: secret
       AWS__region: us-east-1
-      Mailgun__apiKey: secret
       Postmark__apiKey: secret
       OpenCritic__apiKey: key
       Authentication__Google__ClientId: secret
@@ -105,8 +101,6 @@ services:
       Authentication__Patreon__ClientSecret: secret
       Authentication__Discord__ClientId: secret
       Authentication__Discord__ClientSecret: secret
-      PatreonService__AccessToken: secret
-      PatreonService__RefreshToken: secret
       PatreonService__CampaignID: secret
       BotToken: secret
       # Public URL when using published port 8080 (VS dev uses https://localhost:44477 in appsettings).
@@ -114,8 +108,6 @@ services:
       # The admin monitor. Both are behind profiles, so without them these read as Unreachable.
       ServiceHealth__WorkerUrl: http://worker:8080
       ServiceHealth__DiscordBotUrl: http://discord-bot:8080
-      RootFolder: "C:\\FantasyCritic"
-      LinuxRootFolder: /var/lib/fantasy-critic
 
   discord-bot:
     container_name: fantasycritic-discord-bot
