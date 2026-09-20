@@ -64,6 +64,8 @@ Client app (`src/FantasyCritic.ClientAppVue2`): `npm install` first; `npm run li
 | **FantasyCritic.Lib/SharedSerialization** | The *deliberate* home for Entity/ViewModel shapes shared across projects. Not legacy — but only for types that genuinely cross project boundaries. |
 | **FantasyCritic.Hosting** | The DI registrations, configuration chain (appsettings → user secrets → Secrets Manager → env vars) and Serilog setup shared by every host. `AddFantasyCriticCore` is where a new repository or domain service gets registered — put it there, not in one host's startup, or the hosts drift. References Lib + MySQL + AWS. |
 | **FantasyCritic.DiscordBot** | The Discord *command* gateway, its own process and container. The web app keeps `DiscordPushService` (notifications out) on the same bot token. Exactly one container may run the command bot. |
+| **FantasyCritic.Worker** | The job system, its own process and container: the `Scheduler` that queues cron jobs and the `Worker` that runs and cancels them. Job types, handlers and the registry live in `Lib/Jobs`. It is a web application only to answer `GET /health`, as the Discord bot is. Setting `WorkerShouldPullNewJobs` off (in `tbl_meta_systemwidesettings`) stops it pulling without stopping the container. |
+| **FantasyCritic.CommandLine** | One-off commands for scripts that need the database, shipped as its own image and run by `deploy.sh` via `docker compose run --rm -T command-line <command>`. A command's answer is the only thing on stdout (logs go to stderr) and it exits 0 or 1. A new ops command belongs here, not as an arguments mode on another host. |
 | **FantasyCritic.FakeRepo** | In-memory repository doubles for unit tests. |
 | **FantasyCritic.DatabaseUpdater** | DbUp migrations. Schema changes happen **only** here: new scripts in `Scripts/Sequential/` with the next dated filename. Never hand-edit the DB. Every code migration needs a `Sequential/` prerequisites script sorted just before it that creates the procs/views it uses — see `.cursor/rules/fantasy-critic-architecture.mdc`. |
 | **FantasyCritic.ApiClient** | NSwag-generated C# client (gitignored output) used by integration tests. |
@@ -91,4 +93,6 @@ Vue 2.7 (Options API — match the file you're editing) + Vite + Bootstrap 4/boo
 
 ## Plans
 
-Implementation plans are committed to `.cursor/plans/` (commit the plan file before and after edits so revisions are diffable in history).
+Implementation plans are committed to `docs/` as `<topic>-plan.md` (commit the plan file before and after edits so revisions are diffable in history). `.cursor/plans/` is Cursor's.
+
+For multi-step work, write the plan as numbered steps and work through them one at a time: build and test the step, commit it alone, then stop for review before starting the next.
