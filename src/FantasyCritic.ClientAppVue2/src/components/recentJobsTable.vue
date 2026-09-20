@@ -52,10 +52,9 @@
     <p v-if="jobs && !jobs.length" class="text-muted">{{ hasFilters ? 'No jobs match these filters.' : 'No jobs yet.' }}</p>
     <b-table v-else-if="jobs" :items="jobs" :fields="fields" :tbody-tr-class="rowClass" striped bordered responsive small>
       <template #cell(type)="row">
+        <font-awesome-icon :disabled="isBusy" @click="filterJobType('only', row.item.type)" icon="eye" />
+        <font-awesome-icon :disabled="isBusy" @click="filterJobType('hide', row.item.type)" icon="eye-slash" />
         {{ jobTypeDisplayName(row.item.type) }}
-        <b-badge v-if="row.item.scheduledFor" variant="secondary" class="ml-1">cron</b-badge>
-        <b-button variant="link" size="sm" class="p-0 ml-2" :disabled="isBusy" @click="filterJobType('only', row.item.type)">only</b-button>
-        <b-button variant="link" size="sm" class="p-0 ml-1" :disabled="isBusy" @click="filterJobType('hide', row.item.type)">hide</b-button>
       </template>
       <template #cell(status)="row">
         <b-badge :variant="statusVariant(row.item.status)">
