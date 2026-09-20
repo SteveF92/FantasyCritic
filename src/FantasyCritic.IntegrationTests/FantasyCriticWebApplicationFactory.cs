@@ -6,6 +6,7 @@ using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.DapperTypeMaps;
 using FantasyCritic.Web;
+using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
@@ -92,6 +93,13 @@ public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<P
             services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(
                 "Server=localhost;Port=3307;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;",
                 adjustableClock));
+
+            // The admin monitor asks the worker and the Discord bot for their health over HTTP, and
+            // the appsettings defaults are the ports a developer's own worker and bot listen on.
+            // Point both at a port nothing listens on, so the result does not depend on what else
+            // happens to be running on this machine.
+            services.RemoveAll<ServiceHealthConfiguration>();
+            services.AddSingleton(new ServiceHealthConfiguration("http://localhost:1", "http://localhost:1"));
 
             // Remove all IHostedService registrations. In Development mode the schedulers are
             // already not registered (gated by !IsDevelopment()), but the Discord bot may still
