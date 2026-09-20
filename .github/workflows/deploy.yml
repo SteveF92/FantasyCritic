@@ -3,7 +3,7 @@ name: Deploy
 # Manual only. Pick the branch or tag in the "Run workflow" dialog — that ref is what gets
 # built and shipped. Nothing deploys on a push.
 #
-# As of Phase 4b the deploy artifact is four container images in ECR. The bundle that travels
+# The deploy artifact is five container images in ECR. The bundle that travels
 # through S3 to the instance is now only the deploy script, the compose file, the maintenance
 # page and the release metadata — a few kilobytes rather than a few hundred megabytes.
 #
@@ -26,6 +26,10 @@ on:
         description: Skip the database migrator entirely (front-end-only redeploys)
         type: boolean
         default: false
+      skip_drain:
+        description: Do not wait for the job worker's running job to finish (kills it; for a hung job, or the first deploy of the drain itself)
+        type: boolean
+        default: false
 
 concurrency:
   # One deploy at a time per environment. Never cancel one in flight — it may be mid-migration.
@@ -45,7 +49,9 @@ jobs:
   deploy:
     name: Deploy to ${{ inputs.environment }}
     runs-on: ubuntu-latest
-    timeout-minutes: 90
+    # Build, test and five images, then up to an hour on the instance: the deploy waits up to
+    # 30 minutes for the job worker's running job before it touches anything.
+    timeout-minutes: 120
 
     # Resolves the per-environment variables below, and is the hook for adding a required
     # reviewer to production later without touching this file.
@@ -121,6 +127,15 @@ jobs:
           tags: ${{ steps.ecr.outputs.registry }}/fantasycritic-worker:${{ steps.release.outputs.id }}
           push: 'true'
           cache-scope: worker
+
+      # Not a service: deploy.sh runs it as a one-off container to wait for the job worker.
+      - name: Build and push command-line image
+        uses: ./.github/actions/build-image
+        with:
+          dockerfile: src/FantasyCritic.CommandLine/Dockerfile
+          tags: ${{ steps.ecr.outputs.registry }}/fantasycritic-command-line:${{ steps.release.outputs.id }}
+          push: 'true'
+          cache-scope: command-line
 
       # ----------------------------------------------------------------------------------
       # Bundle
@@ -232,6 +247,7 @@ jobs:
           S3_URI: ${{ steps.upload.outputs.s3_uri }}
           RELEASE_ID: ${{ steps.release.outputs.id }}
           SKIP_MIGRATIONS: ${{ inputs.skip_migrations }}
+          SKIP_DRAIN: ${{ inputs.skip_drain }}
         run: |
           set -euo pipefail
 
@@ -252,7 +268,7 @@ jobs:
           commands=$(jq -n \
             --arg s3_uri "$S3_URI" \
             --arg release_id "$RELEASE_ID" \
-            --arg skip_migrations "$SKIP_MIGRATIONS" \
+            --arg skip_migrations "$SKIP_MIGRATIONS"             --arg skip_drain "$SKIP_DRAIN" \
             '[
               "set -eu",
               "export PATH=\"$PATH:/usr/local/bin:/snap/bin\"",
@@ -266,7 +282,7 @@ jobs:
               "tar -xzf /tmp/$RELEASE_ID.tar.gz -C \"$RELEASE_DIR\"",
               "rm -f /tmp/$RELEASE_ID.tar.gz",
               "chmod +x \"$RELEASE_DIR/deploy.sh\"",
-              "FC_IMAGE_TAG=" + $release_id + " FC_SKIP_MIGRATIONS=" + $skip_migrations + " \"$RELEASE_DIR/deploy.sh\""
+              "FC_IMAGE_TAG=" + $release_id + " FC_SKIP_MIGRATIONS=" + $skip_migrations + " FC_SKIP_DRAIN=" + $skip_drain + " \"$RELEASE_DIR/deploy.sh\""
             ]')
 
           parameters=$(jq -n --argjson c "$commands" '{commands: $c, executionTimeout: ["3600"]}')
@@ -282,8 +298,10 @@ jobs:
           echo "SSM command: $command_id"
           echo "Waiting for it to finish..."
 
+          # An hour, to match executionTimeout above. Most of that is headroom for the drain:
+          # deploy.sh waits up to 30 minutes for the job worker's running job to finish.
           status=Pending
-          for _ in $(seq 1 240); do
+          for _ in $(seq 1 360); do
             sleep 10
             status=$(aws ssm get-command-invocation \
               --command-id "$command_id" --instance-id "$INSTANCE_ID" \
@@ -348,5 +366,6 @@ jobs:
             echo "| Ref | \`${{ github.ref_name }}\` |"
             echo "| Commit | \`${GITHUB_SHA:0:7}\` |"
             echo "| Migrations | ${{ inputs.skip_migrations && 'skipped' || 'run' }} |"
+            echo "| Worker drain | ${{ inputs.skip_drain && 'skipped' || 'run' }} |"
             echo "| Result | ${{ job.status }} |"
           } >> "$GITHUB_STEP_SUMMARY"

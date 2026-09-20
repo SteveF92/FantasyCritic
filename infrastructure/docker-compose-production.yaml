@@ -36,6 +36,21 @@ services:
     volumes:
       - /var/log/fantasy-critic:/var/log/fantasy-critic
 
+  # One-off commands for deploy.sh, which has no database access of its own. It uses them to
+  # wait for the job worker's running job before stopping anything:
+  #   docker compose run --rm -T command-line worker-should-pull
+  # Behind a profile for the same reason as the migrator: `up -d` must never start it. And as
+  # with the migrator, that means a pull has to name the profile or it skips this image.
+  command-line:
+    image: ${ECR_REGISTRY}/fantasycritic-command-line:${IMAGE_TAG}
+    restart: "no"
+    profiles: [tools]
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      AWS__region: ${AWS_REGION}
+    volumes:
+      - /var/log/fantasy-critic:/var/log/fantasy-critic
+
   web:
     image: ${ECR_REGISTRY}/fantasycritic-web:${IMAGE_TAG}
     restart: unless-stopped
