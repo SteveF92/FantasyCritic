@@ -39,7 +39,7 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         await resultSets.DisposeAsync();
         await connection.DisposeAsync();
 
-        var systemWideSettings = new SystemWideSettings(systemWideSettingsEntity.ActionProcessingMode, systemWideSettingsEntity.RefreshOpenCritic);
+        var systemWideSettings = systemWideSettingsEntity.ToDomain();
         var tags = tagEntities.Select(x => x.ToDomain()).ToList();
         var supportedYears = supportedYearEntities.Select(x => x.ToDomain()).ToList();
         var activeRoyaleYearQuarter = activeRoyaleYearQuarterEntity.ToDomain();

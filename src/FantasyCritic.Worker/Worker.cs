@@ -95,8 +95,16 @@ public class Worker : BackgroundService
     private async Task<FantasyCriticJob?> GetNextQueuedJob()
     {
         await using var scope = _serviceProvider.CreateAsyncScope();
+        var fantasyCriticRepo = scope.ServiceProvider.GetRequiredService<IFantasyCriticRepo>();
         var jobRepo = scope.ServiceProvider.GetRequiredService<IJobRepo>();
         var clock = scope.ServiceProvider.GetRequiredService<IClock>();
+
+        var systemWideSettings = await fantasyCriticRepo.GetSystemWideSettings();
+        if (!systemWideSettings.WorkerShouldPullNewJobs)
+        {
+            _logger.LogInformation("Intentionally not running new jobs because WorkerShouldPullNewJobs is FALSE.");
+            return null;
+        }
 
         var incompleteJobs = await jobRepo.GetIncompleteJobs();
         var queuedJobs = incompleteJobs.Where(x => x.Status.Equals(FantasyCriticJobStatus.Queued)).ToList();

@@ -213,10 +213,13 @@ public class MySQLJobRepo : IJobRepo
 
     public async Task<bool> StartJob(FantasyCriticJob job, Instant startTime)
     {
+        //The flag is part of the claim itself, so turning it off and a job starting cannot race:
+        //once it reads off, no claim succeeds, and "nothing is Running" stays true.
         const string sql =
             """
             UPDATE tbl_job SET Status = @running, StartedAt = @startTime
-            WHERE JobID = @jobID AND Status = @queued;
+            WHERE JobID = @jobID AND Status = @queued
+            AND EXISTS (SELECT 1 FROM tbl_meta_systemwidesettings WHERE WorkerShouldPullNewJobs = 1);
             """;
 
         var parameters = new
