@@ -15,7 +15,9 @@
 #
 #   /opt/fantasy-critic/
 #     docker-compose.yaml      installed from the release being deployed
-#     .env                     environment + registry + IMAGE_TAG (created during setup)
+#     .env                     environment + registry + IMAGE_TAG (created during setup).
+#                              IMAGE_TAG names the release that is live: it only changes once
+#                              the new one is about to start, never on a deploy that stops early
 #     RELEASE                  bind-mounted into the web container, read by the admin console
 #     maintenance.sh           fixed path, so raising the page by hand needs no release id:
 #     maintenance.html           sudo /opt/fantasy-critic/maintenance.sh on|off|status
@@ -75,8 +77,18 @@ fail() {
     exit 1
 }
 
+# Every compose command in this script runs against the release being deployed, whatever
+# IMAGE_TAG in .env says. It reads a copy of .env made further down, in this release's own
+# directory, with only IMAGE_TAG changed. That is what lets the pull, the drain and the migrator
+# use the new images while .env itself goes on naming the release that is actually live, right
+# up until the new one is about to start.
+#
+# An explicit --env-file rather than exporting IMAGE_TAG and relying on the shell environment
+# beating .env: which of those two wins has differed between compose versions.
+readonly DEPLOY_ENV_FILE="$RELEASE_DIR/.env.deploy"
+
 compose() {
-    docker compose --project-directory "$APP_ROOT" -f "$COMPOSE_FILE" "$@"
+    docker compose --project-directory "$APP_ROOT" --env-file "$DEPLOY_ENV_FILE" -f "$COMPOSE_FILE" "$@"
 }
 
 # One-off commands against the database, which this host cannot reach itself. A command's
@@ -339,11 +351,10 @@ install -m 644 "$RELEASE_DIR/maintenance.html" "$APP_ROOT/maintenance.html"
 # site down.
 install_nginx_snippet
 
-if grep -qE '^IMAGE_TAG=' "$ENV_FILE"; then
-    sed -i -E "s|^IMAGE_TAG=.*|IMAGE_TAG=$IMAGE_TAG|" "$ENV_FILE"
-else
-    echo "IMAGE_TAG=$IMAGE_TAG" >> "$ENV_FILE"
-fi
+# .env itself is deliberately not touched yet — see "Start". This copy is what compose() reads.
+# Same permissions as the original; grep -v so that it works whether or not .env has the key.
+install -m 600 /dev/null "$DEPLOY_ENV_FILE"
+{ grep -vE '^IMAGE_TAG=' "$ENV_FILE" || true; echo "IMAGE_TAG=$IMAGE_TAG"; } > "$DEPLOY_ENV_FILE"
 
 # The web container bind-mounts this file. Docker creates a *directory* in place of a missing
 # bind-mount source, which the app would then fail to read, so it has to exist before anything
@@ -448,6 +459,18 @@ fi
 # rewriting means a re-run of this script leaves a history in the file; the app takes the last
 # value.
 echo "deployed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$RELEASE_FILE"
+
+# Only now does .env name this release. It is what a compose command typed by hand uses, so it
+# should say what is live: until this point that was the previous release, and a deploy that
+# stopped early — a drain that ran out of time, a failed pull — leaves it saying so, rather
+# than pointing a stray `docker compose up -d` at new images on an unmigrated database.
+# Written before `up` rather than after, so that a release that starts and then fails its
+# health check is still the one .env describes; the rollback hint names the way back.
+if grep -qE '^IMAGE_TAG=' "$ENV_FILE"; then
+    sed -i -E "s|^IMAGE_TAG=.*|IMAGE_TAG=$IMAGE_TAG|" "$ENV_FILE"
+else
+    echo "IMAGE_TAG=$IMAGE_TAG" >> "$ENV_FILE"
+fi
 
 # Before the worker starts, so that it comes up pulling. Does nothing unless the drain above
 # is what turned it off. A failure here does not stop the site coming back up, but it does

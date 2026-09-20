@@ -198,6 +198,12 @@ Commit → review.
     is back up.
   - The pull names both profiles (`migrate` and `tools`), or the command-line image would
     download inside the downtime window.
+  - `IMAGE_TAG` in `.env` is now written just before `compose up`, not before the pull. The
+    drain made "stopped early with the site untouched" a normal outcome, and `.env` naming a
+    release that never went live would point a hand-typed `docker compose up -d` at new images
+    on an unmigrated database. Until then the script's own compose commands read a copy of
+    `.env` with the new tag, passed with `--env-file`. Not by exporting `IMAGE_TAG`: whether
+    the shell environment beats `.env` has differed between compose versions (v2.5.1 says no).
   - The `sleep 15` + `RestartCount` block became `wait_for_healthy`, polling Docker's health
     status for two minutes and giving up early on a crash loop. Same WARNING block and
     `exit 1` for the worker; the bot gets the same check as a warning only.
