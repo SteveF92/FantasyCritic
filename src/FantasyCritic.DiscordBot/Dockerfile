@@ -6,6 +6,12 @@
 # gateway connection on the same token, so exactly one container must run this one.
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+# For the compose healthcheck. Docker cannot probe a URL itself: a healthcheck is a command run
+# inside the container, and the aspnet image ships neither curl nor wget. Installed here, before
+# anything release-specific, so the layer is cached rather than rebuilt on every deploy.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
 USER $APP_UID
 WORKDIR /app
 

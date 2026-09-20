@@ -130,6 +130,8 @@ services:
         condition: service_completed_successfully
     environment:
       DOTNET_ENVIRONMENT: Development
+      # Only for GET /health. No port is published; the web container reaches it by service name.
+      ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
       AWS__region: us-east-1
       BaseAddress: http://localhost:8080
@@ -137,6 +139,12 @@ services:
       BotToken: secret
       # Restricts slash command registration to one server while developing.
       # DevDiscordServerId: "000000000000000000"
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "--max-time", "5", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
 
   worker:
     container_name: fantasycritic-worker
@@ -154,6 +162,8 @@ services:
         condition: service_completed_successfully
     environment:
       DOTNET_ENVIRONMENT: Development
+      # Only for GET /health. No port is published; the web container reaches it by service name.
+      ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
       AWS__region: us-east-1
       BaseAddress: http://localhost:8080
@@ -161,6 +171,12 @@ services:
       # OpenCritic, Patreon, BotToken), which is enough for the host to start. Handlers that
       # actually call those services will fail until real ones are provided here.
       BotToken: secret
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "--max-time", "5", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
 
 volumes:
   mysql_data:

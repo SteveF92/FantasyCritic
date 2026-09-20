@@ -57,14 +57,27 @@ services:
 
   # Slash commands only. The web app keeps DiscordPushService on the same bot token, so this
   # must stay at exactly one replica — two would answer every command twice.
+  #
+  # It listens on 8080 only to answer GET /health, and publishes no port: the web app's admin
+  # monitor reaches it by service name on the compose network, and the healthcheck below runs
+  # inside the container. On this host an unhealthy container is only *labelled* (docker ps,
+  # docker inspect) — compose does not restart it. Under ECS the same command is what gets an
+  # unhealthy task replaced.
   discord-bot:
     image: ${ECR_REGISTRY}/fantasycritic-discord-bot:${IMAGE_TAG}
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ASPNETCORE_URLS: http://+:8080
       AWS__region: ${AWS_REGION}
     volumes:
       - /var/log/fantasy-critic:/var/log/fantasy-critic
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "--max-time", "5", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
 
   # The job system (Phase 4b): the scheduler that decides what is due, the runner that executes
   # it and the canceller that stops it. Cron scheduling left the web process when this shipped,
@@ -76,11 +89,22 @@ services:
   # claims a row with a conditional update, so a second one would not double-run jobs, but
   # nothing here is built to need one: if jobs start queueing behind each other, add runner
   # loops inside the container rather than a second container.
+  #
+  # Port 8080 and the healthcheck are as for the bot above. Healthy here means the runner has
+  # read the database within the last minute or is inside a job — not merely that the process
+  # is up.
   worker:
     image: ${ECR_REGISTRY}/fantasycritic-worker:${IMAGE_TAG}
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ASPNETCORE_URLS: http://+:8080
       AWS__region: ${AWS_REGION}
     volumes:
       - /var/log/fantasy-critic:/var/log/fantasy-critic
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "--max-time", "5", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
