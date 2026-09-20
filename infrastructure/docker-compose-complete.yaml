@@ -101,8 +101,8 @@ services:
       Authentication__Patreon__ClientSecret: secret
       Authentication__Discord__ClientId: secret
       Authentication__Discord__ClientSecret: secret
-      PatreonService__CampaignID: secret
-      BotToken: secret
+      Patreon__CampaignID: secret
+      Discord__BotToken: secret
       # Public URL when using published port 8080 (VS dev uses https://localhost:44477 in appsettings).
       BaseAddress: http://localhost:8080
       # The admin monitor. Both are behind profiles, so without them these read as Unreachable.
@@ -131,9 +131,9 @@ services:
       AWS__region: us-east-1
       BaseAddress: http://localhost:8080
       # Override with a development bot's token to actually connect.
-      BotToken: secret
+      Discord__BotToken: secret
       # Restricts slash command registration to one server while developing.
-      # DevDiscordServerId: "000000000000000000"
+      # Discord__DevServerId: "000000000000000000"
     healthcheck:
       test: ["CMD", "curl", "-fsS", "--max-time", "5", "http://localhost:8080/health"]
       interval: 15s
@@ -160,9 +160,9 @@ services:
       AWS__region: us-east-1
       BaseAddress: http://localhost:8080
       # The image's appsettings.json supplies placeholder values for the rest (Postmark,
-      # OpenCritic, Patreon, BotToken), which is enough for the host to start. Handlers that
+      # OpenCritic, Patreon, Discord__BotToken), which is enough for the host to start. Handlers that
       # actually call those services will fail until real ones are provided here.
-      BotToken: secret
+      Discord__BotToken: secret
     healthcheck:
       test: ["CMD", "curl", "-fsS", "--max-time", "5", "http://localhost:8080/health"]
       interval: 15s

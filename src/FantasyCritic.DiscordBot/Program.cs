@@ -32,7 +32,7 @@ public static class Program
             //Loki credentials live in the secret store, so the real logger cannot be built until now.
             Log.Logger = CreateLogger(loggingPaths, builder.Environment, configuration);
 
-            var botToken = configuration["BotToken"];
+            var botToken = configuration["Discord:BotToken"];
             if (string.IsNullOrWhiteSpace(botToken) || botToken == "secret")
             {
                 Log.Fatal("No Discord bot token is configured.");

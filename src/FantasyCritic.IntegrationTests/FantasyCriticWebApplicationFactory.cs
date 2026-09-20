@@ -63,7 +63,7 @@ public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<P
             {
                 // "secret" is the sentinel value that HostingExtensions uses to skip
                 // Discord bot registration (see HostingExtensions.cs:162).
-                ["BotToken"] = "secret",
+                ["Discord:BotToken"] = "secret",
                 // Always use local Docker MySQL, never any real database from user secrets.
                 ["ConnectionStrings:DefaultConnection"] = "Server=localhost;Port=3307;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;",
                 ["IntegrationTestMode"] = "true",

@@ -73,15 +73,15 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddFantasyCriticCore(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
     {
         var baseAddress = configuration["BaseAddress"]!;
-        var discordBotToken = configuration["BotToken"]!;
+        var discordBotToken = configuration["Discord:BotToken"]!;
 
         services.AddHttpClient();
         services.AddFantasyCriticRepositories(configuration);
 
         //Configuration objects
-        services.AddSingleton(new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["PatreonService:CampaignID"]!));
+        services.AddSingleton(new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["Patreon:CampaignID"]!));
         services.AddSingleton(new EnvironmentConfiguration(baseAddress, environment.IsProduction()));
-        services.AddSingleton(new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId")));
+        services.AddSingleton(new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("Discord:DevServerId")));
 
         //Domain services
         services.AddScoped<PatreonService>();
