@@ -348,6 +348,22 @@ There is nothing to go stale across processes and no invalidation to design. (It
 
 ---
 
+## Added after this plan: health, off/on and the deploy drain
+
+Not part of the original design; see [worker-health-and-drain-plan.md](worker-health-and-drain-plan.md)
+for the reasoning and [operations.md](operations.md) for how to use it.
+
+- The worker and the Discord bot answer `GET /health`, probed by Docker and shown in the admin
+  console's Services panel. The worker's is how recently its runner read the database — which
+  is *not* the heartbeat in item 5. Nothing sweeps a killed runner's `Running` rows yet.
+- `WorkerShouldPullNewJobs` in `tbl_meta_systemwidesettings` turns the runner off without
+  stopping the container. It is part of the claim itself (`StartJob`), so nothing can start once
+  it is off. The scheduler ignores it and keeps queuing.
+- Deploys use that flag, through the `FantasyCritic.CommandLine` image, to wait for the running
+  job before stopping anything.
+
+---
+
 ## Deferred
 
 - **The admin site.** `admin.fantasycritic.games` with its own auth, able to answer while the
