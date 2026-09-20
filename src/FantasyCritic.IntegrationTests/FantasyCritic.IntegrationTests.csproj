@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.Web\FantasyCritic.Web.csproj" />
     <ProjectReference Include="..\FantasyCritic.ApiClient\FantasyCritic.ApiClient.csproj" />
+    <ProjectReference Include="..\FantasyCritic.CommandLine\FantasyCritic.CommandLine.csproj" />
   </ItemGroup>
 
   <ItemGroup>

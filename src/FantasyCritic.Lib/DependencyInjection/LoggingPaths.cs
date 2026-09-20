@@ -11,6 +11,7 @@ public class LoggingPaths
     public static LoggingPaths DatabaseUpdater => new LoggingPaths("databaseupdater");
     public static LoggingPaths DiscordBot => new LoggingPaths("discordbot");
     public static LoggingPaths Worker => new LoggingPaths("worker");
+    public static LoggingPaths CommandLine => new LoggingPaths("commandline");
     public static LoggingPaths UnitTests => new LoggingPaths("tests");
 
     private LoggingPaths(string appName)

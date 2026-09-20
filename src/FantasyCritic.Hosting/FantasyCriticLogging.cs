@@ -17,13 +17,14 @@ public static class FantasyCriticLogging
     //For a process that runs several independent loops. Set through a log scope; events carrying it also get their own file and a Loki label.
     public const string FlowProperty = "Flow";
 
-    public static LoggerConfiguration CreateConfiguration(LoggingPaths loggingPaths, LogEventLevel microsoftMinimumLevel)
+    /// <param name="consoleToStandardError">For a command line tool whose standard output is its answer, read by a script. Logs go to standard error instead.</param>
+    public static LoggerConfiguration CreateConfiguration(LoggingPaths loggingPaths, LogEventLevel microsoftMinimumLevel, bool consoleToStandardError = false)
     {
         return new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", microsoftMinimumLevel)
             .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
             .Enrich.FromLogContext()
-            .WriteTo.Console()
+            .WriteTo.Console(standardErrorFromLevel: consoleToStandardError ? LogEventLevel.Verbose : null)
             .WriteTo.File(loggingPaths.AllLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: OutputTemplate)
             .WriteTo.File(loggingPaths.WarnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: OutputTemplate);
     }

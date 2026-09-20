@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "FantasyCritic.CommandLine": {
+      "commandName": "Project",
+      "commandLineArgs": "worker-should-pull",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      }
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
+}

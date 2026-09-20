@@ -22,6 +22,7 @@
     <Build />
     <Deploy />
   </Project>
+  <Project Path="FantasyCritic.CommandLine/FantasyCritic.CommandLine.csproj" />
   <Project Path="FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj" />
   <Project Path="FantasyCritic.DiscordBot/FantasyCritic.DiscordBot.csproj" />
   <Project Path="FantasyCritic.EmailTemplates/FantasyCritic.EmailTemplates.csproj" />

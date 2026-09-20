@@ -178,5 +178,19 @@ services:
       start_period: 30s
       retries: 3
 
+  # One-off commands, the way deploy.sh runs them on the server. Behind a profile so that `up`
+  # never starts it; naming the service in `run` does not need the profile:
+  #   docker compose -f infrastructure/docker-compose-complete.yaml run --rm -T command-line worker-should-pull
+  command-line:
+    build:
+      context: ..
+      dockerfile: src/FantasyCritic.CommandLine/Dockerfile
+    profiles: [tools]
+    restart: "no"
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
+      AWS__region: us-east-1
+
 volumes:
   mysql_data:
