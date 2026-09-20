@@ -49,6 +49,14 @@ public static class HostingExtensions
         services.AddHealthChecks()
             .AddCheck<DatabaseHealthCheck>("database", tags: [DatabaseHealthCheck.ReadyTag]);
 
+        //For the admin monitor. The timeout is short because a stopped container does not refuse the connection,
+        //it just never answers, and the console should say so promptly.
+        services.AddSingleton(new ServiceHealthConfiguration(configuration["ServiceHealth:WorkerUrl"]!, configuration["ServiceHealth:DiscordBotUrl"]!));
+        services.AddHttpClient<ServiceHealthClient>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(3);
+        });
+
         //Read once at startup: the RELEASE file cannot change without a new deploy, which restarts the process.
         services.AddSingleton<BuildInfo>(_ => BuildInfoReader.Read(environment.ContentRootPath));
 

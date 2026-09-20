@@ -48,6 +48,10 @@ services:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       ASPNETCORE_URLS: http://+:8080
       AWS__region: ${AWS_REGION}
+      # Where the admin monitor asks the other two containers for their health: by service
+      # name, on the compose network. The appsettings defaults are localhost ports for dev.
+      ServiceHealth__WorkerUrl: http://worker:8080
+      ServiceHealth__DiscordBotUrl: http://discord-bot:8080
     volumes:
       - /var/log/fantasy-critic:/var/log/fantasy-critic
       # The admin console reports which release is live. The file is written by the deploy

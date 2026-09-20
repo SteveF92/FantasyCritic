@@ -111,6 +111,9 @@ services:
       BotToken: secret
       # Public URL when using published port 8080 (VS dev uses https://localhost:44477 in appsettings).
       BaseAddress: http://localhost:8080
+      # The admin monitor. Both are behind profiles, so without them these read as Unreachable.
+      ServiceHealth__WorkerUrl: http://worker:8080
+      ServiceHealth__DiscordBotUrl: http://discord-bot:8080
       RootFolder: "C:\\FantasyCritic"
       LinuxRootFolder: /var/lib/fantasy-critic
 

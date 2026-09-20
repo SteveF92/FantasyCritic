@@ -32,13 +32,14 @@ public class AdminController : BaseJobQueuingController
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IConfiguration _configuration;
     private readonly BuildInfo _buildInfo;
+    private readonly ServiceHealthClient _serviceHealthClient;
 
     private const string IntegrationTestModeConfigKey = "IntegrationTestMode";
 
     public AdminController(FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
-        IFantasyCriticRepo fantasyCriticRepo, IConfiguration configuration, BuildInfo buildInfo, IJobRepo jobRepo)
+        IFantasyCriticRepo fantasyCriticRepo, IConfiguration configuration, BuildInfo buildInfo, IJobRepo jobRepo, ServiceHealthClient serviceHealthClient)
         : base(userManager, jobRepo, clock)
     {
         _fantasyCriticService = fantasyCriticService;
@@ -51,12 +52,51 @@ public class AdminController : BaseJobQueuingController
         _fantasyCriticRepo = fantasyCriticRepo;
         _configuration = configuration;
         _buildInfo = buildInfo;
+        _serviceHealthClient = serviceHealthClient;
     }
 
     [HttpGet]
     public ActionResult<BuildInfoViewModel> BuildInfo()
     {
         return new BuildInfoViewModel(_buildInfo);
+    }
+
+    [HttpGet]
+    [ProducesResponseType<ServiceMonitorViewModel>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<ServiceMonitorViewModel>> GetServiceMonitor()
+    {
+        var workerHealthTask = _serviceHealthClient.GetWorkerHealth();
+        var discordBotHealthTask = _serviceHealthClient.GetDiscordBotHealth();
+        var workerHealth = await workerHealthTask;
+        var discordBotHealth = await discordBotHealthTask;
+
+        //Both read from the database rather than taken from the worker's answer, so that the state shown here
+        //is the one a deploy's drain acts on, and is still known when the worker cannot be reached.
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        var incompleteJobs = await _jobRepo.GetIncompleteJobs();
+
+        var workerReachable = workerHealth.Status != ServiceHealthClient.UnreachableStatus;
+        var workerHealthy = workerHealth.Status != ServiceHealthClient.UnhealthyStatus;
+        var workerState = WorkerState.Determine(workerReachable, workerHealthy, systemWideSettings.WorkerShouldPullNewJobs, incompleteJobs);
+
+        return new ServiceMonitorViewModel(_clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs, workerState, workerHealth, discordBotHealth);
+    }
+
+    //Turning the worker off does not stop its container. It stops pulling new jobs, finishes the one it has, and idles.
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TurnOffWorker()
+    {
+        await _interLeagueService.SetWorkerShouldPullNewJobs(false);
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TurnOnWorker()
+    {
+        await _interLeagueService.SetWorkerShouldPullNewJobs(true);
+        return Ok();
     }
 
     [HttpPost]
