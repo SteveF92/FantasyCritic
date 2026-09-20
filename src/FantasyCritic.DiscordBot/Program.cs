@@ -1,10 +1,6 @@
 using FantasyCritic.Hosting;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.MySQL.DapperTypeMaps;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Serilog;
 using Serilog.Events;
 
@@ -16,7 +12,8 @@ public static class Program
     {
         var loggingPaths = LoggingPaths.DiscordBot;
 
-        var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
+        //A web application only so that it can answer GET /health. It serves nothing else.
+        var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
             EnvironmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                               ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
@@ -42,11 +39,11 @@ public static class Program
                 return 1;
             }
 
-            builder.ConfigureContainer(new DefaultServiceProviderFactory(new ServiceProviderOptions
+            builder.Host.UseDefaultServiceProvider(options =>
             {
-                ValidateOnBuild = true,
-                ValidateScopes = true
-            }));
+                options.ValidateOnBuild = true;
+                options.ValidateScopes = true;
+            });
 
             builder.Configuration.AddConfiguration(configuration);
             builder.Logging.ClearProviders();
@@ -55,8 +52,11 @@ public static class Program
             builder.Services.AddFantasyCriticCore(configuration, builder.Environment);
             builder.Services.AddFantasyCriticIdentityCore();
             builder.Services.AddFantasyCriticDiscordBot(configuration);
+            builder.Services.AddHealthChecks().AddCheck<DiscordBotHealthCheck>("discord-bot");
 
-            await builder.Build().RunAsync();
+            var app = builder.Build();
+            app.MapFantasyCriticHealth();
+            await app.RunAsync();
             return 0;
         }
         catch (Exception ex)
@@ -74,6 +74,8 @@ public static class Program
     {
         var loggerConfiguration = FantasyCriticLogging
             .CreateConfiguration(loggingPaths, LogEventLevel.Information)
+            //The only requests are health probes, every few seconds. Each would otherwise log four lines.
+            .MinimumLevel.Override("Microsoft.AspNetCore", LogEventLevel.Warning)
             .WriteToApplicationLogFile(loggingPaths);
 
         if (configuration is not null && !environment.IsDevelopment())

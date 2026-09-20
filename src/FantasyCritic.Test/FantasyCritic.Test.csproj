@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FantasyCritic.DiscordBot\FantasyCritic.DiscordBot.csproj" />
     <ProjectReference Include="..\FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj" />
     <ProjectReference Include="..\FantasyCritic.RdsSnapshotManager\FantasyCritic.RdsSnapshotManager.csproj" />
     <ProjectReference Include="..\FantasyCritic.Worker\FantasyCritic.Worker.csproj" />
