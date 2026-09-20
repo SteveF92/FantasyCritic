@@ -32,9 +32,9 @@ the worker finishes its job and then sits idle. The monitor shows the derived st
 no DB access, so a dedicated `FantasyCritic.CommandLine` image supplies the commands:
 `docker compose run --rm -T command-line worker-wait-idle`.
 
-**Status: built.** Steps 1–9 are done. What remains is the beta verification at the end, and
-one piece of AWS setup: the `fantasycritic-command-line` ECR repository and its ARN in the
-deploy role's policy ([setup guide](deployment-phase-3-setup.md), steps 1 and 2).
+**Status: done.** Steps 1–9 are built, and the whole thing deployed to beta successfully on
+2026-09-20, which was the first time `deploy.sh` ran end to end with the drain in it. Still
+ahead: the first production deploy, which needs `skip_drain` (see Step 8).
 
 ## How we work through this
 
