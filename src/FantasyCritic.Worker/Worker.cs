@@ -13,15 +13,17 @@ public class Worker : BackgroundService
 
     private readonly ILogger<Worker> _logger;
     private readonly IServiceProvider _serviceProvider;
+    private readonly WorkerStatus _workerStatus;
 
     //The one piece of state shared between the two loops. A CancellationTokenSource can't cross a process boundary,
     //so the canceller needs the runner's own tokens to stop a job that has already started.
     private readonly ConcurrentDictionary<Guid, CancellationTokenSource> _inFlightJobs = new();
 
-    public Worker(ILogger<Worker> logger, IServiceProvider serviceProvider)
+    public Worker(ILogger<Worker> logger, IServiceProvider serviceProvider, WorkerStatus workerStatus)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
+        _workerStatus = workerStatus;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -100,6 +102,7 @@ public class Worker : BackgroundService
         var clock = scope.ServiceProvider.GetRequiredService<IClock>();
 
         var systemWideSettings = await fantasyCriticRepo.GetSystemWideSettings();
+        _workerStatus.RecordPoll(clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs);
         if (!systemWideSettings.WorkerShouldPullNewJobs)
         {
             _logger.LogInformation("Intentionally not running new jobs because WorkerShouldPullNewJobs is FALSE.");
@@ -168,6 +171,7 @@ public class Worker : BackgroundService
             }
 
             _logger.LogInformation("Starting job {Job}.", job);
+            _workerStatus.RecordJobStarted(job);
 
             var context = new FantasyCriticJobContext(job, jobRepo);
             var cancelledInProgress = false;
@@ -211,6 +215,7 @@ public class Worker : BackgroundService
         finally
         {
             _inFlightJobs.TryRemove(job.JobID, out _);
+            _workerStatus.RecordJobFinished();
         }
     }
 
