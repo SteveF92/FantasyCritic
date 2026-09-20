@@ -161,18 +161,6 @@
             <b-button variant="info" size="sm" :disabled="isBusy" @click="resendConfirmationEmail">Send Confirmation</b-button>
           </div>
         </div>
-      </div>
-
-      <div v-if="hasRightColumn" class="col-lg-7 col-md-12">
-        <div v-if="isAdmin" class="mb-3">
-          <h4>Services</h4>
-          <service-monitor ref="serviceMonitor"></service-monitor>
-        </div>
-
-        <div v-if="isJobManager" class="mb-3">
-          <h4>Recent Jobs</h4>
-          <recent-jobs-table ref="jobsTable"></recent-jobs-table>
-        </div>
 
         <div v-if="isAdmin">
           <h4>Build</h4>
@@ -219,6 +207,18 @@
               </tbody>
             </table>
           </div>
+        </div>
+      </div>
+
+      <div v-if="hasRightColumn" class="col-lg-7 col-md-12">
+        <div v-if="isAdmin" class="mb-3">
+          <h4>Services</h4>
+          <service-monitor ref="serviceMonitor"></service-monitor>
+        </div>
+
+        <div v-if="isJobManager" class="mb-3">
+          <h4>Recent Jobs</h4>
+          <recent-jobs-table ref="jobsTable"></recent-jobs-table>
         </div>
       </div>
     </div>
