@@ -3,7 +3,7 @@ name: Deploy
 # Manual only. Pick the branch or tag in the "Run workflow" dialog — that ref is what gets
 # built and shipped. Nothing deploys on a push.
 #
-# As of Phase 3 the deploy artifact is three container images in ECR. The bundle that travels
+# As of Phase 4b the deploy artifact is four container images in ECR. The bundle that travels
 # through S3 to the instance is now only the deploy script, the compose file, the maintenance
 # page and the release metadata — a few kilobytes rather than a few hundred megabytes.
 #
@@ -113,6 +113,14 @@ jobs:
           tags: ${{ steps.ecr.outputs.registry }}/fantasycritic-discord-bot:${{ steps.release.outputs.id }}
           push: 'true'
           cache-scope: discord-bot
+
+      - name: Build and push worker image
+        uses: ./.github/actions/build-image
+        with:
+          dockerfile: src/FantasyCritic.Worker/Dockerfile
+          tags: ${{ steps.ecr.outputs.registry }}/fantasycritic-worker:${{ steps.release.outputs.id }}
+          push: 'true'
+          cache-scope: worker
 
       # ----------------------------------------------------------------------------------
       # Bundle

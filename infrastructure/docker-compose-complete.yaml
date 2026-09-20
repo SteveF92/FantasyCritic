@@ -1,4 +1,4 @@
-# Full local stack: MySQL, migrator, seed data, web app and Discord bot.
+# Full local stack: MySQL, migrator, seed data, web app, Discord bot and job worker.
 #
 #   docker compose -f infrastructure/docker-compose-complete.yaml up
 #
@@ -119,9 +119,7 @@ services:
     build:
       context: ..
       dockerfile: src/FantasyCritic.DiscordBot/Dockerfile
-    # Off by default. The bot exits immediately unless a real token is configured, and a
-    # second gateway session on the production token would handle live slash commands from a
-    # developer's machine. Start it deliberately:
+    # Off by default.
     #   docker compose -f infrastructure/docker-compose-complete.yaml --profile bot up
     profiles: [bot]
     restart: unless-stopped
@@ -139,6 +137,30 @@ services:
       BotToken: secret
       # Restricts slash command registration to one server while developing.
       # DevDiscordServerId: "000000000000000000"
+
+  worker:
+    container_name: fantasycritic-worker
+    build:
+      context: ..
+      dockerfile: src/FantasyCritic.Worker/Dockerfile
+    # Off by default, for the same reason as the bot. Start it deliberately:
+    #   docker compose -f infrastructure/docker-compose-complete.yaml --profile worker up
+    profiles: [worker]
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      database-updater:
+        condition: service_completed_successfully
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
+      AWS__region: us-east-1
+      BaseAddress: http://localhost:8080
+      # The image's appsettings.json supplies placeholder values for the rest (Postmark,
+      # OpenCritic, Patreon, BotToken), which is enough for the host to start. Handlers that
+      # actually call those services will fail until real ones are provided here.
+      BotToken: secret
 
 volumes:
   mysql_data:

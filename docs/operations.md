@@ -17,8 +17,13 @@ definition and its variables. Run the commands below from that directory.
 | `releases/<id>/` | Past release bundles, kept so any of them can redeploy itself. |
 | `/var/log/fantasy-critic/` | Serilog rolling files, owned by uid 1654. |
 
-Two long-running services: **`web`** and **`discord-bot`**. A third, **`database-updater`**, is
-a one-off job behind the `migrate` profile — it never runs on its own.
+Three long-running services: **`web`**, **`discord-bot`** and **`worker`**. A fourth,
+**`database-updater`**, is a one-off job behind the `migrate` profile — it never runs on its
+own.
+
+`worker` is the job system: it owns the schedule, so every cron job and every admin console
+button runs there rather than in `web`. Stopping it does not affect the site, and the site
+gives no sign that it is down — it just quietly stops doing anything on a timer.
 
 ## Everyday commands
 
@@ -46,23 +51,32 @@ Restart it:
 cd /opt/fantasy-critic && sudo docker compose restart web
 ```
 
-The Discord bot is the same with `discord-bot` in place of `web`:
+The Discord bot and the worker are the same with their own names in place of `web`:
 
 ```bash
 cd /opt/fantasy-critic && sudo docker compose restart discord-bot
 ```
 
-Both at once:
+```bash
+cd /opt/fantasy-critic && sudo docker compose restart worker
+```
+
+Restarting the worker is safe at any time it is not mid-job: it re-seeds its schedule from 30
+minutes back, so a slot that fell inside the restart is still attempted, and the unique
+constraint stops it enqueueing a job twice. A job that was *running* when it went down is a
+different matter — see the troubleshooting table.
+
+All at once:
 
 ```bash
-cd /opt/fantasy-critic && sudo docker compose restart web discord-bot
+cd /opt/fantasy-critic && sudo docker compose restart web discord-bot worker
 ```
 
 After editing `docker-compose.yaml` or `.env`, recreate rather than restart — a restart reuses
 the old container with the old settings:
 
 ```bash
-cd /opt/fantasy-critic && sudo docker compose up -d --force-recreate web discord-bot
+cd /opt/fantasy-critic && sudo docker compose up -d --force-recreate web discord-bot worker
 ```
 
 Two things worth knowing:
@@ -87,11 +101,18 @@ cd /opt/fantasy-critic && sudo docker compose logs -f discord-bot
 ```
 
 ```bash
+cd /opt/fantasy-critic && sudo docker compose logs -f worker
+```
+
+```bash
 sudo tail -f /var/log/fantasy-critic/web/log-my.txt
 ```
 
 `log-my.txt` is filtered to Fantasy Critic's own code, which is usually what you want.
-`log-all.txt` and `log-warning.txt` sit beside it. Everything also goes to Grafana Loki.
+`log-all.txt` and `log-warning.txt` sit beside it. The worker writes to
+`/var/log/fantasy-critic/worker/`, where its three loops — `Scheduler`, `JobRunner` and
+`Canceller` — also get a file each, so following a job does not mean reading the scheduler's
+heartbeat around it. Everything also goes to Grafana Loki.
 
 ## Health
 
@@ -185,8 +206,8 @@ console shows the same thing.
 
 ## After a reboot
 
-Nothing to do. Docker starts at boot and `restart: unless-stopped` brings `web` and
-`discord-bot` back. The migrator does not run. The exception is a container you had stopped by
+Nothing to do. Docker starts at boot and `restart: unless-stopped` brings `web`,
+`discord-bot` and `worker` back. The migrator does not run. The exception is a container you had stopped by
 hand, which stays stopped.
 
 ## Troubleshooting
@@ -200,6 +221,9 @@ hand, which stays stopped.
 | Slash commands answered twice | Two bot gateways on one token. Exactly one `discord-bot` container may run per bot token. |
 | Slash commands not answered, notifications fine | `discord-bot` is down; `web` owns notifications. `docker compose ps`. |
 | Bot restarting in a loop | It exits when no bot token is configured. Check `docker compose logs discord-bot` and the environment's secret. |
+| Nothing scheduled has happened, site fine | `worker` is down. `docker compose ps`, then `docker compose logs worker`. The site never notices. |
+| Admin console button sticks on "Queued" | Same thing: nothing is consuming the queue. The job will run whenever the worker comes back. |
+| A job is stuck "Running" and nothing is happening | The worker was killed mid-job. Nothing sweeps those rows yet, and cancelling from the console will not settle one either — the canceller only trips tokens a live worker holds. Until the sweep is built, finish the row by hand in `tbl_job`; while it sits there, that job type cannot be queued again. |
 | Containers cannot start, Secrets Manager errors | The IMDSv2 hop limit has been reset to 1. See step 3 of the setup guide. |
 | Nothing in `/var/log/fantasy-critic` | The directory is not owned by uid 1654. |
 | Admin console shows no release info | `/opt/fantasy-critic/RELEASE` is missing, or Docker created it as a directory. |

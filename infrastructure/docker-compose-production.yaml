@@ -12,7 +12,7 @@
 #   cd /opt/fantasy-critic
 #   docker compose pull
 #   docker compose run --rm database-updater
-#   docker compose up -d web discord-bot
+#   docker compose up -d web discord-bot worker
 
 name: fantasy-critic
 
@@ -59,6 +59,25 @@ services:
   # must stay at exactly one replica — two would answer every command twice.
   discord-bot:
     image: ${ECR_REGISTRY}/fantasycritic-discord-bot:${IMAGE_TAG}
+    restart: unless-stopped
+    environment:
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      AWS__region: ${AWS_REGION}
+    volumes:
+      - /var/log/fantasy-critic:/var/log/fantasy-critic
+
+  # The job system (Phase 4b): the scheduler that decides what is due, the runner that executes
+  # it and the canceller that stops it. Cron scheduling left the web process when this shipped,
+  # so with this container down *nothing scheduled runs at all* — no public bidding emails, no
+  # releasing-this-week posts, no trade expiry — and the site gives no sign of it. deploy.sh
+  # checks that it came up for exactly that reason.
+  #
+  # One replica. The scheduler's inserts are protected by a unique constraint and the runner
+  # claims a row with a conditional update, so a second one would not double-run jobs, but
+  # nothing here is built to need one: if jobs start queueing behind each other, add runner
+  # loops inside the container rather than a second container.
+  worker:
+    image: ${ECR_REGISTRY}/fantasycritic-worker:${IMAGE_TAG}
     restart: unless-stopped
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}

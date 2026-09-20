@@ -153,9 +153,9 @@ WARN
 
 # `docker compose ps --status` is too new to rely on across compose plugin versions, so ask
 # the daemon directly.
-web_is_running() {
+service_is_running() {
     local container_id
-    container_id="$(compose ps -q web 2>/dev/null || true)"
+    container_id="$(compose ps -q "$1" 2>/dev/null || true)"
     [ -n "$container_id" ] || return 1
     [ "$(docker inspect -f '{{.State.Running}}' "$container_id" 2>/dev/null || echo false)" = "true" ]
 }
@@ -234,7 +234,7 @@ HINT
         cat >&2 <<HINT
 
 To roll back, put IMAGE_TAG=$PREVIOUS_TAG back in $ENV_FILE and run:
-  cd $APP_ROOT && docker compose up -d web discord-bot && $MAINTENANCE off
+  cd $APP_ROOT && docker compose up -d web discord-bot worker && $MAINTENANCE off
 HINT
     fi
 }
@@ -327,8 +327,8 @@ fi
 # value.
 echo "deployed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$RELEASE_FILE"
 
-log "Starting web and discord-bot"
-compose up -d web discord-bot
+log "Starting web, discord-bot and worker"
+compose up -d web discord-bot worker
 
 log "Waiting for $HEALTH_URL"
 healthy=false
@@ -339,7 +339,7 @@ for _ in $(seq 1 60); do
         break
     fi
     # No point waiting out the full two minutes if the container has already given up.
-    if ! web_is_running; then
+    if ! service_is_running web; then
         break
     fi
 done
@@ -349,6 +349,8 @@ if [ "$healthy" != "true" ]; then
     compose logs --tail 50 web >&2 || true
     echo "Discord bot, last 20 lines:" >&2
     compose logs --tail 20 discord-bot >&2 || true
+    echo "Worker, last 20 lines:" >&2
+    compose logs --tail 20 worker >&2 || true
     rollback_hint
     exit 1
 fi
@@ -358,9 +360,52 @@ log "Healthy."
 "$MAINTENANCE" off
 
 # ------------------------------------------------------------------------------------------
+# Worker
+# ------------------------------------------------------------------------------------------
+# The worker has no HTTP surface to probe, and a worker that died on startup — a bad secret, a
+# handler with no tbl_job_type row — takes every scheduled job with it while the site carries
+# on looking perfectly healthy. Nobody would notice until a Monday bidding email did not
+# arrive. So ask the daemon whether it is still up after a grace period, and fail the deploy
+# loudly if it is not.
+#
+# This runs after the maintenance page is lowered on purpose: the site itself is fine, and
+# keeping it dark over a broken worker would be the worse outcome. The non-zero exit is what
+# turns the deploy run red.
+#
+# `restart: unless-stopped` means a worker that dies on every start is up again by the time
+# anyone looks, so "is it running" on its own would pass a crash loop. A container compose
+# just created has a restart count of 0, and only the restart policy moves it, which makes a
+# non-zero count after the grace period exactly the loop this is trying to catch.
+log "Checking the worker"
+sleep 15
+worker_restarts="$(docker inspect -f '{{.RestartCount}}' "$(compose ps -q worker 2>/dev/null || true)" 2>/dev/null || echo 0)"
+if [ "$worker_restarts" != "0" ]; then
+    echo "The worker container has restarted $worker_restarts time(s) since it was created — it is crash looping." >&2
+fi
+if ! service_is_running worker || [ "$worker_restarts" != "0" ]; then
+    echo "Worker, last 50 log lines:" >&2
+    compose logs --tail 50 worker >&2 || true
+    cat >&2 <<WORKER
+
+  ======================================================================
+  WARNING: the site is up, but the job worker is not running.
+
+  Nothing scheduled will happen until it is: no public bidding emails,
+  no releasing-this-week posts, no trade expiry, no Patreon sync, and
+  no admin console button will ever leave "Queued".
+
+  Fix the cause above, then: cd $APP_ROOT && docker compose up -d worker
+  ======================================================================
+
+WORKER
+    exit 1
+fi
+log "Worker is running."
+
+# ------------------------------------------------------------------------------------------
 # Prune
 # ------------------------------------------------------------------------------------------
-# Three images per release at a few hundred megabytes each fills a disk quickly.
+# Four images per release at a few hundred megabytes each fills a disk quickly.
 
 log "Pruning unused images"
 docker image prune --force >/dev/null || true

@@ -20,9 +20,9 @@ Part 2.
 
 ## What you end up with
 
-Ubuntu, Docker, nginx, certbot and the SSM agent on the box, and nothing else. Three images
-come from ECR: `web` and `discord-bot` run as services, `database-updater` runs as a one-off
-job during deploys. nginx keeps terminating TLS and proxying to `127.0.0.1:5000`, exactly as
+Ubuntu, Docker, nginx, certbot and the SSM agent on the box, and nothing else. Four images
+come from ECR: `web`, `discord-bot` and `worker` run as services, `database-updater` runs as a
+one-off job during deploys. nginx keeps terminating TLS and proxying to `127.0.0.1:5000`, exactly as
 before.
 
 ---
@@ -31,15 +31,19 @@ before.
 
 ## 1. ECR repositories
 
+`fantasycritic-worker` arrived with Phase 4b. An account set up before then already has the
+other three, so re-running these loops is harmless — `create-repository` fails on the existing
+ones and creates the missing one.
+
 ```bash
-for repo in fantasycritic-web fantasycritic-database-updater fantasycritic-discord-bot; do aws ecr create-repository --repository-name "$repo" --region <REGION> --image-scanning-configuration scanOnPush=true --image-tag-mutability IMMUTABLE; done
+for repo in fantasycritic-web fantasycritic-database-updater fantasycritic-discord-bot fantasycritic-worker; do aws ecr create-repository --repository-name "$repo" --region <REGION> --image-scanning-configuration scanOnPush=true --image-tag-mutability IMMUTABLE; done
 ```
 
 `IMMUTABLE` means the tag recorded in `/opt/fantasy-critic/.env` always names the exact image
 that was deployed. Beta and production share these repositories, so an image tested on beta
 goes to production without being rebuilt.
 
-Every deploy pushes three images of a few hundred megabytes, so add a lifecycle policy. Save
+Every deploy pushes four images of a few hundred megabytes, so add a lifecycle policy. Save
 this as `ecr-lifecycle.json`:
 
 ```json
@@ -60,7 +64,7 @@ this as `ecr-lifecycle.json`:
 ```
 
 ```bash
-for repo in fantasycritic-web fantasycritic-database-updater fantasycritic-discord-bot; do aws ecr put-lifecycle-policy --repository-name "$repo" --lifecycle-policy-text file://ecr-lifecycle.json --region <REGION>; done
+for repo in fantasycritic-web fantasycritic-database-updater fantasycritic-discord-bot fantasycritic-worker; do aws ecr put-lifecycle-policy --repository-name "$repo" --lifecycle-policy-text file://ecr-lifecycle.json --region <REGION>; done
 ```
 
 ## 2. IAM
@@ -93,7 +97,8 @@ use separate roles, both need this:
       "Resource": [
         "arn:aws:ecr:<REGION>:<ACCOUNT_ID>:repository/fantasycritic-web",
         "arn:aws:ecr:<REGION>:<ACCOUNT_ID>:repository/fantasycritic-database-updater",
-        "arn:aws:ecr:<REGION>:<ACCOUNT_ID>:repository/fantasycritic-discord-bot"
+        "arn:aws:ecr:<REGION>:<ACCOUNT_ID>:repository/fantasycritic-discord-bot",
+        "arn:aws:ecr:<REGION>:<ACCOUNT_ID>:repository/fantasycritic-worker"
       ]
     }
   ]
@@ -114,8 +119,8 @@ which derives it from the assumed role's account.
 
 Containers reach the instance IAM role through the instance metadata service. At the default
 hop limit of 1, a request from inside a container has already spent its hop leaving the
-container network and is dropped. Since all three processes load their configuration from
-Secrets Manager, every one of them then fails at startup. This is the most likely reason for a
+container network and is dropped. Since every process loads its configuration from
+Secrets Manager, all of them then fail at startup. This is the most likely reason for a
 first deploy to fail.
 
 ```bash
@@ -285,13 +290,14 @@ Actions → Deploy → Run workflow → Use workflow from: <ref> → environment
 The branch selector defaults to the repository's default branch, and the workflow that runs is
 the one on the ref you pick. Choose it deliberately.
 
-Three lines in the run are worth watching:
+Four lines in the run are worth watching:
 
 | Line | Proves |
 |---|---|
 | `Logging in to <REGISTRY>` | the instance role can pull |
 | `Running database migrator` | Secrets Manager works from inside a container, so step 3 took effect |
 | `Healthy.` | `web` answered `127.0.0.1:5000/health` |
+| `Worker is running.` | the worker survived startup, so scheduled jobs will actually run |
 
 ## 10. Verify
 
@@ -299,7 +305,8 @@ Three lines in the run are worth watching:
 cd /opt/fantasy-critic && sudo docker compose ps
 ```
 
-`web` and `discord-bot` up. `database-updater` will not be listed — it is a job, not a service.
+`web`, `discord-bot` and `worker` up. `database-updater` will not be listed — it is a job,
+not a service.
 
 ```bash
 sudo /opt/fantasy-critic/maintenance.sh status
