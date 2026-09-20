@@ -64,8 +64,7 @@ public static class Program
             builder.Logging.ClearProviders();
             builder.Logging.AddSerilog(Log.Logger);
 
-            builder.Services.AddFantasyCriticCore(configuration, builder.Environment);
-            builder.Services.AddFantasyCriticIdentityCore();
+            builder.Services.AddFantasyCriticRepositories(configuration);
             builder.Services.AddScoped<WorkerCommands>();
 
             //Built for its container only. It is never started: there is nothing here to host.

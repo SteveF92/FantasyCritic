@@ -31,28 +31,21 @@ public static class ServiceCollectionExtensions
 {
 
     /// <summary>
-    /// Configuration, repositories and domain services — everything needed to talk to the database
-    /// and run game logic, with no web, email or admin concerns. Web layers ASP.NET Identity,
-    /// authentication and its controllers on top; the bot layers the Discord gateway on top.
+    /// The clock, the connection string and every Dapper repository: the layer that needs nothing but the
+    /// database. <see cref="AddFantasyCriticCore"/> calls this, so a repository is still registered in exactly
+    /// one place. A host that wants the database and nothing else calls it directly instead — the command line
+    /// tool does, so that a deploy's `worker-should-pull` does not depend on the Discord, Patreon and email
+    /// configuration it would never use.
     /// </summary>
-    public static IServiceCollection AddFantasyCriticCore(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+    public static IServiceCollection AddFantasyCriticRepositories(this IServiceCollection services, IConfiguration configuration)
     {
-        var baseAddress = configuration["BaseAddress"]!;
         var connectionString = configuration.GetConnectionString("DefaultConnection")!;
-        var discordBotToken = configuration["BotToken"]!;
 
         IClock clock = SystemClock.Instance;
 
-        services.AddHttpClient();
         services.AddTransient<IClock>(_ => clock);
-
-        //Configuration objects
         services.AddSingleton(new RepositoryConfiguration(connectionString, clock));
-        services.AddSingleton(new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["PatreonService:CampaignID"]!));
-        services.AddSingleton(new EnvironmentConfiguration(baseAddress, environment.IsProduction()));
-        services.AddSingleton(new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId")));
 
-        //MySQL repos
         services.AddScoped<IFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IReadOnlyFantasyCriticUserStore, MySQLFantasyCriticUserStore>();
         services.AddScoped<IFantasyCriticRoleStore, MySQLFantasyCriticRoleStore>();
@@ -68,6 +61,27 @@ public static class ServiceCollectionExtensions
         services.AddScoped<IDiscordRepo, MySQLDiscordRepo>();
         services.AddScoped<IDailyStatsRepo, MySQLDailyStatsRepo>();
         services.AddScoped<IJobRepo, MySQLJobRepo>();
+
+        return services;
+    }
+
+    /// <summary>
+    /// Configuration, repositories and domain services — everything needed to talk to the database
+    /// and run game logic, with no web, email or admin concerns. Web layers ASP.NET Identity,
+    /// authentication and its controllers on top; the bot layers the Discord gateway on top.
+    /// </summary>
+    public static IServiceCollection AddFantasyCriticCore(this IServiceCollection services, IConfiguration configuration, IHostEnvironment environment)
+    {
+        var baseAddress = configuration["BaseAddress"]!;
+        var discordBotToken = configuration["BotToken"]!;
+
+        services.AddHttpClient();
+        services.AddFantasyCriticRepositories(configuration);
+
+        //Configuration objects
+        services.AddSingleton(new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["PatreonService:CampaignID"]!));
+        services.AddSingleton(new EnvironmentConfiguration(baseAddress, environment.IsProduction()));
+        services.AddSingleton(new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("DevDiscordServerId")));
 
         //Domain services
         services.AddScoped<PatreonService>();
