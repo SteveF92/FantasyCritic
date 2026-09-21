@@ -14,12 +14,30 @@ public class PatreonService
     private readonly string _clientId;
     private readonly string _campaignID;
     private readonly IPatreonTokensRepo _tokensRepo;
+    private readonly IFantasyCriticUserStore _userStore;
 
-    public PatreonService(PatreonConfig config, IPatreonTokensRepo tokensRepo)
+    public PatreonService(PatreonConfig config, IPatreonTokensRepo tokensRepo, IFantasyCriticUserStore userStore)
     {
         _clientId = config.ClientId;
         _campaignID = config.CampaignID;
         _tokensRepo = tokensRepo;
+        _userStore = userStore;
+    }
+
+    public async Task RefreshPlusUserRole(FantasyCriticUser user)
+    {
+        var externalLogins = await _userStore.GetLoginsAsync(user, CancellationToken.None);
+        var patreonProviderID = externalLogins.SingleOrDefault(x => x.LoginProvider == "Patreon")?.ProviderKey;
+        if (patreonProviderID is null)
+        {
+            return;
+        }
+
+        var isPlusUser = await UserIsPlusUser(patreonProviderID);
+        if (isPlusUser)
+        {
+            await _userStore.AddToRoleProgrammaticAsync(user, "PlusUser", CancellationToken.None);
+        }
     }
 
     public async Task<IReadOnlyList<PatronInfo>> GetPatronInfo(IReadOnlyList<FantasyCriticUserWithExternalLogins> patreonUsers)

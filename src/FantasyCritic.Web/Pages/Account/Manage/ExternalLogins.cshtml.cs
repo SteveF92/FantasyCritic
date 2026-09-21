@@ -1,6 +1,7 @@
 #nullable disable
 
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Patreon;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -12,13 +13,16 @@ public class ExternalLoginsModel : PageModel
 {
     private readonly FantasyCriticUserManager _userManager;
     private readonly FantasyCriticSignInManager _signInManager;
+    private readonly PatreonService _patreonService;
 
     public ExternalLoginsModel(
         FantasyCriticUserManager userManager,
-        FantasyCriticSignInManager signInManager)
+        FantasyCriticSignInManager signInManager,
+        PatreonService patreonService)
     {
         _userManager = userManager;
         _signInManager = signInManager;
+        _patreonService = patreonService;
     }
 
     public IList<UserLoginInfo> CurrentLogins { get; set; }
@@ -108,7 +112,7 @@ public class ExternalLoginsModel : PageModel
             return RedirectToPage();
         }
 
-        await _userManager.RefreshExternalLoginFeatures(user);
+        await _patreonService.RefreshPlusUserRole(user);
 
         // Clear the existing external cookie to ensure a clean login process
         await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
