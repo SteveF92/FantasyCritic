@@ -81,7 +81,7 @@ public static class ServiceCollectionExtensions
         //Configuration objects
         services.AddSingleton(new PatreonConfig(configuration["Authentication:Patreon:ClientId"]!, configuration["Patreon:CampaignID"]!));
         services.AddSingleton(new EnvironmentConfiguration(baseAddress, environment.IsProduction()));
-        services.AddSingleton(new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment(), configuration.GetValue<ulong?>("Discord:DevServerId")));
+        services.AddSingleton(new FantasyCriticDiscordConfiguration(discordBotToken, baseAddress, environment.IsDevelopment()));
 
         //Domain services
         services.AddScoped<PatreonService>();
