@@ -13,6 +13,7 @@ public sealed record WebOptions : IHostOptions
     public required string BaseAddress { get; init; }
     public required ServiceHealthOptions ServiceHealth { get; init; }
     public required GrafanaOptions Grafana { get; init; }
+    public required GrafanaLogsOptions GrafanaLogs { get; init; }
 
     public Result Validate(FantasyCriticEnvironment environment)
     {
@@ -26,6 +27,7 @@ public sealed record WebOptions : IHostOptions
             .Value(nameof(BaseAddress), BaseAddress)
             .Section(nameof(ServiceHealth), ServiceHealth)
             .Section(nameof(Grafana), Grafana)
+            .Section(nameof(GrafanaLogs), GrafanaLogs)
             .ToResult();
     }
 }

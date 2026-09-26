@@ -56,6 +56,9 @@ public static class HostingExtensions
             client.Timeout = TimeSpan.FromSeconds(3);
         });
 
+        //Nothing goes to Loki from Development, so there are no logs there to link to.
+        services.AddSingleton(new JobLogLinks(webOptions.GrafanaLogs, environment.IsDevelopment() ? null : environment.EnvironmentName));
+
         //Read once at startup: the RELEASE file cannot change without a new deploy, which restarts the process.
         services.AddSingleton<BuildInfo>(_ => BuildInfoReader.Read(environment.ContentRootPath));
 

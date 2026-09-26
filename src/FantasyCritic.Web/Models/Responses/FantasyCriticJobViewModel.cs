@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class FantasyCriticJobViewModel
 {
-    public FantasyCriticJobViewModel(FantasyCriticJob domain)
+    public FantasyCriticJobViewModel(FantasyCriticJob domain, string? logsUrl)
     {
         JobID = domain.JobID;
         Type = domain.Type.Value;
@@ -20,6 +20,7 @@ public class FantasyCriticJobViewModel
         FinishedAt = domain.FinishedAt;
         CancelledAt = domain.CancelledAt;
         CancelledByUserDisplayName = domain.CancelledByUser?.DisplayName;
+        LogsUrl = logsUrl;
     }
 
     public Guid JobID { get; }
@@ -36,4 +37,5 @@ public class FantasyCriticJobViewModel
     public Instant? FinishedAt { get; }
     public Instant? CancelledAt { get; }
     public string? CancelledByUserDisplayName { get; }
+    public string? LogsUrl { get; }
 }

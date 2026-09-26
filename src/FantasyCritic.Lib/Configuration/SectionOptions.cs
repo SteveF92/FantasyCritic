@@ -190,6 +190,24 @@ public sealed record GrafanaOptions : IOptionsSection
     }
 }
 
+/// <summary>
+/// Where people read the logs Loki holds, for the links the admin console puts beside each job.
+/// </summary>
+public sealed record GrafanaLogsOptions : IOptionsSection
+{
+    public required string Url { get; init; }
+    public required string DataSource { get; init; }
+
+    //An empty Url turns the links off.
+    public IReadOnlyList<string> Validate(string path, FantasyCriticEnvironment environment)
+    {
+        return new MissingConfiguration(environment)
+            .Present($"{path}:{nameof(Url)}", Url)
+            .Present($"{path}:{nameof(DataSource)}", DataSource)
+            .Paths;
+    }
+}
+
 public sealed record LokiOptions : IOptionsSection
 {
     public required string Uri { get; init; }

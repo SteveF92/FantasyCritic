@@ -7,6 +7,7 @@ using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
+using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -26,8 +27,8 @@ public class FactCheckerController : BaseJobQueuingController
 
     public FactCheckerController(AdminService adminService, IClock clock, InterLeagueService interLeagueService,
         ILogger<FactCheckerController> logger, FantasyCriticUserManager userManager, LeagueMemberService leagueMemberService,
-        FantasyCriticService fantasyCriticService, IJobRepo jobRepo)
-        : base(userManager, jobRepo, clock)
+        FantasyCriticService fantasyCriticService, IJobRepo jobRepo, JobLogLinks jobLogLinks)
+        : base(userManager, jobRepo, clock, jobLogLinks)
     {
         _adminService = adminService;
         _interLeagueService = interLeagueService;

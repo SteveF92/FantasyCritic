@@ -72,6 +72,7 @@
       <template #cell(actions)="row">
         <b-button v-if="isCancellable(row.item)" variant="danger" size="sm" :disabled="isBusy" @click="cancelJob(row.item)">Cancel</b-button>
         <b-button variant="secondary" size="sm" @click="row.toggleDetails">{{ row.detailsShowing ? 'Hide' : 'Details' }}</b-button>
+        <b-button v-if="row.item.logsUrl" variant="info" size="sm" :href="row.item.logsUrl" target="_blank" rel="noopener">Logs</b-button>
       </template>
       <template #row-details="row">
         <dl class="row mb-0">

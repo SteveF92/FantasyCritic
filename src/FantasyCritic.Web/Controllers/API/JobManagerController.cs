@@ -3,6 +3,7 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Web.Models.Requests.JobManager;
 using FantasyCritic.Web.Models.Responses;
+using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,13 +18,15 @@ public class JobManagerController : FantasyCriticController
     private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly IJobRepo _jobRepo;
+    private readonly JobLogLinks _jobLogLinks;
 
-    public JobManagerController(IClock clock, ILogger<JobManagerController> logger, FantasyCriticUserManager userManager, IJobRepo jobRepo)
+    public JobManagerController(IClock clock, ILogger<JobManagerController> logger, FantasyCriticUserManager userManager, IJobRepo jobRepo, JobLogLinks jobLogLinks)
         : base(userManager)
     {
         _clock = clock;
         _logger = logger;
         _jobRepo = jobRepo;
+        _jobLogLinks = jobLogLinks;
     }
 
     [HttpGet]
@@ -43,7 +46,7 @@ public class JobManagerController : FantasyCriticController
         }
 
         var jobs = await _jobRepo.GetJobs(request.Page, request.Count, filter.Value);
-        return jobs.Select(x => new FantasyCriticJobViewModel(x)).ToList();
+        return jobs.Select(x => new FantasyCriticJobViewModel(x, _jobLogLinks.ForJob(x))).ToList();
     }
 
     [HttpPost]
