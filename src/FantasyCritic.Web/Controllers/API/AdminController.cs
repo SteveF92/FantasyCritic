@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
@@ -13,7 +14,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -30,16 +30,14 @@ public class AdminController : BaseJobQueuingController
     private readonly DiscordPushService _discordPushService;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
-    private readonly IConfiguration _configuration;
+    private readonly EnvironmentConfiguration _environmentConfiguration;
     private readonly BuildInfo _buildInfo;
     private readonly ServiceHealthClient _serviceHealthClient;
-
-    private const string IntegrationTestModeConfigKey = "IntegrationTestMode";
 
     public AdminController(FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
-        IFantasyCriticRepo fantasyCriticRepo, IConfiguration configuration, BuildInfo buildInfo, IJobRepo jobRepo, ServiceHealthClient serviceHealthClient)
+        IFantasyCriticRepo fantasyCriticRepo, EnvironmentConfiguration environmentConfiguration, BuildInfo buildInfo, IJobRepo jobRepo, ServiceHealthClient serviceHealthClient)
         : base(userManager, jobRepo, clock)
     {
         _fantasyCriticService = fantasyCriticService;
@@ -50,7 +48,7 @@ public class AdminController : BaseJobQueuingController
         _discordPushService = discordPushService;
         _masterGameRepo = masterGameRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
-        _configuration = configuration;
+        _environmentConfiguration = environmentConfiguration;
         _buildInfo = buildInfo;
         _serviceHealthClient = serviceHealthClient;
     }
@@ -476,8 +474,7 @@ public class AdminController : BaseJobQueuingController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult SetInitialTime([FromBody] SetTimeRequest request)
     {
-        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
-        if (!integrationTestMode)
+        if (!_environmentConfiguration.IntegrationTestMode)
         {
             return NotFound();
         }
@@ -498,8 +495,7 @@ public class AdminController : BaseJobQueuingController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult SetTime([FromBody] SetTimeRequest request)
     {
-        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
-        if (!integrationTestMode)
+        if (!_environmentConfiguration.IntegrationTestMode)
         {
             return NotFound();
         }
@@ -524,8 +520,7 @@ public class AdminController : BaseJobQueuingController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult ResetTime()
     {
-        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
-        if (!integrationTestMode)
+        if (!_environmentConfiguration.IntegrationTestMode)
         {
             return NotFound();
         }

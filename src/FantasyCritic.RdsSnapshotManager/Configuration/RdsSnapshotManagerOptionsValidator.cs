@@ -8,19 +8,19 @@ public static class RdsSnapshotManagerOptionsValidator
     {
         if (options.RdsInstances.Count == 0)
         {
-            return Result.Failure("No RDS instances are configured. At least one entry is required under 'rdsInstances'.");
+            return Result.Failure("No RDS instances are configured. At least one entry is required under 'RdsInstances'.");
         }
 
         foreach (var (key, instance) in options.RdsInstances)
         {
             if (string.IsNullOrWhiteSpace(instance.InstanceName))
             {
-                return Result.Failure($"RDS instance '{key}' is missing an instanceName.");
+                return Result.Failure($"RDS instance '{key}' is missing an InstanceName.");
             }
 
             if (string.IsNullOrWhiteSpace(instance.ConnectionString))
             {
-                return Result.Failure($"RDS instance '{key}' is missing a connectionString.");
+                return Result.Failure($"RDS instance '{key}' is missing a ConnectionString.");
             }
         }
 
@@ -32,7 +32,7 @@ public static class RdsSnapshotManagerOptionsValidator
         if (defaultSnapshotSources.Count != 1)
         {
             var suffix = defaultSnapshotSources.Count == 0 ? "." : $": {string.Join(", ", defaultSnapshotSources)}.";
-            return Result.Failure($"Expected exactly one RDS instance with defaultSnapshotSource=true, found {defaultSnapshotSources.Count}{suffix}");
+            return Result.Failure($"Expected exactly one RDS instance with DefaultSnapshotSource=true, found {defaultSnapshotSources.Count}{suffix}");
         }
 
         var writeEnabledInstances = options.RdsInstances
@@ -42,7 +42,7 @@ public static class RdsSnapshotManagerOptionsValidator
 
         if (writeEnabledInstances.Count == 0)
         {
-            return Result.Failure("No RDS instance has enableWriteOperations=true. At least one write-enabled instance is required as a restore destination.");
+            return Result.Failure("No RDS instance has EnableWriteOperations=true. At least one write-enabled instance is required as a restore destination.");
         }
 
         return Result.Success();

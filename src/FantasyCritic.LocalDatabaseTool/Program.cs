@@ -45,9 +45,9 @@ public static class Program
             .AddEnvironmentVariables()
             .Build();
 
-        _localConnectionString = configuration["localConnectionString"]!;
-        _baseAddress = configuration["baseAddress"]!;
-        _addedByUserIDOverride = Guid.Parse(configuration["addedByUserIDOverride"]!);
+        _localConnectionString = configuration["LocalConnectionString"]!;
+        _baseAddress = configuration["BaseAddress"]!;
+        _addedByUserIDOverride = Guid.Parse(configuration["AddedByUserIdOverride"]!);
 
         DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
 
@@ -132,7 +132,7 @@ public static class Program
 
         return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
             openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, discordPushService, discordRepo, dailyStatsRepo,
-            new EnvironmentConfiguration(_baseAddress, IsProduction: false));
+            new EnvironmentConfiguration(_baseAddress, IsProduction: false, IntegrationTestMode: false));
     }
 
     private static async Task UpdateSupportedYears()

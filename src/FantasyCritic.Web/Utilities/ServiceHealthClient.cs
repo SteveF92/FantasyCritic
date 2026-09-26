@@ -2,11 +2,10 @@ using System.Net.Http;
 using System.Net.Http.Json;
 using System.Text.Json;
 using FantasyCritic.Lib;
+using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.SharedSerialization.API;
 
 namespace FantasyCritic.Web.Utilities;
-
-public record ServiceHealthConfiguration(string WorkerUrl, string DiscordBotUrl);
 
 /// <summary>
 /// Asks the worker and the Discord bot for their own GET /health, for the admin monitor.
@@ -17,16 +16,16 @@ public class ServiceHealthClient
     public const string UnhealthyStatus = "Unhealthy";
 
     private readonly HttpClient _httpClient;
-    private readonly ServiceHealthConfiguration _configuration;
+    private readonly ServiceHealthOptions _serviceHealth;
 
-    public ServiceHealthClient(HttpClient httpClient, ServiceHealthConfiguration configuration)
+    public ServiceHealthClient(HttpClient httpClient, ServiceHealthOptions serviceHealth)
     {
         _httpClient = httpClient;
-        _configuration = configuration;
+        _serviceHealth = serviceHealth;
     }
 
-    public Task<ServiceHealthReport> GetWorkerHealth() => GetHealth(_configuration.WorkerUrl);
-    public Task<ServiceHealthReport> GetDiscordBotHealth() => GetHealth(_configuration.DiscordBotUrl);
+    public Task<ServiceHealthReport> GetWorkerHealth() => GetHealth(_serviceHealth.WorkerUrl);
+    public Task<ServiceHealthReport> GetDiscordBotHealth() => GetHealth(_serviceHealth.DiscordBotUrl);
 
     private async Task<ServiceHealthReport> GetHealth(string serviceUrl)
     {

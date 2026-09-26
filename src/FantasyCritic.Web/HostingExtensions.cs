@@ -19,7 +19,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticAssets;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NodaTime.Serialization.SystemTextJson;
@@ -31,7 +30,7 @@ namespace FantasyCritic.Web;
 
 public static class HostingExtensions
 {
-    public static WebApplication ConfigureServices(this WebApplicationBuilder builder, IConfigurationRoot configuration)
+    public static WebApplication ConfigureServices(this WebApplicationBuilder builder, WebOptions webOptions)
     {
         var services = builder.Services;
         var environment = builder.Environment;
@@ -40,18 +39,18 @@ public static class HostingExtensions
 
         //Repositories, domain services and the Discord push service. Shared with the bot process
         //and the worker so the three hosts cannot drift apart.
-        services.AddFantasyCriticCore(configuration, environment);
+        services.AddFantasyCriticCore(webOptions.ConnectionStrings, webOptions.Discord, webOptions.BaseAddress, environment);
 
         //Shared with the worker, whose job handlers call the same services the admin actions do.
-        services.AddFantasyCriticAdminServices(configuration);
-        services.AddFantasyCriticEmail(configuration);
+        services.AddFantasyCriticAdminServices(webOptions.Aws, webOptions.OpenCritic, webOptions.Authentication.Patreon);
+        services.AddFantasyCriticEmail(webOptions.Postmark);
 
         services.AddHealthChecks()
             .AddCheck<DatabaseHealthCheck>("database", tags: [DatabaseHealthCheck.ReadyTag]);
 
         //For the admin monitor. The timeout is short because a stopped container does not refuse the connection,
         //it just never answers, and the console should say so promptly.
-        services.AddSingleton(new ServiceHealthConfiguration(configuration["ServiceHealth:WorkerUrl"]!, configuration["ServiceHealth:DiscordBotUrl"]!));
+        services.AddSingleton(webOptions.ServiceHealth);
         services.AddHttpClient<ServiceHealthClient>(client =>
         {
             client.Timeout = TimeSpan.FromSeconds(3);
@@ -140,28 +139,28 @@ public static class HostingExtensions
             authenticationBuilder
                 .AddGoogle(options =>
                 {
-                    options.ClientId = configuration["Authentication:Google:ClientId"]!;
-                    options.ClientSecret = configuration["Authentication:Google:ClientSecret"]!;
+                    options.ClientId = webOptions.Authentication.Google.ClientId;
+                    options.ClientSecret = webOptions.Authentication.Google.ClientSecret;
                 })
                 .AddMicrosoftAccount(microsoftOptions =>
                 {
-                    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"]!;
-                    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"]!;
+                    microsoftOptions.ClientId = webOptions.Authentication.Microsoft.ClientId;
+                    microsoftOptions.ClientSecret = webOptions.Authentication.Microsoft.ClientSecret;
                 })
                 .AddTwitch(options =>
                 {
-                    options.ClientId = configuration["Authentication:Twitch:ClientId"]!;
-                    options.ClientSecret = configuration["Authentication:Twitch:ClientSecret"]!;
+                    options.ClientId = webOptions.Authentication.Twitch.ClientId;
+                    options.ClientSecret = webOptions.Authentication.Twitch.ClientSecret;
                 })
                 .AddPatreon(options =>
                 {
-                    options.ClientId = configuration["Authentication:Patreon:ClientId"]!;
-                    options.ClientSecret = configuration["Authentication:Patreon:ClientSecret"]!;
+                    options.ClientId = webOptions.Authentication.Patreon.ClientId;
+                    options.ClientSecret = webOptions.Authentication.Patreon.ClientSecret;
                 })
                 .AddDiscord(options =>
                 {
-                    options.ClientId = configuration["Authentication:Discord:ClientId"]!;
-                    options.ClientSecret = configuration["Authentication:Discord:ClientSecret"]!;
+                    options.ClientId = webOptions.Authentication.Discord.ClientId;
+                    options.ClientSecret = webOptions.Authentication.Discord.ClientSecret;
                 });
         }
 

@@ -1,6 +1,7 @@
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using FantasyCritic.Hosting;
+using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.MySQL.DapperTypeMaps;
 using Microsoft.AspNetCore.Builder;
@@ -14,10 +15,10 @@ namespace FantasyCritic.Web;
 
 public class Program
 {
-    public static async Task Main(string[] args)
+    public static async Task<int> Main(string[] args)
     {
         var loggingPaths = LoggingPaths.WebApplication;
-        ConfigureLogging(loggingPaths);
+        FantasyCriticLogging.UseBootstrapLogger(CreateLoggerConfiguration(loggingPaths, environment: null, grafana: null));
 
         try
         {
@@ -34,21 +35,32 @@ public class Program
             builder.Host.UseSerilog();
 
             var configuration = await FantasyCriticConfigurationLoader.Load(builder.Environment);
+            var boundOptions = configuration.Get<WebOptions>();
 
-            var app = builder
-                .ConfigureServices(configuration)
-                .ConfigurePipeline();
+            //Loki credentials live in the secret store, so the real logger cannot be built until now. It is built before the
+            //options are validated, so that a host refusing to start says why in Loki too.
+            FantasyCriticLogging.ReplaceBootstrapLogger(() => CreateLoggerConfiguration(loggingPaths, builder.Environment, boundOptions?.Grafana));
 
-            if (!app.Environment.IsDevelopment())
+            var validOptions = boundOptions.ToValidOptions(builder.Environment.GetFantasyCriticEnvironment());
+            if (validOptions.IsFailure)
             {
-                ConfigureGrafanaLogging(loggingPaths, app.Environment, configuration);
+                Log.Fatal("Invalid configuration: {Error}", validOptions.Error);
+                return 1;
             }
 
+            var options = validOptions.Value;
+
+            var app = builder
+                .ConfigureServices(options)
+                .ConfigurePipeline();
+
             await app.RunAsync();
+            return 0;
         }
         catch (Exception ex)
         {
             Log.Fatal(ex, "Host terminated unexpectedly");
+            return 1;
         }
         finally
         {
@@ -56,24 +68,24 @@ public class Program
         }
     }
 
-    private static void ConfigureLogging(LoggingPaths loggingPaths)
+    /// <param name="environment">Unknown while the bootstrap logger is built, before the builder exists.</param>
+    private static LoggerConfiguration CreateLoggerConfiguration(LoggingPaths loggingPaths, IHostEnvironment? environment, GrafanaOptions? grafana)
     {
-        Log.Logger = FantasyCriticLogging
+        var loggerConfiguration = FantasyCriticLogging
             .CreateConfiguration(loggingPaths, LogEventLevel.Warning)
-            .WriteToApplicationLogFile(loggingPaths)
-            .CreateLogger();
-    }
+            .WriteToApplicationLogFile(loggingPaths);
 
-    private static void ConfigureGrafanaLogging(LoggingPaths loggingPaths, IWebHostEnvironment env, IConfiguration configuration)
-    {
+        if (environment is null || grafana is null || environment.IsDevelopment())
+        {
+            return loggerConfiguration;
+        }
+
         //The HTTP enrichers only make sense here: they read the current request, so the bot and the
         //migrator have nothing to give them.
-        Log.Logger = FantasyCriticLogging
-            .CreateConfiguration(loggingPaths, LogEventLevel.Warning)
+        return loggerConfiguration
             .Enrich.WithClientIp()
             .Enrich.WithCorrelationId()
             .Enrich.WithUserClaims(ClaimTypes.NameIdentifier, ClaimTypes.Email)
-            .WriteToGrafanaLoki(env, configuration)
-            .CreateLogger();
+            .WriteToGrafanaLoki(environment.EnvironmentName, grafana);
     }
 }

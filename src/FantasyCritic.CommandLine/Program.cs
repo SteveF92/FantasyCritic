@@ -1,4 +1,5 @@
 using FantasyCritic.Hosting;
+using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.MySQL.DapperTypeMaps;
 using Microsoft.Extensions.Configuration;
@@ -37,12 +38,11 @@ public static class Program
 
         var builder = Host.CreateApplicationBuilder(new HostApplicationBuilderSettings
         {
-            EnvironmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
-                              ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            EnvironmentName = FantasyCriticEnvironments.NameFromEnvironmentVariables(),
             ContentRootPath = AppContext.BaseDirectory
         });
 
-        Log.Logger = CreateLogger(loggingPaths, builder.Environment, configuration: null);
+        FantasyCriticLogging.UseBootstrapLogger(CreateLoggerConfiguration(loggingPaths, builder.Environment, grafana: null));
 
         try
         {
@@ -50,9 +50,20 @@ public static class Program
             Log.Information("Running '{Command}' in {EnvironmentName} mode.", string.Join(' ', args), builder.Environment.EnvironmentName);
 
             var configuration = await FantasyCriticConfigurationLoader.Load(builder.Environment);
+            var boundOptions = configuration.Get<CommandLineOptions>();
 
-            //Loki credentials live in the secret store, so the real logger cannot be built until now.
-            Log.Logger = CreateLogger(loggingPaths, builder.Environment, configuration);
+            //Loki credentials live in the secret store, so the real logger cannot be built until now. It is built before the
+            //options are validated, so that a host refusing to start says why in Loki too.
+            FantasyCriticLogging.ReplaceBootstrapLogger(() => CreateLoggerConfiguration(loggingPaths, builder.Environment, boundOptions?.Grafana));
+
+            var validOptions = boundOptions.ToValidOptions(builder.Environment.GetFantasyCriticEnvironment());
+            if (validOptions.IsFailure)
+            {
+                Log.Fatal("Invalid configuration: {Error}", validOptions.Error);
+                return FailedExitCode;
+            }
+
+            var options = validOptions.Value;
 
             builder.ConfigureContainer(new DefaultServiceProviderFactory(new ServiceProviderOptions
             {
@@ -64,7 +75,7 @@ public static class Program
             builder.Logging.ClearProviders();
             builder.Logging.AddSerilog(Log.Logger);
 
-            builder.Services.AddFantasyCriticRepositories(configuration);
+            builder.Services.AddFantasyCriticRepositories(options.ConnectionStrings);
             builder.Services.AddScoped<WorkerCommands>();
 
             //Built for its container only. It is never started: there is nothing here to host.
@@ -120,17 +131,17 @@ public static class Program
         return idle ? SucceededExitCode : FailedExitCode;
     }
 
-    private static Serilog.Core.Logger CreateLogger(LoggingPaths loggingPaths, IHostEnvironment environment, IConfiguration? configuration)
+    private static LoggerConfiguration CreateLoggerConfiguration(LoggingPaths loggingPaths, IHostEnvironment environment, GrafanaOptions? grafana)
     {
         var loggerConfiguration = FantasyCriticLogging
             .CreateConfiguration(loggingPaths, LogEventLevel.Warning, consoleToStandardError: true)
             .WriteToApplicationLogFile(loggingPaths);
 
-        if (configuration is not null && !environment.IsDevelopment())
+        if (grafana is not null && !environment.IsDevelopment())
         {
-            loggerConfiguration = loggerConfiguration.WriteToGrafanaLoki(environment, configuration);
+            loggerConfiguration = loggerConfiguration.WriteToGrafanaLoki(environment.EnvironmentName, grafana);
         }
 
-        return loggerConfiguration.CreateLogger();
+        return loggerConfiguration;
     }
 }
