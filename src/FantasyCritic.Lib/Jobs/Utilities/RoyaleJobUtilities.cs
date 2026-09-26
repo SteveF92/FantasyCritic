@@ -4,7 +4,7 @@ namespace FantasyCritic.Lib.Jobs.Utilities;
 
 internal static class RoyaleJobUtilities
 {
-    public static async Task RecalculateRoyaleWinners(IRoyaleRepo royaleRepo)
+    public static async Task RecalculateRoyaleWinners(IRoyaleRepo royaleRepo, CancellationToken cancellationToken)
     {
         var supportedQuarters = await royaleRepo.GetYearQuarters();
         foreach (var supportedQuarter in supportedQuarters)
@@ -15,6 +15,7 @@ internal static class RoyaleJobUtilities
                 continue;
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
             await royaleRepo.CalculateRoyaleWinnerForQuarter(supportedQuarter.YearQuarter.Year, supportedQuarter.YearQuarter.Quarter);
         }
     }

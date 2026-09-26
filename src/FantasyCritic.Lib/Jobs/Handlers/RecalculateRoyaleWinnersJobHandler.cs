@@ -16,7 +16,7 @@ internal class RecalculateRoyaleWinnersJobHandler : IFantasyCriticJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await RoyaleJobUtilities.RecalculateRoyaleWinners(_royaleRepo);
+        await RoyaleJobUtilities.RecalculateRoyaleWinners(_royaleRepo, cancellationToken);
         return Result.Success();
     }
 }

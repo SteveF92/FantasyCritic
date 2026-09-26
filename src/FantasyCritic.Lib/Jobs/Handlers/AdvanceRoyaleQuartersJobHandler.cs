@@ -37,13 +37,14 @@ internal class AdvanceRoyaleQuartersJobHandler : IFantasyCriticCronJobHandler
             var endDate = supportedQuarter.YearQuarter.LastDateOfQuarter;
             if (nycNow.Date > endDate)
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 _logger.LogInformation($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
                 await _royaleRepo.FinishQuarter(supportedQuarter);
             }
         }
 
         //Calculate winners for any finished quarters that don't have one yet. This reloads the quarters, so it sees the ones just finished above.
-        await RoyaleJobUtilities.RecalculateRoyaleWinners(_royaleRepo);
+        await RoyaleJobUtilities.RecalculateRoyaleWinners(_royaleRepo, cancellationToken);
 
         //Start the next quarter as we approach it.
         supportedQuarters = await _royaleRepo.GetYearQuarters();
@@ -52,6 +53,7 @@ internal class AdvanceRoyaleQuartersJobHandler : IFantasyCriticCronJobHandler
         var dayToStartNextQuarter = nextQuarter.FirstDateOfQuarter.Minus(Period.FromDays(15));
         if (nycNow.Date > dayToStartNextQuarter)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             await _royaleRepo.StartNewQuarter(nextQuarter);
         }
 
