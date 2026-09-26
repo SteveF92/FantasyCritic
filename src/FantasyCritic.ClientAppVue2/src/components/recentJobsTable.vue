@@ -438,9 +438,11 @@ div >>> tr.highlighted-job > td:first-child {
   box-shadow: inset 4px 0 0 #d6993a;
 }
 
-/*Up to three lines at a fixed width, so an exception message says something before it is cut off without widening the table.*/
+/*Up to three lines at a bounded width, so an exception message says something before it is cut off without widening the table.
+  The minimum stops an open detail row from squeezing it to a few characters.*/
 .job-detail-summary {
   display: -webkit-box;
+  min-width: 10rem;
   max-width: 14rem;
   overflow: hidden;
   overflow-wrap: anywhere;
