@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
-internal class ProcessSpecialAuctionsJobHandler : IFantasyCriticCronJobHandler
+internal class ProcessSpecialAuctionsJobHandler : IConditionalCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.ProcessSpecialAuctions;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.EveryTenMinutes;
@@ -15,6 +15,11 @@ internal class ProcessSpecialAuctionsJobHandler : IFantasyCriticCronJobHandler
     {
         _adminService = adminService;
         _logger = logger;
+    }
+
+    public async Task<bool> ShouldSchedule()
+    {
+        return await _adminService.AnyUnprocessedSpecialAuctions();
     }
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)

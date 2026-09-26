@@ -14,6 +14,10 @@ public class FantasyCriticJobRegistry
         Schedules = definitionList
             .Where(x => x.Schedule is not null)
             .ToDictionary(x => x.JobType, x => x.Schedule!);
+        ConditionallyScheduled = definitionList
+            .Where(x => typeof(IConditionalCronJobHandler).IsAssignableFrom(x.HandlerType))
+            .Select(x => x.JobType)
+            .ToHashSet();
 
         ValidateSkipWhenDue(skipWhenDue, Schedules);
         SkipWhenDue = skipWhenDue.ToDictionary(x => x.Key, x => (IReadOnlyList<FantasyCriticJobType>)x.Value.ToList());
@@ -21,6 +25,9 @@ public class FantasyCriticJobRegistry
 
     public IReadOnlyList<FantasyCriticJobDefinition> Definitions { get; }
     public IReadOnlyDictionary<FantasyCriticJobType, FantasyCriticJobSchedule> Schedules { get; }
+
+    //Job types whose handler is an IConditionalCronJobHandler, so the scheduler constructs only those handlers to ask whether a due slot has work.
+    public IReadOnlySet<FantasyCriticJobType> ConditionallyScheduled { get; }
 
     //A key's cron slot is skipped when any of its values is due in the same scheduler wake, because those jobs do the key's work themselves.
     public IReadOnlyDictionary<FantasyCriticJobType, IReadOnlyList<FantasyCriticJobType>> SkipWhenDue { get; }

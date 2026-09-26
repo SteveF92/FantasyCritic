@@ -454,6 +454,13 @@ public class AdminService
         return results;
     }
 
+    public async Task<bool> AnyUnprocessedSpecialAuctions()
+    {
+        var allSpecialAuctions = await _fantasyCriticRepo.GetAllActiveSpecialAuctions();
+        var now = _clock.GetCurrentInstant();
+        return allSpecialAuctions.Any(x => x.IsLocked(now));
+    }
+
     public async Task<FinalizedActionProcessingResults> GetSpecialAuctionResults(SystemWideValues systemWideValues, int year, Instant processingTime, IReadOnlyList<LeagueYear> allLeagueYears)
     {
         var allSpecialAuctions = await _fantasyCriticRepo.GetAllActiveSpecialAuctions();

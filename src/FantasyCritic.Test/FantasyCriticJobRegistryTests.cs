@@ -52,6 +52,14 @@ public class FantasyCriticJobRegistryTests
     }
 
     [Test]
+    public void Create_ConditionallySchedulesOnlyConditionalCronHandlers()
+    {
+        var registry = FantasyCriticJobRegistry.Create();
+
+        Assert.That(registry.ConditionallyScheduled, Is.EquivalentTo(new[] { FantasyCriticJobType.ProcessSpecialAuctions }));
+    }
+
+    [Test]
     public void GetDueJobsToDeferTo_FullDataRefreshDefersToPrepareForActionProcessingWhenBothAreDue()
     {
         var registry = FantasyCriticJobRegistry.Create();

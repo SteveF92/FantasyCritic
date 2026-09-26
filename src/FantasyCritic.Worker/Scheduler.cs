@@ -75,6 +75,17 @@ public class Scheduler : BackgroundService
                     continue;
                 }
 
+                //Asked before the slot counts as due, so no other job defers to a slot that never gets enqueued.
+                if (_jobRegistry.ConditionallyScheduled.Contains(jobType))
+                {
+                    var handler = (IConditionalCronJobHandler)scope.ServiceProvider.GetRequiredKeyedService<IJobHandler>(jobType);
+                    if (!await handler.ShouldSchedule())
+                    {
+                        _logger.LogInformation("Skipped slot {ScheduledFor} for {JobType}: it has nothing to do.", nextScheduledOccurrenceForJobType, jobType);
+                        continue;
+                    }
+                }
+
                 dueSlots.Add(new DueSlot(jobTypeFromDatabase, schedule, nextScheduledOccurrenceForJobType));
             }
 
