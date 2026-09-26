@@ -8,7 +8,7 @@
     <div v-show="jobAttempted && !lastJobFailed && !isBusy && !lastQueuedJob" class="alert alert-success">'{{ jobAttempted }}' successfully run.</div>
 
     <div class="row">
-      <div :class="hasRightColumn ? 'col-lg-5 col-md-12' : 'col-12'">
+      <div :class="hasRightColumn ? 'col-lg-4 col-md-12' : 'col-12'">
         <div v-if="isFactChecker" class="mb-3">
           <h4>Master Games</h4>
           <div>
@@ -210,7 +210,7 @@
         </div>
       </div>
 
-      <div v-if="hasRightColumn" class="col-lg-7 col-md-12">
+      <div v-if="hasRightColumn" class="col-lg-8 col-md-12">
         <div v-if="isAdmin" class="mb-3">
           <h4>Services</h4>
           <service-monitor ref="serviceMonitor"></service-monitor>
