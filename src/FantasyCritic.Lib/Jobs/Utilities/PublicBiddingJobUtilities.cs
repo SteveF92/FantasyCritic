@@ -1,7 +1,7 @@
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Services;
 
-namespace FantasyCritic.Lib.Jobs.Handlers;
+namespace FantasyCritic.Lib.Jobs.Utilities;
 
 internal static class PublicBiddingJobUtilities
 {

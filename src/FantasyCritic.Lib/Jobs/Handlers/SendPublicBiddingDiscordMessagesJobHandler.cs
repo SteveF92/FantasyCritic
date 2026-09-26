@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Jobs.Utilities;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;

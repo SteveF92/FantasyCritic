@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Jobs.Utilities;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
 
