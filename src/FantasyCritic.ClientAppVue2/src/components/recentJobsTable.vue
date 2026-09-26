@@ -52,19 +52,25 @@
     <p v-if="jobs && !jobs.length">{{ hasFilters ? 'No jobs match these filters.' : 'No jobs yet.' }}</p>
     <b-table v-else-if="jobs" :items="jobs" :fields="fields" :tbody-tr-class="rowClass" striped bordered responsive small>
       <template #cell(type)="row">
-        <div class="job-type-cell">
+        <div class="row-filter-cell">
           {{ jobTypeDisplayName(row.item.type) }}
-          <span class="job-type-filters">
+          <span class="row-filters">
             <font-awesome-icon :disabled="isBusy" @click="filterJobType('only', row.item.type)" icon="eye" title="Show only this job type" />
             <font-awesome-icon :disabled="isBusy" @click="filterJobType('hide', row.item.type)" icon="eye-slash" title="Hide this job type" />
           </span>
         </div>
       </template>
       <template #cell(status)="row">
-        <b-badge :variant="statusVariant(row.item.status)">
-          <font-awesome-icon v-if="row.item.status === 'Running'" icon="circle-notch" spin class="mr-1" />
-          {{ row.item.status }}
-        </b-badge>
+        <div class="row-filter-cell">
+          <b-badge :variant="statusVariant(row.item.status)">
+            <font-awesome-icon v-if="row.item.status === 'Running'" icon="circle-notch" spin class="mr-1" />
+            {{ row.item.status }}
+          </b-badge>
+          <span class="row-filters">
+            <font-awesome-icon :disabled="isBusy" @click="filterStatus('only', row.item.status)" icon="eye" title="Show only this status" />
+            <font-awesome-icon :disabled="isBusy" @click="filterStatus('hide', row.item.status)" icon="eye-slash" title="Hide this status" />
+          </span>
+        </div>
       </template>
       <template #cell(requestedBy)="row">{{ row.item.createdByUserDisplayName || 'Scheduler' }}</template>
       <template #cell(createdAt)="row">{{ formatTimestamp(row.item.createdAt) }}</template>
@@ -292,15 +298,23 @@ export default {
       const isSelected = selected.some((x) => x.value === value);
       return mode === 'only' ? !isSelected : isSelected;
     },
-    //The links on each row. "only" narrows to that one type; "hide" adds the type to what is hidden.
+    //The icons on each row. "only" narrows to that one value; "hide" adds the value to what is hidden.
     async filterJobType(mode, jobType) {
       const option = this.jobTypeOptions.find((x) => x.value === jobType) || { value: jobType, label: this.jobTypeDisplayName(jobType) };
-      const alreadyHiding = this.jobTypeMode === 'hide' && mode === 'hide';
-      const others = alreadyHiding ? this.selectedJobTypes.filter((x) => x.value !== jobType) : [];
-
+      this.selectedJobTypes = this.narrowFilter(this.jobTypeMode, this.selectedJobTypes, mode, option);
       this.jobTypeMode = mode;
-      this.selectedJobTypes = [...others, option];
       await this.changeFilter();
+    },
+    async filterStatus(mode, status) {
+      const option = this.statusOptions.find((x) => x.value === status) || { value: status, label: spaceOutWords(status) };
+      this.selectedStatuses = this.narrowFilter(this.statusMode, this.selectedStatuses, mode, option);
+      this.statusMode = mode;
+      await this.changeFilter();
+    },
+    narrowFilter(currentMode, currentSelected, mode, option) {
+      const alreadyHiding = currentMode === 'hide' && mode === 'hide';
+      const others = alreadyHiding ? currentSelected.filter((x) => x.value !== option.value) : [];
+      return [...others, option];
     },
     async changeFilter() {
       this.page = 1;
@@ -453,17 +467,17 @@ div >>> tr.b-table-has-details > td {
   border-bottom: 1px dashed #6c757d;
 }
 
-.job-type-filters svg {
+.row-filters svg {
   cursor: pointer;
 }
 
-/*The filter icons cost the job name a line on every row, so where there is a mouse they only appear over the row being pointed at.*/
+/*The filter icons cost the job name a line on every row and widen the status column, so where there is a mouse they only appear over the cell being pointed at.*/
 @media (hover: hover) {
-  .job-type-cell {
+  .row-filter-cell {
     position: relative;
   }
 
-  .job-type-filters {
+  .row-filters {
     display: none;
     position: absolute;
     top: 0;
@@ -473,7 +487,7 @@ div >>> tr.b-table-has-details > td {
     background-color: #414141;
   }
 
-  tr:hover .job-type-filters {
+  td:hover .row-filters {
     display: inline;
   }
 }
