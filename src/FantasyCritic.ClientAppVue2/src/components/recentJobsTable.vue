@@ -195,8 +195,8 @@ export default {
         { key: 'type', label: 'Job', thClass: 'bg-primary' },
         { key: 'status', label: 'Status', thClass: 'bg-primary' },
         { key: 'requestedBy', label: 'Requested by', thClass: 'bg-primary' },
-        { key: 'createdAt', label: 'Queued', thClass: 'bg-primary' },
-        { key: 'duration', label: 'Duration', thClass: 'bg-primary' },
+        { key: 'createdAt', label: 'Queued', thClass: 'bg-primary', tdClass: 'text-nowrap' },
+        { key: 'duration', label: 'Duration', thClass: 'bg-primary', tdClass: 'text-nowrap' },
         { key: 'detail', label: 'Detail', thClass: 'bg-primary' },
         { key: 'actions', label: '', thClass: 'bg-primary' }
       ]
