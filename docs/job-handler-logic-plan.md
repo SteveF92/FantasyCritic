@@ -47,8 +47,14 @@ The diff should read as a pure move.
 - **`AdminService`**: delete `AdvanceRoyaleQuarters` and `RecalculateRoyaleWinners`. Grep confirms no other callers.
 - The cancellation token stays unused, as it is today.
 
+### Step 2a½: Call IRoyaleRepo directly, with no change in behavior
+`RoyaleService.CalculateRoyaleWinnerForQuarter`, `FinishQuarter` and `StartNewQuarter` are one-line passthroughs to `IRoyaleRepo`, and only these jobs call them.
+- The two handlers and `RoyaleJobUtilities` take `IRoyaleRepo` instead of `RoyaleService`, including for `GetYearQuarters`.
+- Delete the three passthroughs from `RoyaleService`. `GetYearQuarters` stays, since the rest of the app uses it.
+- The general rule for later handlers: a job may call a repo directly, but SQL never moves into the job layer.
+
 ### Step 2b: Add status, cancellation and structured logs
-- **`RoyaleJobUtilities`**: rename the method to `CalculateMissingWinners(RoyaleService, ILogger, CancellationToken)`.
+- **`RoyaleJobUtilities`**: rename the method to `CalculateMissingWinners(IRoyaleRepo, ILogger, CancellationToken)`.
   - Loops finished quarters with no `WinningUser`: token check, `CalculateRoyaleWinnerForQuarter`, structured log.
   - Returns the quarters it calculated, so each caller can report them.
 - **`AdvanceRoyaleQuartersJobHandler`** runs three steps:
