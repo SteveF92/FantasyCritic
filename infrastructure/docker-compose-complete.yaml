@@ -60,9 +60,9 @@ services:
       database-updater:
         condition: service_completed_successfully
     environment:
-      localConnectionString: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
-      baseAddress: "https://www.fantasycritic.games"
-      addedByUserIDOverride: "00000000-0000-0000-0000-000000000000"
+      LocalConnectionString: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
+      BaseAddress: "https://www.fantasycritic.games"
+      AddedByUserIdOverride: "00000000-0000-0000-0000-000000000000"
 
   web:
     container_name: fantasycritic-web
@@ -87,10 +87,10 @@ services:
       AllowedHosts: "*"
       # appsettings uses localhost:3307 for the host; in Compose the DB service is `mysql`.
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
-      AWS__rdsInstanceName: secret
-      AWS__region: us-east-1
-      Postmark__apiKey: secret
-      OpenCritic__apiKey: key
+      Aws__RdsInstanceName: secret
+      Aws__Region: us-east-1
+      Postmark__ApiKey: secret
+      OpenCritic__ApiKey: secret
       Authentication__Google__ClientId: secret
       Authentication__Google__ClientSecret: secret
       Authentication__Microsoft__ClientId: secret
@@ -99,9 +99,9 @@ services:
       Authentication__Twitch__ClientSecret: secret
       Authentication__Patreon__ClientId: secret
       Authentication__Patreon__ClientSecret: secret
+      Authentication__Patreon__CampaignId: secret
       Authentication__Discord__ClientId: secret
       Authentication__Discord__ClientSecret: secret
-      Patreon__CampaignID: secret
       Discord__BotToken: secret
       # Public URL when using published port 8080 (VS dev uses https://localhost:44477 in appsettings).
       BaseAddress: http://localhost:8080
@@ -128,12 +128,10 @@ services:
       # Only for GET /health. No port is published; the web container reaches it by service name.
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
-      AWS__region: us-east-1
+      Aws__Region: us-east-1
       BaseAddress: http://localhost:8080
       # Override with a development bot's token to actually connect.
       Discord__BotToken: secret
-      # Restricts slash command registration to one server while developing.
-      # Discord__DevServerId: "000000000000000000"
     healthcheck:
       test: ["CMD", "curl", "-fsS", "--max-time", "5", "http://localhost:8080/health"]
       interval: 15s
@@ -157,7 +155,7 @@ services:
       # Only for GET /health. No port is published; the web container reaches it by service name.
       ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
-      AWS__region: us-east-1
+      Aws__Region: us-east-1
       BaseAddress: http://localhost:8080
       # The image's appsettings.json supplies placeholder values for the rest (Postmark,
       # OpenCritic, Patreon, Discord__BotToken), which is enough for the host to start. Handlers that
@@ -182,7 +180,7 @@ services:
     environment:
       DOTNET_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
-      AWS__region: us-east-1
+      Aws__Region: us-east-1
 
 volumes:
   mysql_data:

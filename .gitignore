@@ -264,7 +264,6 @@ src/FantasyCritic.Web/tempkey.jwk
 
 *.received.*
 src/FantasyCritic.ClientAppVue2/dist/
-src/FantasyCritic.IntegrationTests/appsettings.Testing.Local.json
 
 # NSwag-generated API client — regenerate with scripts/Regenerate-ApiClient.ps1
 src/FantasyCritic.ApiClient/Generated/

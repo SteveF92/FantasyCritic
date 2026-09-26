@@ -4,7 +4,7 @@
 #
 # There is no MySQL service here: the database is RDS. There are no secrets here either. Each
 # process loads the environment's JSON blob from AWS Secrets Manager at startup, which is why
-# only AWS__region and the environment name need to be set. That requires the containers to
+# only Aws__Region and the environment name need to be set. That requires the containers to
 # reach the instance IAM role through IMDSv2, which needs the instance metadata hop limit
 # raised to 2 — the single most likely first-deploy failure. See the Phase 3 runbook.
 #
@@ -32,7 +32,7 @@ services:
     profiles: [migrate]
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
-      AWS__region: ${AWS_REGION}
+      Aws__Region: ${AWS_REGION}
     volumes:
       - /var/log/fantasy-critic:/var/log/fantasy-critic
 
@@ -47,7 +47,7 @@ services:
     profiles: [tools]
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
-      AWS__region: ${AWS_REGION}
+      Aws__Region: ${AWS_REGION}
     volumes:
       - /var/log/fantasy-critic:/var/log/fantasy-critic
 
@@ -62,7 +62,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       ASPNETCORE_URLS: http://+:8080
-      AWS__region: ${AWS_REGION}
+      Aws__Region: ${AWS_REGION}
       # Where the admin monitor asks the other two containers for their health: by service
       # name, on the compose network. The appsettings defaults are localhost ports for dev.
       ServiceHealth__WorkerUrl: http://worker:8080
@@ -88,7 +88,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       ASPNETCORE_URLS: http://+:8080
-      AWS__region: ${AWS_REGION}
+      Aws__Region: ${AWS_REGION}
     volumes:
       - /var/log/fantasy-critic:/var/log/fantasy-critic
     healthcheck:
@@ -118,7 +118,7 @@ services:
     environment:
       ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
       ASPNETCORE_URLS: http://+:8080
-      AWS__region: ${AWS_REGION}
+      Aws__Region: ${AWS_REGION}
     volumes:
       - /var/log/fantasy-critic:/var/log/fantasy-critic
     healthcheck:

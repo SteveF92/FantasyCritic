@@ -59,9 +59,9 @@ services:
       database-updater:
         condition: service_completed_successfully
     environment:
-      localConnectionString: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
-      baseAddress: "https://www.fantasycritic.games"
-      addedByUserIDOverride: "00000000-0000-0000-0000-000000000000"
+      LocalConnectionString: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
+      BaseAddress: "https://www.fantasycritic.games"
+      AddedByUserIdOverride: "00000000-0000-0000-0000-000000000000"
 
 volumes:
   mysql_data:
