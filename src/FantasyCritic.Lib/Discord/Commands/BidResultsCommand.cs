@@ -1,6 +1,6 @@
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
@@ -23,13 +23,13 @@ public class BidResultsCommand : InteractionModuleBase<SocketInteractionContext>
         FantasyCriticService fantasyCriticService,
         InterLeagueService interLeagueService,
         IDiscordFormatter discordFormatter,
-        FantasyCriticSettings fantasyCriticSettings)
+        EnvironmentConfiguration environmentConfiguration)
     {
         _discordRepo = discordRepo;
         _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;
         _discordFormatter = discordFormatter;
-        _baseAddress = fantasyCriticSettings.BaseAddress;
+        _baseAddress = environmentConfiguration.BaseAddress;
     }
 
 

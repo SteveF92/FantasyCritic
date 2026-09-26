@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Domain.ScoringSystems;
@@ -28,7 +29,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
         GameSearchingService gameSearchingService,
         InterLeagueService interLeagueService,
         IDiscordFormatter discordFormatter,
-        FantasyCriticSettings fantasyCriticSettings,
+        EnvironmentConfiguration environmentConfiguration,
         IMasterGameRepo masterGameRepo,
         ConferenceService conferenceService
     )
@@ -40,7 +41,7 @@ public class GameCommand : InteractionModuleBase<SocketInteractionContext>
         _discordFormatter = discordFormatter;
         _masterGameRepo = masterGameRepo;
         _conferenceService = conferenceService;
-        _baseAddress = fantasyCriticSettings.BaseAddress;
+        _baseAddress = environmentConfiguration.BaseAddress;
     }
 
     [UsedImplicitly]

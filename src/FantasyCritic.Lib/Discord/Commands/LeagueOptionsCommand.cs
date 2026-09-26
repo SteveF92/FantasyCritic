@@ -2,7 +2,7 @@ using System.Globalization;
 using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
@@ -20,12 +20,12 @@ public class LeagueOptionsCommand : InteractionModuleBase<SocketInteractionConte
     public LeagueOptionsCommand(IDiscordRepo discordRepo,
         InterLeagueService interLeagueService,
         IDiscordFormatter discordFormatter,
-        FantasyCriticSettings fantasyCriticSettings)
+        EnvironmentConfiguration environmentConfiguration)
     {
         _discordRepo = discordRepo;
         _interLeagueService = interLeagueService;
         _discordFormatter = discordFormatter;
-        _baseAddress = fantasyCriticSettings.BaseAddress;
+        _baseAddress = environmentConfiguration.BaseAddress;
     }
 
     [UsedImplicitly]
