@@ -442,18 +442,15 @@ export default {
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style scoped>
-/*An open job and its detail row read as one block: one background, no line between them. Striping would otherwise give them different shades.*/
+/*An open job and its detail row read as one block on one background. Striping would otherwise give them different shades.*/
 div >>> tr.b-table-has-details > td,
 div >>> tr.b-table-details > td {
   background-color: #333333;
 }
 
+/*A fainter, dashed line than between jobs, so the column borders end somewhere without cutting the job off from its details.*/
 div >>> tr.b-table-has-details > td {
-  border-bottom: 0;
-}
-
-div >>> tr.b-table-details > td {
-  border-top: 0;
+  border-bottom: 1px dashed #6c757d;
 }
 
 .job-type-filters svg {
