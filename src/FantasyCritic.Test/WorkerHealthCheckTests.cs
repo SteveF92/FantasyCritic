@@ -1,5 +1,6 @@
 using System;
 using FantasyCritic.Lib.Jobs;
+using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Worker;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime;
@@ -72,7 +73,22 @@ public class WorkerHealthCheckTests
         {
             Assert.That(result.Status, Is.EqualTo(HealthStatus.Healthy));
             Assert.That(result.Description, Does.Contain("WorkerShouldPullNewJobs"));
-            Assert.That(result.Data["workerShouldPullNewJobs"], Is.EqualTo("False"));
+            Assert.That(result.Data["workerShouldPullNewJobs"], Is.EqualTo(ServiceHealthDetail.FromText("Pulling new jobs", "No")));
+        });
+    }
+
+    [Test]
+    public void LastPoll_IsSentAsATime()
+    {
+        var lastPollTime = Now - Duration.FromSeconds(5);
+
+        var polled = WorkerHealthCheck.Evaluate(new WorkerStatusSnapshot(lastPollTime, true, null), Now);
+        var neverPolled = WorkerHealthCheck.Evaluate(new WorkerStatusSnapshot(null, null, null), Now);
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(polled.Data["lastPollTime"], Is.EqualTo(ServiceHealthDetail.FromTime("Last poll", lastPollTime)));
+            Assert.That(neverPolled.Data["lastPollTime"], Is.EqualTo(ServiceHealthDetail.FromText("Last poll", "Never")));
         });
     }
 

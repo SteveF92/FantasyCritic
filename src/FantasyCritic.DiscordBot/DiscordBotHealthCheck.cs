@@ -1,5 +1,6 @@
 using Discord;
 using Discord.WebSocket;
+using FantasyCritic.Lib.SharedSerialization.API;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 namespace FantasyCritic.DiscordBot;
@@ -27,10 +28,10 @@ public sealed class DiscordBotHealthCheck : IHealthCheck
     {
         var data = new Dictionary<string, object>
         {
-            ["connectionState"] = connectionState.ToString(),
-            ["loginState"] = loginState.ToString(),
-            ["latencyMilliseconds"] = latencyMilliseconds.ToString(),
-            ["guilds"] = guildCount.ToString()
+            ["connectionState"] = ServiceHealthDetail.FromText("Connection", connectionState.ToString()),
+            ["loginState"] = ServiceHealthDetail.FromText("Login", loginState.ToString()),
+            ["latencyMilliseconds"] = ServiceHealthDetail.FromText("Latency", $"{latencyMilliseconds} ms"),
+            ["guilds"] = ServiceHealthDetail.FromText("Servers", guildCount.ToString())
         };
 
         return connectionState switch

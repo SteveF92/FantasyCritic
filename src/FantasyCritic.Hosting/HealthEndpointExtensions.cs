@@ -28,16 +28,17 @@ public static class HealthEndpointExtensions
     private static Task WriteReport(HttpContext context, HealthReport report)
     {
         var description = report.Entries.Values.Select(x => x.Description).FirstOrDefault(x => x is not null);
-        var data = new Dictionary<string, string>();
+        //The checks put ServiceHealthDetails in their data. Anything else is shown under its key as it is.
+        var details = new List<ServiceHealthDetail>();
         foreach (var entry in report.Entries.Values)
         {
             foreach (var item in entry.Data)
             {
-                data[item.Key] = item.Value.ToString() ?? "";
+                details.Add(item.Value as ServiceHealthDetail ?? ServiceHealthDetail.FromText(item.Key, item.Value.ToString() ?? ""));
             }
         }
 
-        var serviceHealthReport = new ServiceHealthReport(report.Status.ToString(), description, data);
+        var serviceHealthReport = new ServiceHealthReport(report.Status.ToString(), description, details);
         context.Response.ContentType = "application/json";
         return JsonSerializer.SerializeAsync(context.Response.Body, serviceHealthReport, FantasyCriticJsonOptions.Default);
     }

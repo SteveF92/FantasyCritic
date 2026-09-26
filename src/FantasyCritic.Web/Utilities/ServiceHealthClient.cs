@@ -54,6 +54,6 @@ public class ServiceHealthClient
 
     private static ServiceHealthReport Unreachable(string description)
     {
-        return new ServiceHealthReport(UnreachableStatus, description, new Dictionary<string, string>());
+        return new ServiceHealthReport(UnreachableStatus, description, new List<ServiceHealthDetail>());
     }
 }

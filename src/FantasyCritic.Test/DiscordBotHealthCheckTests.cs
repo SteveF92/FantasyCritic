@@ -1,5 +1,6 @@
 using Discord;
 using FantasyCritic.DiscordBot;
+using FantasyCritic.Lib.SharedSerialization.API;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NUnit.Framework;
 
@@ -24,12 +25,12 @@ public class DiscordBotHealthCheckTests
     {
         var result = DiscordBotHealthCheck.Evaluate(ConnectionState.Connected, LoginState.LoggedIn, 40, 3);
 
-        Assert.Multiple(() =>
+        Assert.That(result.Data.Values, Is.EqualTo(new[]
         {
-            Assert.That(result.Data["connectionState"], Is.EqualTo("Connected"));
-            Assert.That(result.Data["loginState"], Is.EqualTo("LoggedIn"));
-            Assert.That(result.Data["latencyMilliseconds"], Is.EqualTo("40"));
-            Assert.That(result.Data["guilds"], Is.EqualTo("3"));
-        });
+            ServiceHealthDetail.FromText("Connection", "Connected"),
+            ServiceHealthDetail.FromText("Login", "LoggedIn"),
+            ServiceHealthDetail.FromText("Latency", "40 ms"),
+            ServiceHealthDetail.FromText("Servers", "3")
+        }));
     }
 }

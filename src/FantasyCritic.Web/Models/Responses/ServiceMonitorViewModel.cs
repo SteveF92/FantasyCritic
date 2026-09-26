@@ -28,11 +28,25 @@ public class ServiceHealthViewModel
         Name = name;
         Status = report.Status;
         Description = report.Description;
-        Details = report.Data;
+        Details = report.Details.Select(x => new ServiceHealthDetailViewModel(x)).ToList();
     }
 
     public string Name { get; }
     public string Status { get; }
     public string? Description { get; }
-    public IReadOnlyDictionary<string, string> Details { get; }
+    public IReadOnlyList<ServiceHealthDetailViewModel> Details { get; }
+}
+
+public class ServiceHealthDetailViewModel
+{
+    public ServiceHealthDetailViewModel(ServiceHealthDetail detail)
+    {
+        Label = detail.Label;
+        Text = detail.Text;
+        Time = detail.Time;
+    }
+
+    public string Label { get; }
+    public string? Text { get; }
+    public Instant? Time { get; }
 }

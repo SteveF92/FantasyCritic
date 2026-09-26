@@ -44,6 +44,7 @@ public class ServiceMonitorTests : IntegrationTestBase
             Assert.That(monitor.Worker.Name, Is.EqualTo("Worker"));
             Assert.That(monitor.Worker.Status, Is.EqualTo(Unreachable));
             Assert.That(monitor.Worker.Description, Is.Not.Empty);
+            Assert.That(monitor.Worker.Details, Is.Empty);
             Assert.That(monitor.DiscordBot.Name, Is.EqualTo("Discord Bot"));
             Assert.That(monitor.DiscordBot.Status, Is.EqualTo(Unreachable));
         });

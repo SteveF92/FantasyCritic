@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.SharedSerialization.API;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime;
 
@@ -30,9 +31,14 @@ public sealed class WorkerHealthCheck : IHealthCheck
     {
         var data = new Dictionary<string, object>
         {
-            ["workerShouldPullNewJobs"] = status.WorkerShouldPullNewJobs?.ToString() ?? "Unknown",
-            ["lastPollTime"] = status.LastPollTime?.ToString() ?? "Never",
-            ["runningJob"] = status.RunningJob is null ? "None" : $"{status.RunningJob.Type} {status.RunningJob.JobID}"
+            ["workerShouldPullNewJobs"] = ServiceHealthDetail.FromText("Pulling new jobs", status.WorkerShouldPullNewJobs switch
+            {
+                true => "Yes",
+                false => "No",
+                null => "Unknown"
+            }),
+            ["lastPollTime"] = status.LastPollTime is null ? ServiceHealthDetail.FromText("Last poll", "Never") : ServiceHealthDetail.FromTime("Last poll", status.LastPollTime.Value),
+            ["runningJob"] = ServiceHealthDetail.FromText("Running job", status.RunningJob is null ? "None" : $"{status.RunningJob.Type} ({status.RunningJob.JobID})")
         };
 
         if (status.RunningJob is not null)

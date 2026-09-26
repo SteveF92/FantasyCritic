@@ -15,7 +15,10 @@
         </b-badge>
       </template>
       <template #cell(details)="row">
-        <div v-for="(value, key) in row.item.details" :key="key" class="small">{{ key }}: {{ value }}</div>
+        <div v-for="detail in row.item.details" :key="detail.label" class="small">
+          <strong>{{ detail.label }}:</strong>
+          {{ detailValue(detail) }}
+        </div>
       </template>
     </b-table>
   </div>
@@ -81,6 +84,17 @@ export default {
       } finally {
         this.isBusy = false;
       }
+    },
+    //Times are shown in the viewer's zone, with how long before the check they were, which is what says whether the worker is keeping up.
+    detailValue(detail) {
+      if (!detail.time) {
+        return detail.text;
+      }
+
+      const time = DateTime.fromISO(detail.time);
+      const checkedAt = DateTime.fromISO(this.monitor.checkedAt);
+      const format = time.hasSame(checkedAt, 'day') ? DateTime.TIME_WITH_SECONDS : DateTime.DATETIME_SHORT_WITH_SECONDS;
+      return `${time.toLocaleString(format)} (${time.toRelative({ base: checkedAt })})`;
     },
     stateVariant(state) {
       return stateVariants[state] || 'secondary';
