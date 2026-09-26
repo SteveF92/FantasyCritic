@@ -66,8 +66,10 @@
       <template #cell(createdAt)="row">{{ formatTimestamp(row.item.createdAt) }}</template>
       <template #cell(duration)="row">{{ duration(row.item) }}</template>
       <template #cell(detail)="row">
-        <font-awesome-icon v-if="isRunningSuspiciouslyLong(row.item)" icon="exclamation-triangle" class="text-warning mr-1" title="Running for over an hour. The worker may have died." />
-        <span class="d-inline-block text-truncate align-bottom" style="max-width: 14rem">{{ detailSummary(row.item) }}</span>
+        <div class="d-flex">
+          <font-awesome-icon v-if="isRunningSuspiciouslyLong(row.item)" icon="exclamation-triangle" class="text-warning mr-1 mt-1" title="Running for over an hour. The worker may have died." />
+          <span class="job-detail-summary" :title="detailSummary(row.item)">{{ detailSummary(row.item) }}</span>
+        </div>
       </template>
       <template #cell(actions)="row">
         <b-button v-if="isCancellable(row.item)" variant="danger" size="sm" :disabled="isBusy" @click="cancelJob(row.item)">Cancel</b-button>
@@ -384,8 +386,13 @@ export default {
       return `${seconds}s`;
     },
     detailSummary(job) {
+      //"Amazon.RDS.Model.DBInstanceNotFoundException: DBInstance not found" -> "DBInstanceNotFoundException: DBInstance not found".
+      //The namespace takes most of the room the message needs. The detail row has the whole thing.
       if (job.status === 'Error' && job.errorMessage) {
-        return job.errorMessage.split('\n')[0];
+        return job.errorMessage
+          .split('\n')[0]
+          .trim()
+          .replace(/^[\w.`]+\.(\w+):/, '$1:');
       }
 
       return job.detailedStatus || '';
@@ -415,6 +422,16 @@ export default {
 <style scoped>
 div >>> tr.highlighted-job > td:first-child {
   box-shadow: inset 4px 0 0 #d6993a;
+}
+
+/*Up to three lines at a fixed width, so an exception message says something before it is cut off without widening the table.*/
+.job-detail-summary {
+  display: -webkit-box;
+  max-width: 14rem;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
 }
 
 /*Stack traces wrap rather than scroll sideways. Unwrapped, one long line stretches the whole table.*/
