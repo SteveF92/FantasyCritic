@@ -108,7 +108,10 @@
             <dt class="col-sm-3">Error</dt>
             <dd class="col-sm-9">
               <div class="job-error">
-                <div class="job-error-message">{{ errorParts(row.item).message }}</div>
+                <div class="d-flex align-items-start">
+                  <div class="job-error-message flex-grow-1">{{ errorParts(row.item).message }}</div>
+                  <b-button v-clipboard:copy="row.item.errorMessage" v-clipboard:success="errorCopied" variant="secondary" size="sm" class="ml-2">Copy</b-button>
+                </div>
                 <pre v-if="errorParts(row.item).trace" class="job-error-trace">{{ errorParts(row.item).trace }}</pre>
               </div>
             </dd>
@@ -408,6 +411,9 @@ export default {
       }
 
       return { message: job.errorMessage.slice(0, firstLineEnd).trim(), trace: job.errorMessage.slice(firstLineEnd + 1) };
+    },
+    errorCopied() {
+      this.makeToast('Error copied to clipboard.');
     },
     //There is no worker heartbeat, so a job whose worker died stays Running forever. Flag it rather than hide it.
     isRunningSuspiciouslyLong(job) {
