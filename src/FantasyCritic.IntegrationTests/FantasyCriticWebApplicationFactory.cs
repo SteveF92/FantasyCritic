@@ -1,16 +1,15 @@
-using System.Collections.Generic;
-using System.IO;
+using System;
+using System.Linq;
+using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.DapperTypeMaps;
 using FantasyCritic.Web;
-using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
@@ -33,43 +32,12 @@ public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<P
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
-        // Use Development so Program.cs skips AWS Secrets Manager,
-        // and HostingExtensions.cs skips scheduled background tasks.
+        // Development, so the configuration loader reads appsettings and user secrets but not the secret store.
         builder.UseEnvironment("Development");
 
-        builder.ConfigureAppConfiguration((_, configBuilder) =>
-        {
-            // Load test-specific overrides on top of appsettings.json.
-            // appsettings.Testing.json is copied to the test output dir by the csproj.
-            var outputDir = Path.GetDirectoryName(
-                typeof(FantasyCriticWebApplicationFactory).Assembly.Location)!;
-
-            configBuilder.AddJsonFile(
-                Path.Combine(outputDir, "appsettings.Testing.json"),
-                optional: true,
-                reloadOnChange: false);
-
-            // Per-machine local overrides — gitignored, never committed.
-            configBuilder.AddJsonFile(
-                Path.Combine(outputDir, "appsettings.Testing.Local.json"),
-                optional: true,
-                reloadOnChange: false);
-
-            // Hard overrides — added last so they always win over user secrets.
-            // User secrets in Development mode can contain real credentials (e.g. a real
-            // BotToken or a connection string pointing to beta RDS). These in-memory values
-            // ensure tests only ever hit local infrastructure.
-            configBuilder.AddInMemoryCollection(new Dictionary<string, string?>
-            {
-                // "secret" is the sentinel value that HostingExtensions uses to skip
-                // Discord bot registration (see HostingExtensions.cs:162).
-                ["Discord:BotToken"] = "secret",
-                // Always use local Docker MySQL, never any real database from user secrets.
-                ["ConnectionStrings:DefaultConnection"] = "Server=localhost;Port=3307;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;",
-                ["IntegrationTestMode"] = "true",
-            });
-        });
-
+        // Web builds its services from the configuration its loader reads, which a factory cannot add to. So
+        // everything a test needs to differ, or that must never reach real infrastructure from a developer's user
+        // secrets, is changed here instead, on the records Web registered.
         builder.ConfigureTestServices(services =>
         {
             // Replace IClock with a controllable fake so tests can advance time via the API.
@@ -82,32 +50,43 @@ public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<P
             services.RemoveAll<IEmailSender>();
             services.AddSingleton<IEmailSender>(CapturingEmailSender);
 
-            // Program.GetConfiguration() builds its own IConfigurationRoot (including user
-            // secrets) and passes it directly into ConfigureServices. That means config values
-            // like BotToken and the connection string may come from user secrets — pointing at
-            // real infrastructure. We fix that here at the DI level.
-
-            // Force the local Docker MySQL connection string, regardless of user secrets.
-            // Also use the same AdjustableClock so the repo sees the same fake time.
-            services.RemoveAll<RepositoryConfiguration>();
-            services.AddSingleton<RepositoryConfiguration>(_ => new RepositoryConfiguration(
+            // Always the local Docker MySQL, and on the same AdjustableClock so the repositories see the tests' time.
+            ReplaceRegistered<RepositoryConfiguration>(services, _ => new RepositoryConfiguration(
                 "Server=localhost;Port=3307;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;",
                 adjustableClock));
+
+            // Opens the endpoints that move the AdjustableClock.
+            ReplaceRegistered<EnvironmentConfiguration>(services, environment => environment with { IntegrationTestMode = true });
+
+            // DiscordPushService stays off with the placeholder token, whatever token a developer's user secrets hold.
+            ReplaceRegistered<FantasyCriticDiscordConfiguration>(services, discord => discord with { BotToken = MissingConfiguration.Placeholder });
 
             // The admin monitor asks the worker and the Discord bot for their health over HTTP, and
             // the appsettings defaults are the ports a developer's own worker and bot listen on.
             // Point both at a port nothing listens on, so the result does not depend on what else
             // happens to be running on this machine.
-            services.RemoveAll<ServiceHealthConfiguration>();
-            services.AddSingleton(new ServiceHealthConfiguration("http://localhost:1", "http://localhost:1"));
+            ReplaceRegistered<ServiceHealthOptions>(services, serviceHealth => serviceHealth with
+            {
+                WorkerUrl = "http://localhost:1",
+                DiscordBotUrl = "http://localhost:1"
+            });
 
-            // Remove all IHostedService registrations. In Development mode the schedulers are
-            // already not registered (gated by !IsDevelopment()), but the Discord bot may still
-            // be registered if a real BotToken came in via user secrets.
+            // Tests run the jobs and clock changes they need themselves, so nothing runs in the background.
             services.RemoveAll<IHostedService>();
 
             // There is no worker here, so tests run the jobs they queue with JobTestHelpers.
             services.AddFantasyCriticJobHandlers();
         });
+    }
+
+    /// <summary>
+    /// Swaps a record Web registered as an instance for a changed copy, leaving the rest of what Web configured as it was.
+    /// </summary>
+    private static void ReplaceRegistered<T>(IServiceCollection services, Func<T, T> change) where T : class
+    {
+        var registered = services.Single(descriptor => descriptor.ServiceType == typeof(T)).ImplementationInstance as T
+                         ?? throw new InvalidOperationException($"{typeof(T).Name} is not registered as an instance, so there is nothing to change.");
+        services.RemoveAll<T>();
+        services.AddSingleton(change(registered));
     }
 }
