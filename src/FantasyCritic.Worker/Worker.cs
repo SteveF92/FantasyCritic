@@ -36,7 +36,7 @@ public class Worker : BackgroundService
 
     private async Task JobRunnerLoop(CancellationToken stoppingToken)
     {
-        using var flowScope = _logger.BeginFlowScope(WorkerLogging.JobRunnerFlow);
+        using var flowScope = WorkerLogging.BeginFlowScope(WorkerLogging.JobRunnerFlow);
         while (!stoppingToken.IsCancellationRequested)
         {
             FantasyCriticJob? nextJob = null;
@@ -59,7 +59,7 @@ public class Worker : BackgroundService
             {
                 if (nextJob is not null)
                 {
-                    using var jobScope = _logger.BeginJobScope(nextJob);
+                    using var jobScope = WorkerLogging.BeginJobScope(nextJob);
                     _logger.LogError(ex, "Job runner loop failed while handling job {Job}.", nextJob);
                 }
                 else
@@ -74,7 +74,7 @@ public class Worker : BackgroundService
 
     private async Task JobCancellationLoop(CancellationToken stoppingToken)
     {
-        using var flowScope = _logger.BeginFlowScope(WorkerLogging.CancellerFlow);
+        using var flowScope = WorkerLogging.BeginFlowScope(WorkerLogging.CancellerFlow);
         while (!stoppingToken.IsCancellationRequested)
         {
             try
@@ -116,7 +116,7 @@ public class Worker : BackgroundService
         //Settle it now, or it sits Queued and runs whenever the type is next re-enabled.
         foreach (var job in queuedJobs.Where(x => !x.AllowedByRunType))
         {
-            using var jobScope = _logger.BeginJobScope(job);
+            using var jobScope = WorkerLogging.BeginJobScope(job);
             try
             {
                 await CancelDisallowedJob(job, jobRepo, clock);
@@ -144,7 +144,7 @@ public class Worker : BackgroundService
     private async Task RunJob(FantasyCriticJob job, CancellationToken stoppingToken)
     {
         //Covers the handler too, so its logs carry the JobID without the handler doing anything.
-        using var jobScope = _logger.BeginJobScope(job);
+        using var jobScope = WorkerLogging.BeginJobScope(job);
 
         //Linked to the stopping token so a shutdown cancels the running job the same way an admin request does.
         using var jobCancellationSource = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
@@ -229,7 +229,7 @@ public class Worker : BackgroundService
         var cancellingJobs = incompleteJobs.Where(x => x.Status.Equals(FantasyCriticJobStatus.Cancelling));
         foreach (var job in cancellingJobs)
         {
-            using var jobScope = _logger.BeginJobScope(job);
+            using var jobScope = WorkerLogging.BeginJobScope(job);
 
             //One job failing to cancel shouldn't hold up the others.
             try

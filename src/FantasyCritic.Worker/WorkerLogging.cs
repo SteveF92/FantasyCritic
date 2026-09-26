@@ -1,10 +1,13 @@
 using FantasyCritic.Hosting;
 using FantasyCritic.Lib.Jobs;
+using Serilog.Context;
+using Serilog.Core.Enrichers;
 
 namespace FantasyCritic.Worker;
 
-//The worker runs three independent flows in one process. These are log scopes rather than logger settings, so everything logged inside one
-//is tagged: a handler's own injected logger, and the services it calls, pick up the flow and job without knowing about either.
+//The worker runs three independent flows in one process. These push onto Serilog's LogContext rather than opening ILogger scopes,
+//because an ILogger scope only reaches loggers created through Microsoft.Extensions.Logging. Services with a static
+//Log.ForContext logger would miss it. LogContext tags everything logged inside, whichever kind of logger writes it.
 public static class WorkerLogging
 {
     public const string JobRunnerFlow = "JobRunner";
@@ -13,20 +16,15 @@ public static class WorkerLogging
 
     public static IReadOnlyList<string> Flows { get; } = [JobRunnerFlow, CancellerFlow, SchedulerFlow];
 
-    public static IDisposable? BeginFlowScope(this ILogger logger, string flow)
+    public static IDisposable BeginFlowScope(string flow)
     {
-        return logger.BeginScope(new Dictionary<string, object>
-        {
-            [FantasyCriticLogging.FlowProperty] = flow
-        });
+        return LogContext.PushProperty(FantasyCriticLogging.FlowProperty, flow);
     }
 
-    public static IDisposable? BeginJobScope(this ILogger logger, FantasyCriticJob job)
+    public static IDisposable BeginJobScope(FantasyCriticJob job)
     {
-        return logger.BeginScope(new Dictionary<string, object>
-        {
-            ["JobID"] = job.JobID,
-            ["JobType"] = job.Type.Value
-        });
+        return LogContext.Push(
+            new PropertyEnricher("JobID", job.JobID),
+            new PropertyEnricher("JobType", job.Type.Value));
     }
 }
