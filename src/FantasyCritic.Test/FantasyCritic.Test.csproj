@@ -27,10 +27,22 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\FantasyCritic.CommandLine\FantasyCritic.CommandLine.csproj" />
+    <ProjectReference Include="..\FantasyCritic.DatabaseUpdater\FantasyCritic.DatabaseUpdater.csproj" />
     <ProjectReference Include="..\FantasyCritic.DiscordBot\FantasyCritic.DiscordBot.csproj" />
     <ProjectReference Include="..\FantasyCritic.FakeRepo\FantasyCritic.FakeRepo.csproj" />
     <ProjectReference Include="..\FantasyCritic.RdsSnapshotManager\FantasyCritic.RdsSnapshotManager.csproj" />
+    <ProjectReference Include="..\FantasyCritic.Web\FantasyCritic.Web.csproj" />
     <ProjectReference Include="..\FantasyCritic.Worker\FantasyCritic.Worker.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Each host's shipped appsettings, so the configuration tests bind what actually deploys. -->
+    <Content Include="../FantasyCritic.Web/appsettings.json" Link="Appsettings/web.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../FantasyCritic.Worker/appsettings.json" Link="Appsettings/worker.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../FantasyCritic.DiscordBot/appsettings.json" Link="Appsettings/discordbot.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../FantasyCritic.CommandLine/appsettings.json" Link="Appsettings/commandline.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../FantasyCritic.DatabaseUpdater/appsettings.json" Link="Appsettings/databaseupdater.json" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
 
 </Project>

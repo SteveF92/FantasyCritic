@@ -1,7 +1,7 @@
 using System.Text.RegularExpressions;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
@@ -19,19 +19,19 @@ public class SetConferenceCommand : InteractionModuleBase<SocketInteractionConte
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly IConferenceRepo _conferenceRepo;
-    private readonly FantasyCriticSettings _fantasyCriticSettings;
+    private readonly EnvironmentConfiguration _environmentConfiguration;
 
     public SetConferenceCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordFormatter discordFormatter,
         IConferenceRepo conferenceRepo,
-        FantasyCriticSettings fantasyCriticSettings)
+        EnvironmentConfiguration environmentConfiguration)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _discordFormatter = discordFormatter;
         _conferenceRepo = conferenceRepo;
-        _fantasyCriticSettings = fantasyCriticSettings;
+        _environmentConfiguration = environmentConfiguration;
     }
 
     [UsedImplicitly]
@@ -101,7 +101,7 @@ public class SetConferenceCommand : InteractionModuleBase<SocketInteractionConte
         }
 
         var conferenceUrlBuilder =
-            new ConferenceUrlBuilder(_fantasyCriticSettings.BaseAddress, conference.ConferenceID, dateToCheck.Year);
+            new ConferenceUrlBuilder(_environmentConfiguration.BaseAddress, conference.ConferenceID, dateToCheck.Year);
         var conferenceLinkWithName = conferenceUrlBuilder.BuildUrl(conference.ConferenceName);
 
         var hasPermissionToSendMessages = Context.Channel.HasPermissionToSendMessagesInChannel(Context.Client.CurrentUser.Id);

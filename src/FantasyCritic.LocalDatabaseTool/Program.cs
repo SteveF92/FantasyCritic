@@ -45,9 +45,9 @@ public static class Program
             .AddEnvironmentVariables()
             .Build();
 
-        _localConnectionString = configuration["localConnectionString"]!;
-        _baseAddress = configuration["baseAddress"]!;
-        _addedByUserIDOverride = Guid.Parse(configuration["addedByUserIDOverride"]!);
+        _localConnectionString = configuration["LocalConnectionString"]!;
+        _baseAddress = configuration["BaseAddress"]!;
+        _addedByUserIDOverride = Guid.Parse(configuration["AddedByUserIdOverride"]!);
 
         DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
 
@@ -118,7 +118,7 @@ public static class Program
         IDiscordRepo discordRepo = new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo, masterGameRepo, conferenceRepo, combinedDataRepo, _clock);
         IRoyaleRepo royaleRepo = new MySQLRoyaleRepo(localRepoConfig, localUserStore, masterGameRepo);
         IDailyStatsRepo dailyStatsRepo = new MySQLDailyStatsRepo(localRepoConfig, fantasyCriticRepo, royaleRepo);
-        DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration("", _baseAddress, true, null), _clock, new ServiceContainer(), new DiscordFormatter());
+        DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration("", _baseAddress, true), _clock, new ServiceContainer(), new DiscordFormatter());
         InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, combinedDataRepo, masterGameRepo, _clock, discordPushService);
         LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo, combinedDataRepo);
         GameAcquisitionService gameAcquisitionService = new GameAcquisitionService(fantasyCriticRepo, masterGameRepo, _clock, discordPushService);
@@ -132,7 +132,7 @@ public static class Program
 
         return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
             openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, discordPushService, discordRepo, dailyStatsRepo,
-            new EnvironmentConfiguration(_baseAddress, IsProduction: false));
+            new EnvironmentConfiguration(_baseAddress, IsProduction: false, IntegrationTestMode: false));
     }
 
     private static async Task UpdateSupportedYears()

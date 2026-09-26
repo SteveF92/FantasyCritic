@@ -1,11 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.DependencyInjection;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
+using Serilog.Extensions.Hosting;
 using Serilog.Sinks.Grafana.Loki;
 
 namespace FantasyCritic.Hosting;
@@ -23,10 +23,36 @@ public static class FantasyCriticLogging
         return new LoggerConfiguration()
             .MinimumLevel.Override("Microsoft", microsoftMinimumLevel)
             .MinimumLevel.Override("Microsoft.Hosting.Lifetime", LogEventLevel.Information)
+            .MinimumLevel.Override("System.Net.Http", LogEventLevel.Warning)
             .Enrich.FromLogContext()
             .WriteTo.Console(standardErrorFromLevel: consoleToStandardError ? LogEventLevel.Verbose : null)
             .WriteTo.File(loggingPaths.AllLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: OutputTemplate)
             .WriteTo.File(loggingPaths.WarnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: OutputTemplate);
+    }
+
+    /// <summary>
+    /// The logger a host starts with, before its configuration is loaded. Anything that takes a logger from it before
+    /// <see cref="ReplaceBootstrapLogger"/> — a static Log.ForContext field, or an ILogger the framework creates — follows
+    /// it to the replacement, rather than writing to a closed logger.
+    /// </summary>
+    public static void UseBootstrapLogger(LoggerConfiguration configuration)
+    {
+        Log.Logger = configuration.CreateBootstrapLogger();
+    }
+
+    /// <summary>
+    /// Replaces the bootstrap logger once configuration is loaded. The old one is closed before the new one is built:
+    /// while it holds the log files open, the rolling file sink would start new files beside them.
+    /// </summary>
+    public static void ReplaceBootstrapLogger(Func<LoggerConfiguration> configure)
+    {
+        if (Log.Logger is not ReloadableLogger bootstrapLogger)
+        {
+            throw new InvalidOperationException($"{nameof(ReplaceBootstrapLogger)} needs the logger {nameof(UseBootstrapLogger)} creates.");
+        }
+
+        bootstrapLogger.Reload(_ => configure());
+        Log.Logger = bootstrapLogger.Freeze();
     }
 
     public static LoggerConfiguration WriteToApplicationLogFile(this LoggerConfiguration loggerConfiguration, LoggingPaths loggingPaths)
@@ -59,32 +85,34 @@ public static class FantasyCriticLogging
         return loggerConfiguration;
     }
 
-    public static LoggerConfiguration WriteToGrafanaLoki(this LoggerConfiguration loggerConfiguration, IHostEnvironment environment, IConfiguration configuration)
+    /// <param name="grafana">
+    /// Bound but not yet validated: hosts build this logger before validating their options, so that a host refusing
+    /// to start says why in Loki too. Any of it may be missing, and then Loki stays off. Empty keys turn it off as well.
+    /// </param>
+    public static LoggerConfiguration WriteToGrafanaLoki(this LoggerConfiguration loggerConfiguration, string environmentName, GrafanaOptions? grafana)
     {
-        var lokiUri = configuration["Grafana:Loki:Uri"];
-        var lokiUserId = configuration["Grafana:Loki:UserId"];
-        var lokiApiToken = configuration["Grafana:Loki:ApiToken"];
-        if (string.IsNullOrWhiteSpace(lokiUri) ||
-            string.IsNullOrWhiteSpace(lokiUserId) ||
-            string.IsNullOrWhiteSpace(lokiApiToken))
+        var loki = grafana?.Loki;
+        if (loki is null ||
+            string.IsNullOrWhiteSpace(loki.Uri) ||
+            string.IsNullOrWhiteSpace(loki.UserId) ||
+            string.IsNullOrWhiteSpace(loki.ApiToken))
         {
             return loggerConfiguration;
         }
 
-        var labelSection = configuration.GetSection("Grafana:Loki:Labels");
-        var lokiLabels = labelSection.GetChildren()
-            .Where(c => !string.IsNullOrWhiteSpace(c.Key) && !string.IsNullOrWhiteSpace(c.Value))
-            .Where(c => !string.Equals(c.Key, "env", StringComparison.OrdinalIgnoreCase))
-            .Select(c => new LokiLabel { Key = c.Key, Value = c.Value! })
-            .Append(new LokiLabel { Key = "env", Value = environment.EnvironmentName })
+        var lokiLabels = (loki.Labels ?? new Dictionary<string, string>())
+            .Where(label => !string.IsNullOrWhiteSpace(label.Key) && !string.IsNullOrWhiteSpace(label.Value))
+            .Where(label => !string.Equals(label.Key, "env", StringComparison.OrdinalIgnoreCase))
+            .Select(label => new LokiLabel { Key = label.Key, Value = label.Value })
+            .Append(new LokiLabel { Key = "env", Value = environmentName })
             .ToArray();
 
         return loggerConfiguration.WriteTo.GrafanaLoki(
-            uri: lokiUri,
+            uri: loki.Uri,
             credentials: new LokiCredentials
             {
-                Login = lokiUserId,
-                Password = lokiApiToken
+                Login = loki.UserId,
+                Password = loki.ApiToken
             },
             labels: lokiLabels,
             //Only low-cardinality properties belong here: each distinct label value is its own Loki stream.

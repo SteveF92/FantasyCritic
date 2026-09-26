@@ -2,8 +2,8 @@ using System.Text.RegularExpressions;
 using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Handlers;
-using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Extensions;
@@ -23,7 +23,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IConferenceRepo _conferenceRepo;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
-    private readonly FantasyCriticSettings _fantasyCriticSettings;
+    private readonly EnvironmentConfiguration _environmentConfiguration;
     private readonly RoleHandler _roleHandler;
 
     public SetLeagueCommand(IDiscordRepo discordRepo,
@@ -32,7 +32,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         IFantasyCriticRepo fantasyCriticRepo,
         IConferenceRepo conferenceRepo,
         IReadOnlyFantasyCriticUserStore userStore,
-        FantasyCriticSettings fantasyCriticSettings,
+        EnvironmentConfiguration environmentConfiguration,
         RoleHandler roleHandler)
     {
         _discordRepo = discordRepo;
@@ -41,7 +41,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
         _fantasyCriticRepo = fantasyCriticRepo;
         _conferenceRepo = conferenceRepo;
         _userStore = userStore;
-        _fantasyCriticSettings = fantasyCriticSettings;
+        _environmentConfiguration = environmentConfiguration;
         _roleHandler = roleHandler;
     }
 
@@ -186,7 +186,7 @@ public class SetLeagueCommand : InteractionModuleBase<SocketInteractionContext>
             return;
         }
         var leagueUrlBuilder =
-            new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress, league.LeagueID, dateToCheck.Year);
+            new LeagueUrlBuilder(_environmentConfiguration.BaseAddress, league.LeagueID, dateToCheck.Year);
         var leagueLinkWithName = leagueUrlBuilder.BuildUrl(league.LeagueName);
 
         var hasPermissionToSendMessages = Context.Channel.HasPermissionToSendMessagesInChannel(Context.Client.CurrentUser.Id);

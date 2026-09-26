@@ -1,4 +1,5 @@
 using FantasyCritic.Hosting;
+using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Jobs;
 using FantasyCritic.MySQL.DapperTypeMaps;
@@ -16,12 +17,11 @@ public static class Program
         //A web application only so that it can answer GET /health. It serves nothing else.
         var builder = WebApplication.CreateBuilder(new WebApplicationOptions
         {
-            EnvironmentName = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
-                              ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
+            EnvironmentName = FantasyCriticEnvironments.NameFromEnvironmentVariables(),
             ContentRootPath = AppContext.BaseDirectory
         });
 
-        Log.Logger = CreateLogger(loggingPaths, builder.Environment, configuration: null);
+        FantasyCriticLogging.UseBootstrapLogger(CreateLoggerConfiguration(loggingPaths, builder.Environment, grafana: null));
 
         try
         {
@@ -29,24 +29,35 @@ public static class Program
             Log.Information("Starting Worker in {EnvironmentName} mode.", builder.Environment.EnvironmentName);
 
             var configuration = await FantasyCriticConfigurationLoader.Load(builder.Environment);
+            var boundOptions = configuration.Get<WorkerOptions>();
 
-            //Loki credentials live in the secret store, so the real logger cannot be built until now.
-            Log.Logger = CreateLogger(loggingPaths, builder.Environment, configuration);
+            //Loki credentials live in the secret store, so the real logger cannot be built until now. It is built before the
+            //options are validated, so that a host refusing to start says why in Loki too.
+            FantasyCriticLogging.ReplaceBootstrapLogger(() => CreateLoggerConfiguration(loggingPaths, builder.Environment, boundOptions?.Grafana));
 
-            builder.Host.UseDefaultServiceProvider(options =>
+            var validOptions = boundOptions.ToValidOptions(builder.Environment.GetFantasyCriticEnvironment());
+            if (validOptions.IsFailure)
             {
-                options.ValidateOnBuild = true;
-                options.ValidateScopes = true;
+                Log.Fatal("Invalid configuration: {Error}", validOptions.Error);
+                return 1;
+            }
+
+            var options = validOptions.Value;
+
+            builder.Host.UseDefaultServiceProvider(providerOptions =>
+            {
+                providerOptions.ValidateOnBuild = true;
+                providerOptions.ValidateScopes = true;
             });
 
             builder.Configuration.AddConfiguration(configuration);
             builder.Logging.ClearProviders();
             builder.Logging.AddSerilog(Log.Logger);
 
-            builder.Services.AddFantasyCriticCore(configuration, builder.Environment);
+            builder.Services.AddFantasyCriticCore(options.ConnectionStrings, options.Discord, options.BaseAddress, builder.Environment);
             builder.Services.AddFantasyCriticIdentityCore();
-            builder.Services.AddFantasyCriticAdminServices(configuration);
-            builder.Services.AddFantasyCriticEmail(configuration);
+            builder.Services.AddFantasyCriticAdminServices(options.Aws, options.OpenCritic, options.Authentication.Patreon);
+            builder.Services.AddFantasyCriticEmail(options.Postmark);
             builder.Services.AddFantasyCriticJobHandlers();
             builder.Services.AddSingleton<WorkerStatus>();
             builder.Services.AddHealthChecks().AddCheck<WorkerHealthCheck>("worker");
@@ -69,7 +80,7 @@ public static class Program
         }
     }
 
-    private static Serilog.Core.Logger CreateLogger(LoggingPaths loggingPaths, IHostEnvironment environment, IConfiguration? configuration)
+    private static LoggerConfiguration CreateLoggerConfiguration(LoggingPaths loggingPaths, IHostEnvironment environment, GrafanaOptions? grafana)
     {
         var loggerConfiguration = FantasyCriticLogging
             .CreateConfiguration(loggingPaths, LogEventLevel.Information)
@@ -78,11 +89,11 @@ public static class Program
             .WriteToApplicationLogFile(loggingPaths)
             .WriteToFlowLogFiles(loggingPaths, WorkerLogging.Flows);
 
-        if (configuration is not null && !environment.IsDevelopment())
+        if (grafana is not null && !environment.IsDevelopment())
         {
-            loggerConfiguration = loggerConfiguration.WriteToGrafanaLoki(environment, configuration);
+            loggerConfiguration = loggerConfiguration.WriteToGrafanaLoki(environment.EnvironmentName, grafana);
         }
 
-        return loggerConfiguration.CreateLogger();
+        return loggerConfiguration;
     }
 }

@@ -1,6 +1,6 @@
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -18,19 +18,19 @@ public class SetConferenceNewsCommand : InteractionModuleBase<SocketInteractionC
     private readonly IClock _clock;
     private readonly IDiscordFormatter _discordFormatter;
     private readonly InterLeagueService _interLeagueService;
-    private readonly FantasyCriticSettings _fantasyCriticSettings;
+    private readonly EnvironmentConfiguration _environmentConfiguration;
 
     public SetConferenceNewsCommand(IDiscordRepo discordRepo,
         IClock clock,
         IDiscordFormatter discordFormatter,
         InterLeagueService interLeagueService,
-        FantasyCriticSettings fantasyCriticSettings)
+        EnvironmentConfiguration environmentConfiguration)
     {
         _discordRepo = discordRepo;
         _clock = clock;
         _discordFormatter = discordFormatter;
         _interLeagueService = interLeagueService;
-        _fantasyCriticSettings = fantasyCriticSettings;
+        _environmentConfiguration = environmentConfiguration;
     }
 
     [UsedImplicitly]
@@ -70,7 +70,7 @@ public class SetConferenceNewsCommand : InteractionModuleBase<SocketInteractionC
         }
 
         var conferenceUrlBuilder = new ConferenceUrlBuilder(
-            _fantasyCriticSettings.BaseAddress,
+            _environmentConfiguration.BaseAddress,
             conferenceChannel.ConferenceYear.Conference.ConferenceID,
             dateToCheck.Year);
         var conferenceLinkWithName = conferenceUrlBuilder.BuildUrl(conferenceChannel.ConferenceYear.Conference.ConferenceName);

@@ -62,7 +62,7 @@ Client app (`src/FantasyCritic.ClientAppVue2`): `npm install` first; `npm run li
 | **FantasyCritic.MySQL** | Dapper repositories (`*Repo`) implementing Lib interfaces. Row types under `Entities/` end in `Entity`. |
 | **FantasyCritic.Web** | API controllers (`Controllers/API/`), Web-owned `ViewModel`/`Request`/`Response` models, SignalR `UpdateHub` (live draft updates), and hosts the Vue SPA. Uses System.Text.Json + NodaTime serialization; shared `JsonSerializerOptions` come from `FantasyCriticJsonOptions` in Lib. |
 | **FantasyCritic.Lib/SharedSerialization** | The *deliberate* home for Entity/ViewModel shapes shared across projects. Not legacy — but only for types that genuinely cross project boundaries. |
-| **FantasyCritic.Hosting** | The DI registrations, configuration chain (appsettings → user secrets → Secrets Manager → env vars) and Serilog setup shared by every host. `AddFantasyCriticCore` is where a new repository or domain service gets registered — put it there, not in one host's startup, or the hosts drift. References Lib + MySQL + AWS. |
+| **FantasyCritic.Hosting** | The DI registrations, configuration chain (appsettings → user secrets → Secrets Manager → env vars) and Serilog setup shared by every host. `AddFantasyCriticRepositories` is where a new repository gets registered and `AddFantasyCriticCore` where a new domain service does — put them there, not in one host's startup, or the hosts drift. References Lib + MySQL + AWS. |
 | **FantasyCritic.DiscordBot** | The Discord *command* gateway, its own process and container. The web app keeps `DiscordPushService` (notifications out) on the same bot token. Exactly one container may run the command bot. |
 | **FantasyCritic.Worker** | The job system, its own process and container: the `Scheduler` that queues cron jobs and the `Worker` that runs and cancels them. Job types, handlers and the registry live in `Lib/Jobs`. It is a web application only to answer `GET /health`, as the Discord bot is. Setting `WorkerShouldPullNewJobs` off (in `tbl_meta_systemwidesettings`) stops it pulling without stopping the container. |
 | **FantasyCritic.CommandLine** | One-off commands for scripts that need the database, shipped as its own image and run by `deploy.sh` via `docker compose run --rm -T command-line <command>`. A command's answer is the only thing on stdout (logs go to stderr) and it exits 0 or 1. A new ops command belongs here, not as an arguments mode on another host. |
@@ -71,6 +71,12 @@ Client app (`src/FantasyCritic.ClientAppVue2`): `npm install` first; `npm run li
 | **FantasyCritic.ApiClient** | NSwag-generated C# client (gitignored output) used by integration tests. |
 
 Satellite console tools: LocalDatabaseTool (seeds dev DB from prod data), RdsSnapshotManager (import prod snapshots), MasterGameUpdater, BetaSync, DBUtility, TestDataScrubber. Supporting libs: AWS (Secrets Manager/S3), Postmark + EmailTemplates (email), OpenCritic/Patreon/GG clients inside Lib.
+
+### Configuration
+
+Each host binds its configuration into its own options type (`WebOptions`, `WorkerOptions`, `DiscordBotOptions`, `CommandLineOptions`, `DatabaseUpdaterOptions`), made of section records from `Lib/Configuration`, and validates it at startup: a missing key stops the host with a message naming it. Nothing reads configuration by string key; the `Add*` registration methods take sections. Keys are PascalCase with initialisms as words (`Aws`, `ApiKey`, `CampaignId`), and each value lives at one path.
+
+A new key goes in three places: its section record, with the environment it is required from (`MissingConfiguration` treats the `"secret"` placeholder as missing from then on); the `appsettings.json` of every host that reads it, since each file lists every key its host reads; and, if it is a secret, the Secrets Manager blob for beta and production. `HostOptionsTests` binds each host's shipped appsettings in every environment, so it shows what a new key requires. See `docs/typed-configuration-plan.md` for the design.
 
 ### Typed API contract (NSwag)
 
