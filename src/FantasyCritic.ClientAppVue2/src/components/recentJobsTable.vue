@@ -107,7 +107,10 @@
           <template v-if="row.item.errorMessage">
             <dt class="col-sm-3">Error</dt>
             <dd class="col-sm-9">
-              <pre class="job-error mb-0">{{ row.item.errorMessage }}</pre>
+              <div class="job-error">
+                <div class="job-error-message">{{ errorParts(row.item).message }}</div>
+                <pre v-if="errorParts(row.item).trace" class="job-error-trace">{{ errorParts(row.item).trace }}</pre>
+              </div>
             </dd>
           </template>
         </dl>
@@ -397,6 +400,15 @@ export default {
 
       return job.detailedStatus || '';
     },
+    //The first line of an exception's text is its type and message; everything after is the stack trace.
+    errorParts(job) {
+      const firstLineEnd = job.errorMessage.indexOf('\n');
+      if (firstLineEnd === -1) {
+        return { message: job.errorMessage.trim(), trace: '' };
+      }
+
+      return { message: job.errorMessage.slice(0, firstLineEnd).trim(), trace: job.errorMessage.slice(firstLineEnd + 1) };
+    },
     //There is no worker heartbeat, so a job whose worker died stays Running forever. Flag it rather than hide it.
     isRunningSuspiciouslyLong(job) {
       if (job.status !== 'Running' || !job.startedAt || !this.lastRefreshedAt) {
@@ -450,13 +462,22 @@ div >>> tr.highlighted-job > td:first-child {
   -webkit-line-clamp: 3;
 }
 
-/*Stack traces wrap rather than scroll sideways. Unwrapped, one long line stretches the whole table.*/
 .job-error {
-  max-height: 300px;
-  overflow-y: auto;
   padding: 0.5rem;
   border-left: 4px solid #aa1e1e;
   background-color: rgba(0, 0, 0, 0.4);
+}
+
+.job-error-message {
+  font-weight: bold;
+  overflow-wrap: anywhere;
+}
+
+/*Stack traces wrap rather than scroll sideways. Unwrapped, one long line stretches the whole table.*/
+.job-error-trace {
+  max-height: 300px;
+  margin: 0.5rem 0 0;
+  overflow-y: auto;
   color: white;
   font-size: 12px;
   white-space: pre-wrap;
