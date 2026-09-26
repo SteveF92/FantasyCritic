@@ -1,22 +1,22 @@
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Jobs.Utilities;
-using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class RecalculateRoyaleWinnersJobHandler : IFantasyCriticJobHandler
 {
-    private readonly RoyaleService _royaleService;
+    private readonly IRoyaleRepo _royaleRepo;
 
-    public RecalculateRoyaleWinnersJobHandler(RoyaleService royaleService)
+    public RecalculateRoyaleWinnersJobHandler(IRoyaleRepo royaleRepo)
     {
-        _royaleService = royaleService;
+        _royaleRepo = royaleRepo;
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.RecalculateRoyaleWinners;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await RoyaleJobUtilities.RecalculateRoyaleWinners(_royaleService);
+        await RoyaleJobUtilities.RecalculateRoyaleWinners(_royaleRepo);
         return Result.Success();
     }
 }

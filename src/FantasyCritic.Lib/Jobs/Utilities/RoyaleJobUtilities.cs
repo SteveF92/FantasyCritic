@@ -1,12 +1,12 @@
-using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Jobs.Utilities;
 
 internal static class RoyaleJobUtilities
 {
-    public static async Task RecalculateRoyaleWinners(RoyaleService royaleService)
+    public static async Task RecalculateRoyaleWinners(IRoyaleRepo royaleRepo)
     {
-        var supportedQuarters = await royaleService.GetYearQuarters();
+        var supportedQuarters = await royaleRepo.GetYearQuarters();
         foreach (var supportedQuarter in supportedQuarters)
         {
             bool readyToCalculateWinners = supportedQuarter.Finished && supportedQuarter.WinningUser is null;
@@ -15,7 +15,7 @@ internal static class RoyaleJobUtilities
                 continue;
             }
 
-            await royaleService.CalculateRoyaleWinnerForQuarter(supportedQuarter);
+            await royaleRepo.CalculateRoyaleWinnerForQuarter(supportedQuarter.YearQuarter.Year, supportedQuarter.YearQuarter.Quarter);
         }
     }
 }
