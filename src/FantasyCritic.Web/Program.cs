@@ -24,7 +24,13 @@ public class Program
         {
             DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
             Log.Information("Starting web host");
-            var builder = WebApplication.CreateBuilder(args);
+            //The application name locates the static assets manifest. Under NSwag's document generation it defaults to the
+            //assembly's full name, which finds no manifest, so pin it to the simple name.
+            var builder = WebApplication.CreateBuilder(new WebApplicationOptions
+            {
+                Args = args,
+                ApplicationName = typeof(Program).Assembly.GetName().Name
+            });
             Log.Information($"Running in {builder.Environment.EnvironmentName} mode.");
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
