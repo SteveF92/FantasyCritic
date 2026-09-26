@@ -53,25 +53,31 @@ The diff should read as a pure move.
 - Delete the three passthroughs from `RoyaleService`. `GetYearQuarters` stays, since the rest of the app uses it.
 - The general rule for later handlers: a job may call a repo directly, but SQL never moves into the job layer.
 
-### Step 2b: Add status, cancellation and structured logs
+### Step 2b: Check for cancellation before each write
+These statements are too simple to interrupt mid-query, so the token isn't passed into the repo. The checks set the precedent for longer jobs.
+- Call `cancellationToken.ThrowIfCancellationRequested()` just before each write: `FinishQuarter`, `StartNewQuarter`, and each `CalculateRoyaleWinnerForQuarter`.
+- `RoyaleJobUtilities.RecalculateRoyaleWinners` takes the token, so a shared helper shows how it gets one.
+- Throw; don't return `Result.Failure`. The runner records a thrown `OperationCanceledException` as `CancelledInProgress`. A failed `Result` means the handler refused to run, and the runner records it as Error.
+- Each step reconciles from DB state, so stopping between writes is safe: the next run picks up where this one stopped.
+- The rule for later handlers: check before each write, and at the top of any loop over many items.
+
+### Step 2c: Add status and structured logs
 - **`RoyaleJobUtilities`**: rename the method to `CalculateMissingWinners(IRoyaleRepo, ILogger, CancellationToken)`.
-  - Loops finished quarters with no `WinningUser`: token check, `CalculateRoyaleWinnerForQuarter`, structured log.
+  - Loops finished quarters with no `WinningUser`, calling `CalculateRoyaleWinnerForQuarter` and logging each one.
   - Returns the quarters it calculated, so each caller can report them.
 - **`AdvanceRoyaleQuartersJobHandler`** runs three steps:
   1. Finish quarters past their end date.
   2. `RoyaleJobUtilities.CalculateMissingWinners`.
   3. Start the next quarter if within 15 days.
-  - `cancellationToken.ThrowIfCancellationRequested()` before each write. Each step reconciles from DB state, so stopping between steps is safe: the next run picks up where this one stopped.
-  - DetailedStatus accumulates one clause per step, written after each step. A no-op run still says so, e.g. "No quarters to finish. No winners to calculate. 2026 Q4 opens after 2026-09-16." The table then shows what the nightly run did, and a cancelled row shows how far it got.
+  - DetailedStatus accumulates one clause per step, written after each step. A no-op run still says so, e.g. "No quarters to finish. No winners to calculate. 2027 Q1 opens after 2026-12-17." The table then shows what the nightly run did, and a cancelled row shows how far it got.
   - Logs are structured (`{YearQuarter}`, `{EasternDate}`) instead of today's interpolated strings, so Loki can query them. Each state change is logged at Information; "nothing to do" at Debug.
 - **`RecalculateRoyaleWinnersJobHandler`** reports which quarters it calculated, in its DetailedStatus.
 - The accumulating status stays a local `List<string>` in each handler for now. If two or three more handlers repeat it, lift it into `FantasyCriticJobContext` then, not before.
 
 ## Verification
 - `dotnet build src/FantasyCritic.slnx` with zero warnings, `dotnet test src/FantasyCritic.Test/FantasyCritic.Test.csproj`, and `scripts/Format.ps1 -Check`.
+- Local data is never edited by hand to set up a test. Local runs show only what the jobs do with the data as it is.
 - Step 2a: diff review is the main check. Also run both jobs once locally and confirm they complete as before.
-- Step 2b: locally, with Docker MySQL and the worker's connection overridden to :3307 per memory:
-  - Enqueue AdvanceRoyaleQuarters and RecalculateRoyaleWinners from the admin console. Confirm the rows show the new DetailedStatus.
-  - Confirm `JobRunner.log` now contains the handler's lines and the RoyaleService lines.
-  - Cancel a run mid-way, using a temporary local delay that is not committed, and confirm the row reads `CancelledInProgress` with the completed steps in DetailedStatus.
+- Step 2b: review is the check. The runner already handles a thrown `OperationCanceledException`, and a job this quick can't be reliably cancelled mid-run.
+- Step 2c: run both jobs locally and confirm the rows show the new DetailedStatus.
 - Step 1: after the beta deploy, check in Grafana that `{Flow="JobRunner"} | json | JobID != ""` returns lines whose SourceContext is a static-logger service.
