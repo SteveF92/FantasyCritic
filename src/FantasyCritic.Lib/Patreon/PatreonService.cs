@@ -1,4 +1,4 @@
-using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using Patreon.Net;
@@ -16,10 +16,10 @@ public class PatreonService
     private readonly IPatreonTokensRepo _tokensRepo;
     private readonly IFantasyCriticUserStore _userStore;
 
-    public PatreonService(PatreonConfig config, IPatreonTokensRepo tokensRepo, IFantasyCriticUserStore userStore)
+    public PatreonService(PatreonOptions patreon, IPatreonTokensRepo tokensRepo, IFantasyCriticUserStore userStore)
     {
-        _clientId = config.ClientId;
-        _campaignID = config.CampaignID;
+        _clientId = patreon.ClientId;
+        _campaignID = patreon.CampaignId;
         _tokensRepo = tokensRepo;
         _userStore = userStore;
     }

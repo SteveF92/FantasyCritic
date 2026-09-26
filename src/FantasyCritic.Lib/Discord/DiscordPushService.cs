@@ -3,6 +3,7 @@ using Discord;
 using Discord.WebSocket;
 using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
@@ -47,7 +48,7 @@ public class DiscordPushService
         IServiceProvider serviceProvider,
         IDiscordFormatter discordFormatter)
     {
-        _enabled = !string.IsNullOrEmpty(configuration.BotToken) && configuration.BotToken != "secret";
+        _enabled = !string.IsNullOrEmpty(configuration.BotToken) && !MissingConfiguration.IsPlaceholder(configuration.BotToken);
         _botToken = configuration.BotToken;
         _baseAddress = configuration.BaseAddress;
         _clock = clock;
