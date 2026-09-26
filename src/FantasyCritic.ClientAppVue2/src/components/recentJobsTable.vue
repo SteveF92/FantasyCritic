@@ -52,9 +52,13 @@
     <p v-if="jobs && !jobs.length">{{ hasFilters ? 'No jobs match these filters.' : 'No jobs yet.' }}</p>
     <b-table v-else-if="jobs" :items="jobs" :fields="fields" :tbody-tr-class="rowClass" striped bordered responsive small>
       <template #cell(type)="row">
-        <font-awesome-icon :disabled="isBusy" @click="filterJobType('only', row.item.type)" icon="eye" />
-        <font-awesome-icon :disabled="isBusy" @click="filterJobType('hide', row.item.type)" icon="eye-slash" />
-        {{ jobTypeDisplayName(row.item.type) }}
+        <div class="job-type-cell">
+          {{ jobTypeDisplayName(row.item.type) }}
+          <span class="job-type-filters">
+            <font-awesome-icon :disabled="isBusy" @click="filterJobType('only', row.item.type)" icon="eye" title="Show only this job type" />
+            <font-awesome-icon :disabled="isBusy" @click="filterJobType('hide', row.item.type)" icon="eye-slash" title="Hide this job type" />
+          </span>
+        </div>
       </template>
       <template #cell(status)="row">
         <b-badge :variant="statusVariant(row.item.status)">
@@ -450,6 +454,31 @@ div >>> tr.b-table-has-details > td {
 
 div >>> tr.b-table-details > td {
   border-top: 0;
+}
+
+.job-type-filters svg {
+  cursor: pointer;
+}
+
+/*The filter icons cost the job name a line on every row, so where there is a mouse they only appear over the row being pointed at.*/
+@media (hover: hover) {
+  .job-type-cell {
+    position: relative;
+  }
+
+  .job-type-filters {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 0 0.25rem;
+    border-radius: 0.25rem;
+    background-color: #414141;
+  }
+
+  tr:hover .job-type-filters {
+    display: inline;
+  }
 }
 
 div >>> tr.highlighted-job > td:first-child {
