@@ -46,10 +46,10 @@
       <b-button variant="info" size="sm" :disabled="isBusy" @click="refresh">Refresh</b-button>
       <b-button variant="secondary" size="sm" :disabled="isBusy || page === 1" @click="newerPage">Newer</b-button>
       <b-button variant="secondary" size="sm" :disabled="isBusy || !mayHaveOlderPage" @click="olderPage">Older</b-button>
-      <span v-if="lastRefreshedAt" class="text-muted ml-2">Page {{ page }} &middot; refreshed {{ lastRefreshedAt.toLocaleString(DateTime.TIME_WITH_SECONDS) }}</span>
+      <span v-if="lastRefreshedAt" class="ml-2">Page {{ page }} &middot; refreshed {{ lastRefreshedAt.toLocaleString(DateTime.TIME_WITH_SECONDS) }}</span>
     </div>
 
-    <p v-if="jobs && !jobs.length" class="text-muted">{{ hasFilters ? 'No jobs match these filters.' : 'No jobs yet.' }}</p>
+    <p v-if="jobs && !jobs.length">{{ hasFilters ? 'No jobs match these filters.' : 'No jobs yet.' }}</p>
     <b-table v-else-if="jobs" :items="jobs" :fields="fields" :tbody-tr-class="rowClass" striped bordered responsive small>
       <template #cell(type)="row">
         <font-awesome-icon :disabled="isBusy" @click="filterJobType('only', row.item.type)" icon="eye" />
@@ -75,7 +75,7 @@
         <b-button v-if="row.item.logsUrl" variant="info" size="sm" :href="row.item.logsUrl" target="_blank" rel="noopener">Logs</b-button>
       </template>
       <template #row-details="row">
-        <dl class="row mb-0">
+        <dl class="row mx-0 mb-0">
           <dt class="col-sm-3">Job ID</dt>
           <dd class="col-sm-9">{{ row.item.jobID }}</dd>
           <dt class="col-sm-3">Run type</dt>
@@ -105,7 +105,7 @@
           <template v-if="row.item.errorMessage">
             <dt class="col-sm-3">Error</dt>
             <dd class="col-sm-9">
-              <pre class="mb-0" style="max-height: 300px; overflow: auto">{{ row.item.errorMessage }}</pre>
+              <pre class="job-error mb-0">{{ row.item.errorMessage }}</pre>
             </dd>
           </template>
         </dl>
@@ -404,7 +404,7 @@ export default {
       }
 
       if (item.jobID === this.highlightedJobID) {
-        return 'table-info';
+        return 'highlighted-job';
       }
     }
   }
@@ -412,3 +412,21 @@ export default {
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
+<style scoped>
+div >>> tr.highlighted-job > td:first-child {
+  box-shadow: inset 4px 0 0 #d6993a;
+}
+
+/*Stack traces wrap rather than scroll sideways. Unwrapped, one long line stretches the whole table.*/
+.job-error {
+  max-height: 300px;
+  overflow-y: auto;
+  padding: 0.5rem;
+  border-left: 4px solid #aa1e1e;
+  background-color: rgba(0, 0, 0, 0.4);
+  color: white;
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+</style>

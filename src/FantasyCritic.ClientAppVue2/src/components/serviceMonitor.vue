@@ -4,7 +4,7 @@
 
     <div class="mb-2">
       <b-button variant="info" size="sm" :disabled="isBusy" @click="refresh">Refresh</b-button>
-      <span v-if="lastRefreshedAt" class="text-muted ml-2">refreshed {{ lastRefreshedAt.toLocaleString(DateTime.TIME_WITH_SECONDS) }}</span>
+      <span v-if="lastRefreshedAt" class="ml-2">refreshed {{ lastRefreshedAt.toLocaleString(DateTime.TIME_WITH_SECONDS) }}</span>
     </div>
 
     <b-table v-if="monitor" :items="services" :fields="fields" striped bordered responsive small>
@@ -15,7 +15,7 @@
         </b-badge>
       </template>
       <template #cell(details)="row">
-        <div v-for="(value, key) in row.item.details" :key="key" class="small text-muted">{{ key }}: {{ value }}</div>
+        <div v-for="(value, key) in row.item.details" :key="key" class="small">{{ key }}: {{ value }}</div>
       </template>
     </b-table>
   </div>

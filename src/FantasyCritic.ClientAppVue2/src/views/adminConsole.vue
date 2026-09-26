@@ -174,7 +174,7 @@
                   <td>
                     <a v-if="buildInfo.commitUrl" :href="buildInfo.commitUrl" target="_blank" rel="noopener">{{ buildInfo.shortCommitHash }}</a>
                     <span v-else>{{ buildInfo.shortCommitHash }}</span>
-                    <span v-if="gitRefName" class="text-muted">({{ gitRefName }})</span>
+                    <span v-if="gitRefName">({{ gitRefName }})</span>
                   </td>
                 </tr>
                 <tr v-if="buildInfo.commitDate">
@@ -197,7 +197,7 @@
                   <th>Release</th>
                   <td>
                     {{ buildInfo.releaseID }}
-                    <span v-if="buildInfo.deployedEnvironment" class="text-muted">({{ buildInfo.deployedEnvironment }})</span>
+                    <span v-if="buildInfo.deployedEnvironment">({{ buildInfo.deployedEnvironment }})</span>
                   </td>
                 </tr>
                 <tr v-if="buildInfo.buildRunUrl">
