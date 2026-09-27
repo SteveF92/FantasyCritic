@@ -37,12 +37,13 @@ public class AdminController : BaseJobQueuingController
     private readonly BuildInfo _buildInfo;
     private readonly ServiceHealthClient _serviceHealthClient;
     private readonly UpdateHubConnections _updateHubConnections;
+    private readonly ErrorLogCounter _errorLogCounter;
 
     public AdminController(FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
         IFantasyCriticRepo fantasyCriticRepo, EnvironmentConfiguration environmentConfiguration, BuildInfo buildInfo, IJobRepo jobRepo, ServiceHealthClient serviceHealthClient, GrafanaLogLinks logLinks,
-        UpdateHubConnections updateHubConnections)
+        UpdateHubConnections updateHubConnections, ErrorLogCounter errorLogCounter)
         : base(userManager, jobRepo, clock, logLinks)
     {
         _fantasyCriticService = fantasyCriticService;
@@ -57,6 +58,7 @@ public class AdminController : BaseJobQueuingController
         _buildInfo = buildInfo;
         _serviceHealthClient = serviceHealthClient;
         _updateHubConnections = updateHubConnections;
+        _errorLogCounter = errorLogCounter;
     }
 
     [HttpGet]
@@ -98,6 +100,14 @@ public class AdminController : BaseJobQueuingController
             ServiceHealthDetail.FromText("Working set", $"{Megabytes(process.WorkingSet64)} of {Megabytes(availableMemory)} available"),
             ServiceHealthDetail.FromText("GC heap", Megabytes(GC.GetTotalMemory(false)))
         };
+
+        var errorLogSummary = _errorLogCounter.GetSummary();
+        webDetails.Add(ServiceHealthDetail.FromText("Errors since start", errorLogSummary.Count.ToString()));
+        if (errorLogSummary.LastErrorAt.HasValue)
+        {
+            webDetails.Add(ServiceHealthDetail.FromTime("Last error", errorLogSummary.LastErrorAt.Value));
+        }
+
         var webHealth = new ServiceHealthReport(nameof(HealthStatus.Healthy), "Answered this request.", webDetails);
 
         return new ServiceMonitorViewModel(_clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs, workerState, webHealth, workerHealth, discordBotHealth, _logLinks);

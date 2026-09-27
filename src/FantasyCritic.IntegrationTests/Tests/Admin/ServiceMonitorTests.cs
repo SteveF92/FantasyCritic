@@ -67,6 +67,7 @@ public class ServiceMonitorTests : IntegrationTestBase
     [TestCase("Live draft connections")]
     [TestCase("Working set")]
     [TestCase("GC heap")]
+    [TestCase("Errors since start")]
     public async Task Web_ReportsStat(string label)
     {
         var monitor = await _adminSession.Admin.GetServiceMonitorAsync();
