@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.Jobs;
@@ -57,20 +58,22 @@ public class GrafanaLogLinksTests
     }
 
     [Test]
-    public void Worker_LinksToTheLastHourOfEachFlow()
+    public void Worker_LinksToTheLastHourOfEachFlow_AndOfItsErrorsAndWarnings()
     {
         var links = new GrafanaLogLinks(Options, "Production").ForWorker();
         var queries = links.Select(x => ParseQuery(x.Url)).ToList();
 
         Assert.Multiple(() =>
         {
-            Assert.That(links.Select(x => x.Label), Is.EqualTo(new[] { "All", "Job Runner", "Scheduler", "Canceller" }));
+            Assert.That(links.Select(x => x.Label), Is.EqualTo(new[] { "All", "Job Runner", "Scheduler", "Canceller", "Errors", "Warnings" }));
             Assert.That(queries.Select(x => x.Where(y => y.Name == "var-filters").Select(y => y.Value)), Is.EqualTo(new[]
             {
                 new[] { "env|=|Production", "app|=|fantasycritic-worker" },
                 new[] { "env|=|Production", "app|=|fantasycritic-worker", "Flow|=|JobRunner" },
                 new[] { "env|=|Production", "app|=|fantasycritic-worker", "Flow|=|Scheduler" },
-                new[] { "env|=|Production", "app|=|fantasycritic-worker", "Flow|=|Canceller" }
+                new[] { "env|=|Production", "app|=|fantasycritic-worker", "Flow|=|Canceller" },
+                new[] { "env|=|Production", "app|=|fantasycritic-worker", "level|=|error", "level|=|critical" },
+                new[] { "env|=|Production", "app|=|fantasycritic-worker", "level|=|warning" }
             }));
             Assert.That(queries.Select(x => x.Single(y => y.Name == "from").Value), Is.All.EqualTo("now-1h"));
             Assert.That(queries.Select(x => x.Single(y => y.Name == "to").Value), Is.All.EqualTo("now"));
@@ -79,16 +82,25 @@ public class GrafanaLogLinksTests
     }
 
     [Test]
-    public void WebAndDiscordBot_LinkToTheirOwnApp()
+    public void WebAndDiscordBot_LinkToTheirOwnApp_AndItsErrorsAndWarnings()
     {
         var logLinks = new GrafanaLogLinks(Options, "Production");
 
         Assert.Multiple(() =>
         {
-            Assert.That(ParseQuery(logLinks.ForWeb().Single().Url).Where(x => x.Name == "var-filters").Select(x => x.Value),
-                Is.EqualTo(new[] { "env|=|Production", "app|=|fantasycritic-web" }));
-            Assert.That(ParseQuery(logLinks.ForDiscordBot().Single().Url).Where(x => x.Name == "var-filters").Select(x => x.Value),
-                Is.EqualTo(new[] { "env|=|Production", "app|=|fantasycritic-discordbot" }));
+            Assert.That(LabelFilters(logLinks.ForWeb()), Is.EqualTo(new[]
+            {
+                new[] { "env|=|Production", "app|=|fantasycritic-web" },
+                new[] { "env|=|Production", "app|=|fantasycritic-web", "level|=|error", "level|=|critical" },
+                new[] { "env|=|Production", "app|=|fantasycritic-web", "level|=|warning" }
+            }));
+            Assert.That(LabelFilters(logLinks.ForDiscordBot()), Is.EqualTo(new[]
+            {
+                new[] { "env|=|Production", "app|=|fantasycritic-discordbot" },
+                new[] { "env|=|Production", "app|=|fantasycritic-discordbot", "level|=|error", "level|=|critical" },
+                new[] { "env|=|Production", "app|=|fantasycritic-discordbot", "level|=|warning" }
+            }));
+            Assert.That(logLinks.ForWeb().Select(x => x.Label), Is.EqualTo(new[] { "Logs", "Errors", "Warnings" }));
         });
     }
 
@@ -118,6 +130,11 @@ public class GrafanaLogLinksTests
     public void WorkerFlows_MatchTheWorkers()
     {
         Assert.That(new[] { GrafanaLogLinks.JobRunnerFlow, GrafanaLogLinks.SchedulerFlow, GrafanaLogLinks.CancellerFlow }, Is.EquivalentTo(WorkerLogging.Flows));
+    }
+
+    private static string[][] LabelFilters(IEnumerable<LogLink> links)
+    {
+        return links.Select(x => ParseQuery(x.Url).Where(y => y.Name == "var-filters").Select(y => y.Value).ToArray()).ToArray();
     }
 
     private static (string Name, string Value)[] ParseQuery(string url)

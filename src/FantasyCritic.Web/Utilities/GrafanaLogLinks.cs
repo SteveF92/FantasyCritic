@@ -57,16 +57,24 @@ public class GrafanaLogLinks
         return BuildUrl(_lokiEnvironment, from, to, [$"app|=|{WorkerApp}"], jobIDFilter, "Ascending");
     }
 
-    public IReadOnlyList<LogLink> ForWeb() => ForService(("Logs", WebApp, null));
-    public IReadOnlyList<LogLink> ForDiscordBot() => ForService(("Logs", DiscordBotApp, null));
+    public IReadOnlyList<LogLink> ForWeb() => ForService(WebApp, new ServiceLogs("Logs", []), Errors, Warnings);
+    public IReadOnlyList<LogLink> ForDiscordBot() => ForService(DiscordBotApp, new ServiceLogs("Logs", []), Errors, Warnings);
 
-    public IReadOnlyList<LogLink> ForWorker() => ForService(
-        ("All", WorkerApp, null),
-        ("Job Runner", WorkerApp, JobRunnerFlow),
-        ("Scheduler", WorkerApp, SchedulerFlow),
-        ("Canceller", WorkerApp, CancellerFlow));
+    public IReadOnlyList<LogLink> ForWorker() => ForService(WorkerApp,
+        new ServiceLogs("All", []),
+        new ServiceLogs("Job Runner", [FlowFilter(JobRunnerFlow)]),
+        new ServiceLogs("Scheduler", [FlowFilter(SchedulerFlow)]),
+        new ServiceLogs("Canceller", [FlowFilter(CancellerFlow)]),
+        Errors,
+        Warnings);
 
-    private IReadOnlyList<LogLink> ForService(params (string Label, string App, string? Flow)[] links)
+    //The Loki sink puts each line's level in a "level" label, and writes Serilog's Fatal as "critical". Drilldown ORs two values of one label.
+    private static readonly ServiceLogs Errors = new("Errors", ["level|=|error", "level|=|critical"]);
+    private static readonly ServiceLogs Warnings = new("Warnings", ["level|=|warning"]);
+
+    private static string FlowFilter(string flow) => $"{FantasyCriticLogging.FlowProperty}|=|{flow}";
+
+    private IReadOnlyList<LogLink> ForService(string app, params ServiceLogs[] links)
     {
         if (!Enabled)
         {
@@ -74,20 +82,13 @@ public class GrafanaLogLinks
         }
 
         //The last hour, newest first: what the service has been doing lately.
-        var serviceLinks = new List<LogLink>();
-        foreach (var link in links)
-        {
-            var labelFilters = new List<string> { $"app|=|{link.App}" };
-            if (link.Flow is not null)
-            {
-                labelFilters.Add($"{FantasyCriticLogging.FlowProperty}|=|{link.Flow}");
-            }
-
-            serviceLinks.Add(new LogLink(link.Label, BuildUrl(_lokiEnvironment, "now-1h", "now", labelFilters, null, "Descending")));
-        }
-
-        return serviceLinks;
+        var lokiEnvironment = _lokiEnvironment;
+        return links
+            .Select(link => new LogLink(link.Label, BuildUrl(lokiEnvironment, "now-1h", "now", [$"app|=|{app}", .. link.LabelFilters], null, "Descending")))
+            .ToList();
     }
+
+    private sealed record ServiceLogs(string Label, IReadOnlyList<string> LabelFilters);
 
     private string BuildUrl(string lokiEnvironment, string from, string to, IReadOnlyList<string> labelFilters, string? fieldFilter, string sortOrder)
     {
