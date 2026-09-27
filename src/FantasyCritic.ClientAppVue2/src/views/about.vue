@@ -147,7 +147,6 @@
           <li>NodaTime</li>
           <li>Dapper</li>
           <li>CSharpFunctionalExtensions</li>
-          <li>Patreon.Net</li>
           <li>Razor.Templating.Core</li>
           <li>Serilog</li>
           <li>NUnit</li>
