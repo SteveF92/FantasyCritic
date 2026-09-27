@@ -86,16 +86,24 @@ public class AdminController : BaseJobQueuingController
         var workerHealthy = workerHealth.Status != ServiceHealthClient.UnhealthyStatus;
         var workerState = WorkerState.Determine(workerReachable, workerHealthy, systemWideSettings.WorkerShouldPullNewJobs, incompleteJobs);
 
+        //Available is the container's memory limit where it has one, and the machine's memory otherwise.
+        using var process = Process.GetCurrentProcess();
+        var availableMemory = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
+
         //Nothing asks the web app how it is: an unhealthy one could not have answered this request, so it can only be healthy.
         var webDetails = new List<ServiceHealthDetail>
         {
             ServiceHealthDetail.FromText("Database round trip", $"{databaseStopwatch.ElapsedMilliseconds} ms"),
-            ServiceHealthDetail.FromText("Live draft connections", _updateHubConnections.Count.ToString())
+            ServiceHealthDetail.FromText("Live draft connections", _updateHubConnections.Count.ToString()),
+            ServiceHealthDetail.FromText("Working set", $"{Megabytes(process.WorkingSet64)} of {Megabytes(availableMemory)} available"),
+            ServiceHealthDetail.FromText("GC heap", Megabytes(GC.GetTotalMemory(false)))
         };
         var webHealth = new ServiceHealthReport(nameof(HealthStatus.Healthy), "Answered this request.", webDetails);
 
         return new ServiceMonitorViewModel(_clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs, workerState, webHealth, workerHealth, discordBotHealth, _logLinks);
     }
+
+    private static string Megabytes(long bytes) => $"{bytes / (1024 * 1024):N0} MB";
 
     //Turning the worker off does not stop its container. It stops pulling new jobs, finishes the one it has, and idles.
     [HttpPost]
