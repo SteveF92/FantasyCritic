@@ -196,6 +196,7 @@ public static class HostingExtensions
 
         services.AddRazorPages();
         services.AddSignalR();
+        services.AddSingleton<UpdateHubConnections>();
 
         if (environment.IsDevelopment())
         {

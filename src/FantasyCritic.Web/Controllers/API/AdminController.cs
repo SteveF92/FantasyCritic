@@ -8,6 +8,7 @@ using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Lib.Utilities;
+using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
@@ -35,11 +36,13 @@ public class AdminController : BaseJobQueuingController
     private readonly EnvironmentConfiguration _environmentConfiguration;
     private readonly BuildInfo _buildInfo;
     private readonly ServiceHealthClient _serviceHealthClient;
+    private readonly UpdateHubConnections _updateHubConnections;
 
     public AdminController(FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
-        IFantasyCriticRepo fantasyCriticRepo, EnvironmentConfiguration environmentConfiguration, BuildInfo buildInfo, IJobRepo jobRepo, ServiceHealthClient serviceHealthClient, GrafanaLogLinks logLinks)
+        IFantasyCriticRepo fantasyCriticRepo, EnvironmentConfiguration environmentConfiguration, BuildInfo buildInfo, IJobRepo jobRepo, ServiceHealthClient serviceHealthClient, GrafanaLogLinks logLinks,
+        UpdateHubConnections updateHubConnections)
         : base(userManager, jobRepo, clock, logLinks)
     {
         _fantasyCriticService = fantasyCriticService;
@@ -53,6 +56,7 @@ public class AdminController : BaseJobQueuingController
         _environmentConfiguration = environmentConfiguration;
         _buildInfo = buildInfo;
         _serviceHealthClient = serviceHealthClient;
+        _updateHubConnections = updateHubConnections;
     }
 
     [HttpGet]
@@ -85,7 +89,8 @@ public class AdminController : BaseJobQueuingController
         //Nothing asks the web app how it is: an unhealthy one could not have answered this request, so it can only be healthy.
         var webDetails = new List<ServiceHealthDetail>
         {
-            ServiceHealthDetail.FromText("Database round trip", $"{databaseStopwatch.ElapsedMilliseconds} ms")
+            ServiceHealthDetail.FromText("Database round trip", $"{databaseStopwatch.ElapsedMilliseconds} ms"),
+            ServiceHealthDetail.FromText("Live draft connections", _updateHubConnections.Count.ToString())
         };
         var webHealth = new ServiceHealthReport(nameof(HealthStatus.Healthy), "Answered this request.", webDetails);
 

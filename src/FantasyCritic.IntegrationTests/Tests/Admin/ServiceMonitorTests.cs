@@ -64,6 +64,7 @@ public class ServiceMonitorTests : IntegrationTestBase
     }
 
     [TestCase("Database round trip")]
+    [TestCase("Live draft connections")]
     public async Task Web_ReportsStat(string label)
     {
         var monitor = await _adminSession.Admin.GetServiceMonitorAsync();
