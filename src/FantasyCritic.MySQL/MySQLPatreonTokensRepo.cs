@@ -17,7 +17,12 @@ public class MySQLPatreonTokensRepo : IPatreonTokensRepo
     public async Task<PatreonTokens> GetMostRecentTokens()
     {
         await using var connection = new MySqlConnection(_connectionString);
-        var entity = await connection.QuerySingleAsync<PatreonTokensEntity>("select * from tbl_system_patreonkeys order by ID DESC LIMIT 1");
+        var entity = await connection.QuerySingleOrDefaultAsync<PatreonTokensEntity>("select * from tbl_system_patreonkeys order by ID DESC LIMIT 1");
+        if (entity is null)
+        {
+            throw new InvalidOperationException("No Patreon tokens in tbl_system_patreonkeys. Insert the Creator's Access Token and Refresh Token from the Patreon client page as a new row.");
+        }
+
         return entity.ToDomain();
     }
 

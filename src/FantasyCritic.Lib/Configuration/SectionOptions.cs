@@ -100,35 +100,22 @@ public sealed record OAuthClientOptions : IOptionsSection
 }
 
 /// <summary>
-/// What the Patreon API client needs. Patreon is also a login provider, so these live under Authentication:Patreon.
+/// Patreon's keys, for both the login provider and the API client, which refreshes its tokens with the client secret.
+/// Patreon is a login provider first, so these live under Authentication:Patreon.
 /// </summary>
-public record PatreonOptions : IOptionsSection
+public sealed record PatreonOptions : IOptionsSection
 {
     public required string ClientId { get; init; }
     public required string CampaignId { get; init; }
+    public required string ClientSecret { get; init; }
 
-    public virtual IReadOnlyList<string> Validate(string path, FantasyCriticEnvironment environment)
+    public IReadOnlyList<string> Validate(string path, FantasyCriticEnvironment environment)
     {
         return new MissingConfiguration(environment)
             .Value($"{path}:{nameof(ClientId)}", ClientId, FantasyCriticEnvironment.Production)
             .Value($"{path}:{nameof(CampaignId)}", CampaignId, FantasyCriticEnvironment.Production)
-            .Paths;
-    }
-}
-
-/// <summary>
-/// Web's view of Authentication:Patreon: the API client's keys, plus the secret it needs to log people in.
-/// </summary>
-public sealed record PatreonAuthOptions : PatreonOptions
-{
-    public required string ClientSecret { get; init; }
-
-    public override IReadOnlyList<string> Validate(string path, FantasyCriticEnvironment environment)
-    {
-        var own = new MissingConfiguration(environment)
             .Value($"{path}:{nameof(ClientSecret)}", ClientSecret, FantasyCriticEnvironment.Production)
             .Paths;
-        return [.. base.Validate(path, environment), .. own];
     }
 }
 
@@ -137,7 +124,7 @@ public sealed record AuthenticationOptions : IOptionsSection
     public required OAuthClientOptions Google { get; init; }
     public required OAuthClientOptions Microsoft { get; init; }
     public required OAuthClientOptions Twitch { get; init; }
-    public required PatreonAuthOptions Patreon { get; init; }
+    public required PatreonOptions Patreon { get; init; }
     public required OAuthClientOptions Discord { get; init; }
 
     public IReadOnlyList<string> Validate(string path, FantasyCriticEnvironment environment)

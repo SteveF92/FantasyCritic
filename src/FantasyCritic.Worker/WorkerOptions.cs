@@ -30,8 +30,8 @@ public sealed record WorkerOptions : IHostOptions
 }
 
 /// <summary>
-/// The worker's view of Authentication. It refreshes Plus roles from Patreon but logs nobody in, so it binds only the
-/// Patreon API client's keys, at the same path Web reads them.
+/// The worker's view of Authentication. It refreshes Plus roles from Patreon but logs nobody in, so it binds only
+/// Patreon's keys, at the same path Web reads them.
 /// </summary>
 public sealed record WorkerAuthenticationOptions : IOptionsSection
 {

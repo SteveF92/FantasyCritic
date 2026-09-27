@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Jobs;
 using Serilog;
 
 namespace FantasyCritic.MySQL.SyncingRepos;
@@ -43,8 +44,24 @@ public class MySQLBetaCleaner
         await CleanExternalLogins(connection, transaction, nonBetaUsers);
         await CleanDiscordData(connection, transaction, betaUserIds);
         await CleanUnprocessedActionsInNonTestLeagues(connection, transaction);
+        await DisablePatreon(connection, transaction);
 
         await transaction.CommitAsync();
+    }
+
+    /// <summary>
+    /// A copy of production must not run the Patreon job: its tokens are production's, and Patreon's refresh tokens are
+    /// single use, so a refresh here would leave production holding a spent one. The job is turned off with its own
+    /// RunType, and the tokens are dropped so the copy holds no live Patreon credential at all.
+    /// </summary>
+    private static async Task DisablePatreon(MySqlConnection connection, MySqlTransaction transaction)
+    {
+        _logger.Information("Disabling the Patreon job and deleting the Patreon tokens.");
+        await connection.ExecuteAsync(
+            "UPDATE tbl_job_type SET RunType = @runType WHERE Name = @jobType",
+            new { runType = FantasyCriticJobRunType.Disabled.Value, jobType = FantasyCriticJobType.RefreshPatreonInfo.Value },
+            transaction);
+        await connection.ExecuteAsync("DELETE FROM tbl_system_patreonkeys", transaction: transaction);
     }
 
     private static async Task CleanExternalLogins(MySqlConnection connection, MySqlTransaction transaction, IReadOnlyList<FantasyCriticUser> nonBetaUsers)

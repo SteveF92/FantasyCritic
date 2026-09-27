@@ -211,7 +211,7 @@ public class ConfigurationSectionTests
     }
 
     [Test]
-    public void WorkerPatreon_BindsTheApiClientsKeys_FromTheSamePathAsWeb()
+    public void WorkerPatreon_BindsTheSameKeysAsWeb_FromTheSamePath()
     {
         var patreon = Bind<PatreonOptions>("worker", "Authentication:Patreon")!;
 
@@ -219,7 +219,7 @@ public class ConfigurationSectionTests
         {
             Assert.That(patreon.Validate("Authentication:Patreon", FantasyCriticEnvironment.Beta), Is.Empty);
             Assert.That(patreon.Validate("Authentication:Patreon", FantasyCriticEnvironment.Production),
-                Is.EqualTo(new[] { "Authentication:Patreon:ClientId", "Authentication:Patreon:CampaignId" }));
+                Is.EqualTo(new[] { "Authentication:Patreon:ClientId", "Authentication:Patreon:CampaignId", "Authentication:Patreon:ClientSecret" }));
         }
     }
 
@@ -259,7 +259,7 @@ public class ConfigurationSectionTests
             ["Patreon:CampaignID"] = "12345",
         };
 
-        var patreon = Bind<PatreonAuthOptions>("web", "Authentication:Patreon", secret)!;
+        var patreon = Bind<PatreonOptions>("web", "Authentication:Patreon", secret)!;
 
         Assert.That(patreon.Validate("Authentication:Patreon", FantasyCriticEnvironment.Production),
             Is.EqualTo(new[] { "Authentication:Patreon:CampaignId" }));
