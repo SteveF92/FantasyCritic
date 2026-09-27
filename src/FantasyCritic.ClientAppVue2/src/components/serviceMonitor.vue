@@ -20,6 +20,11 @@
           {{ detailValue(detail) }}
         </div>
       </template>
+      <template #cell(logLinks)="row">
+        <b-button v-for="link in row.item.logLinks" :key="link.label" variant="info" size="sm" class="mr-1 mb-1" :href="link.url" target="_blank" rel="noopener">
+          {{ link.label }}
+        </b-button>
+      </template>
     </b-table>
   </div>
 </template>
@@ -28,7 +33,7 @@ import { DateTime } from 'luxon';
 
 import { ApiException, adminClient } from '@/api/clients';
 
-//The worker's states come from WorkerState on the server; the bot only has its health status.
+//The worker's states come from WorkerState on the server; the web app and the bot only have their health status.
 const stateVariants = {
   Running: 'success',
   Draining: 'warning',
@@ -51,7 +56,8 @@ export default {
         { key: 'name', label: 'Service', thClass: 'bg-primary' },
         { key: 'state', label: 'State', thClass: 'bg-primary' },
         { key: 'description', label: 'Description', thClass: 'bg-primary' },
-        { key: 'details', label: 'Details', thClass: 'bg-primary' }
+        { key: 'details', label: 'Details', thClass: 'bg-primary' },
+        { key: 'logLinks', label: 'Logs', thClass: 'bg-primary' }
       ]
     };
   },
@@ -62,8 +68,15 @@ export default {
       }
 
       return [
-        { name: this.monitor.worker.name, state: this.monitor.workerState, description: this.monitor.worker.description, details: this.monitor.worker.details },
-        { name: this.monitor.discordBot.name, state: this.monitor.discordBot.status, description: this.monitor.discordBot.description, details: this.monitor.discordBot.details }
+        { name: this.monitor.web.name, state: this.monitor.web.status, description: this.monitor.web.description, details: this.monitor.web.details, logLinks: this.monitor.web.logLinks },
+        { name: this.monitor.worker.name, state: this.monitor.workerState, description: this.monitor.worker.description, details: this.monitor.worker.details, logLinks: this.monitor.worker.logLinks },
+        {
+          name: this.monitor.discordBot.name,
+          state: this.monitor.discordBot.status,
+          description: this.monitor.discordBot.description,
+          details: this.monitor.discordBot.details,
+          logLinks: this.monitor.discordBot.logLinks
+        }
       ];
     }
   },

@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -77,7 +78,10 @@ public class AdminController : BaseJobQueuingController
         var workerHealthy = workerHealth.Status != ServiceHealthClient.UnhealthyStatus;
         var workerState = WorkerState.Determine(workerReachable, workerHealthy, systemWideSettings.WorkerShouldPullNewJobs, incompleteJobs);
 
-        return new ServiceMonitorViewModel(_clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs, workerState, workerHealth, discordBotHealth);
+        //Nothing asks the web app how it is: an unhealthy one could not have answered this request, so it can only be healthy.
+        var webHealth = new ServiceHealthReport(nameof(HealthStatus.Healthy), "Answered this request.", []);
+
+        return new ServiceMonitorViewModel(_clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs, workerState, webHealth, workerHealth, discordBotHealth, _logLinks);
     }
 
     //Turning the worker off does not stop its container. It stops pulling new jobs, finishes the one it has, and idles.

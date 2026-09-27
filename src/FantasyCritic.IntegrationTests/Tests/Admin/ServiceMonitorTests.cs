@@ -51,6 +51,18 @@ public class ServiceMonitorTests : IntegrationTestBase
     }
 
     [Test]
+    public async Task Web_ReportsItselfHealthy()
+    {
+        var monitor = await _adminSession.Admin.GetServiceMonitorAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(monitor.Web.Name, Is.EqualTo("Web"));
+            Assert.That(monitor.Web.Status, Is.EqualTo("Healthy"));
+        });
+    }
+
+    [Test]
     public async Task TurnOffThenOn_RoundTripsThroughTheMonitor()
     {
         await _adminSession.Admin.TurnOffWorkerAsync();

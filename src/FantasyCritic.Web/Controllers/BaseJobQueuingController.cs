@@ -11,7 +11,7 @@ public abstract class BaseJobQueuingController : FantasyCriticController
 {
     protected readonly IJobRepo _jobRepo;
     protected readonly IClock _clock;
-    private readonly GrafanaLogLinks _logLinks;
+    protected readonly GrafanaLogLinks _logLinks;
 
     protected BaseJobQueuingController(FantasyCriticUserManager userManager, IJobRepo jobRepo, IClock clock, GrafanaLogLinks logLinks)
         : base(userManager)
