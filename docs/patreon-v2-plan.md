@@ -171,25 +171,33 @@ Commit this file. → review.
   - A new `tbl_system_patreonkeys` row means the documented refresh works.
   - If it fails, the job now shows Patreon's actual response.
 
-## Step 5 — Move to a v2 OAuth client (Steve, in the Patreon portal and AWS)
+## Step 5 — Upgrade the client to v2 (Steve, in the Patreon portal)
 
-1. **Create a v2 client for prod**:
-   - Name and description, plus the logo (fixes the broken one).
-   - Redirect URI `https://www.fantasycritic.games/signin-patreon`. Confirm the exact host(s)
-     against the current v1 client.
-2. **Beta gets nothing** (see Decisions). If beta's secret still holds the v1 client's values,
-   swap them for `"secret"` placeholders so nothing points at a client we're about to delete.
-   Beta's validation doesn't require Patreon keys.
-3. **Update** `Authentication:Patreon:ClientId` and `ClientSecret` in `fantasyCritic/Production/appsettings`.
-4. **Insert the new client's Creator's Access and Refresh Tokens** as a new `tbl_system_patreonkeys`
-   row, then restart web and worker. The order matters: the old client's tokens don't work with the
-   new client's ID.
+The portal's Edit Client form has a **Client API Version** dropdown (currently 1), so the plan is to
+upgrade the existing client in place rather than create a new one. That keeps the name, the
+description and the one redirect URI (`https://www.fantasycritic.games/signin-patreon`). Patreon
+doesn't document what the switch does to the client ID, secret or creator tokens, so check each.
+
+1. **Before switching, note the client ID** and the current creator token prefixes (the
+   `tbl_system_patreonkeys` query from the investigation).
+2. **Fix the icon while in the form.** `https://www.fantasycritic.games/img/big-logo.png` has returned
+   404 since `f9944fa3b` moved the file into `src/assets/`, where Vite renames it with a hash.
+3. **Set Client API Version to 2 and save.**
+4. **Compare**:
+   - If the **client ID or secret changed**, update `Authentication:Patreon:ClientId` / `ClientSecret`
+     in `fantasyCritic/Production/appsettings` and restart web and worker.
+   - If the **creator tokens changed**, insert the page's new pair as a `tbl_system_patreonkeys` row.
+     The old ones are probably revoked.
 5. **Verify**:
    - Run `RefreshPatreonInfo`.
-   - Link a Patreon account (existing links store the Patreon user ID, which isn't tied to a client,
-     so they should survive).
-   - Confirm the consent screen shows the new name and logo.
-6. **Delete the v1 client** after the first successful refresh on the new client (about a month
-   later), not before.
+   - Link a Patreon account.
+   - Check the consent screen shows the logo.
+6. **Beta gets nothing** (see Decisions). If beta's secret holds Patreon values, swap them for
+   `"secret"` placeholders. Beta's validation doesn't require Patreon keys.
 
-Step 5 needs no code. If it turns out it does, it becomes its own step with a commit.
+**Fallback** if the dropdown won't save, or the upgrade breaks login: create a new v2 client with the
+same fields, update both secrets, and insert its creator tokens. Keep the old client until the new
+one has refreshed successfully once.
+
+Step 5 needs no code, apart from the optional icon file. If it turns out it does, it becomes its own
+step with a commit.
