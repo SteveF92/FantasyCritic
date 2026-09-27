@@ -25,9 +25,14 @@ Each step is built, tested, committed on its own, then reviewed before the next 
 One commit each, independent enough that any of them can be reverted on its own, so each can be judged on what it
 costs against what it shows.
 
-2. **Database round trip**: how long the monitor's own database reads took.
-3. **Live SignalR connections**: browsers connected to `UpdateHub` now, counted by a singleton the hub updates on
-   connect and disconnect.
-4. **Memory**: the process's working set and GC heap size.
+2. **Database round trip**: how long the monitor's read of the system-wide settings took, one small row.
+3. **Live draft connections**: browsers connected to `UpdateHub` now, counted by a singleton the hub updates on
+   connect and disconnect. The league page only connects while its draft is active.
+4. **Memory**: the process's working set against the memory available to it (the container's limit where it has
+   one), and the GC heap.
 5. **Errors since start**: how many Error-or-worse events the process has logged, and when the last one was, counted
-   by a small Serilog sink.
+   by a small Serilog sink that both the bootstrap and the real logger write to.
+
+## Status
+
+All five steps are committed. Steps 2 to 5 are each waiting on a keep-or-revert decision.
