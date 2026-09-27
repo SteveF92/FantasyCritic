@@ -37,8 +37,8 @@ public class AdminController : BaseJobQueuingController
     public AdminController(FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
-        IFantasyCriticRepo fantasyCriticRepo, EnvironmentConfiguration environmentConfiguration, BuildInfo buildInfo, IJobRepo jobRepo, ServiceHealthClient serviceHealthClient, JobLogLinks jobLogLinks)
-        : base(userManager, jobRepo, clock, jobLogLinks)
+        IFantasyCriticRepo fantasyCriticRepo, EnvironmentConfiguration environmentConfiguration, BuildInfo buildInfo, IJobRepo jobRepo, ServiceHealthClient serviceHealthClient, GrafanaLogLinks logLinks)
+        : base(userManager, jobRepo, clock, logLinks)
     {
         _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;

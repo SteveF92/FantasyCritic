@@ -11,14 +11,14 @@ public abstract class BaseJobQueuingController : FantasyCriticController
 {
     protected readonly IJobRepo _jobRepo;
     protected readonly IClock _clock;
-    private readonly JobLogLinks _jobLogLinks;
+    private readonly GrafanaLogLinks _logLinks;
 
-    protected BaseJobQueuingController(FantasyCriticUserManager userManager, IJobRepo jobRepo, IClock clock, JobLogLinks jobLogLinks)
+    protected BaseJobQueuingController(FantasyCriticUserManager userManager, IJobRepo jobRepo, IClock clock, GrafanaLogLinks logLinks)
         : base(userManager)
     {
         _jobRepo = jobRepo;
         _clock = clock;
-        _jobLogLinks = jobLogLinks;
+        _logLinks = logLinks;
     }
 
     //For the admin console's job buttons. Checks specific to one job type belong in the action, before this.
@@ -31,6 +31,6 @@ public abstract class BaseJobQueuingController : FantasyCriticController
             return BadRequest(result.Error);
         }
 
-        return new FantasyCriticJobViewModel(result.Value, _jobLogLinks.ForJob(result.Value));
+        return new FantasyCriticJobViewModel(result.Value, _logLinks.ForJob(result.Value));
     }
 }

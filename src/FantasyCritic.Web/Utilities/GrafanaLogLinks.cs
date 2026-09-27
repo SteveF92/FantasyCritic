@@ -6,7 +6,7 @@ namespace FantasyCritic.Web.Utilities;
 /// <summary>
 /// Links to a job's logs in Grafana's Logs Drilldown app, for the admin console.
 /// </summary>
-public class JobLogLinks
+public class GrafanaLogLinks
 {
     //The worker's Loki "app" label, from its appsettings.
     private const string WorkerApp = "fantasycritic-worker";
@@ -18,7 +18,7 @@ public class JobLogLinks
     private readonly string? _lokiEnvironment;
 
     /// <param name="lokiEnvironment">The "env" label the worker's logs carry, or null where nothing is sent to Loki.</param>
-    public JobLogLinks(GrafanaLogsOptions options, string? lokiEnvironment)
+    public GrafanaLogLinks(GrafanaLogsOptions options, string? lokiEnvironment)
     {
         _options = options;
         _lokiEnvironment = lokiEnvironment;

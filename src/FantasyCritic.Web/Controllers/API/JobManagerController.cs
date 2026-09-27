@@ -18,15 +18,15 @@ public class JobManagerController : FantasyCriticController
     private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly IJobRepo _jobRepo;
-    private readonly JobLogLinks _jobLogLinks;
+    private readonly GrafanaLogLinks _logLinks;
 
-    public JobManagerController(IClock clock, ILogger<JobManagerController> logger, FantasyCriticUserManager userManager, IJobRepo jobRepo, JobLogLinks jobLogLinks)
+    public JobManagerController(IClock clock, ILogger<JobManagerController> logger, FantasyCriticUserManager userManager, IJobRepo jobRepo, GrafanaLogLinks logLinks)
         : base(userManager)
     {
         _clock = clock;
         _logger = logger;
         _jobRepo = jobRepo;
-        _jobLogLinks = jobLogLinks;
+        _logLinks = logLinks;
     }
 
     [HttpGet]
@@ -46,7 +46,7 @@ public class JobManagerController : FantasyCriticController
         }
 
         var jobs = await _jobRepo.GetJobs(request.Page, request.Count, filter.Value);
-        return jobs.Select(x => new FantasyCriticJobViewModel(x, _jobLogLinks.ForJob(x))).ToList();
+        return jobs.Select(x => new FantasyCriticJobViewModel(x, _logLinks.ForJob(x))).ToList();
     }
 
     [HttpPost]

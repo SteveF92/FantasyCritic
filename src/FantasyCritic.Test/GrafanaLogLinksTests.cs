@@ -9,7 +9,7 @@ using NUnit.Framework;
 namespace FantasyCritic.Test;
 
 [TestFixture]
-public class JobLogLinksTests
+public class GrafanaLogLinksTests
 {
     private static readonly Guid JobID = Guid.Parse("6c6b74d3-3fb7-4b81-aded-d73d68ca01dc");
     private static readonly Instant CreatedAt = Instant.FromUtc(2026, 9, 26, 19, 55, 23);
@@ -20,7 +20,7 @@ public class JobLogLinksTests
     {
         var job = CreateJob(finishedAt: CreatedAt + Duration.FromMinutes(5));
 
-        var url = new JobLogLinks(Options, "Staging").ForJob(job)!;
+        var url = new GrafanaLogLinks(Options, "Staging").ForJob(job)!;
         var query = ParseQuery(url);
 
         Assert.Multiple(() =>
@@ -38,7 +38,7 @@ public class JobLogLinksTests
     [Test]
     public void UnfinishedJob_RunsToNow()
     {
-        var url = new JobLogLinks(Options, "Production").ForJob(CreateJob(finishedAt: null))!;
+        var url = new GrafanaLogLinks(Options, "Production").ForJob(CreateJob(finishedAt: null))!;
 
         Assert.That(ParseQuery(url).Single(x => x.Name == "to").Value, Is.EqualTo("now"));
     }
@@ -46,13 +46,13 @@ public class JobLogLinksTests
     [Test]
     public void NoLokiEnvironment_HasNoLink()
     {
-        Assert.That(new JobLogLinks(Options, null).ForJob(CreateJob(finishedAt: null)), Is.Null);
+        Assert.That(new GrafanaLogLinks(Options, null).ForJob(CreateJob(finishedAt: null)), Is.Null);
     }
 
     [Test]
     public void NoUrl_HasNoLink()
     {
-        Assert.That(new JobLogLinks(Options with { Url = "" }, "Production").ForJob(CreateJob(finishedAt: null)), Is.Null);
+        Assert.That(new GrafanaLogLinks(Options with { Url = "" }, "Production").ForJob(CreateJob(finishedAt: null)), Is.Null);
     }
 
     private static (string Name, string Value)[] ParseQuery(string url)
