@@ -71,9 +71,12 @@ Sources: https://docs.patreon.com/ (the refresh step, the v2 scopes, and the cha
 - **Fail loudly.** A failed refresh throws with Patreon's status code and response body. There's no
   catch-and-continue.
 - **Refresh tokens go in the POST body only.** They never go in a URL, where logs could pick them up.
-- **Beta doesn't keep prod's tokens.** The beta/local cleaner deletes `tbl_system_patreonkeys`, and
-  the job then fails with a clear "no Patreon tokens" message until someone seeds a row. Step 5
-  decides whether beta gets its own client.
+- **No Patreon on beta.** External logins are already Production-only (`HostingExtensions.cs`), so
+  the job is the only Patreon code beta runs. The beta/local cleaner:
+  - sets `RefreshPatreonInfo`'s `tbl_job_type.RunType` to `Disabled`, the job system's own off
+    switch, which blocks cron and manual runs alike;
+  - deletes `tbl_system_patreonkeys`, so beta never holds prod's live refresh token at all.
+  Beta keeps no Patreon client and no Patreon secrets.
 - **Webhooks are out of scope.** Patreon recommends `members:*` webhooks with polling as a fallback.
   We can revisit later.
 
@@ -143,13 +146,19 @@ Commit this file. → review.
 
 → commit → review.
 
-## Step 3 — Beta and local cleans drop Patreon tokens
+## Step 3 — Beta and local cleans turn Patreon off
 
-- `MySQLBetaCleaner` gains `CleanPatreonTokens`: `DELETE FROM tbl_system_patreonkeys`, inside the same
-  transaction.
+- `MySQLBetaCleaner` gains `DisablePatreon`, inside the same transaction:
+  - `UPDATE tbl_job_type SET RunType = 'Disabled' WHERE Name = 'RefreshPatreonInfo'`.
+  - `DELETE FROM tbl_system_patreonkeys`.
 - It covers beta restores (`RestoreSnapshotService`) and local imports and cleans, since both use
-  this cleaner. Neither should hold prod's live tokens.
+  this cleaner. Neither should run the job or hold prod's live tokens.
+- **A side effect to accept:** the Scheduler logs a "Skipped slot … RunType does not allow cron"
+  warning for each hourly slot on beta. That's the Scheduler's existing behaviour for any disabled
+  cron job.
 - Update the RdsSnapshotManager README and menu text that lists what gets scrubbed.
+- **Beta today** (Steve, once): beta was restored before this existed, so set the RunType and
+  delete the tokens there by hand, or re-run the restore.
 
 → commit → review.
 
@@ -168,13 +177,10 @@ Commit this file. → review.
    - Name and description, plus the logo (fixes the broken one).
    - Redirect URI `https://www.fantasycritic.games/signin-patreon`. Confirm the exact host(s)
      against the current v1 client.
-2. **Beta, to decide then.** Either:
-   - (a) A separate beta client, with beta's redirect URI and its own creator tokens seeded after
-     each restore. Its tokens can never touch prod's.
-   - (b) Beta gets no Patreon, so the job fails clearly there and linking is disabled.
-   - Recommendation: (a). It's cheap, and it keeps linking testable on beta.
-3. **Update** `Authentication:Patreon:ClientId` and `ClientSecret` in `fantasyCritic/Production/appsettings`
-   (and beta's for option (a)).
+2. **Beta gets nothing** (see Decisions). If beta's secret still holds the v1 client's values,
+   swap them for `"secret"` placeholders so nothing points at a client we're about to delete.
+   Beta's validation doesn't require Patreon keys.
+3. **Update** `Authentication:Patreon:ClientId` and `ClientSecret` in `fantasyCritic/Production/appsettings`.
 4. **Insert the new client's Creator's Access and Refresh Tokens** as a new `tbl_system_patreonkeys`
    row, then restart web and worker. The order matters: the old client's tokens don't work with the
    new client's ID.
