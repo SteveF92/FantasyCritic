@@ -56,7 +56,7 @@ public class GrafanaLogLinks
         var jobIDFilter = $"JobID|=|{{\"parser\":\"json\"__gfc__\"value\":\"{jobID}\"}},{jobID}";
 
         //Oldest first, so a job reads from start to finish.
-        return BuildUrl(_lokiEnvironment, from, to, [$"app|=|{WorkerApp}"], jobIDFilter, "Ascending");
+        return BuildUrl(_lokiEnvironment, from, to, [$"app|=|{WorkerApp}"], [], jobIDFilter, "Ascending");
     }
 
     public IReadOnlyList<LogLink> ForWeb() => ForService(WebApp, new ServiceLogs("Logs", [], null), Errors, Warnings);
@@ -70,11 +70,20 @@ public class GrafanaLogLinks
         Errors,
         Warnings);
 
-    //The Loki sink puts each line's level in a "level" label, and writes Serilog's Fatal as "critical". Drilldown ORs two values of one label.
-    private static readonly ServiceLogs Errors = new("Errors", ["level|=|error", "level|=|critical"], LogEventLevel.Error);
-    private static readonly ServiceLogs Warnings = new("Warnings", ["level|=|warning"], LogEventLevel.Warning);
+    private static readonly ServiceLogs Errors = new("Errors", [], LogEventLevel.Error);
+    private static readonly ServiceLogs Warnings = new("Warnings", [], LogEventLevel.Warning);
 
     private static string FlowFilter(string flow) => $"{FantasyCriticLogging.FlowProperty}|=|{flow}";
+
+    //Drilldown filters levels on Loki's detected_level, which calls a warning "warn". The Loki sink writes Serilog's Fatal as
+    //"critical", so errors take that in too. Drilldown ORs the levels it is given.
+    private static IReadOnlyList<string> DetectedLevelFilters(LogEventLevel? level) => level switch
+    {
+        null => [],
+        LogEventLevel.Error => ["detected_level|=|error", "detected_level|=|critical"],
+        LogEventLevel.Warning => ["detected_level|=|warn"],
+        _ => throw new ArgumentOutOfRangeException(nameof(level), level, "No service log link is limited to this level.")
+    };
 
     private IReadOnlyList<LogLink> ForService(string app, params ServiceLogs[] links)
     {
@@ -86,13 +95,15 @@ public class GrafanaLogLinks
         //The last hour, newest first: what the service has been doing lately.
         var lokiEnvironment = _lokiEnvironment;
         return links
-            .Select(link => new LogLink(link.Label, BuildUrl(lokiEnvironment, "now-1h", "now", [$"app|=|{app}", .. link.LabelFilters], null, "Descending"), link.Level))
+            .Select(link => new LogLink(link.Label, BuildUrl(lokiEnvironment, "now-1h", "now", [$"app|=|{app}", .. link.LabelFilters], DetectedLevelFilters(link.Level), null, "Descending"),
+                link.Level))
             .ToList();
     }
 
     private sealed record ServiceLogs(string Label, IReadOnlyList<string> LabelFilters, LogEventLevel? Level);
 
-    private string BuildUrl(string lokiEnvironment, string from, string to, IReadOnlyList<string> labelFilters, string? fieldFilter, string sortOrder)
+    private string BuildUrl(string lokiEnvironment, string from, string to, IReadOnlyList<string> labelFilters, IReadOnlyList<string> levelFilters, string? fieldFilter,
+        string sortOrder)
     {
         var parameters = new List<(string Name, string Value)>
         {
@@ -106,8 +117,11 @@ public class GrafanaLogLinks
         parameters.AddRange(labelFilters.Select(x => ("var-filters", x)));
         parameters.AddRange(
         [
-            ("var-fields", fieldFilter ?? ""),
-            ("var-levels", ""),
+            ("var-fields", fieldFilter ?? "")
+        ]);
+        parameters.AddRange(levelFilters.Count > 0 ? levelFilters.Select(x => ("var-levels", x)) : [("var-levels", "")]);
+        parameters.AddRange(
+        [
             ("var-metadata", ""),
             ("var-jsonFields", ""),
             ("var-patterns", ""),

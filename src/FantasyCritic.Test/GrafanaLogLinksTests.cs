@@ -74,12 +74,21 @@ public class GrafanaLogLinksTests
                 new[] { "env|=|Production", "app|=|fantasycritic-worker", "Flow|=|JobRunner" },
                 new[] { "env|=|Production", "app|=|fantasycritic-worker", "Flow|=|Scheduler" },
                 new[] { "env|=|Production", "app|=|fantasycritic-worker", "Flow|=|Canceller" },
-                new[] { "env|=|Production", "app|=|fantasycritic-worker", "level|=|error", "level|=|critical" },
-                new[] { "env|=|Production", "app|=|fantasycritic-worker", "level|=|warning" }
+                new[] { "env|=|Production", "app|=|fantasycritic-worker" },
+                new[] { "env|=|Production", "app|=|fantasycritic-worker" }
             }));
             Assert.That(queries.Select(x => x.Single(y => y.Name == "from").Value), Is.All.EqualTo("now-1h"));
             Assert.That(queries.Select(x => x.Single(y => y.Name == "to").Value), Is.All.EqualTo("now"));
             Assert.That(queries.Select(x => x.Single(y => y.Name == "var-fields").Value), Is.All.Empty);
+            Assert.That(queries.Select(x => x.Where(y => y.Name == "var-levels").Select(y => y.Value)), Is.EqualTo(new[]
+            {
+                new[] { "" },
+                new[] { "" },
+                new[] { "" },
+                new[] { "" },
+                new[] { "detected_level|=|error", "detected_level|=|critical" },
+                new[] { "detected_level|=|warn" }
+            }));
         });
     }
 
@@ -93,14 +102,14 @@ public class GrafanaLogLinksTests
             Assert.That(LabelFilters(logLinks.ForWeb()), Is.EqualTo(new[]
             {
                 new[] { "env|=|Production", "app|=|fantasycritic-web" },
-                new[] { "env|=|Production", "app|=|fantasycritic-web", "level|=|error", "level|=|critical" },
-                new[] { "env|=|Production", "app|=|fantasycritic-web", "level|=|warning" }
+                new[] { "env|=|Production", "app|=|fantasycritic-web" },
+                new[] { "env|=|Production", "app|=|fantasycritic-web" }
             }));
             Assert.That(LabelFilters(logLinks.ForDiscordBot()), Is.EqualTo(new[]
             {
                 new[] { "env|=|Production", "app|=|fantasycritic-discordbot" },
-                new[] { "env|=|Production", "app|=|fantasycritic-discordbot", "level|=|error", "level|=|critical" },
-                new[] { "env|=|Production", "app|=|fantasycritic-discordbot", "level|=|warning" }
+                new[] { "env|=|Production", "app|=|fantasycritic-discordbot" },
+                new[] { "env|=|Production", "app|=|fantasycritic-discordbot" }
             }));
             Assert.That(logLinks.ForWeb().Select(x => x.Label), Is.EqualTo(new[] { "Logs", "Errors", "Warnings" }));
             Assert.That(logLinks.ForWeb().Select(x => x.Level), Is.EqualTo(new LogEventLevel?[] { null, LogEventLevel.Error, LogEventLevel.Warning }));
