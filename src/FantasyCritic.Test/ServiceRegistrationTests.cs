@@ -44,10 +44,10 @@ public class ServiceRegistrationTests
     }
 
     [Test]
-    public void AdminServices_RegisterWebsPatreonLoginOptions_AsThePatreonOptionsTheServiceTakes()
+    public void AdminServices_RegisterThePatreonOptionsTheServiceTakes()
     {
         var services = new ServiceCollection();
-        var patreon = new PatreonAuthOptions { ClientId = "the-client", ClientSecret = "the-secret", CampaignId = "12345" };
+        var patreon = new PatreonOptions { ClientId = "the-client", CampaignId = "12345", ClientSecret = "the-secret" };
 
         services.AddFantasyCriticAdminServices(
             new AwsOptions { Region = "us-east-1", RdsInstanceName = "the-instance" },

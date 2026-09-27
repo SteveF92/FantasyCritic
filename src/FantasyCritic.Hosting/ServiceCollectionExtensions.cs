@@ -134,8 +134,7 @@ public static class ServiceCollectionExtensions
     /// </summary>
     private static IServiceCollection AddFantasyCriticPatreon(this IServiceCollection services, PatreonOptions patreon)
     {
-        //As the base type: Web passes its PatreonAuthOptions, which also carries the login secret.
-        services.AddSingleton<PatreonOptions>(patreon);
+        services.AddSingleton(patreon);
         services.AddScoped<PatreonService>();
         return services;
     }

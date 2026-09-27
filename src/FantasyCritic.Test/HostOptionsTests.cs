@@ -28,7 +28,8 @@ public class HostOptionsTests
                                          + "Authentication:Discord:ClientId, Authentication:Discord:ClientSecret, Discord:BotToken";
     private const string WorkerBeta = "Missing configuration: Aws:RdsInstanceName, Postmark:ApiKey, OpenCritic:ApiKey, Discord:BotToken";
     private const string WorkerProduction = "Missing configuration: Aws:RdsInstanceName, Postmark:ApiKey, OpenCritic:ApiKey, "
-                                            + "Authentication:Patreon:ClientId, Authentication:Patreon:CampaignId, Discord:BotToken";
+                                            + "Authentication:Patreon:ClientId, Authentication:Patreon:CampaignId, Authentication:Patreon:ClientSecret, "
+                                            + "Discord:BotToken";
     private const string BotWithoutAToken = "Missing configuration: Discord:BotToken";
 
     // One blob per environment serves every host, so it holds every value any of them needs.
