@@ -4,9 +4,11 @@ using FantasyCritic.Hosting;
 using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.MySQL.DapperTypeMaps;
+using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using Serilog.Events;
@@ -18,7 +20,9 @@ public class Program
     public static async Task<int> Main(string[] args)
     {
         var loggingPaths = LoggingPaths.WebApplication;
-        FantasyCriticLogging.UseBootstrapLogger(CreateLoggerConfiguration(loggingPaths, environment: null, grafana: null));
+        //Given to both loggers, so the bootstrap logger's errors are counted too.
+        var errorLogCounter = new ErrorLogCounter();
+        FantasyCriticLogging.UseBootstrapLogger(CreateLoggerConfiguration(loggingPaths, errorLogCounter, environment: null, grafana: null));
 
         try
         {
@@ -45,7 +49,7 @@ public class Program
 
             //Loki credentials live in the secret store, so the real logger cannot be built until now. It is built before the
             //options are validated, so that a host refusing to start says why in Loki too.
-            FantasyCriticLogging.ReplaceBootstrapLogger(() => CreateLoggerConfiguration(loggingPaths, builder.Environment, boundOptions?.Grafana));
+            FantasyCriticLogging.ReplaceBootstrapLogger(() => CreateLoggerConfiguration(loggingPaths, errorLogCounter, builder.Environment, boundOptions?.Grafana));
 
             var validOptions = boundOptions.ToValidOptions(builder.Environment.GetFantasyCriticEnvironment());
             if (validOptions.IsFailure)
@@ -55,6 +59,7 @@ public class Program
             }
 
             var options = validOptions.Value;
+            builder.Services.AddSingleton(errorLogCounter);
 
             var app = builder
                 .ConfigureServices(options)
@@ -75,11 +80,12 @@ public class Program
     }
 
     /// <param name="environment">Unknown while the bootstrap logger is built, before the builder exists.</param>
-    private static LoggerConfiguration CreateLoggerConfiguration(LoggingPaths loggingPaths, IHostEnvironment? environment, GrafanaOptions? grafana)
+    private static LoggerConfiguration CreateLoggerConfiguration(LoggingPaths loggingPaths, ErrorLogCounter errorLogCounter, IHostEnvironment? environment, GrafanaOptions? grafana)
     {
         var loggerConfiguration = FantasyCriticLogging
             .CreateConfiguration(loggingPaths, LogEventLevel.Warning)
-            .WriteToApplicationLogFile(loggingPaths);
+            .WriteToApplicationLogFile(loggingPaths)
+            .WriteTo.Sink(errorLogCounter);
 
         if (environment is null || grafana is null || environment.IsDevelopment())
         {

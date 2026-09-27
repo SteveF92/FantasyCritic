@@ -27,8 +27,8 @@ public class FactCheckerController : BaseJobQueuingController
 
     public FactCheckerController(AdminService adminService, IClock clock, InterLeagueService interLeagueService,
         ILogger<FactCheckerController> logger, FantasyCriticUserManager userManager, LeagueMemberService leagueMemberService,
-        FantasyCriticService fantasyCriticService, IJobRepo jobRepo, JobLogLinks jobLogLinks)
-        : base(userManager, jobRepo, clock, jobLogLinks)
+        FantasyCriticService fantasyCriticService, IJobRepo jobRepo, GrafanaLogLinks logLinks)
+        : base(userManager, jobRepo, clock, logLinks)
     {
         _adminService = adminService;
         _interLeagueService = interLeagueService;

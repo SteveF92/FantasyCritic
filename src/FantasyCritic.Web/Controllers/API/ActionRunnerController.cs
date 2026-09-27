@@ -30,8 +30,8 @@ public class ActionRunnerController : BaseJobQueuingController
 
     public ActionRunnerController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<ActionRunnerController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
-        EmailSendingService emailSendingService, DiscordPushService discordPushService, IJobRepo jobRepo, JobLogLinks jobLogLinks)
-        : base(userManager, jobRepo, clock, jobLogLinks)
+        EmailSendingService emailSendingService, DiscordPushService discordPushService, IJobRepo jobRepo, GrafanaLogLinks logLinks)
+        : base(userManager, jobRepo, clock, logLinks)
     {
         _adminService = adminService;
         _fantasyCriticService = fantasyCriticService;

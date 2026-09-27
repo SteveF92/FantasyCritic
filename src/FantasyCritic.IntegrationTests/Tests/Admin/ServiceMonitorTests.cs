@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
 using FantasyCritic.IntegrationTests.Helpers;
@@ -48,6 +49,30 @@ public class ServiceMonitorTests : IntegrationTestBase
             Assert.That(monitor.DiscordBot.Name, Is.EqualTo("Discord Bot"));
             Assert.That(monitor.DiscordBot.Status, Is.EqualTo(Unreachable));
         });
+    }
+
+    [Test]
+    public async Task Web_ReportsItselfHealthy()
+    {
+        var monitor = await _adminSession.Admin.GetServiceMonitorAsync();
+
+        Assert.Multiple(() =>
+        {
+            Assert.That(monitor.Web.Name, Is.EqualTo("Web"));
+            Assert.That(monitor.Web.Status, Is.EqualTo("Healthy"));
+        });
+    }
+
+    [TestCase("Database round trip")]
+    [TestCase("Live draft connections")]
+    [TestCase("Working set")]
+    [TestCase("GC heap")]
+    [TestCase("Errors since start")]
+    public async Task Web_ReportsStat(string label)
+    {
+        var monitor = await _adminSession.Admin.GetServiceMonitorAsync();
+
+        Assert.That(monitor.Web.Details.Select(x => x.Label), Does.Contain(label));
     }
 
     [Test]

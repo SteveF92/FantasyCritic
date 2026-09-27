@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Extensions;
@@ -7,6 +8,7 @@ using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Lib.Utilities;
+using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
@@ -14,6 +16,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Web.Controllers.API;
@@ -33,12 +36,15 @@ public class AdminController : BaseJobQueuingController
     private readonly EnvironmentConfiguration _environmentConfiguration;
     private readonly BuildInfo _buildInfo;
     private readonly ServiceHealthClient _serviceHealthClient;
+    private readonly UpdateHubConnections _updateHubConnections;
+    private readonly ErrorLogCounter _errorLogCounter;
 
     public AdminController(FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<AdminController> logger, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
-        IFantasyCriticRepo fantasyCriticRepo, EnvironmentConfiguration environmentConfiguration, BuildInfo buildInfo, IJobRepo jobRepo, ServiceHealthClient serviceHealthClient, JobLogLinks jobLogLinks)
-        : base(userManager, jobRepo, clock, jobLogLinks)
+        IFantasyCriticRepo fantasyCriticRepo, EnvironmentConfiguration environmentConfiguration, BuildInfo buildInfo, IJobRepo jobRepo, ServiceHealthClient serviceHealthClient, GrafanaLogLinks logLinks,
+        UpdateHubConnections updateHubConnections, ErrorLogCounter errorLogCounter)
+        : base(userManager, jobRepo, clock, logLinks)
     {
         _fantasyCriticService = fantasyCriticService;
         _interLeagueService = interLeagueService;
@@ -51,6 +57,8 @@ public class AdminController : BaseJobQueuingController
         _environmentConfiguration = environmentConfiguration;
         _buildInfo = buildInfo;
         _serviceHealthClient = serviceHealthClient;
+        _updateHubConnections = updateHubConnections;
+        _errorLogCounter = errorLogCounter;
     }
 
     [HttpGet]
@@ -70,15 +78,42 @@ public class AdminController : BaseJobQueuingController
 
         //Both read from the database rather than taken from the worker's answer, so that the state shown here
         //is the one a deploy's drain acts on, and is still known when the worker cannot be reached.
+        //Timed as well, for the web row: one small row, so this is about as close to the database's round trip as a query gets.
+        var databaseStopwatch = Stopwatch.StartNew();
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        databaseStopwatch.Stop();
         var incompleteJobs = await _jobRepo.GetIncompleteJobs();
 
         var workerReachable = workerHealth.Status != ServiceHealthClient.UnreachableStatus;
         var workerHealthy = workerHealth.Status != ServiceHealthClient.UnhealthyStatus;
         var workerState = WorkerState.Determine(workerReachable, workerHealthy, systemWideSettings.WorkerShouldPullNewJobs, incompleteJobs);
 
-        return new ServiceMonitorViewModel(_clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs, workerState, workerHealth, discordBotHealth);
+        //Available is the container's memory limit where it has one, and the machine's memory otherwise.
+        using var process = Process.GetCurrentProcess();
+        var availableMemory = GC.GetGCMemoryInfo().TotalAvailableMemoryBytes;
+
+        //Nothing asks the web app how it is: an unhealthy one could not have answered this request, so it can only be healthy.
+        var webDetails = new List<ServiceHealthDetail>
+        {
+            ServiceHealthDetail.FromText("Database round trip", $"{databaseStopwatch.ElapsedMilliseconds} ms"),
+            ServiceHealthDetail.FromText("Live draft connections", _updateHubConnections.Count.ToString()),
+            ServiceHealthDetail.FromText("Working set", $"{Megabytes(process.WorkingSet64)} of {Megabytes(availableMemory)} available"),
+            ServiceHealthDetail.FromText("GC heap", Megabytes(GC.GetTotalMemory(false)))
+        };
+
+        var errorLogSummary = _errorLogCounter.GetSummary();
+        webDetails.Add(ServiceHealthDetail.FromText("Errors since start", errorLogSummary.Count.ToString()));
+        if (errorLogSummary.LastErrorAt.HasValue)
+        {
+            webDetails.Add(ServiceHealthDetail.FromTime("Last error", errorLogSummary.LastErrorAt.Value));
+        }
+
+        var webHealth = new ServiceHealthReport(nameof(HealthStatus.Healthy), "Answered this request.", webDetails);
+
+        return new ServiceMonitorViewModel(_clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs, workerState, webHealth, workerHealth, discordBotHealth, _logLinks);
     }
+
+    private static string Megabytes(long bytes) => $"{bytes / (1024 * 1024):N0} MB";
 
     //Turning the worker off does not stop its container. It stops pulling new jobs, finishes the one it has, and idles.
     [HttpPost]
