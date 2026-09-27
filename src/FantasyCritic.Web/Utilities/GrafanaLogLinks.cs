@@ -2,10 +2,12 @@ using System.Diagnostics.CodeAnalysis;
 using FantasyCritic.Hosting;
 using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.Jobs;
+using Serilog.Events;
 
 namespace FantasyCritic.Web.Utilities;
 
-public record LogLink(string Label, string Url);
+/// <param name="Level">Set when the link shows only lines at one level, so the console can mark it as such.</param>
+public record LogLink(string Label, string Url, LogEventLevel? Level);
 
 /// <summary>
 /// Links to logs in Grafana's Logs Drilldown app, for the admin console: a job's, or a service's recent ones.
@@ -57,20 +59,20 @@ public class GrafanaLogLinks
         return BuildUrl(_lokiEnvironment, from, to, [$"app|=|{WorkerApp}"], jobIDFilter, "Ascending");
     }
 
-    public IReadOnlyList<LogLink> ForWeb() => ForService(WebApp, new ServiceLogs("Logs", []), Errors, Warnings);
-    public IReadOnlyList<LogLink> ForDiscordBot() => ForService(DiscordBotApp, new ServiceLogs("Logs", []), Errors, Warnings);
+    public IReadOnlyList<LogLink> ForWeb() => ForService(WebApp, new ServiceLogs("Logs", [], null), Errors, Warnings);
+    public IReadOnlyList<LogLink> ForDiscordBot() => ForService(DiscordBotApp, new ServiceLogs("Logs", [], null), Errors, Warnings);
 
     public IReadOnlyList<LogLink> ForWorker() => ForService(WorkerApp,
-        new ServiceLogs("All", []),
-        new ServiceLogs("Job Runner", [FlowFilter(JobRunnerFlow)]),
-        new ServiceLogs("Scheduler", [FlowFilter(SchedulerFlow)]),
-        new ServiceLogs("Canceller", [FlowFilter(CancellerFlow)]),
+        new ServiceLogs("All", [], null),
+        new ServiceLogs("Job Runner", [FlowFilter(JobRunnerFlow)], null),
+        new ServiceLogs("Scheduler", [FlowFilter(SchedulerFlow)], null),
+        new ServiceLogs("Canceller", [FlowFilter(CancellerFlow)], null),
         Errors,
         Warnings);
 
     //The Loki sink puts each line's level in a "level" label, and writes Serilog's Fatal as "critical". Drilldown ORs two values of one label.
-    private static readonly ServiceLogs Errors = new("Errors", ["level|=|error", "level|=|critical"]);
-    private static readonly ServiceLogs Warnings = new("Warnings", ["level|=|warning"]);
+    private static readonly ServiceLogs Errors = new("Errors", ["level|=|error", "level|=|critical"], LogEventLevel.Error);
+    private static readonly ServiceLogs Warnings = new("Warnings", ["level|=|warning"], LogEventLevel.Warning);
 
     private static string FlowFilter(string flow) => $"{FantasyCriticLogging.FlowProperty}|=|{flow}";
 
@@ -84,11 +86,11 @@ public class GrafanaLogLinks
         //The last hour, newest first: what the service has been doing lately.
         var lokiEnvironment = _lokiEnvironment;
         return links
-            .Select(link => new LogLink(link.Label, BuildUrl(lokiEnvironment, "now-1h", "now", [$"app|=|{app}", .. link.LabelFilters], null, "Descending")))
+            .Select(link => new LogLink(link.Label, BuildUrl(lokiEnvironment, "now-1h", "now", [$"app|=|{app}", .. link.LabelFilters], null, "Descending"), link.Level))
             .ToList();
     }
 
-    private sealed record ServiceLogs(string Label, IReadOnlyList<string> LabelFilters);
+    private sealed record ServiceLogs(string Label, IReadOnlyList<string> LabelFilters, LogEventLevel? Level);
 
     private string BuildUrl(string lokiEnvironment, string from, string to, IReadOnlyList<string> labelFilters, string? fieldFilter, string sortOrder)
     {

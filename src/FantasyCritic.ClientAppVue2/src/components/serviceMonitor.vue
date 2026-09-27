@@ -21,7 +21,7 @@
         </div>
       </template>
       <template #cell(logLinks)="row">
-        <b-button v-for="link in row.item.logLinks" :key="link.label" variant="info" size="sm" class="mr-1 mb-1" :href="link.url" target="_blank" rel="noopener">
+        <b-button v-for="link in row.item.logLinks" :key="link.label" :variant="logLinkVariant(link)" size="sm" class="mr-1 mb-1" :href="link.url" target="_blank" rel="noopener">
           {{ link.label }}
         </b-button>
       </template>
@@ -42,6 +42,12 @@ const stateVariants = {
   Degraded: 'warning',
   Unhealthy: 'danger',
   Unreachable: 'dark'
+};
+
+//Links that show only one level's lines have that level's colour. The rest are plain.
+const logLevelVariants = {
+  Error: 'danger',
+  Warning: 'warning'
 };
 
 export default {
@@ -111,6 +117,9 @@ export default {
     },
     stateVariant(state) {
       return stateVariants[state] || 'secondary';
+    },
+    logLinkVariant(link) {
+      return logLevelVariants[link.level] || 'info';
     },
     describeError(error) {
       if (ApiException.isApiException(error) && error.response) {

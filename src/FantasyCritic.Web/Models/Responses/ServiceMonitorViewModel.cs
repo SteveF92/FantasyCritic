@@ -63,8 +63,10 @@ public class LogLinkViewModel
     {
         Label = domain.Label;
         Url = domain.Url;
+        Level = domain.Level?.ToString();
     }
 
     public string Label { get; }
     public string Url { get; }
+    public string? Level { get; }
 }

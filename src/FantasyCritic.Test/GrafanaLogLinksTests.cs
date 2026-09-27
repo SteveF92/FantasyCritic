@@ -7,6 +7,7 @@ using FantasyCritic.Web.Utilities;
 using FantasyCritic.Worker;
 using NodaTime;
 using NUnit.Framework;
+using Serilog.Events;
 
 namespace FantasyCritic.Test;
 
@@ -66,6 +67,7 @@ public class GrafanaLogLinksTests
         Assert.Multiple(() =>
         {
             Assert.That(links.Select(x => x.Label), Is.EqualTo(new[] { "All", "Job Runner", "Scheduler", "Canceller", "Errors", "Warnings" }));
+            Assert.That(links.Select(x => x.Level), Is.EqualTo(new LogEventLevel?[] { null, null, null, null, LogEventLevel.Error, LogEventLevel.Warning }));
             Assert.That(queries.Select(x => x.Where(y => y.Name == "var-filters").Select(y => y.Value)), Is.EqualTo(new[]
             {
                 new[] { "env|=|Production", "app|=|fantasycritic-worker" },
@@ -101,6 +103,7 @@ public class GrafanaLogLinksTests
                 new[] { "env|=|Production", "app|=|fantasycritic-discordbot", "level|=|warning" }
             }));
             Assert.That(logLinks.ForWeb().Select(x => x.Label), Is.EqualTo(new[] { "Logs", "Errors", "Warnings" }));
+            Assert.That(logLinks.ForWeb().Select(x => x.Level), Is.EqualTo(new LogEventLevel?[] { null, LogEventLevel.Error, LogEventLevel.Warning }));
         });
     }
 
