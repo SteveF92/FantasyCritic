@@ -1,0 +1,189 @@
+# Patreon: our own API client, and a v2 OAuth client
+
+## Context
+
+The hourly `RefreshPatreonInfo` job started failing in production after the job-system deploy with
+`PatreonApiException: Unauthorized`. It was not the deploy.
+
+- **The job's credentials are in the database, not config.** `PatreonService` builds the Patreon.Net
+  client from the newest row of `tbl_system_patreonkeys` (a creator access and refresh token). From
+  config it takes only the client ID and the campaign ID.
+- **Refreshing has worked monthly until now.** On a 401, Patreon.Net refreshes and
+  `TokensRefreshedAsync` saves a new row. Prod had one row per ~31 days (rows 44–47, May 23 → Aug 24,
+  2026), each written at about 00:00–00:01. Row 47's access token expired around Sep 24. The refresh
+  failed, so there is no row 48.
+- **Patreon.Net's refresh request doesn't match Patreon's documented contract.** It POSTs
+  `/api/oauth2/token?grant_type=refresh_token&refresh_token=…&client_id=…` as a query string, with no
+  `client_secret`. Patreon documents a form body that includes the secret, and says both returned
+  tokens are single use. Patreon.Net also throws away the refresh response, so we can't see why it
+  failed.
+- **Why Sep 24 failed is unconfirmed.** There are two candidates:
+  - Beta used the shared refresh token first (beta restores from prod snapshots, so it held row 47 too).
+  - Patreon started enforcing the documented refresh form. Its 2026-08-07 changelog retires the v1
+    API, so it was doing auth work around then.
+- Steve fixed prod on 2026-09-27 by copying the creator tokens from the Patreon client page into a
+  new row. **Those expire around 2026-10-28.** That is the next refresh, and the deadline for this
+  code to be live.
+
+### v1 vs v2
+
+- **The portal's "Client Version: 1" is only the client's registration type.** Everything we call is
+  already API v2:
+  - The job uses `/api/oauth2/v2/campaigns/{id}/members`.
+  - The login (AspNet.Security.OAuth.Patreon 10.0.0) uses `/api/oauth2/v2/identity` with scope
+    `identity`.
+  - Patreon's docs say a client's creator access token "will automatically have all V2 scopes".
+- **The v1 shutdown shouldn't affect us.** Patreon's 2026-10-07 shutdown is of v1 *endpoints*
+  (`/api/oauth2/api/...`), which we don't call. Patreon notes that registration type doesn't decide
+  which API a client calls.
+- **We're relying on Patreon being lenient in two places.** The docs say v2 scopes are "only
+  available to v2 clients", yet linking Patreon works today on the v1 client. That, plus the
+  non-standard refresh, is enough reason to move.
+- **New v1 clients can't be made** (since 2026-03-25), so any replacement client will be v2.
+
+### Why write our own client
+
+No package on NuGet refreshes correctly and is maintained:
+- Patreon.Net: last release 2025-01, net5/6, and the refresh above.
+- Patreon.Client (Agash): the only active .NET 10 package, but a single-author prerelease with no
+  token refresh at all.
+- Patreon (T0shik): dormant since 2023.
+- Patreon has never published a .NET SDK.
+
+What we use is small: one endpoint with cursor paging, and one token POST. Writing it ourselves is
+about 150–200 lines. Login stays on AspNet.Security.OAuth.Patreon.
+
+Sources: https://docs.patreon.com/ (the refresh step, the v2 scopes, and the changelog entries of
+2026-03-25 and 2026-08-07).
+
+## Decisions
+
+- **`ClientSecret` joins `PatreonOptions`.** Both hosts need it now, so `PatreonAuthOptions`, which
+  existed only to add it for Web, goes away. All hosts read the one `fantasyCritic/<env>/appsettings`
+  secret, so the Worker already has the value in beta and prod. Only its `appsettings.json` gains the
+  key.
+- **Split HTTP from token handling.** `PatreonApiClient` is a typed `HttpClient` that doesn't store
+  tokens: it gets members given an access token, and refreshes given a refresh token.
+  `PatreonService` keeps the token flow: read the newest row, call, and on a 401 refresh once, save
+  the new pair, and retry. That matches today's behaviour.
+- **Refreshing stays 401-driven.** We don't store `expires_in`, since the table has no column for it
+  and the 401 already tells us.
+- **Fail loudly.** A failed refresh throws with Patreon's status code and response body. There's no
+  catch-and-continue.
+- **Refresh tokens go in the POST body only.** They never go in a URL, where logs could pick them up.
+- **Beta doesn't keep prod's tokens.** The beta/local cleaner deletes `tbl_system_patreonkeys`, and
+  the job then fails with a clear "no Patreon tokens" message until someone seeds a row. Step 5
+  decides whether beta gets its own client.
+- **Webhooks are out of scope.** Patreon recommends `members:*` webhooks with polling as a fallback.
+  We can revisit later.
+
+## How we work through this
+
+**Each step ends the same way: build and relevant tests green, commit that step alone, then STOP and
+review with Steve before starting the next.** Feedback may change later steps; update this plan when
+it does.
+
+## Step 0 — Commit the plan
+
+Commit this file. → review.
+
+## Step 1 — `ClientSecret` in `PatreonOptions`
+
+- `Lib/Configuration/SectionOptions.cs`:
+  - `PatreonOptions` gains `ClientSecret`, required from Production like `ClientId`.
+  - `PatreonAuthOptions` is deleted, and `AuthenticationOptions.Patreon` becomes `PatreonOptions`.
+  - `PatreonOptions` becomes `sealed`, and its `Validate` is no longer virtual.
+- `ServiceCollectionExtensions.AddFantasyCriticPatreon`: drop the "as the base type" comment.
+- `Worker/appsettings.json`: add `Authentication:Patreon:ClientSecret: "secret"`.
+- Tests:
+  - `HostOptionsTests`: update the Worker's missing-keys message.
+  - `ConfigurationSectionTests`: the Worker binding test expects `ClientSecret` too, and the Web
+    Patreon test binds `PatreonOptions`.
+  - `ServiceRegistrationTests`: update `AdminServices_RegisterWebsPatreonLoginOptions…`, which may
+    become redundant.
+- No secret changes: the value is already in both environments' blobs.
+
+→ commit → review.
+
+## Step 2 — `PatreonApiClient` replaces Patreon.Net
+
+- **`Lib/Patreon/PatreonApiClient.cs`**, a typed `HttpClient` with base `https://www.patreon.com/`
+  (the `www.` host matters: Patreon has returned 401s on the bare host). It has two methods:
+  - `GetCampaignMembers(string accessToken, string campaignId)`:
+    - GET `api/oauth2/v2/campaigns/{id}/members` with
+      `include=currently_entitled_tiers,user&fields[tier]=title&fields[user]=full_name&page[count]=1000`,
+      following `links.next` until it is absent.
+    - Returns `Result<IReadOnlyList<PatreonMember>, PatreonApiError>`, so a 401 is an expected result
+      the caller acts on.
+    - Any other non-success status throws, with the status and body.
+  - `RefreshTokens(string refreshToken)`:
+    - POST `api/oauth2/token` with a `FormUrlEncodedContent` body of `grant_type=refresh_token`,
+      `refresh_token`, `client_id` and `client_secret`.
+    - Returns the new `PatreonTokens`, or throws with Patreon's status and body.
+- **JSON:API response records**, `internal`, next to the client (following
+  `OpenCritic/OpenCriticGameResponse.cs`). The client joins `data[].relationships` to `included[]`
+  by (type, id). It maps each member to
+  `record PatreonMember(string UserId, string? FullName, IReadOnlyList<string> TierTitles)`.
+- **`PatreonService`**:
+  - Takes `PatreonApiClient`.
+  - `GetPatronInfo` and `UserIsPlusUser` share one private `GetMembers()`: read tokens, call, and on a
+    401 refresh, save, and retry once.
+  - A second 401 after a fresh refresh throws.
+  - The Plus/Donor tier logic is unchanged.
+- **`MySQLPatreonTokensRepo.GetMostRecentTokens`**: an empty table fails with "No Patreon tokens in
+  tbl_system_patreonkeys" rather than a bare `QuerySingleAsync` exception.
+- **Registration**: `AddFantasyCriticPatreon` registers `AddHttpClient<PatreonApiClient>`.
+- **Remove** the `Patreon.Net` package reference.
+- **Unit tests** in `FantasyCritic.Test`, using a stub `HttpMessageHandler`:
+  - Paging across two pages.
+  - Includes joined correctly (a member with no tiers, a member whose user isn't linked to FC).
+  - The refresh body carries `client_secret`.
+  - 401 → refresh → retry, with the new tokens saved.
+  - A failed refresh throws with the body.
+
+→ commit → review.
+
+## Step 3 — Beta and local cleans drop Patreon tokens
+
+- `MySQLBetaCleaner` gains `CleanPatreonTokens`: `DELETE FROM tbl_system_patreonkeys`, inside the same
+  transaction.
+- It covers beta restores (`RestoreSnapshotService`) and local imports and cleans, since both use
+  this cleaner. Neither should hold prod's live tokens.
+- Update the RdsSnapshotManager README and menu text that lists what gets scrubbed.
+
+→ commit → review.
+
+## Step 4 — Deploy (Steve), before ~2026-10-28
+
+- **No config changes.**
+- **Checking it after deploy**: run `RefreshPatreonInfo` from the admin console. It succeeds on the
+  current access token.
+- **The real test is around Oct 28**, when the token expires.
+  - A new `tbl_system_patreonkeys` row means the documented refresh works.
+  - If it fails, the job now shows Patreon's actual response.
+
+## Step 5 — Move to a v2 OAuth client (Steve, in the Patreon portal and AWS)
+
+1. **Create a v2 client for prod**:
+   - Name and description, plus the logo (fixes the broken one).
+   - Redirect URI `https://www.fantasycritic.games/signin-patreon`. Confirm the exact host(s)
+     against the current v1 client.
+2. **Beta, to decide then.** Either:
+   - (a) A separate beta client, with beta's redirect URI and its own creator tokens seeded after
+     each restore. Its tokens can never touch prod's.
+   - (b) Beta gets no Patreon, so the job fails clearly there and linking is disabled.
+   - Recommendation: (a). It's cheap, and it keeps linking testable on beta.
+3. **Update** `Authentication:Patreon:ClientId` and `ClientSecret` in `fantasyCritic/Production/appsettings`
+   (and beta's for option (a)).
+4. **Insert the new client's Creator's Access and Refresh Tokens** as a new `tbl_system_patreonkeys`
+   row, then restart web and worker. The order matters: the old client's tokens don't work with the
+   new client's ID.
+5. **Verify**:
+   - Run `RefreshPatreonInfo`.
+   - Link a Patreon account (existing links store the Patreon user ID, which isn't tied to a client,
+     so they should survive).
+   - Confirm the consent screen shows the new name and logo.
+6. **Delete the v1 client** after the first successful refresh on the new client (about a month
+   later), not before.
+
+Step 5 needs no code. If it turns out it does, it becomes its own step with a commit.
