@@ -135,6 +135,10 @@ public static class ServiceCollectionExtensions
     private static IServiceCollection AddFantasyCriticPatreon(this IServiceCollection services, PatreonOptions patreon)
     {
         services.AddSingleton(patreon);
+        services.AddHttpClient<PatreonApiClient>(client =>
+        {
+            client.BaseAddress = new Uri(PatreonApiClient.BaseAddress);
+        });
         services.AddScoped<PatreonService>();
         return services;
     }
