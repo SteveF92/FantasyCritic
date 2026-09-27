@@ -2,6 +2,8 @@
 # REPOSITORY ROOT:
 #
 #   docker build -f src/FantasyCritic.DatabaseUpdater/Dockerfile .
+#
+# The aspnet image, not runtime: Hosting and EmailTemplates reference the ASP.NET Core shared framework.
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
 USER $APP_UID
@@ -13,8 +15,11 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj", "src/FantasyCritic.DatabaseUpdater/"]
 COPY ["src/FantasyCritic.AWS/FantasyCritic.AWS.csproj", "src/FantasyCritic.AWS/"]
+COPY ["src/FantasyCritic.EmailTemplates/FantasyCritic.EmailTemplates.csproj", "src/FantasyCritic.EmailTemplates/"]
+COPY ["src/FantasyCritic.Hosting/FantasyCritic.Hosting.csproj", "src/FantasyCritic.Hosting/"]
 COPY ["src/FantasyCritic.Lib/FantasyCritic.Lib.csproj", "src/FantasyCritic.Lib/"]
 COPY ["src/FantasyCritic.MySQL/FantasyCritic.MySQL.csproj", "src/FantasyCritic.MySQL/"]
+COPY ["src/FantasyCritic.Postmark/FantasyCritic.Postmark.csproj", "src/FantasyCritic.Postmark/"]
 RUN dotnet restore "src/FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj"
 COPY . .
 RUN dotnet build "src/FantasyCritic.DatabaseUpdater/FantasyCritic.DatabaseUpdater.csproj" -c $BUILD_CONFIGURATION --no-restore

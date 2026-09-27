@@ -1,12 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.RDS;
 using Amazon.RDS.Model;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
 using NodaTime;
@@ -22,32 +20,29 @@ public class RDSManager : IRDSManager
         _instanceName = instanceName;
     }
 
-    public async Task<string> SnapshotRDS(Instant snapshotTime, string? snapshotIdentifier = null)
+    public async Task SnapshotRDS(string snapshotIdentifier, CancellationToken cancellationToken)
+    {
+        var validation = RdsSnapshotIdentifierValidator.Validate(snapshotIdentifier);
+        if (validation.IsFailure)
+        {
+            throw new InvalidOperationException(validation.Error);
+        }
+
+        using AmazonRDSClient rdsClient = new AmazonRDSClient();
+        CreateDBSnapshotRequest request = new CreateDBSnapshotRequest(snapshotIdentifier, _instanceName);
+        await rdsClient.CreateDBSnapshotAsync(request, cancellationToken);
+    }
+
+    public async Task<DatabaseSnapshotInfo> GetSnapshot(string snapshotIdentifier, CancellationToken cancellationToken)
     {
         using AmazonRDSClient rdsClient = new AmazonRDSClient();
-
-        string snapName;
-        if (snapshotIdentifier is null)
+        DescribeDBSnapshotsRequest request = new DescribeDBSnapshotsRequest()
         {
-            var date = snapshotTime.InZone(TimeExtensions.EasternTimeZone).LocalDateTime.Date;
-            var dateString = date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-            var random = Guid.NewGuid().ToString()[..1];
-            snapName = "adminsnap-" + dateString + "-" + random;
-        }
-        else
-        {
-            var validation = RdsSnapshotIdentifierValidator.Validate(snapshotIdentifier);
-            if (validation.IsFailure)
-            {
-                throw new InvalidOperationException(validation.Error);
-            }
-
-            snapName = snapshotIdentifier;
-        }
-
-        CreateDBSnapshotRequest request = new CreateDBSnapshotRequest(snapName, _instanceName);
-        await rdsClient.CreateDBSnapshotAsync(request, CancellationToken.None);
-        return snapName;
+            DBInstanceIdentifier = _instanceName,
+            DBSnapshotIdentifier = snapshotIdentifier
+        };
+        DescribeDBSnapshotsResponse snaps = await rdsClient.DescribeDBSnapshotsAsync(request, cancellationToken);
+        return ToDomain(snaps.DBSnapshots.Single());
     }
 
     public async Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentSnapshots()
@@ -60,12 +55,14 @@ public class RDSManager : IRDSManager
         DescribeDBSnapshotsResponse snaps = await rdsClient.DescribeDBSnapshotsAsync(request, CancellationToken.None);
         var orderedSnaps = snaps.DBSnapshots.OrderBy(x => x.PercentProgress).ThenByDescending(x => x.SnapshotCreateTime);
         var domainObjects = orderedSnaps
-            .Select(x =>
-                new DatabaseSnapshotInfo(x.DBSnapshotIdentifier,
-                    Instant.FromDateTimeUtc(x.SnapshotCreateTime ?? DateTime.MinValue),
-                    x.PercentProgress ?? 0,
-                    x.Status))
+            .Select(ToDomain)
             .ToList();
         return domainObjects;
     }
+
+    private static DatabaseSnapshotInfo ToDomain(DBSnapshot snapshot) =>
+        new DatabaseSnapshotInfo(snapshot.DBSnapshotIdentifier,
+            Instant.FromDateTimeUtc(snapshot.SnapshotCreateTime ?? DateTime.MinValue),
+            snapshot.PercentProgress ?? 0,
+            snapshot.Status);
 }

@@ -1,0 +1,13 @@
+{
+  "profiles": {
+    "FantasyCritic.DiscordBot": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:5082",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
+}

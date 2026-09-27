@@ -179,6 +179,11 @@ public class InterLeagueService
         return _fantasyCriticRepo.SetActionProcessingMode(modeOn);
     }
 
+    public Task SetWorkerShouldPullNewJobs(bool shouldPull)
+    {
+        return _fantasyCriticRepo.SetWorkerShouldPullNewJobs(shouldPull);
+    }
+
     public Task CreateMasterGameRequest(MasterGameRequest domainRequest)
     {
         return _masterGameRepo.CreateMasterGameRequest(domainRequest);

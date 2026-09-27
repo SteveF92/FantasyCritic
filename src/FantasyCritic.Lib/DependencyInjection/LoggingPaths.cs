@@ -10,6 +10,8 @@ public class LoggingPaths
     public static LoggingPaths WebApplication => new LoggingPaths("web");
     public static LoggingPaths DatabaseUpdater => new LoggingPaths("databaseupdater");
     public static LoggingPaths DiscordBot => new LoggingPaths("discordbot");
+    public static LoggingPaths Worker => new LoggingPaths("worker");
+    public static LoggingPaths CommandLine => new LoggingPaths("commandline");
     public static LoggingPaths UnitTests => new LoggingPaths("tests");
 
     private LoggingPaths(string appName)
@@ -23,6 +25,7 @@ public class LoggingPaths
     public string AllLogPath => $"{GetBase()}/{AppName}/log-all.txt";
     public string MyLogPath => $"{GetBase()}/{AppName}/log-my.txt";
     public string WarnLogPath => $"{GetBase()}/{AppName}/log-warning.txt";
+    public string GetFlowLogPath(string flow) => $"{GetBase()}/{AppName}/log-{flow.ToLowerInvariant()}.txt";
 
     private static string GetBase() => RuntimeInformation.IsOSPlatform(OSPlatform.Windows) ? _windowsBase : _linuxBase;
 }

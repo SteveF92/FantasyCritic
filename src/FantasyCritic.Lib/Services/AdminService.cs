@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.LeagueActions;
@@ -18,6 +19,7 @@ namespace FantasyCritic.Lib.Services;
 public class AdminService
 {
     private static readonly ILogger _logger = Log.ForContext<AdminService>();
+    private static readonly IReadOnlyList<IsoDayOfWeek> AcceptableActionProcessingDays = [IsoDayOfWeek.Saturday, IsoDayOfWeek.Sunday];
 
     private readonly IRDSManager _rdsManager;
     private readonly RoyaleService _royaleService;
@@ -34,10 +36,12 @@ public class AdminService
     private readonly IGGService _ggService;
     private readonly PatreonService _patreonService;
     private readonly IClock _clock;
+    private readonly EnvironmentConfiguration _environmentConfiguration;
 
     public AdminService(FantasyCriticService fantasyCriticService, FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
         InterLeagueService interLeagueService, IOpenCriticService openCriticService, IGGService ggService, PatreonService patreonService, IClock clock, IRDSManager rdsManager,
-        RoyaleService royaleService, IHypeFactorService hypeFactorService, DiscordPushService discordPushService, IDiscordRepo discordRepo, IDailyStatsRepo dailyStatsRepo)
+        RoyaleService royaleService, IHypeFactorService hypeFactorService, DiscordPushService discordPushService, IDiscordRepo discordRepo, IDailyStatsRepo dailyStatsRepo,
+        EnvironmentConfiguration environmentConfiguration)
     {
         _fantasyCriticService = fantasyCriticService;
         _userManager = userManager;
@@ -54,6 +58,7 @@ public class AdminService
         _discordPushService = discordPushService;
         _discordRepo = discordRepo;
         _dailyStatsRepo = dailyStatsRepo;
+        _environmentConfiguration = environmentConfiguration;
     }
 
     public Task<IReadOnlyList<LeagueYear>> GetLeagueYears(int year)
@@ -342,10 +347,15 @@ public class AdminService
         _discordPushService.ClearMasterGameEditQueue();
     }
 
-    public Task SnapshotDatabase()
+    //Returns once RDS accepts the request, while the snapshot is still being created. Poll GetDatabaseSnapshot to know when it's usable.
+    public Task StartDatabaseSnapshot(string snapshotName, CancellationToken cancellationToken)
     {
-        Instant time = _clock.GetCurrentInstant();
-        return _rdsManager.SnapshotRDS(time);
+        return _rdsManager.SnapshotRDS(snapshotName, cancellationToken);
+    }
+
+    public Task<DatabaseSnapshotInfo> GetDatabaseSnapshot(string snapshotName, CancellationToken cancellationToken)
+    {
+        return _rdsManager.GetSnapshot(snapshotName, cancellationToken);
     }
 
     public Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentDatabaseSnapshots()
@@ -353,12 +363,10 @@ public class AdminService
         return _rdsManager.GetRecentSnapshots();
     }
 
-    public async Task SetTimeFlags()
+    public async Task RunEndOfYearRollover()
     {
         var supportedYears = await _interLeagueService.GetSupportedYears();
-
-        var now = _clock.GetCurrentInstant();
-        var nycNow = now.InZone(TimeExtensions.EasternTimeZone);
+        var nycNow = _clock.GetCurrentInstant().InZone(TimeExtensions.EasternTimeZone);
 
         foreach (var supportedYear in supportedYears)
         {
@@ -381,7 +389,13 @@ public class AdminService
                 await _discordPushService.SendFinalYearStandings(leagueYears, nycNow.Date);
             }
         }
+    }
 
+    public async Task AdvanceRoyaleQuarters()
+    {
+        var nycNow = _clock.GetCurrentInstant().InZone(TimeExtensions.EasternTimeZone);
+
+        //Finish any quarters whose end date has passed.
         var supportedQuarters = await _royaleService.GetYearQuarters();
         foreach (var supportedQuarter in supportedQuarters)
         {
@@ -398,52 +412,17 @@ public class AdminService
             }
         }
 
+        //Calculate winners for any finished quarters that don't have one yet. This reloads the quarters, so it sees the ones just finished above.
+        await RecalculateRoyaleWinners();
+
+        //Start the next quarter as we approach it.
         supportedQuarters = await _royaleService.GetYearQuarters();
-        foreach (var supportedQuarter in supportedQuarters)
-        {
-            bool readyToCalculateWinners = supportedQuarter.Finished && supportedQuarter.WinningUser is null;
-            if (!readyToCalculateWinners)
-            {
-                continue;
-            }
-
-            await _royaleService.CalculateRoyaleWinnerForQuarter(supportedQuarter);
-        }
-
         var latestQuarter = supportedQuarters.WhereMax(x => x.YearQuarter).Single();
         var nextQuarter = latestQuarter.YearQuarter.NextQuarter;
         var dayToStartNextQuarter = nextQuarter.FirstDateOfQuarter.Minus(Period.FromDays(15));
         if (nycNow.Date > dayToStartNextQuarter)
         {
             await _royaleService.StartNewQuarter(nextQuarter);
-        }
-
-        var dayOfWeek = nycNow.DayOfWeek;
-        var timeOfDay = nycNow.TimeOfDay;
-        var earliestTimeToSetActionProcessingOn = new LocalTime(19, 59);
-        var latestTimeToSetActionProcessingOn = new LocalTime(20, 59);
-        if (dayOfWeek == TimeExtensions.ActionProcessingDay && timeOfDay > earliestTimeToSetActionProcessingOn && timeOfDay < latestTimeToSetActionProcessingOn)
-        {
-            _logger.Information($"Automatically setting action processing mode = true because date/time is: {nycNow}");
-            await _interLeagueService.SetActionProcessingMode(true);
-            _logger.Information("Snapshotting database");
-            await _rdsManager.SnapshotRDS(now);
-        }
-
-        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-        if (systemWideSettings.ActionProcessingMode)
-        {
-            var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
-            if (actionProcessingSets.Any())
-            {
-                var mostRecentSet = actionProcessingSets.Where(x => x.ProcessName.StartsWith("Drop/Bid Processing")).MaxBy(x => x.ProcessTime)!;
-                var timeSinceMostRecentProcessing = now - mostRecentSet.ProcessTime;
-                if (timeSinceMostRecentProcessing < Duration.FromHours(4))
-                {
-                    //If last processing was less than 4 hours ago, turn action processing mode off.
-                    await _interLeagueService.SetActionProcessingMode(false);
-                }
-            }
         }
     }
 
@@ -473,6 +452,13 @@ public class AdminService
         var actionProcessor = new ActionProcessor(systemWideValues, processingTime, currentDate, masterGameYearDictionary, allTags);
         FinalizedActionProcessingResults results = actionProcessor.ProcessActions(leaguesAndBids, leaguesAndDropRequests, publishersInLeagues);
         return results;
+    }
+
+    public async Task<bool> AnyUnprocessedSpecialAuctions()
+    {
+        var allSpecialAuctions = await _fantasyCriticRepo.GetAllActiveSpecialAuctions();
+        var now = _clock.GetCurrentInstant();
+        return allSpecialAuctions.Any(x => x.IsLocked(now));
     }
 
     public async Task<FinalizedActionProcessingResults> GetSpecialAuctionResults(SystemWideValues systemWideValues, int year, Instant processingTime, IReadOnlyList<LeagueYear> allLeagueYears)
@@ -506,6 +492,24 @@ public class AdminService
         var actionProcessor = new ActionProcessor(systemWideValues, processingTime, currentDate, masterGameYearDictionary, allTags);
         FinalizedActionProcessingResults results = actionProcessor.ProcessSpecialAuctions(specialAuctionSets);
         return results;
+    }
+
+    //Checked when the button is pressed, for immediate feedback, and again when the job runs, since either can change while it waits in the queue.
+    public async Task<Result> CanProcessActions()
+    {
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        if (!systemWideSettings.ActionProcessingMode)
+        {
+            return Result.Failure("Turn on action processing mode first.");
+        }
+
+        var today = _clock.GetToday();
+        if (_environmentConfiguration.IsProduction && !AcceptableActionProcessingDays.Contains(today.DayOfWeek))
+        {
+            return Result.Failure($"You probably didn't mean to process pickups on a {today.DayOfWeek}.");
+        }
+
+        return Result.Success();
     }
 
     public async Task ProcessActions(SystemWideValues systemWideValues, int year)
@@ -622,10 +626,8 @@ public class AdminService
         var leagueYearsWithSuperDrops = allLeagueYears.Where(x => x.IsFirstDraftFinished && x.Options.GrantSuperDrops).ToList();
 
         var allLeagueActions = await _fantasyCriticRepo.GetLeagueActions(currentDate.Year);
-        var allSuperDropActions = allLeagueActions.Where(x => x.Description.Contains("super drop", StringComparison.InvariantCultureIgnoreCase)).ToList();
         var automatedGrantActions = allLeagueActions.Where(x => x.ActionType == "Granted Super Drop");
-        var manualGrantActions = new List<LeagueAction>();
-        var publishersAlreadyGranted = automatedGrantActions.Concat(manualGrantActions).Select(x => x.Publisher.PublisherID).ToHashSet();
+        var publishersAlreadyGranted = automatedGrantActions.Select(x => x.Publisher.PublisherID).ToHashSet();
 
         List<Publisher> publishersToGrantSuperDrop = [];
         List<LeagueAction> superDropActions = [];

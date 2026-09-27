@@ -89,7 +89,8 @@ public class DropProcessingTests : IntegrationTestBase
         });
 
         await _adminSession.ActionRunner.TurnOnActionProcessingModeAsync();
-        await _adminSession.ActionRunner.ProcessActionsAsync();
+        var processActionsJob = await _adminSession.ActionRunner.ProcessActionsAsync();
+        await JobTestHelpers.RunQueuedJobAsync(Factory, processActionsJob.JobID);
         await _adminSession.ActionRunner.TurnOffActionProcessingModeAsync();
 
         _postProcessingSnapshot = await _adminSession.League.GetLeagueYearAsync(_league.LeagueID, _league.Year, null);

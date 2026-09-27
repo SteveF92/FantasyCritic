@@ -3247,6 +3247,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync("update tbl_meta_systemwidesettings set ActionProcessingMode = @modeOn;", new { modeOn });
     }
 
+    public async Task SetWorkerShouldPullNewJobs(bool shouldPull)
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync("update tbl_meta_systemwidesettings set WorkerShouldPullNewJobs = @shouldPull;", new { shouldPull });
+    }
+
     public async Task EditPublisher(EditPublisherRequest editValues, LeagueAction leagueAction)
     {
         string sql = "update tbl_league_publisher SET ";

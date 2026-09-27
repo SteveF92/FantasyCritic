@@ -60,7 +60,7 @@ public class RdsSnapshotManagerOptionsValidatorTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsFailure, Is.True);
-            Assert.That(result.Error, Does.Contain("instanceName"));
+            Assert.That(result.Error, Does.Contain("InstanceName"));
         }
     }
 
@@ -76,7 +76,7 @@ public class RdsSnapshotManagerOptionsValidatorTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsFailure, Is.True);
-            Assert.That(result.Error, Does.Contain("connectionString"));
+            Assert.That(result.Error, Does.Contain("ConnectionString"));
         }
     }
 
@@ -128,7 +128,7 @@ public class RdsSnapshotManagerOptionsValidatorTests
         using (Assert.EnterMultipleScope())
         {
             Assert.That(result.IsFailure, Is.True);
-            Assert.That(result.Error, Does.Contain("enableWriteOperations"));
+            Assert.That(result.Error, Does.Contain("EnableWriteOperations"));
         }
     }
 }

@@ -3,6 +3,7 @@ using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
 using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
@@ -25,13 +26,13 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         InterLeagueService interLeagueService,
         IDiscordFormatter discordFormatter,
         IReadOnlyFantasyCriticUserStore userStore,
-        FantasyCriticSettings fantasyCriticSettings)
+        EnvironmentConfiguration environmentConfiguration)
     {
         _discordRepo = discordRepo;
         _interLeagueService = interLeagueService;
         _discordFormatter = discordFormatter;
         _userStore = userStore;
-        _baseAddress = fantasyCriticSettings.BaseAddress;
+        _baseAddress = environmentConfiguration.BaseAddress;
     }
 
     [UsedImplicitly]

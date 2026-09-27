@@ -1,18 +1,9 @@
 using System.Runtime.InteropServices;
 using System.Text.Json;
-using FantasyCritic.AWS;
-using FantasyCritic.EmailTemplates;
 using FantasyCritic.Hosting;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.OpenCritic;
-using FantasyCritic.Lib.Scheduling;
-using FantasyCritic.Lib.Scheduling.Lib;
-using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL;
-using FantasyCritic.Postmark;
 using FantasyCritic.Web.Authorization;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.OpenApi;
@@ -28,80 +19,48 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.StaticAssets;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NodaTime.Serialization.SystemTextJson;
 using NSwag;
 using Serilog;
 using CacheControlHeaderValue = Microsoft.Net.Http.Headers.CacheControlHeaderValue;
-using IEmailSender = FantasyCritic.Lib.Interfaces.IEmailSender;
 
 namespace FantasyCritic.Web;
 
 public static class HostingExtensions
 {
-    public static WebApplication ConfigureServices(this WebApplicationBuilder builder, IConfigurationRoot configuration)
+    public static WebApplication ConfigureServices(this WebApplicationBuilder builder, WebOptions webOptions)
     {
         var services = builder.Services;
         var environment = builder.Environment;
 
         Log.Information($"Startup: Running in {environment} mode.");
 
-        var rdsInstanceName = configuration["AWS:rdsInstanceName"]!;
-        var postmarkAPIKey = configuration["Postmark:apiKey"]!;
-        var openCriticAPIKey = configuration["OpenCritic:apiKey"]!;
-
         //Repositories, domain services and the Discord push service. Shared with the bot process
-        //(and, later, the Hangfire worker) so the three hosts cannot drift apart.
-        services.AddFantasyCriticCore(configuration, environment);
+        //and the worker so the three hosts cannot drift apart.
+        services.AddFantasyCriticCore(webOptions.ConnectionStrings, webOptions.Discord, webOptions.BaseAddress, environment);
+
+        //Shared with the worker, whose job handlers call the same services the admin actions do.
+        services.AddFantasyCriticAdminServices(webOptions.Aws, webOptions.OpenCritic, webOptions.Authentication.Patreon);
+        services.AddFantasyCriticEmail(webOptions.Postmark);
 
         services.AddHealthChecks()
             .AddCheck<DatabaseHealthCheck>("database", tags: [DatabaseHealthCheck.ReadyTag]);
 
+        //For the admin monitor. The timeout is short because a stopped container does not refuse the connection,
+        //it just never answers, and the console should say so promptly.
+        services.AddSingleton(webOptions.ServiceHealth);
+        services.AddHttpClient<ServiceHealthClient>(client =>
+        {
+            client.Timeout = TimeSpan.FromSeconds(3);
+        });
+
+        //Nothing goes to Loki from Development, so there are no logs there to link to.
+        services.AddSingleton(new JobLogLinks(webOptions.GrafanaLogs, environment.IsDevelopment() ? null : environment.EnvironmentName));
+
         //Read once at startup: the RELEASE file cannot change without a new deploy, which restarts the process.
         services.AddSingleton<BuildInfo>(_ => BuildInfoReader.Read(environment.ContentRootPath));
-
-        //Web-only services
-        services.AddScoped<IEmailBuilder, RazorEmailBuilder>();
-        services.AddScoped<IRDSManager>(_ => new RDSManager(rdsInstanceName));
-        services.AddScoped<EmailSendingService>();
-
-        //Email Services
-        //services.AddScoped<IEmailSender>(_ => new SESEmailSender(configuration["AWS:region"], "noreply@fantasycritic.games"));
-        //services.AddScoped<IEmailSender>(_ => new MailGunEmailSender("fantasycritic.games", mailgunAPIKey, "noreply@fantasycritic.games", "Fantasy Critic"));
-        services.AddScoped<IEmailSender>(_ => new PostmarkEmailSender(postmarkAPIKey, "admin@fantasycritic.games"));
-
-        services.AddScoped<AdminService>();
-
-        services.AddHttpClient<IOpenCriticService, OpenCriticService>(client =>
-        {
-            client.BaseAddress = new Uri("https://opencritic-api.p.rapidapi.com/");
-            client.DefaultRequestHeaders.Add("X-RapidAPI-Key", openCriticAPIKey);
-            client.DefaultRequestHeaders.Add("X-RapidAPI-Host", "opencritic-api.p.rapidapi.com");
-        });
-        services.AddHttpClient<IGGService, GGService>(client =>
-        {
-            client.BaseAddress = new Uri("https://api.ggapp.io/");
-        });
-
-        if (!environment.IsDevelopment())
-        {
-            //Add scheduled tasks & scheduler
-            services.AddSingleton<IScheduledTask, RefreshDataTask>();
-            services.AddSingleton<IScheduledTask, TimeFlagsTask>();
-            services.AddSingleton<IScheduledTask, PatreonUpdateTask>();
-            services.AddSingleton<IScheduledTask, PublicBiddingNotificationTask>();
-            services.AddSingleton<IScheduledTask, ProcessSpecialAuctionsTask>();
-            services.AddSingleton<IScheduledTask, GrantSuperDropsTask>();
-            services.AddSingleton<IScheduledTask, ExpireTradesTask>();
-            services.AddSingleton<IScheduledTask, GameReleaseNotificationTask>();
-            services.AddSingleton<IScheduledTask, ReleasingThisWeekNotificationTask>();
-            services.AddScheduler((_, args) =>
-            {
-                args.SetObserved();
-            });
-        }
 
         services.AddAuthorization(options =>
         {
@@ -148,6 +107,13 @@ public static class HostingExtensions
                 policy.RequireAuthenticatedUser();
                 policy.RequireRole("ActionRunner");
             });
+
+            options.AddPolicy("JobManager", policy =>
+            {
+                policy.AddAuthenticationSchemes(IdentityConstants.ApplicationScheme);
+                policy.RequireAuthenticatedUser();
+                policy.RequireRole("JobManager");
+            });
         });
 
         services.AddIdentity<FantasyCriticUser, FantasyCriticRole>(FantasyCriticIdentityOptions.Configure)
@@ -176,28 +142,28 @@ public static class HostingExtensions
             authenticationBuilder
                 .AddGoogle(options =>
                 {
-                    options.ClientId = configuration["Authentication:Google:ClientId"]!;
-                    options.ClientSecret = configuration["Authentication:Google:ClientSecret"]!;
+                    options.ClientId = webOptions.Authentication.Google.ClientId;
+                    options.ClientSecret = webOptions.Authentication.Google.ClientSecret;
                 })
                 .AddMicrosoftAccount(microsoftOptions =>
                 {
-                    microsoftOptions.ClientId = configuration["Authentication:Microsoft:ClientId"]!;
-                    microsoftOptions.ClientSecret = configuration["Authentication:Microsoft:ClientSecret"]!;
+                    microsoftOptions.ClientId = webOptions.Authentication.Microsoft.ClientId;
+                    microsoftOptions.ClientSecret = webOptions.Authentication.Microsoft.ClientSecret;
                 })
                 .AddTwitch(options =>
                 {
-                    options.ClientId = configuration["Authentication:Twitch:ClientId"]!;
-                    options.ClientSecret = configuration["Authentication:Twitch:ClientSecret"]!;
+                    options.ClientId = webOptions.Authentication.Twitch.ClientId;
+                    options.ClientSecret = webOptions.Authentication.Twitch.ClientSecret;
                 })
                 .AddPatreon(options =>
                 {
-                    options.ClientId = configuration["Authentication:Patreon:ClientId"]!;
-                    options.ClientSecret = configuration["Authentication:Patreon:ClientSecret"]!;
+                    options.ClientId = webOptions.Authentication.Patreon.ClientId;
+                    options.ClientSecret = webOptions.Authentication.Patreon.ClientSecret;
                 })
                 .AddDiscord(options =>
                 {
-                    options.ClientId = configuration["Authentication:Discord:ClientId"]!;
-                    options.ClientSecret = configuration["Authentication:Discord:ClientSecret"]!;
+                    options.ClientId = webOptions.Authentication.Discord.ClientId;
+                    options.ClientSecret = webOptions.Authentication.Discord.ClientSecret;
                 });
         }
 
@@ -247,7 +213,6 @@ public static class HostingExtensions
             });
         }
 
-        services.AddRazorTemplating();
         services.AddSession();
         services.AddOpenApiDocument(settings =>
         {

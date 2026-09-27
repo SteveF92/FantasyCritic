@@ -1,6 +1,6 @@
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Interfaces;
@@ -25,7 +25,7 @@ public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionCon
         GameAcquisitionService gameAcquisitionService,
         IClock clock,
         IDiscordFormatter discordFormatter,
-        FantasyCriticSettings fantasyCriticSettings)
+        EnvironmentConfiguration environmentConfiguration)
     {
         _discordRepo = discordRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
@@ -33,7 +33,7 @@ public class SpecialAuctionsCommand : InteractionModuleBase<SocketInteractionCon
         _gameAcquisitionService = gameAcquisitionService;
         _clock = clock;
         _discordFormatter = discordFormatter;
-        _baseAddress = fantasyCriticSettings.BaseAddress;
+        _baseAddress = environmentConfiguration.BaseAddress;
     }
 
     [UsedImplicitly]

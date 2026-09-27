@@ -1,4 +1,4 @@
-# Full local stack: MySQL, migrator, seed data, web app and Discord bot.
+# Full local stack: MySQL, migrator, seed data, web app, Discord bot and job worker.
 #
 #   docker compose -f infrastructure/docker-compose-complete.yaml up
 #
@@ -60,9 +60,9 @@ services:
       database-updater:
         condition: service_completed_successfully
     environment:
-      localConnectionString: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
-      baseAddress: "https://www.fantasycritic.games"
-      addedByUserIDOverride: "00000000-0000-0000-0000-000000000000"
+      LocalConnectionString: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
+      BaseAddress: "https://www.fantasycritic.games"
+      AddedByUserIdOverride: "00000000-0000-0000-0000-000000000000"
 
   web:
     container_name: fantasycritic-web
@@ -87,14 +87,10 @@ services:
       AllowedHosts: "*"
       # appsettings uses localhost:3307 for the host; in Compose the DB service is `mysql`.
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
-      Logging__LogLevel__Default: Trace
-      Logging__LogLevel__Microsoft: Warning
-      Logging__LogLevel__Microsoft.Hosting.Lifetime: Information
-      AWS__rdsInstanceName: secret
-      AWS__region: us-east-1
-      Mailgun__apiKey: secret
-      Postmark__apiKey: secret
-      OpenCritic__apiKey: key
+      Aws__RdsInstanceName: secret
+      Aws__Region: us-east-1
+      Postmark__ApiKey: secret
+      OpenCritic__ApiKey: secret
       Authentication__Google__ClientId: secret
       Authentication__Google__ClientSecret: secret
       Authentication__Microsoft__ClientId: secret
@@ -103,25 +99,22 @@ services:
       Authentication__Twitch__ClientSecret: secret
       Authentication__Patreon__ClientId: secret
       Authentication__Patreon__ClientSecret: secret
+      Authentication__Patreon__CampaignId: secret
       Authentication__Discord__ClientId: secret
       Authentication__Discord__ClientSecret: secret
-      PatreonService__AccessToken: secret
-      PatreonService__RefreshToken: secret
-      PatreonService__CampaignID: secret
-      BotToken: secret
+      Discord__BotToken: secret
       # Public URL when using published port 8080 (VS dev uses https://localhost:44477 in appsettings).
       BaseAddress: http://localhost:8080
-      RootFolder: "C:\\FantasyCritic"
-      LinuxRootFolder: /var/lib/fantasy-critic
+      # The admin monitor. Both are behind profiles, so without them these read as Unreachable.
+      ServiceHealth__WorkerUrl: http://worker:8080
+      ServiceHealth__DiscordBotUrl: http://discord-bot:8080
 
   discord-bot:
     container_name: fantasycritic-discord-bot
     build:
       context: ..
       dockerfile: src/FantasyCritic.DiscordBot/Dockerfile
-    # Off by default. The bot exits immediately unless a real token is configured, and a
-    # second gateway session on the production token would handle live slash commands from a
-    # developer's machine. Start it deliberately:
+    # Off by default.
     #   docker compose -f infrastructure/docker-compose-complete.yaml --profile bot up
     profiles: [bot]
     restart: unless-stopped
@@ -132,13 +125,62 @@ services:
         condition: service_completed_successfully
     environment:
       DOTNET_ENVIRONMENT: Development
+      # Only for GET /health. No port is published; the web container reaches it by service name.
+      ASPNETCORE_URLS: http://+:8080
       ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
-      AWS__region: us-east-1
+      Aws__Region: us-east-1
       BaseAddress: http://localhost:8080
       # Override with a development bot's token to actually connect.
-      BotToken: secret
-      # Restricts slash command registration to one server while developing.
-      # DevDiscordServerId: "000000000000000000"
+      Discord__BotToken: secret
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "--max-time", "5", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+  worker:
+    container_name: fantasycritic-worker
+    build:
+      context: ..
+      dockerfile: src/FantasyCritic.Worker/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+      database-updater:
+        condition: service_completed_successfully
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      # Only for GET /health. No port is published; the web container reaches it by service name.
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
+      Aws__Region: us-east-1
+      BaseAddress: http://localhost:8080
+      # The image's appsettings.json supplies placeholder values for the rest (Postmark,
+      # OpenCritic, Patreon, Discord__BotToken), which is enough for the host to start. Handlers that
+      # actually call those services will fail until real ones are provided here.
+      Discord__BotToken: secret
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "--max-time", "5", "http://localhost:8080/health"]
+      interval: 15s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+  # One-off commands, the way deploy.sh runs them on the server. Behind a profile so that `up`
+  # never starts it; naming the service in `run` does not need the profile:
+  #   docker compose -f infrastructure/docker-compose-complete.yaml run --rm -T command-line worker-should-pull
+  command-line:
+    build:
+      context: ..
+      dockerfile: src/FantasyCritic.CommandLine/Dockerfile
+    profiles: [tools]
+    restart: "no"
+    environment:
+      DOTNET_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Server=mysql;Port=3306;Database=fantasycritic;Uid=fantasycritic;Pwd=afantasticpassword;SslMode=required;charset=utf8;"
+      Aws__Region: us-east-1
 
 volumes:
   mysql_data:

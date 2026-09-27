@@ -15,11 +15,16 @@ Settings live in `appsettings.json`. Put secrets in user secrets (`UserSecretsId
 
 | Key | Purpose |
 |-----|---------|
-| `betaConnectionString` | Beta RDS MySQL connection (for scrub after beta sync) |
-| `dumpConnectionString` | MySQL connection used by mysqldump (typically admin user) |
-| `localStagingDirectory` | Where `.sql.gz` dumps are written before upload |
-| `destinations.s3.bucket` | S3 bucket for backup uploads |
-| `destinations.googleCloud.credentialsPath` | Path to GCS service account JSON (optional) |
+| `RdsInstances.<name>.InstanceName` | The RDS instance identifier, e.g. `fantasy-critic-rds` |
+| `RdsInstances.<name>.ConnectionString` | MySQL connection to that instance, typically the admin user |
+| `RdsInstances.<name>.EnableWriteOperations` | Whether it may ever be the destination of a restore and scrub |
+| `RdsInstances.<name>.DefaultSnapshotSource` | Whose snapshots are browsed when restoring; exactly one instance |
+| `LocalStagingDirectory` | Where `.sql.gz` dumps are written before upload |
+| `LocalDocker.ConnectionString` | The local Docker MySQL that imports and cleans target |
+| `LocalDocker.ContainerName` | The container whose health is checked first |
+| `Destinations.LocalDirectory.Path` | Local archive for dumps, when `Enabled` |
+| `Destinations.S3.Bucket` | S3 bucket for backup uploads, when `Enabled` |
+| `Destinations.GoogleCloud.CredentialsPath` | Path to GCS service account JSON (optional) |
 
 Connection strings and paths should be set via user secrets in local development, not committed to git.
 
@@ -72,7 +77,7 @@ Do not run this tool in CI or automated agents against production AWS resources.
 6. `docker compose -f infrastructure/docker-compose-mysql.yaml up -d`
 7. Import dump; confirm app can connect on port 3307 and users scrubbed.
 8. Run import again without force; confirm refusal when DB has tables.
-9. Run option 5 on the imported database; confirm scrub runs and refuses if `localDocker.connectionString` is pointed at a remote host.
+9. Run option 5 on the imported database; confirm scrub runs and refuses if `LocalDocker.ConnectionString` is pointed at a remote host.
 
 Optional unit tests:
 

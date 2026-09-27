@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\FantasyCritic.Web\FantasyCritic.Web.csproj" />
     <ProjectReference Include="..\FantasyCritic.ApiClient\FantasyCritic.ApiClient.csproj" />
+    <ProjectReference Include="..\FantasyCritic.CommandLine\FantasyCritic.CommandLine.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,8 +35,6 @@
       WebApplicationFactory can find it when it sets the content root to the output dir.
     -->
     <Content Include="..\FantasyCritic.Web\appsettings.json" CopyToOutputDirectory="PreserveNewest" Link="appsettings.json" />
-    <Content Include="appsettings.Testing.json" CopyToOutputDirectory="PreserveNewest" />
-    <Content Include="appsettings.Testing.Local.json" CopyToOutputDirectory="PreserveNewest" Condition="Exists('appsettings.Testing.Local.json')" />
   </ItemGroup>
 
 </Project>

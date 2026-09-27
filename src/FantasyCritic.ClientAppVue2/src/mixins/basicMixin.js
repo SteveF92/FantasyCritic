@@ -3,7 +3,7 @@ import { formatLongDateTime, formatLongDate } from '@/globalFunctions';
 
 let basicMixin = {
   computed: {
-    ...mapGetters(['interLeagueDataLoaded', 'isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'isActionRunner', 'authIsBusy']),
+    ...mapGetters(['interLeagueDataLoaded', 'isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'isActionRunner', 'isJobManager', 'authIsBusy']),
     ...mapState({
       possibleLeagueOptions: (state) => state.interLeague.possibleLeagueOptions,
       supportedYears: (state) => state.interLeague.supportedYears,

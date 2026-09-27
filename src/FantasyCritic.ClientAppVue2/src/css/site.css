@@ -55,6 +55,9 @@ hr {
 a.btn,
 input.btn,
 button.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border-radius: 0;
   min-height: 40px;
   color: white;

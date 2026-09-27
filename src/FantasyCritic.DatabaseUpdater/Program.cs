@@ -1,10 +1,10 @@
-using System.Reflection;
 using System.Text;
 using DbUp;
 using DbUp.Engine;
 using DbUp.Support;
-using FantasyCritic.AWS;
 using FantasyCritic.DatabaseUpdater.CodeMigrations;
+using FantasyCritic.Hosting;
+using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.MySQL.DapperTypeMaps;
 using Microsoft.Extensions.Configuration;
@@ -12,46 +12,50 @@ using Microsoft.Extensions.Logging;
 using MySqlConnector;
 using NodaTime;
 using Serilog;
-using Serilog.Core;
 using Serilog.Events;
-using Serilog.Sinks.Grafana.Loki;
 
 namespace FantasyCritic.DatabaseUpdater;
 
 public class Program
 {
-    private const string outputTemplate = "{Timestamp:yyyy-MM-dd HH:mm:ss.fff zzz} [{Level}] ({SourceContext}.{Method}) {Message}{NewLine}{Exception}";
+    private const int SucceededExitCode = 0;
+    private const int FailedExitCode = 1;
+
     private static string _connectionString = null!;
 
     public static async Task<int> Main()
     {
         var loggingPaths = LoggingPaths.DatabaseUpdater;
-        (ILoggerFactory loggerFactory, Logger logger) = ConfigureLogging(loggingPaths);
+        var environmentName = FantasyCriticEnvironments.NameFromEnvironmentVariables();
 
-        var environmentName = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")
-                              ?? Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
-                              ?? "Production";
-
-        var preliminaryConfig = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: true)
-            .AddEnvironmentVariables()
-            .Build();
-
-        var awsRegion = preliminaryConfig["AWS:region"] ?? "";
-        var configuration = await GetConfiguration(environmentName, awsRegion);
-        _connectionString = configuration.GetConnectionString("AdminConnection")!;
-        MySqlConnectionStringBuilder mySqlConnectionStringBuilder = new MySqlConnectionStringBuilder(_connectionString);
-        DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
-
-
-        if (environmentName != "Development")
-        {
-            (loggerFactory, logger) = ConfigureGrafanaLogging(loggingPaths, environmentName, configuration);
-        }
+        FantasyCriticLogging.UseBootstrapLogger(CreateLoggerConfiguration(loggingPaths, environmentName, grafana: null));
 
         try
         {
+            Log.Information("Starting database update in {EnvironmentName} mode.", environmentName);
+
+            var configuration = await FantasyCriticConfigurationLoader.Load(environmentName, AppContext.BaseDirectory);
+            var boundOptions = configuration.Get<DatabaseUpdaterOptions>();
+
+            //Loki credentials live in the secret store, so the real logger cannot be built until now. It is built before the
+            //options are validated, so that a host refusing to start says why in Loki too.
+            FantasyCriticLogging.ReplaceBootstrapLogger(() => CreateLoggerConfiguration(loggingPaths, environmentName, boundOptions?.Grafana));
+
+            var validOptions = boundOptions.ToValidOptions(FantasyCriticEnvironments.FromName(environmentName));
+            if (validOptions.IsFailure)
+            {
+                Log.Fatal("Invalid configuration: {Error}", validOptions.Error);
+                return FailedExitCode;
+            }
+
+            var options = validOptions.Value;
+
+            using var loggerFactory = new LoggerFactory().AddSerilog(Log.Logger);
+
+            _connectionString = options.ConnectionStrings.AdminConnection;
+            MySqlConnectionStringBuilder mySqlConnectionStringBuilder = new MySqlConnectionStringBuilder(_connectionString);
+            DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
+
             EnsureDatabase.For.MySqlDatabase(_connectionString);
 
             var scriptsRoot = GetScriptsRoot();
@@ -72,9 +76,9 @@ public class Program
                     // Run-always scripts (e.g., views / stored procedures)
                     .WithScripts(GetRunAlwaysScripts(idempotentScriptsPath))
                     // Run-once, journaled code migrations
-                    .WithScript("2026-08-09_002_processSetCleanup.cs", new ProcessSetCleanupMigration(repositoryConfiguration, logger.ForContext<ProcessSetCleanupMigration>()))
-                    .WithScript("2026-08-31_001_topBidsAndDropsBackfill.cs", new TopBidsAndDropsBackfillMigration(repositoryConfiguration, logger.ForContext<TopBidsAndDropsBackfillMigration>()))
-                    .WithScript("2026-09-02_001_topBidsAndDropsRecompute.cs", new TopBidsAndDropsRecomputeMigration(repositoryConfiguration, logger.ForContext<TopBidsAndDropsRecomputeMigration>()))
+                    .WithScript("2026-08-09_002_processSetCleanup.cs", new ProcessSetCleanupMigration(repositoryConfiguration, Log.ForContext<ProcessSetCleanupMigration>()))
+                    .WithScript("2026-08-31_001_topBidsAndDropsBackfill.cs", new TopBidsAndDropsBackfillMigration(repositoryConfiguration, Log.ForContext<TopBidsAndDropsBackfillMigration>()))
+                    .WithScript("2026-09-02_001_topBidsAndDropsRecompute.cs", new TopBidsAndDropsRecomputeMigration(repositoryConfiguration, Log.ForContext<TopBidsAndDropsRecomputeMigration>()))
                     .WithExecutionTimeout(TimeSpan.FromMinutes(30))
                     .LogTo(loggerFactory)
                     .Build();
@@ -83,48 +87,22 @@ public class Program
 
             if (!result.Successful)
             {
-                logger.Error(result.Error, "Database update could not be completed.");
-                return -1;
+                Log.Error(result.Error, "Database update could not be completed.");
+                return FailedExitCode;
             }
 
-            logger.Information("Database update was completed.");
-            return 0;
+            Log.Information("Database update was completed.");
+            return SucceededExitCode;
+        }
+        catch (Exception ex)
+        {
+            Log.Fatal(ex, "Database update terminated unexpectedly");
+            return FailedExitCode;
         }
         finally
         {
-            logger.Dispose();
-            loggerFactory.Dispose();
+            await Log.CloseAndFlushAsync();
         }
-
-    }
-
-    private static async Task<IConfigurationRoot> GetConfiguration(string environmentName, string awsRegion)
-    {
-        var isDevelopment = environmentName.Equals("Development", StringComparison.OrdinalIgnoreCase);
-        var isStaging = environmentName.Equals("Staging", StringComparison.OrdinalIgnoreCase);
-
-        var nativeConfig = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json")
-            .AddUserSecrets(Assembly.GetExecutingAssembly(), true);
-
-        if (!isDevelopment)
-        {
-            string fixedEnvironmentName = environmentName;
-            if (isStaging)
-            {
-                fixedEnvironmentName = "beta";
-            }
-            var awsStore = new SecretsManagerConfigurationStore(awsRegion, "fantasyCritic", fixedEnvironmentName);
-            var awsString = await awsStore.GetConfiguration();
-
-            nativeConfig.AddJsonStream(new MemoryStream(System.Text.Encoding.UTF8.GetBytes(awsString)));
-        }
-
-        // Override JSON / AWS secrets (last wins) — required for Docker Compose and hosting env vars.
-        nativeConfig.AddEnvironmentVariables();
-
-        return nativeConfig.Build();
     }
 
     private static string GetScriptsRoot()
@@ -172,69 +150,19 @@ public class Program
         });
     }
 
-    private static (ILoggerFactory factory, Logger logger) ConfigureLogging(LoggingPaths loggingPaths)
+    private static LoggerConfiguration CreateLoggerConfiguration(LoggingPaths loggingPaths, string environmentName, GrafanaOptions? grafana)
     {
-        var loggerConfig = new LoggerConfiguration()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            .Enrich.FromLogContext()
-            .WriteTo.Console()
-            .WriteTo.File(loggingPaths.AllLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: outputTemplate)
-            .WriteTo.File(loggingPaths.WarnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: outputTemplate)
-            .WriteTo.Logger(config =>
-            {
-                config.Filter
-                    .ByIncludingOnly(logEvent =>
-                    {
-                        var sourceContext = logEvent.Properties.GetValueOrDefault("SourceContext");
-                        var sourceContextString = sourceContext?.ToString();
-                        return sourceContextString != null && sourceContextString.StartsWith("\"FantasyCritic");
-                    })
-                    .WriteTo.File(loggingPaths.MyLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 5, outputTemplate: outputTemplate);
-            });
+        var loggerConfiguration = FantasyCriticLogging
+            .CreateConfiguration(loggingPaths, LogEventLevel.Information)
+            .WriteToApplicationLogFile(loggingPaths);
 
-        var logger = loggerConfig.CreateLogger();
-        var loggerFactory = new LoggerFactory().AddSerilog(logger);
-        return (loggerFactory, logger);
-    }
-
-
-    private static (ILoggerFactory factory, Logger logger) ConfigureGrafanaLogging(LoggingPaths loggingPaths, string environmentName, IConfiguration configuration)
-    {
-        var loggerConfig = new LoggerConfiguration()
-            .MinimumLevel.Override("Microsoft", LogEventLevel.Information)
-            .Enrich.FromLogContext()
-            .WriteTo.Console()
-            .WriteTo.File(loggingPaths.AllLogPath, rollingInterval: RollingInterval.Day, retainedFileCountLimit: 3, outputTemplate: outputTemplate)
-            .WriteTo.File(loggingPaths.WarnLogPath, rollingInterval: RollingInterval.Day, restrictedToMinimumLevel: LogEventLevel.Warning, retainedFileCountLimit: 10, outputTemplate: outputTemplate);
-
-        var lokiUri = configuration["Grafana:Loki:Uri"];
-        var lokiUserId = configuration["Grafana:Loki:UserId"];
-        var lokiApiToken = configuration["Grafana:Loki:ApiToken"];
-        if (!string.IsNullOrWhiteSpace(lokiUri) &&
-            !string.IsNullOrWhiteSpace(lokiUserId) &&
-            !string.IsNullOrWhiteSpace(lokiApiToken))
+        if (grafana is not null && !IsDevelopment(environmentName))
         {
-            var labelSection = configuration.GetSection("Grafana:Loki:Labels");
-            var lokiLabels = labelSection.GetChildren()
-                .Where(c => !string.IsNullOrWhiteSpace(c.Key) && !string.IsNullOrWhiteSpace(c.Value))
-                .Where(c => !string.Equals(c.Key, "env", StringComparison.OrdinalIgnoreCase))
-                .Select(c => new LokiLabel { Key = c.Key, Value = c.Value! })
-                .Append(new LokiLabel { Key = "env", Value = environmentName })
-                .ToArray();
-
-            loggerConfig = loggerConfig.WriteTo.GrafanaLoki(
-                uri: lokiUri,
-                credentials: new LokiCredentials
-                {
-                    Login = lokiUserId,
-                    Password = lokiApiToken
-                },
-                labels: lokiLabels,
-                propertiesAsLabels: ["SourceContext"]);
+            loggerConfiguration = loggerConfiguration.WriteToGrafanaLoki(environmentName, grafana);
         }
 
-        var logger = loggerConfig.CreateLogger();
-        var loggerFactory = new LoggerFactory().AddSerilog(logger);
-        return (loggerFactory, logger);
+        return loggerConfiguration;
     }
+
+    private static bool IsDevelopment(string environmentName) => FantasyCriticEnvironments.FromName(environmentName) == FantasyCriticEnvironment.Development;
 }

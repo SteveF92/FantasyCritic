@@ -1,8 +1,9 @@
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
-using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Lib.Utilities;
@@ -13,50 +14,43 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Web.Controllers.API;
 
 [Route("api/[controller]/[action]")]
 [Authorize("Admin")]
-public class AdminController : FantasyCriticController
+public class AdminController : BaseJobQueuingController
 {
-    private readonly AdminService _adminService;
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly InterLeagueService _interLeagueService;
-    private readonly IClock _clock;
     private readonly ILogger _logger;
-    private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly EmailSendingService _emailSendingService;
     private readonly DiscordPushService _discordPushService;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
-    private readonly IConfiguration _configuration;
+    private readonly EnvironmentConfiguration _environmentConfiguration;
     private readonly BuildInfo _buildInfo;
+    private readonly ServiceHealthClient _serviceHealthClient;
 
-    private const string IntegrationTestModeConfigKey = "IntegrationTestMode";
-
-    public AdminController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
-        ILogger<AdminController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
+    public AdminController(FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
+        ILogger<AdminController> logger, FantasyCriticUserManager userManager,
         IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService, IMasterGameRepo masterGameRepo,
-        IFantasyCriticRepo fantasyCriticRepo, IConfiguration configuration, BuildInfo buildInfo)
-        : base(userManager)
+        IFantasyCriticRepo fantasyCriticRepo, EnvironmentConfiguration environmentConfiguration, BuildInfo buildInfo, IJobRepo jobRepo, ServiceHealthClient serviceHealthClient, JobLogLinks jobLogLinks)
+        : base(userManager, jobRepo, clock, jobLogLinks)
     {
-        _adminService = adminService;
         _fantasyCriticService = fantasyCriticService;
-        _clock = clock;
         _interLeagueService = interLeagueService;
         _logger = logger;
-        _gameAcquisitionService = gameAcquisitionService;
         _webHostEnvironment = webHostEnvironment;
         _emailSendingService = emailSendingService;
         _discordPushService = discordPushService;
         _masterGameRepo = masterGameRepo;
         _fantasyCriticRepo = fantasyCriticRepo;
-        _configuration = configuration;
+        _environmentConfiguration = environmentConfiguration;
         _buildInfo = buildInfo;
+        _serviceHealthClient = serviceHealthClient;
     }
 
     [HttpGet]
@@ -65,33 +59,63 @@ public class AdminController : FantasyCriticController
         return new BuildInfoViewModel(_buildInfo);
     }
 
-    [HttpPost]
-    public async Task<IActionResult> MakePublisherSlotsConsistent()
+    [HttpGet]
+    [ProducesResponseType<ServiceMonitorViewModel>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<ServiceMonitorViewModel>> GetServiceMonitor()
     {
-        await _adminService.MakePublisherSlotsConsistent();
+        var workerHealthTask = _serviceHealthClient.GetWorkerHealth();
+        var discordBotHealthTask = _serviceHealthClient.GetDiscordBotHealth();
+        var workerHealth = await workerHealthTask;
+        var discordBotHealth = await discordBotHealthTask;
+
+        //Both read from the database rather than taken from the worker's answer, so that the state shown here
+        //is the one a deploy's drain acts on, and is still known when the worker cannot be reached.
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        var incompleteJobs = await _jobRepo.GetIncompleteJobs();
+
+        var workerReachable = workerHealth.Status != ServiceHealthClient.UnreachableStatus;
+        var workerHealthy = workerHealth.Status != ServiceHealthClient.UnhealthyStatus;
+        var workerState = WorkerState.Determine(workerReachable, workerHealthy, systemWideSettings.WorkerShouldPullNewJobs, incompleteJobs);
+
+        return new ServiceMonitorViewModel(_clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs, workerState, workerHealth, discordBotHealth);
+    }
+
+    //Turning the worker off does not stop its container. It stops pulling new jobs, finishes the one it has, and idles.
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TurnOffWorker()
+    {
+        await _interLeagueService.SetWorkerShouldPullNewJobs(false);
         return Ok();
     }
 
     [HttpPost]
-    public async Task<IActionResult> RecalculateWinners()
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TurnOnWorker()
     {
-        await _adminService.RecalculateWinners();
+        await _interLeagueService.SetWorkerShouldPullNewJobs(true);
         return Ok();
     }
 
     [HttpPost]
-    public async Task<IActionResult> RecalculateRoyaleWinners()
-    {
-        await _adminService.RecalculateRoyaleWinners();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> MakePublisherSlotsConsistent() => EnqueueJob(FantasyCriticJobType.MakeSlotsConsistent);
 
     [HttpPost]
-    public async Task<IActionResult> RecomputeRulesBasedRoyaleGroups()
-    {
-        await _adminService.RecomputeRulesBasedRoyaleGroups();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> RecalculateWinners() => EnqueueJob(FantasyCriticJobType.RecalculateLastSeasonWinners);
+
+    [HttpPost]
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> RecalculateRoyaleWinners() => EnqueueJob(FantasyCriticJobType.RecalculateRoyaleWinners);
+
+    [HttpPost]
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> RecomputeRulesBasedRoyaleGroups() => EnqueueJob(FantasyCriticJobType.RecomputeRulesBasedRoyaleGroups);
 
     [HttpPost]
     public async Task<IActionResult> DeleteLeague([FromBody] DeleteLeagueRequest request)
@@ -201,21 +225,9 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> SendPublicBiddingEmails()
-    {
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
-
-        var publicBiddingSets = new List<LeagueYearPublicBiddingSet>();
-        foreach (var year in activeYears)
-        {
-            var publicBiddingSetsForYear = await _gameAcquisitionService.GetPublicBiddingGames(year.Year);
-            publicBiddingSets.AddRange(publicBiddingSetsForYear);
-        }
-
-        await _emailSendingService.SendPublicBidEmails(publicBiddingSets);
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> SendPublicBiddingEmails() => EnqueueJob(FantasyCriticJobType.SendPublicBiddingEmails);
 
     [HttpPost]
     public async Task<IActionResult> SendSpoofScoreUpdate()
@@ -295,36 +307,19 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> SendReleasingThisWeekUpdate()
-    {
-        var now = _clock.GetCurrentInstant();
-        var year = now.InZone(TimeExtensions.EasternTimeZone).Year;
-        var currentDate = now.ToEasternDate();
-
-        var allGames = await _interLeagueService.GetMasterGameYears(year);
-        var thisWeekGames = allGames.Where(g =>
-            g.MasterGame.ReleaseDate.HasValue &&
-            g.MasterGame.ReleaseDate.Value > now.ToEasternDate() &&
-            g.MasterGame.ReleaseDate.Value <= now.ToEasternDate().PlusWeeks(1));
-        var mostHypedGames = thisWeekGames.OrderByDescending(g => g.HypeFactor).Take(10).ToList();
-
-        await _discordPushService.SendReleasingThisWeekUpdate(mostHypedGames, year);
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> SendReleasingThisWeekUpdate() => EnqueueJob(FantasyCriticJobType.SendReleasingThisWeekUpdate);
 
     [HttpPost]
-    public async Task<IActionResult> GrantSuperDrops()
-    {
-        await _adminService.GrantSuperDrops();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> GrantSuperDrops() => EnqueueJob(FantasyCriticJobType.GrantSuperDrops);
 
     [HttpPost]
-    public async Task<IActionResult> ExpireTrades()
-    {
-        await _adminService.ExpireTrades();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> ExpireTrades() => EnqueueJob(FantasyCriticJobType.ExpireTrades);
 
     [HttpPost]
     public async Task<IActionResult> PushYearEndDiscordMessages()
@@ -336,35 +331,19 @@ public class AdminController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> RefreshPatreonInfo()
-    {
-        await _adminService.UpdatePatreonRoles();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> RefreshPatreonInfo() => EnqueueJob(FantasyCriticJobType.RefreshPatreonInfo);
 
     [HttpPost]
-    public async Task<IActionResult> UpdateDailyPublisherStatistics()
-    {
-        await _adminService.UpdateDailyStats();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> UpdateDailyPublisherStatistics() => EnqueueJob(FantasyCriticJobType.UpdateDailyPublisherStatistics);
 
     [HttpPost]
-    public async Task<IActionResult> PushPublicBiddingDiscordMessages()
-    {
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
-
-        var publicBiddingSets = new List<LeagueYearPublicBiddingSet>();
-        foreach (var year in activeYears)
-        {
-            var publicBiddingSetsForYear = await _gameAcquisitionService.GetPublicBiddingGames(year.Year);
-            publicBiddingSets.AddRange(publicBiddingSetsForYear);
-        }
-
-        await _discordPushService.SendPublicBiddingSummary(publicBiddingSets);
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> PushPublicBiddingDiscordMessages() => EnqueueJob(FantasyCriticJobType.SendPublicBiddingDiscordMessages);
 
     [HttpGet]
     [ProducesResponseType<FantasyCriticUserViewModel>(StatusCodes.Status200OK)]
@@ -495,8 +474,7 @@ public class AdminController : FantasyCriticController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult SetInitialTime([FromBody] SetTimeRequest request)
     {
-        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
-        if (!integrationTestMode)
+        if (!_environmentConfiguration.IntegrationTestMode)
         {
             return NotFound();
         }
@@ -517,8 +495,7 @@ public class AdminController : FantasyCriticController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult SetTime([FromBody] SetTimeRequest request)
     {
-        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
-        if (!integrationTestMode)
+        if (!_environmentConfiguration.IntegrationTestMode)
         {
             return NotFound();
         }
@@ -543,8 +520,7 @@ public class AdminController : FantasyCriticController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public IActionResult ResetTime()
     {
-        var integrationTestMode = _configuration.GetValue<bool>(IntegrationTestModeConfigKey);
-        if (!integrationTestMode)
+        if (!_environmentConfiguration.IntegrationTestMode)
         {
             return NotFound();
         }

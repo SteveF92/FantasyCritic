@@ -137,6 +137,7 @@ public interface IFantasyCriticRepo
     Task DeleteSiteAnnouncement(Guid announcementID);
 
     Task SetActionProcessingMode(bool modeOn);
+    Task SetWorkerShouldPullNewJobs(bool shouldPull);
 
     Task EditPublisher(EditPublisherRequest editValues, LeagueAction leagueAction);
     Task DeletePublisher(Publisher publisher);

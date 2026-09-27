@@ -1,6 +1,6 @@
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
 using JetBrains.Annotations;
@@ -19,11 +19,11 @@ public class TrendingCommand : InteractionModuleBase<SocketInteractionContext>
 
     public TrendingCommand(InterLeagueService interLeagueService,
         IDiscordFormatter discordFormatter,
-        FantasyCriticSettings fantasyCriticSettings)
+        EnvironmentConfiguration environmentConfiguration)
     {
         _interLeagueService = interLeagueService;
         _discordFormatter = discordFormatter;
-        _baseUri = new Uri(fantasyCriticSettings.BaseAddress);
+        _baseUri = new Uri(environmentConfiguration.BaseAddress);
     }
 
     [UsedImplicitly]

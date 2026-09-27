@@ -1,0 +1,50 @@
+using FantasyCritic.Lib.Identity;
+
+namespace FantasyCritic.Lib.Jobs;
+
+public class FantasyCriticJob
+{
+    public FantasyCriticJob(Guid jobID, FantasyCriticJobTypeWithRunType jobTypeWithRunType, IMinimalFantasyCriticUser? createdByUser, FantasyCriticJobStatus status,
+        string? detailedStatus, string? errorMessage, Instant? scheduledFor, Instant createdAt, Instant? startedAt, Instant? finishedAt,
+        Instant? cancelledAt, IMinimalFantasyCriticUser? cancelledByUser)
+    {
+        JobID = jobID;
+        JobTypeWithRunType = jobTypeWithRunType;
+        CreatedByUser = createdByUser;
+        Status = status;
+        DetailedStatus = detailedStatus;
+        ErrorMessage = errorMessage;
+        ScheduledFor = scheduledFor;
+        CreatedAt = createdAt;
+        StartedAt = startedAt;
+        FinishedAt = finishedAt;
+        CancelledAt = cancelledAt;
+        CancelledByUser = cancelledByUser;
+    }
+
+    public Guid JobID { get; }
+    public FantasyCriticJobTypeWithRunType JobTypeWithRunType { get; }
+    public FantasyCriticJobType Type => JobTypeWithRunType.JobType;
+    public FantasyCriticJobRunType RunType => JobTypeWithRunType.RunType;
+    public FantasyCriticJobSeverity Severity => JobTypeWithRunType.Severity;
+    public IMinimalFantasyCriticUser? CreatedByUser { get; }
+    public FantasyCriticJobStatus Status { get; }
+    public string? DetailedStatus { get; }
+    public string? ErrorMessage { get; }
+    public Instant? ScheduledFor { get; }
+    public Instant CreatedAt { get; }
+    public Instant? StartedAt { get; }
+    public Instant? FinishedAt { get; }
+    public Instant? CancelledAt { get; }
+    public IMinimalFantasyCriticUser? CancelledByUser { get; }
+
+    //The scheduler always sets ScheduledFor and manual runs never do, so it identifies cron runs regardless of who enqueued them.
+    public bool IsCronRun => ScheduledFor is not null;
+
+    public bool AllowedByRunType => IsCronRun ? RunType.AllowsCron : RunType.AllowsManual;
+
+    public override string ToString()
+    {
+        return $"{JobID} - {Type.Value} - {Status} - {CreatedAt}";
+    }
+}

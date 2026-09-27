@@ -1,6 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Extensions;
@@ -14,7 +15,7 @@ public class TopAvailableGamesCommand : InteractionModuleBase<SocketInteractionC
 {
     private readonly InterLeagueService _interLeagueService;
     private readonly IDiscordFormatter _discordFormatter;
-    private readonly FantasyCriticSettings _fantasyCriticSettings;
+    private readonly EnvironmentConfiguration _environmentConfiguration;
     private readonly GameSearchingService _gameSearchingService;
     private readonly IReadOnlyFantasyCriticUserStore _userStore;
     private readonly IDiscordRepo _discordRepo;
@@ -24,7 +25,7 @@ public class TopAvailableGamesCommand : InteractionModuleBase<SocketInteractionC
 
     public TopAvailableGamesCommand(InterLeagueService interLeagueService,
         IDiscordFormatter discordFormatter,
-        FantasyCriticSettings fantasyCriticSettings,
+        EnvironmentConfiguration environmentConfiguration,
         GameSearchingService gameSearchingService,
         IReadOnlyFantasyCriticUserStore userStore,
         IDiscordRepo discordRepo,
@@ -32,12 +33,12 @@ public class TopAvailableGamesCommand : InteractionModuleBase<SocketInteractionC
     {
         _interLeagueService = interLeagueService;
         _discordFormatter = discordFormatter;
-        _fantasyCriticSettings = fantasyCriticSettings;
+        _environmentConfiguration = environmentConfiguration;
         _gameSearchingService = gameSearchingService;
         _userStore = userStore;
         _discordRepo = discordRepo;
         _clock = clock;
-        _baseUri = new Uri(fantasyCriticSettings.BaseAddress);
+        _baseUri = new Uri(environmentConfiguration.BaseAddress);
     }
 
     [UsedImplicitly]
@@ -109,7 +110,7 @@ public class TopAvailableGamesCommand : InteractionModuleBase<SocketInteractionC
     private Embed BuildTopAvailableGamesEmbed(List<PossibleMasterGameYear> topPossibleMasterGameYears,
         LeagueChannel leagueChannel, int newIndex)
     {
-        var leagueUrl = new LeagueUrlBuilder(_fantasyCriticSettings.BaseAddress,
+        var leagueUrl = new LeagueUrlBuilder(_environmentConfiguration.BaseAddress,
             leagueChannel.LeagueYear.League.LeagueID,
             leagueChannel.LeagueYear.Year).BuildUrl();
         var topAvailableGames = topPossibleMasterGameYears.Skip(newIndex * GameLimit).Take(GameLimit).ToList();
@@ -146,7 +147,7 @@ public class TopAvailableGamesCommand : InteractionModuleBase<SocketInteractionC
             Value = $"Release Date: {g.MasterGame.MasterGame.ReleaseDate?.ToString() ?? "TBA"}" +
                     $"\nHype Factor: {g.MasterGame.HypeFactor}" +
                     $"\nStatus: {g.GetStatus(currentDate)}" +
-                    $"\n[View Game]({new GameUrlBuilder(_fantasyCriticSettings.BaseAddress, g.MasterGame.MasterGame.MasterGameID).GetOnlyUrl()})",
+                    $"\n[View Game]({new GameUrlBuilder(_environmentConfiguration.BaseAddress, g.MasterGame.MasterGame.MasterGameID).GetOnlyUrl()})",
             IsInline = false,
         }).ToList();
         return topAvailableGamesEmbedFields;

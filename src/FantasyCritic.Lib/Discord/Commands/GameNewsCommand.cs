@@ -2,7 +2,7 @@ using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.Lib.BusinessLogicFunctions;
-using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
@@ -34,7 +34,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
         IReadOnlyFantasyCriticUserStore fantasyCriticUserStore,
         IClock clock,
         IDiscordFormatter discordFormatter,
-        FantasyCriticSettings fantasyCriticSettings)
+        EnvironmentConfiguration environmentConfiguration)
     {
         _discordRepo = discordRepo;
         _interLeagueService = interLeagueService;
@@ -42,7 +42,7 @@ public class GameNewsCommand : InteractionModuleBase<SocketInteractionContext>
         _fantasyCriticUserStore = fantasyCriticUserStore;
         _clock = clock;
         _discordFormatter = discordFormatter;
-        _baseAddress = fantasyCriticSettings.BaseAddress;
+        _baseAddress = environmentConfiguration.BaseAddress;
     }
 
     [UsedImplicitly]

@@ -6,6 +6,12 @@
 # gateway connection on the same token, so exactly one container must run this one.
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS base
+# For the compose healthcheck. Docker cannot probe a URL itself: a healthcheck is a command run
+# inside the container, and the aspnet image ships neither curl nor wget. Installed here, before
+# anything release-specific, so the layer is cached rather than rebuilt on every deploy.
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends curl \
+    && rm -rf /var/lib/apt/lists/*
 USER $APP_UID
 WORKDIR /app
 
@@ -15,9 +21,11 @@ ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["src/FantasyCritic.DiscordBot/FantasyCritic.DiscordBot.csproj", "src/FantasyCritic.DiscordBot/"]
 COPY ["src/FantasyCritic.AWS/FantasyCritic.AWS.csproj", "src/FantasyCritic.AWS/"]
+COPY ["src/FantasyCritic.EmailTemplates/FantasyCritic.EmailTemplates.csproj", "src/FantasyCritic.EmailTemplates/"]
 COPY ["src/FantasyCritic.Hosting/FantasyCritic.Hosting.csproj", "src/FantasyCritic.Hosting/"]
 COPY ["src/FantasyCritic.Lib/FantasyCritic.Lib.csproj", "src/FantasyCritic.Lib/"]
 COPY ["src/FantasyCritic.MySQL/FantasyCritic.MySQL.csproj", "src/FantasyCritic.MySQL/"]
+COPY ["src/FantasyCritic.Postmark/FantasyCritic.Postmark.csproj", "src/FantasyCritic.Postmark/"]
 RUN dotnet restore "src/FantasyCritic.DiscordBot/FantasyCritic.DiscordBot.csproj"
 COPY . .
 RUN dotnet build "src/FantasyCritic.DiscordBot/FantasyCritic.DiscordBot.csproj" -c $BUILD_CONFIGURATION --no-restore

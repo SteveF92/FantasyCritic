@@ -2,13 +2,14 @@ using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -17,30 +18,26 @@ namespace FantasyCritic.Web.Controllers.API;
 
 [Route("api/[controller]/[action]")]
 [Authorize("ActionRunner")]
-public class ActionRunnerController : FantasyCriticController
+public class ActionRunnerController : BaseJobQueuingController
 {
     private readonly AdminService _adminService;
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly InterLeagueService _interLeagueService;
-    private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly GameAcquisitionService _gameAcquisitionService;
-    private readonly IWebHostEnvironment _webHostEnvironment;
     private readonly EmailSendingService _emailSendingService;
     private readonly DiscordPushService _discordPushService;
 
     public ActionRunnerController(AdminService adminService, FantasyCriticService fantasyCriticService, IClock clock, InterLeagueService interLeagueService,
         ILogger<ActionRunnerController> logger, GameAcquisitionService gameAcquisitionService, FantasyCriticUserManager userManager,
-        IWebHostEnvironment webHostEnvironment, EmailSendingService emailSendingService, DiscordPushService discordPushService)
-        : base(userManager)
+        EmailSendingService emailSendingService, DiscordPushService discordPushService, IJobRepo jobRepo, JobLogLinks jobLogLinks)
+        : base(userManager, jobRepo, clock, jobLogLinks)
     {
         _adminService = adminService;
         _fantasyCriticService = fantasyCriticService;
-        _clock = clock;
         _interLeagueService = interLeagueService;
         _logger = logger;
         _gameAcquisitionService = gameAcquisitionService;
-        _webHostEnvironment = webHostEnvironment;
         _emailSendingService = emailSendingService;
         _discordPushService = discordPushService;
     }
@@ -105,49 +102,23 @@ public class ActionRunnerController : FantasyCriticController
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> ProcessActions()
+    public async Task<ActionResult<FantasyCriticJobViewModel>> ProcessActions()
     {
-        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-        if (!systemWideSettings.ActionProcessingMode)
+        var canProcessActions = await _adminService.CanProcessActions();
+        if (canProcessActions.IsFailure)
         {
-            return BadRequest("Turn on action processing mode first.");
+            return BadRequest(canProcessActions.Error);
         }
 
-        var isProduction = string.Equals(_webHostEnvironment.EnvironmentName, "PRODUCTION", StringComparison.OrdinalIgnoreCase);
-        var today = _clock.GetCurrentInstant().ToEasternDate();
-        var acceptableDays = new List<IsoDayOfWeek>
-        {
-            IsoDayOfWeek.Saturday,
-            IsoDayOfWeek.Sunday
-        };
-        if (!acceptableDays.Contains(today.DayOfWeek) && isProduction)
-        {
-            return BadRequest($"You probably didn't mean to process pickups on a {today.DayOfWeek}");
-        }
-
-        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        foreach (var supportedYear in supportedYears)
-        {
-            if (supportedYear.Finished || !supportedYear.OpenForPlay)
-            {
-                continue;
-            }
-
-            await _adminService.ProcessActions(systemWideValues, supportedYear.Year);
-        }
-
-        return Ok();
+        return await EnqueueJob(FantasyCriticJobType.ProcessActions);
     }
 
     [HttpPost]
-    public async Task<IActionResult> ProcessSpecialAuctions()
-    {
-        await _adminService.ProcessSpecialAuctions();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> ProcessSpecialAuctions() => EnqueueJob(FantasyCriticJobType.ProcessSpecialAuctions);
 
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -166,11 +137,9 @@ public class ActionRunnerController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> SnapshotDatabase()
-    {
-        await _adminService.SnapshotDatabase();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> SnapshotDatabase() => EnqueueJob(FantasyCriticJobType.SnapshotDatabase);
 
     [HttpGet]
     public async Task<ActionResult<List<DatabaseSnapshotInfoViewModel>>> GetRecentDatabaseSnapshots()
@@ -182,9 +151,7 @@ public class ActionRunnerController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> UpdateTopBidsAndDrops()
-    {
-        await _adminService.UpdateTopBidsAndDropsForMostRecentWeek();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> UpdateTopBidsAndDrops() => EnqueueJob(FantasyCriticJobType.UpdateTopBidsAndDrops);
 }

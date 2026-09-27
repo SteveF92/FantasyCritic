@@ -62,6 +62,10 @@ jobs:
             dockerfile: src/FantasyCritic.DatabaseUpdater/Dockerfile
           - name: discord-bot
             dockerfile: src/FantasyCritic.DiscordBot/Dockerfile
+          - name: worker
+            dockerfile: src/FantasyCritic.Worker/Dockerfile
+          - name: command-line
+            dockerfile: src/FantasyCritic.CommandLine/Dockerfile
 
     steps:
       - uses: actions/checkout@v4

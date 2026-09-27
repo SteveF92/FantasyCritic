@@ -7,6 +7,7 @@ import {
   FactCheckerClient,
   GameClient,
   GeneralClient,
+  JobManagerClient,
   LeagueClient,
   LeagueManagerClient,
   RoyaleClient,
@@ -37,6 +38,7 @@ export const conferenceClient = createClient(ConferenceClient);
 export const factCheckerClient = createClient(FactCheckerClient);
 export const gameClient = createClient(GameClient);
 export const generalClient = createClient(GeneralClient);
+export const jobManagerClient = createClient(JobManagerClient);
 export const leagueClient = createClient(LeagueClient);
 export const leagueManagerClient = createClient(LeagueManagerClient);
 export const royaleClient = createClient(RoyaleClient);

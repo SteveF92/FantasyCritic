@@ -15,7 +15,9 @@
 #
 #   /opt/fantasy-critic/
 #     docker-compose.yaml      installed from the release being deployed
-#     .env                     environment + registry + IMAGE_TAG (created during setup)
+#     .env                     environment + registry + IMAGE_TAG (created during setup).
+#                              IMAGE_TAG names the release that is live: it only changes once
+#                              the new one is about to start, never on a deploy that stops early
 #     RELEASE                  bind-mounted into the web container, read by the admin console
 #     maintenance.sh           fixed path, so raising the page by hand needs no release id:
 #     maintenance.html           sudo /opt/fantasy-critic/maintenance.sh on|off|status
@@ -33,9 +35,16 @@
 # The maintenance page is raised before the containers stop and lowered once the new release is
 # healthy. Any failure below deliberately leaves it raised.
 #
+# Before any of that, it waits for the job worker: stopping the containers kills whatever job
+# is running, so the worker is told to stop pulling new jobs and given up to 30 minutes to
+# finish the one it has. That wait costs no downtime — the site stays up throughout — and if
+# the job is still going at the end of it, the deploy stops there with nothing touched.
+#
 # Environment:
 #   FC_IMAGE_TAG=<tag>        the ECR tag to deploy; defaults to this release directory's name
 #   FC_SKIP_MIGRATIONS=true   skip the database migrator (front-end-only redeploys, rollbacks)
+#   FC_SKIP_DRAIN=true        do not wait for the worker; a running job is killed. For a hung
+#                             job, a stuck Running row, or the first deploy of the drain itself
 #   FC_KEEP_RELEASES=<n>      how many old release directories to retain (default 10)
 
 set -euo pipefail
@@ -68,9 +77,60 @@ fail() {
     exit 1
 }
 
+# Every compose command in this script runs against the release being deployed, whatever
+# IMAGE_TAG in .env says. It reads a copy of .env made further down, in this release's own
+# directory, with only IMAGE_TAG changed. That is what lets the pull, the drain and the migrator
+# use the new images while .env itself goes on naming the release that is actually live, right
+# up until the new one is about to start.
+#
+# An explicit --env-file rather than exporting IMAGE_TAG and relying on the shell environment
+# beating .env: which of those two wins has differed between compose versions.
+readonly DEPLOY_ENV_FILE="$RELEASE_DIR/.env.deploy"
+
 compose() {
-    docker compose --project-directory "$APP_ROOT" -f "$COMPOSE_FILE" "$@"
+    docker compose --project-directory "$APP_ROOT" --env-file "$DEPLOY_ENV_FILE" -f "$COMPOSE_FILE" "$@"
 }
+
+# One-off commands against the database, which this host cannot reach itself. A command's
+# answer is the only thing it writes to standard output; its logs go to standard error, so
+# they still end up in the deploy output. -T because there is no terminal under SSM, and with
+# one allocated the two streams would be merged.
+command_line() {
+    compose run --rm -T command-line "$@"
+}
+
+# Set to true at the moment this script turns WorkerShouldPullNewJobs off, and back to false
+# once it has turned it on again. If the script exits in between — a failed drain, a failed
+# migration, anything — the trap turns it back on, because a worker left switched off runs
+# nothing and the site gives no sign of it.
+#
+# It is only ever true if pulling was on to begin with. A worker somebody turned off in the
+# admin console is left exactly as it was found.
+RESTORE_WORKER_PULLING=false
+
+restore_worker_pulling() {
+    if [ "$RESTORE_WORKER_PULLING" = "true" ]; then
+        RESTORE_WORKER_PULLING=false
+        log "Turning job pulling back on"
+        if ! command_line worker-start-pulling; then
+            cat >&2 <<PULLING
+
+  ======================================================================
+  WARNING: could not turn WorkerShouldPullNewJobs back on.
+
+  This deploy turned it off to drain the worker. Until it is on again
+  the worker runs nothing. Use "Turn On Worker" in the admin console, or:
+
+      cd $APP_ROOT && docker compose run --rm -T command-line worker-start-pulling
+  ======================================================================
+
+PULLING
+            return 1
+        fi
+    fi
+    return 0
+}
+trap restore_worker_pulling EXIT
 
 # Keeps /etc/nginx/maintenance.conf in step with the repository.
 #
@@ -153,11 +213,40 @@ WARN
 
 # `docker compose ps --status` is too new to rely on across compose plugin versions, so ask
 # the daemon directly.
-web_is_running() {
+service_is_running() {
     local container_id
-    container_id="$(compose ps -q web 2>/dev/null || true)"
+    container_id="$(compose ps -q "$1" 2>/dev/null || true)"
     [ -n "$container_id" ] || return 1
     [ "$(docker inspect -f '{{.State.Running}}' "$container_id" 2>/dev/null || echo false)" = "true" ]
+}
+
+# Docker's own verdict from the compose healthcheck: starting, healthy or unhealthy. "none" if
+# there is no container, or its image predates the healthcheck.
+service_health() {
+    local container_id
+    container_id="$(compose ps -q "$1" 2>/dev/null || true)"
+    [ -n "$container_id" ] || { echo none; return 0; }
+    docker inspect -f '{{if .State.Health}}{{.State.Health.Status}}{{else}}none{{end}}' "$container_id" 2>/dev/null || echo none
+}
+
+# Waits for a service to report healthy. Gives up early on a crash loop: a container compose
+# just created has a restart count of 0 and only the restart policy moves it, so anything else
+# means it has already died at least once and "starting" will never become "healthy".
+wait_for_healthy() {
+    local service="$1" attempts="$2" container_id restarts
+    for _ in $(seq 1 "$attempts"); do
+        sleep 3
+        if [ "$(service_health "$service")" = "healthy" ]; then
+            return 0
+        fi
+        container_id="$(compose ps -q "$service" 2>/dev/null || true)"
+        restarts="$(docker inspect -f '{{.RestartCount}}' "$container_id" 2>/dev/null || echo 0)"
+        if [ "$restarts" != "0" ]; then
+            echo "The $service container has restarted $restarts time(s) since it was created — it is crash looping." >&2
+            return 1
+        fi
+    done
+    return 1
 }
 
 # ------------------------------------------------------------------------------------------
@@ -234,7 +323,7 @@ HINT
         cat >&2 <<HINT
 
 To roll back, put IMAGE_TAG=$PREVIOUS_TAG back in $ENV_FILE and run:
-  cd $APP_ROOT && docker compose up -d web discord-bot && $MAINTENANCE off
+  cd $APP_ROOT && docker compose up -d web discord-bot worker && $MAINTENANCE off
 HINT
     fi
 }
@@ -262,11 +351,10 @@ install -m 644 "$RELEASE_DIR/maintenance.html" "$APP_ROOT/maintenance.html"
 # site down.
 install_nginx_snippet
 
-if grep -qE '^IMAGE_TAG=' "$ENV_FILE"; then
-    sed -i -E "s|^IMAGE_TAG=.*|IMAGE_TAG=$IMAGE_TAG|" "$ENV_FILE"
-else
-    echo "IMAGE_TAG=$IMAGE_TAG" >> "$ENV_FILE"
-fi
+# .env itself is deliberately not touched yet — see "Start". This copy is what compose() reads.
+# Same permissions as the original; grep -v so that it works whether or not .env has the key.
+install -m 600 /dev/null "$DEPLOY_ENV_FILE"
+{ grep -vE '^IMAGE_TAG=' "$ENV_FILE" || true; echo "IMAGE_TAG=$IMAGE_TAG"; } > "$DEPLOY_ENV_FILE"
 
 # The web container bind-mounts this file. Docker creates a *directory* in place of a missing
 # bind-mount source, which the app would then fail to read, so it has to exist before anything
@@ -277,11 +365,56 @@ else
     : > "$RELEASE_FILE"
 fi
 
-# --profile migrate is what makes this pull the migrator image too. A plain `pull` only covers
-# services with no profile, which would leave the migrator to download later — during the
-# downtime window, which is the one place this script tries never to do slow work.
+# The profiles are what make this pull the migrator and command-line images too. A plain `pull`
+# only covers services with no profile, which would leave the migrator to download later —
+# during the downtime window, which is the one place this script tries never to do slow work.
 log "Pulling images tagged $IMAGE_TAG"
-compose --profile migrate pull --quiet
+compose --profile migrate --profile tools pull --quiet
+
+# ------------------------------------------------------------------------------------------
+# Drain
+# ------------------------------------------------------------------------------------------
+# Stopping the containers kills whatever job the worker is in the middle of. So turn off
+# WorkerShouldPullNewJobs — the same flag as "Turn Off Worker" in the admin console — and wait
+# for the job it has to finish. The scheduler keeps queuing in the meantime; that backlog runs
+# once the new worker is up.
+#
+# This happens before the maintenance page, so a long wait costs no downtime, and giving up
+# costs nothing either: the deploy stops with the site untouched and the trap above turns
+# pulling back on.
+#
+# The commands run from the image just pulled, against a database that has not been migrated
+# yet. They read only tbl_meta_systemwidesettings and tbl_job. If a release ever changes what
+# they depend on, this fails here, loudly and harmlessly, and FC_SKIP_DRAIN=true gets past it.
+# The first deploy of the job system to an environment needs that too: there is no tbl_job to
+# read until its migration has run.
+
+if [ "${FC_SKIP_DRAIN:-false}" = "true" ]; then
+    log "Skipping the worker drain (FC_SKIP_DRAIN=true). A job that is running now will be killed."
+else
+    log "Draining the job worker"
+    worker_was_pulling="$(command_line worker-should-pull)" \
+        || fail "Could not read WorkerShouldPullNewJobs. The site has not been touched."
+
+    case "$worker_was_pulling" in
+        true)
+            command_line worker-stop-pulling \
+                || fail "Could not turn WorkerShouldPullNewJobs off. The site has not been touched."
+            RESTORE_WORKER_PULLING=true
+            ;;
+        false)
+            log "The worker was already turned off, and will be left off after this deploy."
+            ;;
+        *)
+            fail "Expected true or false for WorkerShouldPullNewJobs, got '$worker_was_pulling'. The site has not been touched."
+            ;;
+    esac
+
+    if ! command_line worker-wait-idle; then
+        fail "A job was still running when the wait ran out. The site has not been touched. Deploy again once it has finished, or with skip_drain to kill it."
+    fi
+    log "The worker is idle."
+fi
 
 # ------------------------------------------------------------------------------------------
 # Stop
@@ -327,8 +460,28 @@ fi
 # value.
 echo "deployed_at=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$RELEASE_FILE"
 
-log "Starting web and discord-bot"
-compose up -d web discord-bot
+# Only now does .env name this release. It is what a compose command typed by hand uses, so it
+# should say what is live: until this point that was the previous release, and a deploy that
+# stopped early — a drain that ran out of time, a failed pull — leaves it saying so, rather
+# than pointing a stray `docker compose up -d` at new images on an unmigrated database.
+# Written before `up` rather than after, so that a release that starts and then fails its
+# health check is still the one .env describes; the rollback hint names the way back.
+if grep -qE '^IMAGE_TAG=' "$ENV_FILE"; then
+    sed -i -E "s|^IMAGE_TAG=.*|IMAGE_TAG=$IMAGE_TAG|" "$ENV_FILE"
+else
+    echo "IMAGE_TAG=$IMAGE_TAG" >> "$ENV_FILE"
+fi
+
+# Before the worker starts, so that it comes up pulling. Does nothing unless the drain above
+# is what turned it off. A failure here does not stop the site coming back up, but it does
+# fail the deploy further down, once the maintenance page is lowered.
+worker_pulling_restored=true
+if ! restore_worker_pulling; then
+    worker_pulling_restored=false
+fi
+
+log "Starting web, discord-bot and worker"
+compose up -d web discord-bot worker
 
 log "Waiting for $HEALTH_URL"
 healthy=false
@@ -339,7 +492,7 @@ for _ in $(seq 1 60); do
         break
     fi
     # No point waiting out the full two minutes if the container has already given up.
-    if ! web_is_running; then
+    if ! service_is_running web; then
         break
     fi
 done
@@ -349,6 +502,8 @@ if [ "$healthy" != "true" ]; then
     compose logs --tail 50 web >&2 || true
     echo "Discord bot, last 20 lines:" >&2
     compose logs --tail 20 discord-bot >&2 || true
+    echo "Worker, last 20 lines:" >&2
+    compose logs --tail 20 worker >&2 || true
     rollback_hint
     exit 1
 fi
@@ -358,9 +513,58 @@ log "Healthy."
 "$MAINTENANCE" off
 
 # ------------------------------------------------------------------------------------------
+# Worker and Discord bot
+# ------------------------------------------------------------------------------------------
+# A worker that died on startup — a bad secret, a handler with no tbl_job_type row — takes
+# every scheduled job with it while the site carries on looking perfectly healthy. Nobody would
+# notice until a Monday bidding email did not arrive. So wait for Docker's healthcheck to pass,
+# and fail the deploy loudly if it does not. For the worker, healthy means more than the
+# process being up: the job runner has read the database within the last minute.
+#
+# This runs after the maintenance page is lowered on purpose: the site itself is fine, and
+# keeping it dark over a broken worker would be the worse outcome. The non-zero exit is what
+# turns the deploy run red.
+log "Checking the worker"
+# Two minutes. The healthcheck allows 30 seconds to start and probes every 15.
+if ! wait_for_healthy worker 40; then
+    echo "The worker did not become healthy (Docker reports: $(service_health worker)). Last 50 log lines:" >&2
+    compose logs --tail 50 worker >&2 || true
+    cat >&2 <<WORKER
+
+  ======================================================================
+  WARNING: the site is up, but the job worker is not healthy.
+
+  Nothing scheduled will happen until it is: no public bidding emails,
+  no releasing-this-week posts, no trade expiry, no Patreon sync, and
+  no admin console button will ever leave "Queued".
+
+  Fix the cause above, then: cd $APP_ROOT && docker compose up -d worker
+  ======================================================================
+
+WORKER
+    exit 1
+fi
+log "Worker is healthy."
+
+if [ "$worker_pulling_restored" != "true" ]; then
+    # The warning with the fix was printed when it happened; this is what turns the run red.
+    fail "The worker is healthy but was left switched off: WorkerShouldPullNewJobs could not be turned back on."
+fi
+
+# The bot only answers slash commands, so it not connecting is worth saying but not worth
+# failing a deploy over. Healthy here means its gateway connection is up.
+log "Checking the Discord bot"
+if wait_for_healthy discord-bot 20; then
+    log "Discord bot is healthy."
+else
+    echo "WARNING: the Discord bot did not become healthy (Docker reports: $(service_health discord-bot)). Slash commands will not work. Last 20 log lines:" >&2
+    compose logs --tail 20 discord-bot >&2 || true
+fi
+
+# ------------------------------------------------------------------------------------------
 # Prune
 # ------------------------------------------------------------------------------------------
-# Three images per release at a few hundred megabytes each fills a disk quickly.
+# Five images per release at a few hundred megabytes each fills a disk quickly.
 
 log "Pruning unused images"
 docker image prune --force >/dev/null || true

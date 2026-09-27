@@ -1,10 +1,13 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Requests.Admin;
 using FantasyCritic.Web.Models.Responses;
+using FantasyCritic.Web.Utilities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,21 +17,20 @@ namespace FantasyCritic.Web.Controllers.API;
 
 [Route("api/[controller]/[action]")]
 [Authorize("FactChecker")]
-public class FactCheckerController : FantasyCriticController
+public class FactCheckerController : BaseJobQueuingController
 {
     private readonly AdminService _adminService;
     private readonly InterLeagueService _interLeagueService;
-    private readonly IClock _clock;
     private readonly ILogger _logger;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly FantasyCriticService _fantasyCriticService;
 
     public FactCheckerController(AdminService adminService, IClock clock, InterLeagueService interLeagueService,
-        ILogger<FactCheckerController> logger, FantasyCriticUserManager userManager, LeagueMemberService leagueMemberService, FantasyCriticService fantasyCriticService)
-        : base(userManager)
+        ILogger<FactCheckerController> logger, FantasyCriticUserManager userManager, LeagueMemberService leagueMemberService,
+        FantasyCriticService fantasyCriticService, IJobRepo jobRepo, JobLogLinks jobLogLinks)
+        : base(userManager, jobRepo, clock, jobLogLinks)
     {
         _adminService = adminService;
-        _clock = clock;
         _interLeagueService = interLeagueService;
         _logger = logger;
         _leagueMemberService = leagueMemberService;
@@ -257,39 +259,29 @@ public class FactCheckerController : FantasyCriticController
     }
 
     [HttpPost]
-    public async Task<IActionResult> FullDataRefresh()
-    {
-        await _adminService.FullDataRefresh();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> FullDataRefresh() => EnqueueJob(FantasyCriticJobType.FullDataRefresh);
 
     [HttpPost]
-    public async Task<IActionResult> RefreshCriticInfo()
-    {
-        await _adminService.RefreshCriticInfo();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> RefreshCriticInfo() => EnqueueJob(FantasyCriticJobType.RefreshCriticScores);
 
     [HttpPost]
-    public async Task<IActionResult> RefreshGGInfo()
-    {
-        await _adminService.RefreshGGInfo(true);
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> RefreshGGInfo() => EnqueueJob(FantasyCriticJobType.RefreshGGInfo);
 
     [HttpPost]
-    public async Task<IActionResult> UpdateFantasyPoints()
-    {
-        await _adminService.UpdateFantasyPoints();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> UpdateFantasyPoints() => EnqueueJob(FantasyCriticJobType.UpdateFantasyPoints);
 
     [HttpPost]
-    public async Task<IActionResult> RefreshCaches()
-    {
-        await _adminService.RefreshCaches();
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> RefreshCaches() => EnqueueJob(FantasyCriticJobType.RefreshCaches);
 
     [HttpPost]
     public IActionResult ClearMasterGameEditDiscordQueue()

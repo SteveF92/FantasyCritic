@@ -1,0 +1,16 @@
+{
+  "profiles": {
+    "FantasyCritic.Worker": {
+      "commandName": "Project",
+      "applicationUrl": "http://localhost:5081",
+      "environmentVariables": {
+        "DOTNET_ENVIRONMENT": "Development"
+      },
+      "dotnetRunMessages": true
+    },
+    "Container (Dockerfile)": {
+      "commandName": "Docker"
+    }
+  },
+  "$schema": "https://json.schemastore.org/launchsettings.json"
+}

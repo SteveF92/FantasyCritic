@@ -1,7 +1,7 @@
 using Discord;
 using Discord.Interactions;
 using DiscordDotNetUtilities.Interfaces;
-using FantasyCritic.Lib.Discord.Models;
+using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Discord.Utilities;
 using FantasyCritic.Lib.Interfaces;
@@ -23,14 +23,14 @@ public class ConferenceCommand : InteractionModuleBase<SocketInteractionContext>
         InterLeagueService interLeagueService,
         IClock clock,
         IDiscordFormatter discordFormatter,
-        FantasyCriticSettings fantasyCriticSettings,
+        EnvironmentConfiguration environmentConfiguration,
         ConferenceService conferenceService)
     {
         _discordRepo = discordRepo;
         _interLeagueService = interLeagueService;
         _discordFormatter = discordFormatter;
         _conferenceService = conferenceService;
-        _baseAddress = fantasyCriticSettings.BaseAddress;
+        _baseAddress = environmentConfiguration.BaseAddress;
     }
 
     [UsedImplicitly]
