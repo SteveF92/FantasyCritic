@@ -68,12 +68,10 @@ public class PatreonService
                 continue;
             }
 
-            bool isPlusUser = member.TierTitles.Contains(PlusTierTitle);
-            bool isDonorUser = member.TierTitles.Contains(DonorTierTitle);
+            bool isPlusUser = IsPlusMember(member);
             string? donorName = null;
-            if (isDonorUser)
+            if (IsDonorMember(member))
             {
-                isPlusUser = true;
                 donorName = member.FullName;
                 if (fantasyCriticUser.PatreonDonorNameOverride is not null)
                 {
@@ -91,8 +89,15 @@ public class PatreonService
     {
         var campaignMembers = await GetCampaignMembers();
         var member = campaignMembers.FirstOrDefault(x => x.UserId == patreonProviderID);
-        return member is not null && member.TierTitles.Contains(PlusTierTitle);
+        return member is not null && IsPlusMember(member);
     }
+
+    private static bool IsDonorMember(PatreonMember member) => member.TierTitles.Contains(DonorTierTitle);
+
+    /// <summary>
+    /// The Donor tier includes everything Plus gives.
+    /// </summary>
+    private static bool IsPlusMember(PatreonMember member) => member.TierTitles.Contains(PlusTierTitle) || IsDonorMember(member);
 
     /// <summary>
     /// Calls Patreon with the newest stored access token. If Patreon rejects it, which it does about monthly as each one

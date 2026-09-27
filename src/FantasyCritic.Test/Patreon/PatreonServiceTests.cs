@@ -29,6 +29,18 @@ public class PatreonServiceTests
         }
         """;
 
+    private const string DonorMember = """
+        {
+          "data": [
+            { "id": "member-1", "type": "member", "attributes": {},
+              "relationships": {
+                "currently_entitled_tiers": { "data": [ { "id": "tier-donor", "type": "tier" } ] },
+                "user": { "data": { "id": "user-1", "type": "user" } } } }
+          ],
+          "included": [ { "id": "tier-donor", "type": "tier", "attributes": { "title": "Fantasy Critic Donor" } } ]
+        }
+        """;
+
     private const string RefreshedTokens = """{ "access_token": "new-access", "refresh_token": "new-refresh", "expires_in": 2678400 }""";
 
     private static HttpResponseMessage Unauthorized() => StubPatreonHandler.Json("""{ "errors": [] }""", HttpStatusCode.Unauthorized);
@@ -52,6 +64,20 @@ public class PatreonServiceTests
             Assert.That(isPlusUser, Is.True);
             Assert.That(handler.Requests.Single().BearerToken, Is.EqualTo("stored-access"));
             Assert.That(tokens.Saved, Is.Empty);
+        }
+    }
+
+    [Test]
+    public async Task UserIsPlusUser_CountsTheDonorTier_WhichIncludesPlus()
+    {
+        var tokens = new FakePatreonTokensRepo(new PatreonTokens("stored-access", "stored-refresh"));
+        var handler = new StubPatreonHandler(_ => StubPatreonHandler.Json(DonorMember));
+        var service = CreateService(handler, tokens);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(await service.UserIsPlusUser("user-1"), Is.True);
+            Assert.That(await service.UserIsPlusUser("someone-else"), Is.False);
         }
     }
 
