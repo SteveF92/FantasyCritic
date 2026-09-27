@@ -116,7 +116,7 @@ Commit this file. → review.
     - GET `api/oauth2/v2/campaigns/{id}/members` with
       `include=currently_entitled_tiers,user&fields[tier]=title&fields[user]=full_name&page[count]=1000`,
       following `links.next` until it is absent.
-    - Returns `Result<IReadOnlyList<PatreonMember>, PatreonApiError>`, so a 401 is an expected result
+    - Returns `Result<IReadOnlyList<PatreonMember>>`, failing only on a 401, so that is an expected result
       the caller acts on.
     - Any other non-success status throws, with the status and body.
   - `RefreshTokens(string refreshToken)`:
