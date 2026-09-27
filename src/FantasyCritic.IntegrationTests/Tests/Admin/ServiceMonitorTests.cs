@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
 using FantasyCritic.IntegrationTests.Helpers;
@@ -60,6 +61,14 @@ public class ServiceMonitorTests : IntegrationTestBase
             Assert.That(monitor.Web.Name, Is.EqualTo("Web"));
             Assert.That(monitor.Web.Status, Is.EqualTo("Healthy"));
         });
+    }
+
+    [TestCase("Database round trip")]
+    public async Task Web_ReportsStat(string label)
+    {
+        var monitor = await _adminSession.Admin.GetServiceMonitorAsync();
+
+        Assert.That(monitor.Web.Details.Select(x => x.Label), Does.Contain(label));
     }
 
     [Test]

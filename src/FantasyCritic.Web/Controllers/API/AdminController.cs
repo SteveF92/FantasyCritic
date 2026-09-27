@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Extensions;
@@ -71,7 +72,10 @@ public class AdminController : BaseJobQueuingController
 
         //Both read from the database rather than taken from the worker's answer, so that the state shown here
         //is the one a deploy's drain acts on, and is still known when the worker cannot be reached.
+        //Timed as well, for the web row: one small row, so this is about as close to the database's round trip as a query gets.
+        var databaseStopwatch = Stopwatch.StartNew();
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        databaseStopwatch.Stop();
         var incompleteJobs = await _jobRepo.GetIncompleteJobs();
 
         var workerReachable = workerHealth.Status != ServiceHealthClient.UnreachableStatus;
@@ -79,7 +83,11 @@ public class AdminController : BaseJobQueuingController
         var workerState = WorkerState.Determine(workerReachable, workerHealthy, systemWideSettings.WorkerShouldPullNewJobs, incompleteJobs);
 
         //Nothing asks the web app how it is: an unhealthy one could not have answered this request, so it can only be healthy.
-        var webHealth = new ServiceHealthReport(nameof(HealthStatus.Healthy), "Answered this request.", []);
+        var webDetails = new List<ServiceHealthDetail>
+        {
+            ServiceHealthDetail.FromText("Database round trip", $"{databaseStopwatch.ElapsedMilliseconds} ms")
+        };
+        var webHealth = new ServiceHealthReport(nameof(HealthStatus.Healthy), "Answered this request.", webDetails);
 
         return new ServiceMonitorViewModel(_clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs, workerState, webHealth, workerHealth, discordBotHealth, _logLinks);
     }
