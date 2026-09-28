@@ -1,5 +1,40 @@
 # Patreon: our own API client, and a v2 OAuth client
 
+## Status: done (2026-09-27)
+
+Steps 0–5 shipped to production on 2026-09-27, and `RefreshPatreonInfo` succeeds. Still to come:
+
+- **The first API refresh on the v2 client**, about a month after 2026-09-27. A new
+  `tbl_system_patreonkeys` row with the job still succeeding proves that path.
+- **Delete the old v1 client** once that refresh has worked.
+
+**Root cause.** A token refreshed through a **v1 client** is v1-only. Patreon issues the new pair, and
+the portal shows it as current, but every v2 endpoint rejects it with 401 (even `identity`), while
+v1's `/api/oauth2/api/current_user` accepts it. Tokens copied from the portal worked on v2. So did
+refreshed tokens before September.
+
+**What Patreon changed.** Something changed between the Aug 24 refresh (row 47) and the Sep 24 one,
+most likely alongside the v1 retirement announced 2026-08-07. Neither change is documented; both are
+inferred from what we saw:
+- A refresh without `client_secret` started being refused. That was Patreon.Net's Sep 24 failure: its
+  refresh was rejected, so it never received a token.
+- A v1 client's refreshed tokens stopped working on v2.
+
+Patreon.Net only ever hit the first change. Our client sends the documented refresh, which got past
+it, and the first production run then hit the second: refresh succeeded, and the retry got a 401.
+Creating a v2 client fixed it.
+
+**Diagnosis.** A read-only curl script tried one token against v1 `current_user`, v2 `identity` and
+v2 members (the members call both with and without a `User-Agent`). Getting 200 from v1 and 401 from
+every v2 call ruled out our request (cookies, `User-Agent`, query) and pointed at the token.
+
+**Unexplained.** The first request after the deploy used the Sep 27 portal tokens and got a 401,
+though those tokens had worked under Patreon.Net on Sep 27. Something invalidated them in between.
+It didn't affect the fix.
+
+**Beyond the plan.** Commit `bfe3b28d7` made `UserIsPlusUser` (run when someone links Patreon) count
+the Donor tier as Plus, as the hourly job already did.
+
 ## Context
 
 The hourly `RefreshPatreonInfo` job started failing in production after the job-system deploy with
@@ -164,6 +199,10 @@ Commit this file. → review.
 
 ## Step 4 — Deploy (Steve), before ~2026-10-28
 
+**Outcome:** Deployed 2026-09-27. The first run got a 401, refreshed successfully (Patreon accepted
+the documented form with `client_secret`), then got a 401 again with the new token. That is how we
+found the v1-client scoping described under Status, and it's why step 5 followed the same day.
+
 - **No config changes.**
 - **Checking it after deploy**: run `RefreshPatreonInfo` from the admin console. It succeeds on the
   current access token.
@@ -172,6 +211,11 @@ Commit this file. → review.
   - If it fails, the job now shows Patreon's actual response.
 
 ## Step 5 — Upgrade the client to v2 (Steve, in the Patreon portal)
+
+**Outcome:** Steve created a **new** v2 client rather than switching the old one in place (the fallback
+below). He updated `Authentication:Patreon:ClientId` and `ClientSecret` in production's secret,
+inserted the new client's creator tokens, restarted the containers, and the job succeeded. The old v1
+client is still there, to be deleted after the first refresh on the new one.
 
 The portal's Edit Client form has a **Client API Version** dropdown (currently 1), so the plan is to
 upgrade the existing client in place rather than create a new one. That keeps the name, the
