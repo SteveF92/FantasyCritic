@@ -33,6 +33,7 @@ public class CacheRefresher
         _discordPushService = discordPushService;
         _royaleService = royaleService;
     }
+
     public async Task RefreshCaches()
     {
         _logger.Information("Refreshing caches");
@@ -64,6 +65,44 @@ public class CacheRefresher
         _logger.Information("Done refreshing caches");
     }
 
+    private async Task UpdateCodeBasedTags(LocalDate today)
+    {
+        _logger.Information("Updating Code Based Tags");
+        var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
+        var allMasterGames = await _masterGameRepo.GetMasterGames();
+        var masterGamesWithEarlyAccessDate = allMasterGames.Where(x => x.EarlyAccessReleaseDate.HasValue);
+        var masterGamesWithInternationalDate = allMasterGames.Where(x => x.InternationalReleaseDate.HasValue);
+        Dictionary<MasterGame, List<MasterGameTag>> tagsToAdd = allMasterGames.ToDictionary(x => x, _ => new List<MasterGameTag>());
+
+        foreach (var masterGame in masterGamesWithEarlyAccessDate)
+        {
+            bool inEarlyAccess = today >= masterGame.EarlyAccessReleaseDate!.Value;
+            if (inEarlyAccess)
+            {
+                tagsToAdd[masterGame].Add(tagDictionary["CurrentlyInEarlyAccess"]);
+            }
+            else
+            {
+                tagsToAdd[masterGame].Add(tagDictionary["PlannedForEarlyAccess"]);
+            }
+        }
+
+        foreach (var masterGame in masterGamesWithInternationalDate)
+        {
+            bool releasedInternationally = today >= masterGame.InternationalReleaseDate!.Value;
+            if (releasedInternationally)
+            {
+                tagsToAdd[masterGame].Add(tagDictionary["ReleasedInternationally"]);
+            }
+            else
+            {
+                tagsToAdd[masterGame].Add(tagDictionary["WillReleaseInternationallyFirst"]);
+            }
+        }
+
+        await _masterGameRepo.UpdateCodeBasedTags(tagsToAdd.SealDictionary());
+    }
+
     private static bool YearNeedsSystemWideValuesRefresh(SupportedYear supportedYear, LocalDate today, HashSet<int> cachedYears)
     {
         if (!supportedYear.Finished)
@@ -78,6 +117,14 @@ public class CacheRefresher
         }
 
         return !cachedYears.Contains(supportedYear.Year);
+    }
+
+    private async Task UpdateSystemWideValues()
+    {
+        _logger.Information("Aggregating system wide values from year cache");
+
+        var systemWideValues = await _fantasyCriticRepo.BuildSystemWideValuesFromYearCache();
+        await _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);
     }
 
     private async Task UpdateSystemWideValuesForYear(int year, IReadOnlyList<LeagueYear> leagueYears)
@@ -134,14 +181,6 @@ public class CacheRefresher
             allPickupOnlyStandardGamesWithPoints.Count, allCounterPicksWithPoints.Count);
     }
 
-    private async Task UpdateSystemWideValues()
-    {
-        _logger.Information("Aggregating system wide values from year cache");
-
-        var systemWideValues = await _fantasyCriticRepo.BuildSystemWideValuesFromYearCache();
-        await _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);
-    }
-
     private async Task UpdateGameStats(HypeConstants hypeConstants)
     {
         _logger.Information("Updating game stats.");
@@ -170,8 +209,8 @@ public class CacheRefresher
     }
 
     private static IReadOnlyList<MasterGameCalculatedStats> CalculateStatsForGames(SupportedYear supportedYear, IReadOnlyList<LeagueYear> leagueYears,
-        IReadOnlyList<MasterGame> cleanMasterGames, IReadOnlyList<MasterGameYear> cachedMasterGames, IReadOnlyList<PickupBid> processedBids,
-        IReadOnlyList<RoyalePublisher> royalePublishers, HypeConstants hypeConstants, LocalDate currentDate)
+    IReadOnlyList<MasterGame> cleanMasterGames, IReadOnlyList<MasterGameYear> cachedMasterGames, IReadOnlyList<PickupBid> processedBids,
+    IReadOnlyList<RoyalePublisher> royalePublishers, HypeConstants hypeConstants, LocalDate currentDate)
     {
         List<MasterGameCalculatedStats> calculatedStats = [];
         var publisherMasterGames = new HashSet<MasterGame>();
@@ -366,44 +405,6 @@ public class CacheRefresher
         }
 
         return calculatedStats;
-    }
-
-    private async Task UpdateCodeBasedTags(LocalDate today)
-    {
-        _logger.Information("Updating Code Based Tags");
-        var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
-        var allMasterGames = await _masterGameRepo.GetMasterGames();
-        var masterGamesWithEarlyAccessDate = allMasterGames.Where(x => x.EarlyAccessReleaseDate.HasValue);
-        var masterGamesWithInternationalDate = allMasterGames.Where(x => x.InternationalReleaseDate.HasValue);
-        Dictionary<MasterGame, List<MasterGameTag>> tagsToAdd = allMasterGames.ToDictionary(x => x, _ => new List<MasterGameTag>());
-
-        foreach (var masterGame in masterGamesWithEarlyAccessDate)
-        {
-            bool inEarlyAccess = today >= masterGame.EarlyAccessReleaseDate!.Value;
-            if (inEarlyAccess)
-            {
-                tagsToAdd[masterGame].Add(tagDictionary["CurrentlyInEarlyAccess"]);
-            }
-            else
-            {
-                tagsToAdd[masterGame].Add(tagDictionary["PlannedForEarlyAccess"]);
-            }
-        }
-
-        foreach (var masterGame in masterGamesWithInternationalDate)
-        {
-            bool releasedInternationally = today >= masterGame.InternationalReleaseDate!.Value;
-            if (releasedInternationally)
-            {
-                tagsToAdd[masterGame].Add(tagDictionary["ReleasedInternationally"]);
-            }
-            else
-            {
-                tagsToAdd[masterGame].Add(tagDictionary["WillReleaseInternationallyFirst"]);
-            }
-        }
-
-        await _masterGameRepo.UpdateCodeBasedTags(tagsToAdd.SealDictionary());
     }
 
     private static double FixDouble(double num)
