@@ -145,13 +145,16 @@
           <li>Vite</li>
           <li>SignalR</li>
           <li>NodaTime</li>
+          <li>Cronos</li>
           <li>Dapper</li>
+          <li>FuzzySharp</li>
+          <li>Math.NET</li>
+          <li>DbUp</li>
           <li>CSharpFunctionalExtensions</li>
           <li>Razor.Templating.Core</li>
           <li>Serilog</li>
           <li>NUnit</li>
           <li>CSVHelper</li>
-          <li>Python Packages (sklearn, numpy, pandas)</li>
           <li>Discord.Net</li>
         </ul>
 
