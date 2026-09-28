@@ -320,7 +320,7 @@ public class RoyaleController : FantasyCriticController
         await _royaleSemaphore.WaitAsync();
         try
         {
-            var purchaseResult = await _royaleService.PurchaseGame(publisher, masterGame);
+            var purchaseResult = await _royaleService.PurchaseGame(publisher, masterGame, request.ExpectedCost);
             var viewModel = new PlayerClaimResultViewModel(purchaseResult);
             return viewModel;
         }

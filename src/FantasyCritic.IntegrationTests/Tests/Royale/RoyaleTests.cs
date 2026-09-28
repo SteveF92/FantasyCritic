@@ -79,6 +79,7 @@ public class RoyaleTests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = gameToBuy!.MasterGame!.MasterGameID,
+                ExpectedCost = gameToBuy.Cost,
             });
         Assert.That(purchaseResult, Is.Not.Null);
         Assert.That(purchaseResult!.Success, Is.True, string.Join("; ", purchaseResult!.Errors ?? []));
@@ -182,6 +183,7 @@ public class RoyaleTests : IntegrationTestBase
                 {
                     PublisherID = publisherID,
                     MasterGameID = game.MasterGame!.MasterGameID,
+                    ExpectedCost = game.Cost,
                 });
             Assert.That(result, Is.Not.Null);
             Assert.That(result!.Success, Is.True,
@@ -269,6 +271,7 @@ public class RoyaleTests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = replacement!.MasterGame!.MasterGameID,
+                ExpectedCost = replacement.Cost,
             });
         Assert.That(replaceResult, Is.Not.Null);
         Assert.That(replaceResult!.Success, Is.True,
@@ -351,6 +354,7 @@ public class RoyaleTests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = game!.MasterGame!.MasterGameID,
+                ExpectedCost = game.Cost,
             });
         Assert.That(purchaseResult, Is.Not.Null);
         Assert.That(purchaseResult!.Success, Is.True,
@@ -408,6 +412,7 @@ public class RoyaleTests : IntegrationTestBase
                 {
                     PublisherID = publisherID,
                     MasterGameID = next.MasterGame.MasterGameID,
+                    ExpectedCost = next.Cost,
                 });
             if (result?.Success != true)
             {
@@ -433,11 +438,14 @@ public class RoyaleTests : IntegrationTestBase
         var budgetBlocked = (allGames ?? []).FirstOrDefault(g => g.IsAvailable != true && g.Status == "Not enough budget.");
         var targetID = budgetBlocked?.MasterGame?.MasterGameID ?? boughtIDs[0];
 
+        // Either failure path (over-budget or already-owned) is rejected before the cost
+        // check runs, so the exact expected cost here doesn't affect the outcome.
         var failureResult = await session.Royale.PurchaseGameAsync(
             new PurchaseRoyaleGameRequest
             {
                 PublisherID = publisherID,
                 MasterGameID = targetID,
+                ExpectedCost = budgetBlocked?.Cost ?? 0m,
             });
 
         Assert.That(failureResult, Is.Not.Null);
@@ -551,6 +559,7 @@ public class RoyaleTests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = lockoutGame.MasterGame.MasterGameID,
+                ExpectedCost = lockoutGame.Cost,
             });
 
         Assert.That(result, Is.Not.Null);

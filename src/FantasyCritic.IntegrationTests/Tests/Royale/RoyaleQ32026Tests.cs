@@ -163,6 +163,61 @@ public class RoyaleQ32026Tests : IntegrationTestBase
     }
 
     [Test]
+    public async Task PurchaseGame_WithMismatchedExpectedCost_IsRejected()
+    {
+        // Mirrors the sell-side regret-window bug: a player opens the purchase dialog
+        // (which shows a cost snapshot from the possible-games search), and in theory the
+        // game's cost can move before they confirm, since it's derived from a hype factor
+        // that's recalculated periodically rather than a fixed price. The confirm request
+        // must be rejected if the expected cost it carries no longer matches the real one,
+        // rather than silently charging a different amount than what was shown.
+        await ResetClockAsync();
+
+        var result = await TryCreateQ3PublisherAsync();
+        if (result is null)
+        {
+            Assert.Inconclusive("Q3 2026 is not open for play. Run LocalDatabaseTool to sync.");
+            return;
+        }
+
+        using var session = result.Value.Session;
+        var publisherID = result.Value.PublisherID;
+
+        var game = await FindPurchasableQ3GameAsync(session, publisherID);
+        if (game is null)
+        {
+            Assert.Inconclusive("No purchasable Q3 2026 games found.");
+            return;
+        }
+
+        var publisherBeforePurchase = await session.Royale.GetRoyalePublisherAsync(publisherID);
+        var budgetBeforePurchase = publisherBeforePurchase!.Budget;
+
+        var purchaseResult = await session.Royale.PurchaseGameAsync(
+            new PurchaseRoyaleGameRequest
+            {
+                PublisherID = publisherID,
+                MasterGameID = game.MasterGame.MasterGameID,
+                ExpectedCost = game.Cost + 0.01m,
+            });
+
+        Assert.That(purchaseResult, Is.Not.Null);
+        Assert.That(purchaseResult!.Success, Is.False,
+            "A purchase whose expected cost no longer matches the server-computed cost must be rejected.");
+
+        var publisherAfterAttempt = await session.Royale.GetRoyalePublisherAsync(publisherID);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(
+                publisherAfterAttempt!.PublisherGames!.Any(g => g.MasterGame?.MasterGameID == game.MasterGame.MasterGameID),
+                Is.False,
+                "The game must not be added to the roster after a rejected purchase.");
+            Assert.That(publisherAfterAttempt.Budget, Is.EqualTo(budgetBeforePurchase),
+                "The budget must be unchanged after a rejected purchase.");
+        }
+    }
+
+    [Test]
     public async Task SellGame_ImmediatelyAfterPurchase_RefundsFullAmountSpent()
     {
         // Within the 10-minute regret window a full refund of AmountSpent is expected.
@@ -190,6 +245,7 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = game.MasterGame.MasterGameID,
+                ExpectedCost = game.Cost,
             });
         Assert.That(purchaseResult!.Success, Is.True,
             $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
@@ -237,6 +293,7 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = game.MasterGame.MasterGameID,
+                ExpectedCost = game.Cost,
             });
         Assert.That(purchaseResult!.Success, Is.True,
             $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
@@ -294,6 +351,7 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = game.MasterGame.MasterGameID,
+                ExpectedCost = game.Cost,
             });
         Assert.That(purchaseResult!.Success, Is.True,
             $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
@@ -365,6 +423,7 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = game.MasterGame.MasterGameID,
+                ExpectedCost = game.Cost,
             });
         Assert.That(purchaseResult!.Success, Is.True,
             $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
@@ -441,6 +500,7 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = game.MasterGame.MasterGameID,
+                ExpectedCost = game.Cost,
             });
         Assert.That(purchaseResult!.Success, Is.True,
             $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
@@ -508,6 +568,7 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = lockoutGame.MasterGame.MasterGameID,
+                ExpectedCost = lockoutGame.Cost,
             });
 
         using (Assert.EnterMultipleScope())
@@ -548,6 +609,7 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = game.MasterGame.MasterGameID,
+                ExpectedCost = game.Cost,
             });
         Assert.That(purchaseResult!.Success, Is.True,
             $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
@@ -587,6 +649,7 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = game.MasterGame.MasterGameID,
+                ExpectedCost = game.Cost,
             });
         Assert.That(purchaseResult!.Success, Is.True,
             $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
@@ -677,6 +740,7 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = biddingCycleBlocked.MasterGame.MasterGameID,
+                ExpectedCost = biddingCycleBlocked.Cost,
             });
 
         using (Assert.EnterMultipleScope())
@@ -717,6 +781,7 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = game.MasterGame.MasterGameID,
+                ExpectedCost = game.Cost,
             });
         Assert.That(purchaseResult!.Success, Is.True,
             $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");

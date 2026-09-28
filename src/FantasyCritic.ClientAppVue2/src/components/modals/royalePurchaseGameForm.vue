@@ -129,7 +129,11 @@ export default {
         masterGameID = this.purchaseRoyaleGame.masterGame.masterGameID;
       }
 
-      let request = { publisherID: this.userRoyalePublisher.publisherID, masterGameID: masterGameID };
+      let request = {
+        publisherID: this.userRoyalePublisher.publisherID,
+        masterGameID: masterGameID,
+        expectedCost: this.purchaseRoyaleGame.cost
+      };
 
       const response = await axios.post('/api/royale/PurchaseGame', request);
       this.purchaseResult = response.data;

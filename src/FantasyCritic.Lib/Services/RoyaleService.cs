@@ -164,7 +164,7 @@ public class RoyaleService
         return RoyalePurchaseGameValidation.Valid();
     }
 
-    public async Task<ClaimResult> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame)
+    public async Task<ClaimResult> PurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame, decimal expectedCost)
     {
         var now = _clock.GetCurrentInstant();
         var currentDate = now.ToEasternDate();
@@ -176,6 +176,11 @@ public class RoyaleService
         }
 
         var gameCost = masterGame.GetRoyaleGameCost(publisher.YearQuarter.YearQuarter);
+        if (gameCost != expectedCost)
+        {
+            return new ClaimResult("The cost of this game has changed since you opened this window. Since you wouldn't be paying the amount you expect, the purchase was not processed. You'll need to close this dialog and try again.");
+        }
+
         RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);
         RoyaleAction action = new RoyaleAction(publisher, masterGame, "Purchased Game", $"Purchased '{masterGame.MasterGame.GameName}' at a cost of ${gameCost:F2}.", now);
         await _royaleRepo.PurchaseGame(game, action);
