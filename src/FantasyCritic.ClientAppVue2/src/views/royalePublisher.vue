@@ -290,7 +290,9 @@ export default {
     async sellGame() {
       const request = {
         publisherID: this.publisher.publisherID,
-        masterGameID: this.gameToModify.masterGame.masterGameID
+        masterGameID: this.gameToModify.masterGame.masterGameID,
+        expectedRefundAmount: this.gameToModify.refundAmount,
+        expectedAdvertisingMoney: this.gameToModify.advertisingMoney
       };
 
       try {
@@ -300,6 +302,7 @@ export default {
         this.makeToast(message);
       } catch (error) {
         this.errorInfo = "You can't sell that game. " + error.response.data;
+        await this.fetchPublisher();
       }
     },
     setGameToSetBudget(publisherGame) {

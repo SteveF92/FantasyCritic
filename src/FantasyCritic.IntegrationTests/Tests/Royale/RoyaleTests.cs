@@ -236,9 +236,16 @@ public class RoyaleTests : IntegrationTestBase
 
         // ── Step C: Sell game0 and buy a replacement ───────────────────────────
         var budgetBeforeSell = publisher!.Budget;
+        var game0BeforeSell = publisher.PublisherGames!.Single(g => g.MasterGame!.MasterGameID == game0ID);
 
         await session.Royale.SellGameAsync(
-            new SellRoyaleGameRequest { PublisherID = publisherID, MasterGameID = game0ID });
+            new SellRoyaleGameRequest
+            {
+                PublisherID = publisherID,
+                MasterGameID = game0ID,
+                ExpectedRefundAmount = game0BeforeSell.RefundAmount!.Value,
+                ExpectedAdvertisingMoney = game0BeforeSell.AdvertisingMoney,
+            });
 
         publisher = await session.Royale.GetRoyalePublisherAsync(publisherID);
         Assert.That(publisher, Is.Not.Null);

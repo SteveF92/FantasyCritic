@@ -262,6 +262,82 @@ public class RoyaleQ32026Tests : IntegrationTestBase
     }
 
     [Test]
+    public async Task SellGame_WithStaleRegretWindowRefund_IsRejected()
+    {
+        // Reproduces the modal edge case: a player opens the sell dialog while still
+        // inside the 10-minute regret window (so the dialog shows a full refund), waits
+        // past the window, then confirms. The confirm request still carries the stale
+        // full-refund amount the dialog showed, and the server must reject it rather
+        // than silently paying out the (now smaller) real refund under a "full refund"
+        // label the player agreed to.
+        await ResetClockAsync();
+
+        var result = await TryCreateQ3PublisherAsync();
+        if (result is null)
+        {
+            Assert.Inconclusive("Q3 2026 is not open for play. Run LocalDatabaseTool to sync.");
+            return;
+        }
+
+        using var session = result.Value.Session;
+        var publisherID = result.Value.PublisherID;
+
+        var game = await FindPurchasableQ3GameAsync(session, publisherID);
+        if (game is null)
+        {
+            Assert.Inconclusive("No purchasable Q3 2026 games found.");
+            return;
+        }
+
+        var purchaseResult = await session.Royale.PurchaseGameAsync(
+            new PurchaseRoyaleGameRequest
+            {
+                PublisherID = publisherID,
+                MasterGameID = game.MasterGame.MasterGameID,
+            });
+        Assert.That(purchaseResult!.Success, Is.True,
+            $"Setup purchase failed: {string.Join("; ", purchaseResult.Errors ?? [])}");
+
+        // Player opens the sell dialog here — still within the regret window, full refund shown.
+        var publisherAfterBuy = await session.Royale.GetRoyalePublisherAsync(publisherID);
+        var purchasedAfterBuy = publisherAfterBuy!.PublisherGames!
+            .Single(g => g.MasterGame?.MasterGameID == game.MasterGame.MasterGameID);
+        var staleExpectedRefund = purchasedAfterBuy.RefundAmount!.Value;
+        var staleExpectedAdvertising = purchasedAfterBuy.AdvertisingMoney;
+
+        Assert.That(staleExpectedRefund, Is.EqualTo(purchasedAfterBuy.AmountSpent),
+            "Precondition: the dialog must have captured a full-refund amount from the regret window.");
+
+        var budgetBeforeSell = publisherAfterBuy.Budget;
+
+        // Player waits past the regret window, then confirms the dialog with the stale amount.
+        await AdvancePastRegretWindowAsync(purchasedAfterBuy.Timestamp);
+
+        var ex = Assert.ThrowsAsync<ApiException>(() =>
+            session.Royale.SellGameAsync(
+                new SellRoyaleGameRequest
+                {
+                    PublisherID = publisherID,
+                    MasterGameID = game.MasterGame.MasterGameID,
+                    ExpectedRefundAmount = staleExpectedRefund,
+                    ExpectedAdvertisingMoney = staleExpectedAdvertising,
+                }));
+        Assert.That(ex!.StatusCode, Is.EqualTo(400),
+            "A sell request whose expected refund no longer matches the server-computed refund must be rejected.");
+
+        var publisherAfterAttempt = await session.Royale.GetRoyalePublisherAsync(publisherID);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(
+                publisherAfterAttempt!.PublisherGames!.Any(g => g.MasterGame?.MasterGameID == game.MasterGame.MasterGameID),
+                Is.True,
+                "The game must remain on the roster after a rejected sell.");
+            Assert.That(publisherAfterAttempt.Budget, Is.EqualTo(budgetBeforeSell),
+                "The budget must be unchanged after a rejected sell.");
+        }
+    }
+
+    [Test]
     public async Task SellGame_AfterRegretWindow_BudgetIncreasesBy_HalfAmountSpentPlusAdvertising()
     {
         // End-to-end sell test: budget delta matches the refund formula.
@@ -304,11 +380,17 @@ public class RoyaleQ32026Tests : IntegrationTestBase
         // Advance past regret window, then sell.
         await AdvancePastRegretWindowAsync(purchased.Timestamp);
 
+        var publisherBeforeSell = await session.Royale.GetRoyalePublisherAsync(publisherID);
+        var gameBeforeSell = publisherBeforeSell!.PublisherGames!
+            .Single(g => g.MasterGame?.MasterGameID == game.MasterGame.MasterGameID);
+
         await session.Royale.SellGameAsync(
             new SellRoyaleGameRequest
             {
                 PublisherID = publisherID,
                 MasterGameID = game.MasterGame.MasterGameID,
+                ExpectedRefundAmount = gameBeforeSell.RefundAmount!.Value,
+                ExpectedAdvertisingMoney = gameBeforeSell.AdvertisingMoney,
             });
 
         var publisherAfterSell = await session.Royale.GetRoyalePublisherAsync(publisherID);
@@ -378,6 +460,8 @@ public class RoyaleQ32026Tests : IntegrationTestBase
             {
                 PublisherID = publisherID,
                 MasterGameID = game.MasterGame.MasterGameID,
+                ExpectedRefundAmount = purchased.RefundAmount!.Value,
+                ExpectedAdvertisingMoney = purchased.AdvertisingMoney,
             });
 
         var publisherAfterSell = await session.Royale.GetRoyalePublisherAsync(publisherID);

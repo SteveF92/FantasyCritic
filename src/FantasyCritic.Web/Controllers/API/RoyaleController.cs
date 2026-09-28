@@ -370,7 +370,7 @@ public class RoyaleController : FantasyCriticController
                 return BadRequest();
             }
 
-            var sellResult = await _royaleService.SellGame(publisher, publisherGame);
+            var sellResult = await _royaleService.SellGame(publisher, publisherGame, request.ExpectedRefundAmount, request.ExpectedAdvertisingMoney);
             if (sellResult.IsFailure)
             {
                 return BadRequest(sellResult.Error);

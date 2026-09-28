@@ -183,7 +183,7 @@ public class RoyaleService
         return new ClaimResult(nextSlot);
     }
 
-    public async Task<Result> SellGame(RoyalePublisher publisher, RoyalePublisherGame publisherGame)
+    public async Task<Result> SellGame(RoyalePublisher publisher, RoyalePublisherGame publisherGame, decimal expectedRefundAmount, decimal expectedAdvertisingMoney)
     {
         var masterGameTags = await _masterGameRepo.GetMasterGameTags();
         var currentlyInEligible = publisherGame.CalculateIsCurrentlyIneligible(masterGameTags);
@@ -213,6 +213,10 @@ public class RoyaleService
         }
 
         var finalRefund = publisherGame.CalculateRefundAmount(masterGameTags, _clock);
+        if (finalRefund != expectedRefundAmount || publisherGame.AdvertisingMoney != expectedAdvertisingMoney)
+        {
+            return Result.Failure("The refund amount for this game since you opened this window. Since you wouldn't be getting the amount you expect, the sale was not processed. You'll need to to close this dialog and try again.");
+        }
 
         var now = _clock.GetCurrentInstant();
         RoyaleAction action = new RoyaleAction(publisher, publisherGame.MasterGame,
