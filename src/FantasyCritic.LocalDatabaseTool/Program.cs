@@ -6,11 +6,8 @@ using FantasyCritic.Lib;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain;
-using FantasyCritic.Lib.GG;
-using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.OpenCritic;
-using FantasyCritic.Lib.Patreon;
+using FantasyCritic.Lib.Jobs.Utilities;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.SharedSerialization.API;
@@ -83,8 +80,8 @@ public static class Program
     private static async Task RefreshCaches()
     {
         Log.Information("Refreshing caches");
-        AdminService localAdminService = GetAdminService();
-        await localAdminService.RefreshCaches();
+        CacheRefresher localCacheRefresher = GetCacheRefresher();
+        await localCacheRefresher.RefreshCaches();
     }
 
     private static async Task<IReadOnlyList<MasterGameTag>> GetTagsFromAPI()
@@ -106,33 +103,20 @@ public static class Program
         return domains;
     }
 
-    private static AdminService GetAdminService()
+    private static CacheRefresher GetCacheRefresher()
     {
-        FantasyCriticUserManager userManager = null!;
         RepositoryConfiguration localRepoConfig = new RepositoryConfiguration(_localConnectionString, _clock);
         IFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         IMasterGameRepo masterGameRepo = new MySQLMasterGameRepo(localRepoConfig, localUserStore, _clock);
         ICombinedDataRepo combinedDataRepo = new MySQLCombinedDataRepo(localRepoConfig, localUserStore);
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo, combinedDataRepo);
-        IConferenceRepo conferenceRepo = new MySQLConferenceRepo(localRepoConfig, localUserStore, masterGameRepo, combinedDataRepo);
-        IDiscordRepo discordRepo = new MySQLDiscordRepo(localRepoConfig, fantasyCriticRepo, masterGameRepo, conferenceRepo, combinedDataRepo, _clock);
         IRoyaleRepo royaleRepo = new MySQLRoyaleRepo(localRepoConfig, localUserStore, masterGameRepo);
-        IDailyStatsRepo dailyStatsRepo = new MySQLDailyStatsRepo(localRepoConfig, fantasyCriticRepo, royaleRepo);
         DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration("", _baseAddress, true), _clock, new ServiceContainer(), new DiscordFormatter());
         InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, combinedDataRepo, masterGameRepo, _clock, discordPushService);
-        LeagueMemberService leagueMemberService = new LeagueMemberService(null!, fantasyCriticRepo, combinedDataRepo);
-        GameAcquisitionService gameAcquisitionService = new GameAcquisitionService(fantasyCriticRepo, masterGameRepo, _clock, discordPushService);
-        FantasyCriticService fantasyCriticService = new FantasyCriticService(leagueMemberService, interLeagueService, discordPushService, gameAcquisitionService, fantasyCriticRepo, combinedDataRepo, discordRepo, _clock);
-        IOpenCriticService openCriticService = null!;
-        IGGService ggService = null!;
-        PatreonService patreonService = null!;
-        IRDSManager rdsManager = null!;
         RoyaleService royaleService = new RoyaleService(royaleRepo, _clock, masterGameRepo);
         IHypeFactorService hypeFactorService = new HypeFactorService(masterGameRepo, interLeagueService);
 
-        return new AdminService(fantasyCriticService, userManager, fantasyCriticRepo, masterGameRepo, interLeagueService,
-            openCriticService, ggService, patreonService, _clock, rdsManager, royaleService, hypeFactorService, discordPushService, discordRepo, dailyStatsRepo,
-            new EnvironmentConfiguration(_baseAddress, IsProduction: false, IntegrationTestMode: false));
+        return new CacheRefresher(_clock, masterGameRepo, interLeagueService, fantasyCriticRepo, hypeFactorService, discordPushService, royaleService);
     }
 
     private static async Task UpdateSupportedYears()

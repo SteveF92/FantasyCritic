@@ -9,14 +9,16 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandl
 {
     private readonly InterLeagueService _interLeagueService;
     private readonly AdminService _adminService;
+    private readonly FullDataRefresher _fullDataRefresher;
     private readonly IClock _clock;
 
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(TimeExtensions.ActionProcessingDay, TimeExtensions.ActionProcessingTime);
 
-    public PrepareForActionProcessingJobHandler(InterLeagueService interLeagueService, AdminService adminService, IClock clock)
+    public PrepareForActionProcessingJobHandler(InterLeagueService interLeagueService, AdminService adminService, FullDataRefresher fullDataRefresher, IClock clock)
     {
         _interLeagueService = interLeagueService;
         _adminService = adminService;
+        _fullDataRefresher = fullDataRefresher;
         _clock = clock;
     }
 
@@ -31,7 +33,7 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandl
         await context.UpdateDetailedStatus("Action processing mode on. Refreshing data.");
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _adminService.FullDataRefresh();
+        await _fullDataRefresher.FullDataRefresh();
         await context.UpdateDetailedStatus("Action processing mode on. Data refreshed. Snapshotting database.");
         cancellationToken.ThrowIfCancellationRequested();
 
