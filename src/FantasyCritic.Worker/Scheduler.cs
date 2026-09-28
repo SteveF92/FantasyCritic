@@ -25,7 +25,7 @@ public class Scheduler : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        using var flowScope = _logger.BeginFlowScope(WorkerLogging.SchedulerFlow);
+        using var flowScope = WorkerLogging.BeginFlowScope(WorkerLogging.SchedulerFlow);
 
         //Seed from 30 minutes ago so a slot that fell in a restart gap is still attempted.
         //The UNIQUE constraint makes this safe if the old worker already enqueued it.
@@ -104,7 +104,7 @@ public class Scheduler : BackgroundService
                 var job = new FantasyCriticJob(Guid.NewGuid(), dueSlot.JobType, createdByUser: null, FantasyCriticJobStatus.Queued,
                     detailedStatus: null, errorMessage: null, scheduledFor: dueSlot.ScheduledFor, createdAt: schedulingInstant, startedAt: null, finishedAt: null,
                     cancelledAt: null, cancelledByUser: null);
-                using var jobScope = _logger.BeginJobScope(job);
+                using var jobScope = WorkerLogging.BeginJobScope(job);
 
                 var created = await jobRepo.CreateJob(job);
                 if (created)

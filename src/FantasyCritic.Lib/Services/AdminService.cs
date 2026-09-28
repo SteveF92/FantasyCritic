@@ -266,21 +266,6 @@ public class AdminService
         await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers, true);
     }
 
-    public async Task RecalculateRoyaleWinners()
-    {
-        var supportedQuarters = await _royaleService.GetYearQuarters();
-        foreach (var supportedQuarter in supportedQuarters)
-        {
-            bool readyToCalculateWinners = supportedQuarter.Finished && supportedQuarter.WinningUser is null;
-            if (!readyToCalculateWinners)
-            {
-                continue;
-            }
-
-            await _royaleService.CalculateRoyaleWinnerForQuarter(supportedQuarter);
-        }
-    }
-
     public async Task RecomputeRulesBasedRoyaleGroups()
     {
         var rulesBasedGroups = await _royaleService.GetAllRoyaleGroupsByType(RoyaleGroupType.RulesBased);
@@ -388,41 +373,6 @@ public class AdminService
                 var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
                 await _discordPushService.SendFinalYearStandings(leagueYears, nycNow.Date);
             }
-        }
-    }
-
-    public async Task AdvanceRoyaleQuarters()
-    {
-        var nycNow = _clock.GetCurrentInstant().InZone(TimeExtensions.EasternTimeZone);
-
-        //Finish any quarters whose end date has passed.
-        var supportedQuarters = await _royaleService.GetYearQuarters();
-        foreach (var supportedQuarter in supportedQuarters)
-        {
-            if (supportedQuarter.Finished)
-            {
-                continue;
-            }
-
-            var endDate = supportedQuarter.YearQuarter.LastDateOfQuarter;
-            if (nycNow.Date > endDate)
-            {
-                _logger.Information($"Automatically setting {supportedQuarter} as finished because date/time is: {nycNow}");
-                await _royaleService.FinishQuarter(supportedQuarter);
-            }
-        }
-
-        //Calculate winners for any finished quarters that don't have one yet. This reloads the quarters, so it sees the ones just finished above.
-        await RecalculateRoyaleWinners();
-
-        //Start the next quarter as we approach it.
-        supportedQuarters = await _royaleService.GetYearQuarters();
-        var latestQuarter = supportedQuarters.WhereMax(x => x.YearQuarter).Single();
-        var nextQuarter = latestQuarter.YearQuarter.NextQuarter;
-        var dayToStartNextQuarter = nextQuarter.FirstDateOfQuarter.Minus(Period.FromDays(15));
-        if (nycNow.Date > dayToStartNextQuarter)
-        {
-            await _royaleService.StartNewQuarter(nextQuarter);
         }
     }
 

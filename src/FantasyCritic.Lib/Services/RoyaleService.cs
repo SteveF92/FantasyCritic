@@ -302,21 +302,6 @@ public class RoyaleService
         return quarters.Where(x => x.WinningUser is not null && x.WinningUser.UserID == user.UserID).ToList();
     }
 
-    public Task StartNewQuarter(YearQuarter nextQuarter)
-    {
-        return _royaleRepo.StartNewQuarter(nextQuarter);
-    }
-
-    public Task FinishQuarter(RoyaleYearQuarter supportedQuarter)
-    {
-        return _royaleRepo.FinishQuarter(supportedQuarter);
-    }
-
-    public Task CalculateRoyaleWinnerForQuarter(RoyaleYearQuarter supportedQuarter)
-    {
-        return _royaleRepo.CalculateRoyaleWinnerForQuarter(supportedQuarter.YearQuarter.Year, supportedQuarter.YearQuarter.Quarter);
-    }
-
     public Task<IReadOnlyList<RoyalePublisherHistoryEntry>> GetPublisherHistoryForUser(Guid userID)
     {
         return _royaleRepo.GetPublisherHistoryForUser(userID);
