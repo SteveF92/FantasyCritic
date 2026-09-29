@@ -15,7 +15,7 @@ internal class RefreshCachesJobHandler : IFantasyCriticJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await _cacheRefresher.RefreshCaches(cancellationToken);
+        await _cacheRefresher.RefreshCaches(context, cancellationToken);
         return Result.Success();
     }
 }

@@ -16,7 +16,7 @@ internal class RefreshGGInfoJobHandler : IFantasyCriticJobHandler
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         //Deep, as the fact checker's button has always been. FullDataRefresh does the shallow refresh.
-        await _ggInfoRefresher.RefreshGGInfo(deepRefresh: true, cancellationToken);
+        await _ggInfoRefresher.RefreshGGInfo(deepRefresh: true, context, cancellationToken);
         return Result.Success();
     }
 }

@@ -5,24 +5,22 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
-using Serilog;
+using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Utilities;
 
-//Public, unlike the other job utilities, because LocalDatabaseTool builds one by hand to refresh a freshly seeded database.
-public class CacheRefresher
+internal class CacheRefresher
 {
-    private static readonly ILogger _logger = Log.ForContext<CacheRefresher>();
-
     private readonly IClock _clock;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IHypeFactorService _hypeFactorService;
     private readonly DiscordPushService _discordPushService;
     private readonly RoyaleService _royaleService;
+    private readonly ILogger<CacheRefresher> _logger;
 
     public CacheRefresher(IClock clock, IMasterGameRepo masterGameRepo, IFantasyCriticRepo fantasyCriticRepo,
-        IHypeFactorService hypeFactorService, DiscordPushService discordPushService, RoyaleService royaleService)
+        IHypeFactorService hypeFactorService, DiscordPushService discordPushService, RoyaleService royaleService, ILogger<CacheRefresher> logger)
     {
         _clock = clock;
         _masterGameRepo = masterGameRepo;
@@ -30,48 +28,64 @@ public class CacheRefresher
         _hypeFactorService = hypeFactorService;
         _discordPushService = discordPushService;
         _royaleService = royaleService;
+        _logger = logger;
     }
 
-    public async Task RefreshCaches(CancellationToken cancellationToken)
+    //Progress goes in a temporary status as each sub-step starts, so a cancelled run shows which one it was on.
+    //The one clause appended at the end says which years were recalculated.
+    public async Task RefreshCaches(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        _logger.Information("Refreshing caches");
+        _logger.LogInformation("Refreshing caches.");
 
         LocalDate today = _clock.GetToday();
         LocalDate tomorrow = today.PlusDays(1);
         cancellationToken.ThrowIfCancellationRequested();
+        await context.AddTemporaryStatus("Caches: updating code-based tags.");
         await UpdateCodeBasedTags(today);
         cancellationToken.ThrowIfCancellationRequested();
+        await context.AddTemporaryStatus("Caches: updating release date estimates.");
         await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
         var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var cachedSystemWideValueYears = (await _fantasyCriticRepo.GetCachedSystemWideValueYears()).ToHashSet();
+        List<int> systemWideValueYears = [];
         foreach (var supportedYear in supportedYears)
         {
             if (!YearNeedsSystemWideValuesRefresh(supportedYear, today, cachedSystemWideValueYears))
             {
+                _logger.LogDebug("System-wide values for {Year} are cached and final; not recalculating.", supportedYear.Year);
                 continue;
             }
 
+            await context.AddTemporaryStatus($"Caches: updating system-wide values for {supportedYear.Year}.");
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
             cancellationToken.ThrowIfCancellationRequested();
             await UpdateSystemWideValuesForYear(supportedYear.Year, leagueYears);
+            systemWideValueYears.Add(supportedYear.Year);
         }
 
         cancellationToken.ThrowIfCancellationRequested();
+        await context.AddTemporaryStatus("Caches: aggregating system-wide values.");
         await UpdateSystemWideValues();
         HypeConstants hypeConstants = await _hypeFactorService.GetHypeConstants();
-        await UpdateGameStats(hypeConstants, cancellationToken);
+        var gameStatsYears = await UpdateGameStats(hypeConstants, context, cancellationToken);
         _masterGameRepo.ClearMasterGameCache();
         _masterGameRepo.ClearMasterGameYearCache();
         //Anything still queued here goes out with the next RefreshCaches in this process.
         cancellationToken.ThrowIfCancellationRequested();
+        await context.AddTemporaryStatus("Caches: sending batched Discord game updates.");
         await _discordPushService.SendBatchedMasterGameUpdates();
-        _logger.Information("Done refreshing caches");
+
+        _logger.LogInformation("Refreshed caches: system-wide values for {SystemWideValueYears}, game stats for {GameStatsYears}.",
+            systemWideValueYears, gameStatsYears);
+        await context.AppendDetailedStatus($"Caches refreshed: system-wide values for {DescribeYears(systemWideValueYears)}; game stats for {DescribeYears(gameStatsYears)}.");
     }
+
+    private static string DescribeYears(IReadOnlyList<int> years) => years.Count == 0 ? "no years" : string.Join(", ", years);
 
     private async Task UpdateCodeBasedTags(LocalDate today)
     {
-        _logger.Information("Updating Code Based Tags");
+        _logger.LogDebug("Updating code-based tags.");
         var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
         var allMasterGames = await _masterGameRepo.GetMasterGames();
         var masterGamesWithEarlyAccessDate = allMasterGames.Where(x => x.EarlyAccessReleaseDate.HasValue);
@@ -125,7 +139,7 @@ public class CacheRefresher
 
     private async Task UpdateSystemWideValues()
     {
-        _logger.Information("Aggregating system wide values from year cache");
+        _logger.LogDebug("Aggregating system-wide values from the year cache.");
 
         var systemWideValues = await _fantasyCriticRepo.BuildSystemWideValuesFromYearCache();
         await _fantasyCriticRepo.UpdateSystemWideValues(systemWideValues);
@@ -133,7 +147,7 @@ public class CacheRefresher
 
     private async Task UpdateSystemWideValuesForYear(int year, IReadOnlyList<LeagueYear> leagueYears)
     {
-        _logger.Information("Updating system wide values for year {Year}", year);
+        _logger.LogDebug("Updating system-wide values for {Year}.", year);
 
         var leaguesToCount = leagueYears.Where(x => x.League.AffectsStats && x.IsFirstDraftFinished).ToList();
         var publisherGames = leaguesToCount.SelectMany(x => x.Publishers).SelectMany(x => x.PublisherGames);
@@ -185,10 +199,10 @@ public class CacheRefresher
             allPickupOnlyStandardGamesWithPoints.Count, allCounterPicksWithPoints.Count);
     }
 
-    private async Task UpdateGameStats(HypeConstants hypeConstants, CancellationToken cancellationToken)
+    //Returns the years it updated.
+    private async Task<IReadOnlyList<int>> UpdateGameStats(HypeConstants hypeConstants, FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        _logger.Information("Updating game stats.");
-
+        List<int> updatedYears = [];
         var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var currentDate = _clock.GetToday();
         foreach (var supportedYear in supportedYears)
@@ -198,19 +212,23 @@ public class CacheRefresher
                 continue;
             }
 
-            _logger.Information("Updating game stats for year {Year}", supportedYear.Year);
+            _logger.LogDebug("Updating game stats for {Year}.", supportedYear.Year);
+            await context.AddTemporaryStatus($"Caches: updating game stats for {supportedYear.Year}.");
             IReadOnlyList<MasterGame> cleanMasterGames = await _masterGameRepo.GetMasterGames();
             IReadOnlyList<MasterGameYear> cachedMasterGames = await _masterGameRepo.GetMasterGameYears(supportedYear.Year);
 
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
             IReadOnlyList<PickupBid> processedBids = await _fantasyCriticRepo.GetProcessedPickupBids(supportedYear.Year, leagueYears);
             var royalePublishers = await _royaleService.GetAllPublishers(supportedYear.Year);
-            _logger.Information("All data retrieved for calculations for year {Year}", supportedYear.Year);
+            _logger.LogDebug("All data retrieved for game stats for {Year}.", supportedYear.Year);
 
             var calculatedStats = CalculateStatsForGames(supportedYear, leagueYears, cleanMasterGames, cachedMasterGames, processedBids, royalePublishers, hypeConstants, currentDate);
             cancellationToken.ThrowIfCancellationRequested();
             await _masterGameRepo.UpdateCalculatedStats(calculatedStats, supportedYear.Year);
+            updatedYears.Add(supportedYear.Year);
         }
+
+        return updatedYears;
     }
 
     private static IReadOnlyList<MasterGameCalculatedStats> CalculateStatsForGames(SupportedYear supportedYear, IReadOnlyList<LeagueYear> leagueYears,

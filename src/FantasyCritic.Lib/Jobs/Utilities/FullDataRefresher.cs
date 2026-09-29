@@ -16,11 +16,12 @@ internal class FullDataRefresher
         _fantasyPointsUpdater = fantasyPointsUpdater;
     }
 
-    public async Task FullDataRefresh(CancellationToken cancellationToken)
+    //Each step appends its own clause to the job's status, so a run that stops partway says which steps finished.
+    public async Task FullDataRefresh(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await _criticScoreRefresher.RefreshCriticInfo(cancellationToken);
-        await _ggInfoRefresher.RefreshGGInfo(false, cancellationToken);
-        await _cacheRefresher.RefreshCaches(cancellationToken);
-        await _fantasyPointsUpdater.UpdateFantasyPoints(cancellationToken);
+        await _criticScoreRefresher.RefreshCriticInfo(context, cancellationToken);
+        await _ggInfoRefresher.RefreshGGInfo(false, context, cancellationToken);
+        await _cacheRefresher.RefreshCaches(context, cancellationToken);
+        await _fantasyPointsUpdater.UpdateFantasyPoints(context, cancellationToken);
     }
 }

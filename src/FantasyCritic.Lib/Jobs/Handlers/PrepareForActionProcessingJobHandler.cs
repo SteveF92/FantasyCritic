@@ -31,11 +31,10 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandl
         //A cancellation leaves action processing mode on, like every other way this job can stop partway.
         await _interLeagueService.SetActionProcessingMode(true);
         await context.AppendDetailedStatus("Action processing mode on.");
-        await context.AddTemporaryStatus("Refreshing data.");
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _fullDataRefresher.FullDataRefresh(cancellationToken);
-        await context.AppendDetailedStatus("Data refreshed.");
+        //Each refresh step appends its own clause.
+        await _fullDataRefresher.FullDataRefresh(context, cancellationToken);
         await context.AddTemporaryStatus("Snapshotting database.");
         cancellationToken.ThrowIfCancellationRequested();
 

@@ -36,6 +36,7 @@ internal class EndOfYearRolloverJobHandler : IFantasyCriticCronJobHandler
         var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var nycNow = _clock.GetCurrentInstant().InZone(TimeExtensions.EasternTimeZone);
 
+        bool anyYearFinished = false;
         foreach (var supportedYear in supportedYears)
         {
             if (supportedYear.Finished)
@@ -46,20 +47,32 @@ internal class EndOfYearRolloverJobHandler : IFantasyCriticCronJobHandler
             var endDate = new LocalDate(supportedYear.Year, 12, 31);
             if (nycNow.Date > endDate)
             {
-                _logger.LogInformation($"Beginning end of year process for {supportedYear} because date/time is: {nycNow}");
+                _logger.LogInformation("Beginning end of year process for {Year}: it ended on {EndDate} and the Eastern time is {EasternTime}.",
+                    supportedYear.Year, endDate.ToISOString(), nycNow.ToString());
 
-                await _criticScoreRefresher.RefreshCriticInfo(cancellationToken);
-                await _cacheRefresher.RefreshCaches(cancellationToken);
+                await _criticScoreRefresher.RefreshCriticInfo(context, cancellationToken);
+                await _cacheRefresher.RefreshCaches(context, cancellationToken);
                 cancellationToken.ThrowIfCancellationRequested();
                 await _fantasyCriticRepo.FinishYear(supportedYear);
+                _logger.LogInformation("Finished {Year}.", supportedYear.Year);
+                await context.AppendDetailedStatus($"Finished {supportedYear.Year}.");
 
                 //Past this point, the next run skips this year because it's finished. So the rest runs to the end regardless:
                 //stopping here would leave fantasy points un-finalized and the final standings never sent.
-                await _fantasyPointsUpdater.UpdateFantasyPoints(CancellationToken.None);
+                await _fantasyPointsUpdater.UpdateFantasyPoints(context, CancellationToken.None);
 
                 var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
                 await _discordPushService.SendFinalYearStandings(leagueYears, nycNow.Date);
+                _logger.LogInformation("Sent final standings for {Year}.", supportedYear.Year);
+                await context.AppendDetailedStatus($"Final standings for {supportedYear.Year} sent.");
+                anyYearFinished = true;
             }
+        }
+
+        if (!anyYearFinished)
+        {
+            _logger.LogDebug("No years to finish: the Eastern date is {EasternDate}.", nycNow.Date.ToISOString());
+            await context.AppendDetailedStatus("No years to finish.");
         }
 
         return Result.Success();
