@@ -22,7 +22,6 @@ internal class ExpireTradesJobHandler : IFantasyCriticCronJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Expiring trades.");
         var now = _clock.GetCurrentInstant();
         var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MaxBy(x => x.Year);
@@ -46,6 +45,17 @@ internal class ExpireTradesJobHandler : IFantasyCriticCronJobHandler
 
         cancellationToken.ThrowIfCancellationRequested();
         await _fantasyCriticRepo.ExpireTrades(tradesToExpire, now);
+
+        if (tradesToExpire.Count == 0)
+        {
+            _logger.LogDebug("No trades to expire in {Year}: {ActiveTradeCount} active.", currentYear.Year, activeTrades.Count);
+            await context.UpdateDetailedStatus($"No trades to expire in {currentYear.Year}.");
+        }
+        else
+        {
+            _logger.LogInformation("Expired {ExpiredTradeCount} of {ActiveTradeCount} active trades in {Year}.", tradesToExpire.Count, activeTrades.Count, currentYear.Year);
+            await context.UpdateDetailedStatus($"Expired {tradesToExpire.Count} trades in {currentYear.Year}.");
+        }
 
         return Result.Success();
     }

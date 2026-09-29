@@ -28,6 +28,11 @@ internal class RefreshPatreonInfoJobHandler : IFantasyCriticCronJobHandler
         cancellationToken.ThrowIfCancellationRequested();
         await _userStore.UpdatePatronInfo(patronInfo);
 
+        //UpdatePatronInfo replaces every programmatic role and donor name, so these counts are the new totals.
+        var plusCount = patronInfo.Count(x => x.IsPlusUser);
+        var donorCount = patronInfo.Count(x => x.DonorName is not null);
+        _logger.LogInformation("Updated patron info: {LinkedUserCount} linked users, {PlusCount} Plus, {DonorCount} donors.", patreonUsers.Count, plusCount, donorCount);
+        await context.UpdateDetailedStatus($"Updated patron info: {patreonUsers.Count} linked users, {plusCount} Plus, {donorCount} donors.");
         return Result.Success();
     }
 }

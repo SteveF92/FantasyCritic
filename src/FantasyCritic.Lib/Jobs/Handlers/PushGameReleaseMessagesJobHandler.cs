@@ -26,20 +26,22 @@ internal class PushGameReleaseMessagesJobHandler : IFantasyCriticCronJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("About to run Master Game Release Push");
-
         var today = _clock.GetToday();
         var allMasterGames = await _masterGameRepo.GetMasterGameYears(today.Year);
         var masterGamesReleasingToday = allMasterGames.Where(x => x.MasterGame.ReleaseDate.HasValue && x.MasterGame.ReleaseDate.Value == today).ToList();
         if (!masterGamesReleasingToday.Any())
         {
-            _logger.LogInformation("No games for Master Game Release Push");
+            _logger.LogDebug("No games release on {Date}.", today.ToISOString());
+            await context.UpdateDetailedStatus("No games released today.");
             return Result.Success();
         }
 
-        _logger.LogInformation("{masterGamesReleasingTodayCount} games for Master Game Release Push", masterGamesReleasingToday.Count);
         cancellationToken.ThrowIfCancellationRequested();
         await _discordPushService.SendGameReleaseUpdates(masterGamesReleasingToday);
+
+        var gameNames = masterGamesReleasingToday.Select(x => x.MasterGame.GameName).ToList();
+        _logger.LogInformation("Pushed release messages for {GameCount} games releasing on {Date}: {GameNames}.", gameNames.Count, today.ToISOString(), gameNames);
+        await context.UpdateDetailedStatus($"{gameNames.Count} games released today: {string.Join(", ", gameNames)}.");
         return Result.Success();
     }
 }

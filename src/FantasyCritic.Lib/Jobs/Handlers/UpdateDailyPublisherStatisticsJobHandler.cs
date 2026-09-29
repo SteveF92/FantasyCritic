@@ -38,6 +38,9 @@ internal class UpdateDailyPublisherStatisticsJobHandler : IFantasyCriticCronJobH
         cancellationToken.ThrowIfCancellationRequested();
         await _dailyStatsRepo.UpdateDailyStats(activeYears, supportedQuarters, today, systemWideValues);
 
+        var years = activeYears.Select(x => x.Year).ToList();
+        _logger.LogInformation("Updated daily statistics for {Years} on {Date}.", years, today.ToISOString());
+        await context.UpdateDetailedStatus($"Updated daily stats for {string.Join(", ", years)} on {today.ToISOString()}.");
         return Result.Success();
     }
 }

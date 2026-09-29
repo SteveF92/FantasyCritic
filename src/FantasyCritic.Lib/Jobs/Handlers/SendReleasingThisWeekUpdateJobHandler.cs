@@ -31,6 +31,10 @@ internal class SendReleasingThisWeekUpdateJobHandler : IFantasyCriticCronJobHand
         var year = today.Year;
         cancellationToken.ThrowIfCancellationRequested();
         await _discordPushService.SendReleasingThisWeekUpdate(upcomingGames, year);
+
+        var throughDate = today.PlusWeeks(1).ToISOString();
+        _logger.LogInformation("Pushed the releasing this week update: the {GameCount} most hyped games releasing through {ThroughDate}.", upcomingGames.Count, throughDate);
+        await context.UpdateDetailedStatus($"The {upcomingGames.Count} most hyped games releasing through {throughDate}.");
         return Result.Success();
     }
 

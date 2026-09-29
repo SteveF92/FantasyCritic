@@ -46,20 +46,23 @@ internal class ProcessSpecialAuctionsJobHandler : IConditionalCronJobHandler
                 continue;
             }
 
-            await ProcessSpecialAuctionsForYear(systemWideValues, supportedYear.Year, cancellationToken);
+            await ProcessSpecialAuctionsForYear(systemWideValues, supportedYear.Year, context, cancellationToken);
         }
 
         return Result.Success();
     }
 
-    private async Task ProcessSpecialAuctionsForYear(SystemWideValues systemWideValues, int year, CancellationToken cancellationToken)
+    private async Task ProcessSpecialAuctionsForYear(SystemWideValues systemWideValues, int year, FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        _logger.LogInformation($"Processing special auctions for {year}.");
+        _logger.LogDebug("Processing special auctions for {Year}.", year);
+        await context.AddTemporaryStatus($"{year}: processing.");
         var now = _clock.GetCurrentInstant();
         IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
         var results = await GetSpecialAuctionResults(systemWideValues, year, now, allLeagueYears);
         if (results.IsEmpty())
         {
+            _logger.LogDebug("No special auctions to process for {Year}.", year);
+            await context.AppendDetailedStatus($"{year}: nothing to process.");
             return;
         }
 
@@ -67,6 +70,11 @@ internal class ProcessSpecialAuctionsJobHandler : IConditionalCronJobHandler
         cancellationToken.ThrowIfCancellationRequested();
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
         await _discordPushService.SendActionProcessingSummary(results.GetLeagueActionSets());
+
+        var auctionCount = results.SpecialAuctionsProcessed.Count;
+        var leagueCount = results.SpecialAuctionsProcessed.Select(x => x.LeagueYearKey).Distinct().Count();
+        _logger.LogInformation("Processed {AuctionCount} special auctions in {LeagueCount} leagues for {Year}.", auctionCount, leagueCount, year);
+        await context.AppendDetailedStatus($"{year}: processed {auctionCount} special auctions in {leagueCount} leagues.");
     }
 
     private async Task<FinalizedActionProcessingResults> GetSpecialAuctionResults(SystemWideValues systemWideValues, int year, Instant processingTime, IReadOnlyList<LeagueYear> allLeagueYears)

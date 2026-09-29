@@ -27,7 +27,6 @@ internal class GrantSuperDropsJobHandler : IFantasyCriticCronJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        _logger.LogInformation("Granting super drops.");
         SystemWideValues systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
         var now = _clock.GetCurrentInstant();
         var currentDate = now.ToEasternDate();
@@ -75,6 +74,19 @@ internal class GrantSuperDropsJobHandler : IFantasyCriticCronJobHandler
         cancellationToken.ThrowIfCancellationRequested();
         await _fantasyCriticRepo.GrantSuperDrops(publishersToGrantSuperDrop, superDropActions);
         await _discordPushService.SendSuperDropMessages(publishersToGrantSuperDrop);
+
+        if (publishersToGrantSuperDrop.Count == 0)
+        {
+            _logger.LogDebug("No super drops to grant for {Year}: {LeagueCount} leagues grant them.", currentYear.Year, leagueYearsWithSuperDrops.Count);
+            await context.UpdateDetailedStatus($"No super drops to grant for {currentYear.Year}.");
+        }
+        else
+        {
+            var leagueCount = publishersToGrantSuperDrop.Select(x => x.LeagueYearKey).Distinct().Count();
+            _logger.LogInformation("Granted super drops to {PublisherCount} publishers in {LeagueCount} leagues for {Year}.",
+                publishersToGrantSuperDrop.Count, leagueCount, currentYear.Year);
+            await context.UpdateDetailedStatus($"Granted super drops to {publishersToGrantSuperDrop.Count} publishers in {leagueCount} leagues for {currentYear.Year}.");
+        }
 
         return Result.Success();
     }

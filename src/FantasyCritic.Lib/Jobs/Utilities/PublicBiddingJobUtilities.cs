@@ -21,4 +21,9 @@ internal static class PublicBiddingJobUtilities
 
         return publicBiddingSets;
     }
+
+    public static string DescribeLeagues(IReadOnlyList<LeagueYearPublicBiddingSet> publicBiddingSets)
+    {
+        return $"{publicBiddingSets.Count} leagues with public bidding.";
+    }
 }
