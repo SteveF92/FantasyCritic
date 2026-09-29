@@ -22,6 +22,7 @@ internal class RecalculateLastSeasonWinnersJobHandler : IFantasyCriticJobHandler
         var mostRecentFinishedYear = supportedYears.Where(x => x.Finished).OrderByDescending(x => x.Year).First();
         IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(mostRecentFinishedYear.Year);
         var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(mostRecentFinishedYear.Year, leagueYears, true);
+        cancellationToken.ThrowIfCancellationRequested();
         await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers, true);
 
         return Result.Success();

@@ -23,6 +23,7 @@ internal class SendPublicBiddingEmailsJobHandler : IFantasyCriticJobHandler
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         var publicBiddingSets = await PublicBiddingJobUtilities.GetPublicBiddingSets(_fantasyCriticRepo, _gameAcquisitionService);
+        cancellationToken.ThrowIfCancellationRequested();
         await _emailSendingService.SendPublicBidEmails(publicBiddingSets);
         return Result.Success();
     }

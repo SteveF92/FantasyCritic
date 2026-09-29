@@ -24,6 +24,7 @@ internal class SendPublicBiddingDiscordMessagesJobHandler : IFantasyCriticJobHan
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         var publicBiddingSets = await PublicBiddingJobUtilities.GetPublicBiddingSets(_fantasyCriticRepo, _gameAcquisitionService);
+        cancellationToken.ThrowIfCancellationRequested();
         await _discordPushService.SendPublicBiddingSummary(publicBiddingSets);
         return Result.Success();
     }

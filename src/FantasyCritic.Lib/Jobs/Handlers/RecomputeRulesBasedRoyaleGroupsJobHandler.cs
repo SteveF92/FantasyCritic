@@ -22,6 +22,7 @@ internal class RecomputeRulesBasedRoyaleGroupsJobHandler : IFantasyCriticJobHand
         var rulesBasedGroups = await _royaleRepo.GetAllRoyaleGroupsByType(RoyaleGroupType.RulesBased);
         foreach (var group in rulesBasedGroups)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var memberIDs = await ComputeRulesBasedMembers(group);
             await _royaleRepo.SetRoyaleGroupMembers(group.GroupID, memberIDs);
             _logger.LogInformation("Recomputed rules-based Royale group {GroupName} with {Count} members.", group.GroupName, memberIDs.Count);

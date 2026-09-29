@@ -46,13 +46,13 @@ internal class ProcessSpecialAuctionsJobHandler : IConditionalCronJobHandler
                 continue;
             }
 
-            await ProcessSpecialAuctionsForYear(systemWideValues, supportedYear.Year);
+            await ProcessSpecialAuctionsForYear(systemWideValues, supportedYear.Year, cancellationToken);
         }
 
         return Result.Success();
     }
 
-    private async Task ProcessSpecialAuctionsForYear(SystemWideValues systemWideValues, int year)
+    private async Task ProcessSpecialAuctionsForYear(SystemWideValues systemWideValues, int year, CancellationToken cancellationToken)
     {
         _logger.LogInformation($"Processing special auctions for {year}.");
         var now = _clock.GetCurrentInstant();
@@ -63,6 +63,8 @@ internal class ProcessSpecialAuctionsJobHandler : IConditionalCronJobHandler
             return;
         }
 
+        //No check between the save and its summary: the next run won't find these auctions again, so the summary would never go out.
+        cancellationToken.ThrowIfCancellationRequested();
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
         await _discordPushService.SendActionProcessingSummary(results.GetLeagueActionSets());
     }

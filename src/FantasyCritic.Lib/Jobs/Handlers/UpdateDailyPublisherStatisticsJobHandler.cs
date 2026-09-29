@@ -35,6 +35,7 @@ internal class UpdateDailyPublisherStatisticsJobHandler : IFantasyCriticCronJobH
         var activeYears = supportedYears.Where(x => !x.Finished && x.OpenForPlay).ToList();
         var supportedQuarters = await _royaleRepo.GetYearQuarters();
 
+        cancellationToken.ThrowIfCancellationRequested();
         await _dailyStatsRepo.UpdateDailyStats(activeYears, supportedQuarters, today, systemWideValues);
 
         return Result.Success();

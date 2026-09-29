@@ -17,6 +17,7 @@ internal class MakeSlotsConsistentJobHandler : IFantasyCriticJobHandler
     {
         var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MaxBy(x => x.Year);
+        cancellationToken.ThrowIfCancellationRequested();
         await _fantasyCriticRepo.ManualMakePublisherGameSlotsConsistent(currentYear!.Year);
 
         return Result.Success();

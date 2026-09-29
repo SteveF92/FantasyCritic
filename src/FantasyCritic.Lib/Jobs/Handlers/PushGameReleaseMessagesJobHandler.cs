@@ -38,6 +38,7 @@ internal class PushGameReleaseMessagesJobHandler : IFantasyCriticCronJobHandler
         }
 
         _logger.LogInformation("{masterGamesReleasingTodayCount} games for Master Game Release Push", masterGamesReleasingToday.Count);
+        cancellationToken.ThrowIfCancellationRequested();
         await _discordPushService.SendGameReleaseUpdates(masterGamesReleasingToday);
         return Result.Success();
     }

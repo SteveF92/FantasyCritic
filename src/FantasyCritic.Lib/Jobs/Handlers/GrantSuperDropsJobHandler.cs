@@ -71,6 +71,8 @@ internal class GrantSuperDropsJobHandler : IFantasyCriticCronJobHandler
             superDropActions.AddRange(actions);
         }
 
+        //No check between the grant and its messages: the next run skips publishers already granted, so their messages would never go out.
+        cancellationToken.ThrowIfCancellationRequested();
         await _fantasyCriticRepo.GrantSuperDrops(publishersToGrantSuperDrop, superDropActions);
         await _discordPushService.SendSuperDropMessages(publishersToGrantSuperDrop);
 

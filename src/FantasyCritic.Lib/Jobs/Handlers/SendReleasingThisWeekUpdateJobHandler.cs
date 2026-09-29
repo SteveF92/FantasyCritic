@@ -29,6 +29,7 @@ internal class SendReleasingThisWeekUpdateJobHandler : IFantasyCriticCronJobHand
         var today = _clock.GetToday();
         var upcomingGames = await GetUpcomingGames(today);
         var year = today.Year;
+        cancellationToken.ThrowIfCancellationRequested();
         await _discordPushService.SendReleasingThisWeekUpdate(upcomingGames, year);
         return Result.Success();
     }

@@ -25,6 +25,7 @@ internal class RefreshPatreonInfoJobHandler : IFantasyCriticCronJobHandler
     {
         var patreonUsers = await _userStore.GetUsersWithExternalLogin("Patreon");
         var patronInfo = await _patreonService.GetPatronInfo(patreonUsers);
+        cancellationToken.ThrowIfCancellationRequested();
         await _userStore.UpdatePatronInfo(patronInfo);
 
         return Result.Success();
