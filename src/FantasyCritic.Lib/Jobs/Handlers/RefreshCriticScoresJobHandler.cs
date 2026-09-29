@@ -1,21 +1,21 @@
-using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Jobs.Utilities;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class RefreshCriticScoresJobHandler : IFantasyCriticJobHandler
 {
-    private readonly AdminService _adminService;
+    private readonly CriticScoreRefresher _criticScoreRefresher;
 
-    public RefreshCriticScoresJobHandler(AdminService adminService)
+    public RefreshCriticScoresJobHandler(CriticScoreRefresher criticScoreRefresher)
     {
-        _adminService = adminService;
+        _criticScoreRefresher = criticScoreRefresher;
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.RefreshCriticScores;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await _adminService.RefreshCriticInfo();
+        await _criticScoreRefresher.RefreshCriticInfo(context, cancellationToken);
         return Result.Success();
     }
 }

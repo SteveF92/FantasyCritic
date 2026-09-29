@@ -20,7 +20,7 @@ internal class SnapshotDatabaseJobHandler : IFantasyCriticJobHandler
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         var snapshotName = DatabaseSnapshotNames.Admin(_clock.GetCurrentInstant());
-        await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_adminService, _clock, context, snapshotName, "", cancellationToken);
+        await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_adminService, _clock, context, snapshotName, cancellationToken);
         return Result.Success();
     }
 }

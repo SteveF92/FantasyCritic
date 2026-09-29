@@ -9,14 +9,16 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandl
 {
     private readonly InterLeagueService _interLeagueService;
     private readonly AdminService _adminService;
+    private readonly FullDataRefresher _fullDataRefresher;
     private readonly IClock _clock;
 
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(TimeExtensions.ActionProcessingDay, TimeExtensions.ActionProcessingTime);
 
-    public PrepareForActionProcessingJobHandler(InterLeagueService interLeagueService, AdminService adminService, IClock clock)
+    public PrepareForActionProcessingJobHandler(InterLeagueService interLeagueService, AdminService adminService, FullDataRefresher fullDataRefresher, IClock clock)
     {
         _interLeagueService = interLeagueService;
         _adminService = adminService;
+        _fullDataRefresher = fullDataRefresher;
         _clock = clock;
     }
 
@@ -28,16 +30,16 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandl
         //The scheduler skips FullDataRefresh's own slot in this wake, since this is the refresh.
         //A cancellation leaves action processing mode on, like every other way this job can stop partway.
         await _interLeagueService.SetActionProcessingMode(true);
-        await context.UpdateDetailedStatus("Action processing mode on. Refreshing data.");
+        await context.AppendDetailedStatus("Action processing mode on.");
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _adminService.FullDataRefresh();
-        await context.UpdateDetailedStatus("Action processing mode on. Data refreshed. Snapshotting database.");
+        //Each refresh step appends its own clause.
+        await _fullDataRefresher.FullDataRefresh(context, cancellationToken);
+        await context.AddTemporaryStatus("Snapshotting database.");
         cancellationToken.ThrowIfCancellationRequested();
 
         var snapshotName = DatabaseSnapshotNames.PreActionProcessing(_clock.GetCurrentInstant());
-        await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_adminService, _clock, context, snapshotName,
-            "Action processing mode on. Data refreshed. ", cancellationToken);
+        await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_adminService, _clock, context, snapshotName, cancellationToken);
         return Result.Success();
     }
 

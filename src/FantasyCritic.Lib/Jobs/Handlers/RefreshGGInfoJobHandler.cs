@@ -1,14 +1,14 @@
-using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Jobs.Utilities;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class RefreshGGInfoJobHandler : IFantasyCriticJobHandler
 {
-    private readonly AdminService _adminService;
+    private readonly GGInfoRefresher _ggInfoRefresher;
 
-    public RefreshGGInfoJobHandler(AdminService adminService)
+    public RefreshGGInfoJobHandler(GGInfoRefresher ggInfoRefresher)
     {
-        _adminService = adminService;
+        _ggInfoRefresher = ggInfoRefresher;
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.RefreshGGInfo;
@@ -16,7 +16,7 @@ internal class RefreshGGInfoJobHandler : IFantasyCriticJobHandler
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         //Deep, as the fact checker's button has always been. FullDataRefresh does the shallow refresh.
-        await _adminService.RefreshGGInfo(deepRefresh: true);
+        await _ggInfoRefresher.RefreshGGInfo(deepRefresh: true, context, cancellationToken);
         return Result.Success();
     }
 }

@@ -25,9 +25,6 @@ internal class AdvanceRoyaleQuartersJobHandler : IFantasyCriticCronJobHandler
     {
         var easternDate = _clock.GetCurrentInstant().InZone(TimeExtensions.EasternTimeZone).Date;
 
-        //Written after each step, so a row that stops partway says which steps finished.
-        List<string> statusParts = [];
-
         //Finish any quarters whose end date has passed.
         var supportedQuarters = await _royaleRepo.GetYearQuarters();
         List<string> finishedQuarters = [];
@@ -52,19 +49,16 @@ internal class AdvanceRoyaleQuartersJobHandler : IFantasyCriticCronJobHandler
         if (finishedQuarters.Count == 0)
         {
             _logger.LogDebug("No Royale quarters to finish.");
-            statusParts.Add("No quarters to finish.");
+            await context.AppendDetailedStatus("No quarters to finish.");
         }
         else
         {
-            statusParts.Add($"Finished {string.Join(", ", finishedQuarters)}.");
+            await context.AppendDetailedStatus($"Finished {string.Join(", ", finishedQuarters)}.");
         }
-
-        await context.UpdateDetailedStatus(string.Join(" ", statusParts));
 
         //Calculate winners for any finished quarters that don't have one yet. This reloads the quarters, so it sees the ones just finished above.
         var calculatedQuarters = await RoyaleJobUtilities.CalculateMissingWinners(_royaleRepo, _logger, cancellationToken);
-        statusParts.Add(RoyaleJobUtilities.DescribeWinners(calculatedQuarters));
-        await context.UpdateDetailedStatus(string.Join(" ", statusParts));
+        await context.AppendDetailedStatus(RoyaleJobUtilities.DescribeWinners(calculatedQuarters));
 
         //Start the next quarter as we approach it.
         supportedQuarters = await _royaleRepo.GetYearQuarters();
@@ -77,15 +71,14 @@ internal class AdvanceRoyaleQuartersJobHandler : IFantasyCriticCronJobHandler
             _logger.LogInformation("Starting Royale quarter {YearQuarter}: it opens after {OpenAfterDate} and the Eastern date is {EasternDate}.",
                 nextQuarter, dayToStartNextQuarter.ToISOString(), easternDate.ToISOString());
             await _royaleRepo.StartNewQuarter(nextQuarter);
-            statusParts.Add($"Started {nextQuarter}.");
+            await context.AppendDetailedStatus($"Started {nextQuarter}.");
         }
         else
         {
             _logger.LogDebug("Not starting Royale quarter {YearQuarter} yet: it opens after {OpenAfterDate}.", nextQuarter, dayToStartNextQuarter.ToISOString());
-            statusParts.Add($"{nextQuarter} opens after {dayToStartNextQuarter.ToISOString()}.");
+            await context.AppendDetailedStatus($"{nextQuarter} opens after {dayToStartNextQuarter.ToISOString()}.");
         }
 
-        await context.UpdateDetailedStatus(string.Join(" ", statusParts));
         return Result.Success();
     }
 }

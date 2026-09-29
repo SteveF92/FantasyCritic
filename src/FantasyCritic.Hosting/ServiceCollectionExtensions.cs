@@ -102,7 +102,7 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// <see cref="AdminService"/> and the external systems behind it: OpenCritic, GG, Patreon and RDS snapshots.
+    /// <see cref="AdminService"/> and the external systems behind it and the data refresh jobs: OpenCritic, GG, Patreon and RDS snapshots.
     /// Registered by Web, which calls it from controller actions, and by the worker, whose job handlers
     /// call it. Needs <see cref="AddFantasyCriticCore"/> and <see cref="AddFantasyCriticIdentityCore"/>
     /// (or Web's own Identity registration).

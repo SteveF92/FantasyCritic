@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Jobs.Utilities;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace FantasyCritic.Lib.Jobs;
@@ -15,6 +16,13 @@ public static class JobServiceCollectionExtensions
         {
             services.AddKeyedScoped(typeof(IJobHandler), definition.JobType, definition.HandlerType);
         }
+
+        //Units of work that more than one job runs. Scoped, so the steps of one job share its repositories and their caches.
+        services.AddScoped<CriticScoreRefresher>();
+        services.AddScoped<GGInfoRefresher>();
+        services.AddScoped<CacheRefresher>();
+        services.AddScoped<FantasyPointsUpdater>();
+        services.AddScoped<FullDataRefresher>();
 
         return services;
     }

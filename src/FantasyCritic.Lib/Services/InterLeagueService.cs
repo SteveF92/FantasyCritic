@@ -2,10 +2,8 @@ using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.OpenCritic;
 
 namespace FantasyCritic.Lib.Services;
 
@@ -159,21 +157,6 @@ public class InterLeagueService
         return _masterGameRepo.GetAllSelectedMasterGameIDsForYear(year);
     }
 
-    public Task UpdateCriticStats(MasterGame masterGame, OpenCriticGame openCriticGame)
-    {
-        return _masterGameRepo.UpdateCriticStats(masterGame, openCriticGame);
-    }
-
-    public Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame)
-    {
-        return _masterGameRepo.UpdateCriticStats(masterSubGame, openCriticGame);
-    }
-
-    public Task UpdateGGStats(MasterGame masterGame, GGGame ggGame)
-    {
-        return _masterGameRepo.UpdateGGStats(masterGame, ggGame);
-    }
-
     public Task SetActionProcessingMode(bool modeOn)
     {
         return _fantasyCriticRepo.SetActionProcessingMode(modeOn);
@@ -276,11 +259,6 @@ public class InterLeagueService
         return _masterGameRepo.GetMasterGameTagDictionary();
     }
 
-    public Task FinishYear(SupportedYear supportedYear)
-    {
-        return _fantasyCriticRepo.FinishYear(supportedYear);
-    }
-
     public Task<IReadOnlyList<ActionProcessingSetMetadata>> GetActionProcessingSets()
     {
         return _fantasyCriticRepo.GetActionProcessingSets();
@@ -306,16 +284,6 @@ public class InterLeagueService
     public Task<IReadOnlyList<LongestTenuredGame>> GetMostDreamsDashedGames(LocalDate currentDate, int? year)
     {
         return _masterGameRepo.GetMostDreamsDashedGames(currentDate, year);
-    }
-
-    public void ClearMasterGameCache()
-    {
-        _masterGameRepo.ClearMasterGameCache();
-    }
-
-    public void ClearMasterGameYearCache()
-    {
-        _masterGameRepo.ClearMasterGameYearCache();
     }
 
     public Task<IReadOnlyList<LocalDate>> GetProcessingDatesForTopBidsAndDrops()

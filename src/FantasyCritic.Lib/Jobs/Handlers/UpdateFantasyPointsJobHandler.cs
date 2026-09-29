@@ -1,21 +1,21 @@
-using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Jobs.Utilities;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class UpdateFantasyPointsJobHandler : IFantasyCriticJobHandler
 {
-    private readonly AdminService _adminService;
+    private readonly FantasyPointsUpdater _fantasyPointsUpdater;
 
-    public UpdateFantasyPointsJobHandler(AdminService adminService)
+    public UpdateFantasyPointsJobHandler(FantasyPointsUpdater fantasyPointsUpdater)
     {
-        _adminService = adminService;
+        _fantasyPointsUpdater = fantasyPointsUpdater;
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.UpdateFantasyPoints;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await _adminService.UpdateFantasyPoints();
+        await _fantasyPointsUpdater.UpdateFantasyPoints(context, cancellationToken);
         return Result.Success();
     }
 }
