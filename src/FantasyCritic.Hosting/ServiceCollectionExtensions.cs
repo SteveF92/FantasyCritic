@@ -102,9 +102,9 @@ public static class ServiceCollectionExtensions
     }
 
     /// <summary>
-    /// <see cref="AdminService"/> and the external systems behind it and the data refresh jobs: OpenCritic, GG, Patreon and RDS snapshots.
-    /// Registered by Web, which calls it from controller actions, and by the worker, whose job handlers
-    /// call it. Needs <see cref="AddFantasyCriticCore"/> and <see cref="AddFantasyCriticIdentityCore"/>
+    /// <see cref="AdminService"/> and the external systems behind it and the jobs: OpenCritic, GG, Patreon and RDS snapshots.
+    /// Registered by Web, which calls them from controller actions and account pages, and by the worker, whose job handlers
+    /// call them. Needs <see cref="AddFantasyCriticCore"/> and <see cref="AddFantasyCriticIdentityCore"/>
     /// (or Web's own Identity registration).
     /// </summary>
     public static IServiceCollection AddFantasyCriticAdminServices(this IServiceCollection services, AwsOptions aws, OpenCriticOptions openCritic,
@@ -130,7 +130,7 @@ public static class ServiceCollectionExtensions
 
     /// <summary>
     /// Private so that it is only ever registered once, by <see cref="AddFantasyCriticAdminServices"/>:
-    /// AdminService is why a host needs Patreon at all.
+    /// Web needs Patreon for linking accounts, and the worker for the RefreshPatreonInfo job.
     /// </summary>
     private static IServiceCollection AddFantasyCriticPatreon(this IServiceCollection services, PatreonOptions patreon)
     {
