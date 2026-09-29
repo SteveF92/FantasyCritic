@@ -103,24 +103,26 @@ Same rule: `ThrowIfCancellationRequested` before each write and at the top of ea
 
 ### Step 4: Add status and structured logs
 
-Each handler reports once, with `UpdateDetailedStatus`, except the two with a loop, which use `AppendDetailedStatus` so a cancelled run shows how far it got. Wording is a first draft for review:
+Each handler reports once, with `UpdateDetailedStatus`, except the two with a loop, which use `AppendDetailedStatus` so a cancelled run shows how far it got. As built:
 
-- **ExpireTrades:** `Expired 2 trades in 2026.` or `No trades to expire in 2026.` It runs hourly, so the no-op logs at Debug. Step 1 already replaced the handler's own "Expiring trades." Debug line with the moved Information one, so there's no duplicate left; the summary replaces that line.
-- **GrantSuperDrops:** `Granted super drops to 5 publishers in 3 leagues for 2026.` or `No super drops to grant for 2026.`
+- **ExpireTrades:** `Expired 2 trades in 2026.` or `No trades to expire in 2026.` The summary replaces the "Expiring trades." line, which would log every hour.
+- **GrantSuperDrops:** `Granted super drops to 5 publishers in 3 leagues for 2026.` or `No super drops to grant for 2026.` The summary replaces "Granting super drops.", for the same reason.
 - **MakeSlotsConsistent:** `Made publisher slots consistent for 2026.`
-- **ProcessSpecialAuctions:** one clause per year: `2026: processed 3 special auctions in 2 leagues.` or `2026: nothing to process.`
-- **RecalculateLastSeasonWinners:** `Recalculated winners for 2025: 1,234 leagues.`
-- **RecomputeRulesBasedRoyaleGroups:** one clause per group: `Previous Winners: 12 members.`
-- **RefreshPatreonInfo:** `Updated patron info for 40 users.`
+- **ProcessSpecialAuctions:** one clause per year: `2026: processed 3 special auctions in 2 leagues.` or `2026: nothing to process.` While a year runs, `2026: processing.` is its temporary clause.
+- **RecalculateLastSeasonWinners:** `Recalculated winners for 2025: 1200 winners across 1234 leagues.`
+- **RecomputeRulesBasedRoyaleGroups:** one clause per group: `Previous Winners: 12 members.`, or `No rules-based groups.`
+- **RefreshPatreonInfo:** `Updated patron info: 55 linked users, 30 Plus, 12 donors.` `UpdatePatronInfo` replaces every programmatic role and donor name, so those are the new totals.
 - **UpdateDailyPublisherStatistics:** `Updated daily stats for 2026 on 2026-09-28.`
-- **PushGameReleaseMessages:** `Sent release messages for 3 games: Game A, Game B, Game C.` or `No games released today.`
-- **SendReleasingThisWeekUpdate:** `Sent 10 games releasing by 2026-10-05.`
-- **SendPublicBiddingDiscordMessages / SendPublicBiddingEmails:** `Sent public bidding for 12 leagues.`
-- **SendAllPublicBiddingMessages:** writes `Emails: succeeded; Discord: succeeded` on success too, not only on failure.
+- **PushGameReleaseMessages:** `3 games released today: Game A, Game B, Game C.` or `No games released today.`
+- **SendReleasingThisWeekUpdate:** `The 10 most hyped games releasing through 2026-10-05.`
+- **SendPublicBiddingDiscordMessages / SendPublicBiddingEmails:** `12 leagues with public bidding.`
+- **SendAllPublicBiddingMessages:** `12 leagues with public bidding. Emails: succeeded; Discord: succeeded.`, written on success too, not only on failure.
+- The Discord statuses say what the job found, not "sent": `DiscordPushService` returns early without sending when the bot isn't set to run.
 
 Logs:
-- Structured properties (`{Year}`, `{Count}`, `{GroupName}`, `{GameName}`), replacing the interpolated lines ("Processing special auctions for {year}", PushGameReleaseMessages' three lines).
+- Structured properties (`{Year}`, `{LeagueCount}`, `{GroupName}`, `{GameNames}`), replacing the interpolated lines ("Processing special auctions for {year}", PushGameReleaseMessages' three lines).
 - Each state change and each run's summary at Information. "Nothing to do" at Debug, since most of these run hourly or every ten minutes.
+- Handlers that had no logger get `ILogger<T>`: MakeSlotsConsistent, RecalculateLastSeasonWinners and the three public bidding handlers.
 
 ## Found along the way, not changing
 
