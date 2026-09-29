@@ -47,4 +47,7 @@ public class FantasyCriticJob
     {
         return $"{JobID} - {Type.Value} - {Status} - {CreatedAt}";
     }
+
+    public static readonly FantasyCriticJob FakeJob = new FantasyCriticJob(Guid.Empty, null!, null, FantasyCriticJobStatus.Running,
+        null, null, null, Instant.MinValue, null, null, null, null);
 }

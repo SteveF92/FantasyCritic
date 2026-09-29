@@ -28,3 +28,76 @@ public interface IJobRepo
     /// <returns>False if the job was no longer Queued or Running (already resolved, or another request beat this one).</returns>
     Task<bool> RequestCancellation(FantasyCriticJob job, IMinimalFantasyCriticUser cancelledByUser, Instant requestedAt);
 }
+
+public class NoOpJobRepo : IJobRepo
+{
+    public Task<FantasyCriticJob?> GetJob(Guid jobID)
+    {
+        return Task.FromResult<FantasyCriticJob?>(null);
+    }
+
+    public Task<IReadOnlyList<FantasyCriticJob>> GetJobs(int page, int count, FantasyCriticJobFilter filter)
+    {
+        return Task.FromResult<IReadOnlyList<FantasyCriticJob>>([]);
+    }
+
+    public Task<IReadOnlyList<FantasyCriticJob>> GetIncompleteJobs()
+    {
+        return Task.FromResult<IReadOnlyList<FantasyCriticJob>>([]);
+    }
+
+    public Task<IReadOnlyList<FantasyCriticJobTypeWithRunType>> GetJobTypeRunTypes()
+    {
+        return Task.FromResult<IReadOnlyList<FantasyCriticJobTypeWithRunType>>([]);
+    }
+
+    public Task<bool> CreateJob(FantasyCriticJob job)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task<Result<FantasyCriticJob>> EnqueueJob(FantasyCriticJobType jobType, IMinimalFantasyCriticUser createdByUser, Instant createdAt)
+    {
+        return Task.FromResult(Result.Success(FantasyCriticJob.FakeJob));
+    }
+
+    public Task<bool> StartJob(FantasyCriticJob job, Instant startTime)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task CompleteJob(FantasyCriticJob job, Instant finishTime)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task UpdateDetailedStatusForJob(FantasyCriticJob job, string detailedStatus)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task ErrorJob(FantasyCriticJob job, string errorMessage, Instant finishTime)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task<bool> CancelJob(FantasyCriticJob job, Instant cancellationTime)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task<bool> CancelQueuedJob(FantasyCriticJob job, string reason, Instant cancellationTime)
+    {
+        return Task.FromResult(true);
+    }
+
+    public Task CancelInProgressJob(FantasyCriticJob job, Instant cancellationTime)
+    {
+        return Task.CompletedTask;
+    }
+
+    public Task<bool> RequestCancellation(FantasyCriticJob job, IMinimalFantasyCriticUser cancelledByUser, Instant requestedAt)
+    {
+        return Task.FromResult(true);
+    }
+}

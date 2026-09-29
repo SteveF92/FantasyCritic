@@ -7,6 +7,7 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Interfaces;
+using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Lib.Jobs.Utilities;
 using FantasyCritic.Lib.Royale;
 using FantasyCritic.Lib.Services;
@@ -18,6 +19,7 @@ using FantasyCritic.MySQL.SyncingRepos;
 using Microsoft.Extensions.Configuration;
 using NodaTime;
 using Serilog;
+using Serilog.Core;
 
 namespace FantasyCritic.LocalDatabaseTool;
 
@@ -81,7 +83,7 @@ public static class Program
     {
         Log.Information("Refreshing caches");
         CacheRefresher localCacheRefresher = GetCacheRefresher();
-        await localCacheRefresher.RefreshCaches(CancellationToken.None);
+        await localCacheRefresher.RefreshCaches(FantasyCriticJobContext.FakeContext, CancellationToken.None);
     }
 
     private static async Task<IReadOnlyList<MasterGameTag>> GetTagsFromAPI()

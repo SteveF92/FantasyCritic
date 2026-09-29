@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Utilities;
 
-internal class CacheRefresher
+public class CacheRefresher
 {
     private readonly IClock _clock;
     private readonly IMasterGameRepo _masterGameRepo;
