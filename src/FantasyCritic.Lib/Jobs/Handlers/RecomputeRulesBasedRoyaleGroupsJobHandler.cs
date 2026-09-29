@@ -6,13 +6,11 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class RecomputeRulesBasedRoyaleGroupsJobHandler : IFantasyCriticJobHandler
 {
-    private readonly AdminService _adminService;
     private readonly RoyaleService _royaleService;
     private readonly ILogger<RecomputeRulesBasedRoyaleGroupsJobHandler> _logger;
 
-    public RecomputeRulesBasedRoyaleGroupsJobHandler(AdminService adminService, RoyaleService royaleService, ILogger<RecomputeRulesBasedRoyaleGroupsJobHandler> logger)
+    public RecomputeRulesBasedRoyaleGroupsJobHandler(RoyaleService royaleService, ILogger<RecomputeRulesBasedRoyaleGroupsJobHandler> logger)
     {
-        _adminService = adminService;
         _royaleService = royaleService;
         _logger = logger;
     }

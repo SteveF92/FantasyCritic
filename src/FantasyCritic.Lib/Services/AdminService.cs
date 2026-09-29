@@ -3,46 +3,32 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Patreon;
 using FantasyCritic.Lib.Utilities;
-using Serilog;
 
 namespace FantasyCritic.Lib.Services;
 
 public class AdminService
 {
-    private static readonly ILogger _logger = Log.ForContext<AdminService>();
     private static readonly IReadOnlyList<IsoDayOfWeek> AcceptableActionProcessingDays = [IsoDayOfWeek.Saturday, IsoDayOfWeek.Sunday];
 
     private readonly IRDSManager _rdsManager;
-    private readonly RoyaleService _royaleService;
     private readonly DiscordPushService _discordPushService;
-    private readonly IDailyStatsRepo _dailyStatsRepo;
-    private readonly FantasyCriticUserManager _userManager;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly InterLeagueService _interLeagueService;
-    private readonly PatreonService _patreonService;
     private readonly IClock _clock;
     private readonly EnvironmentConfiguration _environmentConfiguration;
 
-    public AdminService(FantasyCriticUserManager userManager, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
-        InterLeagueService interLeagueService, PatreonService patreonService, IClock clock, IRDSManager rdsManager,
-        RoyaleService royaleService, DiscordPushService discordPushService, IDailyStatsRepo dailyStatsRepo,
-        EnvironmentConfiguration environmentConfiguration)
+    public AdminService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, InterLeagueService interLeagueService, IClock clock,
+        IRDSManager rdsManager, DiscordPushService discordPushService, EnvironmentConfiguration environmentConfiguration)
     {
-        _userManager = userManager;
         _fantasyCriticRepo = fantasyCriticRepo;
         _masterGameRepo = masterGameRepo;
         _interLeagueService = interLeagueService;
-        _patreonService = patreonService;
         _clock = clock;
         _rdsManager = rdsManager;
-        _royaleService = royaleService;
         _discordPushService = discordPushService;
-        _dailyStatsRepo = dailyStatsRepo;
         _environmentConfiguration = environmentConfiguration;
     }
 
