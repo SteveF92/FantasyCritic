@@ -138,6 +138,22 @@ Writers and sender switch together; switching either alone would write rows nobo
 - The three spoof endpoints call `SendMasterGameUpdates` directly. Spoof edit passes the test game as both snapshots, with the current year.
 - LocalDatabaseTool builds a disabled `DiscordPushService`, which returns before it reads any rows, so it needs no change.
 
+As built:
+- **`DiscordPushService`:**
+  - The old send body is now the private `PostMasterGameUpdates`. Its parameters are named after the old fields, so the body's diff is just the dropped underscores and the dropped `Clear()` calls.
+  - `SendMasterGameUpdates(newGames, scoreUpdates, edits)` is the public entry for the spoofs. `SendPendingMasterGameUpdates()` returns a `MasterGameUpdatesSendResult`.
+  - With nothing pending, it skips the post, which saves loading every channel's league years every two hours for no messages.
+- **Status wording:** `bot unavailable, nothing sent`, because `StartBot` returns false both when the bot is disabled and when it never becomes ready. Otherwise `none pending`, or `2 new games, 5 score updates, 1 edit`.
+- **`InterLeagueService.GetEditMessage`** checks `minorEdit` before the `MasterGameYear` lookup, which gives the same result with one query fewer.
+- **Dropped dependencies:** `InterLeagueService` and `CriticScoreRefresher` no longer take `DiscordPushService`. LocalDatabaseTool's `new InterLeagueService(...)` drops the argument; that's its only change.
+- **Repo:** `CreateMasterGame` always queues a `NewGame` row. Only `InterLeagueService` calls it; the seeding tools insert games through `MySQLMasterGameUpdater`.
+- **NSwag:** regenerating left the TypeScript client unchanged.
+- **Committed as 120a2c95c.** All 298 integration tests pass, and they run against the Docker database.
+  - Their five game creations each queued a `NewGame` row, so the insert inside the create transaction works against real MySQL. The stored snapshot is camelCase with ISO dates.
+  - They queued no edits, because their edits hit the gate. The read, send and delete paths still need the local run below.
+  - Those five rows are still pending in the Docker database. A worker with a bot token pointed at it would announce them.
+- **Not run:** the worker's own start-up check. Step 2 only removes constructor dependencies, which can't make resolution fail.
+
 After Step 1, two follow-ups, each committed alone:
 - The deletes were renamed after their purpose (26d83ebe4): `DeleteSentMasterGameUpdates(ids)` deletes the rows a send read, and `ClearPendingMasterGameEdits()` is the Clear button.
 - `DeletePendingMasterGameUpdate(Guid)` was added for Step 3 (f4478c2f2). It returns false when the row is already gone, following `IDiscordRepo.DeleteLeagueChannel`.
