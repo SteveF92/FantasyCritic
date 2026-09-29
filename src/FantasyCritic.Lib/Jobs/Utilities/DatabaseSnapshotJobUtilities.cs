@@ -9,12 +9,12 @@ internal static class DatabaseSnapshotJobUtilities
 
     //RDS accepts a snapshot request long before the snapshot is usable, and doesn't document when during "creating" the data is captured.
     //So a job that takes a snapshot waits for "available"; otherwise a completed job wouldn't mean the snapshot exists.
-    //statusPrefix carries the earlier steps of a multi-step job, so each progress update still says what already finished.
+    //Progress goes after any steps the job already completed, so each update still says what finished.
     public static async Task SnapshotDatabaseAndWait(AdminService adminService, IClock clock, FantasyCriticJobContext context,
-        string snapshotName, string statusPrefix, CancellationToken cancellationToken)
+        string snapshotName, CancellationToken cancellationToken)
     {
         await adminService.StartDatabaseSnapshot(snapshotName, cancellationToken);
-        await context.UpdateDetailedStatus($"{statusPrefix}Snapshot {snapshotName} requested.");
+        await context.UpdateStatusProgress($"Snapshot {snapshotName} requested.");
 
         var deadline = clock.GetCurrentInstant().Plus(Timeout);
         while (true)
@@ -23,7 +23,7 @@ internal static class DatabaseSnapshotJobUtilities
             var snapshot = await adminService.GetDatabaseSnapshot(snapshotName, cancellationToken);
             if (snapshot.Status == "available")
             {
-                await context.UpdateDetailedStatus($"{statusPrefix}Snapshot {snapshotName} available.");
+                await context.CompleteStatusPart($"Snapshot {snapshotName} available.");
                 return;
             }
 
@@ -37,7 +37,7 @@ internal static class DatabaseSnapshotJobUtilities
                 throw new TimeoutException($"Snapshot {snapshotName} was still creating ({snapshot.Percent}%) after {Timeout}.");
             }
 
-            await context.UpdateDetailedStatus($"{statusPrefix}Snapshot {snapshotName} creating: {snapshot.Percent}%.");
+            await context.UpdateStatusProgress($"Snapshot {snapshotName} creating: {snapshot.Percent}%.");
         }
     }
 }
