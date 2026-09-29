@@ -72,22 +72,25 @@ Same rule as last time: `ThrowIfCancellationRequested` before each write and at 
 
 ### Step 4a: Move the accumulating status into FantasyCriticJobContext
 The last plan said to lift the `statusParts` list into the context once two or three more handlers repeated it. This round adds three (FullDataRefresh, PrepareForActionProcessing, EndOfYearRollover), plus `DatabaseSnapshotJobUtilities`'s `statusPrefix`, which is the same idea. So:
-- `FantasyCriticJobContext` gets `CompleteStatusPart(string)`, which appends a finished step's clause and writes the whole status, and `UpdateStatusProgress(string)`, which writes the finished clauses plus one in-progress clause that the next call replaces.
-- Convert AdvanceRoyaleQuarters and `DatabaseSnapshotJobUtilities`, dropping the `statusPrefix` parameter. No wording changes.
+- `FantasyCriticJobContext` gets `AppendDetailedStatus(string)`, which appends a finished step's clause and writes the whole status, and `AddTemporaryStatus(string)`, which writes the finished clauses plus one in-progress clause that the next call replaces.
+- Convert AdvanceRoyaleQuarters, PrepareForActionProcessing and `DatabaseSnapshotJobUtilities`, dropping the `statusPrefix` parameter. No wording changes.
+- `UpdateDetailedStatus` stays for the handlers that report once (SendAllPublicBiddingMessages, RecalculateRoyaleWinners, ProcessActions).
 
 ### Step 4b: Add status and structured logs to the data refresh jobs
-- Each class's entry method takes the context and returns what it did as a small record. A `Describe()` method turns that record into its status clause. The one-off job then writes a single clause, while a composite job writes one clause per finished step.
-  - Critic scores: `Critic scores: checked 1,250 games; 7 changed; 2 newly scored (Game A, Game B); 1 failed to fetch.` The loop reports progress every 100 games (`checked 300 of 1,250`).
-  - GG: `GG (shallow): checked 40 games; 1 failed to fetch.`
-  - Caches: one clause per sub-step as it finishes: tags, release estimates, system-wide values for the years it recalculated, game stats per year.
-  - Fantasy points: the years updated, the finished years whose winners were updated, and the Royale quarters updated.
+As built, this differs from the first draft, which had each class return a record for the caller to describe. Instead, each class takes the context and writes its own status:
+- While it runs, it writes progress with `AddTemporaryStatus`. A cancelled run keeps the last progress clause on the row, so it shows where it stopped.
+- When it finishes, it appends one summary clause with `AppendDetailedStatus`. FullDataRefresh's status is then the four clauses in order, with no work in `FullDataRefresher`:
+  - Critic scores: `Critic scores: checked 1250 games; 7 changed; 2 newly scored (Game A, Game B); 1 failed to fetch.` Progress every 100 games: `checked 300 of 1250`. The games in finished years are filtered out before the loop, so the count is the games actually fetched.
+  - GG: `GG (shallow): checked 40 games; 1 failed to fetch.` Progress every 100 games too.
+  - Caches: progress as each sub-step starts, then `Caches refreshed: system-wide values for 2025, 2026; game stats for 2026.`
+  - Fantasy points: `Fantasy points: updated 2026; winners updated for 2025; Royale updated for 2026-Q3.`, or `nothing to update`.
   - A refresh skipped because `RefreshOpenCritic` is off says so.
-- `FullDataRefresher` and EndOfYearRollover call `CompleteStatusPart` after each step, so a cancelled or failed row shows how far it got.
+- PrepareForActionProcessing drops its own "Refreshing data." and "Data refreshed." clauses, since the refresh steps now report themselves.
+- EndOfYearRollover appends `Finished 2026.` and `Final standings for 2026 sent.` around the refresh clauses, or `No years to finish.`
 - Logs:
-  - Switch to injected `ILogger<T>`. LocalDatabaseTool passes a Serilog-backed logger for `CacheRefresher`.
-  - Make the interpolated lines structured (`{GameName}`, `{OpenCriticID}`, `{OldScore}`, `{NewScore}`, `{Year}`, `{YearQuarter}`), and fix "recieved" and the stray `)`.
-  - State changes log at Information; per-item "nothing to do" at Debug.
-
+  - Switch to injected `ILogger<T>`. `CacheRefresher` goes back to `internal`. LocalDatabaseTool is left not building for now; Steve has a plan for it.
+  - Structured properties (`{GameName}`, `{MasterGameID}`, `{OpenCriticID}`, `{OldScore}`, `{NewScore}`, `{Year}`), and "recieved" and the stray `)` are gone.
+  - Each score change and first score, each finish, and each run's summary log at Information; fetch failures at Warning; sub-step progress and "nothing to do" at Debug.
 ## Found along the way, not changing
 - `RefreshGGInfo` is gated on the `RefreshOpenCritic` flag, not a GG flag of its own.
 - A standalone RefreshCriticScores run queues its Discord score messages but doesn't send them. They go out with the next RefreshCaches in the same worker process, normally the two-hourly FullDataRefresh. A worker restart in between drops them.
