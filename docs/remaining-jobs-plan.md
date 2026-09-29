@@ -71,7 +71,7 @@ Each step: build, test, commit alone, then stop for review.
 - Two substitutions, since the moved code can no longer reach AdminService:
   - `GetLeagueYears(year)` becomes `_fantasyCriticRepo.GetLeagueYears(year)`. It's a one-line passthrough, used by GrantSuperDrops and ProcessSpecialAuctionsForYear. AdminService keeps it for ProcessActions and `ActionRunnerController`.
   - The static `_logger.Information(...)` lines become the handler's `ILogger<T>` (`LogInformation`), wording unchanged, still interpolated where they were. Step 4 makes them structured.
-- Delete the moved methods from AdminService, and drop the dependencies nothing uses any more: `FantasyCriticService`, `FantasyCriticUserManager`, `PatreonService`, `RoyaleService` and `IDailyStatsRepo`.
+- Delete the moved methods from AdminService, and drop the dependencies nothing uses any more: `FantasyCriticService`, `FantasyCriticUserManager`, `PatreonService`, `RoyaleService` and `IDailyStatsRepo`. AdminService has no log lines left, so its static logger goes too.
 - Remove AdminService from each handler that no longer needs it.
 - The cancellation token stays as it is today.
 
@@ -105,7 +105,7 @@ Same rule: `ThrowIfCancellationRequested` before each write and at the top of ea
 
 Each handler reports once, with `UpdateDetailedStatus`, except the two with a loop, which use `AppendDetailedStatus` so a cancelled run shows how far it got. Wording is a first draft for review:
 
-- **ExpireTrades:** `Expired 2 trades in 2026.` or `No trades to expire in 2026.` It runs hourly, so the no-op logs at Debug. Drop the handler's existing "Expiring trades." Debug line, which duplicates the moved Information one.
+- **ExpireTrades:** `Expired 2 trades in 2026.` or `No trades to expire in 2026.` It runs hourly, so the no-op logs at Debug. Step 1 already replaced the handler's own "Expiring trades." Debug line with the moved Information one, so there's no duplicate left; the summary replaces that line.
 - **GrantSuperDrops:** `Granted super drops to 5 publishers in 3 leagues for 2026.` or `No super drops to grant for 2026.`
 - **MakeSlotsConsistent:** `Made publisher slots consistent for 2026.`
 - **ProcessSpecialAuctions:** one clause per year: `2026: processed 3 special auctions in 2 leagues.` or `2026: nothing to process.`
@@ -124,7 +124,6 @@ Logs:
 
 ## Found along the way, not changing
 
-- `HypeFactorService` logs through `Log.ForContext<AdminService>()`, so its lines carry AdminService's SourceContext. It's a one-line fix, and could go into Step 4 if you want it.
 - `AdminService.UpdateTopBidsAndDropsForWeek(LocalDate)` is public and has no callers. Only a comment in `TopBidsAndDropsRecomputeMigration` mentions it. Worth deleting in the last round, when UpdateTopBidsAndDrops moves.
 - ExpireTrades and MakePublisherSlotsConsistent act on the latest open year (`MaxBy`); GrantSuperDrops on the earliest (`MinBy`). All three throw a NullReferenceException through `currentYear!` if no year is open.
 - `PatreonService.GetPatronInfo` logs through a static logger with interpolated strings. It isn't job code, so it stays.
