@@ -108,7 +108,7 @@ public class AdminController : BaseJobQueuingController
             webDetails.Add(ServiceHealthDetail.FromTime("Last error", errorLogSummary.LastErrorAt.Value));
         }
 
-        var webHealth = new ServiceHealthReport(nameof(HealthStatus.Healthy), "Answered this request.", webDetails);
+        var webHealth = new ServiceHealthReport(nameof(HealthStatus.Healthy), "Responding to requests.", webDetails);
 
         return new ServiceMonitorViewModel(_clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs, workerState, webHealth, workerHealth, discordBotHealth, _logLinks);
     }
