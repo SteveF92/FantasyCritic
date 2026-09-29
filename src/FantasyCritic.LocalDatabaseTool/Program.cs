@@ -17,9 +17,10 @@ using FantasyCritic.MySQL.DapperTypeMaps;
 using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.SyncingRepos;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using NodaTime;
 using Serilog;
-using Serilog.Core;
+using Serilog.Extensions.Logging;
 
 namespace FantasyCritic.LocalDatabaseTool;
 
@@ -118,7 +119,9 @@ public static class Program
         RoyaleService royaleService = new RoyaleService(royaleRepo, _clock, masterGameRepo);
         IHypeFactorService hypeFactorService = new HypeFactorService(masterGameRepo, interLeagueService);
 
-        return new CacheRefresher(_clock, masterGameRepo, fantasyCriticRepo, hypeFactorService, discordPushService, royaleService);
+        var logger = new SerilogLoggerFactory(Log.Logger).CreateLogger<CacheRefresher>();
+
+        return new CacheRefresher(_clock, masterGameRepo, fantasyCriticRepo, hypeFactorService, discordPushService, royaleService, logger);
     }
 
     private static async Task UpdateSupportedYears()
