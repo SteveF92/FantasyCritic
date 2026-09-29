@@ -95,7 +95,7 @@ Same rule: `ThrowIfCancellationRequested` before each write and at the top of ea
 
 - **ExpireTrades, MakeSlotsConsistent, RecalculateLastSeasonWinners, UpdateDailyPublisherStatistics:** one write each; check just before it. ExpireTrades' existing check at the top moves down to the write.
 - **GrantSuperDrops:** check before the repo write, not between it and `SendSuperDropMessages`. The next run skips publishers already granted, so their messages would be lost.
-- **ProcessSpecialAuctions:** check at the top of each year, not between `SaveProcessedActionResults` and `SendActionProcessingSummary`.
+- **ProcessSpecialAuctions:** check before each year's `SaveProcessedActionResults`, after the reads and the processing, so a cancel during the slow `GetLeagueYears` still stops before that year writes. Not between the save and `SendActionProcessingSummary`.
 - **RecomputeRulesBasedRoyaleGroups:** check at the top of each group.
 - **RefreshPatreonInfo:** check before `UpdatePatronInfo`, after the Patreon call. The Patreon HTTP call doesn't take a token; a cancel waits at most one round trip.
 - **PushGameReleaseMessages, SendReleasingThisWeekUpdate, SendPublicBiddingDiscordMessages, SendPublicBiddingEmails:** check before the send.
