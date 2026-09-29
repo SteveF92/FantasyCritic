@@ -1285,7 +1285,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return new PendingMasterGameUpdates(entities.Select(x => x.PendingUpdateID).ToList(), newGames, scoreUpdates, edits);
     }
 
-    public async Task DeletePendingMasterGameUpdates(IReadOnlyList<Guid> pendingUpdateIDs)
+    public async Task DeleteSentMasterGameUpdates(IReadOnlyList<Guid> pendingUpdateIDs)
     {
         const string sql = "delete from tbl_discord_pendingmastergameupdate where PendingUpdateID in @pendingUpdateIDs;";
 
@@ -1293,7 +1293,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await connection.ExecuteAsync(sql, new { pendingUpdateIDs });
     }
 
-    public async Task DeletePendingMasterGameEdits()
+    public async Task ClearPendingMasterGameEdits()
     {
         const string sql = "delete from tbl_discord_pendingmastergameupdate where UpdateType = @updateType;";
 

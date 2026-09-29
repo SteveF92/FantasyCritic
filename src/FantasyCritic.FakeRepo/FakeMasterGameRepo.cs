@@ -285,12 +285,12 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task DeletePendingMasterGameUpdates(IReadOnlyList<Guid> pendingUpdateIDs)
+    public Task DeleteSentMasterGameUpdates(IReadOnlyList<Guid> pendingUpdateIDs)
     {
         throw new NotImplementedException();
     }
 
-    public Task DeletePendingMasterGameEdits()
+    public Task ClearPendingMasterGameEdits()
     {
         throw new NotImplementedException();
     }

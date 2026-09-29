@@ -77,8 +77,8 @@ Everything goes on `IMasterGameRepo`: it already has the tag dictionary, the ent
 - `EditMasterGame(MasterGame, changeLogEntries, MasterGameEditMessage?)` inserts the `Edit` row in the same transaction when the message is non-null.
 - `AddPendingScoreUpdate(GameCriticScoreUpdateMessage)`.
 - `GetPendingMasterGameUpdates()` returns a `PendingMasterGameUpdates` record: the three message lists plus the IDs read.
-- `DeletePendingMasterGameUpdates(IReadOnlyList<Guid>)`.
-- `DeletePendingMasterGameEdits()`, for the Clear button.
+- `DeleteSentMasterGameUpdates(IReadOnlyList<Guid>)`.
+- `ClearPendingMasterGameEdits()`, for the Clear button.
 
 Alternative: a separate insert after the edit commits. It's simpler, but a failed insert would leave the edit saved with its message lost, and the fact checker would see an error for an edit that went through.
 
@@ -127,7 +127,7 @@ Writers and sender switch together; switching either alone would write rows nobo
   - The cancellation check before the send stays. There is none between the send and the delete: a stop there would send the same updates again.
   - Reporting, following remaining-jobs: `SendPendingMasterGameUpdates` returns what it sent, and `CacheRefresher` adds it to its closing clause, e.g. `...; game stats for 2026; Discord game updates: 2 new, 5 scores, 1 edit.`, or `none pending`, or `bot disabled, nothing sent`. The disabled case gives no count, because counting would mean reading rows before the early return, and LocalDatabaseTool's `DiscordPushService` has no service provider to read them with.
   - The new log lines use structured properties, while the rest of `DiscordPushService`'s logging stays as it is.
-- `AdminService.ClearMasterGameEditDiscordQueue` calls `_masterGameRepo.DeletePendingMasterGameEdits()` and becomes async, and so does its `FactCheckerController` action.
+- `AdminService.ClearMasterGameEditDiscordQueue` calls `_masterGameRepo.ClearPendingMasterGameEdits()` and becomes async, and so does its `FactCheckerController` action.
   - `AdminService` already injects `IMasterGameRepo`, and it keeps `DiscordPushService` for `SendActionProcessingSummary`, so its constructor doesn't change.
   - The API surface is unchanged (`IActionResult`), so NSwag regeneration should produce no diff; check that.
 - The three spoof endpoints call `SendMasterGameUpdates` directly. Spoof edit passes the test game as both snapshots, with the current year.
