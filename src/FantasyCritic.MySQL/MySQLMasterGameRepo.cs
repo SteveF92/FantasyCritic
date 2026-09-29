@@ -1301,6 +1301,16 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await connection.ExecuteAsync(sql, new { updateType = PendingMasterGameUpdateType.Edit.Value });
     }
 
+    //False when the row is already gone: sent, cleared, or deleted by someone else.
+    public async Task<bool> DeletePendingMasterGameUpdate(Guid pendingUpdateID)
+    {
+        const string sql = "delete from tbl_discord_pendingmastergameupdate where PendingUpdateID = @pendingUpdateID;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var rowsDeleted = await connection.ExecuteAsync(sql, new { pendingUpdateID });
+        return rowsDeleted >= 1;
+    }
+
     //Takes a transaction so a new game or an edit can queue its update in the same transaction that saves it.
     private static Task InsertPendingMasterGameUpdate(MySqlConnection connection, PendingMasterGameUpdateEntity entity, MySqlTransaction? transaction = null)
     {

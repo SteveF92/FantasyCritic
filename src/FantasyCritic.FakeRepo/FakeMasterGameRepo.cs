@@ -295,6 +295,11 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
+    public Task<bool> DeletePendingMasterGameUpdate(Guid pendingUpdateID)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<MasterGameYearWithStatistics?> GetMasterGameYearWithStatistics(Guid masterGameID, int year)
     {
         throw new NotImplementedException();

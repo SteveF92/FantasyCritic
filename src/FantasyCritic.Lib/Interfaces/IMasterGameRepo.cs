@@ -68,6 +68,7 @@ public interface IMasterGameRepo
     Task<PendingMasterGameUpdates> GetPendingMasterGameUpdates();
     Task DeleteSentMasterGameUpdates(IReadOnlyList<Guid> pendingUpdateIDs);
     Task ClearPendingMasterGameEdits();
+    Task<bool> DeletePendingMasterGameUpdate(Guid pendingUpdateID);
 
     Task<MasterGame> GetTestMasterGame(int year);
     Task<MasterGameYear> GetTestMasterGameYear(int year);
