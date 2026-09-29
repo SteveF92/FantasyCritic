@@ -1,6 +1,6 @@
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Extensions;
-using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Interfaces;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
@@ -10,15 +10,15 @@ internal class SendReleasingThisWeekUpdateJobHandler : IFantasyCriticCronJobHand
     public static FantasyCriticJobType JobType => FantasyCriticJobType.SendReleasingThisWeekUpdate;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(TimeExtensions.ReleasingThisWeekNewsDay, TimeExtensions.ReleasingThisWeekNewsTime);
 
-    private readonly InterLeagueService _interLeagueService;
+    private readonly IMasterGameRepo _masterGameRepo;
     private readonly DiscordPushService _discordPushService;
     private readonly IClock _clock;
     private readonly ILogger<SendReleasingThisWeekUpdateJobHandler> _logger;
 
-    public SendReleasingThisWeekUpdateJobHandler(InterLeagueService interLeagueService, DiscordPushService discordPushService,
+    public SendReleasingThisWeekUpdateJobHandler(IMasterGameRepo masterGameRepo, DiscordPushService discordPushService,
         IClock clock, ILogger<SendReleasingThisWeekUpdateJobHandler> logger)
     {
-        _interLeagueService = interLeagueService;
+        _masterGameRepo = masterGameRepo;
         _discordPushService = discordPushService;
         _clock = clock;
         _logger = logger;
@@ -29,7 +29,12 @@ internal class SendReleasingThisWeekUpdateJobHandler : IFantasyCriticCronJobHand
         var today = _clock.GetToday();
         var upcomingGames = await GetUpcomingGames(today);
         var year = today.Year;
+        cancellationToken.ThrowIfCancellationRequested();
         await _discordPushService.SendReleasingThisWeekUpdate(upcomingGames, year);
+
+        var throughDate = today.PlusWeeks(1).ToISOString();
+        _logger.LogInformation("Pushed the releasing this week update: the {GameCount} most hyped games releasing through {ThroughDate}.", upcomingGames.Count, throughDate);
+        await context.UpdateDetailedStatus($"The {upcomingGames.Count} most hyped games releasing through {throughDate}.");
         return Result.Success();
     }
 
@@ -37,7 +42,7 @@ internal class SendReleasingThisWeekUpdateJobHandler : IFantasyCriticCronJobHand
     {
         var year = today.Year;
 
-        var allGames = await _interLeagueService.GetMasterGameYears(year);
+        var allGames = await _masterGameRepo.GetMasterGameYears(year);
         var thisWeekGames = allGames.Where(g =>
             g.MasterGame.ReleaseDate.HasValue &&
             g.MasterGame.ReleaseDate.Value > today &&

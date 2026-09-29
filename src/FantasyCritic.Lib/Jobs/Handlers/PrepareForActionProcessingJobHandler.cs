@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Jobs.Utilities;
 using FantasyCritic.Lib.Services;
 using FantasyCritic.Lib.Utilities;
@@ -8,16 +9,16 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandler
 {
     private readonly InterLeagueService _interLeagueService;
-    private readonly AdminService _adminService;
+    private readonly IRDSManager _rdsManager;
     private readonly FullDataRefresher _fullDataRefresher;
     private readonly IClock _clock;
 
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(TimeExtensions.ActionProcessingDay, TimeExtensions.ActionProcessingTime);
 
-    public PrepareForActionProcessingJobHandler(InterLeagueService interLeagueService, AdminService adminService, FullDataRefresher fullDataRefresher, IClock clock)
+    public PrepareForActionProcessingJobHandler(InterLeagueService interLeagueService, IRDSManager rdsManager, FullDataRefresher fullDataRefresher, IClock clock)
     {
         _interLeagueService = interLeagueService;
-        _adminService = adminService;
+        _rdsManager = rdsManager;
         _fullDataRefresher = fullDataRefresher;
         _clock = clock;
     }
@@ -39,7 +40,7 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandl
         cancellationToken.ThrowIfCancellationRequested();
 
         var snapshotName = DatabaseSnapshotNames.PreActionProcessing(_clock.GetCurrentInstant());
-        await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_adminService, _clock, context, snapshotName, cancellationToken);
+        await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_rdsManager, _clock, context, snapshotName, cancellationToken);
         return Result.Success();
     }
 

@@ -7,7 +7,7 @@ namespace FantasyCritic.Lib.Services;
 
 public class HypeFactorService : IHypeFactorService
 {
-    private static readonly ILogger _logger = Log.ForContext<AdminService>();
+    private static readonly ILogger _logger = Log.ForContext<HypeFactorService>();
 
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly InterLeagueService _interLeagueService;
