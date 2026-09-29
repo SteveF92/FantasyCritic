@@ -69,7 +69,7 @@ The snapshot must carry what `MasterGame` computes from, not what it computes:
 - Tag names.
 - Sub-games, with the `MasterSubGameEntity` fields.
 
-It is serialized with `FantasyCriticJsonOptions.Default` (camelCase, NodaTime). `ToDomain` looks tags up in the tag dictionary. A tag that no longer exists throws, so the send fails loudly instead of posting with a tag missing. This is the first JSON column the MySQL layer reads, and the entity is the only place that knows its shape. The domain stays free of JSON.
+It is serialized with `FantasyCriticJsonOptions.Default` (camelCase, NodaTime). `ToDomain` looks tags up in the tag dictionary. A tag that no longer exists throws, so the send fails loudly instead of posting with a tag missing. The entity is the only place that knows the snapshot's shape, as `MasterGameTagEntity` is for the tag `Examples` JSON. The domain stays free of JSON.
 
 ### Repository
 Everything goes on `IMasterGameRepo`: it already has the tag dictionary, the entity mapping and the create/edit transactions.
@@ -105,6 +105,17 @@ Each step: build, test, commit alone, then stop for review.
 - `MasterGameEditMessage`'s new shape and the `PendingMasterGameUpdates` record.
 - The new `IMasterGameRepo` methods in `MySQLMasterGameRepo`. `FakeMasterGameRepo` throws `NotImplementedException` for them, like its other unused members.
 - The `Create`/`Edit` signature change waits for Step 2, so this step changes no behavior.
+
+As built (d8e260493):
+- The migration is `2026-09-29_000_pendingMasterGameUpdates.sql`. The FK is named `FK_tbl_discord_pendingmastergameupdate_type`, because the pattern name is over MySQL's 64-character limit. There's an index on `QueuedTimestamp` for the ordered read.
+- The row is `PendingMasterGameUpdateEntity` (internal), with a constructor per message kind and the `PendingMasterGameUpdateType` TypeSafeEnum beside it in `MySQL/Entities`. The type is only a persistence discriminator, so it stays out of `Lib/Enums`.
+- `InsertPendingMasterGameUpdate` is a private static helper that takes an optional transaction, so Step 2 only has to call it from `CreateMasterGame` and `EditMasterGame`.
+- The new edit message shape meant a three-line change in `DiscordPushService`: `QueueMasterGameEditMessage` still takes two `MasterGameYear`s and converts them, and the send reads `ExistingGame`, `EditedGame` and `PreviousReleaseStatus`. The old code took each game's own year, but both callers pass the same year, so this is the same value.
+- Tests:
+  - The round-trip test compares the domain `MasterGame` serialized before and after, so a field the snapshot drops fails it. Checked by removing `OpenCriticSlug` for one run.
+  - A missing tag throws.
+  - `MasterGameEditMessageTests` cover `PreviousReleaseStatus`.
+- The repository SQL has no caller yet, so it gets its first run in Step 2's local checks.
 
 ### Step 2: Write to the table and send from it
 Writers and sender switch together; switching either alone would write rows nobody sends, or send rows nobody writes.
