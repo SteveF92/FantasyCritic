@@ -111,7 +111,7 @@ public class DiscordPushService
 
     public void QueueMasterGameEditMessage(MasterGameYear existingGame, MasterGameYear editedGame, IReadOnlyList<string> changes)
     {
-        _masterGameEditMessages.Add(new MasterGameEditMessage(existingGame, editedGame, changes));
+        _masterGameEditMessages.Add(new MasterGameEditMessage(existingGame.MasterGame, editedGame.MasterGame, existingGame.Year, changes));
     }
 
     public void ClearMasterGameEditQueue()
@@ -158,8 +158,7 @@ public class DiscordPushService
                 .Where(x => combinedChannel.GetRelevanceHandler().ScoredGameIsRelevant(x.Game, x.OldCriticScore, x.NewCriticScore, today))
                 .ToList();
             var editsToSend = _masterGameEditMessages
-                .Where(x => combinedChannel.GetRelevanceHandler().ExistingGameIsRelevant(x.ExistingGame.MasterGame,
-                    x.ExistingGame.GetWillReleaseStatus() != x.EditedGame.GetWillReleaseStatus() ? x.ExistingGame.GetWillReleaseStatus() : null, today))
+                .Where(x => combinedChannel.GetRelevanceHandler().ExistingGameIsRelevant(x.ExistingGame, x.PreviousReleaseStatus, today))
                 .ToList();
 
             if (!newMasterGamesToSend.Any() && !scoreUpdatesToSend.Any() && !editsToSend.Any())
@@ -188,8 +187,8 @@ public class DiscordPushService
 
             //score updates
             var scoreUpdateLookup = scoreUpdatesToSend.ToLookup(x => x.Game);
-            var editsLookup = editsToSend.ToLookup(x => x.EditedGame.MasterGame);
-            var existingGames = scoreUpdatesToSend.Select(x => x.Game).Concat(editsToSend.Select(x => x.EditedGame.MasterGame)).Distinct().ToList();
+            var editsLookup = editsToSend.ToLookup(x => x.EditedGame);
+            var existingGames = scoreUpdatesToSend.Select(x => x.Game).Concat(editsToSend.Select(x => x.EditedGame)).Distinct().ToList();
             foreach (var existingGame in existingGames)
             {
                 var changeMessages = new List<string>();

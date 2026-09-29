@@ -1,5 +1,6 @@
 using System.Data;
 using FantasyCritic.Lib.DependencyInjection;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.GG;
@@ -1240,5 +1241,73 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, param);
+    }
+
+    public async Task AddPendingScoreUpdate(GameCriticScoreUpdateMessage scoreUpdate)
+    {
+        var entity = new PendingMasterGameUpdateEntity(scoreUpdate, _clock.GetCurrentInstant());
+        await using var connection = new MySqlConnection(_connectionString);
+        await InsertPendingMasterGameUpdate(connection, entity);
+    }
+
+    public async Task<PendingMasterGameUpdates> GetPendingMasterGameUpdates()
+    {
+        const string sql = "select * from tbl_discord_pendingmastergameupdate order by QueuedTimestamp;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = (await connection.QueryAsync<PendingMasterGameUpdateEntity>(sql)).ToList();
+        var tagDictionary = await GetMasterGameTagDictionary();
+
+        List<NewMasterGameMessage> newGames = [];
+        List<GameCriticScoreUpdateMessage> scoreUpdates = [];
+        List<MasterGameEditMessage> edits = [];
+        foreach (var entity in entities)
+        {
+            var updateType = entity.GetUpdateType();
+            if (updateType.Equals(PendingMasterGameUpdateType.NewGame))
+            {
+                newGames.Add(entity.ToNewGameMessage(tagDictionary));
+            }
+            else if (updateType.Equals(PendingMasterGameUpdateType.ScoreUpdate))
+            {
+                scoreUpdates.Add(entity.ToScoreUpdateMessage(tagDictionary));
+            }
+            else if (updateType.Equals(PendingMasterGameUpdateType.Edit))
+            {
+                edits.Add(entity.ToEditMessage(tagDictionary));
+            }
+            else
+            {
+                throw new Exception($"Unknown pending master game update type: {updateType}");
+            }
+        }
+
+        return new PendingMasterGameUpdates(entities.Select(x => x.PendingUpdateID).ToList(), newGames, scoreUpdates, edits);
+    }
+
+    public async Task DeletePendingMasterGameUpdates(IReadOnlyList<Guid> pendingUpdateIDs)
+    {
+        const string sql = "delete from tbl_discord_pendingmastergameupdate where PendingUpdateID in @pendingUpdateIDs;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, new { pendingUpdateIDs });
+    }
+
+    public async Task DeletePendingMasterGameEdits()
+    {
+        const string sql = "delete from tbl_discord_pendingmastergameupdate where UpdateType = @updateType;";
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.ExecuteAsync(sql, new { updateType = PendingMasterGameUpdateType.Edit.Value });
+    }
+
+    //Takes a transaction so a new game or an edit can queue its update in the same transaction that saves it.
+    private static Task InsertPendingMasterGameUpdate(MySqlConnection connection, PendingMasterGameUpdateEntity entity, MySqlTransaction? transaction = null)
+    {
+        const string sql = "insert into tbl_discord_pendingmastergameupdate " +
+                           "(PendingUpdateID,UpdateType,MasterGameID,MasterGameSnapshot,EditedMasterGameSnapshot,`Year`,OldCriticScore,NewCriticScore,Changes,QueuedTimestamp) VALUES " +
+                           "(@PendingUpdateID,@UpdateType,@MasterGameID,@MasterGameSnapshot,@EditedMasterGameSnapshot,@Year,@OldCriticScore,@NewCriticScore,@Changes,@QueuedTimestamp);";
+
+        return connection.ExecuteAsync(sql, entity, transaction);
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.FakeRepo.Factories;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.GG;
@@ -270,6 +271,26 @@ public class FakeMasterGameRepo : IMasterGameRepo
     }
 
     public Task UpdateDailyStatistics(int year, LocalDate currentDate)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task AddPendingScoreUpdate(GameCriticScoreUpdateMessage scoreUpdate)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PendingMasterGameUpdates> GetPendingMasterGameUpdates()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeletePendingMasterGameUpdates(IReadOnlyList<Guid> pendingUpdateIDs)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task DeletePendingMasterGameEdits()
     {
         throw new NotImplementedException();
     }

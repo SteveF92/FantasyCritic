@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.GG;
 using FantasyCritic.Lib.Identity;
@@ -62,6 +63,11 @@ public interface IMasterGameRepo
     Task<IReadOnlyList<LeagueYearWithMasterGame>> GetLeagueYearsWithMasterGameForUser(Guid userID, Guid masterGameID);
 
     Task UpdateDailyStatistics(int year, LocalDate currentDate);
+
+    Task AddPendingScoreUpdate(GameCriticScoreUpdateMessage scoreUpdate);
+    Task<PendingMasterGameUpdates> GetPendingMasterGameUpdates();
+    Task DeletePendingMasterGameUpdates(IReadOnlyList<Guid> pendingUpdateIDs);
+    Task DeletePendingMasterGameEdits();
 
     Task<MasterGame> GetTestMasterGame(int year);
     Task<MasterGameYear> GetTestMasterGameYear(int year);
