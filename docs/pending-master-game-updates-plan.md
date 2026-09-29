@@ -113,7 +113,12 @@ Writers and sender switch together; switching either alone would write rows nobo
 - `CriticScoreRefresher`: `AddPendingScoreUpdate` right after `UpdateCriticStats`, with no cancellation check between them.
 - `DiscordPushService`: as in Sending above.
 - `CacheRefresher`: call `SendPendingMasterGameUpdates`. The comment "Anything still queued here goes out with the next RefreshCaches in this process." becomes "...with the next RefreshCaches."
-- `AdminService.ClearMasterGameEditDiscordQueue` calls `DeletePendingMasterGameEdits` and becomes async, and so does its `FactCheckerController` action. The API surface is unchanged (`IActionResult`), so NSwag regeneration should produce no diff; check that.
+  - The cancellation check before the send stays. There is none between the send and the delete: a stop there would send the same updates again.
+  - Reporting, following remaining-jobs: `SendPendingMasterGameUpdates` returns what it sent, and `CacheRefresher` adds it to its closing clause, e.g. `...; game stats for 2026; Discord game updates: 2 new, 5 scores, 1 edit.`, or `none pending`, or `bot disabled, nothing sent`. The disabled case gives no count, because counting would mean reading rows before the early return, and LocalDatabaseTool's `DiscordPushService` has no service provider to read them with.
+  - The new log lines use structured properties, while the rest of `DiscordPushService`'s logging stays as it is.
+- `AdminService.ClearMasterGameEditDiscordQueue` calls `_masterGameRepo.DeletePendingMasterGameEdits()` and becomes async, and so does its `FactCheckerController` action.
+  - `AdminService` already injects `IMasterGameRepo`, and it keeps `DiscordPushService` for `SendActionProcessingSummary`, so its constructor doesn't change.
+  - The API surface is unchanged (`IActionResult`), so NSwag regeneration should produce no diff; check that.
 - The three spoof endpoints call `SendMasterGameUpdates` directly. Spoof edit passes the test game as both snapshots, with the current year.
 - LocalDatabaseTool builds a disabled `DiscordPushService`, which returns before it reads any rows, so it needs no change.
 
@@ -121,7 +126,6 @@ Writers and sender switch together; switching either alone would write rows nobo
 One line in the admin console, such as "Pending Discord game updates: 12 (3 edits)", so a stuck queue is visible. Only if you want it; it isn't needed for the fix.
 
 ## Open questions
-- **Branch base.** This plan branches from `main`. `remaining-jobs` also touches `AdminService` (where `ClearMasterGameEditDiscordQueue` lives), `CacheRefresher` and `CriticScoreRefresher`, so whichever merges second resolves small conflicts. Alternatively, start Step 2 after `remaining-jobs` merges.
 - **Delete, or mark sent?** Delete keeps the table small and means "a row exists" equals "pending". A `SentTimestamp` would keep an audit trail at the cost of cleanup.
 - **Rows while the bot is disabled.** Locally, with no bot token, rows pile up, much as the in-memory bags did. They're harmless, but a local run with a token set would then send the backlog.
 - **Beta restores from prod snapshots.** Prod's pending rows arrive with the restore. Beta's bot only reaches guilds it's in, so this is at most a few duplicates in a guild both bots share. `TestDataScrubber` could truncate the table if that matters.
