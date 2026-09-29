@@ -29,7 +29,7 @@ internal class FantasyPointsUpdater
         _clock = clock;
     }
 
-    public async Task UpdateFantasyPoints()
+    public async Task UpdateFantasyPoints(CancellationToken cancellationToken)
     {
         _logger.Information("Updating fantasy points");
 
@@ -39,6 +39,8 @@ internal class FantasyPointsUpdater
         {
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(activeYear.Year);
             var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(activeYear.Year, leagueYears, false);
+            //No check between the write and the Discord messages: the messages are a diff against the old stats, so a stop there would lose them.
+            cancellationToken.ThrowIfCancellationRequested();
             await _fantasyCriticRepo.UpdatePublisherGameCalculatedStats(calculatedStats.PublisherGameCalculatedStats);
             await PushDiscordScoreChangeMessages(leagueYears, calculatedStats.PublisherGameCalculatedStats);
         }
@@ -56,6 +58,7 @@ internal class FantasyPointsUpdater
 
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(finishedYear.Year);
             var calculatedStats = _fantasyCriticService.GetCalculatedStatsForYear(finishedYear.Year, leagueYears, false);
+            cancellationToken.ThrowIfCancellationRequested();
             await _fantasyCriticRepo.UpdateLeagueWinners(calculatedStats.WinningUsers, false);
         }
 
@@ -86,6 +89,7 @@ internal class FantasyPointsUpdater
                 }
             }
 
+            cancellationToken.ThrowIfCancellationRequested();
             await _royaleService.UpdateFantasyPoints(supportedQuarter.YearQuarter);
         }
 

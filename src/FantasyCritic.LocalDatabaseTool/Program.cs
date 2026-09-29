@@ -81,7 +81,7 @@ public static class Program
     {
         Log.Information("Refreshing caches");
         CacheRefresher localCacheRefresher = GetCacheRefresher();
-        await localCacheRefresher.RefreshCaches();
+        await localCacheRefresher.RefreshCaches(CancellationToken.None);
     }
 
     private static async Task<IReadOnlyList<MasterGameTag>> GetTagsFromAPI()

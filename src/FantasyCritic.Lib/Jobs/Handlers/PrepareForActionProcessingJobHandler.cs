@@ -33,7 +33,7 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandl
         await context.UpdateDetailedStatus("Action processing mode on. Refreshing data.");
         cancellationToken.ThrowIfCancellationRequested();
 
-        await _fullDataRefresher.FullDataRefresh();
+        await _fullDataRefresher.FullDataRefresh(cancellationToken);
         await context.UpdateDetailedStatus("Action processing mode on. Data refreshed. Snapshotting database.");
         cancellationToken.ThrowIfCancellationRequested();
 

@@ -15,7 +15,7 @@ internal class UpdateFantasyPointsJobHandler : IFantasyCriticJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await _fantasyPointsUpdater.UpdateFantasyPoints();
+        await _fantasyPointsUpdater.UpdateFantasyPoints(cancellationToken);
         return Result.Success();
     }
 }

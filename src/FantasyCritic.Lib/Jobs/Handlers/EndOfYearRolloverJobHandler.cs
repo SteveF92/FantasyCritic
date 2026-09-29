@@ -48,10 +48,14 @@ internal class EndOfYearRolloverJobHandler : IFantasyCriticCronJobHandler
             {
                 _logger.LogInformation($"Beginning end of year process for {supportedYear} because date/time is: {nycNow}");
 
-                await _criticScoreRefresher.RefreshCriticInfo();
-                await _cacheRefresher.RefreshCaches();
+                await _criticScoreRefresher.RefreshCriticInfo(cancellationToken);
+                await _cacheRefresher.RefreshCaches(cancellationToken);
+                cancellationToken.ThrowIfCancellationRequested();
                 await _fantasyCriticRepo.FinishYear(supportedYear);
-                await _fantasyPointsUpdater.UpdateFantasyPoints();
+
+                //Past this point, the next run skips this year because it's finished. So the rest runs to the end regardless:
+                //stopping here would leave fantasy points un-finalized and the final standings never sent.
+                await _fantasyPointsUpdater.UpdateFantasyPoints(CancellationToken.None);
 
                 var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
                 await _discordPushService.SendFinalYearStandings(leagueYears, nycNow.Date);

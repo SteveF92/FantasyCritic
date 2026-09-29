@@ -29,7 +29,7 @@ internal class CriticScoreRefresher
         _clock = clock;
     }
 
-    public async Task RefreshCriticInfo()
+    public async Task RefreshCriticInfo(CancellationToken cancellationToken)
     {
         _logger.Information("Refreshing critic scores");
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
@@ -47,6 +47,8 @@ internal class CriticScoreRefresher
         int gamesFetched = 0;
         foreach (var masterGame in masterGamesToUpdate)
         {
+            //Each game is fetched then written, so a stop lands between games, and the next run just fetches that game again.
+            cancellationToken.ThrowIfCancellationRequested();
             if (masterGame.IsReleased(currentDate) && masterGame.ReleaseDate.HasValue)
             {
                 var year = masterGame.ReleaseDate.Value.Year;
@@ -61,7 +63,7 @@ internal class CriticScoreRefresher
             gamesFetched++;
             if (gamesFetched % 100 == 0)
             {
-                await Task.Delay(TimeSpan.FromSeconds(1));
+                await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
             }
 
             if (openCriticGame is not null)

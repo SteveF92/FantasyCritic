@@ -15,7 +15,7 @@ internal class RefreshCriticScoresJobHandler : IFantasyCriticJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await _criticScoreRefresher.RefreshCriticInfo();
+        await _criticScoreRefresher.RefreshCriticInfo(cancellationToken);
         return Result.Success();
     }
 }

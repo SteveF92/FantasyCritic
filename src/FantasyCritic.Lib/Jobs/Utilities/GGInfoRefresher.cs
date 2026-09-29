@@ -20,7 +20,7 @@ internal class GGInfoRefresher
         _ggService = ggService;
     }
 
-    public async Task RefreshGGInfo(bool deepRefresh)
+    public async Task RefreshGGInfo(bool deepRefresh, CancellationToken cancellationToken)
     {
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
         if (!systemWideSettings.RefreshOpenCritic)
@@ -35,6 +35,7 @@ internal class GGInfoRefresher
         var masterGamesToUpdate = masterGames.Where(x => x.GGToken is not null && x.SyncWithExternalAPIs).ToList();
         foreach (var masterGame in masterGamesToUpdate)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             if (!string.IsNullOrWhiteSpace(masterGame.GGCoverArtFileName) && !deepRefresh)
             {
                 continue;

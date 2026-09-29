@@ -32,13 +32,15 @@ public class CacheRefresher
         _royaleService = royaleService;
     }
 
-    public async Task RefreshCaches()
+    public async Task RefreshCaches(CancellationToken cancellationToken)
     {
         _logger.Information("Refreshing caches");
 
         LocalDate today = _clock.GetToday();
         LocalDate tomorrow = today.PlusDays(1);
+        cancellationToken.ThrowIfCancellationRequested();
         await UpdateCodeBasedTags(today);
+        cancellationToken.ThrowIfCancellationRequested();
         await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
         var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
@@ -51,14 +53,18 @@ public class CacheRefresher
             }
 
             IReadOnlyList<LeagueYear> leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
+            cancellationToken.ThrowIfCancellationRequested();
             await UpdateSystemWideValuesForYear(supportedYear.Year, leagueYears);
         }
 
+        cancellationToken.ThrowIfCancellationRequested();
         await UpdateSystemWideValues();
         HypeConstants hypeConstants = await _hypeFactorService.GetHypeConstants();
-        await UpdateGameStats(hypeConstants);
+        await UpdateGameStats(hypeConstants, cancellationToken);
         _masterGameRepo.ClearMasterGameCache();
         _masterGameRepo.ClearMasterGameYearCache();
+        //Anything still queued here goes out with the next RefreshCaches in this process.
+        cancellationToken.ThrowIfCancellationRequested();
         await _discordPushService.SendBatchedMasterGameUpdates();
         _logger.Information("Done refreshing caches");
     }
@@ -179,7 +185,7 @@ public class CacheRefresher
             allPickupOnlyStandardGamesWithPoints.Count, allCounterPicksWithPoints.Count);
     }
 
-    private async Task UpdateGameStats(HypeConstants hypeConstants)
+    private async Task UpdateGameStats(HypeConstants hypeConstants, CancellationToken cancellationToken)
     {
         _logger.Information("Updating game stats.");
 
@@ -202,6 +208,7 @@ public class CacheRefresher
             _logger.Information("All data retrieved for calculations for year {Year}", supportedYear.Year);
 
             var calculatedStats = CalculateStatsForGames(supportedYear, leagueYears, cleanMasterGames, cachedMasterGames, processedBids, royalePublishers, hypeConstants, currentDate);
+            cancellationToken.ThrowIfCancellationRequested();
             await _masterGameRepo.UpdateCalculatedStats(calculatedStats, supportedYear.Year);
         }
     }

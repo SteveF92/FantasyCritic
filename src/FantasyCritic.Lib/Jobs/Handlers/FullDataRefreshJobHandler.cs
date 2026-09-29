@@ -19,7 +19,7 @@ internal class FullDataRefreshJobHandler : IFantasyCriticCronJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await _fullDataRefresher.FullDataRefresh();
+        await _fullDataRefresher.FullDataRefresh(cancellationToken);
         return Result.Success();
     }
 }

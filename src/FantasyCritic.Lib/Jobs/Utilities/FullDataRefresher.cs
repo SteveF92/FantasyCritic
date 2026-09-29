@@ -16,11 +16,11 @@ internal class FullDataRefresher
         _fantasyPointsUpdater = fantasyPointsUpdater;
     }
 
-    public async Task FullDataRefresh()
+    public async Task FullDataRefresh(CancellationToken cancellationToken)
     {
-        await _criticScoreRefresher.RefreshCriticInfo();
-        await _ggInfoRefresher.RefreshGGInfo(false);
-        await _cacheRefresher.RefreshCaches();
-        await _fantasyPointsUpdater.UpdateFantasyPoints();
+        await _criticScoreRefresher.RefreshCriticInfo(cancellationToken);
+        await _ggInfoRefresher.RefreshGGInfo(false, cancellationToken);
+        await _cacheRefresher.RefreshCaches(cancellationToken);
+        await _fantasyPointsUpdater.UpdateFantasyPoints(cancellationToken);
     }
 }
