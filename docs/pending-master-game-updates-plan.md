@@ -79,6 +79,7 @@ Everything goes on `IMasterGameRepo`: it already has the tag dictionary, the ent
 - `GetPendingMasterGameUpdates()` returns a `PendingMasterGameUpdates` record: the three message lists plus the IDs read.
 - `DeleteSentMasterGameUpdates(IReadOnlyList<Guid>)`.
 - `ClearPendingMasterGameEdits()`, for the Clear button.
+- `DeletePendingMasterGameUpdate(Guid)` returns false when the row is already gone, for the pending updates page in Step 3.
 
 Alternative: a separate insert after the edit commits. It's simpler, but a failed insert would leave the edit saved with its message lost, and the fact checker would see an error for an edit that went through.
 
@@ -133,8 +134,22 @@ Writers and sender switch together; switching either alone would write rows nobo
 - The three spoof endpoints call `SendMasterGameUpdates` directly. Spoof edit passes the test game as both snapshots, with the current year.
 - LocalDatabaseTool builds a disabled `DiscordPushService`, which returns before it reads any rows, so it needs no change.
 
-### Step 3 (optional): Show the pending count
-One line in the admin console, such as "Pending Discord game updates: 12 (3 edits)", so a stuck queue is visible. Only if you want it; it isn't needed for the fix.
+After Step 1, two follow-ups, each committed alone:
+- The deletes were renamed after their purpose (26d83ebe4): `DeleteSentMasterGameUpdates(ids)` deletes the rows a send read, and `ClearPendingMasterGameEdits()` is the Clear button.
+- `DeletePendingMasterGameUpdate(Guid)` was added for Step 3 (f4478c2f2). It returns false when the row is already gone, following `IDiscordRepo.DeleteLeagueChannel`.
+
+### Step 3: A page of pending updates
+An admin console page lists what is waiting to go to Discord, and deletes one update that was queued by mistake. It replaces the earlier idea of a one-line pending count.
+- **Listing with IDs.** The page needs each update's ID beside it, and `PendingMasterGameUpdates` keeps the IDs in a separate list. Two ways:
+  - Recommended: each message record carries a `PendingUpdateID`, assigned when the message is created. The entity uses it as the row's key, `DeleteSentMasterGameUpdates` takes the IDs from the messages, and `PendingMasterGameUpdates` drops its separate ID list. The page reads the same `GetPendingMasterGameUpdates` the sender does. The spoof endpoints' messages get IDs that are never stored, which is harmless.
+  - Alternative: a second read that returns one summary row per update (ID, kind, game, queued time, scores or changes). The messages stay unchanged, but there are two read paths, and `PendingMasterGameUpdateType` has to move from `MySQL/Entities` into Lib so Web can show the kind.
+- **API.** List and delete endpoints with `[ProducesResponseType<T>]`, then regenerate NSwag. A delete that finds nothing returns an error that says the update was already sent or deleted.
+- **Page.**
+  - One row per update: queued time, kind, the game as a link, and the details (old → new score, or the change strings).
+  - A delete button per row. The "Clear Edit Game Discord Queue" button could move here too.
+  - Site-consistent Bootstrap, like the rest of the admin console.
+- **Race.** Deleting a row that a running send has already read doesn't stop that send. The window is the length of one send, and the page doesn't need to guard against it.
+- **Open question: who can see it?** The Clear button is on `FactCheckerController`, and fact checkers make the edits this page would correct. That argues for fact checkers rather than admins only.
 
 ## Open questions
 - **Delete, or mark sent?** Delete keeps the table small and means "a row exists" equals "pending". A `SentTimestamp` would keep an audit trail at the cost of cleanup.
@@ -156,4 +171,5 @@ One line in the admin console, such as "Pending Discord game updates: 12 (3 edit
   - Run RefreshCaches from the admin console. With a local bot token, confirm the messages post and the rows go. Without one, confirm the rows stay.
   - Run each spoof endpoint and confirm pending rows are untouched.
   - Clear Edit Game Discord Queue removes only edit rows.
+- Step 3: integration tests for the list and delete endpoints, through the generated client. Locally, queue an edit, see it on the page, delete it, and confirm RefreshCaches doesn't send it. Deleting it a second time reports it's already gone.
 - Local data is never edited by hand to set up a test.
