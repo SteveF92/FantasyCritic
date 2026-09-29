@@ -32,6 +32,4 @@ public class FantasyCriticJobContext
     {
         return UpdateDetailedStatus(string.Join(" ", _completedStatusParts.Append(progress)));
     }
-
-    public static FantasyCriticJobContext FakeContext => new FantasyCriticJobContext(FantasyCriticJob.FakeJob, new NoOpJobRepo());
 }

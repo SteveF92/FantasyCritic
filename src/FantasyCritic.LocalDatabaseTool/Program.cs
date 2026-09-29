@@ -84,7 +84,16 @@ public static class Program
     {
         Log.Information("Refreshing caches");
         CacheRefresher localCacheRefresher = GetCacheRefresher();
-        await localCacheRefresher.RefreshCaches(FantasyCriticJobContext.FakeContext, CancellationToken.None);
+        await localCacheRefresher.RefreshCaches(CreateJobContext(FantasyCriticJobType.RefreshCaches), CancellationToken.None);
+    }
+
+    //A context for running a job utility outside the job system. A new one each time, since the context accumulates its job's status.
+    private static FantasyCriticJobContext CreateJobContext(FantasyCriticJobType jobType)
+    {
+        var jobTypeWithRunType = new FantasyCriticJobTypeWithRunType(jobType, FantasyCriticJobRunType.Manual, FantasyCriticJobSeverity.Info);
+        var job = new FantasyCriticJob(Guid.NewGuid(), jobTypeWithRunType, null, FantasyCriticJobStatus.Running, null, null, null,
+            _clock.GetCurrentInstant(), _clock.GetCurrentInstant(), null, null, null);
+        return new FantasyCriticJobContext(job, new LoggingJobRepo());
     }
 
     private static async Task<IReadOnlyList<MasterGameTag>> GetTagsFromAPI()

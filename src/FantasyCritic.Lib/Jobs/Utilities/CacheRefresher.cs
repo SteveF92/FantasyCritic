@@ -9,6 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Utilities;
 
+//Public, unlike the other job utilities, because LocalDatabaseTool builds one by hand to refresh a freshly seeded database.
 public class CacheRefresher
 {
     private readonly IClock _clock;
