@@ -120,6 +120,10 @@ As built (d8e260493):
 
 ### Step 2: Write to the table and send from it
 Writers and sender switch together; switching either alone would write rows nobody sends, or send rows nobody writes.
+- Each message record gets a `PendingUpdateID` first (decided for Step 3's page).
+  - A second constructor without it assigns `Guid.NewGuid()`, so callers don't deal with IDs.
+  - The entity uses the ID as the row's key, and rebuilds messages with it.
+  - `PendingMasterGameUpdates` drops its separate ID list and gathers the IDs from its messages.
 - `InterLeagueService.CreateMasterGame`: drop the queue call; the repo inserts the row.
 - `InterLeagueService.EditMasterGame`: build the `MasterGameEditMessage` before the edit, under the same conditions as today (changes, a `MasterGameYear` row, not minor), and pass it, or null, to `EditMasterGame`. The `GetMasterGameYear` lookup moves above the edit. It only gates and supplies `Year`, which the edit doesn't change.
 - `CriticScoreRefresher`: `AddPendingScoreUpdate` right after `UpdateCriticStats`, with no cancellation check between them.
@@ -140,16 +144,15 @@ After Step 1, two follow-ups, each committed alone:
 
 ### Step 3: A page of pending updates
 An admin console page lists what is waiting to go to Discord, and deletes one update that was queued by mistake. It replaces the earlier idea of a one-line pending count.
-- **Listing with IDs.** The page needs each update's ID beside it, and `PendingMasterGameUpdates` keeps the IDs in a separate list. Two ways:
-  - Recommended: each message record carries a `PendingUpdateID`, assigned when the message is created. The entity uses it as the row's key, `DeleteSentMasterGameUpdates` takes the IDs from the messages, and `PendingMasterGameUpdates` drops its separate ID list. The page reads the same `GetPendingMasterGameUpdates` the sender does. The spoof endpoints' messages get IDs that are never stored, which is harmless.
-  - Alternative: a second read that returns one summary row per update (ID, kind, game, queued time, scores or changes). The messages stay unchanged, but there are two read paths, and `PendingMasterGameUpdateType` has to move from `MySQL/Entities` into Lib so Web can show the kind.
+- **Listing with IDs.** Decided: each message record carries its `PendingUpdateID`, added in Step 2. The page reads the same `GetPendingMasterGameUpdates` the sender does. The spoof endpoints' messages get IDs that are never stored, which is harmless.
+  - The rejected alternative was a second read returning one summary per row. It would have meant two read paths, and moving `PendingMasterGameUpdateType` into Lib.
+- **Who: fact checkers.** The endpoints go on `FactCheckerController`, beside the Clear button, since fact checkers make the edits this page corrects.
 - **API.** List and delete endpoints with `[ProducesResponseType<T>]`, then regenerate NSwag. A delete that finds nothing returns an error that says the update was already sent or deleted.
 - **Page.**
   - One row per update: queued time, kind, the game as a link, and the details (old → new score, or the change strings).
   - A delete button per row. The "Clear Edit Game Discord Queue" button could move here too.
   - Site-consistent Bootstrap, like the rest of the admin console.
 - **Race.** Deleting a row that a running send has already read doesn't stop that send. The window is the length of one send, and the page doesn't need to guard against it.
-- **Open question: who can see it?** The Clear button is on `FactCheckerController`, and fact checkers make the edits this page would correct. That argues for fact checkers rather than admins only.
 
 ## Open questions
 - **Delete, or mark sent?** Delete keeps the table small and means "a row exists" equals "pending". A `SentTimestamp` would keep an audit trail at the cost of cleanup.
