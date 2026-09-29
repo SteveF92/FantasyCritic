@@ -49,16 +49,16 @@ internal class AdvanceRoyaleQuartersJobHandler : IFantasyCriticCronJobHandler
         if (finishedQuarters.Count == 0)
         {
             _logger.LogDebug("No Royale quarters to finish.");
-            await context.CompleteStatusPart("No quarters to finish.");
+            await context.AppendDetailedStatus("No quarters to finish.");
         }
         else
         {
-            await context.CompleteStatusPart($"Finished {string.Join(", ", finishedQuarters)}.");
+            await context.AppendDetailedStatus($"Finished {string.Join(", ", finishedQuarters)}.");
         }
 
         //Calculate winners for any finished quarters that don't have one yet. This reloads the quarters, so it sees the ones just finished above.
         var calculatedQuarters = await RoyaleJobUtilities.CalculateMissingWinners(_royaleRepo, _logger, cancellationToken);
-        await context.CompleteStatusPart(RoyaleJobUtilities.DescribeWinners(calculatedQuarters));
+        await context.AppendDetailedStatus(RoyaleJobUtilities.DescribeWinners(calculatedQuarters));
 
         //Start the next quarter as we approach it.
         supportedQuarters = await _royaleRepo.GetYearQuarters();
@@ -71,12 +71,12 @@ internal class AdvanceRoyaleQuartersJobHandler : IFantasyCriticCronJobHandler
             _logger.LogInformation("Starting Royale quarter {YearQuarter}: it opens after {OpenAfterDate} and the Eastern date is {EasternDate}.",
                 nextQuarter, dayToStartNextQuarter.ToISOString(), easternDate.ToISOString());
             await _royaleRepo.StartNewQuarter(nextQuarter);
-            await context.CompleteStatusPart($"Started {nextQuarter}.");
+            await context.AppendDetailedStatus($"Started {nextQuarter}.");
         }
         else
         {
             _logger.LogDebug("Not starting Royale quarter {YearQuarter} yet: it opens after {OpenAfterDate}.", nextQuarter, dayToStartNextQuarter.ToISOString());
-            await context.CompleteStatusPart($"{nextQuarter} opens after {dayToStartNextQuarter.ToISOString()}.");
+            await context.AppendDetailedStatus($"{nextQuarter} opens after {dayToStartNextQuarter.ToISOString()}.");
         }
 
         return Result.Success();

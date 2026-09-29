@@ -30,13 +30,13 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandl
         //The scheduler skips FullDataRefresh's own slot in this wake, since this is the refresh.
         //A cancellation leaves action processing mode on, like every other way this job can stop partway.
         await _interLeagueService.SetActionProcessingMode(true);
-        await context.CompleteStatusPart("Action processing mode on.");
-        await context.UpdateStatusProgress("Refreshing data.");
+        await context.AppendDetailedStatus("Action processing mode on.");
+        await context.AddTemporaryStatus("Refreshing data.");
         cancellationToken.ThrowIfCancellationRequested();
 
         await _fullDataRefresher.FullDataRefresh(cancellationToken);
-        await context.CompleteStatusPart("Data refreshed.");
-        await context.UpdateStatusProgress("Snapshotting database.");
+        await context.AppendDetailedStatus("Data refreshed.");
+        await context.AddTemporaryStatus("Snapshotting database.");
         cancellationToken.ThrowIfCancellationRequested();
 
         var snapshotName = DatabaseSnapshotNames.PreActionProcessing(_clock.GetCurrentInstant());

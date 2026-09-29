@@ -14,7 +14,7 @@ internal static class DatabaseSnapshotJobUtilities
         string snapshotName, CancellationToken cancellationToken)
     {
         await adminService.StartDatabaseSnapshot(snapshotName, cancellationToken);
-        await context.UpdateStatusProgress($"Snapshot {snapshotName} requested.");
+        await context.AddTemporaryStatus($"Snapshot {snapshotName} requested.");
 
         var deadline = clock.GetCurrentInstant().Plus(Timeout);
         while (true)
@@ -23,7 +23,7 @@ internal static class DatabaseSnapshotJobUtilities
             var snapshot = await adminService.GetDatabaseSnapshot(snapshotName, cancellationToken);
             if (snapshot.Status == "available")
             {
-                await context.CompleteStatusPart($"Snapshot {snapshotName} available.");
+                await context.AppendDetailedStatus($"Snapshot {snapshotName} available.");
                 return;
             }
 
@@ -37,7 +37,7 @@ internal static class DatabaseSnapshotJobUtilities
                 throw new TimeoutException($"Snapshot {snapshotName} was still creating ({snapshot.Percent}%) after {Timeout}.");
             }
 
-            await context.UpdateStatusProgress($"Snapshot {snapshotName} creating: {snapshot.Percent}%.");
+            await context.AddTemporaryStatus($"Snapshot {snapshotName} creating: {snapshot.Percent}%.");
         }
     }
 }
