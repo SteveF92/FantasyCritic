@@ -510,6 +510,4 @@ public class RoyaleService
     public Task<IReadOnlyList<RoyaleGroupInviteLink>> GetGroupInviteLinks(Guid groupID) => _royaleRepo.GetRoyaleGroupInviteLinks(groupID);
 
     public Task<IReadOnlyList<RoyaleGroup>> GetAllRoyaleGroupsByType(RoyaleGroupType groupType) => _royaleRepo.GetAllRoyaleGroupsByType(groupType);
-
-    public Task SetRoyaleGroupMembers(Guid groupID, IReadOnlyList<Guid> userIDs) => _royaleRepo.SetRoyaleGroupMembers(groupID, userIDs);
 }

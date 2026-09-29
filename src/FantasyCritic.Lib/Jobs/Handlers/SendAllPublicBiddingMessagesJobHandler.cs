@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Jobs.Utilities;
 using FantasyCritic.Lib.Services;
 
@@ -11,15 +12,15 @@ internal class SendAllPublicBiddingMessagesJobHandler : IFantasyCriticCronJobHan
     public static FantasyCriticJobType JobType => FantasyCriticJobType.SendAllPublicBiddingMessages;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(TimeExtensions.PublicBiddingRevealDay, TimeExtensions.PublicBiddingRevealTime);
 
-    private readonly InterLeagueService _interLeagueService;
+    private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly DiscordPushService _discordPushService;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly EmailSendingService _emailSendingService;
 
-    public SendAllPublicBiddingMessagesJobHandler(InterLeagueService interLeagueService, DiscordPushService discordPushService,
+    public SendAllPublicBiddingMessagesJobHandler(IFantasyCriticRepo fantasyCriticRepo, DiscordPushService discordPushService,
         GameAcquisitionService gameAcquisitionService, EmailSendingService emailSendingService)
     {
-        _interLeagueService = interLeagueService;
+        _fantasyCriticRepo = fantasyCriticRepo;
         _discordPushService = discordPushService;
         _gameAcquisitionService = gameAcquisitionService;
         _emailSendingService = emailSendingService;
@@ -27,7 +28,7 @@ internal class SendAllPublicBiddingMessagesJobHandler : IFantasyCriticCronJobHan
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        var publicBiddingSets = await PublicBiddingJobUtilities.GetPublicBiddingSets(_interLeagueService, _gameAcquisitionService);
+        var publicBiddingSets = await PublicBiddingJobUtilities.GetPublicBiddingSets(_fantasyCriticRepo, _gameAcquisitionService);
 
         var emailTask = TrySendEmails(publicBiddingSets, cancellationToken);
         var discordTask = TrySendDiscord(publicBiddingSets, cancellationToken);

@@ -42,17 +42,6 @@ public class AdminService
         _discordPushService.ClearMasterGameEditQueue();
     }
 
-    //Returns once RDS accepts the request, while the snapshot is still being created. Poll GetDatabaseSnapshot to know when it's usable.
-    public Task StartDatabaseSnapshot(string snapshotName, CancellationToken cancellationToken)
-    {
-        return _rdsManager.SnapshotRDS(snapshotName, cancellationToken);
-    }
-
-    public Task<DatabaseSnapshotInfo> GetDatabaseSnapshot(string snapshotName, CancellationToken cancellationToken)
-    {
-        return _rdsManager.GetSnapshot(snapshotName, cancellationToken);
-    }
-
     public Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentDatabaseSnapshots()
     {
         return _rdsManager.GetRecentSnapshots();

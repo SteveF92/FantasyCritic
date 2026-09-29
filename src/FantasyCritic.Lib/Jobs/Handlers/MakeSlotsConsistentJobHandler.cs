@@ -1,16 +1,13 @@
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class MakeSlotsConsistentJobHandler : IFantasyCriticJobHandler
 {
-    private readonly InterLeagueService _interLeagueService;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
 
-    public MakeSlotsConsistentJobHandler(InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo)
+    public MakeSlotsConsistentJobHandler(IFantasyCriticRepo fantasyCriticRepo)
     {
-        _interLeagueService = interLeagueService;
         _fantasyCriticRepo = fantasyCriticRepo;
     }
 
@@ -18,7 +15,7 @@ internal class MakeSlotsConsistentJobHandler : IFantasyCriticJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MaxBy(x => x.Year);
         await _fantasyCriticRepo.ManualMakePublisherGameSlotsConsistent(currentYear!.Year);
 

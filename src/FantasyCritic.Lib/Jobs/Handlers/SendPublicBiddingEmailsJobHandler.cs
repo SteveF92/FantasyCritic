@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Jobs.Utilities;
 using FantasyCritic.Lib.Services;
 
@@ -7,21 +8,21 @@ internal class SendPublicBiddingEmailsJobHandler : IFantasyCriticJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.SendPublicBiddingEmails;
 
-    private readonly InterLeagueService _interLeagueService;
+    private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly GameAcquisitionService _gameAcquisitionService;
     private readonly EmailSendingService _emailSendingService;
 
-    public SendPublicBiddingEmailsJobHandler(InterLeagueService interLeagueService,
+    public SendPublicBiddingEmailsJobHandler(IFantasyCriticRepo fantasyCriticRepo,
         GameAcquisitionService gameAcquisitionService, EmailSendingService emailSendingService)
     {
-        _interLeagueService = interLeagueService;
+        _fantasyCriticRepo = fantasyCriticRepo;
         _gameAcquisitionService = gameAcquisitionService;
         _emailSendingService = emailSendingService;
     }
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        var publicBiddingSets = await PublicBiddingJobUtilities.GetPublicBiddingSets(_interLeagueService, _gameAcquisitionService);
+        var publicBiddingSets = await PublicBiddingJobUtilities.GetPublicBiddingSets(_fantasyCriticRepo, _gameAcquisitionService);
         await _emailSendingService.SendPublicBidEmails(publicBiddingSets);
         return Result.Success();
     }

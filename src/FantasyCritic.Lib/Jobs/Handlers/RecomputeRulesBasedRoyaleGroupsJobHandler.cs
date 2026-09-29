@@ -1,17 +1,17 @@
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Royale;
-using FantasyCritic.Lib.Services;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class RecomputeRulesBasedRoyaleGroupsJobHandler : IFantasyCriticJobHandler
 {
-    private readonly RoyaleService _royaleService;
+    private readonly IRoyaleRepo _royaleRepo;
     private readonly ILogger<RecomputeRulesBasedRoyaleGroupsJobHandler> _logger;
 
-    public RecomputeRulesBasedRoyaleGroupsJobHandler(RoyaleService royaleService, ILogger<RecomputeRulesBasedRoyaleGroupsJobHandler> logger)
+    public RecomputeRulesBasedRoyaleGroupsJobHandler(IRoyaleRepo royaleRepo, ILogger<RecomputeRulesBasedRoyaleGroupsJobHandler> logger)
     {
-        _royaleService = royaleService;
+        _royaleRepo = royaleRepo;
         _logger = logger;
     }
 
@@ -19,11 +19,11 @@ internal class RecomputeRulesBasedRoyaleGroupsJobHandler : IFantasyCriticJobHand
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        var rulesBasedGroups = await _royaleService.GetAllRoyaleGroupsByType(RoyaleGroupType.RulesBased);
+        var rulesBasedGroups = await _royaleRepo.GetAllRoyaleGroupsByType(RoyaleGroupType.RulesBased);
         foreach (var group in rulesBasedGroups)
         {
             var memberIDs = await ComputeRulesBasedMembers(group);
-            await _royaleService.SetRoyaleGroupMembers(group.GroupID, memberIDs);
+            await _royaleRepo.SetRoyaleGroupMembers(group.GroupID, memberIDs);
             _logger.LogInformation("Recomputed rules-based Royale group {GroupName} with {Count} members.", group.GroupName, memberIDs.Count);
         }
 
@@ -41,7 +41,7 @@ internal class RecomputeRulesBasedRoyaleGroupsJobHandler : IFantasyCriticJobHand
 
     private async Task<IReadOnlyList<Guid>> ComputePreviousWinners()
     {
-        var quarters = await _royaleService.GetYearQuarters();
+        var quarters = await _royaleRepo.GetYearQuarters();
         return quarters
             .Where(q => q.WinningUser is not null)
             .Select(q => q.WinningUser!.UserID)

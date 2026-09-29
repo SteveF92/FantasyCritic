@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Jobs.Utilities;
 using FantasyCritic.Lib.Services;
 
@@ -8,21 +9,21 @@ internal class SendPublicBiddingDiscordMessagesJobHandler : IFantasyCriticJobHan
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.SendPublicBiddingDiscordMessages;
 
-    private readonly InterLeagueService _interLeagueService;
+    private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly DiscordPushService _discordPushService;
     private readonly GameAcquisitionService _gameAcquisitionService;
 
-    public SendPublicBiddingDiscordMessagesJobHandler(InterLeagueService interLeagueService,
+    public SendPublicBiddingDiscordMessagesJobHandler(IFantasyCriticRepo fantasyCriticRepo,
         DiscordPushService discordPushService, GameAcquisitionService gameAcquisitionService)
     {
-        _interLeagueService = interLeagueService;
+        _fantasyCriticRepo = fantasyCriticRepo;
         _discordPushService = discordPushService;
         _gameAcquisitionService = gameAcquisitionService;
     }
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        var publicBiddingSets = await PublicBiddingJobUtilities.GetPublicBiddingSets(_interLeagueService, _gameAcquisitionService);
+        var publicBiddingSets = await PublicBiddingJobUtilities.GetPublicBiddingSets(_fantasyCriticRepo, _gameAcquisitionService);
         await _discordPushService.SendPublicBiddingSummary(publicBiddingSets);
         return Result.Success();
     }

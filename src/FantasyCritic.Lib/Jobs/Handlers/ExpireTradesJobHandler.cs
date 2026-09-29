@@ -1,6 +1,5 @@
 using FantasyCritic.Lib.Domain.Trades;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Services;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
@@ -10,15 +9,12 @@ internal class ExpireTradesJobHandler : IFantasyCriticCronJobHandler
     public static FantasyCriticJobType JobType => FantasyCriticJobType.ExpireTrades;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Hourly;
 
-    private readonly InterLeagueService _interLeagueService;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IClock _clock;
     private readonly ILogger<ExpireTradesJobHandler> _logger;
 
-    public ExpireTradesJobHandler(InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo,
-        IClock clock, ILogger<ExpireTradesJobHandler> logger)
+    public ExpireTradesJobHandler(IFantasyCriticRepo fantasyCriticRepo, IClock clock, ILogger<ExpireTradesJobHandler> logger)
     {
-        _interLeagueService = interLeagueService;
         _fantasyCriticRepo = fantasyCriticRepo;
         _clock = clock;
         _logger = logger;
@@ -30,7 +26,7 @@ internal class ExpireTradesJobHandler : IFantasyCriticCronJobHandler
 
         _logger.LogInformation("Expiring trades.");
         var now = _clock.GetCurrentInstant();
-        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MaxBy(x => x.Year);
         IReadOnlyList<Trade> trades = await _fantasyCriticRepo.GetTradesForYear(currentYear!.Year);
 

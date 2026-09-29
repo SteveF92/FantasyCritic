@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Domain.Combinations;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Jobs.Utilities;
@@ -6,9 +7,9 @@ namespace FantasyCritic.Lib.Jobs.Utilities;
 internal static class PublicBiddingJobUtilities
 {
     public static async Task<IReadOnlyList<LeagueYearPublicBiddingSet>> GetPublicBiddingSets(
-        InterLeagueService interLeagueService, GameAcquisitionService gameAcquisitionService)
+        IFantasyCriticRepo fantasyCriticRepo, GameAcquisitionService gameAcquisitionService)
     {
-        var supportedYears = await interLeagueService.GetSupportedYears();
+        var supportedYears = await fantasyCriticRepo.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
 
         var publicBiddingSets = new List<LeagueYearPublicBiddingSet>();

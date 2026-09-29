@@ -1,4 +1,4 @@
-using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.Lib.Jobs.Utilities;
 
@@ -10,17 +10,17 @@ internal static class DatabaseSnapshotJobUtilities
     //RDS accepts a snapshot request long before the snapshot is usable, and doesn't document when during "creating" the data is captured.
     //So a job that takes a snapshot waits for "available"; otherwise a completed job wouldn't mean the snapshot exists.
     //Progress goes after any steps the job already completed, so each update still says what finished.
-    public static async Task SnapshotDatabaseAndWait(AdminService adminService, IClock clock, FantasyCriticJobContext context,
+    public static async Task SnapshotDatabaseAndWait(IRDSManager rdsManager, IClock clock, FantasyCriticJobContext context,
         string snapshotName, CancellationToken cancellationToken)
     {
-        await adminService.StartDatabaseSnapshot(snapshotName, cancellationToken);
+        await rdsManager.SnapshotRDS(snapshotName, cancellationToken);
         await context.AddTemporaryStatus($"Snapshot {snapshotName} requested.");
 
         var deadline = clock.GetCurrentInstant().Plus(Timeout);
         while (true)
         {
             await Task.Delay(PollInterval, cancellationToken);
-            var snapshot = await adminService.GetDatabaseSnapshot(snapshotName, cancellationToken);
+            var snapshot = await rdsManager.GetSnapshot(snapshotName, cancellationToken);
             if (snapshot.Status == "available")
             {
                 await context.AppendDetailedStatus($"Snapshot {snapshotName} available.");

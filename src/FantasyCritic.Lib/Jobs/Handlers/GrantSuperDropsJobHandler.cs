@@ -2,7 +2,6 @@ using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Services;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
@@ -12,16 +11,14 @@ internal class GrantSuperDropsJobHandler : IFantasyCriticCronJobHandler
     public static FantasyCriticJobType JobType => FantasyCriticJobType.GrantSuperDrops;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Hourly.WithCalendarGuard(instant => instant.ShouldGrantSuperDrops());
 
-    private readonly InterLeagueService _interLeagueService;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly DiscordPushService _discordPushService;
     private readonly IClock _clock;
     private readonly ILogger<GrantSuperDropsJobHandler> _logger;
 
-    public GrantSuperDropsJobHandler(InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo,
-        DiscordPushService discordPushService, IClock clock, ILogger<GrantSuperDropsJobHandler> logger)
+    public GrantSuperDropsJobHandler(IFantasyCriticRepo fantasyCriticRepo, DiscordPushService discordPushService, IClock clock,
+        ILogger<GrantSuperDropsJobHandler> logger)
     {
-        _interLeagueService = interLeagueService;
         _fantasyCriticRepo = fantasyCriticRepo;
         _discordPushService = discordPushService;
         _clock = clock;
@@ -31,10 +28,10 @@ internal class GrantSuperDropsJobHandler : IFantasyCriticCronJobHandler
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Granting super drops.");
-        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+        SystemWideValues systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
         var now = _clock.GetCurrentInstant();
         var currentDate = now.ToEasternDate();
-        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MinBy(x => x.Year);
         IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticRepo.GetLeagueYears(currentYear!.Year);
         var leagueYearsWithSuperDrops = allLeagueYears.Where(x => x.IsFirstDraftFinished && x.Options.GrantSuperDrops).ToList();

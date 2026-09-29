@@ -1,6 +1,5 @@
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Services;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
@@ -10,17 +9,17 @@ internal class UpdateDailyPublisherStatisticsJobHandler : IFantasyCriticCronJobH
     public static FantasyCriticJobType JobType => FantasyCriticJobType.UpdateDailyPublisherStatistics;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.AtTenPmEastern;
 
-    private readonly InterLeagueService _interLeagueService;
-    private readonly RoyaleService _royaleService;
+    private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IRoyaleRepo _royaleRepo;
     private readonly IDailyStatsRepo _dailyStatsRepo;
     private readonly IClock _clock;
     private readonly ILogger<UpdateDailyPublisherStatisticsJobHandler> _logger;
 
-    public UpdateDailyPublisherStatisticsJobHandler(InterLeagueService interLeagueService, RoyaleService royaleService,
+    public UpdateDailyPublisherStatisticsJobHandler(IFantasyCriticRepo fantasyCriticRepo, IRoyaleRepo royaleRepo,
         IDailyStatsRepo dailyStatsRepo, IClock clock, ILogger<UpdateDailyPublisherStatisticsJobHandler> logger)
     {
-        _interLeagueService = interLeagueService;
-        _royaleService = royaleService;
+        _fantasyCriticRepo = fantasyCriticRepo;
+        _royaleRepo = royaleRepo;
         _dailyStatsRepo = dailyStatsRepo;
         _clock = clock;
         _logger = logger;
@@ -29,12 +28,12 @@ internal class UpdateDailyPublisherStatisticsJobHandler : IFantasyCriticCronJobH
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         _logger.LogInformation("Updating daily statistics.");
-        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
+        SystemWideValues systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
         var today = _clock.GetToday();
 
-        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var activeYears = supportedYears.Where(x => !x.Finished && x.OpenForPlay).ToList();
-        var supportedQuarters = await _royaleService.GetYearQuarters();
+        var supportedQuarters = await _royaleRepo.GetYearQuarters();
 
         await _dailyStatsRepo.UpdateDailyStats(activeYears, supportedQuarters, today, systemWideValues);
 

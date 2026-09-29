@@ -3,7 +3,6 @@ using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
-using FantasyCritic.Lib.Services;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
@@ -13,17 +12,15 @@ internal class ProcessSpecialAuctionsJobHandler : IConditionalCronJobHandler
     public static FantasyCriticJobType JobType => FantasyCriticJobType.ProcessSpecialAuctions;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.EveryTenMinutes;
 
-    private readonly InterLeagueService _interLeagueService;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly DiscordPushService _discordPushService;
     private readonly IClock _clock;
     private readonly ILogger<ProcessSpecialAuctionsJobHandler> _logger;
 
-    public ProcessSpecialAuctionsJobHandler(InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo,
-        IMasterGameRepo masterGameRepo, DiscordPushService discordPushService, IClock clock, ILogger<ProcessSpecialAuctionsJobHandler> logger)
+    public ProcessSpecialAuctionsJobHandler(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, DiscordPushService discordPushService,
+        IClock clock, ILogger<ProcessSpecialAuctionsJobHandler> logger)
     {
-        _interLeagueService = interLeagueService;
         _fantasyCriticRepo = fantasyCriticRepo;
         _masterGameRepo = masterGameRepo;
         _discordPushService = discordPushService;
@@ -40,8 +37,8 @@ internal class ProcessSpecialAuctionsJobHandler : IConditionalCronJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        SystemWideValues systemWideValues = await _interLeagueService.GetSystemWideValues();
-        var supportedYears = await _interLeagueService.GetSupportedYears();
+        SystemWideValues systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
+        var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         foreach (var supportedYear in supportedYears)
         {
             if (supportedYear.Finished || !supportedYear.OpenForPlay)
@@ -92,7 +89,7 @@ internal class ProcessSpecialAuctionsJobHandler : IConditionalCronJobHandler
             specialAuctionSets.Add(new LeagueYearSpecialAuctionSet(leagueYear, specialAuctionsWithBids));
         }
 
-        var masterGameYears = await _interLeagueService.GetMasterGameYears(year);
+        var masterGameYears = await _masterGameRepo.GetMasterGameYears(year);
         var masterGameYearDictionary = masterGameYears.ToDictionary(x => x.MasterGame.MasterGameID);
 
         var currentDate = _clock.GetToday();
