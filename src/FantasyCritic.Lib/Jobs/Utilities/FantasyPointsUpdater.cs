@@ -11,7 +11,6 @@ internal class FantasyPointsUpdater
 {
     private static readonly ILogger _logger = Log.ForContext<FantasyPointsUpdater>();
 
-    private readonly InterLeagueService _interLeagueService;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly FantasyCriticService _fantasyCriticService;
     private readonly RoyaleService _royaleService;
@@ -19,10 +18,9 @@ internal class FantasyPointsUpdater
     private readonly DiscordPushService _discordPushService;
     private readonly IClock _clock;
 
-    public FantasyPointsUpdater(InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, FantasyCriticService fantasyCriticService,
+    public FantasyPointsUpdater(IFantasyCriticRepo fantasyCriticRepo, FantasyCriticService fantasyCriticService,
         RoyaleService royaleService, IDiscordRepo discordRepo, DiscordPushService discordPushService, IClock clock)
     {
-        _interLeagueService = interLeagueService;
         _fantasyCriticRepo = fantasyCriticRepo;
         _fantasyCriticService = fantasyCriticService;
         _royaleService = royaleService;
@@ -35,7 +33,7 @@ internal class FantasyPointsUpdater
     {
         _logger.Information("Updating fantasy points");
 
-        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var activeYears = supportedYears.Where(x => x.OpenForPlay && !x.Finished);
         foreach (var activeYear in activeYears)
         {

@@ -2,7 +2,6 @@ using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Jobs.Utilities;
-using FantasyCritic.Lib.Services;
 using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
@@ -12,7 +11,6 @@ internal class EndOfYearRolloverJobHandler : IFantasyCriticCronJobHandler
     public static FantasyCriticJobType JobType => FantasyCriticJobType.EndOfYearRollover;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Cron("0 0 1 1 *");
 
-    private readonly InterLeagueService _interLeagueService;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly DiscordPushService _discordPushService;
     private readonly IClock _clock;
@@ -21,10 +19,9 @@ internal class EndOfYearRolloverJobHandler : IFantasyCriticCronJobHandler
     private readonly FantasyPointsUpdater _fantasyPointsUpdater;
     private readonly ILogger<EndOfYearRolloverJobHandler> _logger;
 
-    public EndOfYearRolloverJobHandler(InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, DiscordPushService discordPushService, IClock clock,
+    public EndOfYearRolloverJobHandler(IFantasyCriticRepo fantasyCriticRepo, DiscordPushService discordPushService, IClock clock,
         CriticScoreRefresher criticScoreRefresher, CacheRefresher cacheRefresher, FantasyPointsUpdater fantasyPointsUpdater, ILogger<EndOfYearRolloverJobHandler> logger)
     {
-        _interLeagueService = interLeagueService;
         _fantasyCriticRepo = fantasyCriticRepo;
         _discordPushService = discordPushService;
         _clock = clock;
@@ -36,7 +33,7 @@ internal class EndOfYearRolloverJobHandler : IFantasyCriticCronJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var nycNow = _clock.GetCurrentInstant().InZone(TimeExtensions.EasternTimeZone);
 
         foreach (var supportedYear in supportedYears)
@@ -53,7 +50,7 @@ internal class EndOfYearRolloverJobHandler : IFantasyCriticCronJobHandler
 
                 await _criticScoreRefresher.RefreshCriticInfo();
                 await _cacheRefresher.RefreshCaches();
-                await _interLeagueService.FinishYear(supportedYear);
+                await _fantasyCriticRepo.FinishYear(supportedYear);
                 await _fantasyPointsUpdater.UpdateFantasyPoints();
 
                 var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);

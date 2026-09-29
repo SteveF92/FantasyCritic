@@ -16,18 +16,16 @@ public class CacheRefresher
 
     private readonly IClock _clock;
     private readonly IMasterGameRepo _masterGameRepo;
-    private readonly InterLeagueService _interLeagueService;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IHypeFactorService _hypeFactorService;
     private readonly DiscordPushService _discordPushService;
     private readonly RoyaleService _royaleService;
 
-    public CacheRefresher(IClock clock, IMasterGameRepo masterGameRepo, InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo,
+    public CacheRefresher(IClock clock, IMasterGameRepo masterGameRepo, IFantasyCriticRepo fantasyCriticRepo,
         IHypeFactorService hypeFactorService, DiscordPushService discordPushService, RoyaleService royaleService)
     {
         _clock = clock;
         _masterGameRepo = masterGameRepo;
-        _interLeagueService = interLeagueService;
         _fantasyCriticRepo = fantasyCriticRepo;
         _hypeFactorService = hypeFactorService;
         _discordPushService = discordPushService;
@@ -43,7 +41,7 @@ public class CacheRefresher
         await UpdateCodeBasedTags(today);
         await _masterGameRepo.UpdateReleaseDateEstimates(tomorrow);
 
-        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var cachedSystemWideValueYears = (await _fantasyCriticRepo.GetCachedSystemWideValueYears()).ToHashSet();
         foreach (var supportedYear in supportedYears)
         {
@@ -59,8 +57,8 @@ public class CacheRefresher
         await UpdateSystemWideValues();
         HypeConstants hypeConstants = await _hypeFactorService.GetHypeConstants();
         await UpdateGameStats(hypeConstants);
-        _interLeagueService.ClearMasterGameCache();
-        _interLeagueService.ClearMasterGameYearCache();
+        _masterGameRepo.ClearMasterGameCache();
+        _masterGameRepo.ClearMasterGameYearCache();
         await _discordPushService.SendBatchedMasterGameUpdates();
         _logger.Information("Done refreshing caches");
     }
@@ -185,7 +183,7 @@ public class CacheRefresher
     {
         _logger.Information("Updating game stats.");
 
-        var supportedYears = await _interLeagueService.GetSupportedYears();
+        var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var currentDate = _clock.GetToday();
         foreach (var supportedYear in supportedYears)
         {
@@ -209,8 +207,8 @@ public class CacheRefresher
     }
 
     private static IReadOnlyList<MasterGameCalculatedStats> CalculateStatsForGames(SupportedYear supportedYear, IReadOnlyList<LeagueYear> leagueYears,
-    IReadOnlyList<MasterGame> cleanMasterGames, IReadOnlyList<MasterGameYear> cachedMasterGames, IReadOnlyList<PickupBid> processedBids,
-    IReadOnlyList<RoyalePublisher> royalePublishers, HypeConstants hypeConstants, LocalDate currentDate)
+        IReadOnlyList<MasterGame> cleanMasterGames, IReadOnlyList<MasterGameYear> cachedMasterGames, IReadOnlyList<PickupBid> processedBids,
+        IReadOnlyList<RoyalePublisher> royalePublishers, HypeConstants hypeConstants, LocalDate currentDate)
     {
         List<MasterGameCalculatedStats> calculatedStats = [];
         var publisherMasterGames = new HashSet<MasterGame>();
@@ -241,7 +239,6 @@ public class CacheRefresher
             publishersInCompleteLeagues.Add(publisher);
         }
 
-        var leagueYearDictionaryByPublisherID = publishersInCompleteLeagues.ToDictionary(x => x.PublisherID, y => leagueYearDictionary[y.LeagueYearKey]);
         var leagueYearsToCount = publishersInCompleteLeagues.Select(x => x.LeagueYearKey).ToHashSet();
         IReadOnlyList<PublisherGame> publisherGames = publishersInCompleteLeagues.SelectMany(x => x.PublisherGames).Where(x => x.MasterGame is not null).ToList();
         var bidsToCount = processedBids.Where(x => leagueYearsToCount.Contains(x.LeagueYear.Key)).ToList();

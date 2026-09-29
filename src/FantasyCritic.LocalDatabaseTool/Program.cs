@@ -116,7 +116,7 @@ public static class Program
         RoyaleService royaleService = new RoyaleService(royaleRepo, _clock, masterGameRepo);
         IHypeFactorService hypeFactorService = new HypeFactorService(masterGameRepo, interLeagueService);
 
-        return new CacheRefresher(_clock, masterGameRepo, interLeagueService, fantasyCriticRepo, hypeFactorService, discordPushService, royaleService);
+        return new CacheRefresher(_clock, masterGameRepo, fantasyCriticRepo, hypeFactorService, discordPushService, royaleService);
     }
 
     private static async Task UpdateSupportedYears()

@@ -1,5 +1,6 @@
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
 using FantasyCritic.Lib.Services;
 using Serilog;
@@ -11,13 +12,18 @@ internal class CriticScoreRefresher
     private static readonly ILogger _logger = Log.ForContext<CriticScoreRefresher>();
 
     private readonly InterLeagueService _interLeagueService;
+    private readonly IFantasyCriticRepo _fantasyCriticRepo;
+    private readonly IMasterGameRepo _masterGameRepo;
     private readonly IOpenCriticService _openCriticService;
     private readonly DiscordPushService _discordPushService;
     private readonly IClock _clock;
 
-    public CriticScoreRefresher(InterLeagueService interLeagueService, IOpenCriticService openCriticService, DiscordPushService discordPushService, IClock clock)
+    public CriticScoreRefresher(InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
+        IOpenCriticService openCriticService, DiscordPushService discordPushService, IClock clock)
     {
         _interLeagueService = interLeagueService;
+        _fantasyCriticRepo = fantasyCriticRepo;
+        _masterGameRepo = masterGameRepo;
         _openCriticService = openCriticService;
         _discordPushService = discordPushService;
         _clock = clock;
@@ -33,8 +39,8 @@ internal class CriticScoreRefresher
             return;
         }
 
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        var masterGames = await _interLeagueService.GetMasterGames();
+        var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
+        var masterGames = await _masterGameRepo.GetMasterGames();
 
         var currentDate = _clock.GetToday();
         var masterGamesToUpdate = masterGames.Where(x => x.OpenCriticID.HasValue && x.SyncWithExternalAPIs).ToList();
@@ -81,7 +87,7 @@ internal class CriticScoreRefresher
                     }
                 }
 
-                await _interLeagueService.UpdateCriticStats(masterGame, openCriticGame);
+                await _masterGameRepo.UpdateCriticStats(masterGame, openCriticGame);
                 _discordPushService.QueueGameCriticScoreUpdateMessage(masterGame, masterGame.CriticScore, openCriticGame.Score);
             }
             else
@@ -99,12 +105,12 @@ internal class CriticScoreRefresher
                 var subGameOpenCriticGame = await _openCriticService.GetOpenCriticGame(subGame.OpenCriticID.Value);
                 if (subGameOpenCriticGame is not null)
                 {
-                    await _interLeagueService.UpdateCriticStats(subGame, subGameOpenCriticGame);
+                    await _masterGameRepo.UpdateCriticStats(subGame, subGameOpenCriticGame);
                 }
             }
         }
 
-        _interLeagueService.ClearMasterGameCache();
+        _masterGameRepo.ClearMasterGameCache();
 
         _logger.Information("Done refreshing critic scores");
     }
