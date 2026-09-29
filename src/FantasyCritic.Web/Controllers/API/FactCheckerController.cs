@@ -284,9 +284,9 @@ public class FactCheckerController : BaseJobQueuingController
     public Task<ActionResult<FantasyCriticJobViewModel>> RefreshCaches() => EnqueueJob(FantasyCriticJobType.RefreshCaches);
 
     [HttpPost]
-    public IActionResult ClearMasterGameEditDiscordQueue()
+    public async Task<IActionResult> ClearMasterGameEditDiscordQueue()
     {
-        _adminService.ClearMasterGameEditDiscordQueue();
+        await _adminService.ClearMasterGameEditDiscordQueue();
         return Ok();
     }
 

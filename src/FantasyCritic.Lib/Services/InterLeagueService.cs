@@ -1,4 +1,4 @@
-using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
@@ -13,15 +13,13 @@ public class InterLeagueService
     private readonly ICombinedDataRepo _combinedDataRepo;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IClock _clock;
-    private readonly DiscordPushService _discordPushService;
 
-    public InterLeagueService(IFantasyCriticRepo fantasyCriticRepo, ICombinedDataRepo combinedDataRepo, IMasterGameRepo masterGameRepo, IClock clock, DiscordPushService discordPushService)
+    public InterLeagueService(IFantasyCriticRepo fantasyCriticRepo, ICombinedDataRepo combinedDataRepo, IMasterGameRepo masterGameRepo, IClock clock)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _combinedDataRepo = combinedDataRepo;
         _masterGameRepo = masterGameRepo;
         _clock = clock;
-        _discordPushService = discordPushService;
     }
 
     public Task<BasicData> GetBasicData()
@@ -77,10 +75,10 @@ public class InterLeagueService
         return _fantasyCriticRepo.DeleteSiteAnnouncement(announcementID);
     }
 
-    public async Task CreateMasterGame(MasterGame masterGame)
+    //The repo queues the game's Discord announcement in the same transaction.
+    public Task CreateMasterGame(MasterGame masterGame)
     {
-        await _masterGameRepo.CreateMasterGame(masterGame);
-        _discordPushService.QueueNewMasterGameMessage(masterGame);
+        return _masterGameRepo.CreateMasterGame(masterGame);
     }
 
     public async Task<Result> EditMasterGame(MasterGame existingMasterGame, MasterGame editedMasterGame, FantasyCriticUser changedByUser, bool minorEdit)
@@ -89,27 +87,28 @@ public class InterLeagueService
         var currentDate = now.ToEasternDate();
         var changes = editedMasterGame.CompareToExistingGame(existingMasterGame, currentDate);
         var changeLogEntries = changes.Select(x => new MasterGameChangeLogEntry(Guid.NewGuid(), existingMasterGame, changedByUser, now, x));
-        await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntries);
+        var editMessage = await GetEditMessage(existingMasterGame, editedMasterGame, changes, currentDate.Year, minorEdit);
+        await _masterGameRepo.EditMasterGame(editedMasterGame, changeLogEntries, editMessage);
+        return Result.Success();
+    }
 
-        if (!changes.Any())
+    //Null when the edit isn't announced: nothing changed, a minor edit, or no MasterGameYear row for this year.
+    //The lookup only gates the message, and whether the row exists doesn't depend on the edit, so it can run before the save.
+    private async Task<MasterGameEditMessage?> GetEditMessage(MasterGame existingMasterGame, MasterGame editedMasterGame, IReadOnlyList<string> changes,
+        int year, bool minorEdit)
+    {
+        if (!changes.Any() || minorEdit)
         {
-            return Result.Success();
+            return null;
         }
 
-        var masterGameYearStats = await _masterGameRepo.GetMasterGameYear(editedMasterGame.MasterGameID, currentDate.Year);
+        var masterGameYearStats = await _masterGameRepo.GetMasterGameYear(editedMasterGame.MasterGameID, year);
         if (masterGameYearStats is null)
         {
-            return Result.Success();
+            return null;
         }
 
-        var existingMasterGameYear = masterGameYearStats.WithNewMasterGame(existingMasterGame);
-        var editedMasterGameYear = masterGameYearStats.WithNewMasterGame(editedMasterGame);
-        if (!minorEdit)
-        {
-            _discordPushService.QueueMasterGameEditMessage(existingMasterGameYear, editedMasterGameYear, changes);
-        }
-
-        return Result.Success();
+        return new MasterGameEditMessage(existingMasterGame, editedMasterGame, masterGameYearStats.Year, changes);
     }
 
     public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame)

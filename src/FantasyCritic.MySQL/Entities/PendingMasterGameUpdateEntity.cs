@@ -28,28 +28,28 @@ internal class PendingMasterGameUpdateEntity
     }
 
     public PendingMasterGameUpdateEntity(NewMasterGameMessage message, Instant queuedTimestamp)
-        : this(PendingMasterGameUpdateType.NewGame, message.MasterGame, queuedTimestamp)
+        : this(message.PendingUpdateID, PendingMasterGameUpdateType.NewGame, message.MasterGame, queuedTimestamp)
     {
     }
 
     public PendingMasterGameUpdateEntity(GameCriticScoreUpdateMessage message, Instant queuedTimestamp)
-        : this(PendingMasterGameUpdateType.ScoreUpdate, message.Game, queuedTimestamp)
+        : this(message.PendingUpdateID, PendingMasterGameUpdateType.ScoreUpdate, message.Game, queuedTimestamp)
     {
         OldCriticScore = message.OldCriticScore;
         NewCriticScore = message.NewCriticScore;
     }
 
     public PendingMasterGameUpdateEntity(MasterGameEditMessage message, Instant queuedTimestamp)
-        : this(PendingMasterGameUpdateType.Edit, message.ExistingGame, queuedTimestamp)
+        : this(message.PendingUpdateID, PendingMasterGameUpdateType.Edit, message.ExistingGame, queuedTimestamp)
     {
         EditedMasterGameSnapshot = new MasterGameSnapshotEntity(message.EditedGame).ToJson();
         Year = message.Year;
         Changes = JsonSerializer.Serialize(message.Changes, FantasyCriticJsonOptions.Default);
     }
 
-    private PendingMasterGameUpdateEntity(PendingMasterGameUpdateType updateType, MasterGame masterGame, Instant queuedTimestamp)
+    private PendingMasterGameUpdateEntity(Guid pendingUpdateID, PendingMasterGameUpdateType updateType, MasterGame masterGame, Instant queuedTimestamp)
     {
-        PendingUpdateID = Guid.NewGuid();
+        PendingUpdateID = pendingUpdateID;
         UpdateType = updateType.Value;
         MasterGameID = masterGame.MasterGameID;
         MasterGameSnapshot = new MasterGameSnapshotEntity(masterGame).ToJson();
@@ -71,12 +71,12 @@ internal class PendingMasterGameUpdateEntity
 
     public NewMasterGameMessage ToNewGameMessage(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        return new NewMasterGameMessage(GetMasterGame(tagDictionary));
+        return new NewMasterGameMessage(PendingUpdateID, GetMasterGame(tagDictionary));
     }
 
     public GameCriticScoreUpdateMessage ToScoreUpdateMessage(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        return new GameCriticScoreUpdateMessage(GetMasterGame(tagDictionary), OldCriticScore, NewCriticScore);
+        return new GameCriticScoreUpdateMessage(PendingUpdateID, GetMasterGame(tagDictionary), OldCriticScore, NewCriticScore);
     }
 
     public MasterGameEditMessage ToEditMessage(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
@@ -89,7 +89,7 @@ internal class PendingMasterGameUpdateEntity
         var editedGame = MasterGameSnapshotEntity.FromJson(EditedMasterGameSnapshot).ToDomain(tagDictionary);
         var changes = JsonSerializer.Deserialize<List<string>>(Changes, FantasyCriticJsonOptions.Default)
                       ?? throw new Exception($"Pending edit {PendingUpdateID} has null changes.");
-        return new MasterGameEditMessage(GetMasterGame(tagDictionary), editedGame, Year.Value, changes);
+        return new MasterGameEditMessage(PendingUpdateID, GetMasterGame(tagDictionary), editedGame, Year.Value, changes);
     }
 
     private MasterGame GetMasterGame(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)

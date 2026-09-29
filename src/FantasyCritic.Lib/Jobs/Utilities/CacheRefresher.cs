@@ -1,4 +1,5 @@
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -72,17 +73,35 @@ public class CacheRefresher
         var gameStatsYears = await UpdateGameStats(hypeConstants, context, cancellationToken);
         _masterGameRepo.ClearMasterGameCache();
         _masterGameRepo.ClearMasterGameYearCache();
-        //Anything still queued here goes out with the next RefreshCaches in this process.
+        //Anything still pending here goes out with the next RefreshCaches.
         cancellationToken.ThrowIfCancellationRequested();
         await context.AddTemporaryStatus("Caches: sending batched Discord game updates.");
-        await _discordPushService.SendBatchedMasterGameUpdates();
+        var discordResult = await _discordPushService.SendPendingMasterGameUpdates();
 
         _logger.LogInformation("Refreshed caches: system-wide values for {SystemWideValueYears}, game stats for {GameStatsYears}.",
             systemWideValueYears, gameStatsYears);
-        await context.AppendDetailedStatus($"Caches refreshed: system-wide values for {DescribeYears(systemWideValueYears)}; game stats for {DescribeYears(gameStatsYears)}.");
+        await context.AppendDetailedStatus($"Caches refreshed: system-wide values for {DescribeYears(systemWideValueYears)}; game stats for {DescribeYears(gameStatsYears)}; " +
+                                           $"Discord game updates: {DescribeDiscordUpdates(discordResult)}.");
     }
 
     private static string DescribeYears(IReadOnlyList<int> years) => years.Count == 0 ? "no years" : string.Join(", ", years);
+
+    private static string DescribeDiscordUpdates(MasterGameUpdatesSendResult result)
+    {
+        if (!result.BotAvailable)
+        {
+            return "bot unavailable, nothing sent";
+        }
+
+        if (result.NewGames + result.ScoreUpdates + result.Edits == 0)
+        {
+            return "none pending";
+        }
+
+        return $"{Count(result.NewGames, "new game", "new games")}, {Count(result.ScoreUpdates, "score update", "score updates")}, {Count(result.Edits, "edit", "edits")}";
+    }
+
+    private static string Count(int count, string singular, string plural) => $"{count} {(count == 1 ? singular : plural)}";
 
     private async Task UpdateCodeBasedTags(LocalDate today)
     {

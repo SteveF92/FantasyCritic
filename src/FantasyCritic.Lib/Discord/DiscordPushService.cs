@@ -1,4 +1,3 @@
-using System.Collections.Concurrent;
 using Discord;
 using Discord.WebSocket;
 using DiscordDotNetUtilities;
@@ -37,10 +36,6 @@ public class DiscordPushService
     private bool _botIsReady;
     private readonly bool _enabled;
     private readonly string _baseAddress;
-
-    private readonly ConcurrentBag<NewMasterGameMessage> _newMasterGameMessages = [];
-    private readonly ConcurrentBag<GameCriticScoreUpdateMessage> _gameCriticScoreUpdateMessages = [];
-    private readonly ConcurrentBag<MasterGameEditMessage> _masterGameEditMessages = [];
 
     public DiscordPushService(
         FantasyCriticDiscordConfiguration configuration,
@@ -99,27 +94,38 @@ public class DiscordPushService
         return false;
     }
 
-    public void QueueNewMasterGameMessage(MasterGame masterGame)
+    //Sends what Web and the worker queued in the pending table, then deletes exactly the rows it read,
+    //so anything queued during the send goes out next time. A crash mid-send means those updates post twice, not never.
+    public async Task<MasterGameUpdatesSendResult> SendPendingMasterGameUpdates()
     {
-        _newMasterGameMessages.Add(new NewMasterGameMessage(masterGame));
+        //Checked before any rows are read: LocalDatabaseTool's disabled instance has no service provider to read them with.
+        bool shouldRun = await StartBot();
+        if (!shouldRun)
+        {
+            return MasterGameUpdatesSendResult.BotUnavailable;
+        }
+
+        var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
+        using var scope = serviceScopeFactory.CreateScope();
+        var masterGameRepo = scope.ServiceProvider.GetRequiredService<IMasterGameRepo>();
+
+        var pendingUpdates = await masterGameRepo.GetPendingMasterGameUpdates();
+        var result = new MasterGameUpdatesSendResult(true, pendingUpdates.NewGames.Count, pendingUpdates.ScoreUpdates.Count, pendingUpdates.Edits.Count);
+        if (pendingUpdates.PendingUpdateIDs.Count == 0)
+        {
+            return result;
+        }
+
+        await PostMasterGameUpdates(pendingUpdates.NewGames, pendingUpdates.ScoreUpdates, pendingUpdates.Edits);
+        await masterGameRepo.DeleteSentMasterGameUpdates(pendingUpdates.PendingUpdateIDs);
+        Logger.Information("Sent {NewGameCount} new games, {ScoreUpdateCount} score updates and {EditCount} edits from the pending table.",
+            result.NewGames, result.ScoreUpdates, result.Edits);
+        return result;
     }
 
-    public void QueueGameCriticScoreUpdateMessage(MasterGame game, decimal? oldCriticScore, decimal? newCriticScore)
-    {
-        _gameCriticScoreUpdateMessages.Add(new GameCriticScoreUpdateMessage(game, oldCriticScore, newCriticScore));
-    }
-
-    public void QueueMasterGameEditMessage(MasterGameYear existingGame, MasterGameYear editedGame, IReadOnlyList<string> changes)
-    {
-        _masterGameEditMessages.Add(new MasterGameEditMessage(existingGame.MasterGame, editedGame.MasterGame, existingGame.Year, changes));
-    }
-
-    public void ClearMasterGameEditQueue()
-    {
-        _masterGameEditMessages.Clear();
-    }
-
-    public async Task SendBatchedMasterGameUpdates()
+    //For the spoof endpoints: sends the given updates without touching the pending table.
+    public async Task SendMasterGameUpdates(IReadOnlyList<NewMasterGameMessage> newMasterGameMessages,
+        IReadOnlyList<GameCriticScoreUpdateMessage> gameCriticScoreUpdateMessages, IReadOnlyList<MasterGameEditMessage> masterGameEditMessages)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
@@ -127,13 +133,19 @@ public class DiscordPushService
             return;
         }
 
+        await PostMasterGameUpdates(newMasterGameMessages, gameCriticScoreUpdateMessages, masterGameEditMessages);
+    }
+
+    private async Task PostMasterGameUpdates(IReadOnlyList<NewMasterGameMessage> newMasterGameMessages,
+        IReadOnlyList<GameCriticScoreUpdateMessage> gameCriticScoreUpdateMessages, IReadOnlyList<MasterGameEditMessage> masterGameEditMessages)
+    {
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
         using var scope = serviceScopeFactory.CreateScope();
         var fantasyCriticRepo = scope.ServiceProvider.GetRequiredService<IFantasyCriticRepo>();
         var discordRepo = scope.ServiceProvider.GetRequiredService<IDiscordRepo>();
 
-        Logger.Information($"Sending master game updates. {_newMasterGameMessages.Count} New MasterGames | {_gameCriticScoreUpdateMessages.Count} Score Updates | {_masterGameEditMessages.Count} Edits");
-        foreach (var scoreUpdate in _gameCriticScoreUpdateMessages)
+        Logger.Information($"Sending master game updates. {newMasterGameMessages.Count} New MasterGames | {gameCriticScoreUpdateMessages.Count} Score Updates | {masterGameEditMessages.Count} Edits");
+        foreach (var scoreUpdate in gameCriticScoreUpdateMessages)
         {
             Logger.Information($"Score Update: {scoreUpdate.Game.GameName} - {scoreUpdate.OldCriticScore} -> {scoreUpdate.NewCriticScore}");
         }
@@ -151,13 +163,13 @@ public class DiscordPushService
                 continue;
             }
 
-            var newMasterGamesToSend = _newMasterGameMessages
+            var newMasterGamesToSend = newMasterGameMessages
                 .Where(x => combinedChannel.GetRelevanceHandler().NewGameIsRelevant(x.MasterGame, today))
                 .ToList();
-            var scoreUpdatesToSend = _gameCriticScoreUpdateMessages
+            var scoreUpdatesToSend = gameCriticScoreUpdateMessages
                 .Where(x => combinedChannel.GetRelevanceHandler().ScoredGameIsRelevant(x.Game, x.OldCriticScore, x.NewCriticScore, today))
                 .ToList();
-            var editsToSend = _masterGameEditMessages
+            var editsToSend = masterGameEditMessages
                 .Where(x => combinedChannel.GetRelevanceHandler().ExistingGameIsRelevant(x.ExistingGame, x.PreviousReleaseStatus, today))
                 .ToList();
 
@@ -273,10 +285,6 @@ public class DiscordPushService
 
         Logger.Information("Pushing out {gameUpdateChannels} game updates to channels.", preparedMessages.Count);
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages, MessageFlags.SuppressEmbeds);
-
-        _newMasterGameMessages.Clear();
-        _gameCriticScoreUpdateMessages.Clear();
-        _masterGameEditMessages.Clear();
     }
 
     private static string GetPublisherOfGameNote(IReadOnlyList<Publisher> allPublisherInActiveYears, MasterGame masterGame, LocalDate currentDate)

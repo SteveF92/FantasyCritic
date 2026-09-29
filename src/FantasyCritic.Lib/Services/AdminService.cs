@@ -37,9 +37,9 @@ public class AdminService
         return _fantasyCriticRepo.GetLeagueYears(year);
     }
 
-    public void ClearMasterGameEditDiscordQueue()
+    public Task ClearMasterGameEditDiscordQueue()
     {
-        _discordPushService.ClearMasterGameEditQueue();
+        return _masterGameRepo.ClearPendingMasterGameEdits();
     }
 
     public Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentDatabaseSnapshots()

@@ -20,7 +20,7 @@ public interface IMasterGameRepo
     Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame);
 
     Task CreateMasterGame(MasterGame masterGame);
-    Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries);
+    Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries, MasterGameEditMessage? editMessage);
 
     Task<IReadOnlyList<Guid>> GetAllSelectedMasterGameIDsForYear(int year);
 

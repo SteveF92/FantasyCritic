@@ -124,7 +124,7 @@ public static class Program
         IFantasyCriticRepo fantasyCriticRepo = new MySQLFantasyCriticRepo(localRepoConfig, localUserStore, masterGameRepo, combinedDataRepo);
         IRoyaleRepo royaleRepo = new MySQLRoyaleRepo(localRepoConfig, localUserStore, masterGameRepo);
         DiscordPushService discordPushService = new DiscordPushService(new FantasyCriticDiscordConfiguration("", _baseAddress, true), _clock, new ServiceContainer(), new DiscordFormatter());
-        InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, combinedDataRepo, masterGameRepo, _clock, discordPushService);
+        InterLeagueService interLeagueService = new InterLeagueService(fantasyCriticRepo, combinedDataRepo, masterGameRepo, _clock);
         RoyaleService royaleService = new RoyaleService(royaleRepo, _clock, masterGameRepo);
         IHypeFactorService hypeFactorService = new HypeFactorService(masterGameRepo, interLeagueService);
 

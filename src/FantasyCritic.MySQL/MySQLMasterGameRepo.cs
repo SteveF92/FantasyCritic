@@ -251,18 +251,21 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
         var entity = new MasterGameEntity(masterGame);
         var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
+        //Queued in the same transaction, so every new game is announced and a failed save announces nothing.
+        var pendingUpdate = new PendingMasterGameUpdateEntity(new NewMasterGameMessage(masterGame), _clock.GetCurrentInstant());
         var excludeFields = new List<string>() { "TimeAdded" };
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(masterGameCreateSQL, entity, transaction);
         await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
+        await InsertPendingMasterGameUpdate(connection, pendingUpdate, transaction);
         await transaction.CommitAsync();
         ClearMasterGameCache();
         ClearMasterGameYearCache();
     }
 
-    public async Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries)
+    public async Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries, MasterGameEditMessage? editMessage)
     {
         const string editSQL = "UPDATE tbl_mastergame SET " +
                                "GameName = @GameName, " +
@@ -300,6 +303,11 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await connection.ExecuteAsync(deleteTagsSQL, new { masterGame.MasterGameID }, transaction);
         await connection.BulkInsertAsync<MasterGameChangeLogEntity>(changeLogEntities, "tbl_mastergame_changelog", 500, transaction);
         await connection.BulkInsertAsync<MasterGameHasTagEntity>(tagEntities, "tbl_mastergame_hastag", 500, transaction, excludeFields);
+        if (editMessage is not null)
+        {
+            await InsertPendingMasterGameUpdate(connection, new PendingMasterGameUpdateEntity(editMessage, _clock.GetCurrentInstant()), transaction);
+        }
+
         await transaction.CommitAsync();
         ClearMasterGameCache();
         ClearMasterGameYearCache();
@@ -1282,7 +1290,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             }
         }
 
-        return new PendingMasterGameUpdates(entities.Select(x => x.PendingUpdateID).ToList(), newGames, scoreUpdates, edits);
+        return new PendingMasterGameUpdates(newGames, scoreUpdates, edits);
     }
 
     public async Task DeleteSentMasterGameUpdates(IReadOnlyList<Guid> pendingUpdateIDs)
