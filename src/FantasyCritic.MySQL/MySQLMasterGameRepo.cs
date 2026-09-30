@@ -1306,7 +1306,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await transaction.CommitAsync();
     }
 
-    //False when there's no unsent row to delete: already sent, cleared, or deleted by someone else.
+    //False when there's no unsent row to delete: already sent, or deleted by someone else.
     public async Task<bool> DeletePendingMasterGameUpdate(Guid masterGameUpdateID)
     {
         const string sql = "delete from tbl_discord_mastergameupdate where MasterGameUpdateID = @masterGameUpdateID and SentCount is null;";
