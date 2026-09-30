@@ -285,7 +285,7 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task DeleteSentMasterGameUpdates(IReadOnlyList<Guid> pendingUpdateIDs)
+    public Task DeleteSentMasterGameUpdates(IReadOnlyList<Guid> masterGameUpdateIDs)
     {
         throw new NotImplementedException();
     }
@@ -295,7 +295,7 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task<bool> DeletePendingMasterGameUpdate(Guid pendingUpdateID)
+    public Task<bool> DeletePendingMasterGameUpdate(Guid masterGameUpdateID)
     {
         throw new NotImplementedException();
     }

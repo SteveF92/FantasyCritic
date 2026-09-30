@@ -108,13 +108,13 @@ public class DiscordPushService
 
         var pendingUpdates = await masterGameRepo.GetPendingMasterGameUpdates();
         var result = new MasterGameUpdatesSendResult(true, pendingUpdates.NewGames.Count, pendingUpdates.ScoreUpdates.Count, pendingUpdates.Edits.Count);
-        if (pendingUpdates.PendingUpdateIDs.Count == 0)
+        if (pendingUpdates.MasterGameUpdateIDs.Count == 0)
         {
             return result;
         }
 
         await PostMasterGameUpdates(pendingUpdates.NewGames, pendingUpdates.ScoreUpdates, pendingUpdates.Edits);
-        await masterGameRepo.DeleteSentMasterGameUpdates(pendingUpdates.PendingUpdateIDs);
+        await masterGameRepo.DeleteSentMasterGameUpdates(pendingUpdates.MasterGameUpdateIDs);
         Logger.Information("Sent {NewGameCount} new games, {ScoreUpdateCount} score updates and {EditCount} edits from the pending table.",
             result.NewGames, result.ScoreUpdates, result.Edits);
         return result;

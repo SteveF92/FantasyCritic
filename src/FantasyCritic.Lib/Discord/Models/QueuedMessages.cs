@@ -1,11 +1,11 @@
 namespace FantasyCritic.Lib.Discord.Models;
 
-public record NewMasterGameMessage(Guid PendingUpdateID, MasterGame MasterGame);
+public record NewMasterGameMessage(Guid MasterGameUpdateID, MasterGame MasterGame);
 
-public record GameCriticScoreUpdateMessage(Guid PendingUpdateID, MasterGame Game, decimal? OldCriticScore, decimal? NewCriticScore);
+public record GameCriticScoreUpdateMessage(Guid MasterGameUpdateID, MasterGame Game, decimal? OldCriticScore, decimal? NewCriticScore);
 
 //Year is the year both games were read in, which is what the release statuses are compared for.
-public record MasterGameEditMessage(Guid PendingUpdateID, MasterGame ExistingGame, MasterGame EditedGame, int Year, IReadOnlyList<string> Changes)
+public record MasterGameEditMessage(Guid MasterGameUpdateID, MasterGame ExistingGame, MasterGame EditedGame, int Year, IReadOnlyList<string> Changes)
 {
     public WillReleaseStatus? PreviousReleaseStatus =>
         !ExistingGame.GetWillReleaseStatus(Year).Equals(EditedGame.GetWillReleaseStatus(Year)) ? ExistingGame.GetWillReleaseStatus(Year) : null;
@@ -13,9 +13,9 @@ public record MasterGameEditMessage(Guid PendingUpdateID, MasterGame ExistingGam
 
 public record PendingMasterGameUpdates(IReadOnlyList<NewMasterGameMessage> NewGames, IReadOnlyList<GameCriticScoreUpdateMessage> ScoreUpdates, IReadOnlyList<MasterGameEditMessage> Edits)
 {
-    public IReadOnlyList<Guid> PendingUpdateIDs => NewGames.Select(x => x.PendingUpdateID)
-        .Concat(ScoreUpdates.Select(x => x.PendingUpdateID))
-        .Concat(Edits.Select(x => x.PendingUpdateID))
+    public IReadOnlyList<Guid> MasterGameUpdateIDs => NewGames.Select(x => x.MasterGameUpdateID)
+        .Concat(ScoreUpdates.Select(x => x.MasterGameUpdateID))
+        .Concat(Edits.Select(x => x.MasterGameUpdateID))
         .ToList();
 }
 
