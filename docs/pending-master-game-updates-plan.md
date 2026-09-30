@@ -218,5 +218,6 @@ An admin console page lists what is waiting to go to Discord, and deletes one up
   - Run each spoof endpoint and confirm pending rows are untouched.
   - Clear Edit Game Discord Queue removes only edit rows.
 - Step 3a: unit tests for the per-update counts, if `PostMasterGameUpdates`' channel loop can be separated from the Discord client; otherwise review. Locally, run RefreshCaches with a bot token, and confirm the rows stay with `SentCount` set and the next run finds nothing pending. Clear Edit Game Discord Queue leaves sent edits alone.
+- **2026-09-29: Steve ran the Step 2 and 3a local checks, and everything works.** The read, send and mark paths have now run against a real database and Discord.
 - Step 3b: integration tests for the list and delete endpoints, through the generated client. Locally, queue an edit, see it on the page, delete it, and confirm RefreshCaches doesn't send it. Deleting it a second time reports it's already gone.
 - Local data is never edited by hand to set up a test.
