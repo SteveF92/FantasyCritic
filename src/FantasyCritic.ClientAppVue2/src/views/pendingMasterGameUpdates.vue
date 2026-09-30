@@ -5,7 +5,7 @@
       <b-button variant="info" :to="{ name: 'adminConsole' }">Admin Console</b-button>
     </div>
     <hr />
-    <p>These go out to Discord with the next cache refresh. Delete any that were queued by mistake.</p>
+    <p>These are the messages that are planned to be sent with the next cache refresh. If you don't want one to go out, you can delete it here.</p>
     <div v-if="errorResponse" class="alert alert-danger">{{ errorResponse }}</div>
 
     <div v-if="pendingUpdates">
