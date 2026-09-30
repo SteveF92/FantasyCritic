@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
@@ -278,8 +279,7 @@ public class AdminController : BaseJobQueuingController
 
         var masterGame = await _masterGameRepo.GetTestMasterGame(currentSupportedYear!.Year);
 
-        _discordPushService.QueueGameCriticScoreUpdateMessage(masterGame, 80m, 85m);
-        await _discordPushService.SendBatchedMasterGameUpdates();
+        await _discordPushService.SendMasterGameUpdatesImmediately([], [new GameCriticScoreUpdateMessage(Guid.NewGuid(), masterGame, 80m, 85m)], []);
 
         return Ok();
     }
@@ -298,8 +298,8 @@ public class AdminController : BaseJobQueuingController
 
         var masterGameYear = await _masterGameRepo.GetTestMasterGameYear(currentSupportedYear!.Year);
 
-        _discordPushService.QueueMasterGameEditMessage(masterGameYear, masterGameYear, new List<string>() { "The Test Game Was Changed" });
-        await _discordPushService.SendBatchedMasterGameUpdates();
+        var editMessage = new MasterGameEditMessage(Guid.NewGuid(), masterGameYear.MasterGame, masterGameYear.MasterGame, masterGameYear.Year, new List<string>() { "The Test Game Was Changed" });
+        await _discordPushService.SendMasterGameUpdatesImmediately([], [], [editMessage]);
         return Ok();
     }
 
@@ -317,8 +317,7 @@ public class AdminController : BaseJobQueuingController
             .MaxBy(x => x.Year);
 
         var masterGame = await _masterGameRepo.GetTestMasterGame(currentSupportedYear!.Year);
-        _discordPushService.QueueNewMasterGameMessage(masterGame);
-        await _discordPushService.SendBatchedMasterGameUpdates();
+        await _discordPushService.SendMasterGameUpdatesImmediately([new NewMasterGameMessage(Guid.NewGuid(), masterGame)], [], []);
 
         return Ok();
     }

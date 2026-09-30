@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
 using FantasyCritic.IntegrationTests.Helpers;
@@ -78,5 +79,63 @@ public class FactCheckerTests : IntegrationTestBase
 
         var retrieved = await fcSession.Game.MasterGameAsync(created.MasterGameID);
         Assert.That(retrieved.GameName, Is.EqualTo(gameName));
+    }
+
+    [Test]
+    public async Task PendingMasterGameUpdates_ListsANewGame_UntilItIsDeleted()
+    {
+        using var fcSession = await NewFactCheckerSessionAsync();
+        var created = await CreateTestMasterGameAsync(fcSession);
+
+        var pendingBefore = await fcSession.FactChecker.PendingMasterGameUpdatesAsync();
+        var newGameUpdate = pendingBefore.NewGames.Single(x => x.MasterGame.MasterGameID == created.MasterGameID);
+        Assert.That(newGameUpdate.MasterGame.GameName, Is.EqualTo(created.GameName));
+
+        await fcSession.FactChecker.DeletePendingMasterGameUpdateAsync(new DeletePendingMasterGameUpdateRequest
+        {
+            MasterGameUpdateID = newGameUpdate.MasterGameUpdateID,
+        });
+
+        var pendingAfter = await fcSession.FactChecker.PendingMasterGameUpdatesAsync();
+        Assert.That(pendingAfter.NewGames.Any(x => x.MasterGameUpdateID == newGameUpdate.MasterGameUpdateID), Is.False);
+    }
+
+    [Test]
+    public async Task DeletePendingMasterGameUpdate_AlreadyDeleted_Returns400()
+    {
+        using var fcSession = await NewFactCheckerSessionAsync();
+        var created = await CreateTestMasterGameAsync(fcSession);
+        var pending = await fcSession.FactChecker.PendingMasterGameUpdatesAsync();
+        var request = new DeletePendingMasterGameUpdateRequest
+        {
+            MasterGameUpdateID = pending.NewGames.Single(x => x.MasterGame.MasterGameID == created.MasterGameID).MasterGameUpdateID,
+        };
+        await fcSession.FactChecker.DeletePendingMasterGameUpdateAsync(request);
+
+        var ex = Assert.ThrowsAsync<ApiException>(() => fcSession.FactChecker.DeletePendingMasterGameUpdateAsync(request));
+        Assert.That(ex!.StatusCode, Is.EqualTo(400), "Deleting an update that is no longer pending must return HTTP 400 Bad Request.");
+    }
+
+    private async Task<ApiSession> NewFactCheckerSessionAsync()
+    {
+        var (email, password, displayName) = NewUser();
+        using var regSession = new ApiSession(Factory);
+        await regSession.RegisterAsync(email, password, displayName);
+        var me = await regSession.Account.CurrentUserAsync();
+        await GrantFactCheckerRoleAsync(me.UserID);
+
+        var fcSession = new ApiSession(Factory);
+        await fcSession.LoginAsync(email, password);
+        return fcSession;
+    }
+
+    private static Task<MasterGameViewModel> CreateTestMasterGameAsync(ApiSession fcSession)
+    {
+        return fcSession.FactChecker.CreateMasterGameAsync(new CreateMasterGameRequest
+        {
+            GameName = $"Test Game {Guid.NewGuid():N}"[..36],
+            EstimatedReleaseDate = "2099",
+            Tags = ["NewGame"],
+        });
     }
 }

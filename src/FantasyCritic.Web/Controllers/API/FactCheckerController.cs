@@ -283,10 +283,24 @@ public class FactCheckerController : BaseJobQueuingController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public Task<ActionResult<FantasyCriticJobViewModel>> RefreshCaches() => EnqueueJob(FantasyCriticJobType.RefreshCaches);
 
-    [HttpPost]
-    public IActionResult ClearMasterGameEditDiscordQueue()
+    [HttpGet]
+    public async Task<ActionResult<PendingMasterGameUpdatesViewModel>> PendingMasterGameUpdates()
     {
-        _adminService.ClearMasterGameEditDiscordQueue();
+        var pendingUpdates = await _adminService.GetPendingMasterGameUpdates();
+        return new PendingMasterGameUpdatesViewModel(pendingUpdates, _clock.GetToday());
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeletePendingMasterGameUpdate([FromBody] DeletePendingMasterGameUpdateRequest request)
+    {
+        var deleted = await _adminService.DeletePendingMasterGameUpdate(request.MasterGameUpdateID);
+        if (!deleted)
+        {
+            return BadRequest("That update was already sent or deleted.");
+        }
+
         return Ok();
     }
 

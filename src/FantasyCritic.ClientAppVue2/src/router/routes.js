@@ -29,6 +29,7 @@ import MasterGameRequest from '@/views/masterGameRequest.vue';
 import MasterGameChangeRequest from '@/views/masterGameChangeRequest.vue';
 import ActiveMasterGameRequests from '@/views/activeMasterGameRequests.vue';
 import ActiveMasterGameChangeRequests from '@/views/activeMasterGameChangeRequests.vue';
+import PendingMasterGameUpdates from '@/views/pendingMasterGameUpdates.vue';
 import MasterGameCreator from '@/views/masterGameCreator.vue';
 import ActionProcessingDryRunResults from '@/views/actionProcessingDryRunResults.vue';
 import CriticsRoyale from '@/views/criticsRoyale.vue';
@@ -423,6 +424,15 @@ export const routes = [
     name: 'activeMasterGameChangeRequests',
     meta: {
       title: 'Active Master Game Change Requests',
+      adminOnly: true
+    }
+  },
+  {
+    path: '/pendingMasterGameUpdates',
+    component: PendingMasterGameUpdates,
+    name: 'pendingMasterGameUpdates',
+    meta: {
+      title: 'Pending Discord Game Updates',
       adminOnly: true
     }
   },

@@ -22,9 +22,7 @@
             </b-button>
             <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'masterGameCreator' }">Add new</b-button>
             <b-button size="sm" class="mr-1 mb-1" variant="warning" @click="showMergeMasterGame = true">Merge</b-button>
-            <b-button size="sm" class="mr-1 mb-1" variant="warning" :disabled="isBusy" @click="runAction('Clear Edit Game Discord Queue', () => factCheckerClient.clearMasterGameEditDiscordQueue())">
-              Clear Edit Queue
-            </b-button>
+            <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'pendingMasterGameUpdates' }">Pending Discord updates</b-button>
           </div>
           <div v-show="showMergeMasterGame" class="mt-2">
             <div class="form-group">

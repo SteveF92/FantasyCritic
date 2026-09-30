@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.FakeRepo.Factories;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.GG;
@@ -79,7 +80,7 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries)
+    public Task EditMasterGame(MasterGame masterGame, IEnumerable<MasterGameChangeLogEntry> changeLogEntries, MasterGameEditMessage? editMessage)
     {
         throw new NotImplementedException();
     }
@@ -269,7 +270,22 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task UpdateDailyStatistics(int year, LocalDate currentDate)
+    public Task AddPendingScoreUpdate(GameCriticScoreUpdateMessage scoreUpdate)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<PendingMasterGameUpdates> GetPendingMasterGameUpdates()
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task MarkMasterGameUpdatesSent(IReadOnlyDictionary<Guid, int> sentCounts)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Task<bool> DeletePendingMasterGameUpdate(Guid masterGameUpdateID)
     {
         throw new NotImplementedException();
     }

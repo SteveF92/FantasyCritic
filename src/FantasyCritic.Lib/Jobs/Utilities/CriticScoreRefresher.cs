@@ -1,4 +1,4 @@
-using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.OpenCritic;
@@ -13,18 +13,16 @@ internal class CriticScoreRefresher
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly IOpenCriticService _openCriticService;
-    private readonly DiscordPushService _discordPushService;
     private readonly IClock _clock;
     private readonly ILogger<CriticScoreRefresher> _logger;
 
     public CriticScoreRefresher(InterLeagueService interLeagueService, IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo,
-        IOpenCriticService openCriticService, DiscordPushService discordPushService, IClock clock, ILogger<CriticScoreRefresher> logger)
+        IOpenCriticService openCriticService, IClock clock, ILogger<CriticScoreRefresher> logger)
     {
         _interLeagueService = interLeagueService;
         _fantasyCriticRepo = fantasyCriticRepo;
         _masterGameRepo = masterGameRepo;
         _openCriticService = openCriticService;
-        _discordPushService = discordPushService;
         _clock = clock;
         _logger = logger;
     }
@@ -87,7 +85,8 @@ internal class CriticScoreRefresher
                 }
 
                 await _masterGameRepo.UpdateCriticStats(masterGame, openCriticGame);
-                _discordPushService.QueueGameCriticScoreUpdateMessage(masterGame, masterGame.CriticScore, openCriticGame.Score);
+                //No cancellation check between these two: the update carries the old score, which the save just overwrote.
+                await _masterGameRepo.AddPendingScoreUpdate(new GameCriticScoreUpdateMessage(Guid.NewGuid(), masterGame, masterGame.CriticScore, openCriticGame.Score));
                 scoresChanged++;
                 if (!currentCriticScore.HasValue)
                 {
