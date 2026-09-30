@@ -214,6 +214,13 @@ As built (c44b55dd5):
   - Both filter on their own game, since the test database is shared.
 - **Checks.** Prettier, ESLint and a Vite build pass. The page hasn't been looked at in a browser.
 
+After Step 3b, Steve:
+- Tested the page locally, and it works.
+- Reworded its intro line (2fb1bec72).
+- Removed the Clear All Edits option end to end (e90343069), since per-row delete makes it obsolete: the page button, the `FactCheckerController` endpoint, `AdminService.ClearMasterGameEditDiscordQueue` and `IMasterGameRepo.ClearPendingMasterGameEdits`. The admin console keeps only the link to the page.
+
+The Clear button's notes in earlier steps are history, not current design.
+
 ## Open questions
 - **Rows while the bot is disabled.** Locally, with no bot token, rows pile up, much as the in-memory bags did. They're harmless, but a local run with a token set would then send the backlog.
 - **Beta restores from prod snapshots.** Prod's pending rows arrive with the restore. Beta's bot only reaches guilds it's in, so this is at most a few duplicates in a guild both bots share. `TestDataScrubber` could truncate the table if that matters.
@@ -235,5 +242,5 @@ As built (c44b55dd5):
   - Clear Edit Game Discord Queue removes only edit rows.
 - Step 3a: unit tests for the per-update counts, if `PostMasterGameUpdates`' channel loop can be separated from the Discord client; otherwise review. Locally, run RefreshCaches with a bot token, and confirm the rows stay with `SentCount` set and the next run finds nothing pending. Clear Edit Game Discord Queue leaves sent edits alone.
 - **2026-09-29: Steve ran the Step 2 and 3a local checks, and everything works.** The read, send and mark paths have now run against a real database and Discord.
-- Step 3b (done: the fact checker integration tests pass; the browser check is left for Steve): integration tests for the list and delete endpoints, through the generated client. Locally, queue an edit, see it on the page, delete it, and confirm RefreshCaches doesn't send it. Deleting it a second time reports it's already gone.
+- Step 3b (done: the fact checker integration tests pass, and Steve checked the page in a browser): integration tests for the list and delete endpoints, through the generated client. Locally, queue an edit, see it on the page, delete it, and confirm RefreshCaches doesn't send it. Deleting it a second time reports it's already gone.
 - Local data is never edited by hand to set up a test.
