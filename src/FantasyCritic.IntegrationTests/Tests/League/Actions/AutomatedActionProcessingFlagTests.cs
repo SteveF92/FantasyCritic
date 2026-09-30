@@ -3,7 +3,7 @@ using FantasyCritic.ApiClient;
 using FantasyCritic.IntegrationTests.Helpers;
 using NUnit.Framework;
 
-namespace FantasyCritic.IntegrationTests.Tests.Admin;
+namespace FantasyCritic.IntegrationTests.Tests.League.Actions;
 
 [TestFixture]
 public class AutomatedActionProcessingFlagTests : IntegrationTestBase
@@ -27,17 +27,17 @@ public class AutomatedActionProcessingFlagTests : IntegrationTestBase
     [TearDown]
     public async Task TurnFlagBackOff()
     {
-        await _adminSession.Admin.TurnOffAutomatedActionProcessingAsync();
+        await _adminSession.ActionRunner.TurnOffAutomatedActionProcessingAsync();
     }
 
     [Test]
     public async Task TurnOnThenOff_RoundTrips()
     {
-        await _adminSession.Admin.TurnOnAutomatedActionProcessingAsync();
-        var whileOn = await _adminSession.Admin.GetEnableAutomatedActionProcessingAsync();
+        await _adminSession.ActionRunner.TurnOnAutomatedActionProcessingAsync();
+        var whileOn = await _adminSession.ActionRunner.GetEnableAutomatedActionProcessingAsync();
 
-        await _adminSession.Admin.TurnOffAutomatedActionProcessingAsync();
-        var whileOff = await _adminSession.Admin.GetEnableAutomatedActionProcessingAsync();
+        await _adminSession.ActionRunner.TurnOffAutomatedActionProcessingAsync();
+        var whileOff = await _adminSession.ActionRunner.GetEnableAutomatedActionProcessingAsync();
 
         Assert.Multiple(() =>
         {
@@ -47,16 +47,16 @@ public class AutomatedActionProcessingFlagTests : IntegrationTestBase
     }
 
     [Test]
-    public async Task NonAdmin_IsForbidden()
+    public async Task NonActionRunner_IsForbidden()
     {
         var (email, password, displayName) = NewUser();
         using var userSession = new ApiSession(Factory);
         await userSession.RegisterAsync(email, password, displayName);
         await userSession.LoginAsync(email, password);
 
-        var getException = Assert.CatchAsync<ApiException>(() => userSession.Admin.GetEnableAutomatedActionProcessingAsync());
-        var turnOnException = Assert.CatchAsync<ApiException>(() => userSession.Admin.TurnOnAutomatedActionProcessingAsync());
-        var turnOffException = Assert.CatchAsync<ApiException>(() => userSession.Admin.TurnOffAutomatedActionProcessingAsync());
+        var getException = Assert.CatchAsync<ApiException>(() => userSession.ActionRunner.GetEnableAutomatedActionProcessingAsync());
+        var turnOnException = Assert.CatchAsync<ApiException>(() => userSession.ActionRunner.TurnOnAutomatedActionProcessingAsync());
+        var turnOffException = Assert.CatchAsync<ApiException>(() => userSession.ActionRunner.TurnOffAutomatedActionProcessingAsync());
 
         Assert.Multiple(() =>
         {

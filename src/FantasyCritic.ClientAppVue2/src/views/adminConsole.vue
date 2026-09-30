@@ -77,7 +77,7 @@
               @change="changeActionProcessingMode" />
             <span class="ml-2 align-middle">Action processing mode</span>
           </div>
-          <div v-if="isAdmin && automatedActionProcessingLoaded" class="mb-2">
+          <div v-if="automatedActionProcessingLoaded" class="mb-2">
             <toggle-button
               v-model="automatedActionProcessingSwitch"
               class="toggle align-middle"
@@ -339,11 +339,11 @@ export default {
   },
   methods: {
     async fetchAutomatedActionProcessing() {
-      if (!this.isAdmin) {
+      if (!this.isActionRunner) {
         return;
       }
 
-      this.automatedActionProcessingSwitch = await adminClient.getEnableAutomatedActionProcessing();
+      this.automatedActionProcessingSwitch = await actionRunnerClient.getEnableAutomatedActionProcessing();
       this.automatedActionProcessingLoaded = true;
     },
     async fetchBuildInfo() {
@@ -426,7 +426,7 @@ export default {
     async changeAutomatedActionProcessing(event) {
       const enabled = event.value;
       const label = enabled ? 'Turn on automated action processing' : 'Turn off automated action processing';
-      const call = enabled ? () => adminClient.turnOnAutomatedActionProcessing() : () => adminClient.turnOffAutomatedActionProcessing();
+      const call = enabled ? () => actionRunnerClient.turnOnAutomatedActionProcessing() : () => actionRunnerClient.turnOffAutomatedActionProcessing();
       await this.runAction(label, call);
 
       //As with the mode switch, the server is the truth.
