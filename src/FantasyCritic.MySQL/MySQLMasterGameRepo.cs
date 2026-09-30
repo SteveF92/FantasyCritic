@@ -252,7 +252,7 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         var entity = new MasterGameEntity(masterGame);
         var tagEntities = masterGame.Tags.Select(x => new MasterGameHasTagEntity(masterGame, x));
         //Queued in the same transaction, so every new game is announced and a failed save announces nothing.
-        var pendingUpdate = new PendingMasterGameUpdateEntity(new NewMasterGameMessage(masterGame), _clock.GetCurrentInstant());
+        var pendingUpdate = new PendingMasterGameUpdateEntity(new NewMasterGameMessage(Guid.NewGuid(), masterGame), _clock.GetCurrentInstant());
         var excludeFields = new List<string>() { "TimeAdded" };
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();

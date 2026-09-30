@@ -279,7 +279,7 @@ public class AdminController : BaseJobQueuingController
 
         var masterGame = await _masterGameRepo.GetTestMasterGame(currentSupportedYear!.Year);
 
-        await _discordPushService.SendMasterGameUpdates([], [new GameCriticScoreUpdateMessage(masterGame, 80m, 85m)], []);
+        await _discordPushService.SendMasterGameUpdatesImmediately([], [new GameCriticScoreUpdateMessage(Guid.NewGuid(), masterGame, 80m, 85m)], []);
 
         return Ok();
     }
@@ -298,8 +298,8 @@ public class AdminController : BaseJobQueuingController
 
         var masterGameYear = await _masterGameRepo.GetTestMasterGameYear(currentSupportedYear!.Year);
 
-        var editMessage = new MasterGameEditMessage(masterGameYear.MasterGame, masterGameYear.MasterGame, masterGameYear.Year, new List<string>() { "The Test Game Was Changed" });
-        await _discordPushService.SendMasterGameUpdates([], [], [editMessage]);
+        var editMessage = new MasterGameEditMessage(Guid.NewGuid(), masterGameYear.MasterGame, masterGameYear.MasterGame, masterGameYear.Year, new List<string>() { "The Test Game Was Changed" });
+        await _discordPushService.SendMasterGameUpdatesImmediately([], [], [editMessage]);
         return Ok();
     }
 
@@ -317,7 +317,7 @@ public class AdminController : BaseJobQueuingController
             .MaxBy(x => x.Year);
 
         var masterGame = await _masterGameRepo.GetTestMasterGame(currentSupportedYear!.Year);
-        await _discordPushService.SendMasterGameUpdates([new NewMasterGameMessage(masterGame)], [], []);
+        await _discordPushService.SendMasterGameUpdatesImmediately([new NewMasterGameMessage(Guid.NewGuid(), masterGame)], [], []);
 
         return Ok();
     }

@@ -94,11 +94,8 @@ public class DiscordPushService
         return false;
     }
 
-    //Sends what Web and the worker queued in the pending table, then deletes exactly the rows it read,
-    //so anything queued during the send goes out next time. A crash mid-send means those updates post twice, not never.
     public async Task<MasterGameUpdatesSendResult> SendPendingMasterGameUpdates()
     {
-        //Checked before any rows are read: LocalDatabaseTool's disabled instance has no service provider to read them with.
         bool shouldRun = await StartBot();
         if (!shouldRun)
         {
@@ -123,8 +120,7 @@ public class DiscordPushService
         return result;
     }
 
-    //For the spoof endpoints: sends the given updates without touching the pending table.
-    public async Task SendMasterGameUpdates(IReadOnlyList<NewMasterGameMessage> newMasterGameMessages,
+    public async Task SendMasterGameUpdatesImmediately(IReadOnlyList<NewMasterGameMessage> newMasterGameMessages,
         IReadOnlyList<GameCriticScoreUpdateMessage> gameCriticScoreUpdateMessages, IReadOnlyList<MasterGameEditMessage> masterGameEditMessages)
     {
         bool shouldRun = await StartBot();

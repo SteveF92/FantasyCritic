@@ -21,7 +21,7 @@ public class MasterGameEditMessageTests
         var existingGame = CreateMasterGame(new LocalDate(2026, 6, 1), new LocalDate(2026, 6, 1));
         var editedGame = CreateMasterGame(new LocalDate(2027, 3, 1), new LocalDate(2027, 3, 1));
 
-        var message = new MasterGameEditMessage(existingGame, editedGame, Year, ["Release date changed."]);
+        var message = new MasterGameEditMessage(Guid.NewGuid(), existingGame, editedGame, Year, ["Release date changed."]);
 
         Assert.That(message.PreviousReleaseStatus, Is.EqualTo(WillReleaseStatus.WillRelease));
     }
@@ -32,7 +32,7 @@ public class MasterGameEditMessageTests
         var existingGame = CreateMasterGame(new LocalDate(2026, 6, 1), new LocalDate(2026, 6, 1));
         var editedGame = CreateMasterGame(new LocalDate(2026, 9, 1), new LocalDate(2026, 9, 1));
 
-        var message = new MasterGameEditMessage(existingGame, editedGame, Year, ["Release date changed."]);
+        var message = new MasterGameEditMessage(Guid.NewGuid(), existingGame, editedGame, Year, ["Release date changed."]);
 
         Assert.That(message.PreviousReleaseStatus, Is.Null);
     }

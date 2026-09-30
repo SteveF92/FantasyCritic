@@ -86,7 +86,7 @@ internal class CriticScoreRefresher
 
                 await _masterGameRepo.UpdateCriticStats(masterGame, openCriticGame);
                 //No cancellation check between these two: the update carries the old score, which the save just overwrote.
-                await _masterGameRepo.AddPendingScoreUpdate(new GameCriticScoreUpdateMessage(masterGame, masterGame.CriticScore, openCriticGame.Score));
+                await _masterGameRepo.AddPendingScoreUpdate(new GameCriticScoreUpdateMessage(Guid.NewGuid(), masterGame, masterGame.CriticScore, openCriticGame.Score));
                 scoresChanged++;
                 if (!currentCriticScore.HasValue)
                 {

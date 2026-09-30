@@ -108,7 +108,7 @@ public class InterLeagueService
             return null;
         }
 
-        return new MasterGameEditMessage(existingMasterGame, editedMasterGame, masterGameYearStats.Year, changes);
+        return new MasterGameEditMessage(Guid.NewGuid(), existingMasterGame, editedMasterGame, masterGameYearStats.Year, changes);
     }
 
     public Task<IReadOnlyList<MasterGameChangeLogEntry>> GetMasterGameChangeLog(MasterGame masterGame)
