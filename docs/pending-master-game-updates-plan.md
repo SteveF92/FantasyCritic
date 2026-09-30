@@ -161,7 +161,7 @@ After Step 1, two follow-ups, each committed alone:
 
 ### Step 3a: Keep sent rows, with the number of channels each went to
 Steve's addition. Sent rows stay in the table as history, for seeing which kinds of update reach the most channels.
-- **Migration** `2026-09-29_001_pendingMasterGameUpdateSentCount.sql`: add `SentCount int NULL`.
+- **Migration** `2026-09-29_002_masterGameUpdateSentCount.sql`: add `SentCount int NULL`. (`_001` is the rename below.)
   - Null means not sent yet. After a send, it's the number of channels the update went to, which can be 0 when no channel found it relevant.
   - The `QueuedTimestamp` index becomes `(SentCount, QueuedTimestamp)`, since the pending read is now `WHERE SentCount IS NULL ORDER BY QueuedTimestamp`.
 - **Counting, in `PostMasterGameUpdates`.** It returns a count per update ID, with every ID it was given present, even at 0. For each channel it actually posts to (a text channel it found, with at least one message), each update that contributed text counts once:
@@ -174,16 +174,22 @@ Steve's addition. Sent rows stay in the table as history, for seeing which kinds
   - `ClearPendingMasterGameEdits` and `DeletePendingMasterGameUpdate` gain `AND SentCount IS NULL`, so neither can erase history. `DeletePendingMasterGameUpdate` then returns false for an update that was already sent, as well as for one already deleted.
 - `SendMasterGameUpdatesImmediately` ignores the counts; the spoof messages are never stored.
 - **Crash semantics** are unchanged: counts are written after the posting, so a crash mid-send leaves the rows null and they go out again next time.
-- **Decision: posted or delivered?** Posting goes through `TrySendMessageAsync`, and `RateLimitMessages` returns only a total failure count, which this path ignores today.
-  - Recommended: count channels posted to, and log a warning with the failure count. Failures are rare, and the stats are about relevance.
-  - Alternative: count only confirmed deliveries, which needs a per-message result from `RateLimitMessages`, a shared utility.
-- **Decision: rename the table?** Once it keeps history, "pending" is only half right. The same migration could rename it to `tbl_discord_mastergameupdate`, with the entity and repo names to match (`PendingUpdateID` → `MasterGameUpdateID` and so on). Nothing is deployed yet, so this is the cheapest time.
-- **Decision: add `SentTimestamp`?** `QueuedTimestamp` stays. A sent time would show how long updates waited, but the stats above don't need it.
+- **Decided: count channels posted to.** Posting goes through `TrySendMessageAsync`, and `RateLimitMessages` returns only a total failure count, which this path used to ignore. It now logs a warning with that count. Counting only confirmed deliveries would have needed a per-message result from that shared utility.
+- **Decided: rename the table**, since once it keeps history "pending" is only half right. `2026-09-29_001_renameMasterGameUpdateTables.sql` renames the tables to `tbl_discord_mastergameupdate` and `tbl_discord_mastergameupdatetype`, the key to `MasterGameUpdateID`, and the FK and index names to match. In code, `MasterGameUpdateEntity`, `MasterGameUpdateType` and `MasterGameUpdateID`. Methods that deal only with unsent updates keep "Pending" in their names.
+- **Decided: no `SentTimestamp`.**
+
+As built, in two commits:
+- The rename (f3c4e32c7), mechanical: the migration, a `git mv` of the entity, and identifier renames.
+- `SentCount`:
+  - `PostMasterGameUpdates` returns the per-update counts. It records which updates added text to each channel's post, and counts them once that channel has something to post.
+  - A score update counts when its block produced a line. That is checked right after the score block, before the edits' lines join `changeMessages`.
+  - `SendPendingMasterGameUpdates` marks the rows sent, and logs how many of the updates reached at least one channel.
+  - The counting isn't unit tested: it lives inside the channel loop, which needs the Discord client. It's covered by review and the local run.
 
 ### Step 3b: A page of pending updates
 An admin console page lists what is waiting to go to Discord, and deletes one update that was queued by mistake. It replaces the earlier idea of a one-line pending count. It shows unsent rows only; a stats view of sent rows can come later.
-- **Listing with IDs.** Decided: each message record carries its `PendingUpdateID`, added in Step 2. The page reads the same `GetPendingMasterGameUpdates` the sender does. The spoof endpoints' messages get IDs that are never stored, which is harmless.
-  - The rejected alternative was a second read returning one summary per row. It would have meant two read paths, and moving `PendingMasterGameUpdateType` into Lib.
+- **Listing with IDs.** Decided: each message record carries its `MasterGameUpdateID` (`PendingUpdateID` until the Step 3a rename), added in Step 2. The page reads the same `GetPendingMasterGameUpdates` the sender does. The spoof endpoints' messages get IDs that are never stored, which is harmless.
+  - The rejected alternative was a second read returning one summary per row. It would have meant two read paths, and moving `MasterGameUpdateType` into Lib.
 - **Who: fact checkers.** The endpoints go on `FactCheckerController`, beside the Clear button, since fact checkers make the edits this page corrects.
 - **API.** List and delete endpoints with `[ProducesResponseType<T>]`, then regenerate NSwag. A delete that finds nothing returns an error that says the update was already sent or deleted.
 - **Page.**
