@@ -138,6 +138,7 @@ public interface IFantasyCriticRepo
 
     Task SetActionProcessingMode(bool modeOn);
     Task SetWorkerShouldPullNewJobs(bool shouldPull);
+    Task SetEnableAutomatedActionProcessing(bool enable);
 
     Task EditPublisher(EditPublisherRequest editValues, LeagueAction leagueAction);
     Task DeletePublisher(Publisher publisher);

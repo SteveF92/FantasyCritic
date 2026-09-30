@@ -133,6 +133,30 @@ public class AdminController : BaseJobQueuingController
         return Ok();
     }
 
+    [HttpGet]
+    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+    public async Task<ActionResult<bool>> GetEnableAutomatedActionProcessing()
+    {
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        return systemWideSettings.EnableAutomatedActionProcessing;
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TurnOnAutomatedActionProcessing()
+    {
+        await _interLeagueService.SetEnableAutomatedActionProcessing(true);
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TurnOffAutomatedActionProcessing()
+    {
+        await _interLeagueService.SetEnableAutomatedActionProcessing(false);
+        return Ok();
+    }
+
     [HttpPost]
     [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]

@@ -77,6 +77,20 @@
               @change="changeActionProcessingMode" />
             <span class="ml-2 align-middle">Action processing mode</span>
           </div>
+          <div v-if="isAdmin && automatedActionProcessingLoaded" class="mb-2">
+            <toggle-button
+              v-model="automatedActionProcessingSwitch"
+              class="toggle align-middle"
+              :sync="true"
+              :disabled="isBusy"
+              :labels="{ checked: 'On', unchecked: 'Off' }"
+              :css-colors="true"
+              :font-size="13"
+              :width="60"
+              :height="24"
+              @change="changeAutomatedActionProcessing" />
+            <span class="ml-2 align-middle">Automated action processing</span>
+          </div>
           <div>
             <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Dry Run</b-button>
             <b-button size="sm" class="mr-1 mb-1" variant="info" href="/api/ActionRunner/ComparableActionProcessingDryRun">Comparable Dry Run (CSV)</b-button>
@@ -268,6 +282,8 @@ export default {
       resendConfirmationUserID: null,
       superDropConfirmation: '',
       actionProcessingModeSwitch: false,
+      automatedActionProcessingSwitch: false,
+      automatedActionProcessingLoaded: false,
       buildInfo: null,
       buildInfoError: null
     };
@@ -319,8 +335,17 @@ export default {
   async created() {
     await this.$store.dispatch('fetchAdminTaskCounts');
     await this.fetchBuildInfo();
+    await this.fetchAutomatedActionProcessing();
   },
   methods: {
+    async fetchAutomatedActionProcessing() {
+      if (!this.isAdmin) {
+        return;
+      }
+
+      this.automatedActionProcessingSwitch = await adminClient.getEnableAutomatedActionProcessing();
+      this.automatedActionProcessingLoaded = true;
+    },
     async fetchBuildInfo() {
       //The endpoint is admin only, so don't bother calling it for fact checkers or action runners.
       if (!this.isAdmin) {
@@ -397,6 +422,15 @@ export default {
       //The server is the truth. If the request failed, this also puts the switch back where it was.
       await this.$store.dispatch('fetchBasicData');
       this.syncActionProcessingModeSwitch();
+    },
+    async changeAutomatedActionProcessing(event) {
+      const enabled = event.value;
+      const label = enabled ? 'Turn on automated action processing' : 'Turn off automated action processing';
+      const call = enabled ? () => adminClient.turnOnAutomatedActionProcessing() : () => adminClient.turnOffAutomatedActionProcessing();
+      await this.runAction(label, call);
+
+      //As with the mode switch, the server is the truth.
+      await this.fetchAutomatedActionProcessing();
     },
     //Turning the worker off only stops it pulling new jobs. The service monitor shows it Draining, then Off.
     async turnOffWorker() {
