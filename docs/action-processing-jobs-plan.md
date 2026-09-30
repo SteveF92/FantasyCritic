@@ -29,7 +29,7 @@ With the flag off in production, the job does exactly what PrepareForActionProce
 ## Decisions
 
 - **The flag defaults off.** The migration adds it as `b'0'`, so nothing is automated until Steve turns it on.
-- **The flag is admin only.** Its toggle sits directly under the action processing mode toggle on the admin console, shown only to admins.
+- **The flag is on the ActionRunner permission**, where it belongs semantically, like action processing mode. Its toggle sits directly under the action processing mode toggle on the admin console. (Steve is the only action runner outside special occasions, and the permission may go away once automated processing is trusted.)
 - **Admin notification emails fail loud.** `PostmarkEmailSender.SendEmailAsync` catches and logs every failure, which is right for the public bid loop (one bad address mustn't stop the rest) and wrong for an email whose job is to tell Steve something is wrong. Notifications use a new sender method that throws, so a failed email turns into a failed job.
 - **Steve's address is hard-coded:** `steve.fallon@fantasycritic.games`, as on the contact page.
 - **Two guards keep automated processing out of beta.** `MySQLBetaCleaner` sets the job's RunType to `Disabled` on every restore, as it does for RefreshPatreonInfo, so beta never schedules it. If someone re-enables it there, the not-production stop reason still acts as a forced `EnableAutomatedActionProcessing = false`.
@@ -47,9 +47,9 @@ Each step: build, test, commit alone, then stop for review before the next.
 
 - Migration: `ALTER TABLE tbl_meta_systemwidesettings ADD COLUMN EnableAutomatedActionProcessing BIT(1) NOT NULL DEFAULT b'0'`.
 - `SystemWideSettings`, `SystemWideSettingsEntity`, `IFantasyCriticRepo.SetEnableAutomatedActionProcessing`, the MySQL repo and the FakeRepo, `InterLeagueService`.
-- AdminController (admin only): turn on, turn off, and a GET for the current value.
-- Admin console: a toggle below the action processing mode toggle, `v-if="isAdmin"`, synced from the GET the way the mode switch is synced from bid times.
-- Integration test: an admin turns it on and off and reads it back; a non-admin is refused.
+- ActionRunnerController: turn on, turn off, and a GET for the current value.
+- Admin console: a toggle below the action processing mode toggle, in the action runner section, loaded from the GET.
+- Integration test: an action runner turns it on and off and reads it back; anyone else is refused.
 - Regenerate the NSwag clients.
 
 ### Step 2: Admin notification emails
