@@ -283,13 +283,6 @@ public class FactCheckerController : BaseJobQueuingController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public Task<ActionResult<FantasyCriticJobViewModel>> RefreshCaches() => EnqueueJob(FantasyCriticJobType.RefreshCaches);
 
-    [HttpPost]
-    public async Task<IActionResult> ClearMasterGameEditDiscordQueue()
-    {
-        await _adminService.ClearMasterGameEditDiscordQueue();
-        return Ok();
-    }
-
     [HttpGet]
     public async Task<ActionResult<PendingMasterGameUpdatesViewModel>> PendingMasterGameUpdates()
     {

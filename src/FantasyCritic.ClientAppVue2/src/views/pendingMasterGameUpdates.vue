@@ -54,7 +54,6 @@
       <h3>Edits</h3>
       <div v-if="pendingUpdates.edits.length === 0" class="alert alert-info">No edits pending.</div>
       <div v-else>
-        <b-button variant="warning" size="sm" class="mb-2" :disabled="isBusy" @click="clearEdits">Clear All Edits</b-button>
         <table class="table table-sm table-responsive-sm table-bordered table-striped">
           <thead>
             <tr class="bg-primary">
@@ -119,19 +118,6 @@ export default {
       }
 
       await this.runAndRefresh(() => factCheckerClient.deletePendingMasterGameUpdate({ masterGameUpdateID: update.masterGameUpdateID }));
-    },
-    async clearEdits() {
-      const confirmed = await this.$bvModal.msgBoxConfirm('Delete every pending edit? None of them will go to Discord.', {
-        title: 'Clear All Edits',
-        okTitle: 'Clear',
-        okVariant: 'danger',
-        cancelTitle: 'Cancel'
-      });
-      if (!confirmed) {
-        return;
-      }
-
-      await this.runAndRefresh(() => factCheckerClient.clearMasterGameEditDiscordQueue());
     },
     //The list is refreshed even after a failure: a 400 usually means the update went out while the page was open.
     async runAndRefresh(call) {

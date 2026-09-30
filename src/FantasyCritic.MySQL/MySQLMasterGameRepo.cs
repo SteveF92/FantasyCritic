@@ -1306,14 +1306,6 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         await transaction.CommitAsync();
     }
 
-    public async Task ClearPendingMasterGameEdits()
-    {
-        const string sql = "delete from tbl_discord_mastergameupdate where UpdateType = @updateType and SentCount is null;";
-
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync(sql, new { updateType = MasterGameUpdateType.Edit.Value });
-    }
-
     //False when there's no unsent row to delete: already sent, cleared, or deleted by someone else.
     public async Task<bool> DeletePendingMasterGameUpdate(Guid masterGameUpdateID)
     {

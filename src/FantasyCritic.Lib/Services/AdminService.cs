@@ -38,11 +38,6 @@ public class AdminService
         return _fantasyCriticRepo.GetLeagueYears(year);
     }
 
-    public Task ClearMasterGameEditDiscordQueue()
-    {
-        return _masterGameRepo.ClearPendingMasterGameEdits();
-    }
-
     public Task<PendingMasterGameUpdates> GetPendingMasterGameUpdates()
     {
         return _masterGameRepo.GetPendingMasterGameUpdates();

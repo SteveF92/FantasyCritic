@@ -290,11 +290,6 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task ClearPendingMasterGameEdits()
-    {
-        throw new NotImplementedException();
-    }
-
     public Task<bool> DeletePendingMasterGameUpdate(Guid masterGameUpdateID)
     {
         throw new NotImplementedException();
