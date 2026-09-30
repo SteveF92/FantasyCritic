@@ -1,3 +1,4 @@
+using System.Net;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Identity;
@@ -7,11 +8,15 @@ namespace FantasyCritic.Lib.Services;
 
 public class EmailSendingService
 {
+    //On the site's contact page already.
+    private const string AdminNotificationEmailAddress = "steve.fallon@fantasycritic.games";
+
     private readonly FantasyCriticUserManager _userManager;
     private readonly IEmailBuilder _emailBuilder;
     private readonly IEmailSender _emailSender;
     private readonly LeagueMemberService _leagueMemberService;
     private readonly string _baseAddress;
+    private readonly string _environmentName;
     private readonly bool _isProduction;
 
     public EmailSendingService(FantasyCriticUserManager userManager, IEmailBuilder emailBuilder, IEmailSender emailSender,
@@ -22,6 +27,7 @@ public class EmailSendingService
         _emailSender = emailSender;
         _leagueMemberService = leagueMemberService;
         _baseAddress = configuration.BaseAddress;
+        _environmentName = configuration.EnvironmentName;
         _isProduction = configuration.IsProduction;
     }
 
@@ -72,6 +78,21 @@ public class EmailSendingService
         const string emailSubject = "FantasyCritic - This Week's Public Bids";
         var htmlResult = await _emailBuilder.BuildPublicBidEmail(user, publicBiddingSet, _baseAddress, _isProduction);
         await _emailSender.SendEmailAsync(emailAddress, emailSubject, htmlResult);
+    }
+
+    public async Task SendAdminNotification(string subject, IReadOnlyList<string> lines)
+    {
+        var emailSubject = $"FantasyCritic - {subject}";
+        List<string> emailLines = [];
+        if (!_isProduction)
+        {
+            emailSubject = $"[{_environmentName}] {emailSubject}";
+            emailLines.Add($"Sent from {_environmentName} ({_baseAddress}), not production.");
+        }
+
+        emailLines.AddRange(lines);
+        var htmlResult = string.Concat(emailLines.Select(x => $"<p>{WebUtility.HtmlEncode(x)}</p>"));
+        await _emailSender.SendEmailOrThrow(AdminNotificationEmailAddress, emailSubject, htmlResult);
     }
 
     public async Task SendConfirmationEmail(FantasyCriticUser user, string link)
