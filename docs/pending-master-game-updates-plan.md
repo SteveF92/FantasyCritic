@@ -148,7 +148,7 @@ As built:
 - **`InterLeagueService.GetEditMessage`** checks `minorEdit` before the `MasterGameYear` lookup, which gives the same result with one query fewer.
 - **Dropped dependencies:** `InterLeagueService` and `CriticScoreRefresher` no longer take `DiscordPushService`. LocalDatabaseTool's `new InterLeagueService(...)` drops the argument; that's its only change.
 - **Repo:** `CreateMasterGame` always queues a `NewGame` row. Only `InterLeagueService` calls it; the seeding tools insert games through `MySQLMasterGameUpdater`.
-- **NSwag:** regenerating left the TypeScript client unchanged.
+- **NSwag:** regenerating left the TypeScript client unchanged. (Correction: that file is gitignored, so git couldn't show a change either way. The claim still holds, since Step 2 only made an existing action async and changed no route or response type.)
 - **Committed as 120a2c95c.** All 298 integration tests pass, and they run against the Docker database.
   - Their five game creations each queued a `NewGame` row, so the insert inside the create transaction works against real MySQL. The stored snapshot is camelCase with ISO dates.
   - They queued no edits, because their edits hit the gate. The read, send and delete paths still need the local run below.
@@ -198,6 +198,22 @@ An admin console page lists what is waiting to go to Discord, and deletes one up
   - Site-consistent Bootstrap, like the rest of the admin console.
 - **Race.** Deleting a row that a running send has already read doesn't stop that send. The update posts, and then there's no row left to record its count on. The window is the length of one send, and the page doesn't need to guard against it.
 
+As built (c44b55dd5):
+- **API.** `FactCheckerController` gains two endpoints, through thin `AdminService` passthroughs beside `ClearMasterGameEditDiscordQueue`:
+  - `GET PendingMasterGameUpdates` returns `PendingMasterGameUpdatesViewModel`, which holds three lists: new games, score updates (old and new score) and edits (the change strings). Each entry carries its `MasterGameUpdateID` and a `MasterGameViewModel`. For an edit, that's the edited game.
+  - `POST DeletePendingMasterGameUpdate` takes `DeletePendingMasterGameUpdateRequest`, and returns 400 "That update was already sent or deleted." when the repo finds no unsent row.
+  - NSwag generates both as typed methods.
+- **Page** `pendingMasterGameUpdates.vue` at `/pendingMasterGameUpdates`, using `factCheckerClient`. It differs from the design above:
+  - It has three tables, one per kind, instead of one mixed list. That follows the response's shape, and a kind column isn't needed.
+  - It has no queued time, because the message records don't carry `QueuedTimestamp`. Showing it would mean adding the timestamp to the records.
+  - Delete and Clear All Edits both ask for confirmation first. The list refreshes after either, even on failure, since a 400 usually means the update went out while the page was open.
+- **Admin console.** The Clear Edit Queue button moved onto the page as Clear All Edits. The console's Master Games section now has a "Pending Discord updates" button linking to the page.
+- **Tests.** Two integration tests in `FactCheckerTests`:
+  - A created game's update is listed until it's deleted.
+  - A second delete of the same update returns 400.
+  - Both filter on their own game, since the test database is shared.
+- **Checks.** Prettier, ESLint and a Vite build pass. The page hasn't been looked at in a browser.
+
 ## Open questions
 - **Rows while the bot is disabled.** Locally, with no bot token, rows pile up, much as the in-memory bags did. They're harmless, but a local run with a token set would then send the backlog.
 - **Beta restores from prod snapshots.** Prod's pending rows arrive with the restore. Beta's bot only reaches guilds it's in, so this is at most a few duplicates in a guild both bots share. `TestDataScrubber` could truncate the table if that matters.
@@ -219,5 +235,5 @@ An admin console page lists what is waiting to go to Discord, and deletes one up
   - Clear Edit Game Discord Queue removes only edit rows.
 - Step 3a: unit tests for the per-update counts, if `PostMasterGameUpdates`' channel loop can be separated from the Discord client; otherwise review. Locally, run RefreshCaches with a bot token, and confirm the rows stay with `SentCount` set and the next run finds nothing pending. Clear Edit Game Discord Queue leaves sent edits alone.
 - **2026-09-29: Steve ran the Step 2 and 3a local checks, and everything works.** The read, send and mark paths have now run against a real database and Discord.
-- Step 3b: integration tests for the list and delete endpoints, through the generated client. Locally, queue an edit, see it on the page, delete it, and confirm RefreshCaches doesn't send it. Deleting it a second time reports it's already gone.
+- Step 3b (done: the fact checker integration tests pass; the browser check is left for Steve): integration tests for the list and delete endpoints, through the generated client. Locally, queue an edit, see it on the page, delete it, and confirm RefreshCaches doesn't send it. Deleting it a second time reports it's already gone.
 - Local data is never edited by hand to set up a test.
