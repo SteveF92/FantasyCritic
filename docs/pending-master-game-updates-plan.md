@@ -79,7 +79,7 @@ Everything goes on `IMasterGameRepo`: it already has the tag dictionary, the ent
 - `GetPendingMasterGameUpdates()` returns a `PendingMasterGameUpdates` record: the three message lists plus the IDs read.
 - `DeleteSentMasterGameUpdates(IReadOnlyList<Guid>)`.
 - `ClearPendingMasterGameEdits()`, for the Clear button.
-- `DeletePendingMasterGameUpdate(Guid)` returns false when the row is already gone, for the pending updates page in Step 3.
+- `DeletePendingMasterGameUpdate(Guid)` returns false when the row is already gone, for the pending updates page in Step 3b.
 
 Alternative: a separate insert after the edit commits. It's simpler, but a failed insert would leave the edit saved with its message lost, and the fact checker would see an error for an edit that went through.
 
@@ -93,6 +93,7 @@ Alternative: a separate insert after the edit commits. It's simpler, but a faile
 - `SendPendingMasterGameUpdates()` returns early if the bot is disabled, as today, and the rows wait. Otherwise it reads the pending updates, sends them, then deletes **the IDs it read**, so rows added during the send go out next time. A crash mid-send posts duplicates next time rather than losing messages.
 - `SendMasterGameUpdates(newGames, scoreUpdates, edits)` is the current body from `GetAllCombinedChannels` down, verbatim except that `x.ExistingGame.MasterGame` becomes `x.ExistingGame` and so on.
 - The spoof endpoints call `SendMasterGameUpdates` with one message, so they no longer touch pending rows.
+- Step 3a replaces the delete after sending with recording `SentCount`, so sent rows are kept as history.
 
 ## Steps
 
@@ -120,7 +121,7 @@ As built (d8e260493):
 
 ### Step 2: Write to the table and send from it
 Writers and sender switch together; switching either alone would write rows nobody sends, or send rows nobody writes.
-- Each message record gets a `PendingUpdateID` first (decided for Step 3's page).
+- Each message record gets a `PendingUpdateID` first (decided for Step 3b's page).
   - A second constructor without it assigns `Guid.NewGuid()`, so callers don't deal with IDs.
   - The entity uses the ID as the row's key, and rebuilds messages with it.
   - `PendingMasterGameUpdates` drops its separate ID list and gathers the IDs from its messages.
@@ -156,10 +157,31 @@ As built:
 
 After Step 1, two follow-ups, each committed alone:
 - The deletes were renamed after their purpose (26d83ebe4): `DeleteSentMasterGameUpdates(ids)` deletes the rows a send read, and `ClearPendingMasterGameEdits()` is the Clear button.
-- `DeletePendingMasterGameUpdate(Guid)` was added for Step 3 (f4478c2f2). It returns false when the row is already gone, following `IDiscordRepo.DeleteLeagueChannel`.
+- `DeletePendingMasterGameUpdate(Guid)` was added for Step 3b (f4478c2f2). It returns false when the row is already gone, following `IDiscordRepo.DeleteLeagueChannel`.
 
-### Step 3: A page of pending updates
-An admin console page lists what is waiting to go to Discord, and deletes one update that was queued by mistake. It replaces the earlier idea of a one-line pending count.
+### Step 3a: Keep sent rows, with the number of channels each went to
+Steve's addition. Sent rows stay in the table as history, for seeing which kinds of update reach the most channels.
+- **Migration** `2026-09-29_001_pendingMasterGameUpdateSentCount.sql`: add `SentCount int NULL`.
+  - Null means not sent yet. After a send, it's the number of channels the update went to, which can be 0 when no channel found it relevant.
+  - The `QueuedTimestamp` index becomes `(SentCount, QueuedTimestamp)`, since the pending read is now `WHERE SentCount IS NULL ORDER BY QueuedTimestamp`.
+- **Counting, in `PostMasterGameUpdates`.** It returns a count per update ID, with every ID it was given present, even at 0. For each channel it actually posts to (a text channel it found, with at least one message), each update that contributed text counts once:
+  - A new game counts wherever it was relevant.
+  - An edit counts wherever it was relevant.
+  - A score update counts only if it produced a line. When one game has several score updates in a batch, only the last is shown, so the earlier ones count 0. A change under 1 point also shows nothing, so it counts 0.
+- **Repo:**
+  - `DeleteSentMasterGameUpdates(ids)` becomes `MarkMasterGameUpdatesSent(IReadOnlyDictionary<Guid, int> sentCounts)`: one `UPDATE ... SET SentCount` per row, in one transaction.
+  - `GetPendingMasterGameUpdates` reads only `SentCount IS NULL`. Old rows are never rebuilt, so a tag deleted long after a send can't break a later one.
+  - `ClearPendingMasterGameEdits` and `DeletePendingMasterGameUpdate` gain `AND SentCount IS NULL`, so neither can erase history. `DeletePendingMasterGameUpdate` then returns false for an update that was already sent, as well as for one already deleted.
+- `SendMasterGameUpdatesImmediately` ignores the counts; the spoof messages are never stored.
+- **Crash semantics** are unchanged: counts are written after the posting, so a crash mid-send leaves the rows null and they go out again next time.
+- **Decision: posted or delivered?** Posting goes through `TrySendMessageAsync`, and `RateLimitMessages` returns only a total failure count, which this path ignores today.
+  - Recommended: count channels posted to, and log a warning with the failure count. Failures are rare, and the stats are about relevance.
+  - Alternative: count only confirmed deliveries, which needs a per-message result from `RateLimitMessages`, a shared utility.
+- **Decision: rename the table?** Once it keeps history, "pending" is only half right. The same migration could rename it to `tbl_discord_mastergameupdate`, with the entity and repo names to match (`PendingUpdateID` → `MasterGameUpdateID` and so on). Nothing is deployed yet, so this is the cheapest time.
+- **Decision: add `SentTimestamp`?** `QueuedTimestamp` stays. A sent time would show how long updates waited, but the stats above don't need it.
+
+### Step 3b: A page of pending updates
+An admin console page lists what is waiting to go to Discord, and deletes one update that was queued by mistake. It replaces the earlier idea of a one-line pending count. It shows unsent rows only; a stats view of sent rows can come later.
 - **Listing with IDs.** Decided: each message record carries its `PendingUpdateID`, added in Step 2. The page reads the same `GetPendingMasterGameUpdates` the sender does. The spoof endpoints' messages get IDs that are never stored, which is harmless.
   - The rejected alternative was a second read returning one summary per row. It would have meant two read paths, and moving `PendingMasterGameUpdateType` into Lib.
 - **Who: fact checkers.** The endpoints go on `FactCheckerController`, beside the Clear button, since fact checkers make the edits this page corrects.
@@ -168,10 +190,9 @@ An admin console page lists what is waiting to go to Discord, and deletes one up
   - One row per update: queued time, kind, the game as a link, and the details (old → new score, or the change strings).
   - A delete button per row. The "Clear Edit Game Discord Queue" button could move here too.
   - Site-consistent Bootstrap, like the rest of the admin console.
-- **Race.** Deleting a row that a running send has already read doesn't stop that send. The window is the length of one send, and the page doesn't need to guard against it.
+- **Race.** Deleting a row that a running send has already read doesn't stop that send. The update posts, and then there's no row left to record its count on. The window is the length of one send, and the page doesn't need to guard against it.
 
 ## Open questions
-- **Delete, or mark sent?** Delete keeps the table small and means "a row exists" equals "pending". A `SentTimestamp` would keep an audit trail at the cost of cleanup.
 - **Rows while the bot is disabled.** Locally, with no bot token, rows pile up, much as the in-memory bags did. They're harmless, but a local run with a token set would then send the backlog.
 - **Beta restores from prod snapshots.** Prod's pending rows arrive with the restore. Beta's bot only reaches guilds it's in, so this is at most a few duplicates in a guild both bots share. `TestDataScrubber` could truncate the table if that matters.
 
@@ -190,5 +211,6 @@ An admin console page lists what is waiting to go to Discord, and deletes one up
   - Run RefreshCaches from the admin console. With a local bot token, confirm the messages post and the rows go. Without one, confirm the rows stay.
   - Run each spoof endpoint and confirm pending rows are untouched.
   - Clear Edit Game Discord Queue removes only edit rows.
-- Step 3: integration tests for the list and delete endpoints, through the generated client. Locally, queue an edit, see it on the page, delete it, and confirm RefreshCaches doesn't send it. Deleting it a second time reports it's already gone.
+- Step 3a: unit tests for the per-update counts, if `PostMasterGameUpdates`' channel loop can be separated from the Discord client; otherwise review. Locally, run RefreshCaches with a bot token, and confirm the rows stay with `SentCount` set and the next run finds nothing pending. Clear Edit Game Discord Queue leaves sent edits alone.
+- Step 3b: integration tests for the list and delete endpoints, through the generated client. Locally, queue an edit, see it on the page, delete it, and confirm RefreshCaches doesn't send it. Deleting it a second time reports it's already gone.
 - Local data is never edited by hand to set up a test.
