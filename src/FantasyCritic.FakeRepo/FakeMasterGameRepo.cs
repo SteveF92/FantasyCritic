@@ -270,11 +270,6 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task UpdateDailyStatistics(int year, LocalDate currentDate)
-    {
-        throw new NotImplementedException();
-    }
-
     public Task AddPendingScoreUpdate(GameCriticScoreUpdateMessage scoreUpdate)
     {
         throw new NotImplementedException();

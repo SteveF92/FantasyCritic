@@ -62,8 +62,6 @@ public interface IMasterGameRepo
     Task<IReadOnlyList<TopBidsAndDropsGame>> GetTopBidsAndDrops(LocalDate processingDate);
     Task<IReadOnlyList<LeagueYearWithMasterGame>> GetLeagueYearsWithMasterGameForUser(Guid userID, Guid masterGameID);
 
-    Task UpdateDailyStatistics(int year, LocalDate currentDate);
-
     Task AddPendingScoreUpdate(GameCriticScoreUpdateMessage scoreUpdate);
     Task<PendingMasterGameUpdates> GetPendingMasterGameUpdates();
     Task MarkMasterGameUpdatesSent(IReadOnlyDictionary<Guid, int> sentCounts);
