@@ -291,6 +291,27 @@ public class FactCheckerController : BaseJobQueuingController
     }
 
     [HttpGet]
+    public async Task<ActionResult<PendingMasterGameUpdatesViewModel>> PendingMasterGameUpdates()
+    {
+        var pendingUpdates = await _adminService.GetPendingMasterGameUpdates();
+        return new PendingMasterGameUpdatesViewModel(pendingUpdates, _clock.GetToday());
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> DeletePendingMasterGameUpdate([FromBody] DeletePendingMasterGameUpdateRequest request)
+    {
+        var deleted = await _adminService.DeletePendingMasterGameUpdate(request.MasterGameUpdateID);
+        if (!deleted)
+        {
+            return BadRequest("That update was already sent or deleted.");
+        }
+
+        return Ok();
+    }
+
+    [HttpGet]
     public ActionResult<DateParseResponse> ParseEstimatedDate(string estimatedReleaseDate)
     {
         var dates = TimeFunctions.ParseEstimatedReleaseDate(estimatedReleaseDate, _clock);

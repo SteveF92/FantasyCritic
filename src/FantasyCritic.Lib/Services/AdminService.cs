@@ -1,6 +1,7 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
+using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
@@ -40,6 +41,16 @@ public class AdminService
     public Task ClearMasterGameEditDiscordQueue()
     {
         return _masterGameRepo.ClearPendingMasterGameEdits();
+    }
+
+    public Task<PendingMasterGameUpdates> GetPendingMasterGameUpdates()
+    {
+        return _masterGameRepo.GetPendingMasterGameUpdates();
+    }
+
+    public Task<bool> DeletePendingMasterGameUpdate(Guid masterGameUpdateID)
+    {
+        return _masterGameRepo.DeletePendingMasterGameUpdate(masterGameUpdateID);
     }
 
     public Task<IReadOnlyList<DatabaseSnapshotInfo>> GetRecentDatabaseSnapshots()
