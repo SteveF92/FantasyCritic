@@ -1260,7 +1260,8 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task<PendingMasterGameUpdates> GetPendingMasterGameUpdates()
     {
-        const string sql = "select * from tbl_discord_mastergameupdate order by QueuedTimestamp;";
+        //Sent rows are history and are never rebuilt, so a tag deleted after a send can't break a later one.
+        const string sql = "select * from tbl_discord_mastergameupdate where SentCount is null order by QueuedTimestamp;";
 
         await using var connection = new MySqlConnection(_connectionString);
         var entities = (await connection.QueryAsync<MasterGameUpdateEntity>(sql)).ToList();
@@ -1293,26 +1294,30 @@ public class MySQLMasterGameRepo : IMasterGameRepo
         return new PendingMasterGameUpdates(newGames, scoreUpdates, edits);
     }
 
-    public async Task DeleteSentMasterGameUpdates(IReadOnlyList<Guid> masterGameUpdateIDs)
+    public async Task MarkMasterGameUpdatesSent(IReadOnlyDictionary<Guid, int> sentCounts)
     {
-        const string sql = "delete from tbl_discord_mastergameupdate where MasterGameUpdateID in @masterGameUpdateIDs;";
+        const string sql = "update tbl_discord_mastergameupdate set SentCount = @SentCount where MasterGameUpdateID = @MasterGameUpdateID;";
+        var parameters = sentCounts.Select(x => new { MasterGameUpdateID = x.Key, SentCount = x.Value }).ToList();
 
         await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync(sql, new { masterGameUpdateIDs });
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await connection.ExecuteAsync(sql, parameters, transaction);
+        await transaction.CommitAsync();
     }
 
     public async Task ClearPendingMasterGameEdits()
     {
-        const string sql = "delete from tbl_discord_mastergameupdate where UpdateType = @updateType;";
+        const string sql = "delete from tbl_discord_mastergameupdate where UpdateType = @updateType and SentCount is null;";
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, new { updateType = MasterGameUpdateType.Edit.Value });
     }
 
-    //False when the row is already gone: sent, cleared, or deleted by someone else.
+    //False when there's no unsent row to delete: already sent, cleared, or deleted by someone else.
     public async Task<bool> DeletePendingMasterGameUpdate(Guid masterGameUpdateID)
     {
-        const string sql = "delete from tbl_discord_mastergameupdate where MasterGameUpdateID = @masterGameUpdateID;";
+        const string sql = "delete from tbl_discord_mastergameupdate where MasterGameUpdateID = @masterGameUpdateID and SentCount is null;";
 
         await using var connection = new MySqlConnection(_connectionString);
         var rowsDeleted = await connection.ExecuteAsync(sql, new { masterGameUpdateID });

@@ -66,7 +66,7 @@ public interface IMasterGameRepo
 
     Task AddPendingScoreUpdate(GameCriticScoreUpdateMessage scoreUpdate);
     Task<PendingMasterGameUpdates> GetPendingMasterGameUpdates();
-    Task DeleteSentMasterGameUpdates(IReadOnlyList<Guid> masterGameUpdateIDs);
+    Task MarkMasterGameUpdatesSent(IReadOnlyDictionary<Guid, int> sentCounts);
     Task ClearPendingMasterGameEdits();
     Task<bool> DeletePendingMasterGameUpdate(Guid masterGameUpdateID);
 

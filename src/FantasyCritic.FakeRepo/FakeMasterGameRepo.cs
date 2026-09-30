@@ -285,7 +285,7 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
-    public Task DeleteSentMasterGameUpdates(IReadOnlyList<Guid> masterGameUpdateIDs)
+    public Task MarkMasterGameUpdatesSent(IReadOnlyDictionary<Guid, int> sentCounts)
     {
         throw new NotImplementedException();
     }

@@ -113,10 +113,10 @@ public class DiscordPushService
             return result;
         }
 
-        await PostMasterGameUpdates(pendingUpdates.NewGames, pendingUpdates.ScoreUpdates, pendingUpdates.Edits);
-        await masterGameRepo.DeleteSentMasterGameUpdates(pendingUpdates.MasterGameUpdateIDs);
-        Logger.Information("Sent {NewGameCount} new games, {ScoreUpdateCount} score updates and {EditCount} edits from the pending table.",
-            result.NewGames, result.ScoreUpdates, result.Edits);
+        var sentCounts = await PostMasterGameUpdates(pendingUpdates.NewGames, pendingUpdates.ScoreUpdates, pendingUpdates.Edits);
+        await masterGameRepo.MarkMasterGameUpdatesSent(sentCounts);
+        Logger.Information("Sent pending updates: {NewGameCount} new games, {ScoreUpdateCount} score updates and {EditCount} edits, of which {PostedUpdateCount} reached at least one channel.",
+            result.NewGames, result.ScoreUpdates, result.Edits, sentCounts.Values.Count(x => x > 0));
         return result;
     }
 
@@ -132,7 +132,7 @@ public class DiscordPushService
         await PostMasterGameUpdates(newMasterGameMessages, gameCriticScoreUpdateMessages, masterGameEditMessages);
     }
 
-    private async Task PostMasterGameUpdates(IReadOnlyList<NewMasterGameMessage> newMasterGameMessages,
+    private async Task<IReadOnlyDictionary<Guid, int>> PostMasterGameUpdates(IReadOnlyList<NewMasterGameMessage> newMasterGameMessages,
         IReadOnlyList<GameCriticScoreUpdateMessage> gameCriticScoreUpdateMessages, IReadOnlyList<MasterGameEditMessage> masterGameEditMessages)
     {
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -148,6 +148,10 @@ public class DiscordPushService
 
         var allChannels = await GetAllCombinedChannels(discordRepo, fantasyCriticRepo);
         var preparedMessages = new List<PreparedDiscordMessage>();
+        var sentCounts = newMasterGameMessages.Select(x => x.MasterGameUpdateID)
+            .Concat(gameCriticScoreUpdateMessages.Select(x => x.MasterGameUpdateID))
+            .Concat(masterGameEditMessages.Select(x => x.MasterGameUpdateID))
+            .ToDictionary(x => x, _ => 0);
 
         var today = _clock.GetToday();
         foreach (var combinedChannel in allChannels)
@@ -175,6 +179,7 @@ public class DiscordPushService
             }
 
             var gameUpdateMessages = new Dictionary<MasterGame, List<string>>();
+            List<Guid> postedUpdateIDs = [];
 
             //master games
             foreach (var newMasterGameMessage in newMasterGamesToSend)
@@ -184,6 +189,7 @@ public class DiscordPushService
                     gameUpdateMessages.Add(newMasterGameMessage.MasterGame, []);
                 }
                 gameUpdateMessages[newMasterGameMessage.MasterGame].Add("Just added!");
+                postedUpdateIDs.Add(newMasterGameMessage.MasterGameUpdateID);
                 var tagNames = newMasterGameMessage.MasterGame.Tags.Select(t => t.ReadableName);
                 gameUpdateMessages[newMasterGameMessage.MasterGame].Add($"Tags: {string.Join(", ", tagNames)}");
                 gameUpdateMessages[newMasterGameMessage.MasterGame].Add($"Release Date: {newMasterGameMessage.MasterGame.GetReleaseDateString()}");
@@ -225,10 +231,17 @@ public class DiscordPushService
                     }
                 }
 
+                //Only the score line can be in changeMessages yet, so this is whether the score update showed anything.
+                if (scoreUpdate is not null && changeMessages.Any())
+                {
+                    postedUpdateIDs.Add(scoreUpdate.MasterGameUpdateID);
+                }
+
                 var gameEdits = editsLookup[existingGame].ToList();
                 if (gameEdits.Any())
                 {
                     changeMessages.AddRange(gameEdits.SelectMany(x => x.Changes));
+                    postedUpdateIDs.AddRange(gameEdits.Select(x => x.MasterGameUpdateID));
                 }
 
                 if (changeMessages.Any())
@@ -271,6 +284,11 @@ public class DiscordPushService
                 continue;
             }
 
+            foreach (var postedUpdateID in postedUpdateIDs)
+            {
+                sentCounts[postedUpdateID]++;
+            }
+
             Logger.Information("Building a master game update with {gameUpdatesPerChannel} messages.", messagesToSend.Count);
             var messagesToActuallySend = new MessageListBuilder(messagesToSend, MaxMessageLength)
                 .WithDivider("\n")
@@ -280,7 +298,13 @@ public class DiscordPushService
         }
 
         Logger.Information("Pushing out {gameUpdateChannels} game updates to channels.", preparedMessages.Count);
-        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages, MessageFlags.SuppressEmbeds);
+        var failedMessageCount = await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages, MessageFlags.SuppressEmbeds);
+        if (failedMessageCount > 0)
+        {
+            Logger.Warning("{FailedMessageCount} of {MessageCount} master game update messages failed to post; their updates still count as sent.", failedMessageCount, preparedMessages.Count);
+        }
+
+        return sentCounts;
     }
 
     private static string GetPublisherOfGameNote(IReadOnlyList<Publisher> allPublisherInActiveYears, MasterGame masterGame, LocalDate currentDate)
