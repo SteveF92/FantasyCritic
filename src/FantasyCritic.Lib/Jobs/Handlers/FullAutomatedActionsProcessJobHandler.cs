@@ -47,18 +47,11 @@ internal class FullAutomatedActionsProcessJobHandler : IFantasyCriticCronJobHand
         var snapshotName = DatabaseSnapshotNames.PreActionProcessing(_clock.GetCurrentInstant());
         await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_rdsManager, _clock, context, snapshotName, cancellationToken);
 
-        var canProcessActions = await _adminService.CanProcessActions();
-        if (canProcessActions.IsFailure)
-        {
-            return canProcessActions;
-        }
-
-        //Automated bid processing has an additional check not on manual bid processing
-        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-        if (!systemWideSettings.EnableAutomatedActionProcessing)
+        var reasonsNotToProcess = await _adminService.GetReasonsNotToProcessActions(true, _clock.GetCurrentInstant());
+        if (reasonsNotToProcess.Any())
         {
             //TODO Send admin email
-            return Result.Failure("Automatic bid processing is off.");
+            return Result.Failure(string.Join(" ", reasonsNotToProcess));
         }
 
         await _actionProcessingRunner.ProcessActions(context);

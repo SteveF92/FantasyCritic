@@ -94,6 +94,14 @@
           <div>
             <b-button size="sm" class="mr-1 mb-1" variant="info" :to="{ name: 'actionProcessingDryRunResults' }">Dry Run</b-button>
             <b-button size="sm" class="mr-1 mb-1" variant="info" href="/api/ActionRunner/ComparableActionProcessingDryRun">Comparable Dry Run (CSV)</b-button>
+            <b-button
+              size="sm"
+              class="mr-1 mb-1"
+              variant="info"
+              :disabled="isBusy"
+              @click="runAction('Send Action Processing Pre-Check Email', () => actionRunnerClient.sendActionProcessingPreCheckEmail())">
+              Send Action Processing Pre-Check Email
+            </b-button>
             <b-button size="sm" class="mr-1 mb-1" variant="danger" :disabled="isBusy" @click="enqueueJob('Process Actions', () => actionRunnerClient.processActions())">Process Actions</b-button>
           </div>
         </div>

@@ -106,13 +106,24 @@ public class ActionRunnerController : BaseJobQueuingController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<ActionResult<FantasyCriticJobViewModel>> ProcessActions()
     {
-        var canProcessActions = await _adminService.CanProcessActions();
-        if (canProcessActions.IsFailure)
+        var reasonsNotToProcess = await _adminService.GetReasonsNotToProcessActions(false, _clock.GetCurrentInstant());
+        if (reasonsNotToProcess.Any())
         {
-            return BadRequest(canProcessActions.Error);
+            return BadRequest(string.Join(" ", reasonsNotToProcess));
         }
 
         return await EnqueueJob(FantasyCriticJobType.ProcessActions);
+    }
+
+    //Everything that would stop the next automated run, as of now. Always sends, so a test of it always gets an answer.
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> SendActionProcessingPreCheckEmail()
+    {
+        var reasonsNotToProcess = await _adminService.GetReasonsNotToProcessActions(true, _clock.GetNextBidTime());
+        IReadOnlyList<string> lines = reasonsNotToProcess.Any() ? reasonsNotToProcess : ["Nothing would stop the next automated run."];
+        await _emailSendingService.SendAdminNotification("Action processing pre-check", lines);
+        return Ok();
     }
 
     [HttpPost]

@@ -71,29 +71,44 @@ public class AdminService
         return results;
     }
 
-    //Checked when the button is pressed, for immediate feedback, and again when the job runs, since either can change while it waits in the queue.
-    public async Task<Result> CanProcessActions()
+    //Empty means go. A manual run is checked when the button is pressed, for immediate feedback, and again when the job runs, since either can change while it waits in the queue.
+    //The day check is about processingTime, so a pre-check of the next automated run doesn't report the day it was pressed.
+    public async Task<IReadOnlyList<string>> GetReasonsNotToProcessActions(bool isAutomatedRun, Instant processingTime)
     {
         var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
-        if (!systemWideSettings.ActionProcessingMode)
+        List<string> reasons = [];
+        if (isAutomatedRun)
         {
-            return Result.Failure("Turn on action processing mode first.");
+            if (!_environmentConfiguration.IsProduction)
+            {
+                reasons.Add($"This is {_environmentConfiguration.EnvironmentName}, not production. Outside production, actions are only processed by hand.");
+            }
+
+            if (!systemWideSettings.EnableAutomatedActionProcessing)
+            {
+                reasons.Add("Automated action processing is turned off.");
+            }
+        }
+        //The automated job turns action processing mode on itself.
+        else if (!systemWideSettings.ActionProcessingMode)
+        {
+            reasons.Add("Turn on action processing mode first.");
         }
 
-        var today = _clock.GetToday();
-        if (_environmentConfiguration.IsProduction && !AcceptableActionProcessingDays.Contains(today.DayOfWeek))
+        var processingDay = processingTime.ToEasternDate().DayOfWeek;
+        if (_environmentConfiguration.IsProduction && !AcceptableActionProcessingDays.Contains(processingDay))
         {
-            return Result.Failure($"You probably didn't mean to process actions on a {today.DayOfWeek}.");
+            reasons.Add($"You probably didn't mean to process actions on a {processingDay}.");
         }
 
         var gamesWithPendingCorrections = await _masterGameRepo.GetGamesWithPendingBidsOrDropsThatHavePendingCorrections();
         if (gamesWithPendingCorrections.Any())
         {
             var gameNames = string.Join(", ", gamesWithPendingCorrections.Select(x => x.GameName));
-            return Result.Failure($"Before running actions, pending corrections for the following games must be actioned: {gameNames}");
+            reasons.Add($"Before running actions, pending corrections for the following games must be actioned: {gameNames}");
         }
 
-        return Result.Success();
+        return reasons;
     }
 
     public Task LinkToOpenCritic(MasterGame masterGame, int openCriticID)

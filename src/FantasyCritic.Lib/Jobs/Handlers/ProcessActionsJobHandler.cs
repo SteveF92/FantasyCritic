@@ -7,21 +7,23 @@ internal class ProcessActionsJobHandler : IFantasyCriticJobHandler
 {
     private readonly AdminService _adminService;
     private readonly ActionProcessingRunner _actionProcessingRunner;
+    private readonly IClock _clock;
 
-    public ProcessActionsJobHandler(AdminService adminService, ActionProcessingRunner actionProcessingRunner)
+    public ProcessActionsJobHandler(AdminService adminService, ActionProcessingRunner actionProcessingRunner, IClock clock)
     {
         _adminService = adminService;
         _actionProcessingRunner = actionProcessingRunner;
+        _clock = clock;
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.ProcessActions;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        var canProcessActions = await _adminService.CanProcessActions();
-        if (canProcessActions.IsFailure)
+        var reasonsNotToProcess = await _adminService.GetReasonsNotToProcessActions(false, _clock.GetCurrentInstant());
+        if (reasonsNotToProcess.Any())
         {
-            return canProcessActions;
+            return Result.Failure(string.Join(" ", reasonsNotToProcess));
         }
 
         await _actionProcessingRunner.ProcessActions(context);
