@@ -1,16 +1,17 @@
+using FantasyCritic.Lib.Jobs.Utilities;
 using FantasyCritic.Lib.Services;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class ProcessActionsJobHandler : IFantasyCriticJobHandler
 {
-    private readonly InterLeagueService _interLeagueService;
     private readonly AdminService _adminService;
+    private readonly ActionProcessingRunner _actionProcessingRunner;
 
-    public ProcessActionsJobHandler(InterLeagueService interLeagueService, AdminService adminService)
+    public ProcessActionsJobHandler(AdminService adminService, ActionProcessingRunner actionProcessingRunner)
     {
-        _interLeagueService = interLeagueService;
         _adminService = adminService;
+        _actionProcessingRunner = actionProcessingRunner;
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.ProcessActions;
@@ -23,18 +24,7 @@ internal class ProcessActionsJobHandler : IFantasyCriticJobHandler
             return canProcessActions;
         }
 
-        var systemWideValues = await _interLeagueService.GetSystemWideValues();
-        var supportedYears = await _interLeagueService.GetSupportedYears();
-        foreach (var supportedYear in supportedYears)
-        {
-            if (supportedYear.Finished || !supportedYear.OpenForPlay)
-            {
-                continue;
-            }
-
-            await context.UpdateDetailedStatus($"Processing actions for {supportedYear.Year}.");
-            await _adminService.ProcessActions(systemWideValues, supportedYear.Year);
-        }
+        await _actionProcessingRunner.ProcessActions(context);
 
         await context.UpdateDetailedStatus("Processed actions for all active years.");
         return Result.Success();

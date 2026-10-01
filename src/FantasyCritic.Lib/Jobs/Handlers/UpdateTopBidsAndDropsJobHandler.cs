@@ -1,21 +1,21 @@
-using FantasyCritic.Lib.Services;
+using FantasyCritic.Lib.Jobs.Utilities;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
 internal class UpdateTopBidsAndDropsJobHandler : IFantasyCriticJobHandler
 {
-    private readonly AdminService _adminService;
+    private readonly TopBidsAndDropsUpdater _topBidsAndDropsUpdater;
 
-    public UpdateTopBidsAndDropsJobHandler(AdminService adminService)
+    public UpdateTopBidsAndDropsJobHandler(TopBidsAndDropsUpdater topBidsAndDropsUpdater)
     {
-        _adminService = adminService;
+        _topBidsAndDropsUpdater = topBidsAndDropsUpdater;
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.UpdateTopBidsAndDrops;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await _adminService.UpdateTopBidsAndDropsForMostRecentWeek();
+        await _topBidsAndDropsUpdater.UpdateTopBidsAndDropsForMostRecentWeek();
         return Result.Success();
     }
 }

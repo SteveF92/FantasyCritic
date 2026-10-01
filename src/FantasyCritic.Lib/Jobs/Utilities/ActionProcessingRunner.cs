@@ -25,13 +25,36 @@ internal class ActionProcessingRunner
     }
 
     //Callers check AdminService.CanProcessActions first.
-    public Task ProcessActions(FantasyCriticJobContext context)
+    public async Task ProcessActions(FantasyCriticJobContext context)
     {
-        return Task.CompletedTask;
+        var systemWideValues = await _interLeagueService.GetSystemWideValues();
+        var supportedYears = await _interLeagueService.GetSupportedYears();
+        foreach (var supportedYear in supportedYears)
+        {
+            if (supportedYear.Finished || !supportedYear.OpenForPlay)
+            {
+                continue;
+            }
+
+            await context.UpdateDetailedStatus($"Processing actions for {supportedYear.Year}.");
+            await ProcessActionsForYear(systemWideValues, supportedYear.Year);
+        }
     }
 
-    private Task ProcessActionsForYear(SystemWideValues systemWideValues, int year)
+    private async Task ProcessActionsForYear(SystemWideValues systemWideValues, int year)
     {
-        return Task.CompletedTask;
+        var now = _clock.GetCurrentInstant();
+        var allSpecialAuctions = await _fantasyCriticRepo.GetAllActiveSpecialAuctions();
+        if (allSpecialAuctions.Any(x => x.IsLocked(now)))
+        {
+            throw new Exception("There are special auctions that need to be processed.");
+        }
+        IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
+        var results = await _adminService.GetActionProcessingDryRun(systemWideValues, year, now, allLeagueYears);
+        await _fantasyCriticRepo.SaveProcessedActionResults(results);
+        var leagueActionSets = results.GetLeagueActionSets();
+        await _discordPushService.SendActionProcessingSummary(leagueActionSets);
+
+        await _topBidsAndDropsUpdater.UpdateTopBidsAndDropsForMostRecentWeek();
     }
 }

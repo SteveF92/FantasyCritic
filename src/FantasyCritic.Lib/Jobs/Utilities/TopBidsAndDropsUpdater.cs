@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Interfaces;
 
@@ -14,13 +15,38 @@ internal class TopBidsAndDropsUpdater
         _masterGameRepo = masterGameRepo;
     }
 
-    public Task UpdateTopBidsAndDropsForMostRecentWeek()
+    public async Task UpdateTopBidsAndDropsForMostRecentWeek()
     {
-        return Task.CompletedTask;
+        var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
+        var weeks = TopBidsAndDropsFunctions.GetActionProcessingWeeks(actionProcessingSets);
+        if (weeks.Count == 0)
+        {
+            return;
+        }
+
+        var mostRecentWeek = weeks.Last();
+        await UpdateTopBidsAndDropsForWeek(mostRecentWeek);
     }
 
-    private Task UpdateTopBidsAndDropsForWeek(ActionProcessingWeek week)
+    private async Task UpdateTopBidsAndDropsForWeek(ActionProcessingWeek week)
     {
-        return Task.CompletedTask;
+        var existingProcessDates = await _masterGameRepo.GetProcessingDatesForTopBidsAndDrops();
+        if (existingProcessDates.Contains(week.ProcessDate))
+        {
+            return;
+        }
+
+        var bidsAndDrops = await _fantasyCriticRepo.GetPickupBidsAndDropsForProcessingSets(week.ProcessingSets);
+        var yearsInGroup = bidsAndDrops.Bids.Select(x => x.LeagueYear.Key.Year).Concat(bidsAndDrops.Drops.Select(x => x.LeagueYear.Key.Year)).Distinct().ToList();
+
+        var allMasterGameYears = new List<MasterGameYear>();
+        foreach (var year in yearsInGroup)
+        {
+            var masterGameYears = await _masterGameRepo.GetMasterGameYears(year);
+            allMasterGameYears.AddRange(masterGameYears);
+        }
+
+        var topBidsAndDrops = TopBidsAndDropsFunctions.CalculateTopBidsAndDrops(week.ProcessDate, bidsAndDrops, yearsInGroup, allMasterGameYears);
+        await _fantasyCriticRepo.InsertTopBidsAndDrops(topBidsAndDrops);
     }
 }
