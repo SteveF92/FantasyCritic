@@ -58,7 +58,7 @@ public class FantasyCriticJobRegistry
             FantasyCriticJobDefinition.ForCron<FullDataRefreshJobHandler>(),
             FantasyCriticJobDefinition.ForCron<GrantSuperDropsJobHandler>(),
             FantasyCriticJobDefinition.For<MakeSlotsConsistentJobHandler>(),
-            FantasyCriticJobDefinition.ForCron<PrepareForActionProcessingJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<FullAutomatedActionsProcessJobHandler>(),
             FantasyCriticJobDefinition.For<ProcessActionsJobHandler>(),
             FantasyCriticJobDefinition.ForCron<ProcessSpecialAuctionsJobHandler>(),
             FantasyCriticJobDefinition.ForCron<PushGameReleaseMessagesJobHandler>(),

@@ -6,20 +6,25 @@ using FantasyCritic.Lib.Utilities;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
-internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandler
+internal class FullAutomatedActionsProcessJobHandler : IFantasyCriticCronJobHandler
 {
+    private readonly AdminService _adminService;
     private readonly InterLeagueService _interLeagueService;
     private readonly IRDSManager _rdsManager;
     private readonly FullDataRefresher _fullDataRefresher;
+    private readonly ActionProcessingRunner _actionProcessingRunner;
     private readonly IClock _clock;
 
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(TimeExtensions.ActionProcessingDay, TimeExtensions.ActionProcessingTime);
 
-    public PrepareForActionProcessingJobHandler(InterLeagueService interLeagueService, IRDSManager rdsManager, FullDataRefresher fullDataRefresher, IClock clock)
+    public FullAutomatedActionsProcessJobHandler(AdminService adminService, InterLeagueService interLeagueService, IRDSManager rdsManager,
+        FullDataRefresher fullDataRefresher, ActionProcessingRunner actionProcessingRunner, IClock clock)
     {
+        _adminService = adminService;
         _interLeagueService = interLeagueService;
         _rdsManager = rdsManager;
         _fullDataRefresher = fullDataRefresher;
+        _actionProcessingRunner = actionProcessingRunner;
         _clock = clock;
     }
 
@@ -41,7 +46,24 @@ internal class PrepareForActionProcessingJobHandler : IFantasyCriticCronJobHandl
 
         var snapshotName = DatabaseSnapshotNames.PreActionProcessing(_clock.GetCurrentInstant());
         await DatabaseSnapshotJobUtilities.SnapshotDatabaseAndWait(_rdsManager, _clock, context, snapshotName, cancellationToken);
+
+        var canProcessActions = await _adminService.CanProcessActions();
+        if (canProcessActions.IsFailure)
+        {
+            return canProcessActions;
+        }
+
+        //Automated bid processing has an additional check not on manual bid processing
+        var systemWideSettings = await _interLeagueService.GetSystemWideSettings();
+        if (!systemWideSettings.EnableAutomatedActionProcessing)
+        {
+            //TODO Send admin email
+            return Result.Failure("Automatic bid processing is off.");
+        }
+
+        await _actionProcessingRunner.ProcessActions(context);
+
+        await context.UpdateDetailedStatus("Processed actions for all active years.");
         return Result.Success();
     }
-
 }

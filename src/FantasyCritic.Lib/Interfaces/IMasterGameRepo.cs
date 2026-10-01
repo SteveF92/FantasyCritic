@@ -48,6 +48,8 @@ public interface IMasterGameRepo
         FantasyCriticUser responseUser, MasterGame? masterGame);
     Task CompleteMasterGameChangeRequest(MasterGameChangeRequest masterGameRequest, Instant responseTime,
         FantasyCriticUser responseUser, string responseNote);
+    Task<IReadOnlyList<MasterGame>> GetGamesWithPendingBidsOrDropsThatHavePendingCorrections();
+
     Task LinkToOpenCritic(MasterGame masterGame, int openCriticID);
     Task LinkToGG(MasterGame masterGame, string ggToken);
     Task UpdateReleaseDateEstimates(LocalDate tomorrow);

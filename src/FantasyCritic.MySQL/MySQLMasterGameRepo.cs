@@ -861,6 +861,12 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             });
     }
 
+    public Task<IReadOnlyList<MasterGame>> GetGamesWithPendingBidsOrDropsThatHavePendingCorrections()
+    {
+        //TODO implement this
+        throw new NotImplementedException();
+    }
+
     public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
     {
         const string sql = "select * from tbl_mastergame_request where UserID = @userID and Hidden = 0";

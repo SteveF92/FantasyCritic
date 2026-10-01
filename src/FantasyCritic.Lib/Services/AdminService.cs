@@ -89,6 +89,13 @@ public class AdminService
             return Result.Failure($"You probably didn't mean to process pickups on a {today.DayOfWeek}.");
         }
 
+        var gamesWithPendingCorrections = await _masterGameRepo.GetGamesWithPendingBidsOrDropsThatHavePendingCorrections();
+        if (gamesWithPendingCorrections.Any())
+        {
+            var gameNames = string.Join(", ", gamesWithPendingCorrections.Select(x => x.GameName));
+            return Result.Failure($"Before running bids, actions for the following games must be processed: {gameNames}");
+        }
+
         return Result.Success();
     }
 
