@@ -14,7 +14,7 @@ namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 /// Recomputes tbl_caching_topbidsanddrops for every action processing week in the site's history.
 ///
 /// This exists because <see cref="TopBidsAndDropsBackfillMigration"/> (and the live weekly job it mirrors,
-/// <c>AdminService.UpdateTopBidsAndDropsForWeek</c>) didn't exclude test/custom-rules leagues from the
+/// <c>TopBidsAndDropsUpdater.UpdateTopBidsAndDropsForWeek</c>) didn't exclude test/custom-rules leagues from the
 /// calculation, unlike the old ad-hoc FantasyCritic.DBUtility tool did for its original 2022-2024 backfill.
 /// Now that <see cref="TopBidsAndDropsFunctions.CalculateTopBidsAndDrops"/> filters on <c>League.AffectsStats</c>,
 /// this migration re-derives every week from scratch so the whole table is consistent.
