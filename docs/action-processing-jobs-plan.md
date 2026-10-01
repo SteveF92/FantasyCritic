@@ -144,9 +144,14 @@ It uses the current time, not `processingTime`: an auction that locks before the
 
 ### Step 7: Status and structured logs
 
-The same pattern as the earlier rounds: `AppendDetailedStatus` for each finished step (per year for processing), and the stop reasons in the final status.
+Every clause is appended, so the status of a job that stops partway still shows each step that finished. Nothing calls `UpdateDetailedStatus` any more, which overwrote the mode, refresh and snapshot clauses.
 
-Known now: the runner's per-year `UpdateDetailedStatus` and the handler's final "Processed actions for all active years." replace the appended mode, refresh and snapshot clauses.
+- **`ActionProcessingRunner`**, per year: `2026: processing actions.` while it runs, then `2026: 12 of 20 bids and 3 of 4 drops succeeded in 9 leagues.`, or `2026: no bids or drops.`
+- **`TopBidsAndDropsUpdater`**, which now takes the context: `Top bids and drops: 25 games for 2026-10-03.`, `Top bids and drops: 2026-10-03 already done.`, or `Top bids and drops: no processed weeks.` The UpdateTopBidsAndDrops job reports the same clause, where it reported nothing before.
+- **FullAutomatedActionsProcess:** after processing, `Action processing mode off.` When the checks stop it, `Stopped: ` and the reasons, as Steve asked for in the plan's first discussion: the reasons go in the status, not only the error.
+- **ProcessActions:** `Stopped: ` and the reasons the same way. Its final "Processed actions for all active years." goes, since the per-year and top bids clauses say it.
+
+Logs: structured properties (`{Year}`, `{SuccessBidCount}`, `{BidCount}`, `{SuccessDropCount}`, `{DropCount}`, `{LeagueCount}`, `{ProcessDate}`, `{GameCount}`). Each year's result, top bids and drops written, and the automated job's mode changes at Information; "already done" and "no processed weeks" at Debug. A stop isn't logged by the handlers, since the worker already logs a refused run's reasons at Warning. `ActionProcessingRunner`, `TopBidsAndDropsUpdater` and FullAutomatedActionsProcess get `ILogger<T>`.
 
 ## Verification
 
