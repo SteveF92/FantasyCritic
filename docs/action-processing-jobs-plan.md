@@ -121,7 +121,7 @@ Claude scaffolds; Steve moves the logic.
 - **Unexpected failures email too**: if the job throws, it emails Steve and rethrows, so it still ends in Error. No email on success (Steve's call).
 - **Action processing mode off** after a successful run.
 
-**Done:** 5a is `4f72e1e0e`: the function, the button and its integration tests; the job got the production guard from it. 5b is the commit after it. A cancellation sends no email, since someone chose it. If the failure email also fails, both exceptions go on the job as an `AggregateException`.
+**Done:** 5a is `4f72e1e0e`: the function, the button and its integration tests; the job got the production guard from it. 5b is the commit after it. A cancellation sends an email too (Steve: it's an odd enough case to want one), then rethrows, so the job still ends cancelled. If the failure email also fails, both exceptions go on the job as an `AggregateException`.
 
 Not covered by an automated test: the job itself. The test factory registers the real `RDSManager`, so running the job there would take a real snapshot. The stop email's reasons are the pre-check's, which is tested. The job's own path gets its first real run on beta, with the job's RunType set back to `Cron` there for one run.
 
