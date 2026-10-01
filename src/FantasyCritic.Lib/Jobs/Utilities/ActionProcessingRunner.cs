@@ -39,6 +39,9 @@ internal class ActionProcessingRunner
             await context.UpdateDetailedStatus($"Processing actions for {supportedYear.Year}.");
             await ProcessActionsForYear(systemWideValues, supportedYear.Year);
         }
+
+        //After every year, since a December run processes two and their sets share one top bids and drops week.
+        await _topBidsAndDropsUpdater.UpdateTopBidsAndDropsForMostRecentWeek();
     }
 
     private async Task ProcessActionsForYear(SystemWideValues systemWideValues, int year)
@@ -54,7 +57,5 @@ internal class ActionProcessingRunner
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
         var leagueActionSets = results.GetLeagueActionSets();
         await _discordPushService.SendActionProcessingSummary(leagueActionSets);
-
-        await _topBidsAndDropsUpdater.UpdateTopBidsAndDropsForMostRecentWeek();
     }
 }

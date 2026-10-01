@@ -10,6 +10,26 @@ namespace FantasyCritic.IntegrationTests.Tests.Game;
 [TestFixture]
 public class MasterGameChangeRequestTests : IntegrationTestBase
 {
+    //Action processing refuses to run while a game with an unprocessed bid or drop has an unanswered change request,
+    //and other tests leave unprocessed drops on this game. So answer every request on it, including any an earlier run left behind.
+    [TearDown]
+    public async Task AnswerChangeRequestsOnTargetGame()
+    {
+        var masterGameID = await GetAnyMasterGameIDAsync();
+
+        using var adminSession = new ApiSession(Factory);
+        await LoginAsLocalAdminAsync(adminSession);
+        var activeRequests = await adminSession.FactChecker.ActiveMasterGameChangeRequestsAsync();
+        foreach (var request in activeRequests.Where(x => x.MasterGame.MasterGameID == masterGameID))
+        {
+            await adminSession.FactChecker.CompleteMasterGameChangeRequestAsync(new CompleteMasterGameChangeRequestRequest
+            {
+                RequestID = request.RequestID,
+                ResponseNote = "Answered by test teardown.",
+            });
+        }
+    }
+
     private async Task GrantFactCheckerRoleAsync(Guid userID)
     {
         using var adminSession = new ApiSession(Factory);

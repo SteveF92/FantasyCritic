@@ -1,6 +1,5 @@
 using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.DependencyInjection;
-using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
@@ -14,7 +13,6 @@ public class AdminService
     private static readonly IReadOnlyList<IsoDayOfWeek> AcceptableActionProcessingDays = [IsoDayOfWeek.Saturday, IsoDayOfWeek.Sunday];
 
     private readonly IRDSManager _rdsManager;
-    private readonly DiscordPushService _discordPushService;
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly IMasterGameRepo _masterGameRepo;
     private readonly InterLeagueService _interLeagueService;
@@ -22,14 +20,13 @@ public class AdminService
     private readonly EnvironmentConfiguration _environmentConfiguration;
 
     public AdminService(IFantasyCriticRepo fantasyCriticRepo, IMasterGameRepo masterGameRepo, InterLeagueService interLeagueService, IClock clock,
-        IRDSManager rdsManager, DiscordPushService discordPushService, EnvironmentConfiguration environmentConfiguration)
+        IRDSManager rdsManager, EnvironmentConfiguration environmentConfiguration)
     {
         _fantasyCriticRepo = fantasyCriticRepo;
         _masterGameRepo = masterGameRepo;
         _interLeagueService = interLeagueService;
         _clock = clock;
         _rdsManager = rdsManager;
-        _discordPushService = discordPushService;
         _environmentConfiguration = environmentConfiguration;
     }
 
@@ -93,7 +90,7 @@ public class AdminService
         if (gamesWithPendingCorrections.Any())
         {
             var gameNames = string.Join(", ", gamesWithPendingCorrections.Select(x => x.GameName));
-            return Result.Failure($"Before running bids, actions for the following games must be processed: {gameNames}");
+            return Result.Failure($"These games have unprocessed bids or drops and unanswered change requests: {gameNames}");
         }
 
         return Result.Success();
