@@ -101,6 +101,15 @@ public class AdminService
             reasons.Add($"You probably didn't mean to process actions on a {processingDay}.");
         }
 
+        //Now, not processingTime: an auction that locks before the next bid time is processed by its own job long before then,
+        //so only one that is locked now and still waiting is a problem.
+        var now = _clock.GetCurrentInstant();
+        var allSpecialAuctions = await _fantasyCriticRepo.GetAllActiveSpecialAuctions();
+        if (allSpecialAuctions.Any(x => x.IsLocked(now)))
+        {
+            reasons.Add("There are special auctions that need to be processed.");
+        }
+
         var gamesWithPendingCorrections = await _masterGameRepo.GetGamesWithPendingBidsOrDropsThatHavePendingCorrections();
         if (gamesWithPendingCorrections.Any())
         {

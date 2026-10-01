@@ -24,7 +24,7 @@ internal class ActionProcessingRunner
         _clock = clock;
     }
 
-    //Callers check AdminService.CanProcessActions first.
+    //Callers check AdminService.GetReasonsNotToProcessActions first.
     public async Task ProcessActions(FantasyCriticJobContext context)
     {
         var systemWideValues = await _interLeagueService.GetSystemWideValues();
@@ -47,11 +47,6 @@ internal class ActionProcessingRunner
     private async Task ProcessActionsForYear(SystemWideValues systemWideValues, int year)
     {
         var now = _clock.GetCurrentInstant();
-        var allSpecialAuctions = await _fantasyCriticRepo.GetAllActiveSpecialAuctions();
-        if (allSpecialAuctions.Any(x => x.IsLocked(now)))
-        {
-            throw new Exception("There are special auctions that need to be processed.");
-        }
         IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
         var results = await _adminService.GetActionProcessingDryRun(systemWideValues, year, now, allLeagueYears);
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
