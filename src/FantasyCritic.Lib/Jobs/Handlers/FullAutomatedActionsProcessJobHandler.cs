@@ -87,7 +87,7 @@ internal class FullAutomatedActionsProcessJobHandler : IFantasyCriticCronJobHand
             return Result.Failure(string.Join(" ", reasonsNotToProcess));
         }
 
-        await _actionProcessingRunner.ProcessActions(context);
+        await _actionProcessingRunner.ProcessActions(context, cancellationToken);
         await _interLeagueService.SetActionProcessingMode(false);
 
         await context.UpdateDetailedStatus("Processed actions for all active years. Action processing mode off.");

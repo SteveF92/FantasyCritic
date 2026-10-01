@@ -25,10 +25,13 @@ internal class ActionProcessingRunner
     }
 
     //Callers check AdminService.GetReasonsNotToProcessActions first.
-    public async Task ProcessActions(FantasyCriticJobContext context)
+    public async Task ProcessActions(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         var systemWideValues = await _interLeagueService.GetSystemWideValues();
         var supportedYears = await _interLeagueService.GetSupportedYears();
+
+        //Cancellable until the first year's results are saved, which can't be taken back. After that, the run has to finish.
+        var yearCancellationToken = cancellationToken;
         foreach (var supportedYear in supportedYears)
         {
             if (supportedYear.Finished || !supportedYear.OpenForPlay)
@@ -37,18 +40,20 @@ internal class ActionProcessingRunner
             }
 
             await context.UpdateDetailedStatus($"Processing actions for {supportedYear.Year}.");
-            await ProcessActionsForYear(systemWideValues, supportedYear.Year);
+            await ProcessActionsForYear(systemWideValues, supportedYear.Year, yearCancellationToken);
+            yearCancellationToken = CancellationToken.None;
         }
 
         //After every year, since a December run processes two and their sets share one top bids and drops week.
-        await _topBidsAndDropsUpdater.UpdateTopBidsAndDropsForMostRecentWeek();
+        await _topBidsAndDropsUpdater.UpdateTopBidsAndDropsForMostRecentWeek(CancellationToken.None);
     }
 
-    private async Task ProcessActionsForYear(SystemWideValues systemWideValues, int year)
+    private async Task ProcessActionsForYear(SystemWideValues systemWideValues, int year, CancellationToken cancellationToken)
     {
         var now = _clock.GetCurrentInstant();
         IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticRepo.GetLeagueYears(year);
         var results = await _adminService.GetActionProcessingDryRun(systemWideValues, year, now, allLeagueYears);
+        cancellationToken.ThrowIfCancellationRequested();
         await _fantasyCriticRepo.SaveProcessedActionResults(results);
         var leagueActionSets = results.GetLeagueActionSets();
         await _discordPushService.SendActionProcessingSummary(leagueActionSets);

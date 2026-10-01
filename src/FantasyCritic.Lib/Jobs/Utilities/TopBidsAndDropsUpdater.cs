@@ -15,7 +15,7 @@ internal class TopBidsAndDropsUpdater
         _masterGameRepo = masterGameRepo;
     }
 
-    public async Task UpdateTopBidsAndDropsForMostRecentWeek()
+    public async Task UpdateTopBidsAndDropsForMostRecentWeek(CancellationToken cancellationToken)
     {
         var actionProcessingSets = await _fantasyCriticRepo.GetActionProcessingSets();
         var weeks = TopBidsAndDropsFunctions.GetActionProcessingWeeks(actionProcessingSets);
@@ -25,10 +25,10 @@ internal class TopBidsAndDropsUpdater
         }
 
         var mostRecentWeek = weeks.Last();
-        await UpdateTopBidsAndDropsForWeek(mostRecentWeek);
+        await UpdateTopBidsAndDropsForWeek(mostRecentWeek, cancellationToken);
     }
 
-    private async Task UpdateTopBidsAndDropsForWeek(ActionProcessingWeek week)
+    private async Task UpdateTopBidsAndDropsForWeek(ActionProcessingWeek week, CancellationToken cancellationToken)
     {
         var existingProcessDates = await _masterGameRepo.GetProcessingDatesForTopBidsAndDrops();
         if (existingProcessDates.Contains(week.ProcessDate))
@@ -47,6 +47,7 @@ internal class TopBidsAndDropsUpdater
         }
 
         var topBidsAndDrops = TopBidsAndDropsFunctions.CalculateTopBidsAndDrops(week.ProcessDate, bidsAndDrops, yearsInGroup, allMasterGameYears);
+        cancellationToken.ThrowIfCancellationRequested();
         await _fantasyCriticRepo.InsertTopBidsAndDrops(topBidsAndDrops);
     }
 }

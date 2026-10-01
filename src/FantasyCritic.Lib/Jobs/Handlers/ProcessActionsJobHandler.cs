@@ -26,7 +26,7 @@ internal class ProcessActionsJobHandler : IFantasyCriticJobHandler
             return Result.Failure(string.Join(" ", reasonsNotToProcess));
         }
 
-        await _actionProcessingRunner.ProcessActions(context);
+        await _actionProcessingRunner.ProcessActions(context, cancellationToken);
 
         await context.UpdateDetailedStatus("Processed actions for all active years.");
         return Result.Success();
