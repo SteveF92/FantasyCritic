@@ -35,11 +35,15 @@ With the flag off in production, the job does exactly what PrepareForActionProce
 - **Two guards keep automated processing out of beta.** `MySQLBetaCleaner` sets the job's RunType to `Disabled` on every restore, as it does for RefreshPatreonInfo, so beta never schedules it. If someone re-enables it there, the not-production stop reason still acts as a forced `EnableAutomatedActionProcessing = false`.
 - **Beta sends the stop email, clearly labelled.** With the job disabled there, it's only sent when Steve deliberately runs it, which is how the email gets tested end to end. Outside production, the subject starts with the environment name (beta's is `Staging`) and the body names the base address it came from.
 - **The change request check covers only games in play.** Unanswered change requests whose master game appears in an active pickup bid, as a bid's conditional drop, or in an active drop request, across all active years.
-- **Top bids and drops runs once.** `AdminService.ProcessActions` calls it at the end of each year's processing today. It skips a week it already has, so the second call does nothing. After the move it runs once, after all years. No change in result.
+- **Top bids and drops runs once, after every year is processed.** `AdminService.ProcessActions` called it at the end of each year's processing. All processing sets on one Eastern date make one week, and a week already written is skipped, so in December the first year's call wrote the week from its own set and the second year's bids were never counted. One call after the loop counts both.
+- **The pending corrections check applies to manual processing too** (Steve's change, `6618c4fbf`). It lives in `AdminService.CanProcessActions`, so the Process Actions button, the ProcessActions job and the automated job all refuse while a game with an unprocessed bid, conditional drop or drop has an unanswered change request. It covers the bids and drops processing would pick up: leagues not deleted, years open for play and not finished. Test leagues count, since their bids are processed too.
+- **The change request integration tests answer their own requests.** The check covers every league, and other tests leave unprocessed drops on the game those tests use, so an unanswered request there blocked every later processing test.
 
 ## Steps
 
 Each step: build, test, commit alone, then stop for review before the next.
+
+Steve took Step 5 ahead of the end of Step 4 (`6618c4fbf`), so Steps 3–5 landed in a different order than written. Where each piece stands is under each step.
 
 ### Step 0: Commit this plan
 
@@ -71,18 +75,31 @@ Claude scaffolds; Steve moves the logic.
 - AdminService loses `ProcessActions` and the three `UpdateTopBidsAndDrops*` methods, including the `LocalDate` overload that has no callers. `GetActionProcessingDryRun` stays, since the dry run controller uses it, and the runner calls it.
 - Register both utilities with the other job utilities. Update the comment in `TopBidsAndDropsRecomputeMigration`.
 
+**Done:** scaffold `84dab9b00`, Steve's move `6ac3aaf59` (reviewed: nothing dropped). Top bids and drops moved after the loop and AdminService's unused `DiscordPushService` removed in `7cf6a1fd7`.
+
 ### Step 4: Rename PrepareForActionProcessing to FullAutomatedActionsProcess, cron only, with no logic change
 
 - Migration: insert the `FullAutomatedActionsProcess` row in `tbl_job_type` (display name "Full Automated Actions Process", RunType `Cron`), repoint existing `tbl_job` rows to it, delete the old row. `tbl_job.JobType` has a foreign key to `tbl_job_type.Name` without ON UPDATE CASCADE, so an in-place rename would fail.
 - `FantasyCriticJobType`, the handler class, the registry and its FullDataRefresh skip-when-due entry, `recentJobsTable.vue`.
 - `MySQLBetaCleaner` disables FullAutomatedActionsProcess, next to `DisablePatreon`. It's here rather than earlier so it names the job's final type.
 
+**Done:** the handler class rename is Steve's (`6618c4fbf`); the rest is `38d21a11e`. The new row's Severity is `Danger`, like ProcessActions, since the job now processes actions. The snapshot keeps its `pre-action-processing` name.
+
 ### Step 5: The checks, the email and the happy path
 
 - The handler collects the stop reasons after the snapshot, sends one notification listing them, and returns `Result.Failure` with the reasons.
 - Otherwise it runs the `ActionProcessingRunner` (checking `CanProcessActions` first, like the manual job), then turns action processing mode off.
-- The change request check: a query or a filter over `GetAllMasterGameChangeRequests` against the master games in active bids, conditional drops and drop requests for each active year.
+- The change request check: a query against the master games in active bids, conditional drops and drop requests for each active year.
 - Tests: unit tests of the stop-reason logic; the notification's content through the capturing sender.
+
+**Done:** the handler checks `CanProcessActions` and the flag after the snapshot, then runs the runner (Steve, `6618c4fbf`). `IMasterGameRepo.GetGamesWithPendingBidsOrDropsThatHavePendingCorrections`, its query, and an integration test that the button is refused (`7cf6a1fd7`).
+
+**Not done yet:**
+- **The production guard.** Nothing in the handler checks `IsProduction` yet; until it does, only the beta cleaner keeps the job off copies of production, and nothing keeps it off a developer's machine with the flag on.
+- **Collecting the stop reasons.** The handler returns at the first failed check. It should gather not production, flag off and `CanProcessActions`'s failure (which carries the pending corrections) and stop once with all of them.
+- **The email** (Steve's TODO in the handler): one `SendAdminNotification` listing every reason, sent before returning the failure.
+- **Action processing mode off** after a successful run.
+- **Tests** of the stop reasons and the email.
 
 ### Step 6: Check for cancellation before each write
 
@@ -91,6 +108,8 @@ The same pattern as the earlier rounds, across all three jobs and the two new ut
 ### Step 7: Status and structured logs
 
 The same pattern as the earlier rounds: `AppendDetailedStatus` for each finished step (per year for processing), and the stop reasons in the final status.
+
+Known now: the runner's per-year `UpdateDetailedStatus` and the handler's final "Processed actions for all active years." replace the appended mode, refresh and snapshot clauses.
 
 ## Verification
 
