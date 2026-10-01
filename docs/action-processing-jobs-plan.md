@@ -94,12 +94,32 @@ Claude scaffolds; Steve moves the logic.
 
 **Done:** the handler checks `CanProcessActions` and the flag after the snapshot, then runs the runner (Steve, `6618c4fbf`). `IMasterGameRepo.GetGamesWithPendingBidsOrDropsThatHavePendingCorrections`, its query, and an integration test that the button is refused (`7cf6a1fd7`).
 
-**Not done yet:**
-- **The production guard.** Nothing in the handler checks `IsProduction` yet; until it does, only the beta cleaner keeps the job off copies of production, and nothing keeps it off a developer's machine with the flag on.
-- **Collecting the stop reasons.** The handler returns at the first failed check. It should gather not production, flag off and `CanProcessActions`'s failure (which carries the pending corrections) and stop once with all of them.
-- **The email** (Steve's TODO in the handler): one `SendAdminNotification` listing every reason, sent before returning the failure.
+**Not done yet**, in this order:
+
+#### Step 5a: One function for every check, and a pre-check email button
+
+`AdminService.GetReasonsNotToProcessActions(bool isAutomatedRun, Instant processingTime)` returns the reasons as `IReadOnlyList<string>`, empty meaning go. It replaces `CanProcessActions`; the Process Actions button and the ProcessActions job join the reasons into their `BadRequest`/`Result.Failure`.
+
+| Check | Manual run | Automated run / pre-check |
+|---|---|---|
+| Action processing mode is off | ✓ | — (the job turns it on itself) |
+| Wrong day (production only) | ✓ | ✓ |
+| Pending corrections on games with bids/drops | ✓ | ✓ |
+| Not production | — | ✓ |
+| EnableAutomatedActionProcessing is off | — | ✓ |
+
+- The day check uses `processingTime`, not today: manual runs and the job pass now; the pre-check passes `clock.GetNextBidTime()`, so pressing it midweek doesn't report the weekday. The day check still matters to the job: a worker turned off over a weekend could pick the queued job up on Monday.
+- AdminService only returns reasons and never sends email; AdminService is registered by hosts without email, so the callers send it.
+- `ActionRunnerController.SendActionProcessingPreCheckEmail`, run in the request: emails "Action processing pre-check" with the reasons, or a line saying nothing would stop the next automated run.
+- Admin console: a "Send Action Processing Pre-Check Email" button in the Action Processing section.
+- Integration test: the button emails Steve, labelled `[Development]`, with the not-production reason.
+
+#### Step 5b: The job uses it
+
+- **The production guard and the flag** come from `GetReasonsNotToProcessActions(isAutomatedRun: true, now)`; the job stops once with every reason.
+- **The email**: "Automated action processing stopped", the reasons, and a line saying action processing mode is still on.
+- **Unexpected failures email too**: if the job throws, it emails Steve and rethrows, so it still ends in Error. No email on success (Steve's call).
 - **Action processing mode off** after a successful run.
-- **Tests** of the stop reasons and the email.
 
 ### Step 6: Check for cancellation before each write
 
