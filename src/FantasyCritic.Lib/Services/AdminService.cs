@@ -83,14 +83,14 @@ public class AdminService
         var today = _clock.GetToday();
         if (_environmentConfiguration.IsProduction && !AcceptableActionProcessingDays.Contains(today.DayOfWeek))
         {
-            return Result.Failure($"You probably didn't mean to process pickups on a {today.DayOfWeek}.");
+            return Result.Failure($"You probably didn't mean to process actions on a {today.DayOfWeek}.");
         }
 
         var gamesWithPendingCorrections = await _masterGameRepo.GetGamesWithPendingBidsOrDropsThatHavePendingCorrections();
         if (gamesWithPendingCorrections.Any())
         {
             var gameNames = string.Join(", ", gamesWithPendingCorrections.Select(x => x.GameName));
-            return Result.Failure($"These games have unprocessed bids or drops and unanswered change requests: {gameNames}");
+            return Result.Failure($"Before running actions, pending corrections for the following games must be actioned: {gameNames}");
         }
 
         return Result.Success();
