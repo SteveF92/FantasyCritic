@@ -46,8 +46,8 @@ public class FantasyCriticJobRegistry
 
     private static Dictionary<FantasyCriticJobType, IReadOnlyList<FantasyCriticJobType>> CreateSkipWhenDue() => new()
     {
-        //Prepare refreshes data itself, after action processing mode is on. The rollover refreshes critic info itself, before finishing the year.
-        { FantasyCriticJobType.FullDataRefresh, [FantasyCriticJobType.PrepareForActionProcessing, FantasyCriticJobType.EndOfYearRollover] },
+        //The automated actions process refreshes data itself, after action processing mode is on. The rollover refreshes critic info itself, before finishing the year.
+        { FantasyCriticJobType.FullDataRefresh, [FantasyCriticJobType.FullAutomatedActionsProcess, FantasyCriticJobType.EndOfYearRollover] },
     };
 
     //The one list of handlers. Adding a job type means adding a class and a line here; Validate fails startup if either is forgotten.
@@ -55,10 +55,10 @@ public class FantasyCriticJobRegistry
             FantasyCriticJobDefinition.ForCron<AdvanceRoyaleQuartersJobHandler>(),
             FantasyCriticJobDefinition.ForCron<EndOfYearRolloverJobHandler>(),
             FantasyCriticJobDefinition.ForCron<ExpireTradesJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<FullAutomatedActionsProcessJobHandler>(),
             FantasyCriticJobDefinition.ForCron<FullDataRefreshJobHandler>(),
             FantasyCriticJobDefinition.ForCron<GrantSuperDropsJobHandler>(),
             FantasyCriticJobDefinition.For<MakeSlotsConsistentJobHandler>(),
-            FantasyCriticJobDefinition.ForCron<FullAutomatedActionsProcessJobHandler>(),
             FantasyCriticJobDefinition.For<ProcessActionsJobHandler>(),
             FantasyCriticJobDefinition.ForCron<ProcessSpecialAuctionsJobHandler>(),
             FantasyCriticJobDefinition.ForCron<PushGameReleaseMessagesJobHandler>(),

@@ -28,7 +28,7 @@ internal class FullAutomatedActionsProcessJobHandler : IFantasyCriticCronJobHand
         _clock = clock;
     }
 
-    public static FantasyCriticJobType JobType => FantasyCriticJobType.PrepareForActionProcessing;
+    public static FantasyCriticJobType JobType => FantasyCriticJobType.FullAutomatedActionsProcess;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {

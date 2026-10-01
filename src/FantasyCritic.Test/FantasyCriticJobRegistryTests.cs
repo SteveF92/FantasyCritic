@@ -60,12 +60,12 @@ public class FantasyCriticJobRegistryTests
     }
 
     [Test]
-    public void GetDueJobsToDeferTo_FullDataRefreshDefersToPrepareForActionProcessingWhenBothAreDue()
+    public void GetDueJobsToDeferTo_FullDataRefreshDefersToFullAutomatedActionsProcessWhenBothAreDue()
     {
         var registry = FantasyCriticJobRegistry.Create();
-        var due = new HashSet<FantasyCriticJobType> { FantasyCriticJobType.FullDataRefresh, FantasyCriticJobType.PrepareForActionProcessing };
+        var due = new HashSet<FantasyCriticJobType> { FantasyCriticJobType.FullDataRefresh, FantasyCriticJobType.FullAutomatedActionsProcess };
 
-        Assert.That(registry.GetDueJobsToDeferTo(FantasyCriticJobType.FullDataRefresh, due), Is.EqualTo(new[] { FantasyCriticJobType.PrepareForActionProcessing }));
+        Assert.That(registry.GetDueJobsToDeferTo(FantasyCriticJobType.FullDataRefresh, due), Is.EqualTo(new[] { FantasyCriticJobType.FullAutomatedActionsProcess }));
     }
 
     [Test]
@@ -90,7 +90,7 @@ public class FantasyCriticJobRegistryTests
     public void GetDueJobsToDeferTo_IsEmptyForAJobWithoutAnEntry()
     {
         var registry = FantasyCriticJobRegistry.Create();
-        var due = new HashSet<FantasyCriticJobType> { FantasyCriticJobType.ExpireTrades, FantasyCriticJobType.PrepareForActionProcessing };
+        var due = new HashSet<FantasyCriticJobType> { FantasyCriticJobType.ExpireTrades, FantasyCriticJobType.FullAutomatedActionsProcess };
 
         Assert.That(registry.GetDueJobsToDeferTo(FantasyCriticJobType.ExpireTrades, due), Is.Empty);
     }
@@ -116,10 +116,10 @@ public class FantasyCriticJobRegistryTests
     [Test]
     public void Constructor_RejectsAChainOfSkipWhenDueEntries()
     {
-        var skipWhenDue = WithEntry(FantasyCriticJobType.PrepareForActionProcessing, FantasyCriticJobType.ExpireTrades);
+        var skipWhenDue = WithEntry(FantasyCriticJobType.FullAutomatedActionsProcess, FantasyCriticJobType.ExpireTrades);
 
         var exception = Assert.Throws<InvalidOperationException>(() => new FantasyCriticJobRegistry(FantasyCriticJobRegistry.Create().Definitions, skipWhenDue));
-        Assert.That(exception!.Message, Does.Contain("PrepareForActionProcessing"));
+        Assert.That(exception!.Message, Does.Contain("FullAutomatedActionsProcess"));
     }
 
     private static Dictionary<FantasyCriticJobType, IReadOnlyList<FantasyCriticJobType>> WithEntry(FantasyCriticJobType jobType, FantasyCriticJobType deferTo) =>
