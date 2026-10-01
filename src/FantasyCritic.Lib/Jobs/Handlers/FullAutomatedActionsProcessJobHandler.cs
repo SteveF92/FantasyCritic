@@ -34,20 +34,30 @@ internal class FullAutomatedActionsProcessJobHandler : IFantasyCriticCronJobHand
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.FullAutomatedActionsProcess;
 
-    //Nobody watches this run, so any way it stops short of processing actions sends Steve an email. A cancellation doesn't: someone chose it.
+    //Nobody watches this run, so any way it stops short of processing actions sends Steve an email, a cancellation included.
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         try
         {
             return await RunSteps(context, cancellationToken);
         }
-        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        catch (OperationCanceledException ex) when (cancellationToken.IsCancellationRequested)
         {
+            await SendStoppedShortEmail("Automated action processing cancelled", ex,
+            [
+                $"Job {context.Job.JobID} was cancelled before finishing.",
+                ActionProcessingModeStillOn,
+            ]);
             throw;
         }
         catch (Exception ex)
         {
-            await SendFailureEmail(context, ex);
+            await SendStoppedShortEmail("Automated action processing failed", ex,
+            [
+                $"Job {context.Job.JobID} threw before finishing: {ex.GetType().Name}: {ex.Message}",
+                "Some years' actions may already be processed. Check the job's status and the league histories before processing by hand.",
+                ActionProcessingModeStillOn,
+            ]);
             throw;
         }
     }
@@ -85,20 +95,15 @@ internal class FullAutomatedActionsProcessJobHandler : IFantasyCriticCronJobHand
     }
 
     //If the email fails too, both errors go on the job, so the original isn't lost behind the email's.
-    private async Task SendFailureEmail(FantasyCriticJobContext context, Exception ex)
+    private async Task SendStoppedShortEmail(string subject, Exception ex, IReadOnlyList<string> lines)
     {
         try
         {
-            await _emailSendingService.SendAdminNotification("Automated action processing failed",
-            [
-                $"Job {context.Job.JobID} threw before finishing: {ex.GetType().Name}: {ex.Message}",
-                "Some years' actions may already be processed. Check the job's status and the league histories before processing by hand.",
-                ActionProcessingModeStillOn,
-            ]);
+            await _emailSendingService.SendAdminNotification(subject, lines);
         }
         catch (Exception emailException)
         {
-            throw new AggregateException("The automated action processing job failed, and so did the email about it.", ex, emailException);
+            throw new AggregateException("The automated action processing job stopped short, and the email about it failed.", ex, emailException);
         }
     }
 }
