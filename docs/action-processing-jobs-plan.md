@@ -127,7 +127,20 @@ Not covered by an automated test: the job itself. The test factory registers the
 
 ### Step 6: Check for cancellation before each write
 
-The same pattern as the earlier rounds, across all three jobs and the two new utilities. Once actions are saved for a year, the job doesn't stop partway through the rest of that year.
+Rule (Steve): check for cancellation up to the first write that can't be taken back, saving a year's results, and never after it.
+
+#### Step 6a: The special auction check becomes a reason
+
+`ActionProcessingRunner` threw if any special auction was locked, inside each year's processing. It reads every year's auctions, so in December it could throw on year 2 after year 1 was saved. It becomes a reason in `GetReasonsNotToProcessActions` for every kind of run, checked before anything is saved.
+
+It uses the current time, not `processingTime`: an auction that locks before the next bid time is processed by its own ten-minute job long before then, so the pre-check reports only an auction locked now and still waiting, which means that job is stuck. For the jobs and the button, `processingTime` is now anyway.
+
+#### Step 6b: The cancellation checks
+
+- **FullAutomatedActionsProcess:** the existing checks after mode on and through the refresh and snapshot stay. The last one is the runner's, below.
+- **`ActionProcessingRunner`:** one check, in the first year only, after its reads and the dry run and just before `SaveProcessedActionResults`. The loop passes the token to the first year and `CancellationToken.None` after it. Nothing checks after the first save: not later years, the Discord summaries, top bids and drops, or mode off.
+- **ProcessActions:** passes its token to the runner, so it gets the same single check.
+- **`TopBidsAndDropsUpdater`:** checks just before `InsertTopBidsAndDrops`. The UpdateTopBidsAndDrops job passes its token; the runner passes `CancellationToken.None`, since actions are saved by then.
 
 ### Step 7: Status and structured logs
 
