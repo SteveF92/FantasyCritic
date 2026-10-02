@@ -77,6 +77,7 @@ public class FantasyCriticJobRegistry
             FantasyCriticJobDefinition.For<RefreshGGInfoJobHandler>(),
             FantasyCriticJobDefinition.ForCron<RefreshPatreonInfoJobHandler>(),
             FantasyCriticJobDefinition.ForCron<SendAllPublicBiddingMessagesJobHandler>(),
+            FantasyCriticJobDefinition.For<SendFinalYearStandingsJobHandler>(),
             FantasyCriticJobDefinition.For<SendPublicBiddingDiscordMessagesJobHandler>(),
             FantasyCriticJobDefinition.For<SendPublicBiddingEmailsJobHandler>(),
             FantasyCriticJobDefinition.ForCron<SendReleasingThisWeekUpdateJobHandler>(),

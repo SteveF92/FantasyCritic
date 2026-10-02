@@ -158,6 +158,7 @@ const jobTypes = [
   'RefreshGGInfo',
   'RefreshPatreonInfo',
   'SendAllPublicBiddingMessages',
+  'SendFinalYearStandings',
   'SendPublicBiddingDiscordMessages',
   'SendPublicBiddingEmails',
   'SendReleasingThisWeekUpdate',

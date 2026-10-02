@@ -152,6 +152,7 @@
                 <b-dropdown-item-button @click="confirmOtherJob('Send Releasing This Week Update', () => adminClient.sendReleasingThisWeekUpdate())">
                   Send Releasing This Week Update
                 </b-dropdown-item-button>
+                <b-dropdown-item-button @click="confirmOtherJob('Send Final Year Standings', () => adminClient.sendFinalYearStandings())">Send Final Year Standings</b-dropdown-item-button>
 
                 <b-dropdown-header>League maintenance</b-dropdown-header>
                 <b-dropdown-item-button @click="confirmOtherJob('Make Slots Consistent', () => adminClient.makePublisherSlotsConsistent())">Make Slots Consistent</b-dropdown-item-button>

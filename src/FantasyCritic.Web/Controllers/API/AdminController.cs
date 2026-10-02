@@ -2,7 +2,6 @@ using System.Diagnostics;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Discord;
 using FantasyCritic.Lib.Discord.Models;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Jobs;
@@ -356,13 +355,9 @@ public class AdminController : BaseJobQueuingController
     public Task<ActionResult<FantasyCriticJobViewModel>> ExpireTrades() => EnqueueJob(FantasyCriticJobType.ExpireTrades);
 
     [HttpPost]
-    public async Task<IActionResult> PushYearEndDiscordMessages()
-    {
-        var currentDate = _clock.GetToday();
-        var leagueYears = await _fantasyCriticService.GetLeagueYears(currentDate.Year);
-        await _discordPushService.SendFinalYearStandings(leagueYears, currentDate);
-        return Ok();
-    }
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> SendFinalYearStandings() => EnqueueJob(FantasyCriticJobType.SendFinalYearStandings);
 
     [HttpPost]
     [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
