@@ -15,6 +15,7 @@ public class Scheduler : BackgroundService
     private readonly FantasyCriticJobRegistry _jobRegistry;
     private readonly WorkerStatus _workerStatus;
     private readonly Dictionary<FantasyCriticJobType, Instant> _nextScheduledOccurrencePerJobType;
+    private bool _checkedJobTypeRows;
 
     public Scheduler(ILogger<Scheduler> logger, IServiceProvider serviceProvider, IClock clock, FantasyCriticJobRegistry jobRegistry, WorkerStatus workerStatus)
     {
@@ -44,7 +45,7 @@ public class Scheduler : BackgroundService
                 _workerStatus.RecordSchedulerSuccess();
                 howLongToSleep = GetSleepUntilNextSlot();
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is not MissingJobTypeRowsException)
             {
                 //A failed attempt does not advance the next occurrence times, so the retry tries the same slots again. Trying a
                 //slot twice is harmless: CreateJob refuses the duplicate, and OnScheduled is already safe to call again.
@@ -69,6 +70,19 @@ public class Scheduler : BackgroundService
 
         var schedulingInstant = _clock.GetCurrentInstant();
         var updatedJobTypes = await jobRepo.GetJobTypeRunTypes();
+
+        //Once, at startup, and fatal: a skipped migration or a hand edit is best found while deploying. The loop below only notices
+        //scheduled types, so a manual-only type with no row would otherwise first show up as a 500 on its button.
+        //A row GetJobTypeRunTypes cannot parse counts as missing.
+        if (!_checkedJobTypeRows)
+        {
+            _checkedJobTypeRows = true;
+            var jobTypesWithoutRows = _jobRegistry.Definitions.Select(x => x.JobType).Except(updatedJobTypes.Select(x => x.JobType)).ToList();
+            if (jobTypesWithoutRows.Any())
+            {
+                throw new MissingJobTypeRowsException($"Job types with no usable row in tbl_job_type: {string.Join(", ", jobTypesWithoutRows)}.");
+            }
+        }
 
         //Decide everything that is due before enqueueing anything, because whether a job runs can depend on what else is due.
         var dueSlots = new List<DueSlot>();
@@ -178,6 +192,9 @@ public class Scheduler : BackgroundService
             }
         }
     }
+
+    //Not caught by the loop, so it stops the host. A retry cannot fix a missing row.
+    private class MissingJobTypeRowsException(string message) : Exception(message);
 
     private record DueSlot(FantasyCriticJobTypeWithRunType JobType, FantasyCriticJobSchedule Schedule, Instant ScheduledFor);
 }
