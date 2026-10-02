@@ -171,6 +171,24 @@ The first is older than Phase 4b but is first exercised by the new handler on 1 
 - `remaining-jobs-plan.md` set the rule that a status says what the job found, not that a
   message went out. This handler does not follow it.
 
+**Decided (2 October 2026):** a failed or missed rollover is acceptable as long as the worst case
+is Steve noticing the next day and pressing a button. So F3b keeps its single yearly slot, and the
+work went into making the buttons real.
+- F3a: Steve fixed the guard (`d48a69ab4`). The guard went in on 17 May 2026 and was never part
+  of a January run, and it would have broken the old `SetTimeFlags` the same way. The points
+  ordering stays: winners are computed from stored points, so a year ends on its points from the
+  last refresh before midnight (22:00, since the midnight refresh defers to the rollover). The
+  handler's comment now says so.
+- F3b: the review was wrong that "the button is the retry". No endpoint enqueued
+  `EndOfYearRollover`. The console now has End Of Year Rollover under a Year end header.
+- F3c: `SendFinalYearStandings` returns what it sent, and the status says "bot unavailable,
+  nothing sent" or gives the message and league counts.
+- `PushYearEndDiscordMessages` read the calendar year, so pressed in January it sent the new year,
+  and it had no console button. It is replaced by a manual Send Final Year Standings job, for the
+  most recently finished year, next to the rollover button.
+- 1 January 2027 is a Friday. A rollover that has not succeeded by Saturday 20:00 leaves 2026 open
+  to action processing. The `operations.md` troubleshooting row says so.
+
 ### F4. Turning action processing mode on now waits in the job queue
 
 **Mechanics confirmed, likelihood low.** Needs a decision on how much of it to close.
@@ -414,8 +432,8 @@ Suggested order: findings → production deploy → alerting → 7a → 5 → 6 
 1. Has 4b been deployed to production? (R0)
 2. Which findings close the phase? Suggested: F1, F3 and F5, plus the day-check half of F4.
 3. ~~F2: retry like the runner, or keep the crash?~~ Retry, and report through health. See F2.
-4. F3a: fix the guard only, or also update points before `FinishYear`?
-5. F3b: what retry does the rollover get, given the skip-when-due trap?
+4. ~~F3a: fix the guard only, or also update points before `FinishYear`?~~ The guard only. See F3.
+5. ~~F3b: what retry does the rollover get, given the skip-when-due trap?~~ None; the button is the retry. See F3.
 6. R5: is 7a next, or infrastructure through Phase 6?
 7. L7 and L9: drop the unused columns and the prune job from the plan?
 
