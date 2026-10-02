@@ -746,7 +746,7 @@ public class DiscordPushService
         var failedMessageCount = await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
         if (failedMessageCount > 0)
         {
-            throw new InvalidOperationException($"Failed to send {failedMessageCount} public bidding Discord message(s).");
+            Logger.Warning("{FailedMessageCount} of {MessageCount} public bidding messages failed to post.", failedMessageCount, preparedMessages.Count);
         }
     }
 
