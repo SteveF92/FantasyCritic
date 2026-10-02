@@ -58,7 +58,9 @@ internal class EndOfYearRolloverJobHandler : IFantasyCriticCronJobHandler
                 await context.AppendDetailedStatus($"Finished {supportedYear.Year}.");
 
                 //Past this point, the next run skips this year because it's finished. So the rest runs to the end regardless:
-                //stopping here would leave fantasy points un-finalized and the final standings never sent.
+                //stopping here would leave the final standings unsent.
+                //This writes the finished year's winners, which the next refresh would also do. It doesn't update that year's points,
+                //since only unfinished years get those, so the year ends on the points from the last refresh before midnight.
                 await _fantasyPointsUpdater.UpdateFantasyPoints(context, CancellationToken.None);
 
                 var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
