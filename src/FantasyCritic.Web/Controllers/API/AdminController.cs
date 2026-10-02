@@ -357,6 +357,11 @@ public class AdminController : BaseJobQueuingController
     [HttpPost]
     [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> EndOfYearRollover() => EnqueueJob(FantasyCriticJobType.EndOfYearRollover);
+
+    [HttpPost]
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public Task<ActionResult<FantasyCriticJobViewModel>> SendFinalYearStandings() => EnqueueJob(FantasyCriticJobType.SendFinalYearStandings);
 
     [HttpPost]
