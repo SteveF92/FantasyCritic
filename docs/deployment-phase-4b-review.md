@@ -96,6 +96,17 @@ A middle path: retry on a failed database call, and keep the "Job Type not found
 throw at line 55 fatal, since that one is a deploy mistake and a crash loop is how `deploy.sh`
 notices it.
 
+**Decided (1 October 2026):** all three loops catch, log at Error and retry, and none stops the
+process. The rule is that a failure outside a job either clears on a retry or keeps the worker
+unhealthy until Steve notices. A crash is no louder than unhealthy on this host, and it takes the
+running job down with it. Each loop records its outcome in `WorkerStatus`, and `WorkerHealthCheck`
+is unhealthy while any loop's latest attempt failed or has not happened yet. The scheduler retries
+after 30 seconds without advancing its next slots, so the retry tries the same slots again. The
+missing-row throw needs no special case: the scheduler fails every attempt, the worker never
+becomes healthy, and `deploy.sh`'s `wait_for_healthy` fails the deploy. Per-job failures inside the
+canceller and the runner's disallowed-job cleanup now count as that loop failing. Getting an
+unhealthy worker in front of Steve without him looking is still R1.
+
 ### F3. Year-end rollover: three problems, with a 1 January deadline
 
 The first is older than Phase 4b but is first exercised by the new handler on 1 January 2027.
@@ -390,7 +401,7 @@ Suggested order: findings → production deploy → alerting → 7a → 5 → 6 
 
 1. Has 4b been deployed to production? (R0)
 2. Which findings close the phase? Suggested: F1, F3 and F5, plus the day-check half of F4.
-3. F2: retry like the runner, or keep the crash?
+3. ~~F2: retry like the runner, or keep the crash?~~ Retry, and report through health. See F2.
 4. F3a: fix the guard only, or also update points before `FinishYear`?
 5. F3b: what retry does the rollover get, given the skip-when-due trap?
 6. R5: is 7a next, or infrastructure through Phase 6?

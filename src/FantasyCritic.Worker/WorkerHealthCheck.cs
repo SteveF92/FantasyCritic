@@ -5,9 +5,9 @@ using NodaTime;
 namespace FantasyCritic.Worker;
 
 /// <summary>
-/// The runner loop catches a failed poll and carries on, so the process staying up proves nothing. What does is how
-/// recently it last read the database. While a job runs the loop is inside that job and does not poll at all, so a
-/// running job counts as healthy on its own.
+/// Each of the worker's three loops catches a failure and tries again, so the process staying up proves nothing. The worker
+/// is healthy only while every loop's most recent attempt succeeded. A failure that a retry fixes clears by itself; one it
+/// does not leaves the worker unhealthy, saying which loop and why, until someone looks.
 /// </summary>
 public sealed class WorkerHealthCheck : IHealthCheck
 {
@@ -37,24 +37,30 @@ public sealed class WorkerHealthCheck : IHealthCheck
                 false => "No",
                 null => "Unknown"
             }),
-            ["lastPollTime"] = status.LastPollTime is null ? ServiceHealthDetail.FromText("Last poll", "Never") : ServiceHealthDetail.FromTime("Last poll", status.LastPollTime.Value),
             ["runningJob"] = ServiceHealthDetail.FromText("Running job", status.RunningJob is null ? "None" : $"{status.RunningJob.Type} ({status.RunningJob.JobID})")
         };
+        AddLoopDetails(data, "jobRunner", "Job runner", status.JobRunner);
+        AddLoopDetails(data, "scheduler", "Scheduler", status.Scheduler);
+        AddLoopDetails(data, "canceller", "Canceller", status.Canceller);
+
+        //The age limits catch a loop that hangs rather than fails. The runner does not poll while it is inside a job, so its
+        //limit only applies while it is idle. The scheduler sleeps until its next slot, which can be ten minutes away, so it
+        //has none: a failed attempt is the only thing that marks it.
+        var problems = new List<string?>
+        {
+            FindProblem("job runner", status.JobRunner, now, status.RunningJob is null ? MaximumPollAge : null),
+            FindProblem("scheduler", status.Scheduler, now, maximumAge: null),
+            FindProblem("canceller", status.Canceller, now, MaximumPollAge)
+        }.OfType<string>().ToList();
+
+        if (problems.Count > 0)
+        {
+            return HealthCheckResult.Unhealthy(string.Join(" ", problems), data: data);
+        }
 
         if (status.RunningJob is not null)
         {
             return HealthCheckResult.Healthy($"Running {status.RunningJob.Type}.", data);
-        }
-
-        if (status.LastPollTime is null)
-        {
-            return HealthCheckResult.Unhealthy("The job runner has not polled the database yet.", data: data);
-        }
-
-        var pollAge = now - status.LastPollTime.Value;
-        if (pollAge > MaximumPollAge)
-        {
-            return HealthCheckResult.Unhealthy($"The job runner last polled the database {(int)pollAge.TotalSeconds} seconds ago.", data: data);
         }
 
         if (status.WorkerShouldPullNewJobs == false)
@@ -63,5 +69,39 @@ public sealed class WorkerHealthCheck : IHealthCheck
         }
 
         return HealthCheckResult.Healthy("Waiting for jobs.", data);
+    }
+
+    private static string? FindProblem(string loopName, WorkerLoopStatus loop, Instant now, Duration? maximumAge)
+    {
+        if (loop.Failure is not null)
+        {
+            return $"The {loopName} is failing: {loop.Failure.Error}";
+        }
+
+        if (loop.LastSucceededAt is null)
+        {
+            return $"The {loopName} has not completed a pass yet.";
+        }
+
+        var age = now - loop.LastSucceededAt.Value;
+        if (maximumAge.HasValue && age > maximumAge.Value)
+        {
+            return $"The {loopName} last completed a pass {(int)age.TotalSeconds} seconds ago.";
+        }
+
+        return null;
+    }
+
+    private static void AddLoopDetails(Dictionary<string, object> data, string key, string label, WorkerLoopStatus loop)
+    {
+        data[$"{key}LastSucceededAt"] = loop.LastSucceededAt is null
+            ? ServiceHealthDetail.FromText($"{label} last succeeded", "Never")
+            : ServiceHealthDetail.FromTime($"{label} last succeeded", loop.LastSucceededAt.Value);
+
+        if (loop.Failure is not null)
+        {
+            data[$"{key}FailingSince"] = ServiceHealthDetail.FromTime($"{label} failing since", loop.Failure.FailingSince);
+            data[$"{key}Error"] = ServiceHealthDetail.FromText($"{label} error", loop.Failure.Error);
+        }
     }
 }

@@ -102,7 +102,7 @@ button and no timer. For the worker it shows one of:
 | **Running** | Healthy and pulling jobs. |
 | **Draining** | Turned off, but a job is still Running or Cancelling. |
 | **Off** | Turned off and nothing is running. Safe to restart or stop the container. |
-| **Unhealthy** | It answered, but its job runner has not read the database for over a minute. |
+| **Unhealthy** | It answered, but one of its three loops is failing or stuck. The description says which, and why. |
 | **Unreachable** | It did not answer at all: the container is down or still starting. |
 
 **Turn Off Worker** does not stop the container. It clears one flag,
@@ -199,8 +199,14 @@ cd /opt/fantasy-critic && sudo docker compose exec worker curl -sS http://localh
 cd /opt/fantasy-critic && sudo docker compose exec discord-bot curl -sS http://localhost:8080/health
 ```
 
-The worker is healthy when its job runner has read the database within the last minute, or is
-inside a job; the process merely being up is not enough. The bot is healthy when its gateway
+The worker runs three loops (the job runner, the scheduler and the canceller), and each one
+catches its own failures, logs them at Error and tries again. None of them stops the process,
+so a database outage does not take a running job down with it. The process merely being up
+therefore proves nothing. The worker is healthy only when every loop's most recent attempt
+succeeded, the job runner has read the database within the last minute or is inside a job, and
+the canceller has done the same within the last minute. A failure that a retry fixes clears by
+itself. One that does not keeps the worker unhealthy, naming the loop and the error, until
+someone looks. The bot is healthy when its gateway
 connection is up. `unhealthy` is only a label: on this host nothing restarts a container for
 it. A process that *exits* is restarted, as before.
 
@@ -311,7 +317,7 @@ hand, which stays stopped.
 | Admin console button sticks on "Queued" | Same thing: nothing is consuming the queue. The job will run whenever the worker comes back. |
 | A job is stuck "Running" and nothing is happening | The worker was killed mid-job. Nothing sweeps those rows yet, and cancelling from the console will not settle one either — the canceller only trips tokens a live worker holds. Until the sweep is built, finish the row by hand in `tbl_job`. While it sits there the console's button for that job type refuses, a turned-off worker reads as Draining rather than Off, and a deploy waits its full 30 minutes on it and then stops — use `skip_drain`. Cron runs of the job type are unaffected. |
 | Deploy stops at "Draining the job worker" | "A job was still running when the wait ran out": a real long job, or a stuck Running row (above). Nothing was touched and the worker is back on. Redeploy once the job is done, or with `skip_drain`. Any other error there means the `command-line` image could not reach the database — its log lines are in the deploy output's stderr. |
-| Worker or bot shows `(unhealthy)` in `docker compose ps` | `docker compose exec <service> curl -sS http://localhost:8080/health` says why. For the worker it is nearly always the database being unreachable; it recovers by itself when the database does. |
+| Worker or bot shows `(unhealthy)` in `docker compose ps` | `docker compose exec <service> curl -sS http://localhost:8080/health` says why. For the worker it names each failing loop and its error. If that is the database being unreachable, it recovers by itself when the database does. Anything else, such as "Job Type X not found in database" from the scheduler, will not fix itself: read the loop's log file. |
 | Containers cannot start, Secrets Manager errors | The IMDSv2 hop limit has been reset to 1. See step 3 of the setup guide. |
 | Nothing in `/var/log/fantasy-critic` | The directory is not owned by uid 1654. |
 | Admin console shows no release info | `/opt/fantasy-critic/RELEASE` is missing, or Docker created it as a directory. |

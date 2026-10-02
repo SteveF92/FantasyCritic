@@ -67,6 +67,7 @@ public class Worker : BackgroundService
                     _logger.LogError(ex, "Job runner loop failed while looking for a job to run.");
                 }
 
+                _workerStatus.RecordJobRunnerFailure(ex.Message);
                 await DelayUnlessStopping(RunnerPollInterval, stoppingToken);
             }
         }
@@ -89,6 +90,7 @@ public class Worker : BackgroundService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Job cancellation loop failed.");
+                _workerStatus.RecordCancellerFailure(ex.Message);
                 await DelayUnlessStopping(CancellerPollInterval, stoppingToken);
             }
         }
@@ -102,10 +104,11 @@ public class Worker : BackgroundService
         var clock = scope.ServiceProvider.GetRequiredService<IClock>();
 
         var systemWideSettings = await fantasyCriticRepo.GetSystemWideSettings();
-        _workerStatus.RecordPoll(clock.GetCurrentInstant(), systemWideSettings.WorkerShouldPullNewJobs);
+        _workerStatus.RecordWorkerShouldPullNewJobs(systemWideSettings.WorkerShouldPullNewJobs);
         if (!systemWideSettings.WorkerShouldPullNewJobs)
         {
             _logger.LogInformation("Intentionally not running new jobs because WorkerShouldPullNewJobs is FALSE.");
+            _workerStatus.RecordJobRunnerSuccess();
             return null;
         }
 
@@ -114,6 +117,7 @@ public class Worker : BackgroundService
 
         //Enqueueing already refuses these, so one only turns up if its RunType changed while it waited.
         //Settle it now, or it sits Queued and runs whenever the type is next re-enabled.
+        var failedCancellations = 0;
         foreach (var job in queuedJobs.Where(x => !x.AllowedByRunType))
         {
             using var jobScope = WorkerLogging.BeginJobScope(job);
@@ -124,7 +128,18 @@ public class Worker : BackgroundService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to cancel job {Job}, which its RunType no longer allows.", job);
+                failedCancellations++;
             }
+        }
+
+        //Still runs the next job, but the worker stays unhealthy until the cancellation goes through.
+        if (failedCancellations > 0)
+        {
+            _workerStatus.RecordJobRunnerFailure($"Failed to cancel {failedCancellations} queued job(s) that their RunType no longer allows.");
+        }
+        else
+        {
+            _workerStatus.RecordJobRunnerSuccess();
         }
 
         return queuedJobs.Where(x => x.AllowedByRunType).MinBy(x => x.CreatedAt);
@@ -227,6 +242,7 @@ public class Worker : BackgroundService
 
         var incompleteJobs = await jobRepo.GetIncompleteJobs();
         var cancellingJobs = incompleteJobs.Where(x => x.Status.Equals(FantasyCriticJobStatus.Cancelling));
+        var failedResolutions = 0;
         foreach (var job in cancellingJobs)
         {
             using var jobScope = WorkerLogging.BeginJobScope(job);
@@ -239,7 +255,17 @@ public class Worker : BackgroundService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to resolve cancellation request for job {Job}.", job);
+                failedResolutions++;
             }
+        }
+
+        if (failedResolutions > 0)
+        {
+            _workerStatus.RecordCancellerFailure($"Failed to resolve {failedResolutions} cancellation request(s).");
+        }
+        else
+        {
+            _workerStatus.RecordCancellerSuccess();
         }
     }
 

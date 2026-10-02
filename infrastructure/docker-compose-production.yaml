@@ -109,9 +109,10 @@ services:
   # nothing here is built to need one: if jobs start queueing behind each other, add runner
   # loops inside the container rather than a second container.
   #
-  # Port 8080 and the healthcheck are as for the bot above. Healthy here means the runner has
-  # read the database within the last minute or is inside a job — not merely that the process
-  # is up.
+  # Port 8080 and the healthcheck are as for the bot above. Healthy here means each of the
+  # worker's loops last succeeded at reading the database — not merely that the process is up.
+  # The loops catch their own failures and retry, so a database outage shows as unhealthy
+  # rather than as a crash loop.
   worker:
     image: ${ECR_REGISTRY}/fantasycritic-worker:${IMAGE_TAG}
     restart: unless-stopped
