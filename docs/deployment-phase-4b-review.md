@@ -177,6 +177,14 @@ is what makes (c) visible.
 **Do not change:** leaving the mode on after a stop is deliberate. So is stopping with an email
 when `EnableAutomatedActionProcessing` is off.
 
+**Decided (1 October 2026):** the scheduler turns the mode on when the slot is due, through a new
+`IOnScheduledCronJobHandler` hook that the scheduler calls before enqueueing. That closes (a) and
+(c), since the scheduler runs whether or not the runner is busy or pulling. (b) becomes harmless:
+the site is locked from Saturday 20:00, and the stale job stops on the day check. The early day
+check is no longer worth adding. Widening `IsBidLockWindow` was rejected: it forces the mode on
+for the whole window, so it would block next week's bids long after processing finished. What is
+left is the whole Worker process being down at 20:00, the same exposure Web being down had before.
+
 ### F5. Nothing checks that every job type has a `tbl_job_type` row
 
 **Confirmed.** Plan item 10, half built.

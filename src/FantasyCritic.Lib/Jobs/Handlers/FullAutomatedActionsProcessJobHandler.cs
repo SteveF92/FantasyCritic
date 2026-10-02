@@ -7,7 +7,7 @@ using Microsoft.Extensions.Logging;
 
 namespace FantasyCritic.Lib.Jobs.Handlers;
 
-internal class FullAutomatedActionsProcessJobHandler : IFantasyCriticCronJobHandler
+internal class FullAutomatedActionsProcessJobHandler : IOnScheduledCronJobHandler
 {
     private const string ActionProcessingModeStillOn = "Action processing mode is still on, so the site stays locked until actions are processed by hand or the mode is turned off.";
 
@@ -37,6 +37,13 @@ internal class FullAutomatedActionsProcessJobHandler : IFantasyCriticCronJobHand
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.FullAutomatedActionsProcess;
+
+    //The bid lock window only lasts a few minutes, and the runner may be busy or not pulling, so the site locks when the slot is due, not when this job starts.
+    public async Task OnScheduled()
+    {
+        await _interLeagueService.SetActionProcessingMode(true);
+        _logger.LogInformation("Turned action processing mode on for the scheduled automated run.");
+    }
 
     //Nobody watches this run, so any way it stops short of processing actions sends Steve an email, a cancellation included.
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
@@ -69,6 +76,7 @@ internal class FullAutomatedActionsProcessJobHandler : IFantasyCriticCronJobHand
     private async Task<Result> RunSteps(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         //Mode first, so nothing changes between the refresh, the snapshot, and processing.
+        //OnScheduled already turned it on. Doing it again keeps this correct if the run type ever allows a manual run, which skips OnScheduled.
         //The scheduler skips FullDataRefresh's own slot in this wake, since this is the refresh.
         //A cancellation leaves action processing mode on, like every other way this job can stop partway.
         await _interLeagueService.SetActionProcessingMode(true);

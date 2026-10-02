@@ -60,6 +60,14 @@ public class FantasyCriticJobRegistryTests
     }
 
     [Test]
+    public void Create_NotifiesOnScheduledOnlyOnScheduledCronHandlers()
+    {
+        var registry = FantasyCriticJobRegistry.Create();
+
+        Assert.That(registry.NotifiedOnScheduled, Is.EquivalentTo(new[] { FantasyCriticJobType.FullAutomatedActionsProcess }));
+    }
+
+    [Test]
     public void GetDueJobsToDeferTo_FullDataRefreshDefersToFullAutomatedActionsProcessWhenBothAreDue()
     {
         var registry = FantasyCriticJobRegistry.Create();

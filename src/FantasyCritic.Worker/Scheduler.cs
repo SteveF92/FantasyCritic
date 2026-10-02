@@ -106,6 +106,13 @@ public class Scheduler : BackgroundService
                     cancelledAt: null, cancelledByUser: null);
                 using var jobScope = WorkerLogging.BeginJobScope(job);
 
+                //Before enqueueing, so its work is done on time even if the enqueue fails. Called even when another scheduler already enqueued the slot.
+                if (_jobRegistry.NotifiedOnScheduled.Contains(jobType))
+                {
+                    var handler = (IOnScheduledCronJobHandler)scope.ServiceProvider.GetRequiredKeyedService<IJobHandler>(jobType);
+                    await handler.OnScheduled();
+                }
+
                 var created = await jobRepo.CreateJob(job);
                 if (created)
                 {
