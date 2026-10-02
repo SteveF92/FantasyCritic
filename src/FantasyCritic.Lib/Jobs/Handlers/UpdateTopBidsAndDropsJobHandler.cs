@@ -15,7 +15,7 @@ internal class UpdateTopBidsAndDropsJobHandler : IFantasyCriticJobHandler
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
-        await _topBidsAndDropsUpdater.UpdateTopBidsAndDropsForMostRecentWeek(cancellationToken);
+        await _topBidsAndDropsUpdater.UpdateTopBidsAndDropsForMostRecentWeek(context, cancellationToken);
         return Result.Success();
     }
 }

@@ -23,12 +23,12 @@ internal class ProcessActionsJobHandler : IFantasyCriticJobHandler
         var reasonsNotToProcess = await _adminService.GetReasonsNotToProcessActions(false, _clock.GetCurrentInstant());
         if (reasonsNotToProcess.Any())
         {
-            return Result.Failure(string.Join(" ", reasonsNotToProcess));
+            var stopReasons = string.Join(" ", reasonsNotToProcess);
+            await context.AppendDetailedStatus($"Stopped: {stopReasons}");
+            return Result.Failure(stopReasons);
         }
 
         await _actionProcessingRunner.ProcessActions(context, cancellationToken);
-
-        await context.UpdateDetailedStatus("Processed actions for all active years.");
         return Result.Success();
     }
 }
