@@ -861,6 +861,39 @@ public class MySQLMasterGameRepo : IMasterGameRepo
             });
     }
 
+    public async Task<IReadOnlyList<MasterGame>> GetGamesWithPendingBidsOrDropsThatHavePendingCorrections()
+    {
+        //The same bids and drops action processing would pick up: unprocessed, in leagues not deleted, in years open for play and not finished.
+        const string sql =
+            """
+            SELECT DISTINCT cr.MasterGameID
+            FROM tbl_mastergame_changerequest cr
+            WHERE cr.Answered = 0
+            AND cr.MasterGameID IN (
+                SELECT pb.MasterGameID
+                FROM vw_league_pickupbid pb
+                JOIN tbl_meta_supportedyear sy ON pb.Year = sy.Year
+                WHERE pb.Successful IS NULL AND pb.IsDeleted = 0 AND sy.OpenForPlay = 1 AND sy.Finished = 0
+                UNION
+                SELECT pb.ConditionalDropMasterGameID
+                FROM vw_league_pickupbid pb
+                JOIN tbl_meta_supportedyear sy ON pb.Year = sy.Year
+                WHERE pb.Successful IS NULL AND pb.IsDeleted = 0 AND sy.OpenForPlay = 1 AND sy.Finished = 0
+                AND pb.ConditionalDropMasterGameID IS NOT NULL
+                UNION
+                SELECT dr.MasterGameID
+                FROM vw_league_droprequest dr
+                JOIN tbl_meta_supportedyear sy ON dr.Year = sy.Year
+                WHERE dr.Successful IS NULL AND dr.IsDeleted = 0 AND sy.OpenForPlay = 1 AND sy.Finished = 0
+            );
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var masterGameIDs = await connection.QueryAsync<Guid>(sql);
+        var masterGames = await GetMasterGameDictionary();
+        return masterGameIDs.Select(x => masterGames[x]).ToList();
+    }
+
     public async Task<IReadOnlyList<MasterGameRequest>> GetMasterGameRequestsForUser(FantasyCriticUser user)
     {
         const string sql = "select * from tbl_mastergame_request where UserID = @userID and Hidden = 0";

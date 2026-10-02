@@ -74,7 +74,7 @@ public static class ServiceCollectionExtensions
         services.AddFantasyCriticRepositories(connectionStrings);
 
         //Configuration objects
-        services.AddSingleton(new EnvironmentConfiguration(baseAddress, environment.IsProduction(), IntegrationTestMode: false));
+        services.AddSingleton(new EnvironmentConfiguration(baseAddress, environment.EnvironmentName, environment.IsProduction(), IntegrationTestMode: false));
         services.AddSingleton(new FantasyCriticDiscordConfiguration(discord.BotToken, baseAddress, environment.IsDevelopment()));
 
         //Domain services

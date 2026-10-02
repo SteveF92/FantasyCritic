@@ -45,8 +45,22 @@ public class MySQLBetaCleaner
         await CleanDiscordData(connection, transaction, betaUserIds);
         await CleanUnprocessedActionsInNonTestLeagues(connection, transaction);
         await DisablePatreon(connection, transaction);
+        await DisableAutomatedActionProcessing(connection, transaction);
 
         await transaction.CommitAsync();
+    }
+
+    /// <summary>
+    /// A copy of production must never process actions automatically: outside production, that is always done by hand.
+    /// The copy keeps production's EnableAutomatedActionProcessing, so the job is turned off with its own RunType.
+    /// </summary>
+    private static async Task DisableAutomatedActionProcessing(MySqlConnection connection, MySqlTransaction transaction)
+    {
+        _logger.Information("Disabling the automated action processing job.");
+        await connection.ExecuteAsync(
+            "UPDATE tbl_job_type SET RunType = @runType WHERE Name = @jobType",
+            new { runType = FantasyCriticJobRunType.Disabled.Value, jobType = FantasyCriticJobType.FullAutomatedActionsProcess.Value },
+            transaction);
     }
 
     /// <summary>

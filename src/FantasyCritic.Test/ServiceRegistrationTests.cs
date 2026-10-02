@@ -38,6 +38,7 @@ public class ServiceRegistrationTests
             Assert.That(discord.BaseAddress, Is.EqualTo("https://the-base-address"));
             Assert.That(discord.IsDevelopment, Is.False);
             Assert.That(environment.BaseAddress, Is.EqualTo("https://the-base-address"));
+            Assert.That(environment.EnvironmentName, Is.EqualTo(Environments.Production));
             Assert.That(environment.IsProduction, Is.True);
             Assert.That(environment.IntegrationTestMode, Is.False, "only the integration tests turn it on, by overriding this record");
         }

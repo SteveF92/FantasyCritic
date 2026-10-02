@@ -7,4 +7,7 @@ internal sealed class NullEmailSender : IEmailSender
 {
     public Task SendEmailAsync(string email, string subject, string htmlMessage)
         => Task.CompletedTask;
+
+    public Task SendEmailOrThrow(string email, string subject, string htmlMessage)
+        => Task.CompletedTask;
 }

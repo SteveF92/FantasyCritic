@@ -5,9 +5,10 @@ public class SystemWideSettingsEntity
     public bool ActionProcessingMode { get; set; }
     public bool RefreshOpenCritic { get; set; }
     public bool WorkerShouldPullNewJobs { get; set; }
+    public bool EnableAutomatedActionProcessing { get; set; }
 
     public SystemWideSettings ToDomain()
     {
-        return new SystemWideSettings(ActionProcessingMode, RefreshOpenCritic, WorkerShouldPullNewJobs);
+        return new SystemWideSettings(ActionProcessingMode, RefreshOpenCritic, WorkerShouldPullNewJobs, EnableAutomatedActionProcessing);
     }
 }

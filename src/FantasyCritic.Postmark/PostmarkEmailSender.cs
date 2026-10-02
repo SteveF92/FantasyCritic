@@ -19,19 +19,10 @@ public class PostmarkEmailSender : IEmailSender
 
     public async Task SendEmailAsync(string email, string subject, string message)
     {
-        var postmarkMessage = new PostmarkMessage()
-        {
-            To = email,
-            From = _fromEmail,
-            TrackOpens = false,
-            Subject = subject,
-            HtmlBody = message
-        };
-
         try
         {
             var client = new PostmarkClient(_apiKey);
-            var sendResult = await client.SendMessageAsync(postmarkMessage);
+            var sendResult = await client.SendMessageAsync(BuildMessage(email, subject, message));
 
             if (sendResult.Status != PostmarkStatus.Success)
             {
@@ -42,5 +33,28 @@ public class PostmarkEmailSender : IEmailSender
         {
             _logger.Error(e, $"Mail failed to send to {email}");
         }
+    }
+
+    public async Task SendEmailOrThrow(string email, string subject, string message)
+    {
+        var client = new PostmarkClient(_apiKey);
+        var sendResult = await client.SendMessageAsync(BuildMessage(email, subject, message));
+
+        if (sendResult.Status != PostmarkStatus.Success)
+        {
+            throw new InvalidOperationException($"Mail failed to send to {email}: {sendResult.ErrorCode} {sendResult.Message}");
+        }
+    }
+
+    private PostmarkMessage BuildMessage(string email, string subject, string message)
+    {
+        return new PostmarkMessage()
+        {
+            To = email,
+            From = _fromEmail,
+            TrackOpens = false,
+            Subject = subject,
+            HtmlBody = message
+        };
     }
 }

@@ -205,6 +205,11 @@ public class FakeMasterGameRepo : IMasterGameRepo
         throw new NotImplementedException();
     }
 
+    public Task<IReadOnlyList<MasterGame>> GetGamesWithPendingBidsOrDropsThatHavePendingCorrections()
+    {
+        throw new NotImplementedException();
+    }
+
     public Task LinkToOpenCritic(MasterGame masterGame, int openCriticID)
     {
         throw new NotImplementedException();

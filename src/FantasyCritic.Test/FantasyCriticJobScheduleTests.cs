@@ -167,7 +167,7 @@ public class FantasyCriticJobScheduleTests
             ["PushGameReleaseMessages"] = "1 0 * * *",
             ["EndOfYearRollover"] = "0 0 1 1 *",
             ["AdvanceRoyaleQuarters"] = "1 0 * * *",
-            ["PrepareForActionProcessing"] = "0 20 * * 6",
+            ["FullAutomatedActionsProcess"] = "0 20 * * 6",
             ["SendAllPublicBiddingMessages"] = "0 20 * * 4",
             ["SendReleasingThisWeekUpdate"] = "0 20 * * 0",
         }));

@@ -4,10 +4,10 @@ public class FantasyCriticJobType : TypeSafeEnum<FantasyCriticJobType>
 {
     // Define values here.
     public static readonly FantasyCriticJobType ExpireTrades = new FantasyCriticJobType("ExpireTrades");
+    public static readonly FantasyCriticJobType FullAutomatedActionsProcess = new FantasyCriticJobType("FullAutomatedActionsProcess");
     public static readonly FantasyCriticJobType FullDataRefresh = new FantasyCriticJobType("FullDataRefresh");
     public static readonly FantasyCriticJobType GrantSuperDrops = new FantasyCriticJobType("GrantSuperDrops");
     public static readonly FantasyCriticJobType MakeSlotsConsistent = new FantasyCriticJobType("MakeSlotsConsistent");
-    public static readonly FantasyCriticJobType PrepareForActionProcessing = new FantasyCriticJobType("PrepareForActionProcessing");
     public static readonly FantasyCriticJobType ProcessActions = new FantasyCriticJobType("ProcessActions");
     public static readonly FantasyCriticJobType ProcessSpecialAuctions = new FantasyCriticJobType("ProcessSpecialAuctions");
     public static readonly FantasyCriticJobType PushGameReleaseMessages = new FantasyCriticJobType("PushGameReleaseMessages");

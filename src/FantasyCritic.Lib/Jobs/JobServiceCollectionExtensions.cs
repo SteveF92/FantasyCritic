@@ -23,6 +23,8 @@ public static class JobServiceCollectionExtensions
         services.AddScoped<CacheRefresher>();
         services.AddScoped<FantasyPointsUpdater>();
         services.AddScoped<FullDataRefresher>();
+        services.AddScoped<TopBidsAndDropsUpdater>();
+        services.AddScoped<ActionProcessingRunner>();
 
         return services;
     }

@@ -1,4 +1,6 @@
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using FantasyCritic.Lib.Interfaces;
@@ -15,11 +17,21 @@ public sealed class CapturingEmailSender : IEmailSender
     // Keyed by the *lowercase* recipient email address; stores the raw HTML body.
     private readonly ConcurrentDictionary<string, string> _bodies = new();
 
+    // Every email, for tests that check the subject, or that send more than one to the same address.
+    private readonly ConcurrentQueue<CapturedEmail> _emails = new();
+
     public Task SendEmailAsync(string email, string subject, string htmlMessage)
     {
         _bodies[email.ToLowerInvariant()] = htmlMessage;
+        _emails.Enqueue(new CapturedEmail(email, subject, htmlMessage));
         return Task.CompletedTask;
     }
+
+    public Task SendEmailOrThrow(string email, string subject, string htmlMessage)
+        => SendEmailAsync(email, subject, htmlMessage);
+
+    public IReadOnlyList<CapturedEmail> GetEmailsWithSubject(string subject)
+        => _emails.Where(x => x.Subject == subject).ToList();
 
     /// <summary>
     /// Returns the relative path (e.g. <c>/Account/ConfirmEmail?userId=...&amp;code=...</c>)
@@ -49,3 +61,5 @@ public sealed class CapturingEmailSender : IEmailSender
         return uri.PathAndQuery;
     }
 }
+
+public record CapturedEmail(string Email, string Subject, string HtmlMessage);
