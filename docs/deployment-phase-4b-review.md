@@ -43,7 +43,7 @@ Each finding says whether it is **confirmed** (the code path was read end to end
 | 10 Startup reconciliation | **Partial** (F5). |
 | 11 Delete the old scheduler and vendored cron | Done. No references remain. |
 | 12 Remove the nginx 300s overrides | **Not done** (R3). |
-| Prune job ("worth adding") | Not built (L9). |
+| Prune job ("worth adding") | Not built, and dropped (L9). |
 
 ---
 
@@ -274,6 +274,8 @@ change request by editing a game during that wait, the pending-corrections check
 a fresh query) and processing uses the pre-edit game. Clearing both caches just before the
 check at line 87 closes it. The manual Process Actions job starts in a fresh scope and is not
 affected.
+*Decided (2 October 2026):* no change. Master games are edited by the site's operators, and
+they would not edit one while Saturday's processing is running.
 
 **L4. ProcessSpecialAuctions may throw in December. Pre-existing; reachability not verified.**
 `GetAllActiveSpecialAuctions` returns every year's unprocessed auctions, but
@@ -287,6 +289,7 @@ hold a special auction in December.
 `FullAutomatedActionsProcessJobHandler.cs:12` says the site stays locked "until actions are
 processed by hand or the mode is turned off". `ProcessActionsJobHandler` no longer turns the
 mode off, so only the second half is true.
+*Decided (2 October 2026):* no change. The email is for Steve, and it reads right to him.
 
 **L6. Discord sends can do nothing while the job reports success. Mechanism confirmed; how
 often is not known.**
@@ -295,11 +298,17 @@ disabled, or it was not Ready about five seconds after first use (`DiscordPushSe
 `MaxAttempts = 4`). The service is a singleton, so the exposure is the first Discord-sending
 job after a worker start. Only `SendPendingMasterGameUpdates` reports "bot unavailable".
 Whether Ready ever takes longer than five seconds on a cold start has not been measured.
+*Decided (2 October 2026):* addressed. A bot that is not Ready logs "Discord bot is not ready,
+cannot send message." at Warning, which the service monitor's Warnings button shows. A disabled
+bot is silent on purpose, since that is every environment without a token. The two sends whose
+status matters now report what they did: `SendPendingMasterGameUpdates`, and
+`SendFinalYearStandings` (F3c).
 
 **L7. `tbl_job_type.DisplayName` and `Category` are never read. Confirmed.**
 `GetJobTypeRunTypes` selects only `Name`, `RunType` and `Severity`. The console was laid out by
 hand, and `recentJobsTable.vue` hard-codes the list of job types for its filter, so a new job
 type needs a line there too. Either drop the two columns or accept them as documentation.
+*Decided (2 October 2026):* keep them. They may be used some day.
 
 **L8. Scheduler noise. Confirmed, cosmetic.**
 - A job type whose `RunType` does not allow cron logs a Warning at every slot
@@ -311,9 +320,13 @@ type needs a line there too. Either drop the two columns or accept them as docum
 - After every restart, slots from the last 30 minutes are retried and log "probably a
   deployment overlap" at Warning. Expected, but it is a Warning on every deploy.
 
+*Decided (2 October 2026):* no change. Beta only runs while Steve is developing, so its hourly
+Warning costs nothing.
+
 **L9. No prune job.** The plan estimated about 494 rows a day. Since ProcessSpecialAuctions is
 now only queued when there is work, the real figure is roughly 90 a day, about 33,000 a year.
 Suggest dropping the idea.
+*Decided (2 October 2026):* dropped. No prune job.
 
 **L10. GrantSuperDrops reads two different years. Pre-existing; from the handler comparison.**
 `GrantSuperDropsJobHandler.cs:34` takes leagues from the earliest open year; line 38 takes
@@ -435,7 +448,8 @@ Suggested order: findings → production deploy → alerting → 7a → 5 → 6 
 4. ~~F3a: fix the guard only, or also update points before `FinishYear`?~~ The guard only. See F3.
 5. ~~F3b: what retry does the rollover get, given the skip-when-due trap?~~ None; the button is the retry. See F3.
 6. R5: is 7a next, or infrastructure through Phase 6?
-7. L7 and L9: drop the unused columns and the prune job from the plan?
+7. ~~L7 and L9: drop the unused columns and the prune job from the plan?~~ Keep the columns;
+   drop the prune job. See L7 and L9.
 
 ---
 
