@@ -153,6 +153,8 @@ Every clause is appended, so the status of a job that stops partway still shows 
 
 Logs: structured properties (`{Year}`, `{SuccessBidCount}`, `{BidCount}`, `{SuccessDropCount}`, `{DropCount}`, `{LeagueCount}`, `{ProcessDate}`, `{GameCount}`). Each year's result, top bids and drops written, and the automated job's mode changes at Information; "already done" and "no processed weeks" at Debug. A stop isn't logged by the handlers, since the worker already logs a refused run's reasons at Warning. `ActionProcessingRunner`, `TopBidsAndDropsUpdater` and FullAutomatedActionsProcess get `ILogger<T>`.
 
+**Done:** checked against a ProcessActions run from the integration tests: `2026: 15 of 19 bids and 2 of 2 drops succeeded in 9 leagues. Top bids and drops: 0 games for 2025-01-11.` ("league" when there's one.) The automated job's clauses are untested until its first beta run.
+
 ## Verification
 
 - Build with zero warnings, unit tests, integration tests (with NSwag regenerated).
