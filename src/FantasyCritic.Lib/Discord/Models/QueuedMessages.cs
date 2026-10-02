@@ -23,3 +23,8 @@ public record MasterGameUpdatesSendResult(bool BotAvailable, int NewGames, int S
 {
     public static readonly MasterGameUpdatesSendResult BotUnavailable = new MasterGameUpdatesSendResult(false, 0, 0, 0);
 }
+
+public record FinalYearStandingsSendResult(bool BotAvailable, int Leagues, int Messages, int FailedMessages)
+{
+    public static readonly FinalYearStandingsSendResult BotUnavailable = new FinalYearStandingsSendResult(false, 0, 0, 0);
+}

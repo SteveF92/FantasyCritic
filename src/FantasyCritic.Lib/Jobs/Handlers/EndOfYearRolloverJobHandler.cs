@@ -62,9 +62,9 @@ internal class EndOfYearRolloverJobHandler : IFantasyCriticCronJobHandler
                 await _fantasyPointsUpdater.UpdateFantasyPoints(context, CancellationToken.None);
 
                 var leagueYears = await _fantasyCriticRepo.GetLeagueYears(supportedYear.Year);
-                await _discordPushService.SendFinalYearStandings(leagueYears, nycNow.Date);
-                _logger.LogInformation("Sent final standings for {Year}.", supportedYear.Year);
-                await context.AppendDetailedStatus($"Final standings for {supportedYear.Year} sent.");
+                var standingsResult = await _discordPushService.SendFinalYearStandings(leagueYears, nycNow.Date);
+                FinalYearStandingsJobUtilities.LogResult(_logger, supportedYear.Year, standingsResult);
+                await context.AppendDetailedStatus(FinalYearStandingsJobUtilities.Describe(supportedYear.Year, standingsResult));
                 anyYearFinished = true;
             }
         }

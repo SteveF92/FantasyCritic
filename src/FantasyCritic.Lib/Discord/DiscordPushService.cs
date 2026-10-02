@@ -1128,12 +1128,12 @@ public class DiscordPushService
         await Task.WhenAll(messageTasks);
     }
 
-    public async Task SendFinalYearStandings(IReadOnlyList<LeagueYear> leagueYears, LocalDate dateToCheck)
+    public async Task<FinalYearStandingsSendResult> SendFinalYearStandings(IReadOnlyList<LeagueYear> leagueYears, LocalDate dateToCheck)
     {
         bool shouldRun = await StartBot();
         if (!shouldRun)
         {
-            return;
+            return FinalYearStandingsSendResult.BotUnavailable;
         }
 
         var serviceScopeFactory = _serviceProvider.GetRequiredService<IServiceScopeFactory>();
@@ -1143,6 +1143,7 @@ public class DiscordPushService
         var systemWideValues = await fantasyCriticRepo.GetSystemWideValues();
 
         var preparedMessages = new List<PreparedDiscordMessage>();
+        var leaguesMessaged = 0;
         foreach (var leagueYear in leagueYears)
         {
             var previousYearWinner = await fantasyCriticRepo.GetLeagueYearWinner(leagueYear.League.LeagueID, leagueYear.Year - 1);
@@ -1159,6 +1160,7 @@ public class DiscordPushService
                     leagueYear.Year)
                 .BuildUrl();
 
+            var messageCountBeforeLeague = preparedMessages.Count;
             foreach (var minimalLeagueChannel in leagueChannels)
             {
                 var guild = _client.GetGuild(minimalLeagueChannel.GuildID);
@@ -1171,9 +1173,15 @@ public class DiscordPushService
                 var embed = _discordFormatter.BuildRegularEmbed($"Final Standings for {leagueYear.League.LeagueName} ({leagueYear.Year})", publisherStrings, url: leagueUrl);
                 preparedMessages.Add(new PreparedDiscordMessage(textChannel, Embed: embed));
             }
+
+            if (preparedMessages.Count > messageCountBeforeLeague)
+            {
+                leaguesMessaged++;
+            }
         }
 
-        await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+        var failedMessageCount = await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
+        return new FinalYearStandingsSendResult(true, leaguesMessaged, preparedMessages.Count, failedMessageCount);
     }
 
     private static async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(MinimalFantasyCriticUser fantasyCriticUser, IFantasyCriticUserStore userStore)
