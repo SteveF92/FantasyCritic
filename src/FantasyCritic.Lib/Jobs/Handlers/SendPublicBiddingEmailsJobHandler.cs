@@ -8,6 +8,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class SendPublicBiddingEmailsJobHandler : IFantasyCriticJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.SendPublicBiddingEmails;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.TimeCritical;
 
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly GameAcquisitionService _gameAcquisitionService;

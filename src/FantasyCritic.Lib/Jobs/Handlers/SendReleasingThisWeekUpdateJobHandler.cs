@@ -8,6 +8,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class SendReleasingThisWeekUpdateJobHandler : IFantasyCriticCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.SendReleasingThisWeekUpdate;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.StrictlyDependant;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(TimeExtensions.ReleasingThisWeekNewsDay, TimeExtensions.ReleasingThisWeekNewsTime);
 
     private readonly IMasterGameRepo _masterGameRepo;

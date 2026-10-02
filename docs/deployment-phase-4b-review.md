@@ -255,6 +255,11 @@ The scheduler gives every job in a wake the same `CreatedAt` (`Scheduler.cs:104`
 `FullDataRefresh` are both due; the old `RefreshDataTask` always ran stats after the refresh.
 When stats win the tie, the day's row reflects the 20:00 refresh. Moving stats to 22:05, or a
 tie-break in the query, fixes it.
+*Decided (2 October 2026):* every handler declares a `FantasyCriticJobPriority`, from
+TimeCritical to Independent, kept in code only. The runner still takes the oldest job;
+priority breaks a tie in `CreatedAt` and the type name breaks a tie in priority
+(`FantasyCriticJobRegistry.GetNextJobToRun`). FullDataRefresh is DependedUpon and
+UpdateDailyPublisherStatistics is StrictlyDependant, so the refresh goes first.
 
 **L2. Daily jobs take their date from the clock, not from their slot. Confirmed, needs an
 outage that spans midnight.**

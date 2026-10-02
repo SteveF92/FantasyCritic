@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using CSharpFunctionalExtensions;
 using FantasyCritic.Lib.Jobs;
 using Microsoft.Extensions.DependencyInjection;
+using NodaTime;
 using NUnit.Framework;
 
 namespace FantasyCritic.Test;
@@ -152,15 +153,62 @@ public class FantasyCriticJobRegistryTests
         });
     }
 
+    [Test]
+    public void GetNextJobToRun_RunsTheOldestJobFirstWhateverItsPriority()
+    {
+        var registry = FantasyCriticJobRegistry.Create();
+        var olderIndependent = QueuedJob(FantasyCriticJobType.ExpireTrades, MinutesAfterBase(0));
+        var newerTimeCritical = QueuedJob(FantasyCriticJobType.FullAutomatedActionsProcess, MinutesAfterBase(10));
+
+        Assert.That(registry.GetNextJobToRun([newerTimeCritical, olderIndependent]), Is.SameAs(olderIndependent));
+    }
+
+    //The 22:00 wake: the day's statistics have to reflect the refresh queued alongside them.
+    [Test]
+    public void GetNextJobToRun_BreaksATieInCreatedAtByPriority()
+    {
+        var registry = FantasyCriticJobRegistry.Create();
+        var statistics = QueuedJob(FantasyCriticJobType.UpdateDailyPublisherStatistics, MinutesAfterBase(0));
+        var refresh = QueuedJob(FantasyCriticJobType.FullDataRefresh, MinutesAfterBase(0));
+        var expireTrades = QueuedJob(FantasyCriticJobType.ExpireTrades, MinutesAfterBase(0));
+
+        Assert.That(registry.GetNextJobToRun([statistics, expireTrades, refresh]), Is.SameAs(refresh));
+    }
+
+    [Test]
+    public void GetNextJobToRun_BreaksATieInPriorityByJobTypeName()
+    {
+        var registry = FantasyCriticJobRegistry.Create();
+        var rollover = QueuedJob(FantasyCriticJobType.EndOfYearRollover, MinutesAfterBase(0));
+        var royale = QueuedJob(FantasyCriticJobType.AdvanceRoyaleQuarters, MinutesAfterBase(0));
+
+        Assert.That(registry.GetNextJobToRun([rollover, royale]), Is.SameAs(royale));
+    }
+
+    [Test]
+    public void GetNextJobToRun_IsNullWhenNothingIsQueued()
+    {
+        Assert.That(FantasyCriticJobRegistry.Create().GetNextJobToRun([]), Is.Null);
+    }
+
+    private static Instant MinutesAfterBase(int minutes) => Instant.FromUtc(2026, 10, 3, 2, 0).Plus(Duration.FromMinutes(minutes));
+
+    private static FantasyCriticJob QueuedJob(FantasyCriticJobType jobType, Instant createdAt) =>
+        new(Guid.NewGuid(), new FantasyCriticJobTypeWithRunType(jobType, FantasyCriticJobRunType.ManualOrCron, FantasyCriticJobSeverity.Info), createdByUser: null,
+            FantasyCriticJobStatus.Queued, detailedStatus: null, errorMessage: null, scheduledFor: createdAt, createdAt: createdAt, startedAt: null, finishedAt: null,
+            cancelledAt: null, cancelledByUser: null);
+
     public class SecondProcessActionsHandler : IFantasyCriticJobHandler
     {
         public static FantasyCriticJobType JobType => FantasyCriticJobType.ProcessActions;
+        public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.TimeCritical;
         public Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken) => Task.FromResult(Result.Success());
     }
 
     public class CronExpireTradesHandler : IFantasyCriticCronJobHandler
     {
         public static FantasyCriticJobType JobType => FantasyCriticJobType.ExpireTrades;
+        public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.Independent;
         public static FantasyCriticJobSchedule Schedule => FantasyCriticJobSchedule.EveryTenMinutes;
         public Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken) => Task.FromResult(Result.Success());
     }

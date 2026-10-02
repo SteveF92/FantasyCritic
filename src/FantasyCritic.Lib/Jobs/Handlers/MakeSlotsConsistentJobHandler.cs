@@ -15,6 +15,7 @@ internal class MakeSlotsConsistentJobHandler : IFantasyCriticJobHandler
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.MakeSlotsConsistent;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.Independent;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {

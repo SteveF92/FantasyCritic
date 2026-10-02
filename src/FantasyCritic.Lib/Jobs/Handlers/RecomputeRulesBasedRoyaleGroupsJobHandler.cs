@@ -16,6 +16,7 @@ internal class RecomputeRulesBasedRoyaleGroupsJobHandler : IFantasyCriticJobHand
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.RecomputeRulesBasedRoyaleGroups;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.Independent;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {

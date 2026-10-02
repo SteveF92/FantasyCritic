@@ -16,6 +16,7 @@ internal class SnapshotDatabaseJobHandler : IFantasyCriticJobHandler
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.SnapshotDatabase;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.Independent;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {

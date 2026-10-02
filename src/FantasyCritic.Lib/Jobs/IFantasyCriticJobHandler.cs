@@ -5,4 +5,5 @@ namespace FantasyCritic.Lib.Jobs;
 public interface IFantasyCriticJobHandler : IJobHandler
 {
     static abstract FantasyCriticJobType JobType { get; }
+    static abstract FantasyCriticJobPriority Priority { get; }
 }

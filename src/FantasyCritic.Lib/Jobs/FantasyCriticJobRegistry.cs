@@ -11,6 +11,7 @@ public class FantasyCriticJobRegistry
         Validate(definitionList);
 
         Definitions = definitionList;
+        Priorities = definitionList.ToDictionary(x => x.JobType, x => x.Priority);
         Schedules = definitionList
             .Where(x => x.Schedule is not null)
             .ToDictionary(x => x.JobType, x => x.Schedule!);
@@ -28,6 +29,7 @@ public class FantasyCriticJobRegistry
     }
 
     public IReadOnlyList<FantasyCriticJobDefinition> Definitions { get; }
+    public IReadOnlyDictionary<FantasyCriticJobType, FantasyCriticJobPriority> Priorities { get; }
     public IReadOnlyDictionary<FantasyCriticJobType, FantasyCriticJobSchedule> Schedules { get; }
 
     //Job types whose handler is an IConditionalCronJobHandler, so the scheduler constructs only those handlers to ask whether a due slot has work.
@@ -47,6 +49,17 @@ public class FantasyCriticJobRegistry
         }
 
         return deferTo.Where(dueJobTypes.Contains).ToList();
+    }
+
+    //Oldest first. Priority only breaks ties, such as the jobs one scheduler wake enqueues together, so a frequent job never
+    //starves an older one. The type name makes the order total.
+    public FantasyCriticJob? GetNextJobToRun(IEnumerable<FantasyCriticJob> queuedJobs)
+    {
+        return queuedJobs
+            .OrderBy(x => x.CreatedAt)
+            .ThenBy(x => Priorities[x.Type])
+            .ThenBy(x => x.Type.Value, StringComparer.Ordinal)
+            .FirstOrDefault();
     }
 
     public static FantasyCriticJobRegistry Create() => new FantasyCriticJobRegistry(CreateDefinitions(), CreateSkipWhenDue());

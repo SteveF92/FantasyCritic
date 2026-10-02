@@ -37,6 +37,7 @@ internal class FullAutomatedActionsProcessJobHandler : IOnScheduledCronJobHandle
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.FullAutomatedActionsProcess;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.TimeCritical;
 
     //The bid lock window only lasts a few minutes, and the runner may be busy or not pulling, so the site locks when the slot is due, not when this job starts.
     public async Task OnScheduled()

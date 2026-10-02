@@ -8,6 +8,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class PushGameReleaseMessagesJobHandler : IFantasyCriticCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.PushGameReleaseMessages;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.StrictlyDependant;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.AtOnePastMidnightEastern;
 
     private readonly IMasterGameRepo _masterGameRepo;

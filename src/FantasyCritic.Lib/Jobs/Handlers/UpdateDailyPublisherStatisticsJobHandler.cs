@@ -7,6 +7,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class UpdateDailyPublisherStatisticsJobHandler : IFantasyCriticCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.UpdateDailyPublisherStatistics;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.StrictlyDependant;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.AtTenPmEastern;
 
     private readonly IFantasyCriticRepo _fantasyCriticRepo;

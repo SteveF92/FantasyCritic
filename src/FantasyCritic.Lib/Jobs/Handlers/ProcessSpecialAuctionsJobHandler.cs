@@ -10,6 +10,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class ProcessSpecialAuctionsJobHandler : IConditionalCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.ProcessSpecialAuctions;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.DependantAndDependedUpon;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.EveryTenMinutes;
 
     private readonly IFantasyCriticRepo _fantasyCriticRepo;

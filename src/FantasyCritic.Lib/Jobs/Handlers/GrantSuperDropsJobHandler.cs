@@ -9,6 +9,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class GrantSuperDropsJobHandler : IFantasyCriticCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.GrantSuperDrops;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.DependantAndDependedUpon;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Hourly.WithCalendarGuard(instant => instant.ShouldGrantSuperDrops());
 
     private readonly IFantasyCriticRepo _fantasyCriticRepo;

@@ -12,6 +12,7 @@ internal class UpdateFantasyPointsJobHandler : IFantasyCriticJobHandler
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.UpdateFantasyPoints;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.DependantAndDependedUpon;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {

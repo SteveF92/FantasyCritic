@@ -12,6 +12,7 @@ internal class RefreshCriticScoresJobHandler : IFantasyCriticJobHandler
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.RefreshCriticScores;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.DependedUpon;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {

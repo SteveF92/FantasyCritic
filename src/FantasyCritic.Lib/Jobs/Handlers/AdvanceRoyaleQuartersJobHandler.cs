@@ -8,6 +8,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class AdvanceRoyaleQuartersJobHandler : IFantasyCriticCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.AdvanceRoyaleQuarters;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.TimeCritical;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.AtOnePastMidnightEastern;
 
     private readonly IRoyaleRepo _royaleRepo;

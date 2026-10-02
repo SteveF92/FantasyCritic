@@ -7,6 +7,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class RefreshPatreonInfoJobHandler : IFantasyCriticCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.RefreshPatreonInfo;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.Independent;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Hourly;
 
     private readonly IFantasyCriticUserStore _userStore;

@@ -10,6 +10,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class SendFinalYearStandingsJobHandler : IFantasyCriticJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.SendFinalYearStandings;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.StrictlyDependant;
 
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly DiscordPushService _discordPushService;

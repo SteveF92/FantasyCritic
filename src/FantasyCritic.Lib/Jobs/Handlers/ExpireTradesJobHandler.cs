@@ -7,6 +7,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class ExpireTradesJobHandler : IFantasyCriticCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.ExpireTrades;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.Independent;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Hourly;
 
     private readonly IFantasyCriticRepo _fantasyCriticRepo;

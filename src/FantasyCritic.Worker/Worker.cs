@@ -17,16 +17,18 @@ public class Worker : BackgroundService
     private readonly ILogger<Worker> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly WorkerStatus _workerStatus;
+    private readonly FantasyCriticJobRegistry _jobRegistry;
 
     //The one piece of state shared between the two loops. A CancellationTokenSource can't cross a process boundary,
     //so the canceller needs the runner's own tokens to stop a job that has already started.
     private readonly ConcurrentDictionary<Guid, CancellationTokenSource> _inFlightJobs = new();
 
-    public Worker(ILogger<Worker> logger, IServiceProvider serviceProvider, WorkerStatus workerStatus)
+    public Worker(ILogger<Worker> logger, IServiceProvider serviceProvider, WorkerStatus workerStatus, FantasyCriticJobRegistry jobRegistry)
     {
         _logger = logger;
         _serviceProvider = serviceProvider;
         _workerStatus = workerStatus;
+        _jobRegistry = jobRegistry;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -145,7 +147,7 @@ public class Worker : BackgroundService
             _workerStatus.RecordJobRunnerSuccess();
         }
 
-        return queuedJobs.Where(x => x.AllowedByRunType).MinBy(x => x.CreatedAt);
+        return _jobRegistry.GetNextJobToRun(queuedJobs.Where(x => x.AllowedByRunType));
     }
 
     private async Task CancelDisallowedJob(FantasyCriticJob job, IJobRepo jobRepo, IClock clock)

@@ -11,6 +11,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class SendAllPublicBiddingMessagesJobHandler : IFantasyCriticCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.SendAllPublicBiddingMessages;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.TimeCritical;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(TimeExtensions.PublicBiddingRevealDay, TimeExtensions.PublicBiddingRevealTime);
 
     private readonly IFantasyCriticRepo _fantasyCriticRepo;

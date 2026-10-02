@@ -9,6 +9,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class SendPublicBiddingDiscordMessagesJobHandler : IFantasyCriticJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.SendPublicBiddingDiscordMessages;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.TimeCritical;
 
     private readonly IFantasyCriticRepo _fantasyCriticRepo;
     private readonly DiscordPushService _discordPushService;

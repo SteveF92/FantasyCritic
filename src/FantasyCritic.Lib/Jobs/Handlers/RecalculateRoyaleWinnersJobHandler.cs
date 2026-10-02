@@ -16,6 +16,7 @@ internal class RecalculateRoyaleWinnersJobHandler : IFantasyCriticJobHandler
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.RecalculateRoyaleWinners;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.StrictlyDependant;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {

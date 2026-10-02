@@ -12,6 +12,7 @@ internal class RefreshGGInfoJobHandler : IFantasyCriticJobHandler
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.RefreshGGInfo;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.DependedUpon;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {

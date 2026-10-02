@@ -9,6 +9,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class EndOfYearRolloverJobHandler : IFantasyCriticCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.EndOfYearRollover;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.TimeCritical;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Cron("0 0 1 1 *");
 
     private readonly IFantasyCriticRepo _fantasyCriticRepo;

@@ -17,6 +17,7 @@ internal class ProcessActionsJobHandler : IFantasyCriticJobHandler
     }
 
     public static FantasyCriticJobType JobType => FantasyCriticJobType.ProcessActions;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.TimeCritical;
 
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {

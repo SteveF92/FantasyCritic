@@ -6,6 +6,7 @@ namespace FantasyCritic.Lib.Jobs.Handlers;
 internal class FullDataRefreshJobHandler : IFantasyCriticCronJobHandler
 {
     public static FantasyCriticJobType JobType => FantasyCriticJobType.FullDataRefresh;
+    public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.DependedUpon;
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.EveryTwoHours;
 
     private readonly FullDataRefresher _fullDataRefresher;
