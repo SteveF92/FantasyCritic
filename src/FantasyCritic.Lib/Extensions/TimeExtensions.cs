@@ -153,12 +153,6 @@ public static class TimeExtensions
         return true;
     }
 
-    public static Instant GetSuperDropsGrantTime(this IClock clock)
-    {
-        var currentDate = clock.GetToday();
-        return GetSuperDropsGrantTime(currentDate.Year);
-    }
-
     private static Instant GetSuperDropsGrantTime(int year)
     {
         var superDropsDate = SuperDropsDate.InYear(year);
