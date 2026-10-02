@@ -54,7 +54,8 @@ internal class FantasyPointsUpdater
         foreach (var finishedYear in finishedYears)
         {
             var lastDayOfFinishedYear = new LocalDate(finishedYear.Year, 12, 31);
-            if (today.PlusDays(30) > lastDayOfFinishedYear)
+            var dayToStopCheckingThisYear = lastDayOfFinishedYear.PlusDays(30);
+            if (today > dayToStopCheckingThisYear)
             {
                 //We don't need to keep updating old years after a certain point.
                 continue;
