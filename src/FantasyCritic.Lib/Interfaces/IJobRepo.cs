@@ -25,6 +25,10 @@ public interface IJobRepo
     Task<bool> CancelQueuedJob(FantasyCriticJob job, string reason, Instant cancellationTime);
     Task CancelInProgressJob(FantasyCriticJob job, Instant cancellationTime);
 
+    /// <summary>Settles a started job whose cancellation was requested but that no runner holds any more.</summary>
+    /// <returns>False if the job was no longer Cancelling: its runner settled it after all.</returns>
+    Task<bool> CancelAbandonedJob(FantasyCriticJob job, string reason, Instant cancellationTime);
+
     /// <returns>False if the job was no longer Queued or Running (already resolved, or another request beat this one).</returns>
     Task<bool> RequestCancellation(FantasyCriticJob job, IMinimalFantasyCriticUser cancelledByUser, Instant requestedAt);
 }

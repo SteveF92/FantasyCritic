@@ -35,7 +35,7 @@ Each finding says whether it is **confirmed** (the code path was read end to end
 | 2 `JobRunType` / `JobStatus` enums | Done, as `FantasyCriticJobRunType` / `FantasyCriticJobStatus` in `Lib/Jobs`. |
 | 3 The job registry | Done. Also holds the skip-when-due map, which the plan did not have. |
 | 4 Scheduler | Done, but seeded from 30 minutes before startup rather than from `MAX(ScheduledFor)`. |
-| 5 Runner | Done, as a loop inside `Worker`. **The heartbeat and sweep are not built** (F1). |
+| 5 Runner | Done, as a loop inside `Worker`. No heartbeat or automatic sweep; cancelling a stuck row settles it instead (F1). |
 | 6 Canceller | Done, as the second loop inside `Worker`. |
 | 7 `JobService.Enqueue` | Done as `IJobRepo.EnqueueJob`. It also refuses a second open job of the same type. |
 | 8 Controller action per job | Done, through `BaseJobQueuingController.EnqueueJob`. |
@@ -74,6 +74,18 @@ those rows as `Error` with a message saying the worker lost them. This covers bo
 **Constraint to record with the fix:** it is only correct while exactly one worker exists. Two
 workers overlapping (an ECS rolling deploy, R4) would have the new one settle the old one's
 live job. The plan already says a second runner needs an owning-runner column.
+
+**Decided (1 October 2026):** no automatic sweep. Steve notices a stuck row (two jobs Running,
+the times, the logs) and cancels it from the console. Before the fix, that left the row on
+`Cancelling` forever, because the canceller only tripped tokens this worker held. Now the
+canceller settles a started `Cancelling` job that is not in `_inFlightJobs` as
+`CancelledInProgress` (`IJobRepo.CancelAbandonedJob`). The reason goes in `ErrorMessage`, so
+`DetailedStatus` keeps the job's last progress. The update is conditional on `Cancelling`, so a
+runner that settles the job after all wins. A runner holds its entry from before its claim until
+after its final write, so a live job is never mistaken for an abandoned one. The one-worker
+constraint above applies, and is written at the call site. No force-cancel button: if the
+canceller itself is broken the worker is unhealthy (F2), and a button that settled a row whose
+job was really running would let a second job of the type start.
 
 ### F2. The scheduler loop has no exception handling; both worker loops do
 

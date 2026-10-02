@@ -11,6 +11,9 @@ public class Worker : BackgroundService
     private static readonly TimeSpan RunnerPollInterval = TimeSpan.FromSeconds(5);
     private static readonly TimeSpan CancellerPollInterval = TimeSpan.FromSeconds(2);
 
+    private const string AbandonedJobReason = "Cancelled, but no worker was running this job. The worker that started it stopped, or the job ended and " +
+                                              "its final status could not be saved. It may have partly run, or even finished.";
+
     private readonly ILogger<Worker> _logger;
     private readonly IServiceProvider _serviceProvider;
     private readonly WorkerStatus _workerStatus;
@@ -284,14 +287,23 @@ public class Worker : BackgroundService
             return;
         }
 
-        //Trip the token and stop there: the runner writes CancelledInProgress once the job unwinds.
-        //A job this worker doesn't hold belongs to another worker, or to one that died; either way it isn't ours to settle.
+        //A started job this worker doesn't hold has no runner: the worker that started it was killed, or the job ended and its
+        //final status write failed. Nothing else will ever settle it. This assumes exactly one worker; with two, the other's
+        //live job would look the same, and this would need an owning-runner column.
+        //A job holds its entry from before its claim until after its final write, so one that finished between our read and
+        //this lookup is no longer Cancelling, and the conditional update leaves it alone.
         if (!_inFlightJobs.TryGetValue(job.JobID, out var jobCancellationSource))
         {
-            _logger.LogDebug("Job {Job} is cancelling but is not running on this worker.", job);
+            var cancelled = await jobRepo.CancelAbandonedJob(job, AbandonedJobReason, clock.GetCurrentInstant());
+            if (cancelled)
+            {
+                _logger.LogWarning("Cancelled job {Job}, which had started but which no runner on this worker was running.", job);
+            }
+
             return;
         }
 
+        //Trip the token and stop there: the runner writes CancelledInProgress once the job unwinds.
         if (jobCancellationSource.IsCancellationRequested)
         {
             return;

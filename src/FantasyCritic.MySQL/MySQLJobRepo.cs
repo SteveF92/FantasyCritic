@@ -308,6 +308,30 @@ public class MySQLJobRepo : IJobRepo
         await FinishStartedJob(job, FantasyCriticJobStatus.CancelledInProgress, cancellationTime, errorMessage: null);
     }
 
+    public async Task<bool> CancelAbandonedJob(FantasyCriticJob job, string reason, Instant cancellationTime)
+    {
+        //Conditional on Cancelling, so a runner that settles the job after all wins and this does nothing.
+        //The reason goes in ErrorMessage, so DetailedStatus keeps the last thing the job reported doing.
+        const string sql =
+            """
+            UPDATE tbl_job SET Status = @cancelledInProgress, ErrorMessage = @reason, FinishedAt = @cancellationTime
+            WHERE JobID = @jobID AND Status = @cancelling AND StartedAt IS NOT NULL;
+            """;
+
+        var parameters = new
+        {
+            jobID = job.JobID,
+            reason,
+            cancellationTime,
+            cancelledInProgress = FantasyCriticJobStatus.CancelledInProgress.Value,
+            cancelling = FantasyCriticJobStatus.Cancelling.Value
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var rowsUpdated = await connection.ExecuteAsync(sql, parameters);
+        return rowsUpdated >= 1;
+    }
+
     public async Task<bool> RequestCancellation(FantasyCriticJob job, IMinimalFantasyCriticUser cancelledByUser, Instant requestedAt)
     {
         //Conditional on Queued/Running so a job that already finished, or one already Cancelling, is left alone.

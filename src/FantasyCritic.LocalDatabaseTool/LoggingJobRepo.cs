@@ -29,5 +29,6 @@ internal class LoggingJobRepo : IJobRepo
     public Task<bool> CancelJob(FantasyCriticJob job, Instant cancellationTime) => throw new NotSupportedException();
     public Task<bool> CancelQueuedJob(FantasyCriticJob job, string reason, Instant cancellationTime) => throw new NotSupportedException();
     public Task CancelInProgressJob(FantasyCriticJob job, Instant cancellationTime) => throw new NotSupportedException();
+    public Task<bool> CancelAbandonedJob(FantasyCriticJob job, string reason, Instant cancellationTime) => throw new NotSupportedException();
     public Task<bool> RequestCancellation(FantasyCriticJob job, IMinimalFantasyCriticUser cancelledByUser, Instant requestedAt) => throw new NotSupportedException();
 }

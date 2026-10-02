@@ -117,8 +117,8 @@ whole backlog runs, oldest first, when it is turned back on. After a long spell 
 mean the same ten-minute job many times over.
 
 Draining and Off are worked out from the job table, not from what the worker reports. A row
-stuck on Running after the worker was killed therefore reads as Draining forever — see the
-troubleshooting table.
+stuck on Running after the worker was killed therefore reads as Draining until someone cancels
+it — see the troubleshooting table.
 
 The same thing from the box, without the console:
 
@@ -315,8 +315,8 @@ hand, which stays stopped.
 | Bot restarting in a loop | It exits when no bot token is configured. Check `docker compose logs discord-bot` and the environment's secret. |
 | Nothing scheduled has happened, site fine | Look at the admin console's Services panel. **Off** means it was turned off — by someone, or by a deploy that could not turn it back on, which the deploy output says loudly. Turn On Worker fixes it. **Unreachable** means `worker` is down: `docker compose ps`, then `docker compose logs worker`. |
 | Admin console button sticks on "Queued" | Same thing: nothing is consuming the queue. The job will run whenever the worker comes back. |
-| A job is stuck "Running" and nothing is happening | The worker was killed mid-job. Nothing sweeps those rows yet, and cancelling from the console will not settle one either — the canceller only trips tokens a live worker holds. Until the sweep is built, finish the row by hand in `tbl_job`. While it sits there the console's button for that job type refuses, a turned-off worker reads as Draining rather than Off, and a deploy waits its full 30 minutes on it and then stops — use `skip_drain`. Cron runs of the job type are unaffected. |
-| Deploy stops at "Draining the job worker" | "A job was still running when the wait ran out": a real long job, or a stuck Running row (above). Nothing was touched and the worker is back on. Redeploy once the job is done, or with `skip_drain`. Any other error there means the `command-line` image could not reach the database — its log lines are in the deploy output's stderr. |
+| A job is stuck "Running" and nothing is happening | The worker was killed mid-job, or the job ended and its final status could not be saved (the worker log has an Error for it). Nothing settles the row by itself. Check the job's start time and the worker log to be sure it is not just a long job, then cancel it from the console: the canceller sees that no runner holds it and settles it as CancelledInProgress within a few seconds, with a message saying so. The worker must be up for that. While the row sits there the console's button for that job type refuses, a turned-off worker reads as Draining rather than Off, and a deploy waits its full 30 minutes on it and then stops. Cron runs of the job type are unaffected. |
+| Deploy stops at "Draining the job worker" | "A job was still running when the wait ran out": a real long job, or a stuck Running row (above). Nothing was touched and the worker is back on. Redeploy once the job is done or the stuck row is cancelled, or with `skip_drain`. Any other error there means the `command-line` image could not reach the database — its log lines are in the deploy output's stderr. |
 | Worker or bot shows `(unhealthy)` in `docker compose ps` | `docker compose exec <service> curl -sS http://localhost:8080/health` says why. For the worker it names each failing loop and its error. If that is the database being unreachable, it recovers by itself when the database does. Anything else, such as "Job Type X not found in database" from the scheduler, will not fix itself: read the loop's log file. |
 | Containers cannot start, Secrets Manager errors | The IMDSv2 hop limit has been reset to 1. See step 3 of the setup guide. |
 | Nothing in `/var/log/fantasy-critic` | The directory is not owned by uid 1654. |
