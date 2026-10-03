@@ -149,10 +149,11 @@ public static class ServiceCollectionExtensions
     /// The ArchiveDatabase job's dumper and the locations its dumps go to. Registered by the worker only. Nothing is built
     /// until the job runs, so a host whose archive configuration is still placeholders starts normally.
     /// </summary>
-    public static IServiceCollection AddFantasyCriticDatabaseArchive(this IServiceCollection services, DatabaseArchiveOptions databaseArchive)
+    public static IServiceCollection AddFantasyCriticDatabaseArchive(this IServiceCollection services, DatabaseArchiveOptions databaseArchive, AwsOptions aws)
     {
         services.AddSingleton<MysqldumpRunner>();
-        services.AddSingleton<IDatabaseDumper>(x => new MySQLDatabaseDumper(databaseArchive.ConnectionString, x.GetRequiredService<MysqldumpRunner>()));
+        services.AddSingleton<IDatabaseDumper>(x =>
+            new MySQLDatabaseDumper(aws.RdsInstanceName, databaseArchive.ConnectionString, x.GetRequiredService<MysqldumpRunner>()));
         services.AddSingleton<IDatabaseArchiveLocation>(_ =>
             new S3DatabaseArchiveLocation(new AmazonS3Client(), databaseArchive.S3.Bucket, databaseArchive.S3.Prefix));
         services.AddSingleton<IDatabaseArchiveLocation>(_ => new GoogleCloudStorageDatabaseArchiveLocation(

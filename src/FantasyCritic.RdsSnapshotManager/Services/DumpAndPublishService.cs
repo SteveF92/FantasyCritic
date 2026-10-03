@@ -1,6 +1,4 @@
-using System.Globalization;
 using CSharpFunctionalExtensions;
-using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL;
@@ -38,8 +36,7 @@ public sealed class DumpAndPublishService
 
         var instance = instanceResult.Value;
         var timestamp = _clock.GetCurrentInstant();
-        var zonedTimestamp = timestamp.InZone(TimeExtensions.EasternTimeZone);
-        var fileName = $"{instance.InstanceName}-{zonedTimestamp.LocalDateTime.ToString("yyyy-MM-dd-HHmmss", CultureInfo.InvariantCulture)}.sql.gz";
+        var fileName = BackupRemoteKeyBuilder.BuildFileName(instance.InstanceName, timestamp);
         var stagingPath = Path.Combine(_options.LocalStagingDirectory, fileName);
 
         var dumpResult = await _mysqldumpRunner.DumpToGzipFile(instance.ConnectionString, stagingPath, cancellationToken);

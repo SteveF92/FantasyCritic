@@ -32,6 +32,14 @@ public class BackupRemoteKeyBuilderTests
     }
 
     [Test]
+    public void BuildFileName_UsesTheEasternTimeToTheSecond()
+    {
+        var instant = Instant.FromUtc(2026, 10, 4, 7, 0, 5);
+        var fileName = BackupRemoteKeyBuilder.BuildFileName("fantasy-critic-rds", instant);
+        Assert.That(fileName, Is.EqualTo("fantasy-critic-rds-2026-10-04-030005.sql.gz"));
+    }
+
+    [Test]
     public void WithPrefix_PutsTheKeyUnderThePrefix()
     {
         var key = BackupRemoteKeyBuilder.WithPrefix("db-dumps/", "prod/2026-06-18/prod.sql.gz");

@@ -58,7 +58,7 @@ public static class Program
             builder.Services.AddFantasyCriticIdentityCore();
             builder.Services.AddFantasyCriticAdminServices(options.Aws, options.OpenCritic, options.Authentication.Patreon);
             builder.Services.AddFantasyCriticEmail(options.Postmark);
-            builder.Services.AddFantasyCriticDatabaseArchive(options.DatabaseArchive);
+            builder.Services.AddFantasyCriticDatabaseArchive(options.DatabaseArchive, options.Aws);
             builder.Services.AddFantasyCriticJobHandlers();
             builder.Services.AddSingleton<WorkerStatus>();
             builder.Services.AddHealthChecks().AddCheck<WorkerHealthCheck>("worker");

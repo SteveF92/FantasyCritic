@@ -5,6 +5,13 @@ namespace FantasyCritic.Lib.Utilities;
 
 public static class BackupRemoteKeyBuilder
 {
+    //The snapshot manager's DumpFileNameParser reads this pattern back.
+    public static string BuildFileName(string instanceName, Instant timestamp)
+    {
+        var easternTime = timestamp.InZone(TimeExtensions.EasternTimeZone).LocalDateTime;
+        return $"{instanceName}-{easternTime.ToString("yyyy-MM-dd-HHmmss", CultureInfo.InvariantCulture)}.sql.gz";
+    }
+
     public static string Build(string instanceName, Instant timestamp, string fileName) =>
         Build(instanceName, timestamp.InZone(TimeExtensions.EasternTimeZone).Date, fileName);
 

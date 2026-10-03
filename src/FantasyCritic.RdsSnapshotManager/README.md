@@ -46,7 +46,8 @@ dotnet run --project src/FantasyCritic.RdsSnapshotManager/FantasyCritic.RdsSnaps
 4. **Import local dump to Docker MySQL** — Import a staging `.sql.gz` into local Docker MySQL, then scrub. Refuses if the database already has tables unless you force.
 5. **Clean local Docker database** — Run the scrub step only against the configured local Docker MySQL instance. Refuses remote hosts, non-3307 ports, or connection strings that match beta/dump settings. Requires confirmation.
 
-**Scrubbing policy:** Exports are full-fidelity. Scrubbing runs on **load** into beta RDS or local Docker only. Option 5 is local Docker only and cannot target production or beta RDS. Scrubbing removes non-beta user credentials, external logins, most Discord config, and unprocessed pickup bids and drop requests in non-test leagues. It also disables the `RefreshPatreonInfo` job and deletes `tbl_system_patreonkeys`: those are production's Patreon tokens, and their refresh token is single use, so a copy that refreshed it would break production's Patreon job.
+**Scrubbing policy:** Exports are full-fidelity. Scrubbing runs on **load** into beta RDS or local Docker only. Option 5 is local Docker only and cannot target production or beta RDS. Scrubbing removes non-beta user credentials, external logins, most Discord config, and unprocessed pickup bids and drop requests in non-test leagues. It also disables the `RefreshPatreonInfo` job and deletes `tbl_system_patreonkeys`: those are production's Patreon tokens, and their refresh token is single use, so a copy that refreshed it would break production's Patreon job. It turns off the `FullAutomatedActionsProcess` and
+`ArchiveDatabase` jobs too: a copy must not process bids on its own, or add its dumps to production's archive.
 
 ## Local Docker MySQL (two databases)
 
