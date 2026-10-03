@@ -40,7 +40,7 @@ Each finding says whether it is **confirmed** (the code path was read end to end
 | 7 `JobService.Enqueue` | Done as `IJobRepo.EnqueueJob`. It also refuses a second open job of the same type. |
 | 8 Controller action per job | Done, through `BaseJobQueuingController.EnqueueJob`. |
 | 9 Console renders from `tbl_job_type` | Built by hand instead (L7). Refresh is a button, not a poll, by choice. |
-| 10 Startup reconciliation | **Partial** (F5). |
+| 10 Startup reconciliation | Done: a job type with no usable `tbl_job_type` row stops the worker at startup (F5). |
 | 11 Delete the old scheduler and vendored cron | Done. No references remain. |
 | 12 Remove the nginx 300s overrides | **Not done** (R3). |
 | Prune job ("worth adding") | Not built, and dropped (L9). |
@@ -114,8 +114,8 @@ unhealthy until Steve notices. A crash is no louder than unhealthy on this host,
 running job down with it. Each loop records its outcome in `WorkerStatus`, and `WorkerHealthCheck`
 is unhealthy while any loop's latest attempt failed or has not happened yet. The scheduler retries
 after 30 seconds without advancing its next slots, so the retry tries the same slots again. The
-missing-row throw needs no special case: the scheduler fails every attempt, the worker never
-becomes healthy, and `deploy.sh`'s `wait_for_healthy` fails the deploy. Per-job failures inside the
+one exception is a job type with no `tbl_job_type` row (F5), which is a deploy mistake that no
+retry can fix: that still stops the process, by Steve's choice. Per-job failures inside the
 canceller and the runner's disallowed-job cleanup now count as that loop failing. Getting an
 unhealthy worker in front of Steve without him looking is still R1.
 
@@ -253,6 +253,16 @@ which is the pre-F4 behaviour. Not error-proof, but reasonable.
 **Suggested:** one integration test asserting that `FantasyCriticJobType.GetAllPossibleValues()`
 and the names in `tbl_job_type` are the same set. Or have the scheduler check
 `registry.Definitions` rather than `registry.Schedules` on its first pass.
+
+**Decided (2 October 2026):** fail fast, in the scheduler, at startup (`c80308ed9`). Its first
+pass compares `registry.Definitions` against the rows `GetJobTypeRunTypes` could parse, so a row
+with an unknown run type or severity counts as missing too. A mismatch throws
+`MissingJobTypeRowsException`, the one exception the scheduler loop does not catch (F2): the
+process stops, Docker restarts the container, and it stops again, so the container restart-loops
+until the row is added. `deploy.sh`'s `wait_for_healthy` sees the restart count and fails the
+deploy, which is where a skipped migration or a hand edit should be found. Manual-only types are
+covered, so the 500-at-the-button path is gone. No integration test: the worker's own startup is
+the check.
 
 ---
 

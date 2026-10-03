@@ -515,12 +515,13 @@ log "Healthy."
 # ------------------------------------------------------------------------------------------
 # Worker and Discord bot
 # ------------------------------------------------------------------------------------------
-# A worker that died on startup (a bad secret), or that came up but cannot do its work (a
-# scheduled job type with no tbl_job_type row), takes every scheduled job with it while the
-# site carries on looking perfectly healthy. Nobody would
+# A worker that keeps dying on startup (a bad secret, or a job type with no tbl_job_type row,
+# which the scheduler refuses to run without), or that is up but cannot do its work, takes
+# every scheduled job with it while the site carries on looking perfectly healthy. Nobody would
 # notice until a Monday bidding email did not arrive. So wait for Docker's healthcheck to pass,
-# and fail the deploy loudly if it does not. For the worker, healthy means more than the
-# process being up: each of its loops last succeeded at reading the database.
+# and fail the deploy loudly if it does not. wait_for_healthy gives up early on a restart
+# count above zero, which is what a startup failure looks like. For the worker, healthy means
+# more than the process being up: each of its loops last succeeded at reading the database.
 #
 # This runs after the maintenance page is lowered on purpose: the site itself is fine, and
 # keeping it dark over a broken worker would be the worse outcome. The non-zero exit is what
