@@ -601,6 +601,13 @@ public class GameAcquisitionService
             return Result.Failure("The end time must be at least an hour before the next time that bids process.");
         }
 
+        //An hour's margin, like bid time's, so it never locks in the same scheduler wake as the end of year rollover.
+        var endOfYear = new LocalDate(leagueYear.Year + 1, 1, 1).AtStartOfDayInZone(TimeExtensions.EasternTimeZone).ToInstant();
+        if (scheduledEndTime > endOfYear.Minus(Duration.FromHours(1)))
+        {
+            return Result.Failure($"The end time must be at least an hour before the end of {leagueYear.Year}.");
+        }
+
         var oneHourAway = now.Plus(Duration.FromHours(1));
         if (scheduledEndTime < oneHourAway)
         {

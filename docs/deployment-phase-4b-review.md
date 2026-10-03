@@ -295,6 +295,16 @@ two years open, a locked auction in the other year throws `KeyNotFoundException`
 minutes. `ShouldSchedule` and the special-auction reason in `GetReasonsNotToProcessActions`
 would then stay true, which also stops action processing. Check whether a next-year league can
 hold a special auction in December.
+*Decided (2 October 2026):* reachable. In December the next year is open for play, and
+`CreateSpecialAuction` only requires that the year is not finished and no draft is running. A
+second way in, with no outage: an auction still unprocessed when its year finishes (one ending
+between 23:50 and 23:59 on 31 December is due in the same wake as the rollover, which runs first)
+was skipped by `Run` forever but still counted by `ShouldSchedule` and the Saturday reason. Steve
+fixed both in `6bccdaae3`: each year's pass reads only that year's auctions
+(`GetActiveSpecialAuctionsForYear`), and the all-years query ignores finished years, so an auction
+that outlives its year is dropped rather than blocking processing. An auction that spans the end
+of its year makes no sense, so `CreateSpecialAuction` now also refuses one ending later than 23:00
+Eastern on 31 December, an hour's margin like the one before bid time.
 
 **L5. The stop email is wrong about how the site unlocks. Confirmed, trivial.**
 `FullAutomatedActionsProcessJobHandler.cs:12` says the site stays locked "until actions are
