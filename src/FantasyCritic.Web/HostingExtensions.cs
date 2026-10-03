@@ -144,26 +144,31 @@ public static class HostingExtensions
                 {
                     options.ClientId = webOptions.Authentication.Google.ClientId;
                     options.ClientSecret = webOptions.Authentication.Google.ClientSecret;
+                    options.Events.OnRemoteFailure = ExternalLoginFailure.Handle;
                 })
                 .AddMicrosoftAccount(microsoftOptions =>
                 {
                     microsoftOptions.ClientId = webOptions.Authentication.Microsoft.ClientId;
                     microsoftOptions.ClientSecret = webOptions.Authentication.Microsoft.ClientSecret;
+                    microsoftOptions.Events.OnRemoteFailure = ExternalLoginFailure.Handle;
                 })
                 .AddTwitch(options =>
                 {
                     options.ClientId = webOptions.Authentication.Twitch.ClientId;
                     options.ClientSecret = webOptions.Authentication.Twitch.ClientSecret;
+                    options.Events.OnRemoteFailure = ExternalLoginFailure.Handle;
                 })
                 .AddPatreon(options =>
                 {
                     options.ClientId = webOptions.Authentication.Patreon.ClientId;
                     options.ClientSecret = webOptions.Authentication.Patreon.ClientSecret;
+                    options.Events.OnRemoteFailure = ExternalLoginFailure.Handle;
                 })
                 .AddDiscord(options =>
                 {
                     options.ClientId = webOptions.Authentication.Discord.ClientId;
                     options.ClientSecret = webOptions.Authentication.Discord.ClientSecret;
+                    options.Events.OnRemoteFailure = ExternalLoginFailure.Handle;
                 });
         }
 
