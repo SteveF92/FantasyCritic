@@ -30,10 +30,9 @@ internal class ArchiveDatabaseJobHandler : IFantasyCriticCronJobHandler
     public static FantasyCriticJobType JobType => FantasyCriticJobType.ArchiveDatabase;
     public static FantasyCriticJobPriority Priority => FantasyCriticJobPriority.Independent;
 
-    //Saturday night into Sunday, after bids. Not 2 AM, which is when both of the year's daylight saving changes happen.
+    //Saturday night into Sunday, after bids run.
     public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(IsoDayOfWeek.Sunday, new LocalTime(3, 0));
 
-    //Nobody watches a 3 AM run, so any way it stops short of every location having the archive sends Steve an email.
     public async Task<Result> Run(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         Result result;
