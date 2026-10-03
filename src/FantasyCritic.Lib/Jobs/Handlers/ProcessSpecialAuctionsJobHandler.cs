@@ -31,7 +31,7 @@ internal class ProcessSpecialAuctionsJobHandler : IConditionalCronJobHandler
 
     public async Task<bool> ShouldSchedule()
     {
-        var allSpecialAuctions = await _fantasyCriticRepo.GetAllActiveSpecialAuctions();
+        var allSpecialAuctions = await _fantasyCriticRepo.GetActiveSpecialAuctionsForAllYears();
         var now = _clock.GetCurrentInstant();
         return allSpecialAuctions.Any(x => x.IsLocked(now));
     }
@@ -80,7 +80,7 @@ internal class ProcessSpecialAuctionsJobHandler : IConditionalCronJobHandler
 
     private async Task<FinalizedActionProcessingResults> GetSpecialAuctionResults(SystemWideValues systemWideValues, int year, Instant processingTime, IReadOnlyList<LeagueYear> allLeagueYears)
     {
-        var allSpecialAuctions = await _fantasyCriticRepo.GetAllActiveSpecialAuctions();
+        var allSpecialAuctions = await _fantasyCriticRepo.GetActiveSpecialAuctionsForYear(year);
         var specialAuctionsToProcess = allSpecialAuctions.Where(x => !x.Processed && x.IsLocked(processingTime));
         var groupedByLeagueYear = specialAuctionsToProcess.GroupBy(x => x.LeagueYearKey);
         var leagueYearDictionary = allLeagueYears.ToDictionary(x => x.Key);

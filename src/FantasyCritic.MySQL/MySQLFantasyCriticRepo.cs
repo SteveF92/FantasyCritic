@@ -2594,12 +2594,39 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return updatedTrade;
     }
 
-    public async Task<IReadOnlyList<SpecialAuction>> GetAllActiveSpecialAuctions()
+    public async Task<IReadOnlyList<SpecialAuction>> GetActiveSpecialAuctionsForAllYears()
     {
-        const string sql = "select * from tbl_league_specialauction where Processed = 0;";
+        const string sql =
+            """
+            select * from tbl_league_specialauction sa
+            join tbl_meta_supportedyear sy on sa.`Year` = sy.`Year`
+            where Processed = 0 and sy.Finished = 0;
+            """;
 
         await using var connection = new MySqlConnection(_connectionString);
         var results = await connection.QueryAsync<SpecialAuctionEntity>(sql);
+
+        List<SpecialAuction> domains = [];
+        foreach (var result in results)
+        {
+            var masterGame = await _masterGameRepo.GetMasterGameYearOrThrow(result.MasterGameID, result.Year);
+            domains.Add(result.ToDomain(masterGame));
+        }
+
+        return domains;
+    }
+
+    public async Task<IReadOnlyList<SpecialAuction>> GetActiveSpecialAuctionsForYear(int year)
+    {
+        const string sql =
+            """
+            select * from tbl_league_specialauction sa
+            join tbl_meta_supportedyear sy on sa.`Year` = sy.`Year`
+            where sy.`Year` = @year and Processed = 0 and sy.Finished = 0;
+            """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var results = await connection.QueryAsync<SpecialAuctionEntity>(sql, new { year });
 
         List<SpecialAuction> domains = [];
         foreach (var result in results)

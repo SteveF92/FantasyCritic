@@ -169,7 +169,8 @@ public interface IFantasyCriticRepo
     Task DeleteTradeVote(Trade trade, FantasyCriticUser user);
     Task<Trade> ExecuteTrade(ExecutedTrade executedTrade);
     Task ExpireTrades(List<Trade> tradesToExpire, Instant expireTimestamp);
-    Task<IReadOnlyList<SpecialAuction>> GetAllActiveSpecialAuctions();
+    Task<IReadOnlyList<SpecialAuction>> GetActiveSpecialAuctionsForAllYears();
+    Task<IReadOnlyList<SpecialAuction>> GetActiveSpecialAuctionsForYear(int year);
     Task<IReadOnlyList<SpecialAuction>> GetSpecialAuctions(LeagueYear leagueYear);
     Task CreateSpecialAuction(SpecialAuction specialAuction, LeagueManagerAction action);
     Task CancelSpecialAuction(SpecialAuction specialAuction, LeagueManagerAction action);
