@@ -48,7 +48,7 @@ public class Scheduler : BackgroundService
             catch (Exception ex) when (ex is not MissingJobTypeRowsException)
             {
                 //A failed attempt does not advance the next occurrence times, so the retry tries the same slots again. Trying a
-                //slot twice is harmless: CreateJob refuses the duplicate, and OnScheduled is already safe to call again.
+                //slot twice is harmless: CreateJob refuses the duplicate, and OnScheduled only follows a successful insert.
                 _logger.LogError(ex, "Scheduler failed. Retrying in {RetryDelaySeconds} seconds.", FailedAttemptRetryDelay.TotalSeconds);
                 _workerStatus.RecordSchedulerFailure(ex.Message);
                 howLongToSleep = FailedAttemptRetryDelay;
@@ -145,23 +145,24 @@ public class Scheduler : BackgroundService
                 cancelledAt: null, cancelledByUser: null);
             using var jobScope = WorkerLogging.BeginJobScope(job);
 
-            //Before enqueueing, so its work is done on time even if the enqueue fails. Called even when another scheduler already enqueued the slot.
-            if (_jobRegistry.NotifiedOnScheduled.Contains(jobType))
-            {
-                var handler = (IOnScheduledCronJobHandler)scope.ServiceProvider.GetRequiredKeyedService<IJobHandler>(jobType);
-                await handler.OnScheduled();
-            }
-
             var created = await jobRepo.CreateJob(job);
-            if (created)
-            {
-                _logger.LogInformation("Enqueued job {Job} for scheduled slot {ScheduledFor} ({Schedule}).", job, dueSlot.ScheduledFor, dueSlot.Schedule);
-            }
-            else
+            if (!created)
             {
                 //An earlier attempt that failed partway got there first, or another scheduler did, such as the old container during a deploy overlap.
                 //The slot is enqueued, which is all that matters.
                 _logger.LogWarning("Slot {ScheduledFor} for {JobType} was already enqueued - probably a retry after a failure, or a deployment overlap.", dueSlot.ScheduledFor, jobType);
+                continue;
+            }
+
+            _logger.LogInformation("Enqueued job {Job} for scheduled slot {ScheduledFor} ({Schedule}).", job, dueSlot.ScheduledFor, dueSlot.Schedule);
+
+            //Only by whoever enqueued the slot. The startup lookback and a retry both see a slot that was already enqueued, and calling
+            //this for one again could undo what the job has since done, such as turning action processing mode back on after a finished run.
+            //If this fails after the insert, the retry won't repeat it; the job does the same work itself when it runs.
+            if (_jobRegistry.NotifiedOnScheduled.Contains(jobType))
+            {
+                var handler = (IOnScheduledCronJobHandler)scope.ServiceProvider.GetRequiredKeyedService<IJobHandler>(jobType);
+                await handler.OnScheduled();
             }
         }
 

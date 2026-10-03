@@ -77,7 +77,7 @@ internal class FullAutomatedActionsProcessJobHandler : IOnScheduledCronJobHandle
     private async Task<Result> RunSteps(FantasyCriticJobContext context, CancellationToken cancellationToken)
     {
         //Mode first, so nothing changes between the refresh, the snapshot, and processing.
-        //OnScheduled already turned it on. Doing it again keeps this correct if the run type ever allows a manual run, which skips OnScheduled.
+        //OnScheduled normally turned it on already. Doing it again covers a manual run, which skips OnScheduled, and an OnScheduled that failed after the enqueue.
         //The scheduler skips FullDataRefresh's own slot in this wake, since this is the refresh.
         //A cancellation leaves action processing mode on, like every other way this job can stop partway.
         await _interLeagueService.SetActionProcessingMode(true);

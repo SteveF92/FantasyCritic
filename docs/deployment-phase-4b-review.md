@@ -219,12 +219,21 @@ is what makes (c) visible.
 when `EnableAutomatedActionProcessing` is off.
 
 **Decided (1 October 2026):** the scheduler turns the mode on when the slot is due, through a new
-`IOnScheduledCronJobHandler` hook that the scheduler calls before enqueueing. That closes (a) and
-(c), since the scheduler runs whether or not the runner is busy or pulling. (b) becomes harmless:
-the site is locked from Saturday 20:00, and the stale job stops on the day check. The early day
-check is no longer worth adding. Widening `IsBidLockWindow` was rejected: it forces the mode on
-for the whole window, so it would block next week's bids long after processing finished. What is
-left is the whole Worker process being down at 20:00, the same exposure Web being down had before.
+`IOnScheduledCronJobHandler` hook that the scheduler calls when it enqueues the slot. That closes
+(a) and (c), since the scheduler runs whether or not the runner is busy or pulling. (b) becomes
+harmless: the site is locked from Saturday 20:00, and the stale job stops on the day check. The
+early day check is no longer worth adding. Widening `IsBidLockWindow` was rejected: it forces the
+mode on for the whole window, so it would block next week's bids long after processing finished.
+What is left is the whole Worker process being down at 20:00, the same exposure Web being down
+had before.
+
+*Revised (2 October 2026):* the hook first ran before `CreateJob`, for every due slot, including
+one already enqueued. The scheduler's 30-minute startup lookback made that re-run the hook after
+a worker restart within half an hour of the slot, so a restart at 20:28 turned action processing
+mode back on after the 20:00 run had turned it off, with nothing to turn it off again. It now runs
+only after `CreateJob` returns true, so only whoever enqueued the slot calls it. If the hook fails
+after the insert the retry does not repeat it; the job turns the mode on itself when it runs,
+which is the pre-F4 behaviour. Not error-proof, but reasonable.
 
 ### F5. Nothing checks that every job type has a `tbl_job_type` row
 
