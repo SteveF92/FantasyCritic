@@ -141,6 +141,7 @@ import { ApiException, jobManagerClient } from '@/api/clients';
 //A type missing from this list can still be hidden or shown by the server; it just cannot be picked here.
 const jobTypes = [
   'AdvanceRoyaleQuarters',
+  'ArchiveDatabase',
   'EndOfYearRollover',
   'ExpireTrades',
   'FullAutomatedActionsProcess',

@@ -113,6 +113,7 @@
             <b-button size="sm" class="mr-1 mb-1" variant="warning" :disabled="isBusy" @click="enqueueJob('Snapshot Database', () => actionRunnerClient.snapshotDatabase())">
               Snapshot Database
             </b-button>
+            <b-button size="sm" class="mr-1 mb-1" variant="warning" :disabled="isBusy" @click="enqueueJob('Archive Database', () => actionRunnerClient.archiveDatabase())">Archive Database</b-button>
           </div>
           <b-table v-if="recentSnapshots" :items="recentSnapshots" class="mt-2" striped bordered responsive small></b-table>
         </div>
