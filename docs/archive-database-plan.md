@@ -10,17 +10,26 @@ portable `mysqldump` file, kept forever, in a place that a compromised or lost A
 ## Decisions
 
 - **Job:** `ArchiveDatabase`. A cron handler with RunType `ManualOrCron`, so the admin console can also start it.
-- **Schedule:** every Sunday at 02:00 Eastern, so Saturday night into Sunday, six hours after bids. It is a fixed time and
-  is not tied to the action processing constants. It is unconditional: it runs whether or not bids processed.
-- **Production only.** The beta cleaner turns it off (see step 3). Beta's own migration run needs a decision; see the
-  open questions.
+- **Schedule:** every Sunday at 03:00 Eastern, so Saturday night into Sunday, seven hours after bids. It is 03:00, not
+  02:00, because both US daylight saving changes happen at 02:00 on a Sunday. It is a fixed time and is not tied to the
+  action processing constants. It is unconditional: it runs whether or not bids processed.
+- **Production only.** The migration inserts it as `ManualOrCron`, and the beta cleaner turns it off, the same way it
+  does for Patreon and automated action processing. Beta always starts from a production backup.
+- **On failure:** email Steve through `EmailSendingService.SendAdminNotification`, as `FullAutomatedActionsProcess` does.
+  Nobody watches a 3 AM run.
 - **What is archived:** `mysqldump --single-transaction --routines --triggers`, gzipped. That is about 300 MB and under 3
   minutes, so other jobs are allowed to wait behind it.
 - **Where it goes:** Google Cloud Storage and S3. Both go through one interface, `IDatabaseArchiveLocation`.
 - **Who dumps:** a dedicated read-only MySQL user, `fantasycritic-backup`. Steve creates it by hand.
 - **GCP sign-in:** Workload Identity Federation. GCP trusts the AWS role the host already runs as, so no key file exists.
 - **GCP permissions:** create objects only, with no read, list, overwrite or delete.
-- **Retention:** never expire. The bucket's default storage class is a cold one.
+- **Retention:** never expire. Every object starts in an infrequent-access class, a lifecycle rule moves it to cold
+  storage after 90 days, and it stays there permanently:
+  - **GCS:** Nearline, then Coldline. Nearline is the bucket's default class.
+  - **S3:** Standard-IA, set on upload, then Glacier Flexible Retrieval. An S3 lifecycle rule can't move an object to IA
+    before it's 30 days old, so the upload sets IA itself.
+
+  The lifecycle rules are bucket configuration that Steve sets up, not code.
 - **No encryption on our side.** GCS and S3 encrypt at rest.
 - **The dump file:** goes to a local temporary file, which is deleted when the job ends.
 - **The snapshot manager keeps its local-directory location** and its menu. It switches to the shared pieces.
@@ -71,6 +80,8 @@ Each step is built, tested and committed alone, then stops for review.
     configuration JSON. It holds no key material, but it lives in Secrets Manager with everything else that's per
     environment. When it's empty in Development, the location falls back to Application Default Credentials
     (`gcloud auth application-default login`).
+- Have `S3DatabaseArchiveLocation` upload with storage class `STANDARD_IA`. The snapshot manager's S3 uploads get it
+  too, which suits them as well.
 - Add `ConnectionStrings:ArchiveConnection` (the `fantasycritic-backup` user) through a worker-specific connection strings
   record, so Web doesn't have to carry it.
 - Add `AddFantasyCriticDatabaseArchive` in Hosting. It registers both locations as `IDatabaseArchiveLocation`, plus the
@@ -82,15 +93,18 @@ Each step is built, tested and committed alone, then stops for review.
 ### 3. The job
 
 - Add `FantasyCriticJobType.ArchiveDatabase`, plus `ArchiveDatabaseJobHandler : IFantasyCriticCronJobHandler` with
-  priority `Independent` and `Weekly(IsoDayOfWeek.Sunday, new LocalTime(2, 0))`. Register it with `ForCron`.
+  priority `Independent` and `Weekly(IsoDayOfWeek.Sunday, new LocalTime(3, 0))`. Register it with `ForCron`.
 - Handler order: dump to `Path.GetTempPath()`, upload to each location with a job status line for each, and delete the
   file in a `finally` block.
+- Email Steve whenever the job stops short: the dump fails, any upload fails, it throws, or it is cancelled. The email
+  names the job ID and what failed. If the email itself fails, throw an `AggregateException` holding both errors, the
+  same pattern as `FullAutomatedActionsProcessJobHandler.SendStoppedShortEmail`.
 - Add a migration, `Sequential/2026-10-03_000_archiveDatabase.sql`, inserting
   `('ArchiveDatabase', 'Archive Database', 'Database', 'Warning', 'ManualOrCron')`.
-- Make `MySQLBetaCleaner` set its RunType to `Disabled`, next to the Patreon and automated-processing ones.
-- Add schedule tests. Both US DST changes happen at 02:00 on a Sunday, so the tests pin what Cronos does on those dates:
-  - In March, 02:00 doesn't exist. Expected: the job runs once, at 03:00.
-  - In November, 02:00 exists twice. Expected: the job runs once.
+- Add `DisableDatabaseArchive` to `MySQLBetaCleaner`, setting the job's RunType to `Disabled`. Put it next to
+  `DisablePatreon` and `DisableAutomatedActionProcessing`, with a doc comment: a copy of production must not archive
+  itself into production's archive locations, and beta doesn't have the configuration anyway.
+- Add a schedule test for the next occurrence after a Saturday evening.
 
 ### 4. Admin console trigger
 
@@ -114,8 +128,10 @@ Each step is built, tested and committed alone, then stops for review.
 
 - Run the job locally against Docker MySQL, with a dev bucket on each side. Starting it from the admin console tests the
   manual path.
-- Deploy. Run it once by hand in production, then check that both objects exist and that the GCS one has the cold storage
-  class.
+- Deploy. Run it once by hand in production, then check that both objects exist with the expected classes: Nearline in
+  GCS, Standard-IA in S3.
+- Re-sync beta after this deploy. Beta's current database gets the migration's `ManualOrCron` row, and only a sync runs
+  the cleaner. Without one, beta's worker would try the job on Sunday, fail, and email Steve.
 - Download the GCS copy and import it into `fantasycritic-fromsnapshot` with the snapshot manager (option 4). A backup
   that was never restored hasn't been tested.
 
@@ -135,15 +151,18 @@ we'll find another way.
 ### AWS
 
 - Choose the S3 bucket and prefix. The snapshot manager currently uses `fantasy-critic-beta` / `db-dumps/`.
-- Grant `s3:PutObject` on that prefix to the role the production host runs as.
+- Grant `s3:PutObject` on that prefix to the role the production host runs as, and nothing else: no get, list or delete.
+- Add a lifecycle rule on the prefix: transition to Glacier Flexible Retrieval at 90 days, with no expiration.
+- Turn on bucket versioning. PutObject alone can still overwrite an existing key, and versioning keeps the old copy if
+  that ever happens.
 - Find that role's name, because the GCP side needs it.
 
 ### GCP (Workload Identity Federation)
 
 I'll go through this with you step by step. Outline:
 
-1. Create a project and a bucket. Set the default storage class to Archive, which is the cheapest at-rest class and fits
-   "never read, never delete". Turn on uniform bucket-level access.
+1. Create a project and a bucket. Set the default storage class to Nearline and turn on uniform bucket-level access. Add
+   a lifecycle rule: SetStorageClass to Coldline at age 90 days, with no delete rule.
 2. Create a service account, `fantasycritic-archiver`. On the bucket only, grant it `roles/storage.objectCreator`, which
    allows create but no read, list, overwrite or delete.
 3. Create a workload identity pool, then an AWS provider in that pool for the AWS account ID.
@@ -162,15 +181,3 @@ I'll go through this with you step by step. Outline:
 The worker container already reaches the instance metadata service for its AWS calls, so the Google library can sign in
 the same way.
 
-## Open questions
-
-- **Beta before its next sync:** the migration runs on beta too, which would give beta's existing database a
-  `ManualOrCron` row. Beta's worker would then try the job on Sunday and fail, because the archive config is required
-  only in Production. Two options:
-  - The migration inserts `Disabled`, and production is switched to `ManualOrCron` by hand once, after deploy.
-  - The migration inserts `ManualOrCron`, and beta is re-synced or updated by hand once.
-
-  The first fails safe.
-- **S3 storage class:** Standard, or Glacier Deep Archive to match the never-read intent?
-- **Email on failure:** a failed run ends in Error in the admin console and in Grafana. Should it also email Steve, the
-  way `FullAutomatedActionsProcess` does?
