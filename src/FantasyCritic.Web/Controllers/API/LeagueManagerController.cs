@@ -673,6 +673,7 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
+    [ProducesResponseType<ManagerClaimResultViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -694,7 +695,7 @@ public class LeagueManagerController : BaseLeagueController
             masterGame = await _interLeagueService.GetMasterGame(request.MasterGameID.Value);
         }
 
-        bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, request.CounterPick, masterGame, false);
+        bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, request.CounterPick, masterGame);
         ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(leagueYear, publisher, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false, masterGame, null, null);
         ClaimResult result = await _gameAcquisitionService.ClaimGame(domainRequest, true, null, request.AllowIneligibleSlot);
         var viewModel = new ManagerClaimResultViewModel(result);
@@ -1091,7 +1092,7 @@ public class LeagueManagerController : BaseLeagueController
             }
         }
 
-        bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, request.CounterPick, masterGame, false);
+        bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, request.CounterPick, masterGame);
         ClaimGameDomainRequest domainRequest = new ClaimGameDomainRequest(leagueYear, publisher, request.GameName, request.CounterPick, counterPickedGameIsManualWillNotRelease, request.ManagerOverride, false,
             masterGame, draftStatus.RoundNumber, draftStatus.OverallPickNumber);
 

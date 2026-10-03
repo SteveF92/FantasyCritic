@@ -40,7 +40,7 @@ public static class PlayerGameExtensions
         return containsGame;
     }
 
-    public static bool CounterPickedGameIsManualWillNotRelease(LeagueYear leagueYear, bool counterPick, MasterGame? masterGame, bool gameCouldBeDropped)
+    public static bool CounterPickedGameIsManualWillNotRelease(LeagueYear leagueYear, bool counterPick, MasterGame? masterGame)
     {
         if (!counterPick || masterGame is null)
         {
@@ -50,14 +50,15 @@ public static class PlayerGameExtensions
         var gameBeingCounterPickedOptions = leagueYear.Publishers.Select(x => x.GetPublisherGame(masterGame, false))
             .Where(x => x is not null && !x.CounterPick).Select(x => x!).ToList();
 
-        if (gameBeingCounterPickedOptions.Count != 1)
+        // Nobody publishing the game is a normal claim error, which eligibility reports; two publishers holding it is corrupt data.
+        if (gameBeingCounterPickedOptions.Count == 0)
         {
-            if (gameCouldBeDropped && gameBeingCounterPickedOptions.Count == 0)
-            {
-                return false;
-            }
+            return false;
+        }
 
-            throw new Exception($"Something very strange has happened with bid processing for league year: {leagueYear.Key}");
+        if (gameBeingCounterPickedOptions.Count > 1)
+        {
+            throw new Exception($"Multiple publishers hold {masterGame.GameName} as a standard game in league year: {leagueYear.Key}");
         }
 
         return gameBeingCounterPickedOptions.Single().ManualWillNotRelease;

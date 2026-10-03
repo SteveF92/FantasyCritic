@@ -102,20 +102,7 @@ public class GameAcquisitionService
             return new ClaimResult(new ClaimError(BidSlotPathFunctions.NoSlotPathError, false));
         }
 
-        bool counterPickedGameIsManualWillNotRelease = false;
-        if (counterPick)
-        {
-            var gameBeingCounterPickedOptions = leagueYear.Publishers.Select(x => x.GetPublisherGame(masterGame, false))
-                .Where(x => x is not null && !x.CounterPick).SelectNotNull().ToList();
-
-            if (gameBeingCounterPickedOptions.Count != 1)
-            {
-                throw new Exception($"Something very strange has happened with bid processing for publisher: {publisher.PublisherID}");
-            }
-
-            counterPickedGameIsManualWillNotRelease = gameBeingCounterPickedOptions.Single().ManualWillNotRelease;
-        }
-
+        bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(leagueYear, counterPick, masterGame);
         var claimRequest = new ClaimGameDomainRequest(leagueYear, publisher, masterGame.GameName, counterPick,
             counterPickedGameIsManualWillNotRelease, false, false, masterGame, null, null);
 

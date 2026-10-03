@@ -241,7 +241,7 @@ public class ActionProcessor
         foreach (var activeBid in nonDuplicateBids)
         {
             Publisher bidPublisher = publisherStateSet.GetPublisher(activeBid.Publisher.PublisherID);
-            bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(updatedLeagueYear, activeBid.CounterPick, activeBid.MasterGame, true);
+            bool counterPickedGameIsManualWillNotRelease = PlayerGameExtensions.CounterPickedGameIsManualWillNotRelease(updatedLeagueYear, activeBid.CounterPick, activeBid.MasterGame);
             var gameRequest = new ClaimGameDomainRequest(updatedLeagueYear, bidPublisher, activeBid.MasterGame.GameName, activeBid.CounterPick,
                 counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
 
