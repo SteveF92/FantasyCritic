@@ -30,13 +30,12 @@ internal class GrantSuperDropsJobHandler : IFantasyCriticCronJobHandler
     {
         SystemWideValues systemWideValues = await _fantasyCriticRepo.GetSystemWideValues();
         var now = _clock.GetCurrentInstant();
-        var currentDate = now.ToEasternDate();
         var supportedYears = await _fantasyCriticRepo.GetSupportedYears();
         var currentYear = supportedYears.Where(x => !x.Finished && x.OpenForPlay).MinBy(x => x.Year);
         IReadOnlyList<LeagueYear> allLeagueYears = await _fantasyCriticRepo.GetLeagueYears(currentYear!.Year);
         var leagueYearsWithSuperDrops = allLeagueYears.Where(x => x.IsFirstDraftFinished && x.Options.GrantSuperDrops).ToList();
 
-        var allLeagueActions = await _fantasyCriticRepo.GetLeagueActions(currentDate.Year);
+        var allLeagueActions = await _fantasyCriticRepo.GetLeagueActions(currentYear.Year);
         var automatedGrantActions = allLeagueActions.Where(x => x.ActionType == "Granted Super Drop");
         var publishersAlreadyGranted = automatedGrantActions.Select(x => x.Publisher.PublisherID).ToHashSet();
 

@@ -353,6 +353,9 @@ Suggest dropping the idea.
 `GrantSuperDropsJobHandler.cs:34` takes leagues from the earliest open year; line 38 takes
 "already granted" from the calendar year. They only disagree for a manual run between January
 and August, or a 31 December slot that runs after midnight.
+*Decided (2 October 2026):* fixed. They disagree between midnight on 1 January and the rollover
+finishing the old year, and in that window every publisher under the cutoff would be granted a
+second super drop. "Already granted" now reads the same year as the leagues.
 
 ---
 
