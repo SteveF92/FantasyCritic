@@ -191,7 +191,9 @@ character, but not both.
 | `DatabaseArchive:GoogleCloud:Bucket` | The GCS bucket |
 | `DatabaseArchive:GoogleCloud:CredentialConfiguration` | The JSON from `create-cred-config` |
 
-Both prefixes ship as `database-archive/` in the worker's `appsettings.json`. Production refuses to start without the
+Both prefixes ship empty in the worker's `appsettings.json`, so archives land in `fantasy-critic-rds/<date>/` at the
+bucket root, beside the snapshot manager's manual dumps. The S3 permission covers only that folder. The credential
+configuration goes in the blob as an escaped JSON string, not a nested object. Production refuses to start without the
 four keys, so they must be in Secrets Manager before this deploys.
 
 ### AWS
