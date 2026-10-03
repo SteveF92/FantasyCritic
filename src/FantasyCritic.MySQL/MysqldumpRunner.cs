@@ -178,8 +178,22 @@ public sealed class MysqldumpRunner
     }
 
     //An option file reads backslash escapes in a value, and strips one pair of quotes around it, which keeps a # from starting
-    //a comment. Quotes inside the value are kept as they are, so only backslashes need escaping.
-    public static string QuoteOptionValue(string value) => $"\"{value.Replace(@"\", @"\\")}\"";
+    //a comment. It has no escape for the quote itself, so the value is wrapped in the kind of quote it doesn't contain.
+    public static string QuoteOptionValue(string value)
+    {
+        var escaped = value.Replace(@"\", @"\\");
+        if (!escaped.Contains('"'))
+        {
+            return $"\"{escaped}\"";
+        }
+
+        if (!escaped.Contains('\''))
+        {
+            return $"'{escaped}'";
+        }
+
+        throw new ArgumentException("A MySQL option file can't hold a password containing both kinds of quotation mark.", nameof(value));
+    }
 
     private static Process StartProcess(ProcessStartInfo startInfo)
     {

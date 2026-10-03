@@ -1,3 +1,4 @@
+using System;
 using FantasyCritic.MySQL;
 using MySqlConnector;
 using NUnit.Framework;
@@ -10,10 +11,17 @@ public class MysqldumpRunnerTests
     [TestCase("plain", "\"plain\"")]
     [TestCase(@"back\slash", "\"back\\\\slash\"")]
     [TestCase("has#hash", "\"has#hash\"")]
-    [TestCase("has\"quote", "\"has\"quote\"")]
-    public void QuoteOptionValue_EscapesOnlyBackslashes(string password, string expected)
+    [TestCase("has'apostrophe#", "\"has'apostrophe#\"")]
+    [TestCase("has\"quote#", "'has\"quote#'")]
+    public void QuoteOptionValue_EscapesBackslashesAndUsesTheQuoteTheValueLacks(string password, string expected)
     {
         Assert.That(MysqldumpRunner.QuoteOptionValue(password), Is.EqualTo(expected));
+    }
+
+    [Test]
+    public void QuoteOptionValue_RefusesBothKindsOfQuote()
+    {
+        Assert.Throws<ArgumentException>(() => MysqldumpRunner.QuoteOptionValue("both'\""));
     }
 
     [TestCase(MySqlSslMode.None, "DISABLED")]
