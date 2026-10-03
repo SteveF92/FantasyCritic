@@ -191,8 +191,7 @@ public sealed record GoogleCloudArchiveOptions : IOptionsSection
     public required string Prefix { get; init; }
 
     /// <summary>
-    /// The Workload Identity Federation credential configuration, as JSON. It holds no key: it tells Google's library to
-    /// sign in with the host's AWS role. Left the placeholder, the library falls back to Application Default Credentials.
+    /// Workload Identity Federation JSON, which holds no key: Google trusts the host's AWS role.
     /// </summary>
     public required string CredentialConfiguration { get; init; }
 

@@ -7,20 +7,15 @@ namespace FantasyCritic.GCP;
 
 public static class GoogleCloudStorageClientFactory
 {
-    /// <summary>
-    /// Signs in with a Workload Identity Federation credential configuration: Google trusts the host's AWS role, so no
-    /// Google key exists anywhere. Without one, Application Default Credentials (gcloud auth application-default login)
-    /// are used, which is for a developer's machine.
-    /// </summary>
     public static StorageClient Create(string credentialConfiguration)
     {
+        //A developer's machine, signed in with gcloud auth application-default login.
         if (string.IsNullOrWhiteSpace(credentialConfiguration) || MissingConfiguration.IsPlaceholder(credentialConfiguration))
         {
             return StorageClient.Create();
         }
 
-        //Google asks that a credential configuration be checked before use. This one comes from our own secret store, but
-        //anything other than AWS federation would mean it is not the one we made.
+        //Google asks that a credential configuration be validated before use.
         var credential = GoogleCredential.FromJson(credentialConfiguration);
         if (credential.UnderlyingCredential is not AwsExternalAccountCredential)
         {

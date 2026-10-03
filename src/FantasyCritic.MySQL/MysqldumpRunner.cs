@@ -25,7 +25,7 @@ public sealed class MysqldumpRunner
         startInfo.ArgumentList.Add("--routines");
         startInfo.ArgumentList.Add("--triggers");
         startInfo.ArgumentList.Add("--set-gtid-purged=OFF");
-        //Tablespace information needs the PROCESS privilege, which a read-only backup user doesn't have, and nothing here uses it.
+        //Tablespaces need the PROCESS privilege, which the read-only backup user doesn't have.
         startInfo.ArgumentList.Add("--no-tablespaces");
         startInfo.ArgumentList.Add("--verbose");
         startInfo.ArgumentList.Add(builder.Database);
@@ -76,7 +76,7 @@ public sealed class MysqldumpRunner
             : Result.Failure(BuildProcessFailureMessage("mysql", process.ExitCode, stderr));
     }
 
-    //Progress is Debug, so a console run can show it while a host's logs keep only the total.
+    //Progress is Debug: the snapshot manager's console shows it, the worker's logs keep only the total.
     private static async Task CopyWithProgressAsync(Stream source, Stream destination, string label, CancellationToken cancellationToken)
     {
         byte[] buffer = new byte[81920];
@@ -104,7 +104,6 @@ public sealed class MysqldumpRunner
         _logger.Information("[{Label}] Finished: {Megabytes} processed.", label, FormatMegabytes(totalBytes));
     }
 
-    //Captured for the failure message. mysqldump's --verbose writes a line per step here, so these are Debug too.
     private static async Task PumpProcessOutputToLogAsync(
         StreamReader reader,
         string label,
@@ -160,10 +159,7 @@ public sealed class MysqldumpRunner
         _ => throw new ArgumentOutOfRangeException(nameof(sslMode), sslMode, "No mysql client equivalent."),
     };
 
-    /// <summary>
-    /// An option file holding only the password, so that it isn't on a command line, where any process on the machine can
-    /// read it. Deleted when disposed.
-    /// </summary>
+    //A command line is readable by any process on the machine.
     private sealed class PasswordOptionFile : IDisposable
     {
         public PasswordOptionFile(string password)
@@ -177,8 +173,7 @@ public sealed class MysqldumpRunner
         public void Dispose() => File.Delete(Path);
     }
 
-    //An option file reads backslash escapes in a value, and strips one pair of quotes around it, which keeps a # from starting
-    //a comment. It has no escape for the quote itself, so the value is wrapped in the kind of quote it doesn't contain.
+    //Quoting keeps a # from starting a comment, but option files have no escape for the quote itself.
     public static string QuoteOptionValue(string value)
     {
         var escaped = value.Replace(@"\", @"\\");

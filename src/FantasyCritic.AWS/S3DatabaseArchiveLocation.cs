@@ -24,8 +24,7 @@ public sealed class S3DatabaseArchiveLocation : IDatabaseArchiveLocation
 
     public async Task Upload(string localFilePath, string key, CancellationToken cancellationToken)
     {
-        //Infrequent access from the start: a bucket lifecycle rule can't move an object there until it is 30 days old. The
-        //same lifecycle rule moves it to Glacier later.
+        //A lifecycle rule can't move an object to infrequent access until it is 30 days old.
         var request = new TransferUtilityUploadRequest
         {
             FilePath = localFilePath,
