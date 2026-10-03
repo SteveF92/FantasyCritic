@@ -28,6 +28,10 @@ Settings live in `appsettings.json`. Put secrets in user secrets (`UserSecretsId
 
 Connection strings and paths should be set via user secrets in local development, not committed to git.
 
+The S3 and Google Cloud destinations, and the `mysqldump` runner, are shared with the worker's `ArchiveDatabase` job:
+they live in FantasyCritic.AWS, FantasyCritic.GCP and FantasyCritic.MySQL, behind Lib's `IDatabaseArchiveLocation`. Only
+the local directory destination is this tool's own.
+
 ## Running
 
 ```powershell

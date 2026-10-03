@@ -1,13 +1,16 @@
 using System.Diagnostics;
+using System.IO;
 using System.IO.Compression;
 using System.Text;
-using CSharpFunctionalExtensions;
-using MySqlConnector;
+using Serilog;
 
-namespace FantasyCritic.RdsSnapshotManager.Infrastructure;
+namespace FantasyCritic.MySQL;
 
+//Runs the MySQL client tools, which must be on PATH: mysqldump to write a gzipped dump, and mysql to load one.
 public sealed class MysqldumpRunner
 {
+    private static readonly ILogger _logger = Log.ForContext<MysqldumpRunner>();
+
     private const long ProgressReportIntervalBytes = 10 * 1024 * 1024;
 
     public async Task<Result<string>> DumpToGzipFile(string connectionString, string outputFilePath, CancellationToken cancellationToken)
@@ -29,8 +32,8 @@ public sealed class MysqldumpRunner
         await using GZipStream gzipStream = new GZipStream(outputFile, CompressionLevel.Optimal);
 
         List<string> stderrLines = [];
-        Task stderrTask = PumpProcessOutputToConsoleAsync(process.StandardError, "mysqldump", stderrLines, cancellationToken);
-        Task copyTask = CopyStdoutToGzipWithConsoleProgressAsync(process.StandardOutput.BaseStream, gzipStream, cancellationToken);
+        Task stderrTask = PumpProcessOutputToLogAsync(process.StandardError, "mysqldump", stderrLines, cancellationToken);
+        Task copyTask = CopyWithProgressAsync(process.StandardOutput.BaseStream, gzipStream, "mysqldump", cancellationToken);
 
         await Task.WhenAll(copyTask, stderrTask);
         await process.WaitForExitAsync(cancellationToken);
@@ -55,8 +58,8 @@ public sealed class MysqldumpRunner
         await using GZipStream gzipStream = new GZipStream(inputFile, CompressionMode.Decompress);
 
         List<string> stderrLines = [];
-        Task stderrTask = PumpProcessOutputToConsoleAsync(process.StandardError, "mysql", stderrLines, cancellationToken);
-        Task copyTask = CopyWithConsoleProgressAsync(gzipStream, process.StandardInput.BaseStream, "mysql import", cancellationToken);
+        Task stderrTask = PumpProcessOutputToLogAsync(process.StandardError, "mysql", stderrLines, cancellationToken);
+        Task copyTask = CopyWithProgressAsync(gzipStream, process.StandardInput.BaseStream, "mysql import", cancellationToken);
 
         await copyTask;
         process.StandardInput.Close();
@@ -69,13 +72,8 @@ public sealed class MysqldumpRunner
             : Result.Failure(BuildProcessFailureMessage("mysql", process.ExitCode, stderr));
     }
 
-    private static async Task CopyStdoutToGzipWithConsoleProgressAsync(Stream stdout, Stream gzipDestination, CancellationToken cancellationToken)
-    {
-        System.Console.WriteLine("[mysqldump] Writing compressed dump (stdout is SQL data; showing size progress)...");
-        await CopyWithConsoleProgressAsync(stdout, gzipDestination, "mysqldump", cancellationToken);
-    }
-
-    private static async Task CopyWithConsoleProgressAsync(Stream source, Stream destination, string label, CancellationToken cancellationToken)
+    //Progress is Debug, so a console run can show it while a host's logs keep only the total.
+    private static async Task CopyWithProgressAsync(Stream source, Stream destination, string label, CancellationToken cancellationToken)
     {
         byte[] buffer = new byte[81920];
         long totalBytes = 0;
@@ -94,15 +92,16 @@ public sealed class MysqldumpRunner
 
             if (totalBytes >= nextReportAt)
             {
-                System.Console.WriteLine($"[{label}] {FormatMegabytes(totalBytes)} processed...");
+                _logger.Debug("[{Label}] {Megabytes} processed...", label, FormatMegabytes(totalBytes));
                 nextReportAt += ProgressReportIntervalBytes;
             }
         }
 
-        System.Console.WriteLine($"[{label}] Finished — {FormatMegabytes(totalBytes)} processed.");
+        _logger.Information("[{Label}] Finished: {Megabytes} processed.", label, FormatMegabytes(totalBytes));
     }
 
-    private static async Task PumpProcessOutputToConsoleAsync(
+    //Captured for the failure message. mysqldump's --verbose writes a line per step here, so these are Debug too.
+    private static async Task PumpProcessOutputToLogAsync(
         StreamReader reader,
         string label,
         List<string> capturedLines,
@@ -117,7 +116,7 @@ public sealed class MysqldumpRunner
             }
 
             capturedLines.Add(line);
-            System.Console.WriteLine($"[{label}] {line}");
+            _logger.Debug("[{Label}] {Line}", label, line);
         }
     }
 

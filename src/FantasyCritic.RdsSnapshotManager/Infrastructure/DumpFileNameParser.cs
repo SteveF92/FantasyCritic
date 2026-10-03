@@ -10,7 +10,7 @@ public static partial class DumpFileNameParser
     [GeneratedRegex(@"^(?<instanceName>.+)-(?<year>\d{4})-(?<month>\d{2})-(?<day>\d{2})-\d{6}\.sql\.gz$")]
     private static partial Regex DumpFileNamePattern();
 
-    public static Result<string> TryBuildRemoteKey(string prefix, string fileName)
+    public static Result<string> TryBuildKey(string fileName)
     {
         var match = DumpFileNamePattern().Match(fileName);
         if (!match.Success)
@@ -25,6 +25,6 @@ public static partial class DumpFileNameParser
             int.Parse(match.Groups["day"].Value));
         var instanceName = match.Groups["instanceName"].Value;
 
-        return Result.Success(BackupRemoteKeyBuilder.Build(prefix, instanceName, date, fileName));
+        return Result.Success(BackupRemoteKeyBuilder.Build(instanceName, date, fileName));
     }
 }

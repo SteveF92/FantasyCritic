@@ -19,7 +19,9 @@ public static class Program
 {
     private static async Task Main()
     {
+        //Debug, for the MySQL tools' progress and output.
         Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
             .WriteTo.Console()
             .CreateLogger();
 
@@ -50,7 +52,7 @@ public static class Program
         var mysqldumpRunner = new MysqldumpRunner();
         var dockerHealthChecker = new DockerMySqlHealthChecker();
         var emptyChecker = new DatabaseEmptyChecker();
-        var destinations = BackupDestinationFactory.CreateRegistrations(options);
+        var destinations = BackupDestinationFactory.CreateAll(options);
 
         string localSnapshotConnectionString = LocalSnapshotConnectionString.BuildSnapshotConnectionString(
             options.LocalDocker.ConnectionString);
