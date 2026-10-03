@@ -17,13 +17,16 @@ public sealed class MysqldumpRunner
     {
         Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath)!);
         var builder = new MySqlConnectionStringBuilder(connectionString);
+        using var passwordFile = new PasswordOptionFile(builder.Password);
 
         ProcessStartInfo startInfo = BuildMySqlToolStartInfo("mysqldump");
-        AddCommonConnectionArguments(startInfo, builder);
+        AddCommonConnectionArguments(startInfo, builder, passwordFile);
         startInfo.ArgumentList.Add("--single-transaction");
         startInfo.ArgumentList.Add("--routines");
         startInfo.ArgumentList.Add("--triggers");
         startInfo.ArgumentList.Add("--set-gtid-purged=OFF");
+        //Tablespace information needs the PROCESS privilege, which a read-only backup user doesn't have, and nothing here uses it.
+        startInfo.ArgumentList.Add("--no-tablespaces");
         startInfo.ArgumentList.Add("--verbose");
         startInfo.ArgumentList.Add(builder.Database);
 
@@ -47,9 +50,10 @@ public sealed class MysqldumpRunner
     public async Task<Result> ImportGzipFile(string connectionString, string inputFilePath, CancellationToken cancellationToken)
     {
         var builder = new MySqlConnectionStringBuilder(connectionString);
+        using var passwordFile = new PasswordOptionFile(builder.Password);
 
         ProcessStartInfo startInfo = BuildMySqlToolStartInfo("mysql");
-        AddCommonConnectionArguments(startInfo, builder);
+        AddCommonConnectionArguments(startInfo, builder, passwordFile);
         startInfo.ArgumentList.Add(builder.Database);
         startInfo.RedirectStandardInput = true;
 
@@ -136,13 +140,46 @@ public sealed class MysqldumpRunner
         };
     }
 
-    private static void AddCommonConnectionArguments(ProcessStartInfo startInfo, MySqlConnectionStringBuilder builder)
+    private static void AddCommonConnectionArguments(ProcessStartInfo startInfo, MySqlConnectionStringBuilder builder, PasswordOptionFile passwordFile)
     {
+        //The client tools only accept this as their first argument.
+        startInfo.ArgumentList.Add($"--defaults-extra-file={passwordFile.Path}");
         startInfo.ArgumentList.Add($"-h{builder.Server}");
         startInfo.ArgumentList.Add($"-P{builder.Port}");
         startInfo.ArgumentList.Add($"-u{builder.UserID}");
-        startInfo.ArgumentList.Add($"--password={builder.Password}");
+        startInfo.ArgumentList.Add($"--ssl-mode={ToClientSslMode(builder.SslMode)}");
     }
+
+    public static string ToClientSslMode(MySqlSslMode sslMode) => sslMode switch
+    {
+        MySqlSslMode.None => "DISABLED",
+        MySqlSslMode.Preferred => "PREFERRED",
+        MySqlSslMode.Required => "REQUIRED",
+        MySqlSslMode.VerifyCA => "VERIFY_CA",
+        MySqlSslMode.VerifyFull => "VERIFY_IDENTITY",
+        _ => throw new ArgumentOutOfRangeException(nameof(sslMode), sslMode, "No mysql client equivalent."),
+    };
+
+    /// <summary>
+    /// An option file holding only the password, so that it isn't on a command line, where any process on the machine can
+    /// read it. Deleted when disposed.
+    /// </summary>
+    private sealed class PasswordOptionFile : IDisposable
+    {
+        public PasswordOptionFile(string password)
+        {
+            Path = System.IO.Path.GetTempFileName();
+            File.WriteAllText(Path, $"[client]{Environment.NewLine}password={QuoteOptionValue(password)}{Environment.NewLine}");
+        }
+
+        public string Path { get; }
+
+        public void Dispose() => File.Delete(Path);
+    }
+
+    //An option file reads backslash escapes in a value, and strips one pair of quotes around it, which keeps a # from starting
+    //a comment. Quotes inside the value are kept as they are, so only backslashes need escaping.
+    public static string QuoteOptionValue(string value) => $"\"{value.Replace(@"\", @"\\")}\"";
 
     private static Process StartProcess(ProcessStartInfo startInfo)
     {

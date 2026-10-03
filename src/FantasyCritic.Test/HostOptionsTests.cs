@@ -29,7 +29,8 @@ public class HostOptionsTests
     private const string WorkerBeta = "Missing configuration: Aws:RdsInstanceName, Postmark:ApiKey, OpenCritic:ApiKey, Discord:BotToken";
     private const string WorkerProduction = "Missing configuration: Aws:RdsInstanceName, Postmark:ApiKey, OpenCritic:ApiKey, "
                                             + "Authentication:Patreon:ClientId, Authentication:Patreon:CampaignId, Authentication:Patreon:ClientSecret, "
-                                            + "Discord:BotToken";
+                                            + "Discord:BotToken, DatabaseArchive:ConnectionString, DatabaseArchive:S3:Bucket, "
+                                            + "DatabaseArchive:GoogleCloud:Bucket, DatabaseArchive:GoogleCloud:CredentialConfiguration";
     private const string BotWithoutAToken = "Missing configuration: Discord:BotToken";
 
     // One blob per environment serves every host, so it holds every value any of them needs.
@@ -50,6 +51,10 @@ public class HostOptionsTests
         ["Authentication:Discord:ClientId"] = "discord-id",
         ["Authentication:Discord:ClientSecret"] = "discord-secret",
         ["Discord:BotToken"] = "a-bot-token",
+        ["DatabaseArchive:ConnectionString"] = "Server=rds;Database=fantasycritic;Uid=fantasycritic-backup;Pwd=backup-password;",
+        ["DatabaseArchive:S3:Bucket"] = "an-s3-bucket",
+        ["DatabaseArchive:GoogleCloud:Bucket"] = "a-gcs-bucket",
+        ["DatabaseArchive:GoogleCloud:CredentialConfiguration"] = "{\"type\": \"external_account\"}",
     };
 
     /// <returns>Why the host would refuse to start, or null if it would start.</returns>

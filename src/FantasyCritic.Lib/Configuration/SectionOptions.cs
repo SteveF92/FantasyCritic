@@ -151,6 +151,61 @@ public sealed record DiscordOptions : IOptionsSection
     }
 }
 
+/// <summary>
+/// The worker's ArchiveDatabase job: the database it dumps, as a read-only user, and the buckets the dump goes to. Only
+/// production archives, so elsewhere these may stay placeholders.
+/// </summary>
+public sealed record DatabaseArchiveOptions : IOptionsSection
+{
+    public required string ConnectionString { get; init; }
+    public required S3ArchiveOptions S3 { get; init; }
+    public required GoogleCloudArchiveOptions GoogleCloud { get; init; }
+
+    public IReadOnlyList<string> Validate(string path, FantasyCriticEnvironment environment)
+    {
+        return new MissingConfiguration(environment)
+            .Value($"{path}:{nameof(ConnectionString)}", ConnectionString, FantasyCriticEnvironment.Production)
+            .Section($"{path}:{nameof(S3)}", S3)
+            .Section($"{path}:{nameof(GoogleCloud)}", GoogleCloud)
+            .Paths;
+    }
+}
+
+public sealed record S3ArchiveOptions : IOptionsSection
+{
+    public required string Bucket { get; init; }
+    public required string Prefix { get; init; }
+
+    public IReadOnlyList<string> Validate(string path, FantasyCriticEnvironment environment)
+    {
+        return new MissingConfiguration(environment)
+            .Value($"{path}:{nameof(Bucket)}", Bucket, FantasyCriticEnvironment.Production)
+            .Present($"{path}:{nameof(Prefix)}", Prefix)
+            .Paths;
+    }
+}
+
+public sealed record GoogleCloudArchiveOptions : IOptionsSection
+{
+    public required string Bucket { get; init; }
+    public required string Prefix { get; init; }
+
+    /// <summary>
+    /// The Workload Identity Federation credential configuration, as JSON. It holds no key: it tells Google's library to
+    /// sign in with the host's AWS role. Left the placeholder, the library falls back to Application Default Credentials.
+    /// </summary>
+    public required string CredentialConfiguration { get; init; }
+
+    public IReadOnlyList<string> Validate(string path, FantasyCriticEnvironment environment)
+    {
+        return new MissingConfiguration(environment)
+            .Value($"{path}:{nameof(Bucket)}", Bucket, FantasyCriticEnvironment.Production)
+            .Present($"{path}:{nameof(Prefix)}", Prefix)
+            .Value($"{path}:{nameof(CredentialConfiguration)}", CredentialConfiguration, FantasyCriticEnvironment.Production)
+            .Paths;
+    }
+}
+
 public sealed record ServiceHealthOptions : IOptionsSection
 {
     public required string WorkerUrl { get; init; }

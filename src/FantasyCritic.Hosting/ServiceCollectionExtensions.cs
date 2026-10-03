@@ -1,4 +1,5 @@
 using System;
+using Amazon.S3;
 using Discord;
 using Discord.Interactions;
 using Discord.WebSocket;
@@ -6,6 +7,7 @@ using DiscordDotNetUtilities;
 using DiscordDotNetUtilities.Interfaces;
 using FantasyCritic.AWS;
 using FantasyCritic.EmailTemplates;
+using FantasyCritic.GCP;
 using FantasyCritic.Lib.BackgroundServices;
 using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.DependencyInjection;
@@ -140,6 +142,23 @@ public static class ServiceCollectionExtensions
             client.BaseAddress = new Uri(PatreonApiClient.BaseAddress);
         });
         services.AddScoped<PatreonService>();
+        return services;
+    }
+
+    /// <summary>
+    /// The ArchiveDatabase job's dumper and the locations its dumps go to. Registered by the worker only. Nothing is built
+    /// until the job runs, so a host whose archive configuration is still placeholders starts normally.
+    /// </summary>
+    public static IServiceCollection AddFantasyCriticDatabaseArchive(this IServiceCollection services, DatabaseArchiveOptions databaseArchive)
+    {
+        services.AddSingleton<MysqldumpRunner>();
+        services.AddSingleton<IDatabaseDumper>(x => new MySQLDatabaseDumper(databaseArchive.ConnectionString, x.GetRequiredService<MysqldumpRunner>()));
+        services.AddSingleton<IDatabaseArchiveLocation>(_ =>
+            new S3DatabaseArchiveLocation(new AmazonS3Client(), databaseArchive.S3.Bucket, databaseArchive.S3.Prefix));
+        services.AddSingleton<IDatabaseArchiveLocation>(_ => new GoogleCloudStorageDatabaseArchiveLocation(
+            GoogleCloudStorageClientFactory.Create(databaseArchive.GoogleCloud.CredentialConfiguration),
+            databaseArchive.GoogleCloud.Bucket, databaseArchive.GoogleCloud.Prefix));
+
         return services;
     }
 

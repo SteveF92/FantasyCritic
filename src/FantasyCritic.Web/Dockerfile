@@ -30,6 +30,7 @@ COPY ["src/FantasyCritic.Web/FantasyCritic.Web.csproj", "src/FantasyCritic.Web/"
 COPY ["src/FantasyCritic.AWS/FantasyCritic.AWS.csproj", "src/FantasyCritic.AWS/"]
 COPY ["src/FantasyCritic.EmailTemplates/FantasyCritic.EmailTemplates.csproj", "src/FantasyCritic.EmailTemplates/"]
 COPY ["src/FantasyCritic.FakeRepo/FantasyCritic.FakeRepo.csproj", "src/FantasyCritic.FakeRepo/"]
+COPY ["src/FantasyCritic.GCP/FantasyCritic.GCP.csproj", "src/FantasyCritic.GCP/"]
 COPY ["src/FantasyCritic.Hosting/FantasyCritic.Hosting.csproj", "src/FantasyCritic.Hosting/"]
 COPY ["src/FantasyCritic.Lib/FantasyCritic.Lib.csproj", "src/FantasyCritic.Lib/"]
 COPY ["src/FantasyCritic.MySQL/FantasyCritic.MySQL.csproj", "src/FantasyCritic.MySQL/"]
