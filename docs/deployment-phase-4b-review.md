@@ -270,6 +270,12 @@ outage that spans midnight.**
   resume day's releases, N times, and nothing for the missed days.
 - Both could use `context.Job.ScheduledFor` when it is set.
 
+*Decided (2 October 2026):* no change. Daily statistics are a snapshot of the leagues as they
+are now, so the date a run is for is the date it runs on; a missed day cannot be filled in
+after the fact. Release announcements missed during an outage stay missed, since days-old
+"has released" messages are noise to users. A worker that is off or down is a state to notice
+and fix, not one to design around.
+
 **L3. The automated run processes against master game data cached before the snapshot wait.
 Plausible, narrow window.**
 All steps of `FullAutomatedActionsProcess` share one DI scope, and `MySQLMasterGameRepo` caches
