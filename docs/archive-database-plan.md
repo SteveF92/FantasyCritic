@@ -7,6 +7,12 @@ A weekly copy of the production database, kept somewhere other than AWS, made by
 The weekly pre-bids RDS snapshot stays as it is. It is the quick restore when bids go wrong. This archive is different: a
 portable `mysqldump` file, kept forever, in a place that a compromised or lost AWS account cannot reach.
 
+## Status (2026-10-03)
+
+Steps 1 to 5 are done, each in its own commit on `archive-database`. Step 6 is partly done: everything that can be
+checked without the buckets has been checked locally (see step 6). What's left is Steve's manual setup below, then the
+production run.
+
 ## Decisions
 
 - **Job:** `ArchiveDatabase`. A cron handler with RunType `ManualOrCron`, so the admin console can also start it.
@@ -82,13 +88,21 @@ Each step is built, tested and committed alone, then stops for review.
     (`gcloud auth application-default login`).
 - Have `S3DatabaseArchiveLocation` upload with storage class `STANDARD_IA`. The snapshot manager's S3 uploads get it
   too, which suits them as well.
-- Add `ConnectionStrings:ArchiveConnection` (the `fantasycritic-backup` user) through a worker-specific connection strings
-  record, so Web doesn't have to carry it.
+- Add the `fantasycritic-backup` user's connection string. *As built:* it is `DatabaseArchive:ConnectionString`, not
+  `ConnectionStrings:ArchiveConnection`. That keeps the section self-contained, and the shared `ConnectionStringsOptions`
+  that `AddFantasyCriticCore` takes stays unchanged.
 - Add `AddFantasyCriticDatabaseArchive` in Hosting. It registers both locations as `IDatabaseArchiveLocation`, plus the
   dumper. Only the worker calls it.
 - Update `WorkerOptions` and the worker's `appsettings.json`. `HostOptionsTests` covers the new keys.
 - Have the dumper pass `--ssl-mode=REQUIRED` and `--no-tablespaces`. The second one stops a dump from needing PROCESS.
-  Move the password off the command line into a `--defaults-extra-file` temporary file.
+  Move the password off the command line into a `--defaults-extra-file` temporary file. *As built:* the client tools also
+  get `--ssl-mode` from the connection string's `SslMode`, not a fixed `REQUIRED`. An option file has no escape for a
+  quote inside a quoted value, so the password is wrapped in whichever quote it doesn't contain. A password containing
+  both kinds of quote is refused.
+- *As built:* Hosting now references FantasyCritic.GCP, so all five Dockerfiles that restore Hosting copy the GCP csproj.
+  That's every Dockerfile except the worker's, which was planned for step 5.
+- *As built:* `IDatabaseDumper` has `InstanceName` (from `Aws:RdsInstanceName`), which names the dump files the way the
+  snapshot manager names them. `BackupRemoteKeyBuilder.BuildFileName` builds that name for both.
 
 ### 3. The job
 
@@ -123,11 +137,30 @@ Each step is built, tested and committed alone, then stops for review.
     `--set-gtid-purged`.
 - Add `COPY` lines for the GCP csproj to the worker Dockerfile.
 - Run the job against Docker MySQL from inside the built image, to confirm `mysqldump` exists and runs there.
+- *As built:* the image is Ubuntu 24.04, and its `mysql-client-core-8.0` (8.0.46) is all the job needs. Inside the
+  image, as the app user, it dumped the local MySQL 8.4 server with the job's flags. If production RDS is on 8.4, an
+  8.0 `mysqldump` still dumps it.
 
 ### 6. Local run, then production
 
 - Run the job locally against Docker MySQL, with a dev bucket on each side. Starting it from the admin console tests the
   manual path.
+  - *Done without buckets:* a throwaway MySQL 8.4 container held a copy of the local database. The real handler ran
+    against it as a backup user made with exactly the grants below, with a password containing `"`, `#` and `\`. The
+    locations were one that copies to a folder and one that throws. Results:
+    - The migration applied cleanly with the real DatabaseUpdater.
+    - The grants were enough for all 18 procedures.
+    - The copying location got the archive under `fantasy-critic-rds/2026-10-03/…`, even though the other location
+      failed.
+    - The job returned a failure naming the throwing location, its status listed each step, and the failure email had
+      the right subject and lines.
+    - No temp files were left.
+    - The archive restored into a fresh database with the same table, routine and user counts.
+    - The beta cleaner set the job to `Disabled`.
+  - *Still to do:* real S3 and GCS uploads. They need the setup below.
+  - Running this branch's worker against the local Docker database needs the new migration applied first
+    (`docker compose -f infrastructure/docker-compose-mysql.yaml up`). The worker refuses to start if a job type has no
+    `tbl_job_type` row.
 - Deploy. Run it once by hand in production, then check that both objects exist with the expected classes: Nearline in
   GCS, Standard-IA in S3.
 - Re-sync beta after this deploy. Beta's current database gets the migration's `ManualOrCron` row, and only a sync runs
@@ -146,7 +179,20 @@ GRANT SHOW_ROUTINE ON *.* TO 'fantasycritic-backup'@'%';
 ```
 
 `SHOW_ROUTINE` lets `--routines` read procedure bodies without global SELECT. If RDS refuses to grant it, let me know and
-we'll find another way.
+we'll find another way. These exact grants were verified locally on MySQL 8.4. The password may contain one kind of quote
+character, but not both.
+
+### Secrets Manager (production blob)
+
+| Key | Value |
+|---|---|
+| `DatabaseArchive:ConnectionString` | The backup user, e.g. `Server=<rds host>;Database=fantasycritic;Uid=fantasycritic-backup;Pwd=<password>;SslMode=Required;` |
+| `DatabaseArchive:S3:Bucket` | The S3 bucket |
+| `DatabaseArchive:GoogleCloud:Bucket` | The GCS bucket |
+| `DatabaseArchive:GoogleCloud:CredentialConfiguration` | The JSON from `create-cred-config` |
+
+Both prefixes ship as `database-archive/` in the worker's `appsettings.json`. Production refuses to start without the
+four keys, so they must be in Secrets Manager before this deploys.
 
 ### AWS
 
