@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
 
@@ -81,6 +82,14 @@ public class LoginModel : PageModel
         MicrosoftLogin = externalLogins.SingleOrDefault(x => x.Name == "Microsoft");
         TwitchLogin = externalLogins.SingleOrDefault(x => x.Name == "Twitch");
         DiscordLogin = externalLogins.SingleOrDefault(x => x.Name == "Discord");
+
+        // A posted RememberMe that isn't a boolean would be echoed back into the checkbox, which throws while rendering
+        // and puts the posted value in the exception message. Treat it as unchecked instead.
+        var rememberMeKey = $"{nameof(Input)}.{nameof(InputModel.RememberMe)}";
+        if (ModelState.GetFieldValidationState(rememberMeKey) == ModelValidationState.Invalid)
+        {
+            ModelState.Remove(rememberMeKey);
+        }
 
         if (ModelState.IsValid)
         {
