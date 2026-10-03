@@ -167,10 +167,23 @@ public class FantasyCriticJobScheduleTests
             ["PushGameReleaseMessages"] = "1 0 * * *",
             ["EndOfYearRollover"] = "0 0 1 1 *",
             ["AdvanceRoyaleQuarters"] = "1 0 * * *",
+            ["ArchiveDatabase"] = "0 3 * * 0",
             ["FullAutomatedActionsProcess"] = "0 20 * * 6",
             ["SendAllPublicBiddingMessages"] = "0 20 * * 4",
             ["SendReleasingThisWeekUpdate"] = "0 20 * * 0",
         }));
+    }
+
+    //Saturday night's bids are at 8 PM Eastern; the archive is the Sunday 3 AM after them, in summer and winter time.
+    [TestCase(2026, 10, 3, 2026, 10, 4, 7)]
+    [TestCase(2026, 12, 5, 2026, 12, 6, 8)]
+    public void ArchiveDatabase_RunsAt3AmEasternTheSundayAfterBids(int year, int month, int saturday, int expectedYear, int expectedMonth,
+        int expectedDay, int expectedUtcHour)
+    {
+        var schedule = Registry.Schedules[FantasyCriticJobType.ArchiveDatabase];
+        var saturdayBidsEastern = new LocalDateTime(year, month, saturday, 20, 0).InZoneStrictly(TimeExtensions.EasternTimeZone).ToInstant();
+
+        Assert.That(schedule.GetNextOccurrence(saturdayBidsEastern), Is.EqualTo(Instant.FromUtc(expectedYear, expectedMonth, expectedDay, expectedUtcHour, 0)));
     }
 
     //FullDataRefresh only skips in favor of the rollover when both are due in one scheduler wake, so their slots must coincide exactly.

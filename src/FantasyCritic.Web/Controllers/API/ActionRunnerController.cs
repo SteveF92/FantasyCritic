@@ -176,6 +176,11 @@ public class ActionRunnerController : BaseJobQueuingController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public Task<ActionResult<FantasyCriticJobViewModel>> SnapshotDatabase() => EnqueueJob(FantasyCriticJobType.SnapshotDatabase);
 
+    [HttpPost]
+    [ProducesResponseType<FantasyCriticJobViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<ActionResult<FantasyCriticJobViewModel>> ArchiveDatabase() => EnqueueJob(FantasyCriticJobType.ArchiveDatabase);
+
     [HttpGet]
     public async Task<ActionResult<List<DatabaseSnapshotInfoViewModel>>> GetRecentDatabaseSnapshots()
     {

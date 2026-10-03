@@ -1,20 +1,23 @@
+using FantasyCritic.Lib.Interfaces;
+
 namespace FantasyCritic.RdsSnapshotManager.Destinations;
 
-public sealed class LocalDirectoryDestination : IBackupDestination
+//A flat folder: only the key's file name is used.
+public sealed class LocalDirectoryDatabaseArchiveLocation : IDatabaseArchiveLocation
 {
     private readonly string _directoryPath;
 
-    public LocalDirectoryDestination(string directoryPath)
+    public LocalDirectoryDatabaseArchiveLocation(string directoryPath)
     {
         _directoryPath = directoryPath;
     }
 
     public string Name => "LocalDirectory";
 
-    public async Task UploadAsync(string localFilePath, string remoteKey, CancellationToken cancellationToken)
+    public async Task Upload(string localFilePath, string key, CancellationToken cancellationToken)
     {
         Directory.CreateDirectory(_directoryPath);
-        var fileName = Path.GetFileName(remoteKey);
+        var fileName = Path.GetFileName(key);
         var destinationPath = Path.Combine(_directoryPath, fileName);
         await using var source = File.OpenRead(localFilePath);
         await using var destination = File.Create(destinationPath);

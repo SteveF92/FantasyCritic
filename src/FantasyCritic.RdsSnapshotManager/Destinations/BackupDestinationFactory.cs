@@ -1,4 +1,7 @@
 using Amazon.S3;
+using FantasyCritic.AWS;
+using FantasyCritic.GCP;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.RdsSnapshotManager.Configuration;
 using Google.Apis.Auth.OAuth2;
 using Google.Cloud.Storage.V1;
@@ -7,22 +10,18 @@ namespace FantasyCritic.RdsSnapshotManager.Destinations;
 
 public static class BackupDestinationFactory
 {
-    public static IReadOnlyList<BackupDestinationRegistration> CreateRegistrations(RdsSnapshotManagerOptions options)
+    public static IReadOnlyList<IDatabaseArchiveLocation> CreateAll(RdsSnapshotManagerOptions options)
     {
-        List<BackupDestinationRegistration> destinations = [];
+        List<IDatabaseArchiveLocation> destinations = [];
 
         if (options.Destinations.LocalDirectory.Enabled)
         {
-            destinations.Add(new BackupDestinationRegistration(
-                new LocalDirectoryDestination(options.Destinations.LocalDirectory.Path),
-                "db-dumps/"));
+            destinations.Add(new LocalDirectoryDatabaseArchiveLocation(options.Destinations.LocalDirectory.Path));
         }
 
         if (options.Destinations.S3.Enabled)
         {
-            destinations.Add(new BackupDestinationRegistration(
-                new S3BackupDestination(new AmazonS3Client(), options.Destinations.S3.Bucket),
-                options.Destinations.S3.Prefix));
+            destinations.Add(new S3DatabaseArchiveLocation(new AmazonS3Client(), options.Destinations.S3.Bucket, options.Destinations.S3.Prefix));
         }
 
         if (options.Destinations.GoogleCloud.Enabled)
@@ -38,14 +37,10 @@ public static class BackupDestinationFactory
                 storageClient = StorageClient.Create();
             }
 
-            destinations.Add(new BackupDestinationRegistration(
-                new GoogleCloudStorageDestination(storageClient, options.Destinations.GoogleCloud.Bucket),
+            destinations.Add(new GoogleCloudStorageDatabaseArchiveLocation(storageClient, options.Destinations.GoogleCloud.Bucket,
                 options.Destinations.GoogleCloud.Prefix));
         }
 
         return destinations;
     }
-
-    public static IReadOnlyList<IBackupDestination> CreateAll(RdsSnapshotManagerOptions options) =>
-        CreateRegistrations(options).Select(x => x.Destination).ToList();
 }

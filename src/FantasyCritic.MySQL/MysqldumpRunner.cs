@@ -1,26 +1,32 @@
 using System.Diagnostics;
+using System.IO;
 using System.IO.Compression;
 using System.Text;
-using CSharpFunctionalExtensions;
-using MySqlConnector;
+using Serilog;
 
-namespace FantasyCritic.RdsSnapshotManager.Infrastructure;
+namespace FantasyCritic.MySQL;
 
+//Runs the MySQL client tools, which must be on PATH: mysqldump to write a gzipped dump, and mysql to load one.
 public sealed class MysqldumpRunner
 {
+    private static readonly ILogger _logger = Log.ForContext<MysqldumpRunner>();
+
     private const long ProgressReportIntervalBytes = 10 * 1024 * 1024;
 
     public async Task<Result<string>> DumpToGzipFile(string connectionString, string outputFilePath, CancellationToken cancellationToken)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath)!);
         var builder = new MySqlConnectionStringBuilder(connectionString);
+        using var passwordFile = new PasswordOptionFile(builder.Password);
 
         ProcessStartInfo startInfo = BuildMySqlToolStartInfo("mysqldump");
-        AddCommonConnectionArguments(startInfo, builder);
+        AddCommonConnectionArguments(startInfo, builder, passwordFile);
         startInfo.ArgumentList.Add("--single-transaction");
         startInfo.ArgumentList.Add("--routines");
         startInfo.ArgumentList.Add("--triggers");
         startInfo.ArgumentList.Add("--set-gtid-purged=OFF");
+        //Tablespaces need the PROCESS privilege, which the read-only backup user doesn't have.
+        startInfo.ArgumentList.Add("--no-tablespaces");
         startInfo.ArgumentList.Add("--verbose");
         startInfo.ArgumentList.Add(builder.Database);
 
@@ -29,8 +35,8 @@ public sealed class MysqldumpRunner
         await using GZipStream gzipStream = new GZipStream(outputFile, CompressionLevel.Optimal);
 
         List<string> stderrLines = [];
-        Task stderrTask = PumpProcessOutputToConsoleAsync(process.StandardError, "mysqldump", stderrLines, cancellationToken);
-        Task copyTask = CopyStdoutToGzipWithConsoleProgressAsync(process.StandardOutput.BaseStream, gzipStream, cancellationToken);
+        Task stderrTask = PumpProcessOutputToLogAsync(process.StandardError, "mysqldump", stderrLines, cancellationToken);
+        Task copyTask = CopyWithProgressAsync(process.StandardOutput.BaseStream, gzipStream, "mysqldump", cancellationToken);
 
         await Task.WhenAll(copyTask, stderrTask);
         await process.WaitForExitAsync(cancellationToken);
@@ -44,9 +50,10 @@ public sealed class MysqldumpRunner
     public async Task<Result> ImportGzipFile(string connectionString, string inputFilePath, CancellationToken cancellationToken)
     {
         var builder = new MySqlConnectionStringBuilder(connectionString);
+        using var passwordFile = new PasswordOptionFile(builder.Password);
 
         ProcessStartInfo startInfo = BuildMySqlToolStartInfo("mysql");
-        AddCommonConnectionArguments(startInfo, builder);
+        AddCommonConnectionArguments(startInfo, builder, passwordFile);
         startInfo.ArgumentList.Add(builder.Database);
         startInfo.RedirectStandardInput = true;
 
@@ -55,8 +62,8 @@ public sealed class MysqldumpRunner
         await using GZipStream gzipStream = new GZipStream(inputFile, CompressionMode.Decompress);
 
         List<string> stderrLines = [];
-        Task stderrTask = PumpProcessOutputToConsoleAsync(process.StandardError, "mysql", stderrLines, cancellationToken);
-        Task copyTask = CopyWithConsoleProgressAsync(gzipStream, process.StandardInput.BaseStream, "mysql import", cancellationToken);
+        Task stderrTask = PumpProcessOutputToLogAsync(process.StandardError, "mysql", stderrLines, cancellationToken);
+        Task copyTask = CopyWithProgressAsync(gzipStream, process.StandardInput.BaseStream, "mysql import", cancellationToken);
 
         await copyTask;
         process.StandardInput.Close();
@@ -69,13 +76,8 @@ public sealed class MysqldumpRunner
             : Result.Failure(BuildProcessFailureMessage("mysql", process.ExitCode, stderr));
     }
 
-    private static async Task CopyStdoutToGzipWithConsoleProgressAsync(Stream stdout, Stream gzipDestination, CancellationToken cancellationToken)
-    {
-        System.Console.WriteLine("[mysqldump] Writing compressed dump (stdout is SQL data; showing size progress)...");
-        await CopyWithConsoleProgressAsync(stdout, gzipDestination, "mysqldump", cancellationToken);
-    }
-
-    private static async Task CopyWithConsoleProgressAsync(Stream source, Stream destination, string label, CancellationToken cancellationToken)
+    //Progress is Debug: the snapshot manager's console shows it, the worker's logs keep only the total.
+    private static async Task CopyWithProgressAsync(Stream source, Stream destination, string label, CancellationToken cancellationToken)
     {
         byte[] buffer = new byte[81920];
         long totalBytes = 0;
@@ -94,15 +96,15 @@ public sealed class MysqldumpRunner
 
             if (totalBytes >= nextReportAt)
             {
-                System.Console.WriteLine($"[{label}] {FormatMegabytes(totalBytes)} processed...");
+                _logger.Debug("[{Label}] {Megabytes} processed...", label, FormatMegabytes(totalBytes));
                 nextReportAt += ProgressReportIntervalBytes;
             }
         }
 
-        System.Console.WriteLine($"[{label}] Finished — {FormatMegabytes(totalBytes)} processed.");
+        _logger.Information("[{Label}] Finished: {Megabytes} processed.", label, FormatMegabytes(totalBytes));
     }
 
-    private static async Task PumpProcessOutputToConsoleAsync(
+    private static async Task PumpProcessOutputToLogAsync(
         StreamReader reader,
         string label,
         List<string> capturedLines,
@@ -117,7 +119,7 @@ public sealed class MysqldumpRunner
             }
 
             capturedLines.Add(line);
-            System.Console.WriteLine($"[{label}] {line}");
+            _logger.Debug("[{Label}] {Line}", label, line);
         }
     }
 
@@ -137,12 +139,55 @@ public sealed class MysqldumpRunner
         };
     }
 
-    private static void AddCommonConnectionArguments(ProcessStartInfo startInfo, MySqlConnectionStringBuilder builder)
+    private static void AddCommonConnectionArguments(ProcessStartInfo startInfo, MySqlConnectionStringBuilder builder, PasswordOptionFile passwordFile)
     {
+        //The client tools only accept this as their first argument.
+        startInfo.ArgumentList.Add($"--defaults-extra-file={passwordFile.Path}");
         startInfo.ArgumentList.Add($"-h{builder.Server}");
         startInfo.ArgumentList.Add($"-P{builder.Port}");
         startInfo.ArgumentList.Add($"-u{builder.UserID}");
-        startInfo.ArgumentList.Add($"--password={builder.Password}");
+        startInfo.ArgumentList.Add($"--ssl-mode={ToClientSslMode(builder.SslMode)}");
+    }
+
+    public static string ToClientSslMode(MySqlSslMode sslMode) => sslMode switch
+    {
+        MySqlSslMode.None => "DISABLED",
+        MySqlSslMode.Preferred => "PREFERRED",
+        MySqlSslMode.Required => "REQUIRED",
+        MySqlSslMode.VerifyCA => "VERIFY_CA",
+        MySqlSslMode.VerifyFull => "VERIFY_IDENTITY",
+        _ => throw new ArgumentOutOfRangeException(nameof(sslMode), sslMode, "No mysql client equivalent."),
+    };
+
+    //A command line is readable by any process on the machine.
+    private sealed class PasswordOptionFile : IDisposable
+    {
+        public PasswordOptionFile(string password)
+        {
+            Path = System.IO.Path.GetTempFileName();
+            File.WriteAllText(Path, $"[client]{Environment.NewLine}password={QuoteOptionValue(password)}{Environment.NewLine}");
+        }
+
+        public string Path { get; }
+
+        public void Dispose() => File.Delete(Path);
+    }
+
+    //Quoting keeps a # from starting a comment, but option files have no escape for the quote itself.
+    public static string QuoteOptionValue(string value)
+    {
+        var escaped = value.Replace(@"\", @"\\");
+        if (!escaped.Contains('"'))
+        {
+            return $"\"{escaped}\"";
+        }
+
+        if (!escaped.Contains('\''))
+        {
+            return $"'{escaped}'";
+        }
+
+        throw new ArgumentException("A MySQL option file can't hold a password containing both kinds of quotation mark.", nameof(value));
     }
 
     private static Process StartProcess(ProcessStartInfo startInfo)

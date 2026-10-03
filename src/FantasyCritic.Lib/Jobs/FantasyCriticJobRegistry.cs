@@ -73,6 +73,7 @@ public class FantasyCriticJobRegistry
     //The one list of handlers. Adding a job type means adding a class and a line here; Validate fails startup if either is forgotten.
     private static List<FantasyCriticJobDefinition> CreateDefinitions() => [
             FantasyCriticJobDefinition.ForCron<AdvanceRoyaleQuartersJobHandler>(),
+            FantasyCriticJobDefinition.ForCron<ArchiveDatabaseJobHandler>(),
             FantasyCriticJobDefinition.ForCron<EndOfYearRolloverJobHandler>(),
             FantasyCriticJobDefinition.ForCron<ExpireTradesJobHandler>(),
             FantasyCriticJobDefinition.ForCron<FullAutomatedActionsProcessJobHandler>(),
