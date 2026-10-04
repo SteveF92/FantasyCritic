@@ -21,6 +21,8 @@ public sealed class SnapshotArchiveService
     private static readonly TimeSpan ConnectRetryInterval = TimeSpan.FromSeconds(30);
     //An 8.x mysqldump queries a table that 5.7 servers don't have unless this is off.
     private static readonly IReadOnlyList<string> DumpArguments = ["--skip-column-statistics"];
+    //Old snapshots hold utility views that no longer compile, which stop mysqldump. The code never used them.
+    private const string SkippedViewPrefix = "vw_utility_";
     private static readonly JsonSerializerOptions ManifestJsonOptions = new() { WriteIndented = true };
 
     private readonly RdsTemporaryRestoreService _restoreService;
@@ -145,8 +147,12 @@ public sealed class SnapshotArchiveService
             var schemaConnectionString = new MySqlConnectionStringBuilder(serverConnectionString) { Database = schema }.ConnectionString;
             var localPath = Path.Combine(stagingDirectory, SnapshotArchiveNames.BuildFileName(snapshot.Identifier, schema));
 
-            _logger.Information("Dumping {Schema} from {Snapshot}", schema, snapshot.Identifier);
-            var dumpResult = await _mysqldumpRunner.DumpToGzipFile(schemaConnectionString, localPath, DumpArguments, cancellationToken);
+            var skippedViews = await GetSkippedViews(schemaConnectionString, schema, cancellationToken);
+            List<string> arguments = [.. DumpArguments, .. skippedViews.Select(view => $"--ignore-table={schema}.{view}")];
+
+            _logger.Information("Dumping {Schema} from {Snapshot}, skipping {ViewCount} utility views", schema, snapshot.Identifier,
+                skippedViews.Count);
+            var dumpResult = await _mysqldumpRunner.DumpToGzipFile(schemaConnectionString, localPath, arguments, cancellationToken);
             if (dumpResult.IsFailure)
             {
                 return Result.Failure<IReadOnlyList<ArchivedFile>>(dumpResult.Error);
@@ -217,6 +223,29 @@ public sealed class SnapshotArchiveService
                 await Task.Delay(ConnectRetryInterval, cancellationToken);
             }
         }
+    }
+
+    private static async Task<IReadOnlyList<string>> GetSkippedViews(string schemaConnectionString, string schema,
+        CancellationToken cancellationToken)
+    {
+        await using var connection = new MySqlConnection(schemaConnectionString);
+        await connection.OpenAsync(cancellationToken);
+        await using var command = new MySqlCommand(
+            "SELECT TABLE_NAME FROM information_schema.TABLES WHERE TABLE_SCHEMA = @schema AND TABLE_TYPE = 'VIEW';", connection);
+        command.Parameters.AddWithValue("@schema", schema);
+        await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+
+        List<string> views = [];
+        while (await reader.ReadAsync(cancellationToken))
+        {
+            var view = reader.GetString(0);
+            if (view.StartsWith(SkippedViewPrefix, StringComparison.OrdinalIgnoreCase))
+            {
+                views.Add(view);
+            }
+        }
+
+        return views;
     }
 
     private static string DescribeFiles(IReadOnlyList<ArchivedFile> files) =>
