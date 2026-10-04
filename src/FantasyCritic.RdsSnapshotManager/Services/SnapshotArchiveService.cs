@@ -7,6 +7,7 @@ using FantasyCritic.MySQL;
 using FantasyCritic.RdsSnapshotManager.Configuration;
 using MySqlConnector;
 using NodaTime;
+using NodaTime.Text;
 using Serilog;
 using Serilog.Events;
 
@@ -66,17 +67,34 @@ public sealed class SnapshotArchiveService
     public async Task<IReadOnlyList<ArchivedSnapshotDump>> GetArchivedDumps(CancellationToken cancellationToken)
     {
         var objects = await _archive.List(SnapshotArchiveNames.FolderPrefix, cancellationToken);
-        List<ArchivedSnapshotDump> dumps = [];
+        var objectsByKey = objects.ToDictionary(x => x.Key);
+        List<Task<ArchivedSnapshotDump>> dumpTasks = [];
         foreach (var archivedObject in objects)
         {
             var snapshotIdentifier = SnapshotArchiveNames.GetSnapshotIdentifierIfApplicationSchemaKey(archivedObject.Key);
             if (snapshotIdentifier is not null)
             {
-                dumps.Add(new ArchivedSnapshotDump(snapshotIdentifier, archivedObject));
+                dumpTasks.Add(BuildArchivedDump(snapshotIdentifier, archivedObject, objectsByKey, cancellationToken));
             }
         }
 
-        return dumps;
+        return await Task.WhenAll(dumpTasks);
+    }
+
+    //A manifest the lifecycle rule has moved to Glacier can't be read, so that snapshot's date is unknown.
+    private async Task<ArchivedSnapshotDump> BuildArchivedDump(string snapshotIdentifier, ArchivedObject dumpObject,
+        IReadOnlyDictionary<string, ArchivedObject> objectsByKey, CancellationToken cancellationToken)
+    {
+        var manifestKey = SnapshotArchiveNames.BuildManifestKey(snapshotIdentifier);
+        if (!objectsByKey.TryGetValue(manifestKey, out var manifestObject) || manifestObject.Availability != ArchivedObjectAvailability.Available)
+        {
+            return new ArchivedSnapshotDump(snapshotIdentifier, null, dumpObject);
+        }
+
+        var manifest = JsonSerializer.Deserialize<SnapshotArchiveManifest>(await _archive.ReadText(manifestKey, cancellationToken))
+            ?? throw new InvalidOperationException($"{manifestKey} is empty.");
+        var snapshotCreateTime = InstantPattern.General.Parse(manifest.SnapshotCreateTime).Value;
+        return new ArchivedSnapshotDump(snapshotIdentifier, snapshotCreateTime, dumpObject);
     }
 
     public async Task<string> Download(ArchivedSnapshotDump dump, CancellationToken cancellationToken)

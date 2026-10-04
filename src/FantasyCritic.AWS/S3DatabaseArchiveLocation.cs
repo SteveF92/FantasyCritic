@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.IO;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -77,6 +78,13 @@ public sealed class S3DatabaseArchiveLocation : IDatabaseArchiveLocation
         } while (response.IsTruncated == true);
 
         return objects;
+    }
+
+    public async Task<string> ReadText(string key, CancellationToken cancellationToken)
+    {
+        using var response = await _s3Client.GetObjectAsync(_bucket, BackupRemoteKeyBuilder.WithPrefix(_prefix, key), cancellationToken);
+        using var reader = new StreamReader(response.ResponseStream);
+        return await reader.ReadToEndAsync(cancellationToken);
     }
 
     public async Task Download(string key, string localFilePath, CancellationToken cancellationToken)

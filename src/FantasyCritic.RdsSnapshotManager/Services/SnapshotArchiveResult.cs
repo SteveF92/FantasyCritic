@@ -1,4 +1,5 @@
 using FantasyCritic.AWS;
+using NodaTime;
 
 namespace FantasyCritic.RdsSnapshotManager.Services;
 
@@ -27,4 +28,4 @@ public sealed record SnapshotArchiveManifest(
     string ArchivedAt,
     IReadOnlyList<ArchivedFile> Files);
 
-public sealed record ArchivedSnapshotDump(string SnapshotIdentifier, ArchivedObject Object);
+public sealed record ArchivedSnapshotDump(string SnapshotIdentifier, Instant? SnapshotCreateTime, ArchivedObject Object);
