@@ -13,7 +13,11 @@ public sealed class MysqldumpRunner
 
     private const long ProgressReportIntervalBytes = 10 * 1024 * 1024;
 
-    public async Task<Result<string>> DumpToGzipFile(string connectionString, string outputFilePath, CancellationToken cancellationToken)
+    public Task<Result<string>> DumpToGzipFile(string connectionString, string outputFilePath, CancellationToken cancellationToken) =>
+        DumpToGzipFile(connectionString, outputFilePath, [], cancellationToken);
+
+    public async Task<Result<string>> DumpToGzipFile(string connectionString, string outputFilePath,
+        IReadOnlyList<string> additionalArguments, CancellationToken cancellationToken)
     {
         Directory.CreateDirectory(Path.GetDirectoryName(outputFilePath)!);
         var builder = new MySqlConnectionStringBuilder(connectionString);
@@ -28,6 +32,11 @@ public sealed class MysqldumpRunner
         //Tablespaces need the PROCESS privilege, which the read-only backup user doesn't have.
         startInfo.ArgumentList.Add("--no-tablespaces");
         startInfo.ArgumentList.Add("--verbose");
+        foreach (var argument in additionalArguments)
+        {
+            startInfo.ArgumentList.Add(argument);
+        }
+
         startInfo.ArgumentList.Add(builder.Database);
 
         using Process process = StartProcess(startInfo);
@@ -74,6 +83,25 @@ public sealed class MysqldumpRunner
         return process.ExitCode == 0
             ? Result.Success()
             : Result.Failure(BuildProcessFailureMessage("mysql", process.ExitCode, stderr));
+    }
+
+    //mysqldump writes this line last, so a dump cut off part way through lacks it.
+    public static async Task<bool> GzipDumpIsComplete(string inputFilePath, CancellationToken cancellationToken)
+    {
+        await using FileStream inputFile = File.OpenRead(inputFilePath);
+        await using GZipStream gzipStream = new GZipStream(inputFile, CompressionMode.Decompress);
+        using StreamReader reader = new StreamReader(gzipStream, Encoding.UTF8);
+
+        string? lastNonBlankLine = null;
+        while (await reader.ReadLineAsync(cancellationToken) is { } line)
+        {
+            if (!string.IsNullOrWhiteSpace(line))
+            {
+                lastNonBlankLine = line;
+            }
+        }
+
+        return lastNonBlankLine is not null && lastNonBlankLine.StartsWith("-- Dump completed", StringComparison.Ordinal);
     }
 
     //Progress is Debug: the snapshot manager's console shows it, the worker's logs keep only the total.

@@ -1,3 +1,4 @@
+using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
 using Amazon.S3;
@@ -35,5 +36,18 @@ public sealed class S3DatabaseArchiveLocation : IDatabaseArchiveLocation
 
         var transferUtility = new TransferUtility(_s3Client);
         await transferUtility.UploadAsync(request, cancellationToken);
+    }
+
+    public async Task<bool> Exists(string key, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _s3Client.GetObjectMetadataAsync(_bucket, BackupRemoteKeyBuilder.WithPrefix(_prefix, key), cancellationToken);
+            return true;
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            return false;
+        }
     }
 }
