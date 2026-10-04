@@ -29,6 +29,17 @@ public class MysqldumpRunnerTests
         Assert.Throws<ArgumentException>(() => MysqldumpRunner.QuoteOptionValue("both'\""));
     }
 
+    [TestCase("/*!50013 DEFINER=`root`@`%` SQL SECURITY DEFINER */", "/*!50013 DEFINER=CURRENT_USER SQL SECURITY DEFINER */")]
+    [TestCase("CREATE DEFINER=`root`@`%` PROCEDURE `sp_getleagueyear`(", "CREATE DEFINER=CURRENT_USER PROCEDURE `sp_getleagueyear`(")]
+    [TestCase("/*!50003 CREATE*/ /*!50017 DEFINER=`fantasycritic-admin`@`%`*/ /*!50003 TRIGGER `t` BEFORE INSERT ON `x` FOR EACH ROW",
+        "/*!50003 CREATE*/ /*!50017 DEFINER=CURRENT_USER*/ /*!50003 TRIGGER `t` BEFORE INSERT ON `x` FOR EACH ROW")]
+    [TestCase("INSERT INTO `tbl_note` VALUES ('DEFINER=`root`@`%`');", "INSERT INTO `tbl_note` VALUES ('DEFINER=`root`@`%`');")]
+    [TestCase("CREATE TABLE `tbl_user` (", "CREATE TABLE `tbl_user` (")]
+    public void ReplaceDefiner_UsesTheImportingUserOutsideData(string line, string expected)
+    {
+        Assert.That(MysqldumpRunner.ReplaceDefiner(line), Is.EqualTo(expected));
+    }
+
     [TestCase(MySqlSslMode.None, "DISABLED")]
     [TestCase(MySqlSslMode.Preferred, "PREFERRED")]
     [TestCase(MySqlSslMode.Required, "REQUIRED")]
