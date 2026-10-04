@@ -57,8 +57,8 @@ internal class AdvanceRoyaleQuartersJobHandler : IFantasyCriticCronJobHandler
             await context.AppendDetailedStatus($"Finished {string.Join(", ", finishedQuarters)}.");
         }
 
-        //Calculate winners for any finished quarters that don't have one yet. This reloads the quarters, so it sees the ones just finished above.
-        var calculatedQuarters = await RoyaleJobUtilities.CalculateMissingWinners(_royaleRepo, _logger, cancellationToken);
+        //Calculate winners for any quarters past their grace period that don't have one yet.
+        var calculatedQuarters = await RoyaleJobUtilities.CalculateMissingWinners(_royaleRepo, easternDate, _logger, cancellationToken);
         await context.AppendDetailedStatus(RoyaleJobUtilities.DescribeWinners(calculatedQuarters));
 
         //Start the next quarter as we approach it.

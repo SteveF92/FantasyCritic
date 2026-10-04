@@ -78,13 +78,9 @@ internal class FantasyPointsUpdater
                 continue;
             }
 
-            if (supportedQuarter.Finished)
+            if (supportedQuarter.Finished && today > supportedQuarter.GracePeriodEndDate)
             {
-                var gracePeriodDate = supportedQuarter.YearQuarter.LastDateOfQuarter.Plus(Period.FromDays(RoyaleService.POST_QUARTER_GRACE_DAYS));
-                if (today > gracePeriodDate)
-                {
-                    continue;
-                }
+                continue;
             }
 
             await context.AddTemporaryStatus($"Fantasy points: updating Royale {supportedQuarter.YearQuarter}.");

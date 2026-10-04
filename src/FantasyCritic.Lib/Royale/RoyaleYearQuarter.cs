@@ -4,6 +4,8 @@ namespace FantasyCritic.Lib.Royale;
 
 public class RoyaleYearQuarter : IEquatable<RoyaleYearQuarter>, IComparable<RoyaleYearQuarter>
 {
+    private const int POST_QUARTER_GRACE_DAYS = 7;
+
     public RoyaleYearQuarter(YearQuarter yearQuarter, bool openForPlay, bool finished, VeryMinimalFantasyCriticUser? winningUser)
     {
         YearQuarter = yearQuarter;
@@ -16,6 +18,7 @@ public class RoyaleYearQuarter : IEquatable<RoyaleYearQuarter>, IComparable<Roya
     public bool OpenForPlay { get; }
     public bool Finished { get; }
     public VeryMinimalFantasyCriticUser? WinningUser { get; }
+    public LocalDate GracePeriodEndDate => YearQuarter.LastDateOfQuarter.PlusDays(POST_QUARTER_GRACE_DAYS);
 
     public List<string> GetBannedTags()
     {

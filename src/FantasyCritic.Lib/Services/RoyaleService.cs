@@ -13,7 +13,6 @@ public class RoyaleService
     private readonly IMasterGameRepo _masterGameRepo;
 
     public const int FUTURE_RELEASE_LIMIT_DAYS = 7;
-    public const int POST_QUARTER_GRACE_DAYS = 7;
 
     public RoyaleService(IRoyaleRepo royaleRepo, IClock clock, IMasterGameRepo masterGameRepo)
     {

@@ -7,14 +7,14 @@ namespace FantasyCritic.Lib.Jobs.Utilities;
 internal static class RoyaleJobUtilities
 {
     //Returns the quarters it calculated, reloaded so the caller can report who won. A quarter can still come back without a winner,
-    //if none of its publishers has a game.
-    public static async Task<IReadOnlyList<RoyaleYearQuarter>> CalculateMissingWinners(IRoyaleRepo royaleRepo, ILogger logger, CancellationToken cancellationToken)
+    //if none of its publishers has a game. A quarter's scores keep updating through its grace period, so its winner waits until that's over.
+    public static async Task<IReadOnlyList<RoyaleYearQuarter>> CalculateMissingWinners(IRoyaleRepo royaleRepo, LocalDate today, ILogger logger, CancellationToken cancellationToken)
     {
         var supportedQuarters = await royaleRepo.GetYearQuarters();
-        var quartersMissingWinners = supportedQuarters.Where(x => x.Finished && x.WinningUser is null).Select(x => x.YearQuarter).ToHashSet();
+        var quartersMissingWinners = supportedQuarters.Where(x => x.Finished && x.WinningUser is null && today > x.GracePeriodEndDate).Select(x => x.YearQuarter).ToHashSet();
         if (quartersMissingWinners.Count == 0)
         {
-            logger.LogDebug("No finished Royale quarters are missing a winner.");
+            logger.LogDebug("No Royale quarters past their grace period are missing a winner.");
             return [];
         }
 

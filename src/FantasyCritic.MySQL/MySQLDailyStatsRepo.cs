@@ -1,7 +1,6 @@
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.Royale;
-using FantasyCritic.Lib.Services;
 using FantasyCritic.MySQL.Entities;
 
 namespace FantasyCritic.MySQL;
@@ -34,7 +33,7 @@ public class MySQLDailyStatsRepo : IDailyStatsRepo
 
         foreach (var supportedQuarter in royaleQuarters)
         {
-            var inGracePeriod = supportedQuarter.YearQuarter.LastDateOfQuarter.PlusDays(RoyaleService.POST_QUARTER_GRACE_DAYS) >= currentDate;
+            var inGracePeriod = supportedQuarter.GracePeriodEndDate >= currentDate;
             if (currentDate >= supportedQuarter.YearQuarter.FirstDateOfQuarter && ((supportedQuarter.OpenForPlay && !supportedQuarter.Finished) || inGracePeriod))
             {
                 await UpdateDailyRoyalePublisherStatistics(supportedQuarter, currentDate, connection, transaction);
