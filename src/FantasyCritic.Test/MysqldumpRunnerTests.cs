@@ -35,9 +35,28 @@ public class MysqldumpRunnerTests
         "/*!50003 CREATE*/ /*!50017 DEFINER=CURRENT_USER*/ /*!50003 TRIGGER `t` BEFORE INSERT ON `x` FOR EACH ROW")]
     [TestCase("INSERT INTO `tbl_note` VALUES ('DEFINER=`root`@`%`');", "INSERT INTO `tbl_note` VALUES ('DEFINER=`root`@`%`');")]
     [TestCase("CREATE TABLE `tbl_user` (", "CREATE TABLE `tbl_user` (")]
-    public void ReplaceDefiner_UsesTheImportingUserOutsideData(string line, string expected)
+    public void RewriteStatementForImport_UsesTheImportingUserOutsideData(string line, string expected)
     {
-        Assert.That(MysqldumpRunner.ReplaceDefiner(line), Is.EqualTo(expected));
+        Assert.That(MysqldumpRunner.RewriteStatementForImport(line, null), Is.EqualTo(expected));
+    }
+
+    [TestCase("/*!50001 VIEW `vw_x` AS select count(0) AS `UserCount` from `fantasycritic`.`tbl_user` where (`fantasycritic`.`tbl_user`.`IsDeleted` = 0) */;",
+        "/*!50001 VIEW `vw_x` AS select count(0) AS `UserCount` from `tbl_user` where (`tbl_user`.`IsDeleted` = 0) */;")]
+    [TestCase("/*!50001 VIEW `vw_x` AS select `other`.`tbl_user`.`UserID` AS `UserID` from `other`.`tbl_user` */;",
+        "/*!50001 VIEW `vw_x` AS select `other`.`tbl_user`.`UserID` AS `UserID` from `other`.`tbl_user` */;")]
+    [TestCase("INSERT INTO `tbl_note` VALUES ('`fantasycritic`.`tbl_user`');", "INSERT INTO `tbl_note` VALUES ('`fantasycritic`.`tbl_user`');")]
+    public void RewriteStatementForImport_DropsTheSourceSchemaOutsideData(string line, string expected)
+    {
+        Assert.That(MysqldumpRunner.RewriteStatementForImport(line, "fantasycritic"), Is.EqualTo(expected));
+    }
+
+    [TestCase("-- Host: archive-x.us-east-1.rds.amazonaws.com    Database: fantasycritic", "fantasycritic")]
+    [TestCase("-- Host: localhost    Database: fantasycritic-fromsnapshot", "fantasycritic-fromsnapshot")]
+    [TestCase("-- MySQL dump 10.13  Distrib 8.4.8, for Win64 (x86_64)", null)]
+    [TestCase("CREATE TABLE `tbl_user` (", null)]
+    public void GetSourceSchemaIfHeader_ReadsMysqldumpsHostLine(string line, string? expected)
+    {
+        Assert.That(MysqldumpRunner.GetSourceSchemaIfHeader(line), Is.EqualTo(expected));
     }
 
     [TestCase(MySqlSslMode.None, "DISABLED")]

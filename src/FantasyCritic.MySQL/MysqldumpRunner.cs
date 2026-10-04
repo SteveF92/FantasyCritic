@@ -16,6 +16,8 @@ public sealed partial class MysqldumpRunner
 
     //MySQL 8.4 refuses foreign keys on a non-unique key, which schemas from before the upgrade still have.
     private const string ImportPreamble = "/*!80400 SET SESSION restrict_fk_on_non_standard_key = OFF */;";
+    private const string HostHeaderPrefix = "-- Host: ";
+    private const string DatabaseHeaderMarker = "Database: ";
 
     [GeneratedRegex("DEFINER=`[^`]*`@`[^`]*`")]
     private static partial Regex DefinerPattern();
@@ -107,15 +109,32 @@ public sealed partial class MysqldumpRunner
             : Result.Failure($"Writing the dump to mysql failed: {writeFailure.Message}");
     }
 
-    //Creating an object for another definer takes SET_ANY_DEFINER, and old snapshots' objects belong to RDS's root user.
-    public static string ReplaceDefiner(string line)
+    public static string? GetSourceSchemaIfHeader(string line)
     {
-        if (line.StartsWith("INSERT INTO", StringComparison.Ordinal) || !line.Contains("DEFINER=", StringComparison.Ordinal))
+        if (!line.StartsWith(HostHeaderPrefix, StringComparison.Ordinal))
+        {
+            return null;
+        }
+
+        var markerIndex = line.IndexOf(DatabaseHeaderMarker, StringComparison.Ordinal);
+        return markerIndex < 0 ? null : line[(markerIndex + DatabaseHeaderMarker.Length)..].Trim();
+    }
+
+    //Creating an object for another definer takes SET_ANY_DEFINER, and old snapshots' objects belong to RDS's root user.
+    //Old snapshots' views also name their own schema, which would point them at another database once imported.
+    public static string RewriteStatementForImport(string line, string? sourceSchema)
+    {
+        if (line.StartsWith("INSERT INTO", StringComparison.Ordinal))
         {
             return line;
         }
 
-        return DefinerPattern().Replace(line, "DEFINER=CURRENT_USER");
+        if (line.Contains("DEFINER=", StringComparison.Ordinal))
+        {
+            line = DefinerPattern().Replace(line, "DEFINER=CURRENT_USER");
+        }
+
+        return sourceSchema is null ? line : line.Replace($"`{sourceSchema}`.", string.Empty, StringComparison.Ordinal);
     }
 
     //Latin-1 maps every byte to one char and back, so data in any encoding passes through unchanged.
@@ -125,11 +144,13 @@ public sealed partial class MysqldumpRunner
         await using StreamWriter writer = new StreamWriter(destination, Encoding.Latin1, bufferSize: 81920, leaveOpen: true) { NewLine = "\n" };
         long totalBytes = 0;
         long nextReportAt = ProgressReportIntervalBytes;
+        string? sourceSchema = null;
 
         await writer.WriteLineAsync(ImportPreamble.AsMemory(), cancellationToken);
         while (await reader.ReadLineAsync(cancellationToken) is { } line)
         {
-            await writer.WriteLineAsync(ReplaceDefiner(line).AsMemory(), cancellationToken);
+            sourceSchema ??= GetSourceSchemaIfHeader(line);
+            await writer.WriteLineAsync(RewriteStatementForImport(line, sourceSchema).AsMemory(), cancellationToken);
             totalBytes += line.Length + 1;
             if (totalBytes >= nextReportAt)
             {
