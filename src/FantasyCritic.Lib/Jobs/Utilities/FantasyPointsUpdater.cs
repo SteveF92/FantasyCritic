@@ -80,15 +80,8 @@ internal class FantasyPointsUpdater
 
             if (supportedQuarter.Finished)
             {
-                if (SupportedYear.Year2026FeatureSupported(supportedQuarter.YearQuarter.Year))
-                {
-                    var gracePeriodDate = supportedQuarter.YearQuarter.LastDateOfQuarter.Plus(Period.FromDays(RoyaleService.POST_QUARTER_GRACE_DAYS));
-                    if (today > gracePeriodDate)
-                    {
-                        continue;
-                    }
-                }
-                else
+                var gracePeriodDate = supportedQuarter.YearQuarter.LastDateOfQuarter.Plus(Period.FromDays(RoyaleService.POST_QUARTER_GRACE_DAYS));
+                if (today > gracePeriodDate)
                 {
                     continue;
                 }
