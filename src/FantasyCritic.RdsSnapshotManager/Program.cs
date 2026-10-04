@@ -1,4 +1,6 @@
 using System.Reflection;
+using Amazon.RDS;
+using Amazon.S3;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
@@ -77,6 +79,14 @@ public static class Program
             localCleaner,
             localUserStore);
         ManualUploadService manualUploadService = new ManualUploadService(destinations);
+        SnapshotArchiveService? snapshotArchiveService = options.Destinations.S3.Enabled
+            ? new SnapshotArchiveService(
+                new RdsTemporaryRestoreService(new AmazonRDSClient()),
+                mysqldumpRunner,
+                new S3DatabaseArchiveLocation(new AmazonS3Client(), options.Destinations.S3.Bucket, options.Destinations.S3.Prefix),
+                options,
+                clock)
+            : null;
 
         Console.MainMenu mainMenu = new Console.MainMenu(
             snapshotCreateService,
@@ -86,6 +96,7 @@ public static class Program
             localImportService,
             localDatabaseCleanService,
             manualUploadService,
+            snapshotArchiveService,
             options);
 
         await mainMenu.Run(CancellationToken.None);

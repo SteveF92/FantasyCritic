@@ -45,6 +45,10 @@ dotnet run --project src/FantasyCritic.RdsSnapshotManager/FantasyCritic.RdsSnaps
 3. **Dump and publish from instance** — mysqldump to local staging, then upload to all enabled destinations (local archive, S3, GCS).
 4. **Import local dump to Docker MySQL** — Import a staging `.sql.gz` into local Docker MySQL, then scrub. Refuses if the database already has tables unless you force.
 5. **Clean local Docker database** — Run the scrub step only against the configured local Docker MySQL instance. Refuses remote hosts, non-3307 ports, or connection strings that match beta/dump settings. Requires confirmation.
+6. **Upload existing local dump** — Retry a failed upload of a staging `.sql.gz` to one destination.
+7. **Archive manual snapshots to S3** — For every manual MySQL snapshot in the account (or one you name), restore it to a temporary `db.t3.micro` instance tagged `fc-purpose=snapshot-archive`, reset its master password, mysqldump each user schema, and upload to `<S3 prefix>rds-snapshots/<snapshot>/<snapshot>-<schema>.sql.gz`. A `manifest.json` uploaded last marks the snapshot done, so a rerun skips it. Three run at a time. The temporary instance is always deleted afterwards; leftovers from an interrupted run are offered for deletion at the start. Snapshots are never deleted: check the summary, then delete them yourself. Non-MySQL snapshots are skipped.
+
+   Archives are unsanitized. Import one locally with option 4 after copying it to the staging directory.
 
 **Scrubbing policy:** Exports are full-fidelity. Scrubbing runs on **load** into beta RDS or local Docker only. Option 5 is local Docker only and cannot target production or beta RDS. Scrubbing removes non-beta user credentials, external logins, most Discord config, and unprocessed pickup bids and drop requests in non-test leagues. It also disables the `RefreshPatreonInfo` job and deletes `tbl_system_patreonkeys`: those are production's Patreon tokens, and their refresh token is single use, so a copy that refreshed it would break production's Patreon job. It turns off the `FullAutomatedActionsProcess` and
 `ArchiveDatabase` jobs too: a copy must not process bids on its own, or add its dumps to production's archive.
@@ -89,7 +93,3 @@ Optional unit tests:
 ```powershell
 dotnet test src/FantasyCritic.Test/FantasyCritic.Test.csproj --filter "RdsSnapshot|BackupRemote|DatabaseEmpty"
 ```
-
-## Phase 2 (not yet implemented)
-
-Bulk migration worker for archiving many old RDS snapshots to deep storage via EC2.

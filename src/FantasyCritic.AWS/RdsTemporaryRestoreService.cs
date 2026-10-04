@@ -109,9 +109,14 @@ public sealed class RdsTemporaryRestoreService
         return new TemporaryInstanceEndpoint(instance.Endpoint.Address, instance.Endpoint.Port ?? 3306);
     }
 
-    public async Task DeleteTemporaryInstance(string instanceIdentifier)
+    public async Task DeleteTemporaryInstanceIfExists(string instanceIdentifier)
     {
-        DBInstance instance = await GetInstance(instanceIdentifier, CancellationToken.None);
+        DBInstance? instance = await TryGetInstance(instanceIdentifier, CancellationToken.None);
+        if (instance is null)
+        {
+            return;
+        }
+
         if (!HasPurposeTag(instance))
         {
             throw new InvalidOperationException(
@@ -153,15 +158,25 @@ public sealed class RdsTemporaryRestoreService
         }
     }
 
-    private async Task<DBInstance> GetInstance(string instanceIdentifier, CancellationToken cancellationToken)
-    {
-        var response = await _rdsClient.DescribeDBInstancesAsync(new DescribeDBInstancesRequest
-        {
-            DBInstanceIdentifier = instanceIdentifier
-        }, cancellationToken);
+    private async Task<DBInstance> GetInstance(string instanceIdentifier, CancellationToken cancellationToken) =>
+        await TryGetInstance(instanceIdentifier, cancellationToken)
+        ?? throw new InvalidOperationException($"RDS instance not found: {instanceIdentifier}");
 
-        return response.DBInstances?.SingleOrDefault()
-               ?? throw new InvalidOperationException($"RDS instance not found: {instanceIdentifier}");
+    private async Task<DBInstance?> TryGetInstance(string instanceIdentifier, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _rdsClient.DescribeDBInstancesAsync(new DescribeDBInstancesRequest
+            {
+                DBInstanceIdentifier = instanceIdentifier
+            }, cancellationToken);
+
+            return response.DBInstances?.SingleOrDefault();
+        }
+        catch (DBInstanceNotFoundException)
+        {
+            return null;
+        }
     }
 
     private static bool HasPurposeTag(DBInstance instance) =>

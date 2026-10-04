@@ -14,6 +14,7 @@ public sealed class MainMenu
     private readonly LocalImportService _localImportService;
     private readonly LocalDatabaseCleanService _localDatabaseCleanService;
     private readonly ManualUploadService _manualUploadService;
+    private readonly SnapshotArchiveService? _snapshotArchiveService;
     private readonly RdsSnapshotManagerOptions _options;
 
     public MainMenu(
@@ -24,6 +25,7 @@ public sealed class MainMenu
         LocalImportService localImportService,
         LocalDatabaseCleanService localDatabaseCleanService,
         ManualUploadService manualUploadService,
+        SnapshotArchiveService? snapshotArchiveService,
         RdsSnapshotManagerOptions options)
     {
         _snapshotCreateService = snapshotCreateService;
@@ -33,6 +35,7 @@ public sealed class MainMenu
         _localImportService = localImportService;
         _localDatabaseCleanService = localDatabaseCleanService;
         _manualUploadService = manualUploadService;
+        _snapshotArchiveService = snapshotArchiveService;
         _options = options;
     }
 
@@ -48,6 +51,7 @@ public sealed class MainMenu
             System.Console.WriteLine("4. Import local dump to Docker (sanitized)");
             System.Console.WriteLine("5. Clean local Docker database (scrub sensitive data)");
             System.Console.WriteLine("6. Upload existing local dump to a destination (retry a failed upload)");
+            System.Console.WriteLine("7. Archive manual snapshots to S3 (restores each to a temporary instance)");
             System.Console.WriteLine("0. Exit");
             System.Console.Write("Select option: ");
 
@@ -71,6 +75,9 @@ public sealed class MainMenu
                     break;
                 case "6":
                     await UploadExistingDump(cancellationToken);
+                    break;
+                case "7":
+                    await ArchiveSnapshots(cancellationToken);
                     break;
                 case "0":
                     return;
@@ -293,6 +300,85 @@ public sealed class MainMenu
         {
             Log.Error(ex, "Upload failed.");
             System.Console.WriteLine($"Upload failed: {ex.Message}");
+        }
+    }
+
+    private async Task ArchiveSnapshots(CancellationToken cancellationToken)
+    {
+        if (_snapshotArchiveService is null)
+        {
+            System.Console.WriteLine("Archiving needs the S3 destination, which is disabled.");
+            return;
+        }
+
+        try
+        {
+            var leftovers = await _snapshotArchiveService.GetLeftoverInstances(cancellationToken);
+            if (leftovers.Count > 0)
+            {
+                System.Console.WriteLine("Temporary instances left by an earlier run:");
+                foreach (var leftover in leftovers)
+                {
+                    System.Console.WriteLine($"  {leftover}");
+                }
+
+                System.Console.Write("Delete them? (y/N): ");
+                if (string.Equals(System.Console.ReadLine(), "y", StringComparison.OrdinalIgnoreCase))
+                {
+                    foreach (var leftover in leftovers)
+                    {
+                        await _snapshotArchiveService.DeleteLeftoverInstance(leftover);
+                    }
+                }
+            }
+
+            var snapshots = (await _snapshotArchiveService.GetManualSnapshots(cancellationToken))
+                .OrderBy(x => x.CreateTime)
+                .ToList();
+            var unarchivable = snapshots.Where(x => !SnapshotArchiveService.CanArchive(x)).ToList();
+            System.Console.WriteLine($"{snapshots.Count} manual snapshots; {unarchivable.Count} will be skipped as not MySQL:");
+            foreach (var snapshot in unarchivable)
+            {
+                System.Console.WriteLine($"  {snapshot.Identifier} ({snapshot.Engine} {snapshot.EngineVersion})");
+            }
+
+            System.Console.Write("Snapshot identifier to archive (leave blank for all): ");
+            var onlyIdentifier = System.Console.ReadLine();
+            if (!string.IsNullOrWhiteSpace(onlyIdentifier))
+            {
+                snapshots = snapshots.Where(x => x.Identifier == onlyIdentifier.Trim()).ToList();
+                if (snapshots.Count == 0)
+                {
+                    System.Console.WriteLine($"No manual snapshot named '{onlyIdentifier.Trim()}'.");
+                    return;
+                }
+            }
+
+            System.Console.Write(
+                $"Archive {snapshots.Count} snapshot(s)? Each one is restored to a temporary instance, dumped to S3, " +
+                "and the instance is deleted. Snapshots themselves are never deleted. (y/N): ");
+            if (!string.Equals(System.Console.ReadLine(), "y", StringComparison.OrdinalIgnoreCase))
+            {
+                System.Console.WriteLine("Cancelled.");
+                return;
+            }
+
+            var results = await _snapshotArchiveService.ArchiveAll(snapshots, cancellationToken);
+
+            System.Console.WriteLine();
+            System.Console.WriteLine("Archive summary:");
+            foreach (var result in results)
+            {
+                System.Console.WriteLine($"{result.SnapshotIdentifier} | {result.Outcome} | {result.Detail}");
+            }
+
+            var counts = results.GroupBy(x => x.Outcome).Select(x => $"{x.Key}: {x.Count()}");
+            System.Console.WriteLine(string.Join(", ", counts));
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Archiving snapshots failed.");
+            System.Console.WriteLine($"Archiving snapshots failed: {ex.Message}");
         }
     }
 }
