@@ -28,4 +28,8 @@
     <PackageReference Include="Discord.Net.WebSocket" Version="3.19.1" />
     <PackageReference Include="Serilog" Version="4.3.1" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="FantasyCritic.Test" />
+  </ItemGroup>
 </Project>
