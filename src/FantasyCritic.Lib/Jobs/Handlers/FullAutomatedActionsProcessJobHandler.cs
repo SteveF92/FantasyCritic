@@ -20,7 +20,7 @@ internal class FullAutomatedActionsProcessJobHandler : IOnScheduledCronJobHandle
     private readonly IClock _clock;
     private readonly ILogger<FullAutomatedActionsProcessJobHandler> _logger;
 
-    public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(TimeExtensions.ActionProcessingDay, new LocalTime(20, 50));
+    public static FantasyCriticJobSchedule Schedule { get; } = FantasyCriticJobSchedule.Weekly(TimeExtensions.ActionProcessingDay, TimeExtensions.ActionProcessingTime);
 
     public FullAutomatedActionsProcessJobHandler(AdminService adminService, InterLeagueService interLeagueService, IRDSManager rdsManager,
         FullDataRefresher fullDataRefresher, ActionProcessingRunner actionProcessingRunner, EmailSendingService emailSendingService,
