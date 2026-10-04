@@ -4,7 +4,6 @@
       <template v-if="podium.isPreviousQuarter">
         <h2>Last Quarter's Champions</h2>
         <div class="podium-subtitle">
-          The final results of
           <router-link :to="{ name: 'criticsRoyale', params: { year: podium.year, quarter: podium.quarter } }">{{ podium.year }}-Q{{ podium.quarter }}</router-link>
         </div>
       </template>
@@ -82,7 +81,6 @@ export default {
 }
 
 .podium-subtitle {
-  color: #bbb;
   font-size: 13px;
 }
 
@@ -136,7 +134,6 @@ export default {
 }
 
 .podium-points {
-  color: #bbb;
   font-size: 12px;
 }
 
@@ -152,17 +149,17 @@ export default {
 
 .place-1 .podium-step {
   height: 60px;
-  background: linear-gradient(180deg, #f7d774 0%, #d6993a 100%);
+  background: #d6993a;
 }
 
 .place-2 .podium-step {
   height: 42px;
-  background: linear-gradient(180deg, #e6e8eb 0%, #9aa1a9 100%);
+  background: #b4bac1;
 }
 
 .place-3 .podium-step {
   height: 30px;
-  background: linear-gradient(180deg, #e8a974 0%, #a5622f 100%);
+  background: #b8733e;
 }
 
 @media only screen and (max-width: 576px) {
