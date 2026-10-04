@@ -21,6 +21,14 @@ public class DatabaseEmptyCheckerTests
     }
 
     [Test]
+    public void DropDatabaseQuery_UsesIfExists()
+    {
+        Assert.That(
+            DatabaseEmptyChecker.BuildDropDatabaseQuery("fantasycritic-fromsnapshot"),
+            Is.EqualTo("DROP DATABASE IF EXISTS `fantasycritic-fromsnapshot`;"));
+    }
+
+    [Test]
     public void EnsureAppUserGrantsQuery_IncludesTempTablePermission()
     {
         Assert.That(

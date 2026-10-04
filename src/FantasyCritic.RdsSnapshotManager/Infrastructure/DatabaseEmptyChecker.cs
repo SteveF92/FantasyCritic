@@ -11,6 +11,9 @@ public sealed class DatabaseEmptyChecker
     public static string BuildCreateDatabaseQuery(string schemaName) =>
         $"CREATE DATABASE IF NOT EXISTS `{schemaName.Replace("`", "``")}`;";
 
+    public static string BuildDropDatabaseQuery(string schemaName) =>
+        $"DROP DATABASE IF EXISTS `{schemaName.Replace("`", "``")}`;";
+
     public static string BuildEnsureAppUserGrantsQuery(string schemaName) =>
         $"GRANT EXECUTE, SELECT, SHOW VIEW, DELETE, INSERT, UPDATE, CREATE TEMPORARY TABLES ON `{schemaName.Replace("`", "``")}`.* TO 'fantasycritic'@'%';";
 
@@ -37,6 +40,19 @@ public sealed class DatabaseEmptyChecker
         }
 
         return Result.Success();
+    }
+
+    public async Task DropDatabase(string connectionString, string schemaName, CancellationToken cancellationToken)
+    {
+        var builder = new MySqlConnectionStringBuilder(connectionString)
+        {
+            Database = string.Empty
+        };
+
+        await using var connection = new MySqlConnection(builder.ConnectionString);
+        await connection.OpenAsync(cancellationToken);
+        await using var command = new MySqlCommand(BuildDropDatabaseQuery(schemaName), connection);
+        await command.ExecuteNonQueryAsync(cancellationToken);
     }
 
     public async Task<Result> EnsureEmptyOrFailure(string connectionString, string schemaName, CancellationToken cancellationToken)

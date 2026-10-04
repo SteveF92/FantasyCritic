@@ -219,14 +219,14 @@ public sealed class MainMenu
     {
         try
         {
-            var result = await _localImportService.Import(dumpPath, force: false, cancellationToken);
+            var result = await _localImportService.Import(dumpPath, dropExistingDatabase: false, cancellationToken);
             if (result.IsFailure && result.Error.Contains("not empty", StringComparison.OrdinalIgnoreCase))
             {
-                System.Console.Write("Database is not empty. Force import? (y/N): ");
-                var forceResponse = System.Console.ReadLine();
-                if (string.Equals(forceResponse, "y", StringComparison.OrdinalIgnoreCase))
+                System.Console.Write("Database is not empty. Drop it and import? (y/N): ");
+                var dropResponse = System.Console.ReadLine();
+                if (string.Equals(dropResponse, "y", StringComparison.OrdinalIgnoreCase))
                 {
-                    result = await _localImportService.Import(dumpPath, force: true, cancellationToken);
+                    result = await _localImportService.Import(dumpPath, dropExistingDatabase: true, cancellationToken);
                 }
             }
 
