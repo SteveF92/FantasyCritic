@@ -297,7 +297,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         return domainPublishers;
     }
 
-    public async Task UpdateFantasyPoints(Dictionary<(Guid, Guid), decimal?> publisherGameScores)
+    public async Task UpdateFantasyPoints(Dictionary<(Guid, Guid), decimal?> publisherGameScores, YearQuarter yearQuarter)
     {
         if (publisherGameScores.Count == 0)
         {
@@ -320,45 +320,30 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         const string updatePublisherRanksSql =
             """
             UPDATE tbl_royale_publisher rp
-            JOIN tbl_royale_supportedquarter rsq
-                ON rp.`Year` = rsq.`Year`
-               AND rp.`Quarter` = rsq.`Quarter`
             LEFT JOIN (
                 SELECT
-                    ranked.`Year`,
-                    ranked.`Quarter`,
-                    ranked.PublisherID,
-                    ranked.CalculatedRank
-                FROM (
-                    SELECT
-                        rp2.`Year`,
-                        rp2.`Quarter`,
-                        rp2.PublisherID,
-                        RANK() OVER (
-                            PARTITION BY rp2.`Year`, rp2.`Quarter`
-                            ORDER BY SUM(rpg.FantasyPoints) DESC
-                        ) AS CalculatedRank
-                    FROM tbl_royale_publisher rp2
-                    JOIN tbl_royale_publishergame rpg
-                        ON rp2.PublisherID = rpg.PublisherID
-                       AND rpg.FantasyPoints IS NOT NULL
-                    JOIN tbl_royale_supportedquarter rsq2
-                        ON rp2.`Year` = rsq2.`Year`
-                       AND rp2.`Quarter` = rsq2.`Quarter`
-                    WHERE rsq2.Finished = 0
-                    GROUP BY
-                        rp2.`Year`,
-                        rp2.`Quarter`,
-                        rp2.PublisherID
-                    HAVING SUM(rpg.FantasyPoints) > 0
-                ) ranked
+                    rp2.PublisherID,
+                    RANK() OVER (
+                        ORDER BY SUM(rpg.FantasyPoints) DESC
+                    ) AS CalculatedRank
+                FROM tbl_royale_publisher rp2
+                JOIN tbl_royale_publishergame rpg
+                    ON rp2.PublisherID = rpg.PublisherID
+                   AND rpg.FantasyPoints IS NOT NULL
+                WHERE rp2.`Year` = @year AND rp2.`Quarter` = @quarter
+                GROUP BY rp2.PublisherID
+                HAVING SUM(rpg.FantasyPoints) > 0
             ) r
-                ON rp.`Year` = r.`Year`
-               AND rp.`Quarter` = r.`Quarter`
-               AND rp.PublisherID = r.PublisherID
+                ON rp.PublisherID = r.PublisherID
             SET rp.Ranking = r.CalculatedRank
-            WHERE rsq.Finished = 0;
+            WHERE rp.`Year` = @year AND rp.`Quarter` = @quarter;
             """;
+
+        var yearQuarterParam = new
+        {
+            year = yearQuarter.Year,
+            quarter = yearQuarter.Quarter
+        };
 
         List<RoyalePublisherScoreUpdateEntity> updateEntities = publisherGameScores.Select(x => new RoyalePublisherScoreUpdateEntity(x)).ToList();
         await using var connection = new MySqlConnection(_connectionString);
@@ -368,7 +353,7 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         await connection.ExecuteAsync(createTempTableSql, transaction: transaction);
         await connection.BulkInsertAsync(updateEntities, tempTableName, 500, transaction);
         await connection.ExecuteAsync(bulkUpdateGamePointsSql, transaction: transaction);
-        await connection.ExecuteAsync(updatePublisherRanksSql, transaction: transaction);
+        await connection.ExecuteAsync(updatePublisherRanksSql, yearQuarterParam, transaction: transaction);
 
         await transaction.CommitAsync();
     }

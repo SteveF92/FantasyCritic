@@ -293,7 +293,7 @@ public class RoyaleService
             }
         }
 
-        await _royaleRepo.UpdateFantasyPoints(publisherGameScores);
+        await _royaleRepo.UpdateFantasyPoints(publisherGameScores, yearQuarter);
     }
 
     public async Task<IReadOnlyList<RoyaleYearQuarter>> GetQuartersWonByUser(IVeryMinimalFantasyCriticUser user)
