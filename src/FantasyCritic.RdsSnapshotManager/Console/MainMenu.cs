@@ -373,7 +373,7 @@ public sealed class MainMenu
             }
 
             var counts = results.GroupBy(x => x.Outcome).Select(x => $"{x.Key}: {x.Count()}");
-            System.Console.WriteLine(string.Join(", ", counts));
+            Log.Information("Archive run finished. {Counts}", string.Join(", ", counts));
         }
         catch (Exception ex)
         {

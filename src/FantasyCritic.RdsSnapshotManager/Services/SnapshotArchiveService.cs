@@ -8,6 +8,7 @@ using FantasyCritic.RdsSnapshotManager.Configuration;
 using MySqlConnector;
 using NodaTime;
 using Serilog;
+using Serilog.Events;
 
 namespace FantasyCritic.RdsSnapshotManager.Services;
 
@@ -21,8 +22,15 @@ public sealed class SnapshotArchiveService
     private static readonly TimeSpan ConnectRetryInterval = TimeSpan.FromSeconds(30);
     //An 8.x mysqldump queries a table that 5.7 servers don't have unless this is off.
     private static readonly IReadOnlyList<string> DumpArguments = ["--skip-column-statistics"];
-    //Old snapshots hold utility views that no longer compile, which stop mysqldump. The code never used them.
+    //Old snapshots hold these views in states that no longer compile, which stop mysqldump. The code never used them.
     private const string SkippedViewPrefix = "vw_utility_";
+    private static readonly IReadOnlySet<string> SkippedViews = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+    {
+        "vw_discord_leaguechannel",
+        "vw_cacher_mastergameyear",
+        "vw_mastergame_statisticsinput",
+        "vw_subquery_eligibleleaguesforgame"
+    };
     private static readonly JsonSerializerOptions ManifestJsonOptions = new() { WriteIndented = true };
 
     private readonly RdsTemporaryRestoreService _restoreService;
@@ -62,8 +70,10 @@ public sealed class SnapshotArchiveService
         var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = MaxConcurrentSnapshots, CancellationToken = cancellationToken };
         await Parallel.ForEachAsync(Enumerable.Range(0, snapshots.Count), parallelOptions, async (index, token) =>
         {
-            results[index] = await Archive(snapshots[index], token);
-            _logger.Information("{Snapshot}: {Outcome} {Detail}", results[index].SnapshotIdentifier, results[index].Outcome, results[index].Detail);
+            var result = await Archive(snapshots[index], token);
+            results[index] = result;
+            var level = result.Outcome == SnapshotArchiveOutcome.Failed ? LogEventLevel.Error : LogEventLevel.Information;
+            _logger.Write(level, "{Snapshot}: {Outcome} {Detail}", result.SnapshotIdentifier, result.Outcome, result.Detail);
         });
 
         return results;
@@ -150,8 +160,8 @@ public sealed class SnapshotArchiveService
             var skippedViews = await GetSkippedViews(schemaConnectionString, schema, cancellationToken);
             List<string> arguments = [.. DumpArguments, .. skippedViews.Select(view => $"--ignore-table={schema}.{view}")];
 
-            _logger.Information("Dumping {Schema} from {Snapshot}, skipping {ViewCount} utility views", schema, snapshot.Identifier,
-                skippedViews.Count);
+            _logger.Information("Dumping {Schema} from {Snapshot}, skipping views: {SkippedViews}", schema, snapshot.Identifier,
+                skippedViews);
             var dumpResult = await _mysqldumpRunner.DumpToGzipFile(schemaConnectionString, localPath, arguments, cancellationToken);
             if (dumpResult.IsFailure)
             {
@@ -239,7 +249,7 @@ public sealed class SnapshotArchiveService
         while (await reader.ReadAsync(cancellationToken))
         {
             var view = reader.GetString(0);
-            if (view.StartsWith(SkippedViewPrefix, StringComparison.OrdinalIgnoreCase))
+            if (view.StartsWith(SkippedViewPrefix, StringComparison.OrdinalIgnoreCase) || SkippedViews.Contains(view))
             {
                 views.Add(view);
             }
