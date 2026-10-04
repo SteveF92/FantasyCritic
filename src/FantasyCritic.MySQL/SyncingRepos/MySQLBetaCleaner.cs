@@ -46,8 +46,22 @@ public class MySQLBetaCleaner
         await CleanUnprocessedActionsInNonTestLeagues(connection, transaction);
         await DisablePatreon(connection, transaction);
         await DisableAutomatedActionProcessing(connection, transaction);
+        await DisableDatabaseArchive(connection, transaction);
 
         await transaction.CommitAsync();
+    }
+
+    /// <summary>
+    /// A copy of production must not add its dumps to production's archive, and outside production the worker has no archive
+    /// configuration anyway, so the job is turned off with its own RunType.
+    /// </summary>
+    private static async Task DisableDatabaseArchive(MySqlConnection connection, MySqlTransaction transaction)
+    {
+        _logger.Information("Disabling the database archive job.");
+        await connection.ExecuteAsync(
+            "UPDATE tbl_job_type SET RunType = @runType WHERE Name = @jobType",
+            new { runType = FantasyCriticJobRunType.Disabled.Value, jobType = FantasyCriticJobType.ArchiveDatabase.Value },
+            transaction);
     }
 
     /// <summary>

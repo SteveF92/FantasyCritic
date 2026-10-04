@@ -1,6 +1,7 @@
 <Solution>
   <Folder Name="/ExternalServices/">
     <Project Path="FantasyCritic.AWS/FantasyCritic.AWS.csproj" />
+    <Project Path="FantasyCritic.GCP/FantasyCritic.GCP.csproj" />
     <Project Path="FantasyCritic.Postmark/FantasyCritic.Postmark.csproj" />
   </Folder>
   <Folder Name="/Solution Items/">

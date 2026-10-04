@@ -1,35 +1,35 @@
 using CSharpFunctionalExtensions;
-using FantasyCritic.RdsSnapshotManager.Destinations;
+using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.RdsSnapshotManager.Infrastructure;
 
 namespace FantasyCritic.RdsSnapshotManager.Services;
 
 public sealed class ManualUploadService
 {
-    public ManualUploadService(IReadOnlyList<BackupDestinationRegistration> destinations)
+    public ManualUploadService(IReadOnlyList<IDatabaseArchiveLocation> destinations)
     {
         Destinations = destinations;
     }
 
-    public IReadOnlyList<BackupDestinationRegistration> Destinations { get; }
+    public IReadOnlyList<IDatabaseArchiveLocation> Destinations { get; }
 
     public async Task<Result> Upload(string localFilePath, string destinationName, CancellationToken cancellationToken)
     {
         var destination = Destinations.FirstOrDefault(d =>
-            string.Equals(d.Destination.Name, destinationName, StringComparison.OrdinalIgnoreCase));
+            string.Equals(d.Name, destinationName, StringComparison.OrdinalIgnoreCase));
         if (destination is null)
         {
             return Result.Failure($"No enabled destination named '{destinationName}'.");
         }
 
         var fileName = Path.GetFileName(localFilePath);
-        var remoteKeyResult = DumpFileNameParser.TryBuildRemoteKey(destination.Prefix, fileName);
-        if (remoteKeyResult.IsFailure)
+        var keyResult = DumpFileNameParser.TryBuildKey(fileName);
+        if (keyResult.IsFailure)
         {
-            return Result.Failure(remoteKeyResult.Error);
+            return Result.Failure(keyResult.Error);
         }
 
-        await destination.Destination.UploadAsync(localFilePath, remoteKeyResult.Value, cancellationToken);
+        await destination.Upload(localFilePath, keyResult.Value, cancellationToken);
         return Result.Success();
     }
 }

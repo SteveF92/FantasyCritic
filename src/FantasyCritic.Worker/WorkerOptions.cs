@@ -13,6 +13,7 @@ public sealed record WorkerOptions : IHostOptions
     public required DiscordOptions Discord { get; init; }
     public required string BaseAddress { get; init; }
     public required GrafanaOptions Grafana { get; init; }
+    public required DatabaseArchiveOptions DatabaseArchive { get; init; }
 
     public Result Validate(FantasyCriticEnvironment environment)
     {
@@ -25,6 +26,7 @@ public sealed record WorkerOptions : IHostOptions
             .Section(nameof(Discord), Discord)
             .Value(nameof(BaseAddress), BaseAddress)
             .Section(nameof(Grafana), Grafana)
+            .Section(nameof(DatabaseArchive), DatabaseArchive)
             .ToResult();
     }
 }

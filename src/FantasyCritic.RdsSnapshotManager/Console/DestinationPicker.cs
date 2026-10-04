@@ -1,10 +1,10 @@
-using FantasyCritic.RdsSnapshotManager.Destinations;
+using FantasyCritic.Lib.Interfaces;
 
 namespace FantasyCritic.RdsSnapshotManager.Console;
 
 public static class DestinationPicker
 {
-    public static string? PickDestinationName(IReadOnlyList<BackupDestinationRegistration> destinations)
+    public static string? PickDestinationName(IReadOnlyList<IDatabaseArchiveLocation> destinations)
     {
         if (destinations.Count == 0)
         {
@@ -14,7 +14,7 @@ public static class DestinationPicker
 
         for (var index = 0; index < destinations.Count; index++)
         {
-            System.Console.WriteLine($"{index}: {destinations[index].Destination.Name}");
+            System.Console.WriteLine($"{index}: {destinations[index].Name}");
         }
 
         System.Console.Write("Select destination index: ");
@@ -24,6 +24,6 @@ public static class DestinationPicker
             return null;
         }
 
-        return destinations[selected].Destination.Name;
+        return destinations[selected].Name;
     }
 }
