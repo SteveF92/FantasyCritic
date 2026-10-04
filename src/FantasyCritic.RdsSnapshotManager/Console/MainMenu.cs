@@ -1,3 +1,4 @@
+using FantasyCritic.AWS;
 using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.RdsSnapshotManager.Configuration;
 using FantasyCritic.RdsSnapshotManager.Services;
@@ -52,6 +53,7 @@ public sealed class MainMenu
             System.Console.WriteLine("5. Clean local Docker database (scrub sensitive data)");
             System.Console.WriteLine("6. Upload existing local dump to a destination (retry a failed upload)");
             System.Console.WriteLine("7. Archive manual snapshots to S3 (restores each to a temporary instance)");
+            System.Console.WriteLine("8. Import archived snapshot from S3 to Docker (sanitized)");
             System.Console.WriteLine("0. Exit");
             System.Console.Write("Select option: ");
 
@@ -78,6 +80,9 @@ public sealed class MainMenu
                     break;
                 case "7":
                     await ArchiveSnapshots(cancellationToken);
+                    break;
+                case "8":
+                    await ImportArchivedSnapshot(cancellationToken);
                     break;
                 case "0":
                     return;
@@ -207,6 +212,11 @@ public sealed class MainMenu
             return;
         }
 
+        await ImportDump(dumpPath, cancellationToken);
+    }
+
+    private async Task ImportDump(string dumpPath, CancellationToken cancellationToken)
+    {
         try
         {
             var result = await _localImportService.Import(dumpPath, force: false, cancellationToken);
@@ -379,6 +389,62 @@ public sealed class MainMenu
         {
             Log.Error(ex, "Archiving snapshots failed.");
             System.Console.WriteLine($"Archiving snapshots failed: {ex.Message}");
+        }
+    }
+
+    private async Task ImportArchivedSnapshot(CancellationToken cancellationToken)
+    {
+        if (_snapshotArchiveService is null)
+        {
+            System.Console.WriteLine("Importing an archived snapshot needs the S3 destination, which is disabled.");
+            return;
+        }
+
+        string? localPath = null;
+        try
+        {
+            var dumps = await _snapshotArchiveService.GetArchivedDumps(cancellationToken);
+            var dump = ArchivedSnapshotPicker.PickDump(dumps);
+            if (dump is null)
+            {
+                return;
+            }
+
+            if (dump.Object.Availability == ArchivedObjectAvailability.GlacierRestoreInProgress)
+            {
+                System.Console.WriteLine("The Glacier restore of this dump is still in progress. Try again later.");
+                return;
+            }
+
+            if (dump.Object.Availability == ArchivedObjectAvailability.InGlacier)
+            {
+                System.Console.Write(
+                    "This dump is in Glacier. Request a restore? It takes 3 to 5 hours, and the dump stays downloadable for " +
+                    $"{SnapshotArchiveService.GlacierRestoreDays} days. (y/N): ");
+                if (string.Equals(System.Console.ReadLine(), "y", StringComparison.OrdinalIgnoreCase))
+                {
+                    await _snapshotArchiveService.RequestGlacierRestore(dump, cancellationToken);
+                    System.Console.WriteLine("Restore requested. Run this option again once it finishes.");
+                }
+
+                return;
+            }
+
+            localPath = await _snapshotArchiveService.Download(dump, cancellationToken);
+            await ImportDump(localPath, cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Importing the archived snapshot failed.");
+            System.Console.WriteLine($"Importing the archived snapshot failed: {ex.Message}");
+        }
+        finally
+        {
+            //The download is unsanitized.
+            if (localPath is not null)
+            {
+                File.Delete(localPath);
+            }
         }
     }
 }

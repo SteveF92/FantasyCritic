@@ -43,6 +43,22 @@ public class SnapshotArchiveNamesTests
         Assert.That(key, Is.EqualTo("rds-snapshots/before-net10/manifest.json"));
     }
 
+    [Test]
+    public void GetSnapshotIdentifierIfApplicationSchemaKey_ReadsBuiltKey()
+    {
+        var key = SnapshotArchiveNames.BuildKey("before-net10", SnapshotArchiveNames.ApplicationSchema);
+        Assert.That(SnapshotArchiveNames.GetSnapshotIdentifierIfApplicationSchemaKey(key), Is.EqualTo("before-net10"));
+    }
+
+    [TestCase("rds-snapshots/before-net10/before-net10-innodb.sql.gz")]
+    [TestCase("rds-snapshots/before-net10/manifest.json")]
+    [TestCase("rds-snapshots/before-net10/other-fantasycritic.sql.gz")]
+    [TestCase("fantasy-critic-rds/2026-10-04/fantasy-critic-rds-2026-10-04-030016.sql.gz")]
+    public void GetSnapshotIdentifierIfApplicationSchemaKey_IgnoresOtherKeys(string key)
+    {
+        Assert.That(SnapshotArchiveNames.GetSnapshotIdentifierIfApplicationSchemaKey(key), Is.Null);
+    }
+
     [TestCase("information_schema", true)]
     [TestCase("mysql", true)]
     [TestCase("performance_schema", true)]

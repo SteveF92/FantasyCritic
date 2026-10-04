@@ -1,3 +1,5 @@
+using FantasyCritic.AWS;
+
 namespace FantasyCritic.RdsSnapshotManager.Services;
 
 public enum SnapshotArchiveOutcome
@@ -24,3 +26,5 @@ public sealed record SnapshotArchiveManifest(
     string SnapshotCreateTime,
     string ArchivedAt,
     IReadOnlyList<ArchivedFile> Files);
+
+public sealed record ArchivedSnapshotDump(string SnapshotIdentifier, ArchivedObject Object);

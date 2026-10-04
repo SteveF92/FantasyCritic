@@ -18,6 +18,7 @@ public sealed class SnapshotArchiveService
     private static readonly ILogger _logger = Log.ForContext<SnapshotArchiveService>();
 
     private const int MaxConcurrentSnapshots = 3;
+    public const int GlacierRestoreDays = 7;
     private const int ConnectAttempts = 10;
     private static readonly TimeSpan ConnectRetryInterval = TimeSpan.FromSeconds(30);
     //An 8.x mysqldump queries a table that 5.7 servers don't have unless this is off.
@@ -61,6 +62,34 @@ public sealed class SnapshotArchiveService
 
     public Task DeleteLeftoverInstance(string instanceIdentifier) =>
         _restoreService.DeleteTemporaryInstanceIfExists(instanceIdentifier);
+
+    public async Task<IReadOnlyList<ArchivedSnapshotDump>> GetArchivedDumps(CancellationToken cancellationToken)
+    {
+        var objects = await _archive.List(SnapshotArchiveNames.FolderPrefix, cancellationToken);
+        List<ArchivedSnapshotDump> dumps = [];
+        foreach (var archivedObject in objects)
+        {
+            var snapshotIdentifier = SnapshotArchiveNames.GetSnapshotIdentifierIfApplicationSchemaKey(archivedObject.Key);
+            if (snapshotIdentifier is not null)
+            {
+                dumps.Add(new ArchivedSnapshotDump(snapshotIdentifier, archivedObject));
+            }
+        }
+
+        return dumps;
+    }
+
+    public async Task<string> Download(ArchivedSnapshotDump dump, CancellationToken cancellationToken)
+    {
+        var localPath = Path.Combine(_options.LocalStagingDirectory, "rds-snapshots", Path.GetFileName(dump.Object.Key));
+        Directory.CreateDirectory(Path.GetDirectoryName(localPath)!);
+        _logger.Information("Downloading {Key} to {Path}", dump.Object.Key, localPath);
+        await _archive.Download(dump.Object.Key, localPath, cancellationToken);
+        return localPath;
+    }
+
+    public Task RequestGlacierRestore(ArchivedSnapshotDump dump, CancellationToken cancellationToken) =>
+        _archive.RequestGlacierRestore(dump.Object.Key, GlacierRestoreDays, cancellationToken);
 
     public static bool CanArchive(ManualSnapshot snapshot) => snapshot.Engine.Equals("mysql", StringComparison.Ordinal);
 
