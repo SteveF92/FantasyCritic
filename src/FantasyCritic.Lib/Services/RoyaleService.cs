@@ -103,6 +103,11 @@ public class RoyaleService
         return _royaleRepo.GetRoyaleYearQuarterData(year, quarter);
     }
 
+    public Task<IReadOnlyList<RoyalePodiumEntry>> GetPodium(YearQuarter yearQuarter)
+    {
+        return _royaleRepo.GetPodium(yearQuarter);
+    }
+
     public static RoyalePurchaseGameValidation ValidatePurchaseGame(RoyalePublisher publisher, MasterGameYear masterGame,
         IEnumerable<MasterGameTag> masterGameTags, LocalDate currentDate, IClock clock)
     {

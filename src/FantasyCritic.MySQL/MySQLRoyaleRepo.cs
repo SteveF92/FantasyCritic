@@ -585,6 +585,24 @@ public class MySQLRoyaleRepo : IRoyaleRepo
         return entities.Select(x => x.ToDomain()).ToList();
     }
 
+    public async Task<IReadOnlyList<RoyalePodiumEntry>> GetPodium(YearQuarter yearQuarter)
+    {
+        const string sql = """
+                           SELECT p.PublisherID, p.UserID, u.DisplayName AS PlayerName, p.PublisherName, p.PublisherIcon, p.Ranking,
+                                  COALESCE(SUM(pg.FantasyPoints), 0) AS TotalFantasyPoints
+                           FROM tbl_royale_publisher p
+                           JOIN tbl_user u ON u.UserID = p.UserID
+                           LEFT JOIN tbl_royale_publishergame pg ON pg.PublisherID = p.PublisherID
+                           WHERE p.Year = @year AND p.Quarter = @quarter AND p.Ranking <= 3
+                           GROUP BY p.PublisherID, p.UserID, u.DisplayName, p.PublisherName, p.PublisherIcon, p.Ranking
+                           ORDER BY p.Ranking, p.PublisherName;
+                           """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        var entities = await connection.QueryAsync<RoyalePodiumEntity>(sql, new { year = yearQuarter.Year, quarter = yearQuarter.Quarter });
+        return entities.Select(x => x.ToDomain()).ToList();
+    }
+
     public async Task<IReadOnlyList<RoyalePublisherStatistics>> GetPublisherStatistics(Guid publisherID)
     {
         const string sql = """

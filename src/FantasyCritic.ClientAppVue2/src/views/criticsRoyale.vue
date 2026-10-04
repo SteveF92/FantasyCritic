@@ -43,6 +43,8 @@
       </div>
     </div>
 
+    <RoyalePodium v-if="podium && podium.entries.length > 0" :podium="podium" />
+
     <div class="row royale-leaderboard-row">
       <div class="col-xl-8 col-lg-12">
         <div class="leaderboard-header">
@@ -114,6 +116,7 @@
 import axios from 'axios';
 import CreateRoyalePublisherForm from '@/components/modals/createRoyalePublisherForm.vue';
 import RoyaleGroupsWidget from '@/components/royaleGroupsWidget.vue';
+import RoyalePodium from '@/components/royalePodium.vue';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 import CriticsRoyaleInfo from '@/components/criticsRoyaleInfo.vue';
 import { orderBy } from '@/globalFunctions';
@@ -122,6 +125,7 @@ export default {
   components: {
     CreateRoyalePublisherForm,
     RoyaleGroupsWidget,
+    RoyalePodium,
     RoyalePublisherGraph,
     CriticsRoyaleInfo
   },
@@ -139,6 +143,7 @@ export default {
       royaleYearQuarterOptions: null,
       royaleStandings: null,
       topPublishers: [],
+      podium: null,
       userPublisherBusy: true,
       groupSearchQuery: '',
       groupSearchResults: null,
@@ -223,6 +228,7 @@ export default {
       this.royaleStandings = response.data.royaleStandings;
       this.userRoyalePublisherID = response.data.userRoyalePublisherID;
       this.topPublishers = response.data.topPublishers;
+      this.podium = response.data.podium;
       this.userPublisherBusy = false;
       await Promise.all([this.fetchMyGroups(), this.fetchRulesBasedGroups()]);
     },

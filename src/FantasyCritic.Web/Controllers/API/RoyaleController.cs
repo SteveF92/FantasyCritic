@@ -270,12 +270,21 @@ public class RoyaleController : FantasyCriticController
             }
         }
 
+        RoyalePodiumViewModel? podium = null;
+        var podiumYearQuarter = royaleData.GetPodiumYearQuarter();
+        if (podiumYearQuarter is not null)
+        {
+            var podiumEntries = await _royaleService.GetPodium(podiumYearQuarter.YearQuarter);
+            podium = new RoyalePodiumViewModel(podiumYearQuarter, royaleData.ActiveYearQuarter, podiumEntries);
+        }
+
         var vm = new RoyaleQuarterDataViewModel(
             allRoyaleYearQuarters,
             royaleYearQuarterViewModel,
             userRoyalePublisherID,
             publisherViewModels,
-            validStatistics ? topPublishers : []);
+            validStatistics ? topPublishers : [],
+            podium);
 
         return vm;
     }

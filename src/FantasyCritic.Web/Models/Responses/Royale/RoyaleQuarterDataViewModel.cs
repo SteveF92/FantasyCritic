@@ -5,4 +5,5 @@ public record RoyaleQuarterDataViewModel(
     RoyaleYearQuarterViewModel RoyaleYearQuarter,
     Guid? UserRoyalePublisherID,
     List<RoyaleStandingsViewModel> RoyaleStandings,
-    List<RoyalePublisherViewModel> TopPublishers);
+    List<RoyalePublisherViewModel> TopPublishers,
+    RoyalePodiumViewModel? Podium);

@@ -111,6 +111,11 @@ public class FakeRoyaleRepo : IRoyaleRepo
         throw new NotImplementedException();
     }
 
+    public Task<IReadOnlyList<RoyalePodiumEntry>> GetPodium(YearQuarter yearQuarter)
+    {
+        throw new NotImplementedException();
+    }
+
     public Task<IReadOnlyList<RoyalePublisherStatistics>> GetPublisherStatistics(Guid publisherID)
     {
         throw new NotImplementedException();
