@@ -32,16 +32,23 @@ public class MySQLBetaCleaner
         var batches = updateStatements.Chunk(500).ToList();
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
-        await using var transaction = await connection.BeginTransactionAsync();
-        for (var index = 0; index < batches.Count; index++)
+
+        //Committed on its own, so a later step that fails can't roll back the scrub of personal data.
+        await using (var userTransaction = await connection.BeginTransactionAsync())
         {
-            _logger.Information($"Running user clean batch {index + 1}/{batches.Count}");
-            var batch = batches[index];
-            var joinedSQL = string.Join('\n', batch);
-            await connection.ExecuteAsync(joinedSQL, transaction: transaction);
+            for (var index = 0; index < batches.Count; index++)
+            {
+                _logger.Information($"Running user clean batch {index + 1}/{batches.Count}");
+                var batch = batches[index];
+                var joinedSQL = string.Join('\n', batch);
+                await connection.ExecuteAsync(joinedSQL, transaction: userTransaction);
+            }
+
+            await CleanExternalLogins(connection, userTransaction, nonBetaUsers);
+            await userTransaction.CommitAsync();
         }
 
-        await CleanExternalLogins(connection, transaction, nonBetaUsers);
+        await using var transaction = await connection.BeginTransactionAsync();
         await CleanDiscordData(connection, transaction, betaUserIds);
         await CleanUnprocessedActionsInNonTestLeagues(connection, transaction);
         await DisablePatreon(connection, transaction);
