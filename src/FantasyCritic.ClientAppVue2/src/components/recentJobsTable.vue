@@ -83,7 +83,7 @@
       </template>
       <template #cell(actions)="row">
         <b-button v-if="isCancellable(row.item)" variant="danger" size="sm" :disabled="isBusy" @click="cancelJob(row.item)">Cancel</b-button>
-        <b-button variant="secondary" size="sm" @click="row.toggleDetails">{{ row.detailsShowing ? 'Hide' : 'Details' }}</b-button>
+        <b-button variant="secondary" size="sm" @click="toggleDetails(row.item)">{{ row.detailsShowing ? 'Hide' : 'Details' }}</b-button>
         <b-button v-if="row.item.logsUrl" variant="info" size="sm" :href="row.item.logsUrl" target="_blank" rel="noopener">Logs</b-button>
       </template>
       <template #row-details="row">
@@ -209,6 +209,7 @@ export default {
       errorResponse: null,
       lastRefreshedAt: null,
       highlightedJobID: null,
+      expandedJobIDs: [],
       fields: [
         { key: 'type', label: 'Job', thClass: 'bg-primary' },
         { key: 'status', label: 'Status', thClass: 'bg-primary' },
@@ -241,7 +242,7 @@ export default {
       try {
         const jobTypeValues = this.selectedJobTypes.map((x) => x.value);
         const statusValues = this.selectedStatuses.map((x) => x.value);
-        this.jobs = await jobManagerClient.getJobs(
+        const jobs = await jobManagerClient.getJobs(
           this.page,
           this.count,
           this.jobTypeMode === 'only' ? jobTypeValues : null,
@@ -249,11 +250,20 @@ export default {
           this.statusMode === 'only' ? statusValues : null,
           this.statusMode === 'hide' ? statusValues : null
         );
+        //b-table opens a row's details when its item has _showDetails. Setting it on every item up front keeps it reactive, and keeps open the jobs that were open before the refresh.
+        this.jobs = jobs.map((job) => ({ ...job, _showDetails: this.expandedJobIDs.includes(job.jobID) }));
         this.lastRefreshedAt = DateTime.now();
       } catch (error) {
         this.errorResponse = this.describeError(error);
       } finally {
         this.isBusy = false;
+      }
+    },
+    toggleDetails(job) {
+      job._showDetails = !job._showDetails;
+      this.expandedJobIDs = this.expandedJobIDs.filter((x) => x !== job.jobID);
+      if (job._showDetails) {
+        this.expandedJobIDs.push(job.jobID);
       }
     },
     //Jumps back to the newest jobs so a job the console just queued is on screen. A filter is only dropped if it would hide that job.
