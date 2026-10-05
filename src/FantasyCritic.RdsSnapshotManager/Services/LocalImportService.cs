@@ -31,7 +31,7 @@ public sealed class LocalImportService
         _localUserStore = localUserStore;
     }
 
-    public async Task<Result> Import(string gzipFilePath, bool force, CancellationToken cancellationToken)
+    public async Task<Result> Import(string gzipFilePath, bool dropExistingDatabase, CancellationToken cancellationToken)
     {
         string snapshotConnectionString = LocalSnapshotConnectionString.BuildSnapshotConnectionString(
             _options.LocalDocker.ConnectionString);
@@ -50,6 +50,12 @@ public sealed class LocalImportService
             return health;
         }
 
+        //A dump only replaces the tables it holds, so importing over another one would keep tables the dump lacks.
+        if (dropExistingDatabase)
+        {
+            await _emptyChecker.DropDatabase(snapshotConnectionString, LocalSnapshotDatabaseNames.SnapshotDatabase, cancellationToken);
+        }
+
         var ensureDatabase = await _emptyChecker.EnsureDatabaseExistsOrFailure(
             snapshotConnectionString,
             LocalSnapshotDatabaseNames.SnapshotDatabase,
@@ -59,7 +65,7 @@ public sealed class LocalImportService
             return ensureDatabase;
         }
 
-        if (!force)
+        if (!dropExistingDatabase)
         {
             var empty = await _emptyChecker.EnsureEmptyOrFailure(
                 snapshotConnectionString,

@@ -1,4 +1,6 @@
 using System.Reflection;
+using Amazon.RDS;
+using Amazon.S3;
 using FantasyCritic.AWS;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
@@ -12,6 +14,7 @@ using FantasyCritic.RdsSnapshotManager.Services;
 using Microsoft.Extensions.Configuration;
 using NodaTime;
 using Serilog;
+using Serilog.Events;
 
 namespace FantasyCritic.RdsSnapshotManager;
 
@@ -19,12 +22,6 @@ public static class Program
 {
     private static async Task Main()
     {
-        //Debug, for the MySQL tools' progress and output.
-        Log.Logger = new LoggerConfiguration()
-            .MinimumLevel.Debug()
-            .WriteTo.Console()
-            .CreateLogger();
-
         var configuration = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json")
@@ -34,10 +31,13 @@ public static class Program
         var options = new RdsSnapshotManagerOptions();
         configuration.Bind(options);
 
+        Log.Logger = CreateLogger(options.LocalStagingDirectory);
+
         var validation = RdsSnapshotManagerOptionsValidator.Validate(options);
         if (validation.IsFailure)
         {
             Log.Fatal("Invalid RDS Snapshot Manager configuration: {Error}", validation.Error);
+            await Log.CloseAndFlushAsync();
             Environment.Exit(1);
             return;
         }
@@ -77,6 +77,14 @@ public static class Program
             localCleaner,
             localUserStore);
         ManualUploadService manualUploadService = new ManualUploadService(destinations);
+        SnapshotArchiveService? snapshotArchiveService = options.Destinations.S3.Enabled
+            ? new SnapshotArchiveService(
+                new RdsTemporaryRestoreService(new AmazonRDSClient()),
+                mysqldumpRunner,
+                new S3DatabaseArchiveLocation(new AmazonS3Client(), options.Destinations.S3.Bucket, options.Destinations.S3.Prefix),
+                options,
+                clock)
+            : null;
 
         Console.MainMenu mainMenu = new Console.MainMenu(
             snapshotCreateService,
@@ -86,8 +94,28 @@ public static class Program
             localImportService,
             localDatabaseCleanService,
             manualUploadService,
+            snapshotArchiveService,
             options);
 
         await mainMenu.Run(CancellationToken.None);
+        await Log.CloseAndFlushAsync();
+    }
+
+    //Debug, for the MySQL tools' progress and output. The errors file is for finding failures among parallel snapshot archives.
+    private static Serilog.ILogger CreateLogger(string? stagingDirectory)
+    {
+        var loggerConfiguration = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.Console();
+
+        if (!string.IsNullOrWhiteSpace(stagingDirectory))
+        {
+            var logDirectory = Path.Combine(stagingDirectory, "logs");
+            loggerConfiguration = loggerConfiguration
+                .WriteTo.File(Path.Combine(logDirectory, "rds-snapshot-manager-.log"), rollingInterval: RollingInterval.Day)
+                .WriteTo.File(Path.Combine(logDirectory, "errors-.log"), LogEventLevel.Warning, rollingInterval: RollingInterval.Day);
+        }
+
+        return loggerConfiguration.CreateLogger();
     }
 }
