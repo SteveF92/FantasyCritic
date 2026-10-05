@@ -71,7 +71,7 @@ public class TopAvailableGamesCommand : InteractionModuleBase<SocketInteractionC
         }
 
         var publisherFound = leagueChannel.LeagueYear.Publishers.FirstOrDefault(p =>
-            p.User.Id == fantasyCriticUser.Id && leagueChannel.ChannelID == Context.Channel.Id);
+            p.User?.Id == fantasyCriticUser.Id && leagueChannel.ChannelID == Context.Channel.Id);
 
         if (publisherFound == null)
         {
@@ -182,7 +182,7 @@ public class TopAvailableGamesCommand : InteractionModuleBase<SocketInteractionC
         }
 
         var publisherFound = leagueChannel.LeagueYear.Publishers.FirstOrDefault(p =>
-            p.User.Id == fantasyCriticUser.Id && leagueChannel.ChannelID == Context.Channel.Id);
+            p.User?.Id == fantasyCriticUser.Id && leagueChannel.ChannelID == Context.Channel.Id);
 
         if (publisherFound == null)
         {
@@ -260,7 +260,7 @@ public class TopAvailableGamesCommand : InteractionModuleBase<SocketInteractionC
         }
 
         var publisherFound = leagueChannel.LeagueYear.Publishers.FirstOrDefault(p =>
-            p.User.Id == fantasyCriticUser.Id && leagueChannel.ChannelID == Context.Channel.Id);
+            p.User?.Id == fantasyCriticUser.Id && leagueChannel.ChannelID == Context.Channel.Id);
 
         if (publisherFound == null)
         {
@@ -331,7 +331,7 @@ public class TopAvailableGamesCommand : InteractionModuleBase<SocketInteractionC
         }
 
         var publisherFound = leagueChannel.LeagueYear.Publishers.FirstOrDefault(p =>
-            p.User.Id == fantasyCriticUser.Id && leagueChannel.ChannelID == Context.Channel.Id);
+            p.User?.Id == fantasyCriticUser.Id && leagueChannel.ChannelID == Context.Channel.Id);
 
         if (publisherFound == null)
         {

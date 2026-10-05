@@ -176,7 +176,7 @@ public static class DiscordSharedMessageUtilities
         }
 
         var crownEmoji = "";
-        if (previousYearWinner is not null && publisher.User.Id == previousYearWinner.Id)
+        if (previousYearWinner is not null && publisher.User?.Id == previousYearWinner.Id)
         {
             crownEmoji = " 👑";
         }
