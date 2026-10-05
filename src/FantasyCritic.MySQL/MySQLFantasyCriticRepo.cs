@@ -1824,7 +1824,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             LeagueID = leagueYear.League.LeagueID,
             Year = leagueYear.Year,
             PublisherID = publisherToReassign.PublisherID,
-            OldUserID = publisherToReassign.User.Id,
+            OldUserID = publisherToReassign.User?.Id,
             NewUserID = newUser.Id
         };
 
@@ -2005,7 +2005,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<Publisher> publishers = [];
         foreach (var entity in publisherEntities)
         {
-            var user = usersDictionary[entity.UserID];
+            var user = entity.UserID.HasValue ? usersDictionary[entity.UserID.Value] : null;
             var domainGames = domainGameLookup[entity.PublisherID];
             var domainFormerGames = domainFormerGameLookup[entity.PublisherID];
             var draftInfos = draftInfosByPublisherID[entity.PublisherID];
@@ -2153,7 +2153,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var pickSkipLookup = draftPickSkipRows.ToLookup(x => (x.DraftID, x.PublisherID));
         var draftInfos = draftPublisherRows.Select(x => new PublisherDraftInfo(x.DraftID, x.DraftNumber, x.PublisherID, x.DraftPosition,
             pickSkipLookup[(x.DraftID, x.PublisherID)].Select(s => s.ToDomain()).ToList())).ToList();
-        var user = await _userStore.FindByIdOrThrowAsync(publisherEntity.UserID, CancellationToken.None);
+        FantasyCriticUser? user = null;
+        if (publisherEntity.UserID.HasValue)
+        {
+            user = await _userStore.FindByIdOrThrowAsync(publisherEntity.UserID.Value, CancellationToken.None);
+        }
+        
         var domainPublisher = publisherEntity.ToDomain(user, draftInfos, domainGames, domainFormerGames);
         return domainPublisher;
     }

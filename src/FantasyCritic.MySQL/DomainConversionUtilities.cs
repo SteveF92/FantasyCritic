@@ -61,7 +61,7 @@ internal static class DomainConversionUtilities
         {
             var gamesForPublisher = domainGameLookup[entity.PublisherID];
             var formerGamesForPublisher = domainFormerGameLookup[entity.PublisherID];
-            var user = usersInLeague[entity.UserID];
+            var user = entity.UserID.HasValue ? usersInLeague[entity.UserID.Value] : null;
             var draftInfos = draftInfosByPublisherID[entity.PublisherID];
             var domainPublisher = entity.ToDomain(user, draftInfos, gamesForPublisher, formerGamesForPublisher);
             domainPublishers.Add(domainPublisher);
@@ -122,7 +122,7 @@ internal static class DomainConversionUtilities
     /// </summary>
     public static FantasyCriticUser ResolveTradeVoteUser(Guid voteUserId, LeagueYear leagueYear, IReadOnlyDictionary<Guid, FantasyCriticUser> usersById)
     {
-        var fromPublisher = leagueYear.Publishers.FirstOrDefault(x => x.User.Id == voteUserId)?.User;
+        var fromPublisher = leagueYear.Publishers.FirstOrDefault(x => x.User?.Id == voteUserId)?.User;
         if (fromPublisher is not null)
         {
             return fromPublisher;
