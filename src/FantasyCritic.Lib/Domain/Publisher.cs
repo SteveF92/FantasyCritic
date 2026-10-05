@@ -333,7 +333,7 @@ public class Publisher : IEquatable<Publisher>
     {
         var firstDraft = leagueYear.FirstDraft;
         var fakeDraftInfo = new PublisherDraftInfo(firstDraft.DraftID, firstDraft.DraftNumber, Guid.Empty, 1, []);
-        return new Publisher(Guid.Empty, leagueYear.Key, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
+        return new Publisher(Guid.Empty, leagueYear.Key, null, "<Unknown Publisher>",
             null, null, [fakeDraftInfo], new List<PublisherGame>(),
             new List<FormerPublisherGame>(), 0, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false));
     }

@@ -6,12 +6,12 @@ public static class DraftFunctions
 {
     public static bool LeagueIsReadyToSetDraftOrder(IEnumerable<Publisher> publishersInLeague, IEnumerable<IMinimalFantasyCriticUser> activeUsers)
     {
-        if (publishersInLeague.Count() != activeUsers.Count())
+        if (publishersInLeague.Count(x => x.User is not null) != activeUsers.Count())
         {
             return false;
         }
 
-        if (publishersInLeague.Count() < 2 || publishersInLeague.Count() > 20)
+        if (publishersInLeague.Count(x => x.User is not null) < 2 || publishersInLeague.Count() > 20)
         {
             return false;
         }
@@ -39,7 +39,7 @@ public static class DraftFunctions
             errors.Add("You cannot have more than 20 players in the league. You should consider a conference.");
         }
 
-        if (leagueYear.Publishers.Count != activeUsers.Count())
+        if (leagueYear.Publishers.Count(x => x.User is not null) != activeUsers.Count())
         {
             errors.Add("Not every player has created a publisher.");
         }
@@ -444,6 +444,11 @@ public static class DraftFunctions
 
     private static bool ShouldSkipPublisher(Publisher publisher, bool counterPick, LeagueYear leagueYear)
     {
+        if (publisher.User is null)
+        {
+            return true;
+        }
+
         var publisherSlots = publisher.GetPublisherSlots(leagueYear);
         bool hasOpenSlot = publisherSlots.Any(x => x.CounterPick == counterPick && x.PublisherGame is null);
         return !hasOpenSlot;

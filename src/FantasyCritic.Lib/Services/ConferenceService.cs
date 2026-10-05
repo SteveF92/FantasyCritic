@@ -166,7 +166,7 @@ public class ConferenceService
         if (usersThatCannotBeMadeInactive.Any())
         {
             var playerNames = string.Join(",", usersThatCannotBeMadeInactive.Select(x => x.DisplayName));
-            return Result.Failure($"You must remove a player's publisher before you can set them as inactive. Player(s): {playerNames}");
+            return Result.Failure($"You must disconnect a player from their publisher before you can set them as inactive. Player(s): {playerNames}");
         }
 
         if (usersToChange.Any())
