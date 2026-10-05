@@ -48,8 +48,7 @@ public class ConsolidatedLeagueYearViewModel
         Settings = new LeagueYearSettingsViewModel(leagueYear);
 
         IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary = GameUtilities.GetCounterPickedByDictionary(leagueYear);
-        List<FantasyCriticUser> activePublisherUsers = leagueYear.Publishers.Select(x => x.User).ToList();
-        List<MinimalFantasyCriticUser> activeUsersMinimal = activePublisherUsers.Select(x => x.ToMinimal()).ToList();
+        List<FantasyCriticUser> activePublisherUsers = leagueYear.Publishers.Where(x => x.User is not null).Select(x => x.User!).ToList();
         bool conferenceDraftsNotEnabled = leagueYear.ConferenceLocked.HasValue && !leagueYear.ConferenceLocked.Value;
         var activeDraftNextPublisher = DraftFunctions.GetDraftStatus(leagueYear)?.NextDraftPublisher;
 
@@ -78,18 +77,12 @@ public class ConsolidatedLeagueYearViewModel
         Guid? previousYearWinnerUserID = domain.PreviousSeasonWinnerUserID;
 
         List<PlayerWithPublisherViewModel> playerVMs = [];
-        foreach (MinimalFantasyCriticUser user in activeUsersMinimal)
+        foreach (Publisher publisher in leagueYear.Publishers)
         {
-            Publisher? publisher = leagueYear.GetUserPublisher(user);
-            if (publisher is null)
-            {
-                continue;
-            }
-
             int ranking = publisherRankings[publisher.PublisherID];
             int projectedRanking = publisherProjectedRankings[publisher.PublisherID];
-            bool isPreviousYearWinner = previousYearWinnerUserID.HasValue && previousYearWinnerUserID.Value == user.UserID;
-            playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, systemWideValues,
+            bool isPreviousYearWinner = publisher.User is not null && previousYearWinnerUserID == publisher.User.UserID;
+            playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, publisher.User?.ToMinimal(), publisher, currentDate, systemWideValues,
                 userIsInLeague: false, userIsInvitedToLeague: false, isPreviousYearWinner, ranking, projectedRanking));
         }
 

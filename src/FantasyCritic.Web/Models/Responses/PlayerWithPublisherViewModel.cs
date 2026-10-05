@@ -15,11 +15,15 @@ public class PlayerWithPublisherViewModel
         User = new PlayerViewModel(leagueYear.League.LeagueID, leagueYear.League.LeagueName, user);
     }
 
-    public PlayerWithPublisherViewModel(LeagueYear leagueYear, MinimalFantasyCriticUser user, Publisher publisher, LocalDate currentDate,
+    public PlayerWithPublisherViewModel(LeagueYear leagueYear, MinimalFantasyCriticUser? user, Publisher publisher, LocalDate currentDate,
         SystemWideValues systemWideValues, bool userIsInLeague, bool userIsInvitedToLeague,
         bool previousYearWinner, int ranking, int projectedRanking)
     {
-        User = new PlayerViewModel(leagueYear.League.LeagueID, leagueYear.League.LeagueName, user);
+        if (user is not null)
+        {
+            User = new PlayerViewModel(leagueYear.League.LeagueID, leagueYear.League.LeagueName, user);
+        }
+
         Publisher = new PlayerPublisherViewModel(leagueYear, publisher, currentDate, userIsInLeague, userIsInvitedToLeague, systemWideValues);
         TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
         ProjectedFantasyPoints = publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues);
