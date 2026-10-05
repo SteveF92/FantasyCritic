@@ -1615,7 +1615,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher()
     {
-        const string sql = "SELECT UserID, LeagueID, YEAR FROM tbl_league_publisher;";
+        const string sql = "SELECT UserID, LeagueID, YEAR FROM tbl_league_publisher WHERE UserID IS NOT NULL;";
 
         IEnumerable<UserActiveLeaguesEntity> entities;
         await using (var connection = new MySqlConnection(_connectionString))
@@ -1834,7 +1834,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await connection.ExecuteAsync(setUserActiveSQL, param, transaction);
         await connection.ExecuteAsync(reassignPublisherSQL, param, transaction);
-        await connection.ExecuteAsync(setUserInactiveSQL, param, transaction);
+        if (publisherToReassign.User is not null)
+        {
+            await connection.ExecuteAsync(setUserInactiveSQL, param, transaction);
+        }
 
         await transaction.CommitAsync();
     }
@@ -2158,7 +2161,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             user = await _userStore.FindByIdOrThrowAsync(publisherEntity.UserID.Value, CancellationToken.None);
         }
-        
+
         var domainPublisher = publisherEntity.ToDomain(user, draftInfos, domainGames, domainFormerGames);
         return domainPublisher;
     }
