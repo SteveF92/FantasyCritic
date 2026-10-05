@@ -254,7 +254,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         bool userIsPublisher = leagueYearRecord.ValidResult.CurrentUser is not null &&
-                               leagueYearRecord.ValidResult.CurrentUser.Id == publisher.User.Id;
+                               leagueYearRecord.ValidResult.CurrentUser.Id == publisher.User?.Id;
         if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
             return UnauthorizedOrForbid<LeagueYearPublisherRecord>(leagueYearRecord.ValidResult.CurrentUser is not null);
@@ -287,7 +287,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         bool userIsPublisher = leagueYearRecord.ValidResult.CurrentUser is not null &&
-                               leagueYearRecord.ValidResult.CurrentUser.Id == publisher.User.Id;
+                               leagueYearRecord.ValidResult.CurrentUser.Id == publisher.User?.Id;
         if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(Forbid());

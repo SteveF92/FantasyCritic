@@ -14,10 +14,16 @@ public class LeagueAllTimeStatsResponse
         {
             foreach (var publisher in leagueYear.Publishers)
             {
+                if (publisher.User is null)
+                {
+                    //Only publishers with users are counted in all time stats.
+                    continue;
+                }
+
                 var ranking = leagueYear.Publishers.Count(y =>
                     y.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options) >
                     publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options)) + 1;
-                Publishers.Add(new AllTimeStatsPublisherViewModel(leagueYear, publisher, ranking, systemWideValues, currentDate));
+                Publishers.Add(new AllTimeStatsPublisherViewModel(leagueYear, publisher.User, publisher, ranking, systemWideValues, currentDate));
             }
         }
 

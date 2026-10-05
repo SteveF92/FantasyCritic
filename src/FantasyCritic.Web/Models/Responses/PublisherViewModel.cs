@@ -14,12 +14,12 @@ public class PublisherViewModel
     {
         PublisherID = publisher.PublisherID;
         LeagueID = leagueYear.League.LeagueID;
-        UserID = publisher.User.Id;
+        UserID = publisher.User?.Id;
         PublisherName = publisher.PublisherName;
         PublisherIcon = publisher.PublisherIcon;
         PublisherSlogan = publisher.PublisherSlogan;
         LeagueName = leagueYear.League.LeagueName;
-        PlayerName = publisher.User.UserName;
+        PlayerName = publisher.GetUserName();
         Year = leagueYear.Year;
         DraftPosition = publisher.GetDraftPosition(leagueYear.DraftForPublisherDisplayOrder.DraftID);
         AutoDraftMode = publisher.AutoDraftMode.Value;
@@ -78,7 +78,7 @@ public class PublisherViewModel
 
     public Guid PublisherID { get; }
     public Guid LeagueID { get; }
-    public Guid UserID { get; }
+    public Guid? UserID { get; }
     public string PublisherName { get; }
     public string? PublisherIcon { get; }
     public string? PublisherSlogan { get; }
