@@ -235,7 +235,7 @@ public class PublisherService
 
     public async Task<Result> ReassignPublisher(LeagueYear leagueYear, IReadOnlyList<FantasyCriticUser> allUsersInLeague, Guid publisherID, Guid newUserID)
     {
-        var userAlreadyHasPublisher = leagueYear.Publishers.Any(x => x.User.Id == newUserID);
+        var userAlreadyHasPublisher = leagueYear.Publishers.Any(x => x.User?.Id == newUserID);
         if (userAlreadyHasPublisher)
         {
             return Result.Failure("That user already has a publisher in this league year.");

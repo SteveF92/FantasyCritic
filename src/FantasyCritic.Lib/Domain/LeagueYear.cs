@@ -182,7 +182,7 @@ public class LeagueYear : IEquatable<LeagueYear>
             return null;
         }
 
-        return Publishers.SingleOrDefault(x => x.User.Id == user.UserID);
+        return Publishers.SingleOrDefault(x => x.User?.Id == user.UserID);
     }
 
     public IReadOnlyList<Publisher> GetAllPublishersExcept(Publisher publisher)

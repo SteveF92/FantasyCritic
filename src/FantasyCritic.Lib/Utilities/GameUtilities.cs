@@ -33,7 +33,7 @@ public static class GameUtilities
     public static int GetTimesCounterPicked(LeagueYear leagueYear, Publisher publisher)
     {
         var allCounterPicksForOtherTeams = leagueYear.Publishers
-                .Where(x => x.User.UserID != publisher.User.UserID)
+                .Where(x => x.PublisherID != publisher.PublisherID)
                 .SelectMany(x => x.PublisherGames)
                 .Where(x => x.CounterPick)
                 .ToList();

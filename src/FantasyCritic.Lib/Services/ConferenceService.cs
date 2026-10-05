@@ -131,7 +131,7 @@ public class ConferenceService
         var playersInConference = await GetPlayersInConference(conferenceYear.Conference);
         var conferenceYearData = await GetConferenceYearData(conferenceYear.Conference.ConferenceID, conferenceYear.Year);
 
-        var publishersByUserLookup = conferenceYearData!.LeagueYears.SelectMany(x => x.Publishers).ToLookup(x => x.User.UserID);
+        var publishersByUserLookup = conferenceYearData!.LeagueYears.SelectMany(x => x.Publishers).Where(x => x.User is not null).ToLookup(x => x.User!.UserID);
 
         var playerDictionary = playersInConference.ToDictionary(x => x.User.UserID);
         var usersToChange = new Dictionary<MinimalFantasyCriticUser, bool>();
@@ -152,10 +152,10 @@ public class ConferenceService
 
             if (!userToChange.Value)
             {
-                var publishersForUser = publishersByUserLookup[userToChange.Key];
+                var publishersForUser = publishersByUserLookup[userToChange.Key].ToList();
                 if (publishersForUser.Any())
                 {
-                    usersThatCannotBeMadeInactive.Add(publishersForUser.First().User);
+                    usersThatCannotBeMadeInactive.Add(publishersForUser.First().User!);
                     continue;
                 }
             }
@@ -331,7 +331,7 @@ public class ConferenceService
             var leagueOptions = leagueYear.Options;
             foreach (var publisher in leagueYear.Publishers)
             {
-                var standing = new ConferenceYearStanding(leagueYear.League.LeagueID, leagueYear.League.LeagueName, leagueYear.Year, publisher.PublisherID, publisher.User.UserName, publisher.PublisherName,
+                var standing = new ConferenceYearStanding(leagueYear.League.LeagueID, leagueYear.League.LeagueName, leagueYear.Year, publisher.PublisherID, publisher.GetUserName(), publisher.PublisherName,
                     publisher.GetTotalFantasyPoints(supportedYear, leagueOptions), publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues));
                 standings.Add(standing);
             }

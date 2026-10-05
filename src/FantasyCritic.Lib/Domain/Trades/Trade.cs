@@ -54,7 +54,7 @@ public class Trade
 
     public bool UserIsInvolved(Guid userID)
     {
-        return Proposer.User.Id == userID || CounterParty.User.Id == userID;
+        return Proposer.User?.Id == userID || CounterParty.User?.Id == userID;
     }
 
     public bool IsPrivateProposal()

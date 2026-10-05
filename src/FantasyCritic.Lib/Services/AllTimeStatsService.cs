@@ -51,7 +51,7 @@ public class AllTimeStatsService
 
         var leagueYearDictionary = leagueYears.ToDictionary(x => x.Key);
         var playerAllTimeStats = new List<LeaguePlayerAllTimeStats>();
-        var groupedByPlayer = leagueYears.SelectMany(x => x.Publishers).GroupBy(x => x.User);
+        var groupedByPlayer = leagueYears.SelectMany(x => x.Publishers).Where(x => x.User is not null).GroupBy(x => x.User!);
         foreach (var playerGroup in groupedByPlayer)
         {
             var player = new VeryMinimalFantasyCriticUser(playerGroup.Key.UserID, playerGroup.Key.DisplayName);

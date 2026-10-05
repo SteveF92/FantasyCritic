@@ -286,12 +286,15 @@ public class FantasyCriticService
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
                     publisherGameCalculatedStats.Add(publisherSlot.PublisherGame!.PublisherGameID, stats);
                 }
-
-                decimal totalPointsForPublisher = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
-                if (totalPointsForPublisher >= highestPoints && (leagueYear.WinningUser is null || recalculateWinners))
+                if (publisher.User is not null)
                 {
-                    highestPoints = totalPointsForPublisher;
-                    winningUsers[publisher.LeagueYearKey] = publisher.User;
+                    //Disconnected publishers cannot win leagues
+                    decimal totalPointsForPublisher = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
+                    if (totalPointsForPublisher >= highestPoints && (leagueYear.WinningUser is null || recalculateWinners))
+                    {
+                        highestPoints = totalPointsForPublisher;
+                        winningUsers[publisher.LeagueYearKey] = publisher.User;
+                    }
                 }
             }
         }
