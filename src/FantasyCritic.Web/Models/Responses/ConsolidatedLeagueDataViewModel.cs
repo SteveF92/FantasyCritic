@@ -10,11 +10,11 @@ namespace FantasyCritic.Web.Models.Responses;
 
 public class ConsolidatedLeagueDataViewModel
 {
-    public ConsolidatedLeagueDataViewModel(League league, IReadOnlyList<FantasyCriticUserRemovable> playersInLeague, LeagueAllTimeStats allTimeStats,
+    public ConsolidatedLeagueDataViewModel(League league, IReadOnlyList<FantasyCriticUser> playersInLeague, LeagueAllTimeStats allTimeStats,
         SystemWideValues systemWideValues, LocalDate currentDate)
     {
         var typedManager = new VeryMinimalFantasyCriticUserViewModel(league.LeagueManager);
-        var typedPlayersInLeague = playersInLeague.Select(x => new VeryMinimalFantasyCriticUserViewModel(x.User)).ToList();
+        var typedPlayersInLeague = playersInLeague.Select(x => new VeryMinimalFantasyCriticUserViewModel(x)).ToList();
 
         var latestDraftStartedYear = league.Years.Where(x => x.AnyDraftStarted).MaxBy(x => x.Year);
         var highestNonFinishedYear = league.Years.Where(x => !x.Finished).MaxBy(x => x.Year);
@@ -90,7 +90,7 @@ public class ConsolidatedLeagueYearViewModel
             int projectedRanking = publisherProjectedRankings[publisher.PublisherID];
             bool isPreviousYearWinner = previousYearWinnerUserID.HasValue && previousYearWinnerUserID.Value == user.UserID;
             playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, systemWideValues,
-                userIsInLeague: false, userIsInvitedToLeague: false, removable: false, isPreviousYearWinner, ranking, projectedRanking));
+                userIsInLeague: false, userIsInvitedToLeague: false, isPreviousYearWinner, ranking, projectedRanking));
         }
 
         Players = playerVMs.OrderBy(x => x.Publisher!.DraftPosition).ToList();

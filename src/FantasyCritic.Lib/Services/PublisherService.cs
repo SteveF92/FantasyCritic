@@ -140,11 +140,6 @@ public class PublisherService
         return Result.Success();
     }
 
-    public Task FullyRemovePublisher(LeagueYear leagueYear, Publisher publisher)
-    {
-        return _fantasyCriticRepo.FullyRemovePublisher(leagueYear, publisher);
-    }
-
     public async Task<Result> SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
     {
         var requiredNumbers = Enumerable.Range(1, bidPriorities.Count).ToList();

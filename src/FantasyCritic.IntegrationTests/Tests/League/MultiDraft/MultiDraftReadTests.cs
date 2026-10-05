@@ -13,8 +13,7 @@ namespace FantasyCritic.IntegrationTests.Tests.League.MultiDraft;
 /// These exercise the read-path primitives that replaced the old <c>DraftNumber = 1</c>
 /// filters once a league-year can own more than one draft:
 ///   - <b>AnyDraftStarted</b> (per-league-year "has any draft started"): surfaced through
-///     player-removability (sp_getcombinedleagueyearuserstatus) and the public-leagues
-///     listing (GetPublicLeagueYears).
+///     the public-leagues listing (GetPublicLeagueYears).
 ///   - <b>Most-recent-year league type</b> (<c>Standard</c> / <c>OneShot</c> / <c>MultiDraft</c>):
 ///     surfaced on the home-page league list via sp_getleaguesforuser.
 ///
@@ -41,40 +40,6 @@ public class MultiDraftReadTests : IntegrationTestBase
         });
 
         return await league.GetLeagueYearAsync();
-    }
-
-    // ── Primitive A: AnyDraftStarted via player removability ────────────────────────────────
-
-    [Test]
-    public async Task Players_AreRemovable_WhenNoDraftHasStarted()
-    {
-        await using var league = await LeagueFixtureBuilder.CreateLeagueWithMembersAsync(
-            Factory, LeagueScenarios.Standard, NewUser);
-
-        var managerUser = await league.Manager.Account.CurrentUserAsync();
-        var snapshot = await league.GetLeagueYearAsync();
-        var players = snapshot.League.Players!;
-
-        var nonManagerPlayers = players.Where(p => p.UserID != managerUser.UserID).ToList();
-        Assert.That(nonManagerPlayers, Is.Not.Empty, "Scenario should have non-manager players.");
-        Assert.That(nonManagerPlayers.All(p => p.Removable), Is.True,
-            "Before any draft has started, non-manager players should be removable.");
-    }
-
-    [Test]
-    public async Task Players_AreNotRemovable_AfterADraftHasStarted()
-    {
-        await using var league = await LeagueFixtureBuilder.CreateAndStartDraftAsync(
-            Factory, LeagueScenarios.Standard, NewUser);
-
-        var managerUser = await league.Manager.Account.CurrentUserAsync();
-        var snapshot = await league.GetLeagueYearAsync();
-        var players = snapshot.League.Players!;
-
-        var nonManagerPlayers = players.Where(p => p.UserID != managerUser.UserID).ToList();
-        Assert.That(nonManagerPlayers, Is.Not.Empty, "Scenario should have non-manager players.");
-        Assert.That(nonManagerPlayers.All(p => !p.Removable), Is.True,
-            "Once a draft has started, players who joined that year should not be removable.");
     }
 
     // ── Primitive A: AnyDraftStarted on the public-leagues listing ──────────────────────────

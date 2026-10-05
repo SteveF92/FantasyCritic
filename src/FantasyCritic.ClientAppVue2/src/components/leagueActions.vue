@@ -124,12 +124,10 @@
               <li v-b-modal="'invitePlayer'" class="fake-link action">Invite a Player</li>
               <li v-if="!playStarted" v-b-modal="'manageActivePlayers'" class="fake-link action">Manage Active Players</li>
               <li v-if="!playStarted" v-b-modal="'createPublisherForUserForm'" class="fake-link action">Create Publisher For User</li>
-              <li v-if="!playStarted" v-b-modal="'removePublisherForm'" class="fake-link action">Delete A User's Publisher</li>
               <li v-if="hasPendingOrActiveDraft" v-b-modal="'managerSetAutoDraftForm'" class="fake-link action">Edit Player Auto Draft</li>
               <li v-if="postDraftPlayable" v-b-modal="'managerEditPublishersForm'" class="fake-link action">Edit Publishers</li>
               <li v-if="postDraftEditable" v-b-modal="'claimGameForm'" class="fake-link action">Add Publisher Game</li>
               <li v-if="postDraftEditable" v-b-modal="'removePublisherGame'" class="fake-link action">Remove Publisher Game</li>
-              <li v-if="!leagueYear.supportedYear.finished" v-b-modal="'removePlayerForm'" class="fake-link action">Remove a Player</li>
               <li v-if="postDraftPlayable" v-b-modal="'reassignPublisherModal'" class="fake-link action">Reassign a Publisher</li>
             </ul>
           </li>
@@ -201,9 +199,7 @@
       <changeLeagueOptionsForm></changeLeagueOptionsForm>
       <manageEligibilityOverridesModal></manageEligibilityOverridesModal>
       <manageTagOverridesModal></manageTagOverridesModal>
-      <removePlayerModal></removePlayerModal>
       <reassignPublisherModal></reassignPublisherModal>
-      <removePublisherModal></removePublisherModal>
       <transferManagerModal></transferManagerModal>
       <managerMessageModal></managerMessageModal>
       <specialAuctionsModal></specialAuctionsModal>
@@ -255,9 +251,7 @@ import AddNewLeagueYearForm from '@/components/modals/addNewLeagueYearForm.vue';
 import LeagueOptionsModal from '@/components/modals/leagueOptionsModal.vue';
 import ManageEligibilityOverridesModal from '@/components/modals/manageEligibilityOverridesModal.vue';
 import ManageTagOverridesModal from '@/components/modals/manageTagOverridesModal.vue';
-import RemovePlayerModal from '@/components/modals/removePlayerModal.vue';
 import ReassignPublisherModal from '@/components/modals/reassignPublisherModal.vue';
-import RemovePublisherModal from '@/components/modals/removePublisherModal.vue';
 import ManagerMessageModal from '@/components/modals/managerMessageModal.vue';
 import TransferManagerModal from '@/components/modals/transferManagerModal.vue';
 import SpecialAuctionsModal from '@/components/modals/specialAuctionsModal.vue';
@@ -304,9 +298,7 @@ export default {
     LeagueOptionsModal,
     ManageEligibilityOverridesModal,
     ManageTagOverridesModal,
-    RemovePlayerModal,
     ReassignPublisherModal,
-    RemovePublisherModal,
     ManagerMessageModal,
     TransferManagerModal,
     CreatePublisherForUserForm,

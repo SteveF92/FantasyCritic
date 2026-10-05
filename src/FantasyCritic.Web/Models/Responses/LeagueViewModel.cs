@@ -8,7 +8,7 @@ public class LeagueViewModel
     {
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
-        LeagueManager = new PlayerViewModel(league.LeagueID, league.LeagueName, league.LeagueManager, false);
+        LeagueManager = new PlayerViewModel(league.LeagueID, league.LeagueName, league.LeagueManager);
         ConferenceID = league.ConferenceID;
         ConferenceName = league.ConferenceName;
         IsManager = isManager;
@@ -26,12 +26,12 @@ public class LeagueViewModel
         NumberOfFollowers = league.NumberOfFollowers;
     }
 
-    public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUserRemovable> players, LeagueInvite? outstandingInvite,
+    public LeagueViewModel(League league, bool isManager, IEnumerable<FantasyCriticUser> players, LeagueInvite? outstandingInvite,
         FantasyCriticUser? currentUser, bool userIsInLeague, bool userIsFollowingLeague)
     {
         LeagueID = league.LeagueID;
         LeagueName = league.LeagueName;
-        LeagueManager = new PlayerViewModel(league.LeagueID, league.LeagueName, league.LeagueManager, false);
+        LeagueManager = new PlayerViewModel(league.LeagueID, league.LeagueName, league.LeagueManager);
         ConferenceID = league.ConferenceID;
         ConferenceName = league.ConferenceName;
         IsManager = isManager;
@@ -47,7 +47,7 @@ public class LeagueViewModel
             OutstandingInvite = new LeagueInviteViewModel(outstandingInvite);
         }
 
-        Players = players.Select(x => new PlayerViewModel(league.LeagueID, league.LeagueName, x.User, x.Removable)).ToList();
+        Players = players.Select(x => new PlayerViewModel(league.LeagueID, league.LeagueName, x)).ToList();
         PublicLeague = league.PublicLeague;
         TestLeague = league.TestLeague;
         CustomRulesLeague = league.CustomRulesLeague;

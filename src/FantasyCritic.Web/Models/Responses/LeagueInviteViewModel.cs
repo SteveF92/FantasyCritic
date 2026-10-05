@@ -21,7 +21,7 @@ public class CompleteLeagueInviteViewModel
         LeagueName = invite.LeagueName;
         ActiveYear = invite.ActiveYear;
         InviteName = invite.InviteName;
-        LeagueManager = new PlayerViewModel(invite.LeagueID, invite.LeagueName, invite.LeagueManager, false);
+        LeagueManager = new PlayerViewModel(invite.LeagueID, invite.LeagueName, invite.LeagueManager);
     }
 
     public Guid InviteID { get; }
