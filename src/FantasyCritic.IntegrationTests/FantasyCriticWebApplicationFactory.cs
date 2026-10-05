@@ -76,6 +76,10 @@ public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<P
 
             // There is no worker here, so tests run the jobs they queue with JobTestHelpers.
             services.AddFantasyCriticJobHandlers();
+
+            // That registers the ArchiveDatabase handler too, whose dumper and archive locations only the worker
+            // registers. No test runs it, so it gets a dumper that throws and no locations, never mysqldump or a bucket.
+            services.AddSingleton<IDatabaseDumper, UnusedDatabaseDumper>();
         });
     }
 
