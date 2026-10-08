@@ -34,6 +34,14 @@ public class DisconnectPlayerTests : IntegrationTestBase
     private int? _disconnectByNonManagerStatusCode;
     private LeagueYearViewModel _disconnectedPlayersViewAfterReassign = null!;
 
+    private ApiSession _replacementSession = null!;
+    private TestPublisher _handedOverPublisher = null!;
+    private Guid _replacementUserID;
+    private Guid _replacedUserID;
+    private LeagueYearViewModel _replacementsViewAfterReassign = null!;
+    private LeagueYearViewModel _replacedPlayersViewAfterReassign = null!;
+    private QueueResultViewModel _replacementsQueueResult = null!;
+
     private TestPublisher _preDraftDisconnectedPublisher = null!;
     private LeagueYearViewModel _preDraftAfterDraft = null!;
 
@@ -61,6 +69,7 @@ public class DisconnectPlayerTests : IntegrationTestBase
         }
 
         _adminSession?.Dispose();
+        _replacementSession?.Dispose();
 
         if (_midSeasonLeague != null)
         {
@@ -165,6 +174,20 @@ public class DisconnectPlayerTests : IntegrationTestBase
     }
 
     [Test]
+    public void Reassign_HandsThePublisherToANewlyInvitedPlayer()
+    {
+        var publisher = _replacementsViewAfterReassign.Publishers.Single(x => x.PublisherID == _handedOverPublisher.PublisherID);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(publisher.UserID, Is.EqualTo(_replacementUserID));
+            Assert.That(_replacementsViewAfterReassign.UserIsActive, Is.True);
+            Assert.That(_replacementsQueueResult.Success, Is.True, $"The new player could not act for the publisher: {string.Join("; ", _replacementsQueueResult.Errors ?? [])}");
+            Assert.That(_replacedPlayersViewAfterReassign.UserIsActive, Is.False);
+            Assert.That(_replacementsViewAfterReassign.Players.Any(x => x.User?.UserID == _replacedUserID), Is.False);
+        }
+    }
+
+    [Test]
     public void PreDraftDisconnect_DraftSkipsThePublisher()
     {
         var publisher = _preDraftAfterDraft.Publishers.Single(x => x.PublisherID == _preDraftDisconnectedPublisher.PublisherID);
@@ -232,6 +255,41 @@ public class DisconnectPlayerTests : IntegrationTestBase
             NewUserID = _disconnectedUserID,
         });
         _disconnectedPlayersViewAfterReassign = await _disconnectedPublisher.Session.League.GetLeagueYearAsync(_midSeasonLeague.LeagueID, _midSeasonLeague.Year, null);
+
+        await HandOverAPublisherToANewPlayerAsync(otherPlayer, [dropGame.MasterGame!.MasterGameID, bidTarget, queueTarget]);
+    }
+
+    private async Task HandOverAPublisherToANewPlayerAsync(TestPublisher publisherToHandOver, IEnumerable<Guid> gamesAlreadyQueued)
+    {
+        var manager = _midSeasonLeague.Manager;
+        _handedOverPublisher = publisherToHandOver;
+        _replacedUserID = (await publisherToHandOver.Session.Account.CurrentUserAsync()).UserID;
+
+        var (email, password, displayName) = NewUser();
+        _replacementSession = new ApiSession(Factory);
+        await _replacementSession.RegisterAsync(email, password, displayName);
+        await LeagueTestHelpers.InviteAndAcceptAsync(manager, _replacementSession, _midSeasonLeague.LeagueID);
+        _replacementUserID = (await _replacementSession.Account.CurrentUserAsync()).UserID;
+
+        await manager.LeagueManager.DisconnectPlayerAsync(new DisconnectPlayerRequest { PublisherID = publisherToHandOver.PublisherID });
+        await manager.LeagueManager.ReassignPublisherAsync(new ReassignPublisherRequest
+        {
+            LeagueID = _midSeasonLeague.LeagueID,
+            Year = _midSeasonLeague.Year,
+            PublisherID = publisherToHandOver.PublisherID,
+            NewUserID = _replacementUserID,
+        });
+
+        _replacementsViewAfterReassign = await _replacementSession.League.GetLeagueYearAsync(_midSeasonLeague.LeagueID, _midSeasonLeague.Year, null);
+        _replacedPlayersViewAfterReassign = await publisherToHandOver.Session.League.GetLeagueYearAsync(_midSeasonLeague.LeagueID, _midSeasonLeague.Year, null);
+
+        var replacementPublisher = new TestPublisher(publisherToHandOver.DraftPosition, _replacementSession, publisherToHandOver.PublisherID, publisherToHandOver.PublisherName);
+        var queueTarget = await PickAvailableBidTargetAsync(_midSeasonLeague, replacementPublisher, gamesAlreadyQueued);
+        _replacementsQueueResult = await _replacementSession.League.AddGameToQueueAsync(new AddGameToQueueRequest
+        {
+            PublisherID = publisherToHandOver.PublisherID,
+            MasterGameID = queueTarget,
+        });
     }
 
     private async Task SetUpPreDraftLeagueAsync()
