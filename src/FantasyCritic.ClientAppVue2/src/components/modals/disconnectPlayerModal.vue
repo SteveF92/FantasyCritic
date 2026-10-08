@@ -5,14 +5,15 @@
     </div>
 
     <div class="alert alert-warning">
-      If you disconnect a player from their publisher:
+      You can use this option to remove a player from the league.
       <ul>
-        <li>The publisher stays in the league for the rest of the year, with its games and history.</li>
         <li>The player is marked inactive this year and can no longer act for the publisher.</li>
-        <li>The publisher's pending bids, drops and watchlist are deleted, and its open trades are rejected.</li>
-        <li>The publisher is skipped in any later drafts.</li>
+        <li>The publisher, and any games it already contains, remains in place for the rest of the year, but it is effectively "frozen in time" as it no longer has a player attached to it.</li>
+        <li>Any pending bids or drops drops the player placed are deleted, and any open trades they are involved in are automatically rejected.</li>
+        <li>If the player had any games on their publisher's watch list, they will be cleared.</li>
+        <li>If this is a multi draft league, the publisher will be skipped in any future drafts.</li>
       </ul>
-      You can give the publisher to another player later with "Reassign a Publisher".
+      If you chose to, you can transfer the publisher to a new player using the "Reassign a Publisher" option.
     </div>
 
     <div class="form-group">

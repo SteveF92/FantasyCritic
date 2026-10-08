@@ -276,7 +276,7 @@ public class PublisherService
             .ToList();
 
         var leagueAction = new LeagueAction(publisher, _clock.GetCurrentInstant(), "Player Disconnected",
-            "was disconnected from their player by the league manager.", managerAction: true);
+            "Disconnected from their player by the league manager.", managerAction: true);
         await _fantasyCriticRepo.DisconnectPlayer(leagueYear, publisher, tradesToReject, leagueAction);
         await _discordPushService.SendLeagueActionMessage(leagueAction);
         return Result.Success();
