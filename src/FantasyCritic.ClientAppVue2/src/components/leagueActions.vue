@@ -130,6 +130,7 @@
               <li v-if="postDraftEditable" v-b-modal="'removePublisherGame'" class="fake-link action">Remove Publisher Game</li>
               <li v-if="postDraftPlayable" v-b-modal="'reassignPublisherModal'" class="fake-link action">Reassign a Publisher</li>
               <li v-if="!leagueYear.supportedYear.finished && !draftIsActiveOrPaused" v-b-modal="'disconnectPlayerModal'" class="fake-link action">Disconnect a Player</li>
+              <li v-if="!leagueYear.supportedYear.finished && !draftIsActiveOrPaused && hasPublisherWithNoPlayer" v-b-modal="'removePublisherModal'" class="fake-link action">Remove a Publisher</li>
             </ul>
           </li>
           <li v-if="postDraftEditable || postDraftPlayable">
@@ -202,6 +203,7 @@
       <manageTagOverridesModal></manageTagOverridesModal>
       <reassignPublisherModal></reassignPublisherModal>
       <disconnectPlayerModal></disconnectPlayerModal>
+      <removePublisherModal></removePublisherModal>
       <transferManagerModal></transferManagerModal>
       <managerMessageModal></managerMessageModal>
       <specialAuctionsModal></specialAuctionsModal>
@@ -255,6 +257,7 @@ import ManageEligibilityOverridesModal from '@/components/modals/manageEligibili
 import ManageTagOverridesModal from '@/components/modals/manageTagOverridesModal.vue';
 import ReassignPublisherModal from '@/components/modals/reassignPublisherModal.vue';
 import DisconnectPlayerModal from '@/components/modals/disconnectPlayerModal.vue';
+import RemovePublisherModal from '@/components/modals/removePublisherModal.vue';
 import ManagerMessageModal from '@/components/modals/managerMessageModal.vue';
 import TransferManagerModal from '@/components/modals/transferManagerModal.vue';
 import SpecialAuctionsModal from '@/components/modals/specialAuctionsModal.vue';
@@ -303,6 +306,7 @@ export default {
     ManageTagOverridesModal,
     ReassignPublisherModal,
     DisconnectPlayerModal,
+    RemovePublisherModal,
     ManagerMessageModal,
     TransferManagerModal,
     CreatePublisherForUserForm,
@@ -316,6 +320,9 @@ export default {
   computed: {
     iconIsValid() {
       return publisherIconIsValid(this.userPublisher.publisherIcon);
+    },
+    hasPublisherWithNoPlayer() {
+      return this.publishers.some((x) => !x.userID);
     }
   }
 };
