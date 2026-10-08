@@ -168,6 +168,30 @@ public class LeagueMemberService
         return _fantasyCriticRepo.DeleteInvite(invite);
     }
 
+    public async Task<Result> RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
+    {
+        if (league.LeagueManager.UserID == removeUser.Id)
+        {
+            return Result.Failure("You cannot remove the league manager from the league.");
+        }
+
+        bool userIsInLeague = await UserIsInLeague(league, removeUser);
+        if (!userIsInLeague)
+        {
+            return Result.Failure("That player is not in this league.");
+        }
+
+        bool userHasPublisher = await _fantasyCriticRepo.UserHasPublisherInLeague(league, removeUser);
+        if (userHasPublisher)
+        {
+            return Result.Failure("That player has had a publisher in this league, so removing them would erase league history. " +
+                                  "To cut them off this year, use \"Disconnect a Player\". To leave them out of a new year, use \"Manage Active Players\".");
+        }
+
+        await _fantasyCriticRepo.RemovePlayerFromLeague(league, removeUser);
+        return Result.Success();
+    }
+
     public Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(League league, int year)
     {
         return _fantasyCriticRepo.GetActivePlayersForLeagueYear(league.LeagueID, year);

@@ -50,6 +50,7 @@ public interface IFantasyCriticRepo
     Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user);
 
     Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
+    Task<bool> UserHasPublisherInLeague(League league, FantasyCriticUser user);
     Task TransferLeagueManager(League league, FantasyCriticUser newManager);
 
     Task CreatePublisher(Publisher publisher);

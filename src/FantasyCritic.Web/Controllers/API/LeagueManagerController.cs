@@ -477,6 +477,34 @@ public class LeagueManagerController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> RemovePlayerFromLeague([FromBody] RemovePlayerFromLeagueRequest request)
+    {
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
+        if (leagueRecord.FailedResult is not null)
+        {
+            return leagueRecord.FailedResult;
+        }
+
+        var removeUser = await _userManager.FindByIdAsync(request.UserID.ToString());
+        if (removeUser is null)
+        {
+            return BadRequest("That user does not exist.");
+        }
+
+        var removeResult = await _leagueMemberService.RemovePlayerFromLeague(leagueRecord.ValidResult!.League, removeUser);
+        if (removeResult.IsFailure)
+        {
+            return BadRequest(removeResult.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreatePublisherForUser([FromBody] CreatePublisherForUserRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,

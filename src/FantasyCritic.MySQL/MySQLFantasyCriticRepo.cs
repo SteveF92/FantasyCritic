@@ -1958,6 +1958,19 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
+    public async Task<bool> UserHasPublisherInLeague(League league, FantasyCriticUser user)
+    {
+        const string sql = "select exists (select 1 from tbl_league_publisher where LeagueID = @leagueID and UserID = @userID);";
+        var param = new
+        {
+            leagueID = league.LeagueID,
+            userID = user.Id
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        return await connection.ExecuteScalarAsync<bool>(sql, param);
+    }
+
     public async Task TransferLeagueManager(League league, FantasyCriticUser newManager)
     {
         const string sql = "UPDATE tbl_league SET LeagueManager = @newManagerUserID WHERE LeagueID = @leagueID;";
