@@ -71,6 +71,14 @@ public class LeagueYearViewModel
             }
         }
 
+        foreach (var publisher in leagueYear.Publishers.Where(x => x.User is null))
+        {
+            int ranking = publisherRankings[publisher.PublisherID];
+            int projectedRanking = publisherProjectedRankings[publisher.PublisherID];
+            playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, null, publisher, currentDate, supplementalData.SystemWideValues,
+                userIsInLeague, userIsInvitedToLeague, false, ranking, projectedRanking));
+        }
+
         if (Year == leagueYear.League.Years.Max(x => x.Year))
         {
             foreach (var invitedPlayer in invitedPlayers)
