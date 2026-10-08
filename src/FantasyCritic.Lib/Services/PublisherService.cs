@@ -282,6 +282,20 @@ public class PublisherService
         return Result.Success();
     }
 
+    public async Task<Result> RemovePublisher(LeagueYear leagueYear, Publisher publisher)
+    {
+        if (publisher.User is not null)
+        {
+            return Result.Failure("Only a publisher with no player can be removed. Disconnect its player first.");
+        }
+
+        var managerAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Publisher Removed",
+            $"The publisher '{publisher.PublisherName}', which had no player, was removed from the league.");
+        await _fantasyCriticRepo.RemovePublisher(publisher, managerAction);
+        await _discordPushService.SendLeagueActionMessage(managerAction);
+        return Result.Success();
+    }
+
     public Task<IReadOnlyList<SingleGameNews>> GetMyGameNews(FantasyCriticUser user)
     {
         return _fantasyCriticRepo.GetMyGameNews(user);

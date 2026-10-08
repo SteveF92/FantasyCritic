@@ -46,6 +46,7 @@ public interface IFantasyCriticRepo
     Task<LeagueInviteLink?> GetInviteLinkByInviteCode(Guid inviteCode);
     Task ReassignPublisher(LeagueYear leagueYear, Publisher publisherToReassign, FantasyCriticUser newUser);
     Task DisconnectPlayer(LeagueYear leagueYear, Publisher publisher, IReadOnlyList<Trade> tradesToReject, LeagueAction leagueAction);
+    Task RemovePublisher(Publisher publisher, LeagueManagerAction managerAction);
     Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user);
 
     Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
