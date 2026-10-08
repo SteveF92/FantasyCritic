@@ -114,16 +114,19 @@ export default {
       }
       return standings;
     },
+    publishersThatCanWin() {
+      return (this.leagueYear.publishers ?? []).filter((x) => !!x.userID);
+    },
     topPublisher() {
-      if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return maxBy(this.leagueYear.publishers, (x) => x.totalFantasyPoints);
+      if (this.publishersThatCanWin.length > 0) {
+        return maxBy(this.publishersThatCanWin, (x) => x.totalFantasyPoints);
       }
 
       return null;
     },
     projectedTopPublisher() {
-      if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return maxBy(this.leagueYear.publishers, (x) => x.totalProjectedPoints);
+      if (this.publishersThatCanWin.length > 0) {
+        return maxBy(this.publishersThatCanWin, (x) => x.totalProjectedPoints);
       }
 
       return null;

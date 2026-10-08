@@ -129,6 +129,7 @@
               <li v-if="postDraftEditable" v-b-modal="'claimGameForm'" class="fake-link action">Add Publisher Game</li>
               <li v-if="postDraftEditable" v-b-modal="'removePublisherGame'" class="fake-link action">Remove Publisher Game</li>
               <li v-if="postDraftPlayable" v-b-modal="'reassignPublisherModal'" class="fake-link action">Reassign a Publisher</li>
+              <li v-if="!leagueYear.supportedYear.finished && !draftIsActiveOrPaused" v-b-modal="'disconnectPlayerModal'" class="fake-link action">Disconnect a Player</li>
             </ul>
           </li>
           <li v-if="postDraftEditable || postDraftPlayable">
@@ -200,6 +201,7 @@
       <manageEligibilityOverridesModal></manageEligibilityOverridesModal>
       <manageTagOverridesModal></manageTagOverridesModal>
       <reassignPublisherModal></reassignPublisherModal>
+      <disconnectPlayerModal></disconnectPlayerModal>
       <transferManagerModal></transferManagerModal>
       <managerMessageModal></managerMessageModal>
       <specialAuctionsModal></specialAuctionsModal>
@@ -252,6 +254,7 @@ import LeagueOptionsModal from '@/components/modals/leagueOptionsModal.vue';
 import ManageEligibilityOverridesModal from '@/components/modals/manageEligibilityOverridesModal.vue';
 import ManageTagOverridesModal from '@/components/modals/manageTagOverridesModal.vue';
 import ReassignPublisherModal from '@/components/modals/reassignPublisherModal.vue';
+import DisconnectPlayerModal from '@/components/modals/disconnectPlayerModal.vue';
 import ManagerMessageModal from '@/components/modals/managerMessageModal.vue';
 import TransferManagerModal from '@/components/modals/transferManagerModal.vue';
 import SpecialAuctionsModal from '@/components/modals/specialAuctionsModal.vue';
@@ -299,6 +302,7 @@ export default {
     ManageEligibilityOverridesModal,
     ManageTagOverridesModal,
     ReassignPublisherModal,
+    DisconnectPlayerModal,
     ManagerMessageModal,
     TransferManagerModal,
     CreatePublisherForUserForm,
