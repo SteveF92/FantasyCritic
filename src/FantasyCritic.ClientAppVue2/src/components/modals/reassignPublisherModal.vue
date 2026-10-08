@@ -20,9 +20,7 @@
       <div class="form-group">
         <label for="publisherToReassign" class="control-label">Publisher to Reassign</label>
         <b-form-select v-model="publisherToReassign">
-          <option v-for="publisher in publishers" :key="publisher.publisherID" :value="publisher">
-            {{ publisher.publisherName }}
-          </option>
+          <option v-for="publisher in publishers" :key="publisher.publisherID" :value="publisher">{{ publisher.publisherName }} ({{ publisher.playerName }})</option>
         </b-form-select>
       </div>
 
