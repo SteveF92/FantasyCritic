@@ -90,7 +90,7 @@ internal sealed class GetDraftStatusTestBuilder
                 return new Publisher(
                     publisherSpec.PublisherID,
                     leagueYearKey,
-                    FantasyCriticUser.GetFakeUser(),
+                    publisherSpec.Disconnected ? null : FantasyCriticUser.GetFakeUser(),
                     publisherSpec.Name,
                     null,
                     null,
@@ -189,6 +189,11 @@ internal sealed class GetDraftStatusTestBuilder
         }
     }
 
+    internal void DisconnectPublisher(int draftPosition)
+    {
+        _publisherSpecs.Single(x => x.DraftPosition == draftPosition).Disconnected = true;
+    }
+
     private static LeagueDraft CreateLeagueDraft(
         LeagueYearKey leagueYearKey,
         GetDraftStatusTestBuilder.DraftSpec draftSpec,
@@ -280,6 +285,7 @@ internal sealed class GetDraftStatusTestBuilder
         public List<GameSpec> Games { get; } = [];
         public List<SkipSpec> Skips { get; } = [];
         public HashSet<int> PrefilledStandardSlots { get; } = [];
+        public bool Disconnected { get; set; }
     }
 
     internal sealed class DraftSpec(int draftNumber, int gamesToDraft, int counterPicksToDraft, PlayStatus playStatus, string name)
@@ -330,6 +336,12 @@ internal sealed class DraftScenarioBuilder
     public DraftScenarioBuilder PrefillAllStandardSlots(int draftPosition, int slotCount = 10)
     {
         _root.PrefillAllStandardSlots(draftPosition, slotCount);
+        return this;
+    }
+
+    public DraftScenarioBuilder DisconnectPublisher(int draftPosition)
+    {
+        _root.DisconnectPublisher(draftPosition);
         return this;
     }
 

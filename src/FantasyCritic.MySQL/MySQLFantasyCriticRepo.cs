@@ -1842,6 +1842,45 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
+    public async Task DisconnectPlayer(LeagueYear leagueYear, Publisher publisher, IReadOnlyList<Trade> tradesToReject, LeagueAction leagueAction)
+    {
+        if (publisher.User is null)
+        {
+            throw new Exception($"Publisher {publisher.PublisherID} has no player to disconnect.");
+        }
+
+        const string disconnectPublisherSQL = "update tbl_league_publisher SET UserID = NULL WHERE PublisherID = @PublisherID;";
+        const string setUserInactiveSQL = "delete from tbl_league_activeplayer WHERE LeagueID = @LeagueID AND Year = @Year AND UserID = @UserID;";
+        const string deletePendingBidsSQL = "delete from tbl_league_pickupbid WHERE PublisherID = @PublisherID AND Successful IS NULL;";
+        const string deletePendingDropsSQL = "delete from tbl_league_droprequest WHERE PublisherID = @PublisherID AND Successful IS NULL;";
+        const string deleteQueueSQL = "delete from tbl_league_publisherqueue WHERE PublisherID = @PublisherID;";
+
+        var param = new
+        {
+            LeagueID = leagueYear.League.LeagueID,
+            Year = leagueYear.Year,
+            PublisherID = publisher.PublisherID,
+            UserID = publisher.User.Id
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(disconnectPublisherSQL, param, transaction);
+        await connection.ExecuteAsync(setUserInactiveSQL, param, transaction);
+        await connection.ExecuteAsync(deletePendingBidsSQL, param, transaction);
+        await connection.ExecuteAsync(deletePendingDropsSQL, param, transaction);
+        await connection.ExecuteAsync(deleteQueueSQL, param, transaction);
+        foreach (var trade in tradesToReject)
+        {
+            await EditTradeStatus(trade, TradeStatus.RejectedByManager, null, leagueAction.Timestamp, connection, transaction);
+        }
+
+        await AddLeagueAction(leagueAction, connection, transaction);
+        await transaction.CommitAsync();
+    }
+
     public async Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user)
     {
         const string updateSQL = "update tbl_league_hasuser SET Archived = @archive WHERE LeagueID = @leagueID AND UserID = @userID;";

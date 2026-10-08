@@ -429,6 +429,30 @@ public class LeagueManagerController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> DisconnectPlayer([FromBody] DisconnectPlayerRequest request)
+    {
+        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban,
+            RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedNoDraftsActive);
+        if (leagueYearPublisherRecord.FailedResult is not null)
+        {
+            return leagueYearPublisherRecord.FailedResult;
+        }
+        var validResult = leagueYearPublisherRecord.ValidResult!;
+
+        var disconnectResult = await _publisherService.DisconnectPlayer(validResult.LeagueYear, validResult.Publisher);
+        if (disconnectResult.IsFailure)
+        {
+            return BadRequest(disconnectResult.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> CreatePublisherForUser([FromBody] CreatePublisherForUserRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
