@@ -29,6 +29,11 @@ Neither should destroy history, and both should leave competitive balance alone 
 - **Drafts:** a publisher with no user is skipped automatically, using the existing auto-skip mechanism (`DraftFunctions.ShouldSkipPublisher` → `PicksToSkip` → `DraftService.PersistAutoSkips`).
 - **Season winner:** if a publisher with no user finishes first, the winner is the top publisher that has a user.
 - **No-show flow:** Disconnect → Remove Publisher → Remove Player from League.
+- **A publisher with no user stays fully visible** (settled in Step 3):
+  - **League standings:** it has its own row, shown as "User Disconnected", and is ranked with everyone else. It can top the standings, but it can't win.
+  - **League page:** it stays in `leagueYear.publishers`.
+  - **Consolidated export:** included in full, with a null user.
+  - **All-time stats:** it appears in the publishers table, but not in the per-player stats, which are grouped by player.
 
 ## Workflow
 
@@ -155,6 +160,7 @@ When the solution builds with zero warnings and unit tests pass, pick the plan b
   - `notifyAction`
   - a plain confirm, no typed phrase
 - Add a menu item in `leagueActions.vue` under Player Management, visible when `!leagueYear.supportedYear.finished`.
+- In `leagueYearStandings.vue`, the finished-year row highlight and the bold ranking go to the top publisher by points (`topPublisher`). When that publisher has no user, the highlight should go to the recorded winner instead.
 
 **Tests**
 - Integration tests: disconnecting mid-season and pre-draft, the user becoming inactive, pending bids and trades being cancelled, the former owner getting 403 on publisher actions, and Reassign re-attaching the publisher afterwards.
