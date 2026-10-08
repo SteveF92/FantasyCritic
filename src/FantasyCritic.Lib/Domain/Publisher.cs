@@ -340,7 +340,13 @@ public class Publisher : IEquatable<Publisher>
 
     public string GetUserName()
     {
-        return User?.UserName ?? "User Disconnected";
+        if (User is not null)
+        {
+            return User.UserName;
+        }
+
+        bool isFakePublisher = PublisherID == Guid.Empty;
+        return isFakePublisher ? "<Non-Existent User>" : "User Disconnected";
     }
 
     public string GetPublisherAndUserDisplayName()
