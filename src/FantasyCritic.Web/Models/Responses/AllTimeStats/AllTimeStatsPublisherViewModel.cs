@@ -1,21 +1,14 @@
-using FantasyCritic.Lib.Identity;
-
 namespace FantasyCritic.Web.Models.Responses.AllTimeStats;
 
 public class AllTimeStatsPublisherViewModel
 {
-    public AllTimeStatsPublisherViewModel(LeagueYear leagueYear, FantasyCriticUser user, Publisher publisher, int ranking, SystemWideValues systemWideValues, LocalDate currentDate)
+    public AllTimeStatsPublisherViewModel(LeagueYear leagueYear, Publisher publisher, int ranking, SystemWideValues systemWideValues, LocalDate currentDate)
     {
-        if (publisher.User is null || !user.Equals(publisher.User))
-        {
-            throw new Exception($"Only publishers with users are counted in all time stats. Publisher {publisher.PublisherID} has no user.");
-        }
-
         PublisherID = publisher.PublisherID;
-        UserID = publisher.User.Id;
+        UserID = publisher.User?.Id;
         PublisherName = publisher.PublisherName;
         LeagueName = leagueYear.League.LeagueName;
-        PlayerName = publisher.User.UserName;
+        PlayerName = publisher.GetUserName();
         Year = publisher.LeagueYearKey.Year;
         DraftPosition = publisher.FirstDraftInfo.DraftPosition;
 
@@ -45,7 +38,7 @@ public class AllTimeStatsPublisherViewModel
     }
 
     public Guid PublisherID { get; }
-    public Guid UserID { get; }
+    public Guid? UserID { get; }
     public string PublisherName { get; }
     public string LeagueName { get; }
     public string PlayerName { get; }
