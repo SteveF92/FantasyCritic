@@ -29,6 +29,7 @@ Neither should destroy history, and both should leave competitive balance alone 
 - **Drafts:** a publisher with no user is skipped automatically, using the existing auto-skip mechanism (`DraftFunctions.ShouldSkipPublisher` → `PicksToSkip` → `DraftService.PersistAutoSkips`).
 - **Season winner:** if a publisher with no user finishes first, the winner is the top publisher that has a user.
 - **No-show flow:** Disconnect → Remove Publisher → Remove Player from League.
+- **Removing a disconnected player** (found in Step 7): a disconnected publisher no longer carries its player's ID. So a player whose only publisher was disconnected can be removed from the league right away, and their publisher stays. A player with a publisher in any other year can't be removed.
 - **A publisher with no user stays fully visible** (settled in Step 3):
   - **League standings:** it has its own row, shown as "User Disconnected", and is ranked with everyone else. It can top the standings, but it can't win.
   - **League page:** it stays in `leagueYear.publishers`.
