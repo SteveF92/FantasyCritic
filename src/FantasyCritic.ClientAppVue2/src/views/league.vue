@@ -105,7 +105,7 @@
           This league has been set to "under review", which allows the league manager to make changes after the year is over.
         </div>
 
-        <div class="alert alert-success" role="alert">
+        <div v-if="topPublisher" class="alert alert-success" role="alert">
           This year is finished! The winner is
           <strong>{{ topPublisher.publisherName }}</strong>
           !

@@ -66,9 +66,13 @@ let leagueMixin = {
     isManager() {
       return this.league && this.league.isManager;
     },
+    publishersThatCanWin() {
+      // Publishers with no user stay in the standings, but can't win.
+      return (this.leagueYear.publishers ?? []).filter((x) => !!x.userID);
+    },
     topPublisher() {
-      if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return maxBy(this.leagueYear.publishers, (x) => x.totalFantasyPoints);
+      if (this.publishersThatCanWin.length > 0) {
+        return maxBy(this.publishersThatCanWin, (x) => x.totalFantasyPoints);
       }
       return null;
     },

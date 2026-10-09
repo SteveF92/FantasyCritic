@@ -27,7 +27,7 @@ Neither should destroy history, and both should leave competitive balance alone 
 ### Decisions already made
 - **Pending activity:** cancel all of it when the player is disconnected.
 - **Drafts:** a publisher with no user is skipped automatically, using the existing auto-skip mechanism (`DraftFunctions.ShouldSkipPublisher` → `PicksToSkip` → `DraftService.PersistAutoSkips`).
-- **Season winner:** if a publisher with no user finishes first, the winner is the top publisher that has a user.
+- **Season winner:** if a publisher with no user finishes first, the winner is the top publisher that has a user. `LeagueYear.GetWinningPublisher` is the one rule, and every place that shows a winner follows it: the recorded winner, the league page's "The winner is" banner and standings highlight, the conference standings highlight, and the trophy in the Discord final standings. A publisher with no user keeps its rank everywhere.
 - **No-show flow:** Disconnect → Remove Publisher → Remove Player from League.
 - **Removing a disconnected player** (found in Step 7): a disconnected publisher no longer carries its player's ID. So a player whose only publisher was disconnected can be removed from the league right away, and their publisher stays. A player with a publisher in any other year can't be removed.
 - **A publisher with no user stays fully visible** (settled in Step 3):
@@ -161,7 +161,7 @@ When the solution builds with zero warnings and unit tests pass, pick the plan b
   - `notifyAction`
   - a plain confirm, no typed phrase
 - Add a menu item in `leagueActions.vue` under Player Management, visible when `!leagueYear.supportedYear.finished`.
-- In `leagueYearStandings.vue`, the finished-year row highlight and the bold ranking go to the top publisher by points (`topPublisher`). When that publisher has no user, the highlight should go to the recorded winner instead.
+- In `leagueYearStandings.vue`, the finished-year row highlight and the bold ranking go to the top publisher by points (`topPublisher`). When that publisher has no user, the highlight should go to the top publisher that has a user instead (`topPublisher` in `leagueMixin.js` skips publishers with no user).
 
 **Tests**
 - Integration tests: disconnecting mid-season and pre-draft, the user becoming inactive, pending bids and trades being cancelled, the former owner getting 403 on publisher actions, and Reassign re-attaching the publisher afterwards.

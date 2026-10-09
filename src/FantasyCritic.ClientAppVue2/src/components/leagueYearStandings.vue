@@ -114,16 +114,6 @@ export default {
       }
       return standings;
     },
-    publishersThatCanWin() {
-      return (this.leagueYear.publishers ?? []).filter((x) => !!x.userID);
-    },
-    topPublisher() {
-      if (this.publishersThatCanWin.length > 0) {
-        return maxBy(this.publishersThatCanWin, (x) => x.totalFantasyPoints);
-      }
-
-      return null;
-    },
     projectedTopPublisher() {
       if (this.publishersThatCanWin.length > 0) {
         return maxBy(this.publishersThatCanWin, (x) => x.totalProjectedPoints);

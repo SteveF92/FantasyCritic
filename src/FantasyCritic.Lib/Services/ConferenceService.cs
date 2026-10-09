@@ -331,7 +331,7 @@ public class ConferenceService
             var leagueOptions = leagueYear.Options;
             foreach (var publisher in leagueYear.Publishers)
             {
-                var standing = new ConferenceYearStanding(leagueYear.League.LeagueID, leagueYear.League.LeagueName, leagueYear.Year, publisher.PublisherID, publisher.GetUserName(), publisher.PublisherName,
+                var standing = new ConferenceYearStanding(leagueYear.League.LeagueID, leagueYear.League.LeagueName, leagueYear.Year, publisher.PublisherID, publisher.GetUserName(), publisher.PublisherName, publisher.User is not null,
                     publisher.GetTotalFantasyPoints(supportedYear, leagueOptions), publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues));
                 standings.Add(standing);
             }

@@ -12,6 +12,7 @@ public class ConferenceYearStandingViewModel
         PublisherID = domain.PublisherID;
         DisplayName = domain.DisplayName;
         PublisherName = domain.PublisherName;
+        HasUser = domain.HasUser;
         TotalFantasyPoints = domain.TotalFantasyPoints;
         ProjectedFantasyPoints = domain.ProjectedFantasyPoints;
         Ranking = ranking;
@@ -26,6 +27,7 @@ public class ConferenceYearStandingViewModel
     public Guid PublisherID { get; }
     public string DisplayName { get; }
     public string PublisherName { get; }
+    public bool HasUser { get; }
     public decimal TotalFantasyPoints { get; }
     public decimal ProjectedFantasyPoints { get; }
     public int Ranking { get; }
