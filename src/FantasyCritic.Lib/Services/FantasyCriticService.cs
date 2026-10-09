@@ -269,10 +269,8 @@ public class FantasyCriticService
         var publishersByLeagueYear = allPublishersForYear.GroupBy(x => x.LeagueYearKey);
         foreach (var publishersForLeagueYear in publishersByLeagueYear)
         {
-            var sortedLeagueYearPublishers = publishersForLeagueYear.OrderBy(x => x.FirstDraftInfo.DraftPosition).ToList();
-            decimal highestPoints = 0m;
             var leagueYear = leagueYearDictionary[publishersForLeagueYear.Key];
-            foreach (var publisher in sortedLeagueYearPublishers)
+            foreach (var publisher in publishersForLeagueYear)
             {
                 var slots = publisher.GetPublisherSlots(leagueYear).Where(x => x.PublisherGame is not null).ToList();
                 foreach (var publisherSlot in slots)
@@ -286,12 +284,14 @@ public class FantasyCriticService
                     var stats = new PublisherGameCalculatedStats(fantasyPoints);
                     publisherGameCalculatedStats.Add(publisherSlot.PublisherGame!.PublisherGameID, stats);
                 }
+            }
 
-                decimal totalPointsForPublisher = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
-                if (totalPointsForPublisher >= highestPoints && (leagueYear.WinningUser is null || recalculateWinners))
+            if (leagueYear.WinningUser is null || recalculateWinners)
+            {
+                var winningUser = leagueYear.GetWinningPublisher()?.User;
+                if (winningUser is not null)
                 {
-                    highestPoints = totalPointsForPublisher;
-                    winningUsers[publisher.LeagueYearKey] = publisher.User;
+                    winningUsers[leagueYear.Key] = winningUser;
                 }
             }
         }

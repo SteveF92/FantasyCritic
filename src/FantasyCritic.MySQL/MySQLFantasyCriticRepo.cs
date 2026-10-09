@@ -11,7 +11,6 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.MySQL.Entities;
-using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 using Serilog;
 
@@ -1476,25 +1475,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return users;
     }
 
-    public async Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league)
-    {
-        var param = new
-        {
-            P_LeagueID = league.LeagueID
-        };
-
-        await using var connection = new MySqlConnection(_connectionString);
-        await using var resultSets = await connection.QueryMultipleAsync("sp_getusersinleague", param, commandType: CommandType.StoredProcedure);
-        var userEntities = await resultSets.ReadAsync<FantasyCriticUserEntity>();
-        var playStatuses = await resultSets.ReadAsync<LeagueYearStatusEntity>();
-        var userYears = await resultSets.ReadAsync<LeagueYearUserEntity>();
-
-        var usersInLeague = userEntities.Select(x => x.ToDomain()).ToList();
-
-        var domains = DomainConversionUtilities.ConvertUserRemovableEntities(league, userYears, playStatuses, usersInLeague);
-        return domains;
-    }
-
     public async Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(Guid leagueID, int year)
     {
         var query = new
@@ -1635,7 +1615,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     public async Task<IReadOnlyDictionary<FantasyCriticUser, IReadOnlyList<LeagueYearKey>>> GetUsersWithLeagueYearsWithPublisher()
     {
-        const string sql = "SELECT UserID, LeagueID, YEAR FROM tbl_league_publisher;";
+        const string sql = "SELECT UserID, LeagueID, YEAR FROM tbl_league_publisher WHERE UserID IS NOT NULL;";
 
         IEnumerable<UserActiveLeaguesEntity> entities;
         await using (var connection = new MySqlConnection(_connectionString))
@@ -1844,7 +1824,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             LeagueID = leagueYear.League.LeagueID,
             Year = leagueYear.Year,
             PublisherID = publisherToReassign.PublisherID,
-            OldUserID = publisherToReassign.User.Id,
+            OldUserID = publisherToReassign.User?.Id,
             NewUserID = newUser.Id
         };
 
@@ -1854,8 +1834,98 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await connection.ExecuteAsync(setUserActiveSQL, param, transaction);
         await connection.ExecuteAsync(reassignPublisherSQL, param, transaction);
-        await connection.ExecuteAsync(setUserInactiveSQL, param, transaction);
+        if (publisherToReassign.User is not null)
+        {
+            await connection.ExecuteAsync(setUserInactiveSQL, param, transaction);
+        }
 
+        await transaction.CommitAsync();
+    }
+
+    public async Task DisconnectPlayer(LeagueYear leagueYear, Publisher publisher, IReadOnlyList<Trade> tradesToReject, LeagueAction leagueAction)
+    {
+        if (publisher.User is null)
+        {
+            throw new Exception($"Publisher {publisher.PublisherID} has no player to disconnect.");
+        }
+
+        const string disconnectPublisherSQL = "update tbl_league_publisher SET UserID = NULL WHERE PublisherID = @PublisherID;";
+        const string setUserInactiveSQL = "delete from tbl_league_activeplayer WHERE LeagueID = @LeagueID AND Year = @Year AND UserID = @UserID;";
+        const string deletePendingBidsSQL = "delete from tbl_league_pickupbid WHERE PublisherID = @PublisherID AND Successful IS NULL;";
+        const string deletePendingDropsSQL = "delete from tbl_league_droprequest WHERE PublisherID = @PublisherID AND Successful IS NULL;";
+        const string deleteQueueSQL = "delete from tbl_league_publisherqueue WHERE PublisherID = @PublisherID;";
+
+        var param = new
+        {
+            LeagueID = leagueYear.League.LeagueID,
+            Year = leagueYear.Year,
+            PublisherID = publisher.PublisherID,
+            UserID = publisher.User.Id
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(disconnectPublisherSQL, param, transaction);
+        await connection.ExecuteAsync(setUserInactiveSQL, param, transaction);
+        await connection.ExecuteAsync(deletePendingBidsSQL, param, transaction);
+        await connection.ExecuteAsync(deletePendingDropsSQL, param, transaction);
+        await connection.ExecuteAsync(deleteQueueSQL, param, transaction);
+        foreach (var trade in tradesToReject)
+        {
+            await EditTradeStatus(trade, TradeStatus.RejectedByManager, null, leagueAction.Timestamp, connection, transaction);
+        }
+
+        await AddLeagueAction(leagueAction, connection, transaction);
+        await transaction.CommitAsync();
+    }
+
+    public async Task RemovePublisher(Publisher publisher, LeagueManagerAction managerAction)
+    {
+        if (publisher.User is not null)
+        {
+            throw new Exception($"Publisher {publisher.PublisherID} still has a player, so it cannot be removed.");
+        }
+
+        const string deleteQueueSQL = "delete from tbl_league_publisherqueue WHERE PublisherID = @PublisherID;";
+        const string deleteBidsSQL = "delete from tbl_league_pickupbid WHERE PublisherID = @PublisherID;";
+        const string deleteDropsSQL = "delete from tbl_league_droprequest WHERE PublisherID = @PublisherID;";
+        const string deleteActionsSQL = "delete from tbl_league_action WHERE PublisherID = @PublisherID;";
+        const string deleteStatisticsSQL = "delete from tbl_league_publisherstatistics WHERE PublisherID = @PublisherID;";
+        const string deletePublisherGamesSQL = "delete from tbl_league_publishergame WHERE PublisherID = @PublisherID;";
+        const string deleteFormerPublisherGamesSQL = "delete from tbl_league_formerpublishergame WHERE PublisherID = @PublisherID;";
+        const string clearTradeProposerSQL = "update tbl_league_trade SET ProposerPublisherID = NULL WHERE ProposerPublisherID = @PublisherID;";
+        const string clearTradeCounterPartySQL = "update tbl_league_trade SET CounterPartyPublisherID = NULL WHERE CounterPartyPublisherID = @PublisherID;";
+        const string deletePickSkipsSQL = "delete from tbl_league_draftpickskip WHERE PublisherID = @PublisherID;";
+        const string deleteDraftPublisherSQL = "delete from tbl_league_draftpublisher WHERE PublisherID = @PublisherID;";
+        const string deletePublisherSQL = "delete from tbl_league_publisher WHERE PublisherID = @PublisherID;";
+        const string closeDraftPositionGapSQL = "update tbl_league_draftpublisher SET DraftPosition = DraftPosition - 1 WHERE DraftID = @DraftID AND DraftPosition > @DraftPosition ORDER BY DraftPosition;";
+
+        var param = new { publisher.PublisherID };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+
+        await connection.ExecuteAsync(deleteQueueSQL, param, transaction);
+        await connection.ExecuteAsync(deleteBidsSQL, param, transaction);
+        await connection.ExecuteAsync(deleteDropsSQL, param, transaction);
+        await connection.ExecuteAsync(deleteActionsSQL, param, transaction);
+        await connection.ExecuteAsync(deleteStatisticsSQL, param, transaction);
+        await connection.ExecuteAsync(deletePublisherGamesSQL, param, transaction);
+        await connection.ExecuteAsync(deleteFormerPublisherGamesSQL, param, transaction);
+        await connection.ExecuteAsync(clearTradeProposerSQL, param, transaction);
+        await connection.ExecuteAsync(clearTradeCounterPartySQL, param, transaction);
+        await connection.ExecuteAsync(deletePickSkipsSQL, param, transaction);
+        await connection.ExecuteAsync(deleteDraftPublisherSQL, param, transaction);
+        await connection.ExecuteAsync(deletePublisherSQL, param, transaction);
+        foreach (var draftInfo in publisher.DraftInfos)
+        {
+            await connection.ExecuteAsync(closeDraftPositionGapSQL, new { draftInfo.DraftID, draftInfo.DraftPosition }, transaction);
+        }
+
+        await AddLeagueManagerAction(managerAction, connection, transaction);
         await transaction.CommitAsync();
     }
 
@@ -1867,55 +1937,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await connection.ExecuteAsync(updateSQL, parameters);
-    }
-
-    public async Task FullyRemovePublisher(LeagueYear leagueYear, Publisher deletePublisher)
-    {
-        const string deleteSQL = "delete from tbl_league_publisher where PublisherID = @publisherID;";
-        const string deleteQueueSQL = "delete from tbl_league_publisherqueue where PublisherID = @publisherID;";
-        const string deleteHistorySQL = "delete from tbl_league_action where PublisherID = @publisherID;";
-        const string deletePublisherGameSQL = "delete from tbl_league_publishergame WHERE PublisherID = @publisherID;";
-        const string deleteFormerPublisherGameSQL = "delete from tbl_league_formerpublishergame WHERE PublisherID = @publisherID;";
-        const string deletePublisherBidsSQL = "delete from tbl_league_pickupbid WHERE PublisherID = @publisherID;";
-        const string deletePublisherDropsSQL = "delete from tbl_league_droprequest WHERE PublisherID = @publisherID;";
-        const string deletePublisherStatisticsSQL = "delete from tbl_league_publisherstatistics WHERE PublisherID = @publisherID;";
-        const string updateProposerTradeSQL = "UPDATE tbl_league_trade SET ProposerPublisherID = null WHERE ProposerPublisherID = @publisherID;";
-        const string updateCounterPartyTradeSQL = "UPDATE tbl_league_trade SET CounterPartyPublisherID = null WHERE CounterPartyPublisherID = @publisherID;";
-        const string deleteDraftPublisherSQL = "DELETE FROM tbl_league_draftpublisher WHERE PublisherID = @publisherID;";
-        const string deleteDraftPublisherFromDraftSQL = "DELETE FROM tbl_league_draftpublisher WHERE DraftID = @draftID AND PublisherID != @deletedPublisherID;";
-        const string reinsertDraftPublisherSQL = "INSERT INTO tbl_league_draftpublisher (LeagueID, Year, DraftID, PublisherID, DraftPosition) VALUES (@LeagueID, @Year, @DraftID, @PublisherID, @DraftPosition);";
-
-        var reinsertRows = new List<LeagueDraftPublisherEntity>();
-        foreach (var draft in leagueYear.Drafts)
-        {
-            var remainingOrderedPublishers = leagueYear.GetAllPublishersExcept(deletePublisher)
-                .OrderBy(x => x.GetDraftPosition(draft.DraftID)).ToList();
-            reinsertRows.AddRange(remainingOrderedPublishers.Select((publisher, index) =>
-                new LeagueDraftPublisherEntity(draft.LeagueYearKey, draft.DraftID, publisher.PublisherID, index + 1)));
-        }
-
-        var deleteObject = new { publisherID = deletePublisher.PublisherID };
-
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.OpenAsync();
-        await using var transaction = await connection.BeginTransactionAsync();
-        await connection.ExecuteAsync(deleteQueueSQL, deleteObject, transaction);
-        await connection.ExecuteAsync(deleteHistorySQL, deleteObject, transaction);
-        await connection.ExecuteAsync(deletePublisherGameSQL, deleteObject, transaction);
-        await connection.ExecuteAsync(deleteFormerPublisherGameSQL, deleteObject, transaction);
-        await connection.ExecuteAsync(deletePublisherBidsSQL, deleteObject, transaction);
-        await connection.ExecuteAsync(deletePublisherDropsSQL, deleteObject, transaction);
-        await connection.ExecuteAsync(deletePublisherStatisticsSQL, deleteObject, transaction);
-        await connection.ExecuteAsync(updateProposerTradeSQL, deleteObject, transaction);
-        await connection.ExecuteAsync(updateCounterPartyTradeSQL, deleteObject, transaction);
-        await connection.ExecuteAsync(deleteDraftPublisherSQL, deleteObject, transaction);
-        await connection.ExecuteAsync(deleteSQL, deleteObject, transaction);
-        foreach (var draft in leagueYear.Drafts)
-        {
-            await connection.ExecuteAsync(deleteDraftPublisherFromDraftSQL, new { draftID = draft.DraftID, deletedPublisherID = deletePublisher.PublisherID }, transaction);
-        }
-        await connection.ExecuteAsync(reinsertDraftPublisherSQL, reinsertRows, transaction);
-        await transaction.CommitAsync();
     }
 
     public async Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser)
@@ -1935,6 +1956,19 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(deleteActiveUserSQL, userDeleteObject, transaction);
         await connection.ExecuteAsync(deleteUserSQL, userDeleteObject, transaction);
         await transaction.CommitAsync();
+    }
+
+    public async Task<bool> UserHasPublisherInLeague(League league, FantasyCriticUser user)
+    {
+        const string sql = "select exists (select 1 from tbl_league_publisher where LeagueID = @leagueID and UserID = @userID);";
+        var param = new
+        {
+            leagueID = league.LeagueID,
+            userID = user.Id
+        };
+
+        await using var connection = new MySqlConnection(_connectionString);
+        return await connection.ExecuteScalarAsync<bool>(sql, param);
     }
 
     public async Task TransferLeagueManager(League league, FantasyCriticUser newManager)
@@ -2074,7 +2108,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         List<Publisher> publishers = [];
         foreach (var entity in publisherEntities)
         {
-            var user = usersDictionary[entity.UserID];
+            var user = entity.UserID.HasValue ? usersDictionary[entity.UserID.Value] : null;
             var domainGames = domainGameLookup[entity.PublisherID];
             var domainFormerGames = domainFormerGameLookup[entity.PublisherID];
             var draftInfos = draftInfosByPublisherID[entity.PublisherID];
@@ -2222,7 +2256,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         var pickSkipLookup = draftPickSkipRows.ToLookup(x => (x.DraftID, x.PublisherID));
         var draftInfos = draftPublisherRows.Select(x => new PublisherDraftInfo(x.DraftID, x.DraftNumber, x.PublisherID, x.DraftPosition,
             pickSkipLookup[(x.DraftID, x.PublisherID)].Select(s => s.ToDomain()).ToList())).ToList();
-        var user = await _userStore.FindByIdOrThrowAsync(publisherEntity.UserID, CancellationToken.None);
+        FantasyCriticUser? user = null;
+        if (publisherEntity.UserID.HasValue)
+        {
+            user = await _userStore.FindByIdOrThrowAsync(publisherEntity.UserID.Value, CancellationToken.None);
+        }
+
         var domainPublisher = publisherEntity.ToDomain(user, draftInfos, domainGames, domainFormerGames);
         return domainPublisher;
     }

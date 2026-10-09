@@ -226,7 +226,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         {
             var termToSearch = publisherOrPlayerName.ToLower().Trim();
 
-            searchResults.FoundByPlayerName = leagueChannel.LeagueYear.Publishers.Where(p => p.User.UserName
+            searchResults.FoundByPlayerName = leagueChannel.LeagueYear.Publishers.Where(p => p.User is not null && p.User.UserName
                     .ToLower()
                     .Contains(termToSearch))
                 .ToList();
@@ -309,7 +309,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
             if (foundByPlayerName.Any())
             {
                 message +=
-                    $"Match by player name: {string.Join(", ", foundByPlayerName.Select(p => p.User.UserName))}";
+                    $"Match by player name: {string.Join(", ", foundByPlayerName.Select(p => p.GetUserName()))}";
             }
 
             if (foundByPublisherName.Any())
@@ -328,7 +328,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
             if (inBothLists.Count != foundByPlayerName.Count)
             {
                 message =
-                    $"Match by player name: {string.Join(", ", foundByPlayerName.Select(p => p.User.UserName))}\n";
+                    $"Match by player name: {string.Join(", ", foundByPlayerName.Select(p => p.GetUserName()))}\n";
                 message +=
                     $"Match by publisher name: {string.Join(", ", foundByPublisherName.Select(p => p.PublisherName))}\n";
             }
@@ -441,7 +441,7 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
         if (fantasyCriticUser != null)
         {
             publisherFound =
-                leagueChannel.LeagueYear.Publishers.FirstOrDefault(p => p.User.Id == fantasyCriticUser.Id
+                leagueChannel.LeagueYear.Publishers.FirstOrDefault(p => p.User?.Id == fantasyCriticUser.Id
                                                                         && leagueChannel.ChannelID == channelId);
         }
 

@@ -1,6 +1,5 @@
 import { mapState } from 'vuex';
 import { DateTime } from 'luxon';
-import { maxBy } from '@/globalFunctions';
 
 let leagueMixin = {
   computed: {
@@ -66,11 +65,13 @@ let leagueMixin = {
     isManager() {
       return this.league && this.league.isManager;
     },
+    publishersThatCanWin() {
+      // Publishers with no user stay in the standings, but can't win.
+      return (this.leagueYear.publishers ?? []).filter((x) => !!x.userID);
+    },
     topPublisher() {
-      if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return maxBy(this.leagueYear.publishers, (x) => x.totalFantasyPoints);
-      }
-      return null;
+      // The server picks it, so ties break the same way as the recorded winner.
+      return (this.leagueYear.publishers ?? []).find((x) => x.publisherID === this.leagueYear.winningPublisherID) ?? null;
     },
     currentBids() {
       if (!this.leagueYear || !this.leagueYear.privatePublisherData) {

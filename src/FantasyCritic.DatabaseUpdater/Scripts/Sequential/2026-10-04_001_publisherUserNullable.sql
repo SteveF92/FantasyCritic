@@ -1,0 +1,2 @@
+ALTER TABLE `tbl_league_publisher`
+	MODIFY COLUMN `UserID` CHAR(36) NULL DEFAULT NULL;

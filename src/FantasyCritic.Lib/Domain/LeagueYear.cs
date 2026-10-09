@@ -182,7 +182,17 @@ public class LeagueYear : IEquatable<LeagueYear>
             return null;
         }
 
-        return Publishers.SingleOrDefault(x => x.User.Id == user.UserID);
+        return Publishers.SingleOrDefault(x => x.User?.Id == user.UserID);
+    }
+
+    public Publisher? GetWinningPublisher()
+    {
+        //Publishers with no user stay in the standings, but can't win. A tie goes to the later draft position.
+        return Publishers
+            .Where(x => x.User is not null)
+            .OrderByDescending(x => x.GetTotalFantasyPoints(SupportedYear, Options))
+            .ThenByDescending(x => x.FirstDraftInfo.DraftPosition)
+            .FirstOrDefault();
     }
 
     public IReadOnlyList<Publisher> GetAllPublishersExcept(Publisher publisher)

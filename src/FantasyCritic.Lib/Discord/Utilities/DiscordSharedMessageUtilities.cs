@@ -99,6 +99,7 @@ public static class DiscordSharedMessageUtilities
     {
         var rankedPublishers = leagueYear.Publishers.OrderByDescending(p
             => p.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options));
+        var winningPublisher = isFinal ? leagueYear.GetWinningPublisher() : null;
 
         var publisherLines =
             rankedPublishers
@@ -111,33 +112,35 @@ public static class DiscordSharedMessageUtilities
                         .GetProjectedFantasyPoints(leagueYear,
                             systemWideValues);
 
+                    var isWinner = publisher.PublisherID == winningPublisher?.PublisherID;
                     return BuildPublisherLine(index + 1, publisher, leagueYear, totalPoints, projectedPoints, dateToCheck,
-                        previousYearWinner, isFinal);
+                        previousYearWinner, isFinal, isWinner);
                 });
         return publisherLines.ToList();
     }
 
     public static IList<string> RankConferencePublishers(IReadOnlyList<ConferenceYearStanding> conferenceYearStandings, bool isFinal = false)
     {
+        //Publishers with no user stay in the standings, but can't win.
+        var winningStanding = isFinal ? conferenceYearStandings.FirstOrDefault(x => x.HasUser) : null;
         var conferencePublisherStandings = conferenceYearStandings.Select((c, index) =>
-            BuildConferencePublisherLine(index + 1, c.PublisherName, c.DisplayName, c.TotalFantasyPoints, c.ProjectedFantasyPoints, isFinal));
+            BuildConferencePublisherLine(index + 1, c.PublisherName, c.DisplayName, c.TotalFantasyPoints, c.ProjectedFantasyPoints, isFinal,
+                c.PublisherID == winningStanding?.PublisherID));
         return conferencePublisherStandings.ToList();
     }
 
     private static string BuildConferencePublisherLine(int rank, string publisherName, string displayName,
-        decimal totalFantasyPoints, decimal projectedFantasyPoints, bool isFinal)
+        decimal totalFantasyPoints, decimal projectedFantasyPoints, bool isFinal, bool isWinner)
     {
-        var shouldHighlight = ShouldPublisherBeHighlighted(rank, isFinal);
-
         var conferencePublisherLine = $"**{rank}.** ";
 
         var trophyEmoji = "";
-        if (isFinal && rank == 1)
+        if (isWinner)
         {
             trophyEmoji = " 🏆";
         }
 
-        conferencePublisherLine += shouldHighlight
+        conferencePublisherLine += isWinner
             ? $"__**{publisherName} ({displayName})**__{trophyEmoji}\n"
             : $"**{publisherName} ({displayName})**{trophyEmoji}\n";
         conferencePublisherLine += $"> **{Math.Round(totalFantasyPoints, 1)} points**";
@@ -155,7 +158,8 @@ public static class DiscordSharedMessageUtilities
         decimal projectedPoints,
         LocalDate currentDate,
         FantasyCriticUser? previousYearWinner,
-        bool isFinal)
+        bool isFinal,
+        bool isWinner)
     {
         var totalGames = publisher.PublisherGames
             .Count(x => !x.CounterPick);
@@ -176,20 +180,18 @@ public static class DiscordSharedMessageUtilities
         }
 
         var crownEmoji = "";
-        if (previousYearWinner is not null && publisher.User.Id == previousYearWinner.Id)
+        if (previousYearWinner is not null && publisher.User?.Id == previousYearWinner.Id)
         {
             crownEmoji = " 👑";
         }
 
         var trophyEmoji = "";
-        if (isFinal && rank == 1)
+        if (isWinner)
         {
             trophyEmoji = " 🏆";
         }
 
-        var shouldHighlight = ShouldPublisherBeHighlighted(rank, isFinal);
-
-        publisherLine += shouldHighlight
+        publisherLine += isWinner
             ? $"__**{publisher.GetPublisherAndUserDisplayName()}**__{crownEmoji}{trophyEmoji}\n"
             : $"**{publisher.GetPublisherAndUserDisplayName()}**{crownEmoji}{trophyEmoji}\n";
         publisherLine += $"> **{Math.Round(totalPoints, 1)} points** ";
@@ -212,15 +214,6 @@ public static class DiscordSharedMessageUtilities
         }
 
         return publisherLine;
-    }
-
-    private static bool ShouldPublisherBeHighlighted(int rank, bool highlightCurrentWinner)
-    {
-        if (!highlightCurrentWinner)
-        {
-            return false;
-        }
-        return rank == 1;
     }
 
     public static string BuildBidResultMessage(PickupBid bid)

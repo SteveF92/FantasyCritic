@@ -52,9 +52,14 @@ public class Trade
         };
     }
 
+    public bool InvolvesDisconnectedPublisher()
+    {
+        return Proposer.User is null || CounterParty.User is null;
+    }
+
     public bool UserIsInvolved(Guid userID)
     {
-        return Proposer.User.Id == userID || CounterParty.User.Id == userID;
+        return Proposer.User?.Id == userID || CounterParty.User?.Id == userID;
     }
 
     public bool IsPrivateProposal()

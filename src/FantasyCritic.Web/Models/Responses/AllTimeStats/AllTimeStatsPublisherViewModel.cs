@@ -5,10 +5,10 @@ public class AllTimeStatsPublisherViewModel
     public AllTimeStatsPublisherViewModel(LeagueYear leagueYear, Publisher publisher, int ranking, SystemWideValues systemWideValues, LocalDate currentDate)
     {
         PublisherID = publisher.PublisherID;
-        UserID = publisher.User.Id;
+        UserID = publisher.User?.Id;
         PublisherName = publisher.PublisherName;
         LeagueName = leagueYear.League.LeagueName;
-        PlayerName = publisher.User.UserName;
+        PlayerName = publisher.GetUserName();
         Year = publisher.LeagueYearKey.Year;
         DraftPosition = publisher.FirstDraftInfo.DraftPosition;
 
@@ -38,7 +38,7 @@ public class AllTimeStatsPublisherViewModel
     }
 
     public Guid PublisherID { get; }
-    public Guid UserID { get; }
+    public Guid? UserID { get; }
     public string PublisherName { get; }
     public string LeagueName { get; }
     public string PlayerName { get; }

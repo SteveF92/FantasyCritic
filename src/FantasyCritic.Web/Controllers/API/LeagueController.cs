@@ -943,8 +943,8 @@ public class LeagueController : BaseLeagueController
 
         _logger.LogInfoWithContext("Publisher {PublisherName} attempted to place a bid for {GameName} for {BidAmount}", new
         {
-            UserId = publisher.User.UserID,
-            DisplayName = publisher.User.DisplayName,
+            UserId = publisher.User?.UserID,
+            DisplayName = publisher.GetUserName(),
             PublisherName = publisher.PublisherName,
             BidAmount = request.BidAmount,
             GameName = masterGame.GameName,
@@ -996,8 +996,8 @@ public class LeagueController : BaseLeagueController
 
         _logger.LogInfoWithContext("Publisher {PublisherName} attempted to edit their bid for {GameName} for {BidAmount}", new
         {
-            UserId = publisher.User.UserID,
-            DisplayName = publisher.User.DisplayName,
+            UserId = publisher.User?.UserID,
+            DisplayName = publisher.GetUserName(),
             PublisherName = publisher.PublisherName,
             BidAmount = request.BidAmount,
             GameName = maybeBid.MasterGame.GameName,
@@ -1048,8 +1048,8 @@ public class LeagueController : BaseLeagueController
 
         _logger.LogInfoWithContext("Publisher {PublisherName} attempted to delete their bid for {GameName}", new
         {
-            UserId = publisher.User.UserID,
-            DisplayName = publisher.User.DisplayName,
+            UserId = publisher.User?.UserID,
+            DisplayName = publisher.GetUserName(),
             PublisherName = publisher.PublisherName,
             GameName = bid.MasterGame.GameName,
             LeagueYearKey = publisher.LeagueYearKey,
@@ -1390,8 +1390,8 @@ public class LeagueController : BaseLeagueController
 
         _logger.LogInfoWithContext("Publisher {PublisherName} attempted to place a drop for {GameName}", new
         {
-            UserId = publisher.User.UserID,
-            DisplayName = publisher.User.DisplayName,
+            UserId = publisher.User?.UserID,
+            DisplayName = publisher.GetUserName(),
             PublisherName = publisher.PublisherName,
             GameName = publisherGame.MasterGame?.MasterGame.GameName ?? publisherGame.GameName,
             LeagueYearKey = leagueYear.Key,
@@ -1464,8 +1464,8 @@ public class LeagueController : BaseLeagueController
 
         _logger.LogInfoWithContext("Publisher {PublisherName} attempted to delete a drop for {GameName}", new
         {
-            UserId = publisher.User.UserID,
-            DisplayName = publisher.User.DisplayName,
+            UserId = publisher.User?.UserID,
+            DisplayName = publisher.GetUserName(),
             PublisherName = publisher.PublisherName,
             GameName = dropRequest.MasterGame.GameName,
             LeagueYearKey = publisher.LeagueYearKey,
@@ -1770,7 +1770,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
-        bool userIsProposer = (currentUser.Id == trade.Proposer.User.Id);
+        bool userIsProposer = (currentUser.Id == trade.Proposer.User?.Id);
         if (!userIsProposer)
         {
             return StatusCode(403);
@@ -1807,7 +1807,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
-        bool userIsCounterParty = (currentUser.Id == trade.CounterParty.User.Id);
+        bool userIsCounterParty = (currentUser.Id == trade.CounterParty.User?.Id);
         if (!userIsCounterParty)
         {
             return StatusCode(403);
@@ -1844,7 +1844,7 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
-        bool userIsCounterParty = (currentUser.Id == trade.CounterParty.User.Id);
+        bool userIsCounterParty = (currentUser.Id == trade.CounterParty.User?.Id);
         if (!userIsCounterParty)
         {
             return StatusCode(403);
@@ -1887,8 +1887,13 @@ public class LeagueController : BaseLeagueController
             return StatusCode(403);
         }
 
-        var validUserIDs = leagueYear.Publishers.Select(x => x.User.Id).Except(new List<Guid>()
-            {trade.Proposer.User.Id, trade.CounterParty.User.Id}).ToHashSet();
+        if (trade.InvolvesDisconnectedPublisher())
+        {
+            return BadRequest("That trade is no longer valid as it involves a disconnected publisher.");
+        }
+
+        var validUserIDs = leagueYear.Publishers.Where(x => x.User is not null).Select(x => x.User!.Id).Except(new List<Guid>()
+            {trade.Proposer.User!.Id, trade.CounterParty.User!.Id}).ToHashSet();
         bool userIsInLeagueButNotInTrade = validUserIDs.Contains(currentUser.Id);
         if (!userIsInLeagueButNotInTrade)
         {
@@ -1932,8 +1937,13 @@ public class LeagueController : BaseLeagueController
             return StatusCode(403);
         }
 
-        var validUserIDs = leagueYear.Publishers.Select(x => x.User.Id).Except(new List<Guid>()
-            {trade.Proposer.User.Id, trade.CounterParty.User.Id}).ToHashSet();
+        if (trade.InvolvesDisconnectedPublisher())
+        {
+            return BadRequest("That trade is no longer valid as it involves a disconnected publisher.");
+        }
+
+        var validUserIDs = leagueYear.Publishers.Where(x => x.User is not null).Select(x => x.User!.Id).Except(new List<Guid>()
+            {trade.Proposer.User!.Id, trade.CounterParty.User!.Id}).ToHashSet();
         bool userIsInLeagueButNotInTrade = validUserIDs.Contains(currentUser.Id);
         if (!userIsInLeagueButNotInTrade)
         {

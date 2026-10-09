@@ -160,7 +160,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                 Year = year
             })
             .ToList();
-        var mostRecentActivePrimaryLeaguePlayers = primaryLeaguePreviousLeagueYear.Publishers.Select(x => x.User).ToList();
+        var mostRecentActivePrimaryLeaguePlayers = primaryLeaguePreviousLeagueYear.Publishers.Where(x => x.User is not null).Select(x => x.User!).ToList();
 
         const string createConferenceYearSQL =
             """
@@ -642,6 +642,11 @@ public class MySQLConferenceRepo : IConferenceRepo
                 var fullLeagueYear = await _combinedDataRepo.GetLeagueYear(conferenceLeagueYear.League.LeagueID, conferenceLeagueYear.Year);
                 foreach (var publisher in fullLeagueYear!.Publishers)
                 {
+                    if (publisher.User is null)
+                    {
+                        continue;
+                    }
+
                     leagueHasPlayerInPreviousYear[conferenceLeagueYear.League].Add(publisher.User);
                 }
 

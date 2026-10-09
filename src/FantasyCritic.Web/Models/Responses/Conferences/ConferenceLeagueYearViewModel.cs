@@ -10,7 +10,7 @@ public class ConferenceLeagueYearViewModel
         LeagueID = domain.League.LeagueID;
         LeagueName = domain.League.LeagueName;
         Year = domain.Year;
-        LeagueManager = new PlayerViewModel(domain.League.LeagueID, domain.League.LeagueName, domain.League.LeagueManager, false);
+        LeagueManager = new PlayerViewModel(domain.League.LeagueID, domain.League.LeagueName, domain.League.LeagueManager);
 
         if (currentUser is not null)
         {
@@ -30,7 +30,7 @@ public class ConferenceLeagueYearViewModel
         LeagueID = domain.League.LeagueID;
         LeagueName = domain.League.LeagueName;
         Year = domain.Year;
-        LeagueManager = new PlayerViewModel(domain.League.LeagueID, domain.League.LeagueName, domain.League.LeagueManager, false);
+        LeagueManager = new PlayerViewModel(domain.League.LeagueID, domain.League.LeagueName, domain.League.LeagueManager);
 
         ConferenceLocked = domain.ConferenceLocked;
         DraftStarted = domain.DraftStarted;

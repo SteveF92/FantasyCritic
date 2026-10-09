@@ -9,7 +9,7 @@ public class Publisher : IEquatable<Publisher>
     private decimal? _cachedProjectedPoints;
     private decimal? _cachedTotalPoints;
 
-    public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser user, string publisherName, string? publisherIcon, string? publisherSlogan,
+    public Publisher(Guid publisherID, LeagueYearKey leagueYearKey, FantasyCriticUser? user, string publisherName, string? publisherIcon, string? publisherSlogan,
         IEnumerable<PublisherDraftInfo> draftInfos, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames, uint budget,
         int unrestrictedReleaseStatusGamesDropped, int willNotReleaseGamesDropped, int willReleaseGamesDropped, int superDropsAvailable, AutoDraftSettings autoDraftSettings)
     {
@@ -37,7 +37,7 @@ public class Publisher : IEquatable<Publisher>
 
     public Guid PublisherID { get; }
     public LeagueYearKey LeagueYearKey { get; }
-    public FantasyCriticUser User { get; }
+    public FantasyCriticUser? User { get; }
     public string PublisherName { get; }
     public string? PublisherIcon { get; }
     public string? PublisherSlogan { get; }
@@ -333,14 +333,25 @@ public class Publisher : IEquatable<Publisher>
     {
         var firstDraft = leagueYear.FirstDraft;
         var fakeDraftInfo = new PublisherDraftInfo(firstDraft.DraftID, firstDraft.DraftNumber, Guid.Empty, 1, []);
-        return new Publisher(Guid.Empty, leagueYear.Key, FantasyCriticUser.GetFakeUser(), "<Unknown Publisher>",
+        return new Publisher(Guid.Empty, leagueYear.Key, null, "<Unknown Publisher>",
             null, null, [fakeDraftInfo], new List<PublisherGame>(),
             new List<FormerPublisherGame>(), 0, 0, 0, 0, 0, new AutoDraftSettings(AutoDraftMode.Off, false));
     }
 
+    public string GetUserName()
+    {
+        if (User is not null)
+        {
+            return User.UserName;
+        }
+
+        bool isFakePublisher = PublisherID == Guid.Empty;
+        return isFakePublisher ? "<Non-Existent User>" : "User Disconnected";
+    }
+
     public string GetPublisherAndUserDisplayName()
     {
-        return $"{PublisherName} ({User.UserName})";
+        return $"{PublisherName} ({GetUserName()})";
     }
 
     public PublisherStatistics GetPublisherStatistics(LocalDate date, LeagueYear leagueYear, SystemWideValues systemWideValues)

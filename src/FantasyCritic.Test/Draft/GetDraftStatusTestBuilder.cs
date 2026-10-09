@@ -84,13 +84,18 @@ internal sealed class GetDraftStatusTestBuilder
 
                 foreach (var slotNumber in publisherSpec.PrefilledStandardSlots)
                 {
-                    games.Add(CreatePrefilledStandardGame(publisherSpec.PublisherID, slotNumber));
+                    games.Add(CreatePrefilledStandardGame(publisherSpec.PublisherID, slotNumber, null));
+                }
+
+                if (publisherSpec.FantasyPoints.HasValue)
+                {
+                    games.Add(CreatePrefilledStandardGame(publisherSpec.PublisherID, 0, publisherSpec.FantasyPoints));
                 }
 
                 return new Publisher(
                     publisherSpec.PublisherID,
                     leagueYearKey,
-                    FantasyCriticUser.GetFakeUser(),
+                    publisherSpec.Disconnected ? null : FantasyCriticUser.GetFakeUser(),
                     publisherSpec.Name,
                     null,
                     null,
@@ -189,6 +194,16 @@ internal sealed class GetDraftStatusTestBuilder
         }
     }
 
+    internal void DisconnectPublisher(int draftPosition)
+    {
+        _publisherSpecs.Single(x => x.DraftPosition == draftPosition).Disconnected = true;
+    }
+
+    internal void SetFantasyPoints(int draftPosition, decimal fantasyPoints)
+    {
+        _publisherSpecs.Single(x => x.DraftPosition == draftPosition).FantasyPoints = fantasyPoints;
+    }
+
     private static LeagueDraft CreateLeagueDraft(
         LeagueYearKey leagueYearKey,
         GetDraftStatusTestBuilder.DraftSpec draftSpec,
@@ -231,7 +246,7 @@ internal sealed class GetDraftStatusTestBuilder
 
     internal static Guid DraftIDFor(int draftNumber) => Guid.Parse($"{draftNumber:D8}-0000-0000-0000-{draftNumber:D012}");
 
-    private static PublisherGame CreatePrefilledStandardGame(Guid publisherID, int slotNumber)
+    private static PublisherGame CreatePrefilledStandardGame(Guid publisherID, int slotNumber, decimal? fantasyPoints)
     {
         return new PublisherGame(
             publisherID,
@@ -241,7 +256,7 @@ internal sealed class GetDraftStatusTestBuilder
             false,
             null,
             false,
-            null,
+            fantasyPoints,
             null,
             slotNumber,
             null,
@@ -280,6 +295,8 @@ internal sealed class GetDraftStatusTestBuilder
         public List<GameSpec> Games { get; } = [];
         public List<SkipSpec> Skips { get; } = [];
         public HashSet<int> PrefilledStandardSlots { get; } = [];
+        public bool Disconnected { get; set; }
+        public decimal? FantasyPoints { get; set; }
     }
 
     internal sealed class DraftSpec(int draftNumber, int gamesToDraft, int counterPicksToDraft, PlayStatus playStatus, string name)
@@ -330,6 +347,18 @@ internal sealed class DraftScenarioBuilder
     public DraftScenarioBuilder PrefillAllStandardSlots(int draftPosition, int slotCount = 10)
     {
         _root.PrefillAllStandardSlots(draftPosition, slotCount);
+        return this;
+    }
+
+    public DraftScenarioBuilder DisconnectPublisher(int draftPosition)
+    {
+        _root.DisconnectPublisher(draftPosition);
+        return this;
+    }
+
+    public DraftScenarioBuilder SetFantasyPoints(int draftPosition, decimal fantasyPoints)
+    {
+        _root.SetFantasyPoints(draftPosition, fantasyPoints);
         return this;
     }
 

@@ -400,70 +400,6 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<string>> RemovePlayer([FromBody] PlayerRemoveRequest request)
-    {
-        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
-        if (leagueRecord.FailedResult is not null)
-        {
-            return leagueRecord.FailedResult;
-        }
-        var validResult = leagueRecord.ValidResult!;
-        var league = validResult.League;
-
-        if (league.LeagueManager.UserID == request.UserID)
-        {
-            return BadRequest("Can't remove the league manager.");
-        }
-
-        var removeUser = await _userManager.FindByIdAsync(request.UserID.ToString());
-        if (removeUser == null)
-        {
-            return BadRequest();
-        }
-
-        var playersInLeague = await _leagueMemberService.GetUsersInLeague(league);
-        bool userIsInLeague = playersInLeague.Any(x => x.Id == removeUser.Id);
-        if (!userIsInLeague)
-        {
-            return BadRequest("That user is not in that league.");
-        }
-
-        var mostRecentLeagueYear = league.Years.Max(x => x.Year);
-        var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, mostRecentLeagueYear, ActionProcessingModeBehavior.Ban, RequiredRelationship.LeagueManager, RequiredYearStatus.Any);
-        if (leagueYearRecord.FailedResult is not null)
-        {
-            return leagueYearRecord.FailedResult;
-        }
-
-        var leagueYearResult = leagueYearRecord.ValidResult!;
-        if (leagueYearResult.LeagueYear.SupportedYear.Finished)
-        {
-            return BadRequest("You can't remove a player from a year that is finished.");
-        }
-
-        Result<string> result;
-        var playerIsFullyRemovable = validResult.PlayersInLeague.Single(x => x.User.Id == removeUser.Id).Removable;
-        if (playerIsFullyRemovable)
-        {
-            result = await _leagueMemberService.FullyRemovePlayerFromLeague(league, removeUser);
-        }
-        else
-        {
-            result = await _leagueMemberService.RemovePlayerFromLeagueYear(leagueYearResult.LeagueYear, leagueYearResult.PlayersInLeague, leagueYearResult.ActiveUsers, removeUser);
-        }
-
-        if (result.IsFailure)
-        {
-            return BadRequest(result.Error);
-        }
-
-        return result.Value;
-    }
-
-    [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -478,11 +414,87 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         var leagueYear = leagueYearRecord.ValidResult!.LeagueYear;
-        var playersInLeague = leagueYearRecord.ValidResult!.PlayersInLeague.Select(x => x.User).ToList();
+        var playersInLeague = leagueYearRecord.ValidResult!.PlayersInLeague;
         var reassignResult = await _publisherService.ReassignPublisher(leagueYear, playersInLeague, request.PublisherID, request.NewUserID);
         if (reassignResult.IsFailure)
         {
             return BadRequest(reassignResult.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> DisconnectPlayer([FromBody] DisconnectPlayerRequest request)
+    {
+        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban,
+            RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedNoDraftsActive);
+        if (leagueYearPublisherRecord.FailedResult is not null)
+        {
+            return leagueYearPublisherRecord.FailedResult;
+        }
+        var validResult = leagueYearPublisherRecord.ValidResult!;
+
+        var disconnectResult = await _publisherService.DisconnectPlayer(validResult.LeagueYear, validResult.Publisher);
+        if (disconnectResult.IsFailure)
+        {
+            return BadRequest(disconnectResult.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> RemovePublisher([FromBody] RemovePublisherRequest request)
+    {
+        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Ban,
+            RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedNoDraftsActive);
+        if (leagueYearPublisherRecord.FailedResult is not null)
+        {
+            return leagueYearPublisherRecord.FailedResult;
+        }
+        var validResult = leagueYearPublisherRecord.ValidResult!;
+
+        var removeResult = await _publisherService.RemovePublisher(validResult.LeagueYear, validResult.Publisher);
+        if (removeResult.IsFailure)
+        {
+            return BadRequest(removeResult.Error);
+        }
+
+        return Ok();
+    }
+
+    [HttpPost]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status403Forbidden)]
+    public async Task<IActionResult> RemovePlayerFromLeague([FromBody] RemovePlayerFromLeagueRequest request)
+    {
+        var leagueRecord = await GetExistingLeague(request.LeagueID, RequiredRelationship.LeagueManager);
+        if (leagueRecord.FailedResult is not null)
+        {
+            return leagueRecord.FailedResult;
+        }
+
+        var removeUser = await _userManager.FindByIdAsync(request.UserID.ToString());
+        if (removeUser is null)
+        {
+            return BadRequest("That user does not exist.");
+        }
+
+        var removeResult = await _leagueMemberService.RemovePlayerFromLeague(leagueRecord.ValidResult!.League, removeUser);
+        if (removeResult.IsFailure)
+        {
+            return BadRequest(removeResult.Error);
         }
 
         return Ok();
@@ -562,33 +574,6 @@ public class LeagueManagerController : BaseLeagueController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<IActionResult> RemovePublisher([FromBody] PublisherRemoveRequest request)
-    {
-        var leagueYearPublisherRecord = await GetExistingLeagueYearAndPublisher(request.PublisherID, ActionProcessingModeBehavior.Allow,
-            RequiredRelationship.LeagueManager, RequiredYearStatus.YearNotFinishedNoDraftsStarted);
-        if (leagueYearPublisherRecord.FailedResult is not null)
-        {
-            return leagueYearPublisherRecord.FailedResult;
-        }
-        var validResult = leagueYearPublisherRecord.ValidResult!;
-        var leagueYear = validResult.LeagueYear;
-        var publisher = validResult.Publisher;
-
-        if (leagueYear.IsAnyDraftStarted)
-        {
-            return BadRequest("""Once the draft is started, you need to use "Remove Player".""");
-        }
-
-        await _publisherService.FullyRemovePublisher(leagueYear, publisher);
-
-        return Ok();
-    }
-
-    [HttpPost]
-    [ProducesResponseType(StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    [ProducesResponseType(StatusCodes.Status403Forbidden)]
     public async Task<IActionResult> SetPlayerActiveStatus([FromBody] LeaguePlayerActiveRequest request)
     {
         var leagueYearRecord = await GetExistingLeagueYear(request.LeagueID, request.Year, ActionProcessingModeBehavior.Allow,
@@ -612,7 +597,7 @@ public class LeagueManagerController : BaseLeagueController
             var publisherForUser = leagueYear.GetUserPublisher(domainUser);
             if (publisherForUser is not null && !userKeyValue.Value)
             {
-                return BadRequest("You must remove a player's publisher before you can set them as inactive.");
+                return BadRequest("You must disconnect a player from their publisher before you can set them as inactive.");
             }
 
             userActiveStatus.Add(domainUser, userKeyValue.Value);

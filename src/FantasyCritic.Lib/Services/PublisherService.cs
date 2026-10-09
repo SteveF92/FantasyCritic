@@ -140,11 +140,6 @@ public class PublisherService
         return Result.Success();
     }
 
-    public Task FullyRemovePublisher(LeagueYear leagueYear, Publisher publisher)
-    {
-        return _fantasyCriticRepo.FullyRemovePublisher(leagueYear, publisher);
-    }
-
     public async Task<Result> SetBidPriorityOrder(IReadOnlyList<KeyValuePair<PickupBid, int>> bidPriorities)
     {
         var requiredNumbers = Enumerable.Range(1, bidPriorities.Count).ToList();
@@ -240,7 +235,7 @@ public class PublisherService
 
     public async Task<Result> ReassignPublisher(LeagueYear leagueYear, IReadOnlyList<FantasyCriticUser> allUsersInLeague, Guid publisherID, Guid newUserID)
     {
-        var userAlreadyHasPublisher = leagueYear.Publishers.Any(x => x.User.Id == newUserID);
+        var userAlreadyHasPublisher = leagueYear.Publishers.Any(x => x.User?.Id == newUserID);
         if (userAlreadyHasPublisher)
         {
             return Result.Failure("That user already has a publisher in this league year.");
@@ -259,6 +254,45 @@ public class PublisherService
         }
 
         await _fantasyCriticRepo.ReassignPublisher(leagueYear, publisherToReassign, newUser);
+        return Result.Success();
+    }
+
+    public async Task<Result> DisconnectPlayer(LeagueYear leagueYear, Publisher publisher)
+    {
+        if (publisher.User is null)
+        {
+            return Result.Failure("That publisher has already been disconnected from its player.");
+        }
+
+        if (publisher.User.Id == leagueYear.League.LeagueManager.UserID)
+        {
+            return Result.Failure("You cannot disconnect yourself from your own publisher. Transfer the league manager role to someone else first.");
+        }
+
+        var leagueTrades = await _fantasyCriticRepo.GetTradesForLeague(leagueYear);
+        var tradesToReject = leagueTrades
+            .Where(x => x.Status.IsActive)
+            .Where(x => x.Proposer.PublisherID == publisher.PublisherID || x.CounterParty.PublisherID == publisher.PublisherID)
+            .ToList();
+
+        var leagueAction = new LeagueAction(publisher, _clock.GetCurrentInstant(), "Player Disconnected",
+            "Disconnected from their player by the league manager.", managerAction: true);
+        await _fantasyCriticRepo.DisconnectPlayer(leagueYear, publisher, tradesToReject, leagueAction);
+        await _discordPushService.SendLeagueActionMessage(leagueAction);
+        return Result.Success();
+    }
+
+    public async Task<Result> RemovePublisher(LeagueYear leagueYear, Publisher publisher)
+    {
+        if (publisher.User is not null)
+        {
+            return Result.Failure("Only a publisher with no player can be removed. Disconnect the player first.");
+        }
+
+        var managerAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Publisher Removed",
+            $"The publisher '{publisher.PublisherName}', which had no player, was removed from the league.");
+        await _fantasyCriticRepo.RemovePublisher(publisher, managerAction);
+        await _discordPushService.SendLeagueActionMessage(managerAction);
         return Result.Success();
     }
 

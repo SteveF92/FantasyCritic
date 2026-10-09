@@ -44,7 +44,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             return GetFailedResult<LeagueRecord>(BadRequest("League does not exist."));
         }
 
-        var playersInLeague = await _leagueMemberService.GetUsersWithRemoveStatus(league);
+        var playersInLeague = await _leagueMemberService.GetUsersInLeague(league);
         bool isInLeague = false;
         LeagueInvite? leagueInvite = null;
         bool isLeagueManager = false;
@@ -64,7 +64,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             }
             else
             {
-                isInLeague = playersInLeague.Any(x => x.User.Id == currentUserRecord.Value.Id);
+                isInLeague = playersInLeague.Any(x => x.Id == currentUserRecord.Value.Id);
                 if (!isInLeague)
                 {
                     var inviteesToLeague = await _leagueMemberService.GetOutstandingInvitees(league);
@@ -136,7 +136,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             }
             else
             {
-                isInLeague = combinedLeagueUserStatus.UsersWithRemoveStatus.Any(x => x.User.Id == currentUserRecord.Value.Id);
+                isInLeague = combinedLeagueUserStatus.UsersInLeague.Any(x => x.Id == currentUserRecord.Value.Id);
                 if (!isInLeague)
                 {
                     leagueInvite = combinedLeagueUserStatus.OutstandingInvites.GetMatchingInvite(currentUserRecord.Value.Email);
@@ -157,7 +157,7 @@ public abstract class BaseLeagueController : FantasyCriticController
 
         LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(leagueInvite, isInLeague, isActiveInYear, isLeagueManager, userIsAdmin);
         return new GenericResultRecord<LeagueYearRecord>(new LeagueYearRecord(currentUserRecord.ToNullable(), leagueYear,
-            combinedLeagueUserStatus.UsersWithRemoveStatus, combinedLeagueUserStatus.ActivePlayersForLeagueYear, combinedLeagueUserStatus.OutstandingInvites, relationship), null);
+            combinedLeagueUserStatus.UsersInLeague, combinedLeagueUserStatus.ActivePlayersForLeagueYear, combinedLeagueUserStatus.OutstandingInvites, relationship), null);
     }
 
     protected async Task<GenericResultRecord<LeagueYearWithSupplementalDataRecord>> GetExistingLeagueYearWithSupplementalData(Guid leagueID, int year,
@@ -214,7 +214,7 @@ public abstract class BaseLeagueController : FantasyCriticController
             }
             else
             {
-                isInLeague = combinedLeagueUserStatus.UsersWithRemoveStatus.Any(x => x.User.Id == currentUserRecord.Value.Id);
+                isInLeague = combinedLeagueUserStatus.UsersInLeague.Any(x => x.Id == currentUserRecord.Value.Id);
                 if (!isInLeague)
                 {
                     leagueInvite = combinedLeagueUserStatus.OutstandingInvites.GetMatchingInvite(currentUserRecord.Value.Email);
@@ -235,7 +235,7 @@ public abstract class BaseLeagueController : FantasyCriticController
 
         LeagueYearUserRelationship relationship = new LeagueYearUserRelationship(leagueInvite, isInLeague, isActiveInYear, isLeagueManager, userIsAdmin);
         return new GenericResultRecord<LeagueYearWithSupplementalDataRecord>(new LeagueYearWithSupplementalDataRecord(currentUserRecord.ToNullable(), leagueYear, leagueYearWithSupplementalData.SupplementalData,
-            combinedLeagueUserStatus.UsersWithRemoveStatus, combinedLeagueUserStatus.ActivePlayersForLeagueYear, combinedLeagueUserStatus.OutstandingInvites, relationship), null);
+            combinedLeagueUserStatus.UsersInLeague, combinedLeagueUserStatus.ActivePlayersForLeagueYear, combinedLeagueUserStatus.OutstandingInvites, relationship), null);
     }
 
     protected async Task<GenericResultRecord<LeagueYearPublisherRecord>> GetExistingLeagueYearAndPublisher(Guid leagueID, int year, Guid publisherID,
@@ -254,7 +254,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         bool userIsPublisher = leagueYearRecord.ValidResult.CurrentUser is not null &&
-                               leagueYearRecord.ValidResult.CurrentUser.Id == publisher.User.Id;
+                               leagueYearRecord.ValidResult.CurrentUser.Id == publisher.User?.Id;
         if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
             return UnauthorizedOrForbid<LeagueYearPublisherRecord>(leagueYearRecord.ValidResult.CurrentUser is not null);
@@ -287,7 +287,7 @@ public abstract class BaseLeagueController : FantasyCriticController
         }
 
         bool userIsPublisher = leagueYearRecord.ValidResult.CurrentUser is not null &&
-                               leagueYearRecord.ValidResult.CurrentUser.Id == publisher.User.Id;
+                               leagueYearRecord.ValidResult.CurrentUser.Id == publisher.User?.Id;
         if (requiredRelationship.MustBePublisher && !userIsPublisher)
         {
             return GetFailedResult<LeagueYearPublisherRecord>(Forbid());

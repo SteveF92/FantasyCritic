@@ -7,14 +7,14 @@ public class TradeViewModel
     public TradeViewModel(Trade domain, LocalDate currentDate)
     {
         TradeID = domain.TradeID;
-        ProposerUserID = domain.Proposer.User.Id;
+        ProposerUserID = domain.Proposer.User?.Id;
         ProposerPublisherID = domain.Proposer.PublisherID;
         ProposerPublisherName = domain.Proposer.PublisherName;
-        ProposerDisplayName = domain.Proposer.User.UserName;
-        CounterPartyUserID = domain.CounterParty.User.Id;
+        ProposerDisplayName = domain.Proposer.GetUserName();
+        CounterPartyUserID = domain.CounterParty.User?.Id;
         CounterPartyPublisherID = domain.CounterParty.PublisherID;
         CounterPartyPublisherName = domain.CounterParty.PublisherName;
-        CounterPartyDisplayName = domain.CounterParty.User.UserName;
+        CounterPartyDisplayName = domain.CounterParty.GetUserName();
 
         ProposerSendGames = domain.ProposerMasterGames.Select(x => new MasterGameYearWithCounterPickViewModel(x.MasterGameYear, x.CounterPick, currentDate)).ToList();
         CounterPartySendGames = domain.CounterPartyMasterGames.Select(x => new MasterGameYearWithCounterPickViewModel(x.MasterGameYear, x.CounterPick, currentDate)).ToList();
@@ -32,11 +32,11 @@ public class TradeViewModel
     }
 
     public Guid TradeID { get; }
-    public Guid ProposerUserID { get; }
+    public Guid? ProposerUserID { get; }
     public Guid ProposerPublisherID { get; }
     public string ProposerPublisherName { get; }
     public string ProposerDisplayName { get; }
-    public Guid CounterPartyUserID { get; }
+    public Guid? CounterPartyUserID { get; }
     public Guid CounterPartyPublisherID { get; }
     public string CounterPartyPublisherName { get; }
     public string CounterPartyDisplayName { get; }

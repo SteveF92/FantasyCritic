@@ -15,13 +15,12 @@
         <li>The old player will be marked as inactive in the current year.</li>
       </ol>
     </div>
+    <div class="alert alert-warning">You can also use this to assign a player to a publisher that has no player attached to it, which you can do by using the "Disconnect Player" option.</div>
     <div class="form-horizontal">
       <div class="form-group">
         <label for="publisherToReassign" class="control-label">Publisher to Reassign</label>
         <b-form-select v-model="publisherToReassign">
-          <option v-for="publisher in publishers" :key="publisher.publisherID" :value="publisher">
-            {{ publisher.publisherName }}
-          </option>
+          <option v-for="publisher in publishers" :key="publisher.publisherID" :value="publisher">{{ publisher.publisherName }} ({{ publisher.playerName }})</option>
         </b-form-select>
       </div>
 

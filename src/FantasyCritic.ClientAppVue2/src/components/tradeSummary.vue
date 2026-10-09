@@ -203,7 +203,7 @@ export default {
     },
     isInLeagueButNotInvolved() {
       let involvedParties = [this.trade.proposerUserID, this.trade.counterPartyUserID];
-      let allUserIDsInLeague = this.leagueYear.players.map((x) => x.user.userID);
+      let allUserIDsInLeague = this.leagueYear.players.filter((x) => !!x.user).map((x) => x.user.userID);
       let nonInvolvedParties = except(allUserIDsInLeague, involvedParties);
       return nonInvolvedParties.includes(this.userInfo.userID);
     },

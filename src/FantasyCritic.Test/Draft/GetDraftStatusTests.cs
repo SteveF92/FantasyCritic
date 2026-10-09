@@ -412,6 +412,44 @@ public class GetDraftStatusTests
     }
 
     [Test]
+    public void GetDraftStatus_FirstPublisherHasNoUser_SkipsToTheNextPublisher()
+    {
+        var leagueYear = new GetDraftStatusTestBuilder()
+            .WithPublishers(3)
+            .WithDraft(gamesToDraft: 1, counterPicksToDraft: 0, PlayStatus.Drafting)
+            .DisconnectPublisher(draftPosition: 1)
+            .Build();
+
+        var draftStatus = DraftFunctions.GetDraftStatus(leagueYear);
+
+        Assert.That(draftStatus, Is.Not.Null);
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(draftStatus!.NextDraftPublisher.GetDraftPosition(GetDraftStatusTestBuilder.DraftIDFor(1)), Is.EqualTo(2));
+            Assert.That(draftStatus.PicksToSkip, Has.Count.EqualTo(1));
+            Assert.That(draftStatus.PicksToSkip[0].Publisher.User, Is.Null);
+        }
+    }
+
+    [Test]
+    public void GetTrailingPicksToSkip_LastPublisherHasNoUser_ReturnsItsSkip()
+    {
+        var leagueYear = new GetDraftStatusTestBuilder()
+            .WithPublishers(2)
+            .WithDraft(gamesToDraft: 1, counterPicksToDraft: 0, PlayStatus.Drafting)
+            .DisconnectPublisher(draftPosition: 2)
+            .PickStandard()
+            .Build();
+
+        Assert.That(DraftFunctions.GetDraftStatus(leagueYear), Is.Null);
+
+        var trailingSkips = DraftFunctions.GetTrailingPicksToSkip(leagueYear);
+
+        Assert.That(trailingSkips, Has.Count.EqualTo(1));
+        Assert.That(trailingSkips[0].Publisher.User, Is.Null);
+    }
+
+    [Test]
     public void GetTrailingPicksToSkip_AllRemainingTurnsAreSkips_ReturnsQueuedSkips()
     {
         var leagueYear = new GetDraftStatusTestBuilder()

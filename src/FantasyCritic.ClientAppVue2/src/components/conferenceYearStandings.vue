@@ -73,16 +73,20 @@ export default {
       }
       return standings;
     },
+    standingsThatCanWin() {
+      // Publishers with no user stay in the standings, but can't win.
+      return (this.conferenceYear.standings ?? []).filter((x) => x.hasUser);
+    },
     topPublisher() {
-      if (this.conferenceYear.standings && this.conferenceYear.standings.length > 0) {
-        return maxBy(this.conferenceYear.standings, (x) => x.totalFantasyPoints);
+      if (this.standingsThatCanWin.length > 0) {
+        return maxBy(this.standingsThatCanWin, (x) => x.totalFantasyPoints);
       }
 
       return null;
     },
     projectedTopPublisher() {
-      if (this.conferenceYear.standings && this.conferenceYear.standings.length > 0) {
-        return maxBy(this.conferenceYear.standings, (x) => x.totalProjectedPoints);
+      if (this.standingsThatCanWin.length > 0) {
+        return maxBy(this.standingsThatCanWin, (x) => x.projectedFantasyPoints);
       }
 
       return null;

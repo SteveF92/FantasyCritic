@@ -26,25 +26,8 @@ BEGIN
   FROM tbl_user
   JOIN tbl_league_hasuser ON (tbl_user.UserID = tbl_league_hasuser.UserID)
   WHERE tbl_league_hasuser.LeagueID = P_LeagueID;
-  
-  
-  SELECT tbl_league_year.YEAR,
-         EXISTS (
-           SELECT 1 FROM tbl_league_draft ld
-           WHERE ld.LeagueID = tbl_league_year.LeagueID
-             AND ld.Year = tbl_league_year.Year
-             AND ld.PlayStatus <> 'NotStartedDraft'
-         ) AS AnyDraftStarted
-  FROM tbl_league_year
-  WHERE tbl_league_year.LeagueID = P_LeagueID;
-  
-  
-  SELECT UserID,
-         YEAR
-  FROM tbl_league_publisher
-  WHERE LeagueID = P_LeagueID;
-  
-  
+
+
   SELECT tbl_user.*
   FROM tbl_user
   JOIN tbl_league_activeplayer ON (tbl_user.UserID = tbl_league_activeplayer.UserID)

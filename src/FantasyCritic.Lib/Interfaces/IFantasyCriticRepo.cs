@@ -20,7 +20,6 @@ public interface IFantasyCriticRepo
     Task DeleteLeagueDraft(LeagueDraft draft, LeagueManagerAction managerAction);
 
     Task<IReadOnlyList<FantasyCriticUser>> GetUsersInLeague(Guid leagueID);
-    Task<IReadOnlyList<FantasyCriticUserRemovable>> GetUsersWithRemoveStatus(League league);
     Task<IReadOnlyList<FantasyCriticUser>> GetActivePlayersForLeagueYear(Guid leagueID, int year);
 
     Task SetPlayerActiveStatus(LeagueYear leagueYear, IReadOnlyDictionary<FantasyCriticUser, bool> usersToChange);
@@ -46,10 +45,12 @@ public interface IFantasyCriticRepo
     Task<IReadOnlyList<LeagueInviteLink>> GetInviteLinks(League league);
     Task<LeagueInviteLink?> GetInviteLinkByInviteCode(Guid inviteCode);
     Task ReassignPublisher(LeagueYear leagueYear, Publisher publisherToReassign, FantasyCriticUser newUser);
+    Task DisconnectPlayer(LeagueYear leagueYear, Publisher publisher, IReadOnlyList<Trade> tradesToReject, LeagueAction leagueAction);
+    Task RemovePublisher(Publisher publisher, LeagueManagerAction managerAction);
     Task SetArchiveStatusForUser(League league, bool archive, FantasyCriticUser user);
 
-    Task FullyRemovePublisher(LeagueYear leagueYear, Publisher deletePublisher);
     Task RemovePlayerFromLeague(League league, FantasyCriticUser removeUser);
+    Task<bool> UserHasPublisherInLeague(League league, FantasyCriticUser user);
     Task TransferLeagueManager(League league, FantasyCriticUser newManager);
 
     Task CreatePublisher(Publisher publisher);

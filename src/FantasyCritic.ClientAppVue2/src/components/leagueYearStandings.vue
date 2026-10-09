@@ -6,7 +6,8 @@
       <template #cell(userName)="data">
         <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
         <font-awesome-icon v-if="data.item.previousYearWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-year-winner" />
-        <span v-if="!data.item.user">{{ data.item.inviteName }}</span>
+        <span v-if="data.item.inviteID">{{ data.item.inviteName }}</span>
+        <span v-if="!data.item.user && data.item.publisher">&lt;{{ data.item.publisher.playerName }}&gt;</span>
       </template>
       <template #cell(publisher)="data">
         <span v-if="data.item.publisher">
@@ -17,7 +18,7 @@
           </span>
         </span>
         <span v-if="data.item.user && !data.item.publisher">&lt;Not Created&gt;</span>
-        <span v-if="!data.item.user">
+        <span v-if="data.item.inviteID">
           &lt;Invite Sent&gt;
           <span v-if="league.isManager">
             <b-button variant="danger" size="sm" @click="rescindInvite(data.item.inviteID, data.item.inviteName)">Rescind Invite</b-button>
@@ -113,16 +114,9 @@ export default {
       }
       return standings;
     },
-    topPublisher() {
-      if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return maxBy(this.leagueYear.publishers, (x) => x.totalFantasyPoints);
-      }
-
-      return null;
-    },
     projectedTopPublisher() {
-      if (this.leagueYear.publishers && this.leagueYear.publishers.length > 0) {
-        return maxBy(this.leagueYear.publishers, (x) => x.totalProjectedPoints);
+      if (this.publishersThatCanWin.length > 0) {
+        return maxBy(this.publishersThatCanWin, (x) => x.totalProjectedPoints);
       }
 
       return null;

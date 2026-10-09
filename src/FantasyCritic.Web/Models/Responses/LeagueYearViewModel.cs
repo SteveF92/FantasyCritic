@@ -32,6 +32,7 @@ public class LeagueYearViewModel
             .OrderBy(x => x.GetDraftPosition(displayOrderDraftID))
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, activeDraftNextPublisher, userIsInLeague, userIsInvitedToLeague, supplementalData.SystemWideValues, counterPickedByDictionary))
             .ToList();
+        WinningPublisherID = leagueYear.GetWinningPublisher()?.PublisherID;
 
         var publisherRankings = leagueYear.Publishers
             .Select(x => new
@@ -58,7 +59,7 @@ public class LeagueYearViewModel
             var publisher = leagueYear.GetUserPublisher(user);
             if (publisher is null)
             {
-                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, false));
+                playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user));
                 allPublishersMade = false;
             }
             else
@@ -67,8 +68,16 @@ public class LeagueYearViewModel
                 int projectedRanking = publisherProjectedRankings[publisher.PublisherID];
                 bool isPreviousYearWinner = supplementalData.PreviousYearWinnerUserID == user.UserID;
                 playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, user, publisher, currentDate, supplementalData.SystemWideValues,
-                    userIsInLeague, userIsInvitedToLeague, false, isPreviousYearWinner, ranking, projectedRanking));
+                    userIsInLeague, userIsInvitedToLeague, isPreviousYearWinner, ranking, projectedRanking));
             }
+        }
+
+        foreach (var publisher in leagueYear.Publishers.Where(x => x.User is null))
+        {
+            int ranking = publisherRankings[publisher.PublisherID];
+            int projectedRanking = publisherProjectedRankings[publisher.PublisherID];
+            playerVMs.Add(new PlayerWithPublisherViewModel(leagueYear, null, publisher, currentDate, supplementalData.SystemWideValues,
+                userIsInLeague, userIsInvitedToLeague, false, ranking, projectedRanking));
         }
 
         if (Year == leagueYear.League.Years.Max(x => x.Year))
@@ -155,6 +164,7 @@ public class LeagueYearViewModel
     public bool UserIsActive { get; }
     public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
     public IReadOnlyList<PublisherViewModel> Publishers { get; }
+    public Guid? WinningPublisherID { get; }
     public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }
     public IReadOnlyList<TagOverrideViewModel> TagOverrides { get; }
     public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }

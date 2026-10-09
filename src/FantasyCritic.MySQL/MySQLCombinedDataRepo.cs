@@ -8,7 +8,6 @@ using FantasyCritic.Lib.Interfaces;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities;
 using FantasyCritic.MySQL.Entities.Conferences;
-using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 
 namespace FantasyCritic.MySQL;
@@ -301,8 +300,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         //User Status
         var userEntities = resultSets.Read<FantasyCriticUserEntity>();
-        var playStatuses = resultSets.Read<LeagueYearStatusEntity>();
-        var userYears = resultSets.Read<LeagueYearUserEntity>();
         var activeUserEntities = resultSets.Read<FantasyCriticUserEntity>();
         var inviteEntities = resultSets.Read<LeagueInviteEntity>();
 
@@ -365,10 +362,9 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         var usersInLeague = userEntities.Select(x => x.ToDomain()).ToList();
         var activePlayersForLeagueYear = activeUserEntities.Select(x => x.ToDomain()).ToList();
-        var usersWithRemoveStatus = DomainConversionUtilities.ConvertUserRemovableEntities(leagueYear.League, userYears, playStatuses, usersInLeague);
         var leagueInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
 
-        var userStatus = new CombinedLeagueYearUserStatus(usersWithRemoveStatus, leagueInvites, activePlayersForLeagueYear);
+        var userStatus = new CombinedLeagueYearUserStatus(usersInLeague, leagueInvites, activePlayersForLeagueYear);
 
         return new LeagueYearWithUserStatus(leagueYear, userStatus);
     }
@@ -443,8 +439,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         //User Status
         var userEntities = resultSets.Read<FantasyCriticUserEntity>();
-        var playStatuses = resultSets.Read<LeagueYearStatusEntity>();
-        var userYears = resultSets.Read<LeagueYearUserEntity>();
         var activeUserEntities = resultSets.Read<FantasyCriticUserEntity>();
         var inviteEntities = resultSets.Read<LeagueInviteEntity>();
 
@@ -531,10 +525,9 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
 
         var usersInLeague = userEntities.Select(x => x.ToDomain()).ToList();
         var activePlayersForLeagueYear = activeUserEntities.Select(x => x.ToDomain()).ToList();
-        var usersWithRemoveStatus = DomainConversionUtilities.ConvertUserRemovableEntities(leagueYear.League, userYears, playStatuses, usersInLeague);
         var leagueInvites = inviteEntities.Select(x => x.ToDomain()).ToList();
 
-        var userStatus = new CombinedLeagueYearUserStatus(usersWithRemoveStatus, leagueInvites, activePlayersForLeagueYear);
+        var userStatus = new CombinedLeagueYearUserStatus(usersInLeague, leagueInvites, activePlayersForLeagueYear);
 
         return new LeagueYearWithSupplementalDataFromRepo(leagueYear, supplementalData, userStatus);
     }

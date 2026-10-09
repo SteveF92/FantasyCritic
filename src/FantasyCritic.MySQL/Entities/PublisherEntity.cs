@@ -18,7 +18,7 @@ public class PublisherEntity
         PublisherSlogan = publisher.PublisherSlogan;
         LeagueID = publisher.LeagueYearKey.LeagueID;
         Year = publisher.LeagueYearKey.Year;
-        UserID = publisher.User.Id;
+        UserID = publisher.User?.Id;
         UnrestrictedReleaseStatusGamesDropped = publisher.UnrestrictedReleaseStatusGamesDropped;
         WillNotReleaseGamesDropped = publisher.WillNotReleaseGamesDropped;
         WillReleaseGamesDropped = publisher.WillReleaseGamesDropped;
@@ -34,7 +34,7 @@ public class PublisherEntity
     public string? PublisherSlogan { get; set; }
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
-    public Guid UserID { get; set; }
+    public Guid? UserID { get; set; }
     public int UnrestrictedReleaseStatusGamesDropped { get; set; }
     public int WillNotReleaseGamesDropped { get; set; }
     public int WillReleaseGamesDropped { get; set; }
@@ -43,7 +43,7 @@ public class PublisherEntity
     public string AutoDraftMode { get; set; } = null!;
     public bool OnlyAutoDraftFromWatchlist { get; set; }
 
-    public Publisher ToDomain(FantasyCriticUser user, IEnumerable<PublisherDraftInfo> draftInfos, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames)
+    public Publisher ToDomain(FantasyCriticUser? user, IEnumerable<PublisherDraftInfo> draftInfos, IEnumerable<PublisherGame> publisherGames, IEnumerable<FormerPublisherGame> formerPublisherGames)
     {
         var autoDraftSettings = new Lib.Enums.AutoDraftSettings(Lib.Enums.AutoDraftMode.FromValue(AutoDraftMode), OnlyAutoDraftFromWatchlist);
         return new Publisher(PublisherID, new LeagueYearKey(LeagueID, Year), user, PublisherName, PublisherIcon, PublisherSlogan, draftInfos,

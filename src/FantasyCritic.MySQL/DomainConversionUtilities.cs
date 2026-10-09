@@ -5,7 +5,6 @@ using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.SharedSerialization.Database;
 using FantasyCritic.MySQL.Entities;
-using FantasyCritic.MySQL.Entities.Identity;
 using FantasyCritic.MySQL.Entities.Trades;
 
 namespace FantasyCritic.MySQL;
@@ -62,7 +61,7 @@ internal static class DomainConversionUtilities
         {
             var gamesForPublisher = domainGameLookup[entity.PublisherID];
             var formerGamesForPublisher = domainFormerGameLookup[entity.PublisherID];
-            var user = usersInLeague[entity.UserID];
+            var user = entity.UserID.HasValue ? usersInLeague[entity.UserID.Value] : null;
             var draftInfos = draftInfosByPublisherID[entity.PublisherID];
             var domainPublisher = entity.ToDomain(user, draftInfos, gamesForPublisher, formerGamesForPublisher);
             domainPublishers.Add(domainPublisher);
@@ -123,7 +122,7 @@ internal static class DomainConversionUtilities
     /// </summary>
     public static FantasyCriticUser ResolveTradeVoteUser(Guid voteUserId, LeagueYear leagueYear, IReadOnlyDictionary<Guid, FantasyCriticUser> usersById)
     {
-        var fromPublisher = leagueYear.Publishers.FirstOrDefault(x => x.User.Id == voteUserId)?.User;
+        var fromPublisher = leagueYear.Publishers.FirstOrDefault(x => x.User?.Id == voteUserId)?.User;
         if (fromPublisher is not null)
         {
             return fromPublisher;
@@ -292,47 +291,5 @@ internal static class DomainConversionUtilities
             false, null, false, null, conditionalDropGame, 0, null, null, null, null, null);
 
         return fakePublisherGame;
-    }
-
-    public static IReadOnlyList<FantasyCriticUserRemovable> ConvertUserRemovableEntities(League league, IEnumerable<LeagueYearUserEntity> userYears,
-        IEnumerable<LeagueYearStatusEntity> playStatuses, IReadOnlyList<FantasyCriticUser> usersInLeague)
-    {
-        var userYearsDictionary = new Dictionary<int, HashSet<Guid>>();
-        foreach (var userYear in userYears)
-        {
-            if (!userYearsDictionary.ContainsKey(userYear.Year))
-            {
-                userYearsDictionary[userYear.Year] = [];
-            }
-
-            userYearsDictionary[userYear.Year].Add(userYear.UserID);
-        }
-
-        var startedYears = playStatuses
-            .Where(x => x.AnyDraftStarted)
-            .Select(x => x.Year)
-            .ToList();
-
-        List<FantasyCriticUserRemovable> usersWithStatus = [];
-        foreach (var user in usersInLeague)
-        {
-            bool userRemovable = league.LeagueManager.UserID != user.UserID;
-            foreach (var year in startedYears)
-            {
-                if (!userYearsDictionary.ContainsKey(year))
-                {
-                    continue;
-                }
-                var userPlayedInYear = userYearsDictionary[year].Contains(user.Id);
-                if (userPlayedInYear)
-                {
-                    userRemovable = false;
-                }
-            }
-
-            usersWithStatus.Add(new FantasyCriticUserRemovable(user, userRemovable));
-        }
-
-        return usersWithStatus;
     }
 }

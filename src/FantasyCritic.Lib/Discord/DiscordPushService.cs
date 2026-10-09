@@ -585,7 +585,7 @@ public class DiscordPushService
         }
 
         var leagueText = await GetLeagueText(publisher.LeagueYearKey.LeagueID, true, "League: ");
-        var messageToSend = $"## Publisher Update\n{leagueText}Publisher **{oldPublisherName}** ({publisher.User.UserName}) is now known as **{newPublisherName}**";
+        var messageToSend = $"## Publisher Update\n{leagueText}Publisher **{oldPublisherName}** ({publisher.GetUserName()}) is now known as **{newPublisherName}**";
 
         var preparedMessages = channels.Select(channel => new PreparedDiscordMessage(channel, messageToSend));
         await DiscordRateLimitUtilities.RateLimitMessages(preparedMessages);
@@ -1010,14 +1010,14 @@ public class DiscordPushService
         }
 
         IUser? proposerDiscordUser = null;
-        var proposerDiscordUserId = await GetDiscordUserIdForFantasyCriticUser(trade.Proposer.User.ToMinimal(), userStore);
+        var proposerDiscordUserId = await GetDiscordUserIdForFantasyCriticUser(trade.Proposer.User?.ToMinimal(), userStore);
         if (proposerDiscordUserId != null)
         {
             proposerDiscordUser = await _client.GetUserAsync(proposerDiscordUserId.Value);
         }
 
         IUser? counterPartyDiscordUser = null;
-        var counterPartyDiscordUserId = await GetDiscordUserIdForFantasyCriticUser(trade.CounterParty.User.ToMinimal(), userStore);
+        var counterPartyDiscordUserId = await GetDiscordUserIdForFantasyCriticUser(trade.CounterParty.User?.ToMinimal(), userStore);
         if (counterPartyDiscordUserId != null)
         {
             counterPartyDiscordUser = await _client.GetUserAsync(counterPartyDiscordUserId.Value);
@@ -1184,8 +1184,13 @@ public class DiscordPushService
         return new FinalYearStandingsSendResult(true, leaguesMessaged, preparedMessages.Count, failedMessageCount);
     }
 
-    private static async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(MinimalFantasyCriticUser fantasyCriticUser, IFantasyCriticUserStore userStore)
+    private static async Task<ulong?> GetDiscordUserIdForFantasyCriticUser(MinimalFantasyCriticUser? fantasyCriticUser, IFantasyCriticUserStore userStore)
     {
+        if (fantasyCriticUser is null)
+        {
+            return null;
+        }
+
         var fakedFullUser = new FantasyCriticUser()
         {
             Id = fantasyCriticUser.UserID
@@ -1543,13 +1548,13 @@ public class DiscordPushService
         if (!sendRepeatDraftPublisherMessage)
         {
             IUser? discordUser = null;
-            var publisherDiscordUser = await GetDiscordUserIdForFantasyCriticUser(nextPublisherUp.User.ToMinimal(), userStore);
+            var publisherDiscordUser = await GetDiscordUserIdForFantasyCriticUser(nextPublisherUp.User?.ToMinimal(), userStore);
             if (publisherDiscordUser != null)
             {
                 discordUser = await _client.GetUserAsync(publisherDiscordUser.Value);
                 if (discordUser is null)
                 {
-                    Logger.Warning("Could not find discord user for next draft message: {leagueId} {userId} {attemptedDiscordId}", leagueYear.League.LeagueID, nextPublisherUp.User.UserID, publisherDiscordUser);
+                    Logger.Warning("Could not find discord user for next draft message: {leagueId} {userId} {attemptedDiscordId}", leagueYear.League.LeagueID, nextPublisherUp.User?.UserID, publisherDiscordUser);
                 }
             }
 
