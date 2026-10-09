@@ -176,6 +176,30 @@ public class SlotAssignmentFunctionsTests
     }
 
     [Test]
+    public void GetNewSlotAssignments_WhenRemovingSpecialSlots_KeptSpecialSlotGamesStayAndRemovedOnesJoinNormalSlots()
+    {
+        // 8 std, 4 special (special at 4, 5, 6, 7). Normal slots 0-1 and all special slots filled.
+        // Remove 2 special slots: 8 std, 2 special (special at 6, 7).
+        // Special positions 0 and 1 survive: their games (slots 4, 5) move to 6, 7.
+        // Special positions 2 and 3 are removed: their games (slots 6, 7) compact after the normal games, to 2, 3.
+        var leagueYear = BuildLeagueYear(standardGames: 8, specialSlotCount: 4, filledStandardSlotNumbers: [0, 1, 4, 5, 6, 7]);
+        var gamesBySlot = leagueYear.Publishers.Single().PublisherGames.ToDictionary(g => g.SlotNumber);
+        var newOptions = BuildLeagueOptions(standardGames: 8, specialSlotCount: 2);
+
+        var assignments = SlotAssignmentFunctions.GetNewSlotAssignments(leagueYear, newOptions, leagueYear.Publishers);
+
+        var expectedNewSlotByOldSlot = new Dictionary<int, int> { [0] = 0, [1] = 1, [4] = 6, [5] = 7, [6] = 2, [7] = 3 };
+        Assert.Multiple(() =>
+        {
+            foreach (var (oldSlot, newSlot) in expectedNewSlotByOldSlot)
+            {
+                Assert.That(assignments[gamesBySlot[oldSlot].PublisherGameID], Is.EqualTo(newSlot),
+                    $"Game in slot {oldSlot} should move to slot {newSlot}.");
+            }
+        });
+    }
+
+    [Test]
     public void GetNewSlotAssignments_WhenRemovingSpecialSlotsAndStandardGamesEqually_KeepsEveryGameInsideStandardGames()
     {
         // 10 std, 4 special (special at 6, 7, 8, 9). Normal slots 0-3 and all special slots filled (8 games).
