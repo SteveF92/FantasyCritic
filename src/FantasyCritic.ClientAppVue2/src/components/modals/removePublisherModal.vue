@@ -4,11 +4,15 @@
       {{ errorInfo }}
     </div>
 
-    <div class="alert alert-info">Only a publisher with no player can be removed. To remove a player's publisher, use "Disconnect a Player" first.</div>
+    <div class="alert alert-info">
+      Only a publisher with no player can be removed. To remove a player's publisher, use "Disconnect a Player" first.
+    </div>
 
     <div v-if="playStarted" class="alert alert-warning">
-      This is not recommended. A publisher with no player is already frozen and can stay in the league for the rest of the year. If you remove it, all of its games are deleted, and any that haven't
-      released yet become available for the rest of the league to pick up, which can change the balance of your league. It cannot be undone.
+      Removing a publisher affects the competitive balance of your league. 
+      If you remove the publisher, all of the games owned by it that haven't released yet become available for bidding.
+      This should not be done lightly, as it is not reversible. 
+      A publisher with no player connected to it is already effectively "frozen", that player cannot participate any longer.
     </div>
 
     <div class="form-group">
@@ -18,8 +22,13 @@
       </b-form-select>
     </div>
 
+    <div v-if="readyToConfirm">
+      <div class="alert alert-warning">If you are sure you want do this, please type "I acknowledge the implications for my league." below.</div>
+      <input v-model="removeConfirmation" type="text" class="form-control input" />
+    </div>
+
     <template #modal-footer>
-      <input type="submit" class="btn btn-danger" value="Remove Publisher" :disabled="!publisherToRemove" @click="removePublisher" />
+      <input type="submit" class="btn btn-danger" value="Remove Publisher" :disabled="!readyToRemove" @click="removePublisher" />
     </template>
   </b-modal>
 </template>
@@ -32,13 +41,20 @@ export default {
   data() {
     return {
       publisherToRemove: null,
+      removeConfirmation: '',
       errorInfo: ''
     };
   },
   computed: {
     removablePublishers() {
       return this.publishers.filter((x) => !x.userID);
-    }
+    },
+    readyToConfirm() {
+      return !!this.publisherToRemove;
+    },
+    readyToRemove() {
+      return this.readyToConfirm && this.removeConfirmation === 'I acknowledge the implications for my league.';
+    },
   },
   methods: {
     async removePublisher() {

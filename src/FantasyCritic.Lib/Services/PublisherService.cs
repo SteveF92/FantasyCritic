@@ -286,7 +286,7 @@ public class PublisherService
     {
         if (publisher.User is not null)
         {
-            return Result.Failure("Only a publisher with no player can be removed. Disconnect its player first.");
+            return Result.Failure("Only a publisher with no player can be removed. Disconnect the player first.");
         }
 
         var managerAction = new LeagueManagerAction(leagueYear.Key, _clock.GetCurrentInstant(), "Publisher Removed",

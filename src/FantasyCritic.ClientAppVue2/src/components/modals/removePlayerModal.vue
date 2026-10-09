@@ -5,12 +5,13 @@
     </div>
 
     <div class="alert alert-info">
-      Use this to remove someone who never played in this league, such as a player who joined but never showed up. A player who has had a publisher in any year can't be removed, because that would
-      erase league history.
+     This option will let you remove a player from the league, provided they have no publishers, either in the current year, or in previous years.
       <ul>
-        <li>To cut a player off during this year, use "Disconnect a Player".</li>
-        <li>To leave a player out of a new year, use "Manage Active Players".</li>
+        <li>If you are starting a new year, and there is a player who doesn't wish to return, use "Manage Active Players".</li>
+        <li>If you are in the middle of a year and need to remove a player, use "Disconnect a Player".</li>
       </ul>
+
+      This particular feature is most useful for situations such as a player not showing up to the draft. If they never played at all, they can be removed here.
     </div>
 
     <div class="form-group">
