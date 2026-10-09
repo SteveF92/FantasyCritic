@@ -159,7 +159,57 @@ public class SlotAssignmentFunctionsTests
         });
     }
 
+    // ── Removing special slots ────────────────────────────────────────────────
+
+    [Test]
+    public void GetNewSlotAssignments_WhenRemovingSpecialSlots_KeepsEveryGameInsideStandardGames()
+    {
+        // 8 std, 4 special (special at 4, 5, 6, 7). All 8 slots filled.
+        // Remove 2 special slots: 8 std, 2 special (special at 6, 7).
+        // shift = (8-8)-(2-4) = +2, so the games in special slots 6 and 7 would move to 8 and 9.
+        var leagueYear = BuildLeagueYear(standardGames: 8, specialSlotCount: 4, filledStandardSlotNumbers: [0, 1, 2, 3, 4, 5, 6, 7]);
+        var newOptions = BuildLeagueOptions(standardGames: 8, specialSlotCount: 2);
+
+        var assignments = SlotAssignmentFunctions.GetNewSlotAssignments(leagueYear, newOptions, leagueYear.Publishers);
+
+        AssertEveryGameIsInARealSlot(leagueYear, assignments, newOptions.StandardGames);
+    }
+
+    [Test]
+    public void GetNewSlotAssignments_WhenRemovingSpecialSlotsAndStandardGamesEqually_KeepsEveryGameInsideStandardGames()
+    {
+        // 10 std, 4 special (special at 6, 7, 8, 9). Normal slots 0-3 and all special slots filled (8 games).
+        // Remove 2 standard games and 2 special slots: 8 std, 2 special (special at 6, 7).
+        // shift = (8-10)-(2-4) = 0, so nothing moves and the games in slots 8 and 9 are past the last slot.
+        var leagueYear = BuildLeagueYear(standardGames: 10, specialSlotCount: 4, filledStandardSlotNumbers: [0, 1, 2, 3, 6, 7, 8, 9]);
+        var newOptions = BuildLeagueOptions(standardGames: 8, specialSlotCount: 2);
+
+        var assignments = SlotAssignmentFunctions.GetNewSlotAssignments(leagueYear, newOptions, leagueYear.Publishers);
+
+        AssertEveryGameIsInARealSlot(leagueYear, assignments, newOptions.StandardGames);
+    }
+
     // ── Helpers ───────────────────────────────────────────────────────────────
+
+    /// <summary>
+    /// An empty result means no game moves; otherwise the repo requires every non-counter-pick game to be assigned.
+    /// </summary>
+    private static void AssertEveryGameIsInARealSlot(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> assignments, int newStandardGames)
+    {
+        var games = leagueYear.Publishers.SelectMany(p => p.PublisherGames).Where(g => !g.CounterPick).ToList();
+        var resultingSlots = games.ToDictionary(g => g, g => assignments.Count == 0 ? g.SlotNumber : assignments[g.PublisherGameID]);
+
+        Assert.Multiple(() =>
+        {
+            foreach (var (game, slotNumber) in resultingSlots)
+            {
+                Assert.That(slotNumber, Is.InRange(0, newStandardGames - 1),
+                    $"'{game.GameName}' (was slot {game.SlotNumber}) ends up in slot {slotNumber}, outside the {newStandardGames} standard slots.");
+            }
+
+            Assert.That(resultingSlots.Values, Is.Unique, "Two games ended up in the same slot.");
+        });
+    }
 
     private static readonly int _year = 2026;
 
