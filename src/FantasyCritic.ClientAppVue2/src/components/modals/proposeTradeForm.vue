@@ -133,7 +133,7 @@ export default {
       return '';
     },
     otherPublishers() {
-      return this.leagueYear.publishers.filter((x) => x.publisherID !== this.userPublisher.publisherID);
+      return this.leagueYear.publishers.filter((x) => x.publisherID !== this.userPublisher.publisherID && !!x.userID);
     }
   },
   methods: {

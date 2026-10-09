@@ -69,6 +69,11 @@ public class TradeService
             return Result.Failure("The other publisher does not have enough budget for this trade.");
         }
 
+        if (counterParty.User is null)
+        {
+            return Result.Failure("You cannot trade with a disconnected publisher.");
+        }
+
         var proposerPublisherGames = proposer.PublisherGames.Where(x => proposerPublisherGameIDs.Contains(x.PublisherGameID)).ToList();
         var counterPartyPublisherGames = counterParty.PublisherGames.Where(x => counterPartyPublisherGameIDs.Contains(x.PublisherGameID)).ToList();
         if (proposerPublisherGames.Count != proposerPublisherGameIDs.Count)
