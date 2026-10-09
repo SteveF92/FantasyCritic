@@ -74,6 +74,7 @@ export default {
     clearData() {
       this.publisherToRemove = null;
       this.errorInfo = '';
+      this.removeConfirmation = '';
     }
   }
 };

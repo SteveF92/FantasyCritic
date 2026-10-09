@@ -9,7 +9,7 @@
       <ul>
         <li>The player is marked inactive this year and can no longer act for the publisher.</li>
         <li>The publisher, and any games it already contains, remains in place for the rest of the year, but it is effectively "frozen in time" as it no longer has a player attached to it.</li>
-        <li>Any pending bids or drops drops the player placed are deleted, and any open trades they are involved in are automatically rejected.</li>
+        <li>Any pending bids or drops the player placed are deleted, and any open trades they are involved in are automatically rejected.</li>
         <li>If the player had any games on their publisher's watch list, they will be cleared.</li>
         <li>If this is a multi draft league, the publisher will be skipped in any future drafts.</li>
       </ul>
