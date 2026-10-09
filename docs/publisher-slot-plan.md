@@ -88,19 +88,31 @@ Order inside the script, so a data problem stops it before anything is destroyed
    rerun after a data fix is safe.
 3. Copy tags: for each `tbl_league_specialgameslot` row, insert into `tbl_league_slotrequirestag` against the standard
    slot numbered `StandardGames - specialSlotCount + SpecialSlotPosition` for that league year.
-4. `ALTER TABLE tbl_league_publishergame ADD COLUMN IF NOT EXISTS LeagueSlotID CHAR(36) NULL`.
-5. Backfill `LeagueSlotID` by joining publisher game to publisher to slot on league, year, `CounterPick`, `SlotNumber`.
-6. `MODIFY LeagueSlotID CHAR(36) NOT NULL`. **This is the guard.** A game past the roster is still null here and the
-   alter fails with nothing dropped.
-7. Add `UNIQUE (PublisherID, LeagueSlotID)` and the composite FK `(LeagueSlotID, CounterPick)`.
-8. Drop `UNQ_Slot` and `SlotNumber` from `tbl_league_publishergame`.
-9. Drop `StandardGames` and `CounterPicks` from `tbl_league_year`.
-10. Drop `tbl_league_specialgameslot`.
+4. Inside a throwaway stored procedure (MySQL has no `ADD COLUMN IF NOT EXISTS`, and MySqlConnector rejects `@user`
+   variables in scripts, so a procedure is the only way to get `IF` and `SIGNAL`):
+   - guard: every special slot tag found a slot, or `SIGNAL` with the count and stop;
+   - add `LeagueSlotID CHAR(36) NULL` to `tbl_league_publishergame` if it is missing;
+   - backfill it by joining publisher game to publisher to slot on league, year, `CounterPick`, `SlotNumber`;
+   - guard: no game is left without a slot, or `SIGNAL` with the count and stop. **This is the point where a game
+     past the roster stops the migration, with nothing dropped.**
+5. `MODIFY LeagueSlotID CHAR(36) NOT NULL`, add `UNIQUE (PublisherID, LeagueSlotID)` and the composite FK
+   `(LeagueSlotID, CounterPick)`. The unique index also takes over from `UNQ_Slot` as the index behind the
+   `PublisherID` foreign key, so it must exist before `UNQ_Slot` is dropped.
+6. Drop `UNQ_Slot` and `SlotNumber` from `tbl_league_publishergame`.
+7. Drop `StandardGames` and `CounterPicks` from `tbl_league_year`.
+8. Drop `tbl_league_specialgameslot`.
 
 Before asking for review: run the script against a production snapshot (RdsSnapshotManager / LocalDatabaseTool) and
 report the result, including the count of games the guard would reject. Also note that the idempotent stored
 procedures still name the dropped columns; MySQL accepts them at creation and they fail when called, which is expected
 until Step 4.
+
+**Tested (2026-10-09)** on a clone of the local Docker database (99 league years, 231 publishers, 794 games, 14
+league years with special slots, 2 flex slots) and on an empty database running the whole chain. The clone had 20
+games past the roster left behind by the integration tests that reproduced the bug; the guard stopped the script
+with those 20 named and nothing dropped, a rerun after compacting them succeeded, and every surviving game kept its
+slot number and every special slot tag landed on the slot the old formula put it in. The production snapshot run
+is still outstanding (no connectivity at the time), so the production guard count is unknown.
 
 The step ends with the migration committed and the solution not building.
 
