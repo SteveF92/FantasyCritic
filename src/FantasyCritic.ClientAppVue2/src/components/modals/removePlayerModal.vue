@@ -5,7 +5,7 @@
     </div>
 
     <div class="alert alert-info">
-     This option will let you remove a player from the league, provided they have no publishers, either in the current year, or in previous years.
+      This option will let you remove a player from the league, provided they have no publishers, either in the current year, or in previous years.
       <ul>
         <li>If you are starting a new year, and there is a player who doesn't wish to return, use "Manage Active Players".</li>
         <li>If you are in the middle of a year and need to remove a player, use "Disconnect a Player".</li>

@@ -4,15 +4,11 @@
       {{ errorInfo }}
     </div>
 
-    <div class="alert alert-info">
-      Only a publisher with no player can be removed. To remove a player's publisher, use "Disconnect a Player" first.
-    </div>
+    <div class="alert alert-info">Only a publisher with no player can be removed. To remove a player's publisher, use "Disconnect a Player" first.</div>
 
     <div v-if="playStarted" class="alert alert-warning">
-      Removing a publisher affects the competitive balance of your league. 
-      If you remove the publisher, all of the games owned by it that haven't released yet become available for bidding.
-      This should not be done lightly, as it is not reversible. 
-      A publisher with no player connected to it is already effectively "frozen", that player cannot participate any longer.
+      Removing a publisher affects the competitive balance of your league. If you remove the publisher, all of the games owned by it that haven't released yet become available for bidding. This should
+      not be done lightly, as it is not reversible. A publisher with no player connected to it is already effectively "frozen", that player cannot participate any longer.
     </div>
 
     <div class="form-group">
@@ -54,7 +50,7 @@ export default {
     },
     readyToRemove() {
       return this.readyToConfirm && this.removeConfirmation === 'I acknowledge the implications for my league.';
-    },
+    }
   },
   methods: {
     async removePublisher() {
