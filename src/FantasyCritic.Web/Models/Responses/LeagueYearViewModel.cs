@@ -32,6 +32,7 @@ public class LeagueYearViewModel
             .OrderBy(x => x.GetDraftPosition(displayOrderDraftID))
             .Select(x => new PublisherViewModel(leagueYear, x, currentDate, activeDraftNextPublisher, userIsInLeague, userIsInvitedToLeague, supplementalData.SystemWideValues, counterPickedByDictionary))
             .ToList();
+        WinningPublisherID = leagueYear.GetWinningPublisher()?.PublisherID;
 
         var publisherRankings = leagueYear.Publishers
             .Select(x => new
@@ -163,6 +164,7 @@ public class LeagueYearViewModel
     public bool UserIsActive { get; }
     public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
     public IReadOnlyList<PublisherViewModel> Publishers { get; }
+    public Guid? WinningPublisherID { get; }
     public IReadOnlyList<EligibilityOverrideViewModel> EligibilityOverrides { get; }
     public IReadOnlyList<TagOverrideViewModel> TagOverrides { get; }
     public IReadOnlyList<ManagerMessageViewModel> ManagerMessages { get; }
