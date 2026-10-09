@@ -75,44 +75,40 @@ It is not an inventory of SQL strings or stored procedures. Those are listed in 
 
 ## Step 1: The full database migration (Claude)
 
-Rewrite `src/FantasyCritic.DatabaseUpdater/Scripts/Sequential/2026-10-09_000_publisherSlotRefactor.sql` to take the
-schema all the way to the final state. Pure SQL; no code migration, and no stored procedure edits yet.
+Three migrations take the schema all the way to the final state. DbUp runs them in name order, stops at the first
+failure, and journals each only when it completes, so the cleanup can never run against unmigrated data, and a rerun
+after a data fix starts at the first unjournaled one. No stored procedure edits yet.
 
-Order inside the script, so a data problem stops it before anything is destroyed:
+1. **`Scripts/Sequential/2026-10-09_000_publisherSlotSchema.sql`**, DDL only, runs exactly once. Creates
+   `tbl_league_slot` (with `SlotName VARCHAR(50) NULL` and a `UNIQUE (LeagueSlotID, CounterPick)` index for the
+   composite FK to target) and `tbl_league_slotrequirestag`. Adds `LeagueSlotID CHAR(36) NULL` to
+   `tbl_league_publishergame` together with `UNIQUE (PublisherID, LeagueSlotID)` and the composite FK
+   `(LeagueSlotID, CounterPick)`; both accept NULL, so they validate the backfill as it happens.
+2. **`CodeMigrations/PublisherSlotDataMigration.cs`**, registered as `2026-10-09_001_publisherSlotData.cs`, DML only,
+   one transaction. Guards first, so a failure writes nothing: every special slot position fits inside its roster,
+   and no game has a `SlotNumber` past `StandardGames` (or `CounterPicks`). Each offending game is logged with its
+   league, publisher, name and slot, then the migration throws. **This is where a game past the roster stops the
+   deploy, with nothing changed.** Then it generates `0..StandardGames-1` and `0..CounterPicks-1` slot rows per
+   league year, copies special slot tags onto slot `StandardGames - specialSlotCount + SpecialSlotPosition`, and
+   backfills `LeagueSlotID` with one `UPDATE ... JOIN`. It uses raw SQL and private row classes, never a repo,
+   entity or domain type, because those change shape in Steps 2 to 4 and this code must keep running on a fresh
+   database forever. For the same reason it needs no prerequisites script.
+3. **`Scripts/Sequential/2026-10-09_002_publisherSlotCleanup.sql`**, DDL only. `MODIFY LeagueSlotID NOT NULL`, drop
+   `UNQ_Slot` and `SlotNumber` (the new unique index now backs the `PublisherID` FK), drop `StandardGames` and
+   `CounterPicks` from `tbl_league_year`, drop `tbl_league_specialgameslot`.
 
-1. `CREATE TABLE IF NOT EXISTS tbl_league_slot` and `tbl_league_slotrequirestag` as drafted, plus:
-   - `SlotName VARCHAR(50) NULL` on `tbl_league_slot`;
-   - `UNIQUE (LeagueSlotID, CounterPick)` on `tbl_league_slot`, which the composite FK from publisher games needs.
-2. Generate slot rows for every league year with a recursive CTE: `0..StandardGames-1` with `CounterPick = 0` and
-   `0..CounterPicks-1` with `CounterPick = 1`, `UUID()` for IDs. Skip league years that already have rows, so a
-   rerun after a data fix is safe.
-3. Copy tags: for each `tbl_league_specialgameslot` row, insert into `tbl_league_slotrequirestag` against the standard
-   slot numbered `StandardGames - specialSlotCount + SpecialSlotPosition` for that league year.
-4. Inside a throwaway stored procedure (MySQL has no `ADD COLUMN IF NOT EXISTS`, and MySqlConnector rejects `@user`
-   variables in scripts, so a procedure is the only way to get `IF` and `SIGNAL`):
-   - guard: every special slot tag found a slot, or `SIGNAL` with the count and stop;
-   - add `LeagueSlotID CHAR(36) NULL` to `tbl_league_publishergame` if it is missing;
-   - backfill it by joining publisher game to publisher to slot on league, year, `CounterPick`, `SlotNumber`;
-   - guard: no game is left without a slot, or `SIGNAL` with the count and stop. **This is the point where a game
-     past the roster stops the migration, with nothing dropped.**
-5. `MODIFY LeagueSlotID CHAR(36) NOT NULL`, add `UNIQUE (PublisherID, LeagueSlotID)` and the composite FK
-   `(LeagueSlotID, CounterPick)`. The unique index also takes over from `UNQ_Slot` as the index behind the
-   `PublisherID` foreign key, so it must exist before `UNQ_Slot` is dropped.
-6. Drop `UNQ_Slot` and `SlotNumber` from `tbl_league_publishergame`.
-7. Drop `StandardGames` and `CounterPicks` from `tbl_league_year`.
-8. Drop `tbl_league_specialgameslot`.
-
-Before asking for review: run the script against a production snapshot (RdsSnapshotManager / LocalDatabaseTool) and
+Before asking for review: run the chain against a production snapshot (RdsSnapshotManager / LocalDatabaseTool) and
 report the result, including the count of games the guard would reject. Also note that the idempotent stored
 procedures still name the dropped columns; MySQL accepts them at creation and they fail when called, which is expected
 until Step 4.
 
 **Tested (2026-10-09)** on a clone of the local Docker database (99 league years, 231 publishers, 794 games, 14
 league years with special slots, 2 flex slots) and on an empty database running the whole chain. The clone had 20
-games past the roster left behind by the integration tests that reproduced the bug; the guard stopped the script
-with those 20 named and nothing dropped, a rerun after compacting them succeeded, and every surviving game kept its
-slot number and every special slot tag landed on the slot the old formula put it in. The production snapshot run
-is still outstanding (no connectivity at the time), so the production guard count is unknown.
+games past the roster left behind by the integration tests that reproduced the bug; the data migration logged all 20
+and threw with the schema script journaled and nothing written, a rerun after compacting them went through all three
+steps, and every game outside those 10 publishers kept its slot number while every special slot tag landed on the
+slot the old formula put it in. The production snapshot run is still outstanding (no connectivity at the time), so
+the production guard count is unknown.
 
 The step ends with the migration committed and the solution not building.
 
