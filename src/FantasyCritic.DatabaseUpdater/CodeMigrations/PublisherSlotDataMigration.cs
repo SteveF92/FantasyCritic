@@ -1,4 +1,5 @@
 using System.Data;
+using System.Diagnostics;
 using Dapper;
 using DbUp.Engine;
 using FantasyCritic.Lib.DependencyInjection;
@@ -15,7 +16,7 @@ namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 /// Fills tbl_league_slot and tbl_league_slotrequirestag from the old StandardGames / CounterPicks columns and
 /// tbl_league_specialgameslot, then points every tbl_league_publishergame row at its slot. Runs between
 /// 2026-10-09_000_publisherSlotSchema.sql, which creates the tables and the nullable column, and
-/// 2026-10-09_002_publisherSlotCleanup.sql, which makes the column NOT NULL and drops the old model.
+/// 2026-10-09_002_publisherSlotCleanup.sql, which makes the column NOT NULL, indexes it and drops the old model.
 ///
 /// Special slots have always been the last slots of the roster, so a special slot at position P in a league year
 /// with S standard games and N special slots becomes standard slot number S - N + P.
@@ -24,8 +25,10 @@ namespace FantasyCritic.DatabaseUpdater.CodeMigrations;
 /// follow, and this code has to keep running on a fresh database forever. It talks to the old and new tables with
 /// raw SQL and its own row classes, which also means it needs no prerequisites script.
 ///
-/// Everything runs in one transaction. If a guard fails, nothing is written, and the migration can be rerun as-is
-/// once the data is fixed.
+/// It is safe to rerun at any point. The guards run first and write nothing. The slot rows go in as one
+/// transaction, and a rerun that finds them already there checks their counts and moves on. The backfill commits
+/// one year at a time (a million-row update in one transaction crawls on a small buffer pool), only touching games
+/// that have no slot yet, so a rerun picks up where it stopped.
 /// </summary>
 public class PublisherSlotDataMigration : IScript
 {
@@ -36,7 +39,7 @@ public class PublisherSlotDataMigration : IScript
 
     public PublisherSlotDataMigration(RepositoryConfiguration repositoryConfiguration, ILogger logger)
     {
-        _connectionString = ConnectionStringUtilities.WithDefaultCommandTimeout(repositoryConfiguration.ConnectionString, Duration.FromMinutes(10));
+        _connectionString = ConnectionStringUtilities.WithDefaultCommandTimeout(repositoryConfiguration.ConnectionString, Duration.FromMinutes(30));
         _logger = logger;
     }
 
@@ -52,21 +55,44 @@ public class PublisherSlotDataMigration : IScript
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
-        await using var transaction = await connection.BeginTransactionAsync();
-
-        await EnsureSlotTablesAreEmpty(connection, transaction);
 
         var leagueYears = (await connection.QueryAsync<LeagueYearRow>(
-            "SELECT LeagueID, Year, StandardGames, CounterPicks FROM tbl_league_year;", transaction: transaction)).ToList();
+            "SELECT LeagueID, Year, StandardGames, CounterPicks FROM tbl_league_year;")).ToList();
         var specialSlotTags = (await connection.QueryAsync<SpecialSlotTagRow>(
-            "SELECT LeagueID, Year, SpecialSlotPosition, Tag FROM tbl_league_specialgameslot WHERE Tag IS NOT NULL;", transaction: transaction)).ToList();
+            "SELECT DISTINCT LeagueID, Year, SpecialSlotPosition, Tag FROM tbl_league_specialgameslot WHERE Tag IS NOT NULL;")).ToList();
         var specialSlotTagsByLeagueYear = specialSlotTags.ToLookup(x => (x.LeagueID, x.Year));
         _logger.Information("Found {LeagueYearCount} league years, {LeagueYearsWithSpecialSlots} of them with special slots ({SpecialSlotTagCount} special slot tags).",
             leagueYears.Count, specialSlotTagsByLeagueYear.Count, specialSlotTags.Count);
 
         // Guards first, so a failure leaves nothing to clean up.
         CheckSpecialSlotsFitTheRoster(leagueYears, specialSlotTagsByLeagueYear);
-        await CheckEveryGameIsInsideTheRoster(connection, transaction);
+        await CheckEveryGameIsInsideTheRoster(connection);
+
+        await InsertSlotRows(connection, leagueYears, specialSlotTagsByLeagueYear, specialSlotTags.Count);
+        await LinkGamesToSlots(connection, leagueYears);
+
+        _logger.Information("PublisherSlotDataMigration completed successfully.");
+        return string.Empty;
+    }
+
+    private async Task InsertSlotRows(MySqlConnection connection, IReadOnlyList<LeagueYearRow> leagueYears,
+        ILookup<(Guid LeagueID, int Year), SpecialSlotTagRow> specialSlotTagsByLeagueYear, int expectedSlotTagCount)
+    {
+        var expectedSlotCount = leagueYears.Sum(x => x.StandardGames + x.CounterPicks);
+        var existingSlotCount = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM tbl_league_slot;");
+        var existingSlotTagCount = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM tbl_league_slotrequirestag;");
+        if (existingSlotCount == expectedSlotCount && existingSlotTagCount == expectedSlotTagCount && expectedSlotCount > 0)
+        {
+            _logger.Information("Slot rows are already present ({SlotCount} slots, {SlotTagCount} slot tags); resuming at the backfill.", existingSlotCount, existingSlotTagCount);
+            return;
+        }
+
+        if (existingSlotCount > 0 || existingSlotTagCount > 0)
+        {
+            throw new InvalidOperationException(
+                $"tbl_league_slot has {existingSlotCount} rows and tbl_league_slotrequirestag has {existingSlotTagCount}, but {expectedSlotCount} and {expectedSlotTagCount} were expected. " +
+                "Delete both tables' rows and rerun the migrator.");
+        }
 
         var slots = new List<LeagueSlotRow>();
         var slotTags = new List<LeagueSlotTagRow>();
@@ -89,11 +115,19 @@ public class PublisherSlotDataMigration : IScript
             }
         }
 
+        var stopwatch = Stopwatch.StartNew();
+        await using var transaction = await connection.BeginTransactionAsync();
         await connection.BulkInsertAsync(slots, "tbl_league_slot", 500, transaction);
         await connection.BulkInsertAsync(slotTags, "tbl_league_slotrequirestag", 500, transaction);
-        _logger.Information("Inserted {SlotCount} slots ({StandardSlotCount} standard, {CounterPickSlotCount} counter pick) and {SlotTagCount} slot tags.",
-            slots.Count, slots.Count(x => !x.CounterPick), slots.Count(x => x.CounterPick), slotTags.Count);
+        await transaction.CommitAsync();
+        _logger.Information("Inserted {SlotCount} slots ({StandardSlotCount} standard, {CounterPickSlotCount} counter pick) and {SlotTagCount} slot tags in {Seconds:F1}s.",
+            slots.Count, slots.Count(x => !x.CounterPick), slots.Count(x => x.CounterPick), slotTags.Count, stopwatch.Elapsed.TotalSeconds);
+    }
 
+    private async Task LinkGamesToSlots(MySqlConnection connection, IReadOnlyList<LeagueYearRow> leagueYears)
+    {
+        // One UPDATE per year, each committed on its own: the same work as a single statement, but it stays well
+        // inside the command timeout, the log shows progress, and a rerun only has the unlinked games left to do.
         const string backfillSql = """
             UPDATE tbl_league_publishergame pg
             JOIN tbl_league_publisher p ON p.PublisherID = pg.PublisherID
@@ -102,34 +136,26 @@ public class PublisherSlotDataMigration : IScript
                 AND s.Year = p.Year
                 AND s.CounterPick = pg.CounterPick
                 AND s.SlotNumber = pg.SlotNumber
-            SET pg.LeagueSlotID = s.LeagueSlotID;
+            SET pg.LeagueSlotID = s.LeagueSlotID
+            WHERE p.Year = @year AND pg.LeagueSlotID IS NULL;
             """;
-        await connection.ExecuteAsync(backfillSql, transaction: transaction);
+        foreach (var year in leagueYears.Select(x => x.Year).Distinct().OrderBy(x => x))
+        {
+            var stopwatch = Stopwatch.StartNew();
+            await using var transaction = await connection.BeginTransactionAsync();
+            var gamesLinked = await connection.ExecuteAsync(backfillSql, new { year }, transaction);
+            await transaction.CommitAsync();
+            _logger.Information("Linked {GameCount} publisher games for {Year} in {Seconds:F1}s.", gamesLinked, year, stopwatch.Elapsed.TotalSeconds);
+        }
 
-        var totalGames = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM tbl_league_publishergame;", transaction: transaction);
-        var gamesWithoutSlot = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM tbl_league_publishergame WHERE LeagueSlotID IS NULL;", transaction: transaction);
+        var totalGames = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM tbl_league_publishergame;");
+        var gamesWithoutSlot = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM tbl_league_publishergame WHERE LeagueSlotID IS NULL;");
         if (gamesWithoutSlot > 0)
         {
-            throw new InvalidOperationException($"{gamesWithoutSlot} publisher games have no slot after the backfill. The roster check should have caught this; nothing was committed.");
+            throw new InvalidOperationException($"{gamesWithoutSlot} of {totalGames} publisher games have no slot after the backfill. The roster check should have caught this. Rerunning the migrator retries only those games.");
         }
 
-        _logger.Information("Linked all {GameCount} publisher games to their slots.", totalGames);
-
-        await transaction.CommitAsync();
-        _logger.Information("PublisherSlotDataMigration completed successfully.");
-        return string.Empty;
-    }
-
-    private static async Task EnsureSlotTablesAreEmpty(MySqlConnection connection, MySqlTransaction transaction)
-    {
-        var existingSlots = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM tbl_league_slot;", transaction: transaction);
-        var existingLinks = await connection.ExecuteScalarAsync<int>("SELECT COUNT(*) FROM tbl_league_publishergame WHERE LeagueSlotID IS NOT NULL;", transaction: transaction);
-        if (existingSlots > 0 || existingLinks > 0)
-        {
-            throw new InvalidOperationException(
-                $"Expected empty slot tables but found {existingSlots} rows in tbl_league_slot and {existingLinks} publisher games already linked to a slot. " +
-                "Was tbl_league_slot created by hand before the schema script ran?");
-        }
+        _logger.Information("All {GameCount} publisher games are linked to their slots.", totalGames);
     }
 
     private void CheckSpecialSlotsFitTheRoster(IReadOnlyList<LeagueYearRow> leagueYears, ILookup<(Guid LeagueID, int Year), SpecialSlotTagRow> specialSlotTagsByLeagueYear)
@@ -170,7 +196,7 @@ public class PublisherSlotDataMigration : IScript
         throw new InvalidOperationException($"{problems.Count} league year(s) have special slots that do not fit inside the roster. Nothing was written; see the log for each one.");
     }
 
-    private async Task CheckEveryGameIsInsideTheRoster(MySqlConnection connection, MySqlTransaction transaction)
+    private async Task CheckEveryGameIsInsideTheRoster(MySqlConnection connection)
     {
         const string sql = """
             SELECT p.LeagueID, p.Year, pg.PublisherID, pg.PublisherGameID, pg.GameName, pg.CounterPick, pg.SlotNumber,
@@ -181,7 +207,7 @@ public class PublisherSlotDataMigration : IScript
             WHERE pg.SlotNumber < 0 OR pg.SlotNumber >= IF(pg.CounterPick, ly.CounterPicks, ly.StandardGames)
             ORDER BY p.LeagueID, p.Year, pg.PublisherID, pg.CounterPick, pg.SlotNumber;
             """;
-        var offenders = (await connection.QueryAsync<GameOutsideRosterRow>(sql, transaction: transaction)).ToList();
+        var offenders = (await connection.QueryAsync<GameOutsideRosterRow>(sql)).ToList();
         if (offenders.Count == 0)
         {
             return;

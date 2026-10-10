@@ -34,10 +34,8 @@ COLLATE='utf8mb4_0900_ai_ci'
 ENGINE=InnoDB
 ;
 
--- A publisher has one game per slot, and a counter pick sits in a counter-pick slot. Both constraints accept NULL,
--- so they can go in now and validate the backfill as it happens.
+-- Just the column for now. Its unique index and foreign key are added by the cleanup script, after the backfill:
+-- building them in bulk over a filled column is far cheaper than maintaining them row by row while the data
+-- migration writes a million rows, and they validate the backfill all the same before anything is dropped.
 ALTER TABLE `tbl_league_publishergame`
-	ADD COLUMN `LeagueSlotID` CHAR(36) NULL DEFAULT NULL AFTER `SlotNumber`,
-	ADD UNIQUE INDEX `UNQ_PublisherSlot` (`PublisherID`, `LeagueSlotID`) USING BTREE,
-	ADD INDEX `FK_tbl_league_publishergame_tbl_league_slot` (`LeagueSlotID`, `CounterPick`) USING BTREE,
-	ADD CONSTRAINT `FK_tbl_league_publishergame_tbl_league_slot` FOREIGN KEY (`LeagueSlotID`, `CounterPick`) REFERENCES `tbl_league_slot` (`LeagueSlotID`, `CounterPick`) ON UPDATE NO ACTION ON DELETE NO ACTION;
+	ADD COLUMN `LeagueSlotID` CHAR(36) NULL DEFAULT NULL AFTER `SlotNumber`;

@@ -81,21 +81,29 @@ after a data fix starts at the first unjournaled one. No stored procedure edits 
 
 1. **`Scripts/Sequential/2026-10-09_000_publisherSlotSchema.sql`**, DDL only, runs exactly once. Creates
    `tbl_league_slot` (with `SlotName VARCHAR(50) NULL` and a `UNIQUE (LeagueSlotID, CounterPick)` index for the
-   composite FK to target) and `tbl_league_slotrequirestag`. Adds `LeagueSlotID CHAR(36) NULL` to
-   `tbl_league_publishergame` together with `UNIQUE (PublisherID, LeagueSlotID)` and the composite FK
-   `(LeagueSlotID, CounterPick)`; both accept NULL, so they validate the backfill as it happens.
-2. **`CodeMigrations/PublisherSlotDataMigration.cs`**, registered as `2026-10-09_001_publisherSlotData.cs`, DML only,
-   one transaction. Guards first, so a failure writes nothing: every special slot position fits inside its roster,
-   and no game has a `SlotNumber` past `StandardGames` (or `CounterPicks`). Each offending game is logged with its
-   league, publisher, name and slot, then the migration throws. **This is where a game past the roster stops the
-   deploy, with nothing changed.** Then it generates `0..StandardGames-1` and `0..CounterPicks-1` slot rows per
-   league year, copies special slot tags onto slot `StandardGames - specialSlotCount + SpecialSlotPosition`, and
-   backfills `LeagueSlotID` with one `UPDATE ... JOIN`. It uses raw SQL and private row classes, never a repo,
-   entity or domain type, because those change shape in Steps 2 to 4 and this code must keep running on a fresh
-   database forever. For the same reason it needs no prerequisites script.
-3. **`Scripts/Sequential/2026-10-09_002_publisherSlotCleanup.sql`**, DDL only. `MODIFY LeagueSlotID NOT NULL`, drop
-   `UNQ_Slot` and `SlotNumber` (the new unique index now backs the `PublisherID` FK), drop `StandardGames` and
-   `CounterPicks` from `tbl_league_year`, drop `tbl_league_specialgameslot`.
+   composite FK to target) and `tbl_league_slotrequirestag`, and adds a bare `LeagueSlotID CHAR(36) NULL` to
+   `tbl_league_publishergame`. The column's unique index and foreign key wait for the cleanup script: building
+   them in bulk over a filled column is far cheaper than maintaining them row by row through a million-row
+   backfill, and they validate the backfill all the same before anything is dropped.
+2. **`CodeMigrations/PublisherSlotDataMigration.cs`**, registered as `2026-10-09_001_publisherSlotData.cs`, DML only.
+   Guards first, so a failure writes nothing: every special slot position fits inside its roster, and no game has a
+   `SlotNumber` past `StandardGames` (or `CounterPicks`). Each offending game is logged with its league, publisher,
+   name and slot, then the migration throws. **This is where a game past the roster stops the deploy, with nothing
+   changed.** Then it generates `0..StandardGames-1` and `0..CounterPicks-1` slot rows per league year and copies
+   special slot tags onto slot `StandardGames - specialSlotCount + SpecialSlotPosition`, committed as one
+   transaction, and backfills `LeagueSlotID` with one `UPDATE ... JOIN` per year, each committed on its own and
+   logged with its row count and duration. It is safe to rerun at any point: slot rows already present are
+   count-checked and kept, and the backfill only touches games whose slot is still null. (A single transaction for
+   the whole backfill was tried first and crawled on the production snapshot once it held a million modified rows
+   against Docker's 128 MB buffer pool.) It uses raw SQL and private row classes, never a repo, entity or domain
+   type, because those change shape in Steps 2 to 4 and this code must keep running on a fresh database forever.
+   For the same reason it needs no prerequisites script.
+3. **`Scripts/Sequential/2026-10-09_002_publisherSlotCleanup.sql`**, DDL only. One `ALTER` on
+   `tbl_league_publishergame` does `MODIFY LeagueSlotID NOT NULL`, adds `UNIQUE (PublisherID, LeagueSlotID)` and the
+   composite FK `(LeagueSlotID, CounterPick)` (each fails if the backfill left anything inconsistent), and drops
+   `UNQ_Slot` and `SlotNumber` (the new unique index takes over as the index behind the `PublisherID` FK, which
+   MySQL accepts within one statement). A single statement because every `ALTER` on that table rebuilds its million
+   rows. Then drop `StandardGames` and `CounterPicks` from `tbl_league_year`, and drop `tbl_league_specialgameslot`.
 
 Before asking for review: run the chain against a production snapshot (RdsSnapshotManager / LocalDatabaseTool) and
 report the result, including the count of games the guard would reject. Also note that the idempotent stored
@@ -107,8 +115,29 @@ league years with special slots, 2 flex slots) and on an empty database running 
 games past the roster left behind by the integration tests that reproduced the bug; the data migration logged all 20
 and threw with the schema script journaled and nothing written, a rerun after compacting them went through all three
 steps, and every game outside those 10 publishers kept its slot number while every special slot tag landed on the
-slot the old formula put it in. The production snapshot run is still outstanding (no connectivity at the time), so
-the production guard count is unknown.
+slot the old formula put it in.
+
+**Production snapshot (2026-10-10)**, 20,546 league years, 84,872 publishers, 973,431 games, 6,790 league years
+with special slots, 50,460 special slot tags, run in Docker against a 128 MB buffer pool:
+
+- **The guard found 13 games past the roster**, in three leagues: two 2020 counter picks numbered 7 and 8 in a
+  2-counter-pick league, one game at slot 18 of 18 with slot 16 empty, and ten games at slots 43 and 44 of 43 in a
+  league with 14 special slots (the special-slot-removal bug). Every one has an open regular slot (or counter-pick
+  slot) to move into, so none has to land in a special slot. **Production needs this 13-row fix before the deploy**;
+  the statements, each guarded by the game's current slot number, are the Step 5 placement rule done by hand.
+- **Timings** (schema script 5 min; data step 34 min with the first, single-transaction backfill, of which the
+  2025 batch alone took 22 min; cleanup script 24 min). The per-year committed backfill and the index build moved to
+  cleanup came out of this run. The cleanup's two table rebuilds dominate, and a bigger buffer pool will change every
+  number here, so treat ~1 hour as the Docker worst case, not the production estimate.
+- End state verified: every game's slot is in its own league year with a matching counter-pick flag, 5,802 flex
+  slots carry two or more tags, no counter-pick slot has a tag, and the 13 moved games sit where the fix put them.
+
+**Revised migration (2026-10-10)**, after the snapshot run: per-year committed backfill, resumable data step, indexes
+built at cleanup in one `ALTER`. Tested on clones of the local database (12 league years, 182 games, 2 league years
+with special slots): the full chain; a data step staged by hand with slot rows present and 102 of 182 games linked,
+which the migrator picked up with "resuming at the backfill", linked the remaining 80 and went on to cleanup; and an
+empty database. Each ended with the same schema and with every game on its original slot number. Not rerun at
+production scale: the snapshot was already migrated, so the per-year timings for the revised code are unmeasured.
 
 The step ends with the migration committed and the solution not building.
 
