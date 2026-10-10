@@ -136,8 +136,21 @@ with special slots, 50,460 special slot tags, run in Docker against a 128 MB buf
 built at cleanup in one `ALTER`. Tested on clones of the local database (12 league years, 182 games, 2 league years
 with special slots): the full chain; a data step staged by hand with slot rows present and 102 of 182 games linked,
 which the migrator picked up with "resuming at the backfill", linked the remaining 80 and went on to cleanup; and an
-empty database. Each ended with the same schema and with every game on its original slot number. Not rerun at
-production scale: the snapshot was already migrated, so the per-year timings for the revised code are unmeasured.
+empty database. Each ended with the same schema and with every game on its original slot number.
+
+**Revised migration at production scale (2026-10-10, forked session)**, on the snapshot after reversing the first
+run in place, with `innodb_buffer_pool_size` raised to 4 GB and `innodb_redo_log_capacity` to 2 GB (production is
+db.t4g.large with roughly a 6 GB pool, so the 128 MB Docker default was the pathological case):
+
+- Schema script instant; slot and tag inserts 51 s; the nine per-year backfills about 40 s in total (2025: 5.8 s,
+  2026: 6.5 s); cleanup 78 s with the earlier two-statement form. **Whole chain about 3.5 minutes.**
+- Kill-and-resume: the migrator was killed after the 2021 batch committed; the rerun logged "resuming at the
+  backfill", relinked nothing for the finished years, completed the rest and went on to cleanup. Against reference
+  copies of the pre-migration tables: 0 tags missing or extra, 0 slot-count mismatches, 0 games whose slot differs
+  from the old slot number, 0 rows lost.
+- The single-`ALTER` cleanup was not part of those runs. That MySQL accepts dropping `UNQ_Slot` while adding
+  `UNQ_PublisherSlot` in one statement with the `PublisherID` FK present was confirmed separately, on a synthetic
+  table and on a small clone.
 
 The step ends with the migration committed and the solution not building.
 
