@@ -47,7 +47,7 @@ The last two services exit on their own when done. You can re-run the compose co
 
 #### Optional: develop against a production snapshot
 
-Import a dump with `FantasyCritic.RdsSnapshotManager` (menu option 4), then point `FantasyCritic.Web` user secrets at `Database=fantasycritic-fromsnapshot`. Integration tests always use the seeded `fantasycritic` database and are unaffected.
+Import a dump with `FantasyCritic.RdsSnapshotManager` (menu option 4), then point `FantasyCritic.Web` user secrets at `Database=fantasycritic-fromsnapshot`. Integration tests always use the seeded `fantasycritic` database and are unaffected. Note: this feature is only for internal team members, and by that I really mean, just me, Steve Fallon. No-one else would have access to a production snapshot with which to do this.
 
 #### 2. Run the web app
 
