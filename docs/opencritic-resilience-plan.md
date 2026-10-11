@@ -33,7 +33,9 @@ Step 1 follows straight on.
 
 ## Step 1 — Resilience handler on the OpenCritic client
 
-- Add `Microsoft.Extensions.Http.Resilience` to `FantasyCritic.Hosting`.
+- Add `Microsoft.Extensions.Http.Resilience` to `FantasyCritic.Hosting`. **10.4.0**, not the
+  latest: 10.5.0 and later pull `Microsoft.Extensions.*` 10.0.12, which trips NU1605 against the
+  10.0.5 pins in `FantasyCritic.DatabaseUpdater` (which references Hosting). Bump it with those.
 - In `AddFantasyCriticAdminServices`, chain `.AddStandardResilienceHandler(...)` onto the
   OpenCritic `AddHttpClient`:
   - attempt timeout 10s (normal responses take well under 1s),
@@ -43,8 +45,12 @@ Step 1 follows straight on.
     backoff with jitter, honours `Retry-After`; retries timeouts, `HttpRequestException`, 408,
     429 and 5xx; 404 is not retried, so `OpenCriticService`'s 404 → null is unchanged).
 - A timed-out attempt's connection is discarded, so the retry goes out on a fresh one.
-- Polly logs each retry at Warning under the `Polly` category, so Loki will show whether retries
-  are happening and how often.
+- Polly logs under the `Polly` category, so Loki will show whether retries are happening and how
+  often: a timed-out attempt is an **Error** (`OnTimeout`), each retry a Warning (`OnRetry`).
+
+**Done.** Checked with a throwaway test (not committed) that registers the client through
+`AddFantasyCriticAdminServices` with a primary handler that hangs on the first call: the attempt
+timed out at 10s, the retry succeeded, about 12s in all.
 
 Commit → review.
 

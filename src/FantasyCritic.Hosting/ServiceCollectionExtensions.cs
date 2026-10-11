@@ -121,6 +121,12 @@ public static class ServiceCollectionExtensions
             client.BaseAddress = new Uri("https://opencritic-api.p.rapidapi.com/");
             client.DefaultRequestHeaders.Add("X-RapidAPI-Key", openCritic.ApiKey);
             client.DefaultRequestHeaders.Add("X-RapidAPI-Host", "opencritic-api.p.rapidapi.com");
+        }).AddStandardResilienceHandler(options =>
+        {
+            //Now and then a request gets no response at all. A short attempt timeout lets the retry go out on a fresh connection
+            //instead of waiting out HttpClient's 100 seconds, and the total leaves room for every attempt and backoff under that.
+            options.AttemptTimeout.Timeout = TimeSpan.FromSeconds(10);
+            options.TotalRequestTimeout.Timeout = TimeSpan.FromSeconds(60);
         });
         services.AddHttpClient<IGGService, GGService>(client =>
         {
