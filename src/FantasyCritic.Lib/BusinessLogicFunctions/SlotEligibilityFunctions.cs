@@ -154,10 +154,10 @@ public static class SlotEligibilityFunctions
             return baseEligibilityResult;
         }
 
-        var specialGameSlots = eligibilityFactors.Options.SpecialGameSlots;
-        foreach (var specialGameSlot in specialGameSlots)
+        var slotsWithRequiredTags = eligibilityFactors.Options.LeagueSlots.Where(x => x.RequiredTags.Any());
+        foreach (var slotWithRequiredTags in slotsWithRequiredTags)
         {
-            var tagsForSlot = specialGameSlot.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
+            var tagsForSlot = slotWithRequiredTags.RequiredTags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
             var specialEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, tagsForSlot);
             if (!specialEligibilityResult.Any())
             {
@@ -187,14 +187,14 @@ public static class SlotEligibilityFunctions
             return new List<ClaimError>() { new ClaimError("That game has been specifically banned by your league.", false) };
         }
 
-        if (publisherSlot.SpecialGameSlot is null)
+        if (!publisherSlot.LeagueSlot.RequiredTags.Any())
         {
             var baseEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, new List<LeagueTagStatus>());
             return baseEligibilityResult;
         }
 
         //This is a special slot
-        var tagsForSlot = publisherSlot.SpecialGameSlot.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
+        var tagsForSlot = publisherSlot.LeagueSlot.RequiredTags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
         var specialEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, tagsForSlot);
         return specialEligibilityResult;
     }

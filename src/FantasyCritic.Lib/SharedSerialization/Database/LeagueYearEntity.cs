@@ -15,8 +15,6 @@ public class LeagueYearEntity
         LeagueID = league.LeagueID;
         Year = year;
 
-        StandardGames = options.StandardGames;
-        CounterPicks = options.CounterPicks;
         UnrestrictedReleaseStatusDroppableGames = options.UnrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = options.WillNotReleaseDroppableGames;
         WillReleaseDroppableGames = options.WillReleaseDroppableGames;
@@ -47,8 +45,6 @@ public class LeagueYearEntity
     public Guid LeagueID { get; set; }
     public int Year { get; set; }
     public string? LeagueYearName { get; set; }
-    public int StandardGames { get; set; }
-    public int CounterPicks { get; set; }
     public int UnrestrictedReleaseStatusDroppableGames { get; set; }
     public int WillNotReleaseDroppableGames { get; set; }
     public int WillReleaseDroppableGames { get; set; }
@@ -74,7 +70,7 @@ public class LeagueYearEntity
     public bool UnderReview { get; set; }
 
     public LeagueYear ToDomain(League league, SupportedYear year, IEnumerable<EligibilityOverride> eligibilityOverrides,
-        IEnumerable<TagOverride> tagOverrides, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
+        IEnumerable<TagOverride> tagOverrides, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueSlot> leagueSlots,
         FantasyCriticUser? winningUser, IEnumerable<Publisher> publishersInLeague, IEnumerable<LeagueDraft> leagueDrafts)
     {
         PickupSystem pickupSystem = Lib.Enums.PickupSystem.FromValue(PickupSystem);
@@ -92,9 +88,9 @@ public class LeagueYearEntity
             mightReleaseDroppableDate = new AnnualDate(MightReleaseDroppableMonth.Value, MightReleaseDroppableDay.Value);
         }
 
-        LeagueOptions options = new LeagueOptions(StandardGames, CounterPicks, UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
+        LeagueOptions options = new LeagueOptions(UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames, WillReleaseDroppableGames,
             DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount,
-            EnableBids, leagueTags, specialGameSlots, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem,
+            EnableBids, leagueTags, leagueSlots, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem,
             counterPickDeadline, mightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
 
         return new LeagueYear(league, year, options, leagueDrafts, eligibilityOverrides, tagOverrides,

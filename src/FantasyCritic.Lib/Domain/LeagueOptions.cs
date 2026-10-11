@@ -82,7 +82,8 @@ public class LeagueOptions
     public AnnualDate CounterPickDeadline { get; }
     public AnnualDate? MightReleaseDroppableDate { get; }
     public bool BidsOnlyBeforeNextScheduledDraft { get; }
-    public bool HasSpecialSlots => LeagueSlots.Any(x => x.RequiredTags.Any());
+    public IReadOnlyList<LeagueSlot> SpecialGameSlots => LeagueSlots.Where(x => x.RequiredTags.Any()).ToList();
+    public bool HasSpecialSlots => SpecialGameSlots.Any();
 
     public Result Validate()
     {
