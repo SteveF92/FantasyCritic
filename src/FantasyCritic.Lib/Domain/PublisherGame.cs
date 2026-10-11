@@ -82,7 +82,7 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
         }
 
         return new PublisherGame(PublisherID, PublisherGameID, OriginalGameName, Timestamp, CounterPick, ManualCriticScore, ManualWillNotRelease,
-            stats.FantasyPoints, MasterGame, SlotNumber, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
+            stats.FantasyPoints, MasterGame, LeagueSlotID, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
     }
 
     public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote) => new FormerPublisherGame(this, removedTimestamp, removedNote);
