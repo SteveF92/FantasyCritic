@@ -3,8 +3,7 @@ namespace FantasyCritic.Lib.Domain.Requests;
 public class CreateLeagueDraftParameters
 {
     public CreateLeagueDraftParameters(LeagueYearKey leagueYearKey, string name, LocalDate? scheduledDate,
-        int gamesToDraft, int counterPicksToDraft, bool counterPicksMustBeFromThisDraft, int additionalStandardGames, int additionalCounterPicks,
-        IEnumerable<SpecialGameSlot> newSpecialGameSlots)
+        int gamesToDraft, int counterPicksToDraft, bool counterPicksMustBeFromThisDraft, IEnumerable<RequestedNewDraftSlot> additionalSlots)
     {
         LeagueYearKey = leagueYearKey;
         Name = name;
@@ -12,9 +11,7 @@ public class CreateLeagueDraftParameters
         GamesToDraft = gamesToDraft;
         CounterPicksToDraft = counterPicksToDraft;
         CounterPicksMustBeFromThisDraft = counterPicksMustBeFromThisDraft;
-        AdditionalStandardGames = additionalStandardGames;
-        AdditionalCounterPicks = additionalCounterPicks;
-        NewSpecialGameSlots = newSpecialGameSlots.ToList();
+        AdditionalSlots = additionalSlots.ToList();
     }
 
     public LeagueYearKey LeagueYearKey { get; }
@@ -23,7 +20,7 @@ public class CreateLeagueDraftParameters
     public int GamesToDraft { get; }
     public int CounterPicksToDraft { get; }
     public bool CounterPicksMustBeFromThisDraft { get; }
-    public int AdditionalStandardGames { get; }
-    public int AdditionalCounterPicks { get; }
-    public IReadOnlyList<SpecialGameSlot> NewSpecialGameSlots { get; }
+    public IReadOnlyList<RequestedNewDraftSlot> AdditionalSlots { get; }
 }
+
+public record RequestedNewDraftSlot(bool CounterPick, int SlotNumberWithinNewDraft, string? SlotName, IReadOnlyList<MasterGameTag> RequiredTags);

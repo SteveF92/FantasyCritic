@@ -150,10 +150,10 @@ public class PublisherSlot
 
     public override string ToString()
     {
-        var cp = "";
+        var cpk = "";
         if (CounterPick)
         {
-            cp = "CP-";
+            cpk = "CPK-";
         }
         var slotType = "REG";
         if (SpecialGameSlot is not null)
@@ -178,7 +178,7 @@ public class PublisherSlot
             }
         }
 
-        return $"{cp}{OverallSlotNumber}|{slotType}|{gameName}";
+        return $"{cpk}{OverallSlotNumber}|{slotType}|{gameName}";
     }
 
     public PublisherSlot GetWithReplacedGame(PublisherGame newPublisherGame)

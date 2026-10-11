@@ -102,30 +102,19 @@ public class LeagueOptions
             return Result.Failure("You cannot ban 'system only' tags. These are for behind the scenes use only.");
         }
 
-        var requiredSpecialSlotTags = SpecialGameSlots.SelectMany(x => x.Tags).Distinct().ToList();
+        var requiredSpecialSlotTags = LeagueSlots.SelectMany(x => x.RequiredTags).Distinct().ToList();
         if (requiredSpecialSlotTags.Any(x => x.SystemTagOnly))
         {
             return Result.Failure("You cannot have a slot that requires a 'system only' tag. These are for behind the scenes use only.");
         }
 
-        if (SpecialGameSlots.Count > StandardGames)
+        var slotDuplicates = LeagueSlots
+            .GroupBy(x => (x.CounterPick, x.SlotNumber))
+            .Where(x => x.Count() > 1)
+            .ToList();
+        if (slotDuplicates.Any())
         {
-            return Result.Failure("You cannot have more special game slots than the number of games per player.");
-        }
-
-        if (SpecialGameSlots.Any(x => !x.Tags.Any()))
-        {
-            return Result.Failure("All of your special slots must list at least one tag.");
-        }
-
-        if (SpecialGameSlots.Any())
-        {
-            var expectedSpecialSlotNumbers = Enumerable.Range(0, SpecialGameSlots.Count);
-            var actualNumbers = SpecialGameSlots.Select(x => x.SpecialSlotPosition);
-            if (!actualNumbers.SequenceEqual(expectedSpecialSlotNumbers))
-            {
-                return Result.Failure("Your special game slots have invalid positions. You should reload the page and try again. This shouldn't be possible.");
-            }
+            return Result.Failure("Some of the slots specified have duplicate positions, which is invalid.");
         }
 
         return Result.Success();
@@ -242,11 +231,10 @@ public class LeagueOptions
             differences.Add($"Banned tags changed from {string.Join(",", orderedExistingTags.Select(x => x.Tag.ReadableName))} to {string.Join(",", orderedNewTags.Select(x => x.Tag.ReadableName))}.");
         }
 
-        var orderedExistingSpecialSlots = existingOptions.SpecialGameSlots.OrderBy(t => t.SpecialSlotPosition).ToList();
-        var orderedNewSpecialGameSlots = SpecialGameSlots.OrderBy(t => t.SpecialSlotPosition).ToList();
-        if (!orderedNewSpecialGameSlots.SequenceEqual(orderedExistingSpecialSlots))
+        //TODO can we make this summary easier to read?
+        if (!LeagueSlots.SequenceEqual(existingOptions.LeagueSlots))
         {
-            differences.Add($"Special slots changed from \n {string.Join("\n", orderedExistingSpecialSlots.Select(x => x.ToString()))} \n TO \n {string.Join("\n", orderedNewSpecialGameSlots.Select(x => x.ToString()))}");
+            differences.Add($"Special slots changed from \n {string.Join("\n", existingOptions.LeagueSlots.Select(x => x.ToString()))} \n TO \n {string.Join("\n", LeagueSlots.Select(x => x.ToString()))}");
         }
 
         return new LeagueOptionsDifferences(differences);
@@ -255,9 +243,9 @@ public class LeagueOptions
     public LeagueOptions UpdateOptionsForYear(int requestYear)
     {
         var newScoringSystem = ScoringSystem.SupportedInYear(requestYear) ? ScoringSystem : ScoringSystem.GetDefaultScoringSystem(requestYear);
-        LeagueOptions options = new LeagueOptions(StandardGames, CounterPicks, UnrestrictedReleaseStatusDroppableGames,
+        LeagueOptions options = new LeagueOptions(UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
-            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, SpecialGameSlots,
+            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, LeagueSlots,
             PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
             CounterPickDeadline, MightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
         return options;
@@ -265,21 +253,37 @@ public class LeagueOptions
 
     public NewDraftLeagueSettingsChanges? WithNewDraftOptions(CreateLeagueDraftParameters newParameters, Instant currentTimestamp)
     {
-        var totalStandardGames = StandardGames + newParameters.AdditionalStandardGames;
-        var totalCounterPicks = CounterPicks + newParameters.AdditionalCounterPicks;
+        var newSlots = new List<LeagueSlot>();
 
-        // The incoming NewSpecialGameSlots carry positions relative to their own sub-list (0-based within
-        // the selector component). Re-number them so they follow the existing slots.
-        var existingSlotCount = SpecialGameSlots.Count;
-        var renumberedNewSlots = newParameters.NewSpecialGameSlots
-            .OrderBy(s => s.SpecialSlotPosition)
-            .Select((s, i) => new SpecialGameSlot(existingSlotCount + i, s.Tags))
+        int standardSlotNumber = StandardGames;
+        var newStandardSlots = newParameters.AdditionalSlots
+            .Where(x => !x.CounterPick)
+            .OrderBy(x => x.SlotNumberWithinNewDraft)
             .ToList();
-        var totalSpecialGameSlots = SpecialGameSlots.Concat(renumberedNewSlots).ToList();
+        foreach (var newStandardSlot in newStandardSlots)
+        {
+            var numberedNewSlot = new LeagueSlot(Guid.NewGuid(), false, standardSlotNumber, newStandardSlot.SlotName, newStandardSlot.RequiredTags);
+            newSlots.Add(numberedNewSlot);
+            standardSlotNumber++;
+        }
 
-        LeagueOptions newOptions = new LeagueOptions(totalStandardGames, totalCounterPicks, UnrestrictedReleaseStatusDroppableGames,
+        int counterPickSlotNumber = CounterPicks;
+        var newCounterPickSlots = newParameters.AdditionalSlots
+            .Where(x => x.CounterPick)
+            .OrderBy(x => x.SlotNumberWithinNewDraft)
+            .ToList();
+        foreach (var newCounterPickSlot in newCounterPickSlots)
+        {
+            var numberedNewSlot = new LeagueSlot(Guid.NewGuid(), false, counterPickSlotNumber, newCounterPickSlot.SlotName, newCounterPickSlot.RequiredTags);
+            newSlots.Add(numberedNewSlot);
+            counterPickSlotNumber++;
+        }
+
+        var allSlots = LeagueSlots.Concat(newSlots).ToList();
+
+        LeagueOptions newOptions = new LeagueOptions(UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
-            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, totalSpecialGameSlots,
+            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, allSlots,
             PickupSystem, ScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
             CounterPickDeadline, MightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
 
@@ -290,7 +294,7 @@ public class LeagueOptions
         }
 
         var settingsChangeAction = new LeagueManagerAction(newParameters.LeagueYearKey, currentTimestamp, "League Year Settings Changed While Adding New Draft", differences.ToString());
-        var settingsChanges = new NewDraftLeagueSettingsChanges(newOptions, renumberedNewSlots, new Dictionary<Guid, int>(), settingsChangeAction);
+        var settingsChanges = new NewDraftLeagueSettingsChanges(newOptions, newSlots, settingsChangeAction);
         return settingsChanges;
     }
 }
