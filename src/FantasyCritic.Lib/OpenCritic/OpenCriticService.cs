@@ -17,11 +17,11 @@ public class OpenCriticService : IOpenCriticService
         _logger = logger;
     }
 
-    public async Task<OpenCriticGame?> GetOpenCriticGame(int openCriticGameID)
+    public async Task<OpenCriticGame?> GetOpenCriticGame(int openCriticGameID, CancellationToken cancellationToken)
     {
         try
         {
-            var response = await _client.GetFromJsonAsync<OpenCriticGameResponse>($"game/{openCriticGameID}");
+            var response = await _client.GetFromJsonAsync<OpenCriticGameResponse>($"game/{openCriticGameID}", cancellationToken);
             if (response is null)
             {
                 return null;
@@ -60,6 +60,10 @@ public class OpenCriticService : IOpenCriticService
 
             var openCriticGame = new OpenCriticGame(openCriticGameID, gameName, score, earliestReleaseDate, hasAnyReviews, slug);
             return openCriticGame;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
         }
         catch (HttpRequestException httpEx)
         {

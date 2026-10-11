@@ -58,7 +58,7 @@ internal class CriticScoreRefresher
             //Each game is fetched then written, so a stop lands between games, and the next run just fetches that game again.
             cancellationToken.ThrowIfCancellationRequested();
 
-            var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID!.Value);
+            var openCriticGame = await _openCriticService.GetOpenCriticGame(masterGame.OpenCriticID!.Value, cancellationToken);
             gamesFetched++;
             if (gamesFetched % 100 == 0)
             {
@@ -114,7 +114,7 @@ internal class CriticScoreRefresher
                     continue;
                 }
 
-                var subGameOpenCriticGame = await _openCriticService.GetOpenCriticGame(subGame.OpenCriticID.Value);
+                var subGameOpenCriticGame = await _openCriticService.GetOpenCriticGame(subGame.OpenCriticID.Value, cancellationToken);
                 if (subGameOpenCriticGame is not null)
                 {
                     await _masterGameRepo.UpdateCriticStats(subGame, subGameOpenCriticGame);

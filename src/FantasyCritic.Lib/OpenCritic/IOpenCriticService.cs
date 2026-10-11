@@ -2,5 +2,5 @@ namespace FantasyCritic.Lib.OpenCritic;
 
 public interface IOpenCriticService
 {
-    Task<OpenCriticGame?> GetOpenCriticGame(int openCriticGameID);
+    Task<OpenCriticGame?> GetOpenCriticGame(int openCriticGameID, CancellationToken cancellationToken);
 }

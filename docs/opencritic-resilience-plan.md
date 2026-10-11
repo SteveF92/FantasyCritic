@@ -63,4 +63,7 @@ Commit → review.
 - `CriticScoreRefresher` passes its token for both the game and sub-game fetches, so stopping the
   job interrupts a request in flight.
 
+**Done.** Checked with a throwaway test (not committed): a request against a handler that never
+answers, cancelled after 1s, threw `OperationCanceledException` at 1.03s with no error logged.
+
 Commit → review.
