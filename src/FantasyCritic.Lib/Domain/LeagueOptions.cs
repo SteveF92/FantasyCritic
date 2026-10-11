@@ -7,17 +7,13 @@ namespace FantasyCritic.Lib.Domain;
 
 public class LeagueOptions
 {
-    private readonly Dictionary<int, SpecialGameSlot> _specialSlotDictionary;
-
-    public LeagueOptions(int standardGames, int counterPicks, int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames,
+    public LeagueOptions(int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames,
         int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops, bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount,
-        bool enableBids, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots, PickupSystem pickupSystem,
+        bool enableBids, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueSlot> leagueSlots, PickupSystem pickupSystem,
         ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
         IneligibleGameSystem ineligibleGameSystem,
         AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate, bool bidsOnlyBeforeNextScheduledDraft)
     {
-        StandardGames = standardGames;
-        CounterPicks = counterPicks;
         UnrestrictedReleaseStatusDroppableGames = unrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
         WillReleaseDroppableGames = willReleaseDroppableGames;
@@ -28,7 +24,7 @@ public class LeagueOptions
         MinimumBidAmount = minimumBidAmount;
         EnableBids = enableBids;
         LeagueTags = leagueTags.ToList();
-        SpecialGameSlots = specialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
+        LeagueSlots = leagueSlots.OrderBy(x => x.CounterPick).ThenBy(x => x.SlotNumber).ToList();
         PickupSystem = pickupSystem;
         ScoringSystem = scoringSystem;
         TradingSystem = tradingSystem;
@@ -38,14 +34,10 @@ public class LeagueOptions
         CounterPickDeadline = counterPickDeadline;
         MightReleaseDroppableDate = mightReleaseDroppableDate;
         BidsOnlyBeforeNextScheduledDraft = bidsOnlyBeforeNextScheduledDraft;
-
-        _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
 
     public LeagueOptions(LeagueYearParameters parameters)
     {
-        StandardGames = parameters.StandardGames;
-        CounterPicks = parameters.CounterPicks;
         UnrestrictedReleaseStatusDroppableGames = parameters.UnrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = parameters.WillNotReleaseDroppableGames;
         WillReleaseDroppableGames = parameters.WillReleaseDroppableGames;
@@ -56,7 +48,7 @@ public class LeagueOptions
         MinimumBidAmount = parameters.MinimumBidAmount;
         EnableBids = parameters.EnableBids;
         LeagueTags = parameters.LeagueTags;
-        SpecialGameSlots = parameters.SpecialGameSlots.OrderBy(x => x.SpecialSlotPosition).ToList();
+        LeagueSlots = parameters.LeagueSlots.OrderBy(x => x.CounterPick).ThenBy(x => x.SlotNumber).ToList();
         PickupSystem = parameters.PickupSystem;
         ScoringSystem = parameters.ScoringSystem;
         TradingSystem = parameters.TradingSystem;
@@ -66,12 +58,10 @@ public class LeagueOptions
         CounterPickDeadline = parameters.CounterPickDeadline;
         MightReleaseDroppableDate = parameters.MightReleaseDroppableDate;
         BidsOnlyBeforeNextScheduledDraft = parameters.BidsOnlyBeforeNextScheduledDraft;
-
-        _specialSlotDictionary = SpecialGameSlots.ToDictionary(specialGameSlot => StandardGames - SpecialGameSlots.Count + specialGameSlot.SpecialSlotPosition);
     }
 
-    public int StandardGames { get; }
-    public int CounterPicks { get; }
+    public int StandardGames => LeagueSlots.Count(x => !x.CounterPick);
+    public int CounterPicks => LeagueSlots.Count(x => x.CounterPick);
     public int UnrestrictedReleaseStatusDroppableGames { get; }
     public int WillNotReleaseDroppableGames { get; }
     public int WillReleaseDroppableGames { get; }
@@ -82,7 +72,7 @@ public class LeagueOptions
     public int MinimumBidAmount { get; }
     public bool EnableBids { get; }
     public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
-    public IReadOnlyList<SpecialGameSlot> SpecialGameSlots { get; }
+    public IReadOnlyList<LeagueSlot> LeagueSlots { get; }
     public PickupSystem PickupSystem { get; }
     public ScoringSystem ScoringSystem { get; }
     public TradingSystem TradingSystem { get; }
@@ -92,9 +82,7 @@ public class LeagueOptions
     public AnnualDate CounterPickDeadline { get; }
     public AnnualDate? MightReleaseDroppableDate { get; }
     public bool BidsOnlyBeforeNextScheduledDraft { get; }
-    public bool HasSpecialSlots => SpecialGameSlots.Any();
-
-    public SpecialGameSlot? GetSpecialGameSlotByOverallSlotNumber(int slotNumber) => _specialSlotDictionary.GetValueOrDefault(slotNumber);
+    public bool HasSpecialSlots => LeagueSlots.Any(x => x.RequiredTags.Any());
 
     public Result Validate()
     {
