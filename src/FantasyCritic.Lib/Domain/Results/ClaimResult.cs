@@ -2,8 +2,8 @@ namespace FantasyCritic.Lib.Domain.Results;
 
 public class ClaimResult
 {
-    public ClaimResult(int bestSlotNumber)
-        : this(new List<ClaimError>(), bestSlotNumber)
+    public ClaimResult(LeagueSlot bestSlot)
+        : this(new List<ClaimError>(), bestSlot)
     {
     }
 
@@ -19,16 +19,16 @@ public class ClaimResult
 
     }
 
-    public ClaimResult(IEnumerable<ClaimError> errors, int? bestSlotNumber)
+    public ClaimResult(IEnumerable<ClaimError> errors, LeagueSlot? bestSlot)
     {
-        Success = !errors.Any() && bestSlotNumber.HasValue;
-        BestSlotNumber = bestSlotNumber;
+        Success = !errors.Any() && bestSlot is not null;
+        BestSlot = bestSlot;
         Errors = errors.ToList();
         Overridable = errors.All(x => x.Overridable);
     }
 
     public bool Success { get; }
-    public int? BestSlotNumber { get; }
+    public LeagueSlot? BestSlot { get; }
     public IReadOnlyList<ClaimError> Errors { get; }
     public bool Overridable { get; }
 

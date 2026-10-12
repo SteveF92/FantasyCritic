@@ -2,18 +2,18 @@ namespace FantasyCritic.Lib.Domain.Results;
 
 public class PublisherSlotAcquisitionResult
 {
-    public PublisherSlotAcquisitionResult(int slotNumber)
+    public PublisherSlotAcquisitionResult(LeagueSlot slot)
     {
-        SlotNumber = slotNumber;
+        Slot = slot;
         ClaimErrors = new List<ClaimError>();
     }
 
     public PublisherSlotAcquisitionResult(IEnumerable<ClaimError> claimErrors)
     {
-        SlotNumber = null;
+        Slot = null;
         ClaimErrors = claimErrors.ToList();
     }
 
-    public int? SlotNumber { get; }
+    public LeagueSlot? Slot { get; }
     public IReadOnlyList<ClaimError> ClaimErrors { get; }
 }

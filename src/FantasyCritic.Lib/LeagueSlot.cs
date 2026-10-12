@@ -2,6 +2,9 @@ namespace FantasyCritic.Lib;
 
 public class LeagueSlot : IEquatable<LeagueSlot>
 {
+    //Used in cases where a slot is required but not relevant, like Royale.
+    public static readonly LeagueSlot FakeSlot = new LeagueSlot(Guid.Empty, false, 0, null, new List<MasterGameTag>());
+
     public LeagueSlot(Guid leagueSlotID, bool counterPick, int slotNumber, string? slotName,
         IEnumerable<MasterGameTag> requiredTags)
     {
