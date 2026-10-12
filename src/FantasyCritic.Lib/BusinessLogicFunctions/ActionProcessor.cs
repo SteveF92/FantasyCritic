@@ -246,14 +246,14 @@ public class ActionProcessor
                 counterPickedGameIsManualWillNotRelease, false, false, activeBid.MasterGame, null, null);
 
             PickupBid pickupBidWithConditionalDropResult = activeBid;
-            int? validConditionalDropSlot = null;
+            LeagueSlot? validConditionalDropSlot = null;
             if (activeBid.ConditionalDropPublisherGame is not null)
             {
                 var conditionalDropResult = GameEligibilityFunctions.CanConditionallyDropGame(activeBid, updatedLeagueYear, bidPublisher, _processingTime, _currentDate);
                 pickupBidWithConditionalDropResult = activeBid.WithConditionalDropResult(conditionalDropResult);
                 if (conditionalDropResult.Result.IsSuccess)
                 {
-                    validConditionalDropSlot = activeBid.ConditionalDropPublisherGame.SlotNumber;
+                    validConditionalDropSlot = leagueYear.Options.LeagueSlotDictionary[activeBid.ConditionalDropPublisherGame.LeagueSlotID];
                 }
             }
 
@@ -290,7 +290,7 @@ public class ActionProcessor
                 continue;
             }
 
-            validPickupBids.Add(new ValidPickupBid(pickupBidWithConditionalDropResult, claimResult.BestSlotNumber!.Value));
+            validPickupBids.Add(new ValidPickupBid(pickupBidWithConditionalDropResult, claimResult.BestSlot!));
         }
 
         var processDate = _processingTime.ToEasternDate();
@@ -436,14 +436,14 @@ public class ActionProcessor
         if (bidsForGame.Count() == 1)
         {
             var singleBid = bidsForGame.First();
-            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "No competing bids for this game.", _systemWideValues);
+            return new SucceededPickupBid(singleBid.PickupBid, singleBid.Slot, "No competing bids for this game.", _systemWideValues);
         }
 
         var bestBids = bidsForGame.WhereMax(x => x.PickupBid.BidAmount).ToList();
         if (bestBids.Count == 1)
         {
             var singleBid = bestBids.Single();
-            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was the highest bid.", _systemWideValues);
+            return new SucceededPickupBid(singleBid.PickupBid, singleBid.Slot, "This bid was the highest bid.", _systemWideValues);
         }
 
         IEnumerable<ValidPickupBid> remainingGamesAfterTiebreaks;
@@ -453,14 +453,14 @@ public class ActionProcessor
             if (bestBidsByProjectedScore.Count == 1)
             {
                 var singleBid = bestBidsByProjectedScore.Single();
-                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game)", _systemWideValues);
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.Slot, "This publisher has the lowest projected points. (Not including this game)", _systemWideValues);
             }
 
             var bestBidsByBidTime = bestBidsByProjectedScore.WhereMin(x => x.PickupBid.Timestamp).ToList();
             if (bestBidsByBidTime.Count == 1)
             {
                 var singleBid = bestBidsByBidTime.Single();
-                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was placed earliest. (Projected points were tied)", _systemWideValues);
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.Slot, "This bid was placed earliest. (Projected points were tied)", _systemWideValues);
             }
 
             remainingGamesAfterTiebreaks = bestBidsByBidTime;
@@ -471,14 +471,14 @@ public class ActionProcessor
             if (bestBidsByBidTime.Count == 1)
             {
                 var singleBid = bestBidsByBidTime.Single();
-                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This bid was placed earliest.", _systemWideValues);
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.Slot, "This bid was placed earliest.", _systemWideValues);
             }
 
             var bestBidsByProjectedScore = bestBidsByBidTime.WhereMin(x => x.PickupBid.Publisher.GetProjectedFantasyPoints(leagueYear, _systemWideValues)).ToList();
             if (bestBidsByProjectedScore.Count == 1)
             {
                 var singleBid = bestBidsByProjectedScore.Single();
-                return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied)", _systemWideValues);
+                return new SucceededPickupBid(singleBid.PickupBid, singleBid.Slot, "This publisher has the lowest projected points. (Not including this game) (Bid placement time was tied)", _systemWideValues);
             }
 
             remainingGamesAfterTiebreaks = bestBidsByProjectedScore;
@@ -492,7 +492,7 @@ public class ActionProcessor
         if (bestBidsByDraftPosition.Count == 1)
         {
             var singleBid = bestBidsByDraftPosition.Single();
-            return new SucceededPickupBid(singleBid.PickupBid, singleBid.SlotNumber, "This publisher had the latest draft position (Projected points and Bid placement time were tied)", _systemWideValues);
+            return new SucceededPickupBid(singleBid.PickupBid, singleBid.Slot, "This publisher had the latest draft position (Projected points and Bid placement time were tied)", _systemWideValues);
         }
 
         throw new Exception($"Inconceivable tie situation for game: {masterGame.GameName} for league year: {leagueYear}");
@@ -507,7 +507,7 @@ public class ActionProcessor
         {
             var masterGameYear = _masterGameYearDictionary[successBid.PickupBid.MasterGame.MasterGameID];
             PublisherGame newPublisherGame = new PublisherGame(successBid.PickupBid.Publisher.PublisherID, Guid.NewGuid(), successBid.PickupBid.MasterGame.GameName, _processingTime,
-                successBid.PickupBid.CounterPick, null, false, null, masterGameYear, successBid.SlotNumber, null, null, successBid.PickupBid.BidAmount, null, null);
+                successBid.PickupBid.CounterPick, null, false, null, masterGameYear, successBid.Slot.LeagueSlotID, null, null, successBid.PickupBid.BidAmount, null, null);
             gamesToAdd.Add(newPublisherGame);
             var affectedPublisher = publisherStateSet.GetPublisher(successBid.PickupBid.Publisher.PublisherID);
             publisherStateSet.AcquireGameForPublisher(affectedPublisher, newPublisherGame, successBid.PickupBid.BidAmount);
