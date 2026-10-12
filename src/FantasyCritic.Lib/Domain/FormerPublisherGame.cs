@@ -24,7 +24,7 @@ public class FormerPublisherGame : IPublisherGame
     public bool ManualWillNotRelease => PublisherGame.ManualWillNotRelease;
     public decimal? FantasyPoints => PublisherGame.FantasyPoints;
     public MasterGameYear? MasterGame => PublisherGame.MasterGame;
-    public int SlotNumber => PublisherGame.SlotNumber;
+    public Guid? OptionalLeagueSlotID => null;
     public int? PickNumber => PublisherGame.PickNumber;
     public int? OverallPickNumber => PublisherGame.OverallPickNumber;
     public Guid? DraftID => PublisherGame.DraftID;

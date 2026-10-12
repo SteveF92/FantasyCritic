@@ -2,14 +2,14 @@ namespace FantasyCritic.Lib.Domain.LeagueActions;
 
 public class ValidPickupBid
 {
-    public ValidPickupBid(PickupBid pickupBid, int slotNumber)
+    public ValidPickupBid(PickupBid pickupBid, LeagueSlot slot)
     {
         PickupBid = pickupBid;
-        SlotNumber = slotNumber;
+        Slot = slot;
     }
 
     public PickupBid PickupBid { get; }
-    public int SlotNumber { get; }
+    public LeagueSlot Slot { get; }
 
     public override string ToString() => PickupBid.ToString();
 }

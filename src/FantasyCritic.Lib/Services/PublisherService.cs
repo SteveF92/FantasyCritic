@@ -205,21 +205,21 @@ public class PublisherService
         return queuedGames.OrderBy(x => x.Rank).ToList();
     }
 
-    public async Task<Result> ReorderPublisherGames(LeagueYear leagueYear, Publisher publisher, Dictionary<int, Guid?> slotStates)
+    public async Task<Result> ReorderPublisherGames(LeagueYear leagueYear, Publisher publisher, Dictionary<LeagueSlot, PublisherGame?> slotStates)
     {
-        var requestedPositionsWithGames = slotStates.Where(x => x.Value.HasValue).ToList();
-        var gameDictionary = publisher.PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.PublisherGameID);
-        var slotDictionary = publisher.GetPublisherSlots(leagueYear).Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
+        var requestedPositionsWithGames = slotStates.Where(x => x.Value is not null).ToList();
+        var gameDictionary = publisher.PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x);
+        var slotDictionary = publisher.GetPublisherSlots(leagueYear).Where(x => !x.CounterPick).ToDictionary(x => x.LeagueSlot.LeagueSlotID);
         foreach (var requestedSlotState in requestedPositionsWithGames)
         {
-            var moveIntoSlot = slotDictionary.GetValueOrDefault(requestedSlotState.Key);
+            var moveIntoSlot = slotDictionary.GetValueOrDefault(requestedSlotState.Key.LeagueSlotID);
             if (moveIntoSlot is null)
             {
                 return Result.Failure("Invalid movement.");
             }
 
-            var game = gameDictionary[requestedSlotState.Value!.Value];
-            var currentSlot = slotDictionary[game.SlotNumber];
+            var game = gameDictionary[requestedSlotState.Value!];
+            var currentSlot = slotDictionary[game.LeagueSlotID];
             var currentSlotIsValid = currentSlot.SlotIsValid(leagueYear);
             var potentialNewSlot = moveIntoSlot.GetWithReplacedGame(game);
             var potentialNewSlotIsValid = potentialNewSlot.SlotIsValid(leagueYear);

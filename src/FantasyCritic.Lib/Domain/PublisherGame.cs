@@ -7,7 +7,7 @@ namespace FantasyCritic.Lib.Domain;
 public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
 {
     public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, bool manualWillNotRelease,
-        decimal? fantasyPoints, MasterGameYear? masterGame, int slotNumber, int? pickNumber, int? overallPickNumber, uint? bidAmount, Guid? acquiredInTradeID, Guid? draftID)
+        decimal? fantasyPoints, MasterGameYear? masterGame, Guid leagueSlotID, int? pickNumber, int? overallPickNumber, uint? bidAmount, Guid? acquiredInTradeID, Guid? draftID)
     {
         PublisherID = publisherID;
         PublisherGameID = publisherGameID;
@@ -18,7 +18,7 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
         ManualWillNotRelease = manualWillNotRelease;
         FantasyPoints = fantasyPoints;
         MasterGame = masterGame;
-        SlotNumber = slotNumber;
+        LeagueSlotID = leagueSlotID;
         PickNumber = pickNumber;
         OverallPickNumber = overallPickNumber;
         BidAmount = bidAmount;
@@ -35,7 +35,8 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
     public bool ManualWillNotRelease { get; }
     public decimal? FantasyPoints { get; }
     public MasterGameYear? MasterGame { get; }
-    public int SlotNumber { get; }
+    public Guid LeagueSlotID { get; }
+    public Guid? OptionalLeagueSlotID => LeagueSlotID;
     public int? PickNumber { get; }
     public int? OverallPickNumber { get; }
     public Guid? DraftID { get; }
@@ -81,7 +82,7 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
         }
 
         return new PublisherGame(PublisherID, PublisherGameID, OriginalGameName, Timestamp, CounterPick, ManualCriticScore, ManualWillNotRelease,
-            stats.FantasyPoints, MasterGame, SlotNumber, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
+            stats.FantasyPoints, MasterGame, LeagueSlotID, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
     }
 
     public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote) => new FormerPublisherGame(this, removedTimestamp, removedNote);

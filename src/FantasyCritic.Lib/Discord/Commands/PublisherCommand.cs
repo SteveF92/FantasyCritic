@@ -241,8 +241,8 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
 
     private static List<EmbedFieldBuilder> BuildPublisherEmbedFieldBuilders(Publisher publisherFound, LeagueChannel leagueChannel)
     {
-        var pickedGames = GetSortedPublisherGames(publisherFound, false);
-        var counterPickedGames = GetSortedPublisherGames(publisherFound, true);
+        var pickedGames = GetSortedPublisherGames(publisherFound, leagueChannel.LeagueYear, false);
+        var counterPickedGames = GetSortedPublisherGames(publisherFound, leagueChannel.LeagueYear, true);
 
         var remainingWillReleaseDrops =
             GetDropsRemainingText(leagueChannel.LeagueYear.Options.WillReleaseDroppableGames,
@@ -277,9 +277,11 @@ public class PublisherCommand : InteractionModuleBase<SocketInteractionContext>
             : (numberOfDropsAllowed - dropsDone).ToString();
     }
 
-    private static IEnumerable<PublisherGame> GetSortedPublisherGames(Publisher publisherFound, bool isCounterPick)
+    private static IEnumerable<PublisherGame> GetSortedPublisherGames(Publisher publisherFound, LeagueYear leagueYear, bool isCounterPick)
     {
-        return publisherFound.PublisherGames.Where(g => g.CounterPick == isCounterPick).OrderBy(g => g.SlotNumber);
+        return publisherFound.GetPublisherSlots(leagueYear)
+            .Where(g => g.PublisherGame is not null && g.CounterPick == isCounterPick)
+            .Select(x => x.PublisherGame!);
     }
 
     private static Publisher? GetPublisherFromFoundLists(IReadOnlyList<Publisher> foundByPlayerName,

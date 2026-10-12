@@ -410,10 +410,6 @@ public class DraftService
             return Result.Failure("Cannot create a draft while one is in progress.");
         }
 
-        if (domainRequest.AdditionalStandardGames < 0 || domainRequest.AdditionalCounterPicks < 0)
-        {
-            return Result.Failure("Additional standard games / counter picks cannot be negative.");
-        }
         if (domainRequest.GamesToDraft < 0)
         {
             return Result.Failure("Standard games to draft cannot be negative.");
@@ -425,12 +421,6 @@ public class DraftService
         if (domainRequest.CounterPicksMustBeFromThisDraft && domainRequest.CounterPicksToDraft > domainRequest.GamesToDraft)
         {
             return Result.Failure("Can't have more drafted counter picks than drafted games if they must come from this draft.");
-        }
-
-        if (domainRequest.NewSpecialGameSlots.Count > domainRequest.AdditionalStandardGames)
-        {
-            return Result.Failure("You must add at least as many 'Additional Standard Games' as new special slots. " +
-                                  "Otherwise the new special slots would convert existing standard slots into special slots.");
         }
 
         var draftID = Guid.NewGuid();
@@ -452,12 +442,6 @@ public class DraftService
         var newDraftAction = new LeagueManagerAction(leagueYear.Key, timestamp, "Create Draft", description);
 
         NewDraftLeagueSettingsChanges? settingsToChange = leagueYear.Options.WithNewDraftOptions(domainRequest, timestamp);
-        if (settingsToChange is not null && settingsToChange.NewLeagueOptions.StandardGames != leagueYear.Options.StandardGames)
-        {
-            var slotAssignments = SlotAssignmentFunctions.GetNewSlotAssignments(leagueYear, settingsToChange.NewLeagueOptions, leagueYear.Publishers);
-            settingsToChange = settingsToChange with { SlotAssignments = slotAssignments };
-        }
-
         var leagueOptions = settingsToChange?.NewLeagueOptions ?? leagueYear.Options;
         var allDrafts = leagueYear.Drafts.Concat([draft]).ToList();
         var draftValidationResult = DraftFunctions.ValidateDrafts(leagueOptions, allDrafts, null);
