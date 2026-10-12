@@ -114,11 +114,9 @@ public static class SlotEligibilityFunctions
         return bestSlot;
     }
 
-    public static int? GetTradeSlotResult(Publisher publisher, LeagueYear leagueYear, MasterGameYearWithCounterPick masterGameYearWithCounterPick,
-        MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> openSlotNumbers, IReadOnlyList<MasterGameTag> allTags)
+    public static PublisherSlot? GetTradeSlotResult(Publisher publisher, LeagueYear leagueYear, MasterGameYearWithCounterPick masterGameYearWithCounterPick,
+        MasterGameWithEligibilityFactors eligibilityFactors, IReadOnlyList<PublisherSlot> openSlots, IReadOnlyList<MasterGameTag> allTags)
     {
-        var slots = publisher.GetPublisherSlots(leagueYear);
-        var openSlots = slots.Where(x => x.CounterPick == masterGameYearWithCounterPick.CounterPick && openSlotNumbers.Contains(x.SlotNumber)).OrderBy(x => x.SlotNumber).ToList();
         if (!openSlots.Any())
         {
             return null;
@@ -127,12 +125,12 @@ public static class SlotEligibilityFunctions
         var bestEligibleSlot = GetBestEligibleSlot(openSlots, eligibilityFactors, allTags);
         if (bestEligibleSlot is not null)
         {
-            return bestEligibleSlot.SlotNumber;
+            return bestEligibleSlot;
         }
 
         //This game isn't eligible in any slots, so we will just take the first open one.
         var bestSlot = openSlots.First();
-        return bestSlot.SlotNumber;
+        return bestSlot;
     }
 
     public static IReadOnlyList<ClaimError> GetClaimErrorsForLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
