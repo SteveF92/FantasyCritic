@@ -37,17 +37,22 @@ update on one row: no game moves because a slot's rules changed.
 - **A game's slot must belong to the game's league year.** The schema can't express that without denormalizing
   `LeagueID`/`Year` onto the game row, which we won't do. The league-year loader throws if a game's slot isn't in that
   year's slot list.
-- **The API contract doesn't change in this phase.** `LeagueYearParameters` and the league creation request keep
-  "standard game count + counter pick count + special slots"; the server derives slot rows from that. View models keep
-  `SlotNumber`, `OverallSlotNumber`, `SpecialSlotPosition` and `RequiredTags`. The gate is that regenerating the NSwag
-  clients produces no diff.
-- **Settings edits reconcile slot rows, keeping IDs.** Match the new definition to existing rows by counter-pick flag
-  and slot number; update tags and names in place; insert new numbers; delete removed numbers. Games stay attached.
+- **The Web API contract doesn't change in this phase.** Lib moves fully to the slot model (Step 2 changed
+  `LeagueYearParameters`, `CreateLeagueDraftParameters` and the claim and bid results to carry slots). The Web layer
+  keeps the request shapes "standard game count + counter pick count + special slots" and converts them to and from
+  slots. View models keep `SlotNumber`, `OverallSlotNumber`, `SpecialSlotPosition` and `RequiredTags`. The gate is
+  that regenerating the NSwag clients produces no diff.
+- **Settings edits reconcile slot rows, keeping IDs.** Update tags and names in place, insert new rows, delete removed
+  rows. Games stay attached to rows that survive. *How* a requested definition is matched to existing rows is still
+  open: by counter-pick flag and slot number, as first written here, or special slots by position. See D1 in
+  [the review notes](publisher-slot-review-notes.md).
 - **Removing a special slot without shrinking the roster is an update, not a deletion.** The row loses its tags.
-  Nothing moves. The reassignment logic in `SlotAssignmentFunctions`, `OrganizeSlots` and
-  `MakePublisherGameSlotsConsistent` is deleted.
-- **Shrinking the roster is a contraction** (Step 5). Until Step 5 lands, an edit that would delete a slot any
-  publisher has a game in is refused with a message.
+  Nothing moves. `OrganizeSlots` and `MakePublisherGameSlotsConsistent` are deleted. `SlotAssignmentFunctions` stays,
+  rewritten to handle contraction only (next point).
+- **Shrinking the roster is a contraction, and it moves games rather than refusing.** This was planned as Step 5 and
+  was done in Step 2: `SlotAssignmentFunctions.GetNewSlotAssignments` moves each game whose slot is deleted into an
+  open slot of its kind. `EditLeague` already refuses a roster smaller than some publisher's game count, so an open
+  slot always exists.
 - **Reordering needs an intermediate state.** With the unique key on (`PublisherID`, `LeagueSlotID`) and a non-null
   slot ID, swapping two games fails on the transient duplicate. Nothing references `PublisherGameID` by foreign key,
   so the repo can delete and reinsert the publisher's games inside the transaction, or park them on temporary slot
@@ -70,6 +75,18 @@ It is not an inventory of SQL strings or stored procedures. Those are listed in 
 - Commit this plan to `docs/publisher-slot-plan.md` first. Commit it again whenever it's revised.
 - One step at a time: build, test, commit, then stop for review. Steps 1 and 3 are committed in a non-building state
   on purpose.
+- Findings from reviewing each step go in [publisher-slot-review-notes.md](publisher-slot-review-notes.md), as a
+  checklist to cross off.
+
+## Status (2026-10-13)
+
+| Step | State |
+|---|---|
+| 1 Migration | Done, tested on a production snapshot. |
+| 2 Domain layer | Done at `7b582c7d2`; Lib builds with zero warnings. Reviewed; findings open in the review notes. |
+| 3 Entities | Not started. |
+| 4 Everything else | Not started. |
+| 5 Placement on contraction | Done early, inside Step 2. Its integration tests are part of Step 4. |
 
 ---
 
@@ -172,6 +189,34 @@ Likely territory, not a prescription:
 
 Commit when Lib builds.
 
+**Done (2026-10-13)**: the domain work merged from `slot-domain-logic` at `236298a94`, then the slot assignment
+function in `13e78ea92` to `7b582c7d2`. Where it went beyond or differed from the list above:
+
+- **Lib's shapes changed, not just its internals.** Lib is where the model should end up; the compatibility layer for
+  the front end belongs in Web.
+  - `LeagueYearParameters` takes `LeagueSlot`s. It still also carries `StandardGames` and `CounterPicks`, which
+    nothing reads (D4).
+  - `CreateLeagueDraftParameters` takes `RequestedNewDraftSlot`s in place of the additional counts and special slots.
+  - `ClaimResult`, `PublisherSlotAcquisitionResult`, `ValidPickupBid` and `SucceededPickupBid` carry a `LeagueSlot`
+    in place of a slot number. `PotentialPublisherSlot` is deleted.
+  - `IFantasyCriticRepo.EditLeagueYear` takes the game-to-slot moves; `ReorderPublisherGames` takes slot-to-game.
+- **`LeagueSlot`** (`Lib/LeagueSlot.cs`): ID, counter-pick flag, slot number, optional name, required tags. Equality
+  is by ID. `LeagueOptions` holds `LeagueSlots` and `LeagueSlotDictionary`; `StandardGames`, `CounterPicks` and
+  `SpecialGameSlots` (slots with tags) are derived. `GetSpecialGameSlotByOverallSlotNumber` is gone.
+- **`PublisherGame.LeagueSlotID`** replaces `SlotNumber`. `IPublisherGame` exposes `OptionalLeagueSlotID`, null for
+  former games, whose table has no slot column (B3).
+- **`PublisherSlot`** is built from a `LeagueSlot` plus that publisher's game, if any.
+- **`SlotAssignmentFunctions` was kept and rewritten**, not deleted. A game moves only when its slot is deleted. Each
+  displaced game, in its current slot order, takes an open slot of its kind: one it is eligible in under the *new*
+  options if possible, a regular slot before a tag-restricted one, then the lowest number; failing all that, any
+  open slot. `LeagueYear.GetEligibilityFactorsForSlot` has an overload taking other options for this.
+- **The edited league year is consistent.** `EditLeague` applies the moves to copies of the publishers
+  (`Publisher.GetUpdatedPublisherWithNewSlots`, `PublisherGame.GetWithNewSlot`) before building it.
+- **The `LeagueYear` constructor throws** when a game's slot isn't one of that year's slots of its kind, or a
+  publisher has two games in one slot. That covers the Step 4 loader check, and applies wherever a `LeagueYear` is
+  built, bid processing included.
+- Not run: any test. The Test project won't build until Step 4.
+
 ## Step 3: Entities 1:1 with the tables (Claude)
 
 Make the MySQL row types match the schema exactly, nothing more:
@@ -211,15 +256,23 @@ paths, services, FakeRepo and unit tests, Web view models last. Build Lib alone 
     counts over `tbl_league_slot`;
   - `sp_gethomepagedata` and `vw_meta_sitecounts` only read columns that survive; confirm and leave them.
 - `DeleteLeagueYear` deletes only the year row; it must delete slot tags and slots first.
-- Creating a league, creating a new league year, and creating an additional draft (`AdditionalStandardGames`,
-  `AdditionalCounterPicks`) insert slot rows.
-- Settings edits reconcile slot rows keeping IDs, and refuse to delete a slot any publisher has filled (until Step 5).
-- The league-year loader throws when a game's slot isn't in that year's slots.
+- Creating a league, creating a new league year, and creating an additional draft
+  (`NewDraftLeagueSettingsChanges.NewLeagueSlots`) insert slot rows.
+- Settings edits reconcile slot rows keeping IDs (the matching rule is D1 in the review notes). Inside the
+  transaction, the repo moves the games in the slot assignments before deleting the rows they leave.
+- ~~The league-year loader throws when a game's slot isn't in that year's slots.~~ Done in Step 2: the `LeagueYear`
+  constructor throws.
+- `FormerPublisherGameEntity.ToDomain` must supply a slot ID that the table doesn't have (B3).
+- The `MakeSlotsConsistent` job (job type, handler, registry entry) and
+  `IFantasyCriticRepo.ManualMakePublisherGameSlotsConsistent` still exist in Lib. They go with `OrganizeSlots`;
+  check whether job rows of that type need handling first.
 - Unit test fixtures under `src/FantasyCritic.Test/TestData/April2023/`: `LeagueYears.csv` loses the two count
   columns, `PublisherGames.csv` swaps `SlotNumber` for `LeagueSlotID`, and a new `LeagueSlots.csv` (plus tags)
   is generated from the old counts and special slots the same way the migration does. `TestDataService` loads it.
-- `SlotAssignmentFunctionsTests` goes with its function. Keep the two integration tests in `SpecialSlotRemovalTests`;
-  they should pass with no reassignment logic left.
+- Unit tests that build a `LeagueYear` by hand need consistent slot data, since the constructor now checks.
+- `SlotAssignmentFunctionsTests` is rewritten for the new function: games in surviving slots never move, displaced
+  games prefer eligible then regular slots, counter picks stay counter picks. Keep the two integration tests in
+  `SpecialSlotRemovalTests`; they should pass with the new logic.
 - The Discord `PublisherCommand` orders games by slot number; it reads it through the slot now.
 
 **Done when:**
@@ -228,29 +281,26 @@ paths, services, FakeRepo and unit tests, Web view models last. Build Lib alone 
 - Unit tests pass.
 - Docker MySQL migrated from scratch, then `scripts/Regenerate-ApiClient.ps1` produces **no diff** in the generated
   clients. That is the proof the contract held.
-- Integration tests pass, in particular draft, bids, trades, reorder, settings edits, special slot removal, and
-  creating a second draft.
+- Integration tests pass, in particular draft, bids (including conditional drops, now that the `LeagueYear`
+  constructor checks slots), trades, reorder, settings edits, special slot removal, shrinking the roster with filled
+  slots, and creating a second draft.
 
-## Step 5: Automatic placement on contraction
+## Step 5: Automatic placement on contraction (done in Step 2)
 
 When a settings edit shrinks the roster and a publisher has a game in a slot being deleted, the system moves that game
-into the most reasonable open slot instead of refusing the edit. The rules are deliberately not defined yet; we'll
-design them when we get here, with the Step 4 code in front of us.
+into the most reasonable open slot instead of refusing the edit. This landed in Step 2 as
+`SlotAssignmentFunctions.GetNewSlotAssignments`; the rule is described there and in Step 2 above.
 
-What is fixed now:
+- There is no refusal step to replace. A roster smaller than some publisher's game count is still refused up front.
+- The moves are computed before the edit is saved, and the repo applies them inside the settings edit transaction.
+- `AllowMoveIntoIneligible` is not consulted: the manager's edit forces the move, so a game eligible nowhere still
+  takes an open slot, as the old compaction did.
 
-- It replaces the Step 4 refusal. The refusal stays until this step lands.
-- It runs inside the settings edit transaction, per publisher, over the slots that remain.
-- If no open slot exists for a displaced game, the edit is refused, as before.
-
-Inputs to weigh when designing it: the existing best-eligible-slot heuristic in `SlotEligibilityFunctions`,
-`AllowMoveIntoIneligible`, and whether a displaced game should prefer a regular slot over a special one it happens to
-qualify for.
+What remains is its integration tests, listed under Step 4.
 
 ## Verification (each step)
 
 - Step 1: migration applied to a prod snapshot and to the Docker database from scratch; guard count reported.
-- Step 2: `dotnet build src/FantasyCritic.Lib/FantasyCritic.Lib.csproj` with zero warnings.
+- Step 2: `dotnet build src/FantasyCritic.Lib/FantasyCritic.Lib.csproj` with zero warnings. (Done.)
 - Step 3: entities match the tables column for column; nothing else changed.
-- Step 4: the "Done when" list above.
-- Step 5: integration tests for shrinking the roster with filled slots, written alongside the rules.
+- Step 4: the "Done when" list above, which now includes Step 5's tests.
