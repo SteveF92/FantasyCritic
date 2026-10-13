@@ -203,6 +203,7 @@ public class FantasyCriticService
             return Result.Failure($"Cannot reduce number of 'will release' droppable games to {newLeagueOptions.WillReleaseDroppableGames} as a publisher has already dropped {maxWillReleaseGamesDropped} games.");
         }
 
+        var slotAssignments = SlotAssignmentFunctions.GetNewSlotAssignments(leagueYear, newLeagueOptions);
         var eligibilityOverrides = leagueYear.EligibilityOverrides;
         var tagOverrides = leagueYear.TagOverrides;
         var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
@@ -232,8 +233,6 @@ public class FantasyCriticService
             ? leagueDrafts[0].GetDifferences(leagueYear.FirstDraft)
             : new LeagueOptionsDifferences([]);
         var combined = optionsDiff.Combine(draftDiff);
-
-        var slotAssignments = SlotAssignmentFunctions.GetNewSlotAssignments(leagueYear, newLeagueYear);
 
         if (combined.HasChanges)
         {

@@ -138,7 +138,10 @@ public class LeagueYear : IEquatable<LeagueYear>
         return new MasterGameWithEligibilityFactors(masterGame, Options, eligibilityOverride, tagOverrides, dateOfPotentialAcquisition);
     }
 
-    public MasterGameWithEligibilityFactors? GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
+    public MasterGameWithEligibilityFactors? GetEligibilityFactorsForSlot(PublisherSlot publisherSlot) => GetEligibilityFactorsForSlot(publisherSlot, Options);
+
+    //For options other than this year's own, such as a settings edit not yet saved. The overrides are still this year's.
+    public MasterGameWithEligibilityFactors? GetEligibilityFactorsForSlot(PublisherSlot publisherSlot, LeagueOptions options)
     {
         if (publisherSlot.PublisherGame?.MasterGame is null)
         {
@@ -149,7 +152,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
         IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
         var acquisitionDate = publisherSlot.PublisherGame.Timestamp.ToEasternDate();
-        return new MasterGameWithEligibilityFactors(publisherSlot.PublisherGame.MasterGame.MasterGame, Options, eligibilityOverride, tagOverrides, acquisitionDate);
+        return new MasterGameWithEligibilityFactors(publisherSlot.PublisherGame.MasterGame.MasterGame, options, eligibilityOverride, tagOverrides, acquisitionDate);
     }
 
     public bool GameIsEligibleInAnySlot(MasterGame masterGame, LocalDate dateOfPotentialAcquisition)
