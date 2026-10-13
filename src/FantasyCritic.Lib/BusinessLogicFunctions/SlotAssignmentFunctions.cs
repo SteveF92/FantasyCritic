@@ -3,20 +3,57 @@ namespace FantasyCritic.Lib.BusinessLogicFunctions;
 public static class SlotAssignmentFunctions
 {
     /// <summary>
-    /// Computes new slot numbers for every non-counter-pick game when the standard-game count or the special-slot
-    /// count is changing.
-    /// Games in a special slot whose position still exists are shifted forward by the net growth in normal
-    /// (non-special) slot count — i.e. (newStandardGames - oldStandardGames) minus (newSpecialSlots - oldSpecialSlots) —
-    /// so they land in the same special-slot position in the new configuration.
-    /// Games in a special slot that is being removed join the normal games, which are compacted to 0, 1, 2 …
-    /// in their current order.
-    /// If that leaves two games in one slot, or a game past the last slot, every game is compacted in order instead.
-    /// Returns an empty dictionary when no game needs to move: the normal slot count is unchanged (including the
-    /// case where new special slots are added in equal number to new standard games) and no special slot is removed.
+    /// Finds a new slot for every game whose slot does not survive into the new league options, i.e. its slot ID is
+    /// gone (or, defensively, now has the other counter-pick flag). Games whose slot survives never move, even if the
+    /// slot's tags changed.
+    /// Each displaced game, taken in its current slot order, goes to an open slot of its own kind: one it is eligible
+    /// in if possible, preferring a regular slot over a tag-restricted one, then the lowest slot number. If it is
+    /// eligible nowhere it still takes an open slot, as the old compaction did.
+    /// The caller must already have refused a roster smaller than some publisher's game count, so an open slot
+    /// always exists.
+    /// Returns an empty dictionary when no game is displaced.
     /// </summary>
-    public static IReadOnlyDictionary<PublisherGame, LeagueSlot> GetNewSlotAssignments(LeagueYear currentLeagueYear,
-        LeagueOptions newLeagueOptions, IReadOnlyList<Publisher> publishers)
+    public static IReadOnlyDictionary<PublisherGame, LeagueSlot> GetNewSlotAssignments(LeagueYear currentLeagueYear, LeagueYear editedLeagueYear)
     {
-        throw new NotImplementedException("I think this can be made much cleaner now.");
+        Dictionary<PublisherGame, LeagueSlot> slotAssignments = [];
+
+        bool KeepsSlot(PublisherGame game)
+        {
+            var newSlot = editedLeagueYear.Options.LeagueSlotDictionary.GetValueOrDefault(game.LeagueSlotID);
+            return newSlot is not null && newSlot.CounterPick == game.CounterPick;
+        }
+
+        foreach (var publisher in editedLeagueYear.Publishers)
+        {
+            var displacedGames = publisher.PublisherGames
+                .Where(x => !KeepsSlot(x))
+                .OrderBy(x => currentLeagueYear.Options.LeagueSlotDictionary[x.LeagueSlotID].SlotNumber)
+                .ToList();
+            if (!displacedGames.Any())
+            {
+                continue;
+            }
+
+            var filledSlotIDs = publisher.PublisherGames.Where(KeepsSlot).Select(x => x.LeagueSlotID).ToHashSet();
+            var openSlots = editedLeagueYear.Options.LeagueSlots.Where(x => !filledSlotIDs.Contains(x.LeagueSlotID)).ToList();
+            foreach (var game in displacedGames)
+            {
+                var newSlot = openSlots
+                    .Where(x => x.CounterPick == game.CounterPick)
+                    .OrderBy(x => !new PublisherSlot(x, game, null).SlotIsValid(editedLeagueYear))
+                    .ThenBy(x => x.RequiredTags.Any())
+                    .ThenBy(x => x.SlotNumber)
+                    .FirstOrDefault();
+                if (newSlot is null)
+                {
+                    throw new Exception($"No open slot for publisher game {game.PublisherGameID}. A roster smaller than a publisher's games should have been refused.");
+                }
+
+                slotAssignments[game] = newSlot;
+                openSlots.Remove(newSlot);
+            }
+        }
+
+        return slotAssignments;
     }
 }
