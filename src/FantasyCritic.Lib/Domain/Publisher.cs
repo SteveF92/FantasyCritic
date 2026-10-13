@@ -237,6 +237,13 @@ public class Publisher : IEquatable<Publisher>
             FormerPublisherGames, Budget, UnrestrictedReleaseStatusGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftSettings);
     }
 
+    public Publisher GetUpdatedPublisherWithNewSlots(IReadOnlyDictionary<PublisherGame, LeagueSlot> slotAssignments)
+    {
+        var newPublisherGames = PublisherGames.Select(x => slotAssignments.TryGetValue(x, out var newSlot) ? x.GetWithNewSlot(newSlot) : x).ToList();
+        return new Publisher(PublisherID, LeagueYearKey, User, PublisherName, PublisherIcon, PublisherSlogan, DraftInfos, newPublisherGames,
+            FormerPublisherGames, Budget, UnrestrictedReleaseStatusGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftSettings);
+    }
+
     public HashSet<MasterGame> MyMasterGames => PublisherGames
         .Where(x => x.MasterGame is not null)
         .Select(x => x.MasterGame!.MasterGame)

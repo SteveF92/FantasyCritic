@@ -204,6 +204,7 @@ public class FantasyCriticService
         }
 
         var slotAssignments = SlotAssignmentFunctions.GetNewSlotAssignments(leagueYear, newLeagueOptions);
+        var publishersWithNewSlots = publishers.Select(x => x.GetUpdatedPublisherWithNewSlots(slotAssignments)).ToList();
         var eligibilityOverrides = leagueYear.EligibilityOverrides;
         var tagOverrides = leagueYear.TagOverrides;
         var supportedYear = await _interLeagueService.GetSupportedYear(parameters.Year);
@@ -225,7 +226,7 @@ public class FantasyCriticService
 
         LeagueYear newLeagueYear = new LeagueYear(league, supportedYear, newLeagueOptions,
             leagueDrafts, eligibilityOverrides, tagOverrides,
-            leagueYear.WinningUser, publishers, leagueYear.ConferenceLocked,
+            leagueYear.WinningUser, publishersWithNewSlots, leagueYear.ConferenceLocked,
             leagueYear.UnderReview, parameters.LeagueYearName);
 
         var optionsDiff = newLeagueOptions.GetDifferences(leagueYear.Options);

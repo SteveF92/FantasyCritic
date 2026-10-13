@@ -85,6 +85,12 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
             stats.FantasyPoints, MasterGame, LeagueSlotID, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
     }
 
+    public PublisherGame GetWithNewSlot(LeagueSlot leagueSlot)
+    {
+        return new PublisherGame(PublisherID, PublisherGameID, OriginalGameName, Timestamp, CounterPick, ManualCriticScore, ManualWillNotRelease,
+            FantasyPoints, MasterGame, leagueSlot.LeagueSlotID, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
+    }
+
     public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote) => new FormerPublisherGame(this, removedTimestamp, removedNote);
     public MasterGameYearWithCounterPick? GetMasterGameYearWithCounterPick()
     {

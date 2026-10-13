@@ -35,6 +35,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         LeagueYearName = leagueYearName;
 
         _publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
+        ValidatePublisherGameSlots(Key, Options, _publisherDictionary.Values);
 
         StandardGamesTaken = _publisherDictionary.Values.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
     }
@@ -130,6 +131,28 @@ public class LeagueYear : IEquatable<LeagueYear>
     public LeagueYearKey Key => new LeagueYearKey(League.LeagueID, Year);
 
     public string GetGroupName => $"{League.LeagueID}|{Year}";
+
+    private static void ValidatePublisherGameSlots(LeagueYearKey key, LeagueOptions options, IEnumerable<Publisher> publishers)
+    {
+        foreach (var publisher in publishers)
+        {
+            HashSet<Guid> filledSlotIDs = [];
+            foreach (var publisherGame in publisher.PublisherGames)
+            {
+                var slot = options.LeagueSlotDictionary.GetValueOrDefault(publisherGame.LeagueSlotID);
+                if (slot is null || slot.CounterPick != publisherGame.CounterPick)
+                {
+                    throw new Exception($"Publisher game {publisherGame.PublisherGameID} is in slot {publisherGame.LeagueSlotID}, which is not one of league year {key}'s " +
+                                        $"{(publisherGame.CounterPick ? "counter pick" : "standard")} slots.");
+                }
+
+                if (!filledSlotIDs.Add(publisherGame.LeagueSlotID))
+                {
+                    throw new Exception($"Publisher {publisher.PublisherID} has more than one game in slot {publisherGame.LeagueSlotID}.");
+                }
+            }
+        }
+    }
 
     public MasterGameWithEligibilityFactors GetEligibilityFactorsForMasterGame(MasterGame masterGame, LocalDate dateOfPotentialAcquisition)
     {
