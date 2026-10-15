@@ -2,34 +2,47 @@ namespace FantasyCritic.Lib.Domain;
 
 public class FormerPublisherGame : IPublisherGame
 {
-    public FormerPublisherGame(PublisherGame publisherGame, Instant removedTimestamp, string removedNote)
+    public FormerPublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, bool manualWillNotRelease,
+        decimal? fantasyPoints, MasterGameYear? masterGame, int? pickNumber, int? overallPickNumber, uint? bidAmount, Guid? acquiredInTradeID, Guid? draftID,
+        Instant removedTimestamp, string removedNote)
     {
-        PublisherGame = publisherGame;
+        PublisherID = publisherID;
+        PublisherGameID = publisherGameID;
+        OriginalGameName = gameName;
+        Timestamp = timestamp;
+        CounterPick = counterPick;
+        ManualCriticScore = manualCriticScore;
+        ManualWillNotRelease = manualWillNotRelease;
+        FantasyPoints = fantasyPoints;
+        MasterGame = masterGame;
+        PickNumber = pickNumber;
+        OverallPickNumber = overallPickNumber;
+        BidAmount = bidAmount;
+        AcquiredInTradeID = acquiredInTradeID;
+        DraftID = draftID;
         RemovedTimestamp = removedTimestamp;
         RemovedNote = removedNote;
     }
 
-    private PublisherGame PublisherGame { get; }
+    public Guid PublisherID { get; }
+    public Guid PublisherGameID { get; }
+    public string OriginalGameName { get; }
+    public Instant Timestamp { get; }
+    public bool CounterPick { get; }
+    public decimal? ManualCriticScore { get; }
+    public bool ManualWillNotRelease { get; }
+    public decimal? FantasyPoints { get; }
+    public MasterGameYear? MasterGame { get; }
+    public int? PickNumber { get; }
+    public int? OverallPickNumber { get; }
+    public Guid? DraftID { get; }
+    public uint? BidAmount { get; }
+    public Guid? AcquiredInTradeID { get; }
     public Instant RemovedTimestamp { get; }
     public string RemovedNote { get; }
-
-    public override string ToString() => PublisherGame.ToString();
-
-    public Guid PublisherID => PublisherGame.PublisherID;
-    public Guid PublisherGameID => PublisherGame.PublisherGameID;
-    public string OriginalGameName => PublisherGame.OriginalGameName;
-    public Instant Timestamp => PublisherGame.Timestamp;
-    public bool CounterPick => PublisherGame.CounterPick;
-    public decimal? ManualCriticScore => PublisherGame.ManualCriticScore;
-    public bool ManualWillNotRelease => PublisherGame.ManualWillNotRelease;
-    public decimal? FantasyPoints => PublisherGame.FantasyPoints;
-    public MasterGameYear? MasterGame => PublisherGame.MasterGame;
-    public Guid? OptionalLeagueSlotID => null;
-    public int? PickNumber => PublisherGame.PickNumber;
-    public int? OverallPickNumber => PublisherGame.OverallPickNumber;
-    public Guid? DraftID => PublisherGame.DraftID;
-    public uint? BidAmount => PublisherGame.BidAmount;
-    public Guid? AcquiredInTradeID => PublisherGame.AcquiredInTradeID;
-    public string GameName => PublisherGame.GameName;
     public bool IsFormerPublisherGame => true;
+
+    public string GameName => MasterGame?.MasterGame.GameName ?? OriginalGameName;
+
+    public override string ToString() => GameName;
 }

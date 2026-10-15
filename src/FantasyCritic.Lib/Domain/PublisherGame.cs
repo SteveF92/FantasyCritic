@@ -36,7 +36,6 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
     public decimal? FantasyPoints { get; }
     public MasterGameYear? MasterGame { get; }
     public Guid LeagueSlotID { get; }
-    public Guid? OptionalLeagueSlotID => LeagueSlotID;
     public int? PickNumber { get; }
     public int? OverallPickNumber { get; }
     public Guid? DraftID { get; }
@@ -91,7 +90,12 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
             FantasyPoints, MasterGame, leagueSlot.LeagueSlotID, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
     }
 
-    public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote) => new FormerPublisherGame(this, removedTimestamp, removedNote);
+    public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote)
+    {
+        return new FormerPublisherGame(PublisherID, PublisherGameID, OriginalGameName, Timestamp, CounterPick, ManualCriticScore, ManualWillNotRelease,
+            FantasyPoints, MasterGame, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID, removedTimestamp, removedNote);
+    }
+
     public MasterGameYearWithCounterPick? GetMasterGameYearWithCounterPick()
     {
         if (MasterGame is null)

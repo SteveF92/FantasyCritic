@@ -21,12 +21,23 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
     the Test project doesn't build until Step 4.
 - [x] **B2. New counter-pick slots are created as standard slots.** `LeagueOptions.WithNewDraftOptions`
   (`LeagueOptions.cs:284`) passes `false` for the counter-pick flag when numbering new counter-pick slots.
-- [ ] **B3. Former games carry a made-up slot ID.** `tbl_league_formerpublishergame` has no slot column, but
+- [x] **B3. Former games carry a made-up slot ID.** `tbl_league_formerpublishergame` has no slot column, but
   `FormerPublisherGame` wraps a `PublisherGame`, whose `LeagueSlotID` is non-null, so `FormerPublisherGameEntity.ToDomain`
   (`FantasyCritic.MySQL/Entities/FormerPublisherGameEntity.cs:72`) has to invent one; it passed `0` before. The
   interface is covered (`OptionalLeagueSlotID => null`), and the `LeagueYear` slot check looks only at current games,
   but anything reading `former.PublisherGame.LeagueSlotID` gets the made-up value. Options: give
   `FormerPublisherGame` its own fields, or accept `Guid.Empty` and document it.
+  - Fixed in Lib: `FormerPublisherGame` no longer wraps a `PublisherGame`. It has its own fields (everything but the
+    slot) and `PublisherGame.GetFormerPublisherGame` copies them across. Left for Step 4, outside Lib:
+    - `FormerPublisherGameEntity`: the constructor and `ToDomain` read and build through `.PublisherGame`. The
+      constructor also never sets `AcquiredInTradeID`, so the insert always writes null for it; worth fixing then.
+    - `DomainConversionUtilities.GetActivePickupBids` and `GetConditionalDropPublisherGame` (both copies, the other in
+      `MySQLFantasyCriticRepo`) key their lookups by `.PublisherGame`. When a bid's conditional-drop game is a former
+      game, they hand back `former.PublisherGame` as the bid's `PublisherGame`, so that case now has to build a
+      `PublisherGame` itself and needs a slot ID, like the fake game just below it. `CanConditionallyDropGame` fails
+      such a bid before the slot is read, so `Guid.Empty` would do, but it is the same made-up value in a new place.
+    - `PublisherGameViewModel(FormerPublisherGame, ...)` reads everything through `.PublisherGame`, including
+      `WillRelease`/`CouldRelease`, which live on `PublisherGame` and have no former-game equivalent yet.
 
 ## Design questions
 

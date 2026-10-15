@@ -11,7 +11,6 @@ public interface IPublisherGame
     bool ManualWillNotRelease { get; }
     decimal? FantasyPoints { get; }
     MasterGameYear? MasterGame { get; }
-    Guid? OptionalLeagueSlotID { get; }
     int? PickNumber { get; }
     int? OverallPickNumber { get; }
     Guid? DraftID { get; }
