@@ -262,8 +262,8 @@ public class CacheRefresher
             foreach (var publisher in leagueYear.Publishers)
             {
                 var currentGames = publisher.MyMasterGames;
-                var formerGames = publisher.FormerPublisherGames.Where(x => x.PublisherGame.MasterGame is not null)
-                    .Select(x => x.PublisherGame.MasterGame!.MasterGame);
+                var formerGames = publisher.FormerPublisherGames.Where(x => x.MasterGame is not null)
+                    .Select(x => x.MasterGame!.MasterGame);
                 publisherMasterGames.UnionWith(currentGames);
                 publisherMasterGames.UnionWith(formerGames);
             }

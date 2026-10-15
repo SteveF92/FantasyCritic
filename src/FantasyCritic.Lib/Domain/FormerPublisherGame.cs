@@ -9,7 +9,7 @@ public class FormerPublisherGame : IPublisherGame
         RemovedNote = removedNote;
     }
 
-    public PublisherGame PublisherGame { get; }
+    private PublisherGame PublisherGame { get; }
     public Instant RemovedTimestamp { get; }
     public string RemovedNote { get; }
 
