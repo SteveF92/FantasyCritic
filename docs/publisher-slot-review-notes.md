@@ -8,11 +8,17 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
 
 ## Bugs
 
-- [ ] **B1. Tag-only slot edits are silently dropped.** `LeagueSlot` equality is by ID only, so
+- [x] **B1. Tag-only slot edits are silently dropped.** `LeagueSlot` equality is by ID only, so
   `LeagueOptions.GetDifferences` (`LeagueSlots.SequenceEqual`, `LeagueOptions.cs:242`) sees no change when a slot's
   tags or name change. If that is the only edit, `HasChanges` is false and `EditLeague` never calls
   `EditLeagueYear`. Keep ID equality (dictionary keys rely on it) and compare a value projection in the diff, e.g.
   counter pick, number, name and tags.
+  - Fixed in `f8a2656b5`: `LeagueSlotDifferenceFunctions.GetSlotDifferences` matches slots by ID and compares tags (as a set), name
+    and number, one log line per change ("Slot 3 required tags changed from 'New Game' to 'New Game' or 'Remake'.",
+    "Slot 2 removed.", "Slot 3 moved to slot 2."). That replaces the before/after dump of every slot. Renumbering
+    caused by an add or remove isn't reported as a move; a kept slot whose number changed says "(was slot N)".
+    Numbers are 1-based. Tests in `LeagueSlotDifferenceFunctionsTests`, run in a scratch project against Lib since
+    the Test project doesn't build until Step 4.
 - [ ] **B2. New counter-pick slots are created as standard slots.** `LeagueOptions.WithNewDraftOptions`
   (`LeagueOptions.cs:284`) passes `false` for the counter-pick flag when numbering new counter-pick slots.
 - [ ] **B3. Former games carry a made-up slot ID.** `tbl_league_formerpublishergame` has no slot column, but
@@ -62,7 +68,7 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
 - [ ] **S7.** `LeagueSlot.cs` sits at the Lib root, namespace `FantasyCritic.Lib`, rather than in `Domain/` with the
   other domain types.
 - [ ] **S8.** `LeagueSlot.ToString` (`LeagueSlot.cs:44`) leaves a trailing `|` when the slot has no name. That string
-  appears in the settings-change log.
+  appeared in the settings-change log; since B1 the log no longer uses it, so this is cosmetic only.
 - [ ] **S9.** `LeagueOptions.StandardGames`, `CounterPicks` (`:67`-`68`) and `SpecialGameSlots` (`:89`) are
   recalculated on every call, including inside per-publisher loops. `LeagueOptions` is immutable, so compute them
   once in the constructor.

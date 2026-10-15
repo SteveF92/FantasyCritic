@@ -1,3 +1,4 @@
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
@@ -238,11 +239,7 @@ public class LeagueOptions
             differences.Add($"Banned tags changed from {string.Join(",", orderedExistingTags.Select(x => x.Tag.ReadableName))} to {string.Join(",", orderedNewTags.Select(x => x.Tag.ReadableName))}.");
         }
 
-        //TODO can we make this summary easier to read?
-        if (!LeagueSlots.SequenceEqual(existingOptions.LeagueSlots))
-        {
-            differences.Add($"Special slots changed from \n {string.Join("\n", existingOptions.LeagueSlots.Select(x => x.ToString()))} \n TO \n {string.Join("\n", LeagueSlots.Select(x => x.ToString()))}");
-        }
+        differences.AddRange(LeagueSlotDifferenceFunctions.GetSlotDifferences(existingOptions.LeagueSlots, LeagueSlots));
 
         return new LeagueOptionsDifferences(differences);
     }
