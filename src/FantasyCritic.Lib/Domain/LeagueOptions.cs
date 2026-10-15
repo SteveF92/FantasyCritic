@@ -278,7 +278,7 @@ public class LeagueOptions
             .ToList();
         foreach (var newCounterPickSlot in newCounterPickSlots)
         {
-            var numberedNewSlot = new LeagueSlot(Guid.NewGuid(), false, counterPickSlotNumber, newCounterPickSlot.SlotName, newCounterPickSlot.RequiredTags);
+            var numberedNewSlot = new LeagueSlot(Guid.NewGuid(), true, counterPickSlotNumber, newCounterPickSlot.SlotName, newCounterPickSlot.RequiredTags);
             newSlots.Add(numberedNewSlot);
             counterPickSlotNumber++;
         }

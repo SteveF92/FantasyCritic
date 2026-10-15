@@ -19,7 +19,7 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
     caused by an add or remove isn't reported as a move; a kept slot whose number changed says "(was slot N)".
     Numbers are 1-based. Tests in `LeagueSlotDifferenceFunctionsTests`, run in a scratch project against Lib since
     the Test project doesn't build until Step 4.
-- [ ] **B2. New counter-pick slots are created as standard slots.** `LeagueOptions.WithNewDraftOptions`
+- [x] **B2. New counter-pick slots are created as standard slots.** `LeagueOptions.WithNewDraftOptions`
   (`LeagueOptions.cs:284`) passes `false` for the counter-pick flag when numbering new counter-pick slots.
 - [ ] **B3. Former games carry a made-up slot ID.** `tbl_league_formerpublishergame` has no slot column, but
   `FormerPublisherGame` wraps a `PublisherGame`, whose `LeagueSlotID` is non-null, so `FormerPublisherGameEntity.ToDomain`
