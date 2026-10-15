@@ -57,7 +57,7 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
   existing specials. Fine for the domain, but the Web layer's `SpecialSlotPosition` and `OverallSlotNumber` assume
   specials are last. Under D1 as proposed, the next settings round trip renumbers the rows and games follow their IDs;
   under number matching it would retag them.
-- [ ] **D4. Two sources of truth in `LeagueYearParameters`.** It still has `StandardGames` and `CounterPicks`, which
+- [x] **D4. Two sources of truth in `LeagueYearParameters`.** It still has `StandardGames` and `CounterPicks`, which
   `LeagueOptions(LeagueYearParameters)` ignores. Drop them, or validate that they match the slots.
 
 ## Smaller items
