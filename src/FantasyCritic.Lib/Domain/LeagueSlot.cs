@@ -1,4 +1,4 @@
-namespace FantasyCritic.Lib;
+namespace FantasyCritic.Lib.Domain;
 
 public class LeagueSlot : IEquatable<LeagueSlot>
 {
@@ -41,7 +41,12 @@ public class LeagueSlot : IEquatable<LeagueSlot>
             }
         }
 
-        return $"{cpk}{SlotNumber}|{slotType}|{SlotName}";
+        List<string> stringParts = [cpk, SlotNumber.ToString(), slotType];
+        if (SlotName is not null)
+        {
+            stringParts.Add(SlotName);
+        }
+        return string.Join('|', stringParts);
     }
 
     public bool Equals(LeagueSlot? other)

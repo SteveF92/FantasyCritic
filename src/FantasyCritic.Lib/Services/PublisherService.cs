@@ -205,7 +205,7 @@ public class PublisherService
         return queuedGames.OrderBy(x => x.Rank).ToList();
     }
 
-    public async Task<Result> ReorderPublisherGames(LeagueYear leagueYear, Publisher publisher, Dictionary<LeagueSlot, PublisherGame?> slotStates)
+    public async Task<Result> ReorderPublisherGames(LeagueYear leagueYear, Publisher publisher, IReadOnlyDictionary<LeagueSlot, PublisherGame?> slotStates)
     {
         var requestedPositionsWithGames = slotStates.Where(x => x.Value is not null).ToList();
         var gameDictionary = publisher.PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x);

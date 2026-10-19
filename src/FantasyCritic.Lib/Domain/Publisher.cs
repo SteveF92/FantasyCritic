@@ -195,7 +195,7 @@ public class Publisher : IEquatable<Publisher>
             var counterPickedGame = publisherGameLookup[publisherGame.MasterGame.MasterGame].FirstOrDefault(x => !x.CounterPick);
             if (counterPickedGame is not null)
             {
-                var relevantLeagueSlot = leagueYear.Options.LeagueSlots.Single(x => x.LeagueSlotID == counterPickedGame.LeagueSlotID);
+                var relevantLeagueSlot = leagueYear.Options.LeagueSlotDictionary[counterPickedGame.LeagueSlotID];
                 var slotForGame = new PublisherSlot(relevantLeagueSlot, counterPickedGame, null);
                 counterPickedGameIsValid = slotForGame.SlotIsValid(leagueYear);
             }

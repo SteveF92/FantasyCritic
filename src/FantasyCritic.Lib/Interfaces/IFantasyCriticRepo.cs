@@ -57,7 +57,7 @@ public interface IFantasyCriticRepo
     Task AddPublisherGame(PublisherGame publisherGame);
     Task AssociatePublisherGame(Publisher publisher, PublisherGame publisherGame, MasterGame masterGame);
     Task MergeMasterGame(MasterGame removeMasterGame, MasterGame mergeIntoMasterGame);
-    Task ReorderPublisherGames(Publisher publisher, Dictionary<LeagueSlot, PublisherGame?> slotsToUpdate);
+    Task ReorderPublisherGames(Publisher publisher, IReadOnlyDictionary<LeagueSlot, PublisherGame?> slotsToUpdate);
 
 
     Task<IReadOnlyList<SupportedYear>> GetSupportedYears();

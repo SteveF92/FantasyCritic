@@ -319,7 +319,7 @@ public class Trade
             var existingPublisherGame = proposerGameDictionary[game];
             var eligibilityFactors = LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
             var openSlots = allOpenCounterPartySlots.Where(x => x.CounterPick == game.CounterPick).ToList();
-            var slotResult = SlotEligibilityFunctions.GetTradeSlotResult(CounterParty, LeagueYear, game, eligibilityFactors, openSlots, allTags);
+            var slotResult = SlotEligibilityFunctions.GetTradeSlotResult(game, eligibilityFactors, openSlots, allTags);
             if (slotResult is null)
             {
                 return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");
@@ -336,7 +336,7 @@ public class Trade
             var existingPublisherGame = counterPartyGameDictionary[game];
             var eligibilityFactors = LeagueYear.GetEligibilityFactorsForMasterGame(game.MasterGameYear.MasterGame, dateOfAcquisition);
             var openSlots = allOpenProposerSlots.Where(x => x.CounterPick == game.CounterPick).ToList();
-            var slotResult = SlotEligibilityFunctions.GetTradeSlotResult(Proposer, LeagueYear, game, eligibilityFactors, openSlots, allTags);
+            var slotResult = SlotEligibilityFunctions.GetTradeSlotResult(game, eligibilityFactors, openSlots, allTags);
             if (slotResult is null)
             {
                 return Result.Failure<IReadOnlyList<PublisherGame>>($"Cannot find an appropriate slot for: {game.MasterGameYear.MasterGame.GameName}");

@@ -54,7 +54,7 @@ public static class SlotEligibilityFunctions
 
             if (!acquiringNow)
             {
-                return new PublisherSlotAcquisitionResult(leagueYear.Options.LeagueSlots[0]);
+                return new PublisherSlotAcquisitionResult(leagueYear.Options.LeagueSlots.First(x => x.CounterPick == counterPick));
             }
 
             return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError(filledSpacesText, false, true) });
@@ -114,8 +114,8 @@ public static class SlotEligibilityFunctions
         return bestSlot;
     }
 
-    public static PublisherSlot? GetTradeSlotResult(Publisher publisher, LeagueYear leagueYear, MasterGameYearWithCounterPick masterGameYearWithCounterPick,
-        MasterGameWithEligibilityFactors eligibilityFactors, IReadOnlyList<PublisherSlot> openSlots, IReadOnlyList<MasterGameTag> allTags)
+    public static PublisherSlot? GetTradeSlotResult(MasterGameYearWithCounterPick masterGameYearWithCounterPick, MasterGameWithEligibilityFactors eligibilityFactors,
+        IReadOnlyList<PublisherSlot> openSlots, IReadOnlyList<MasterGameTag> allTags)
     {
         if (!openSlots.Any())
         {

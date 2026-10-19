@@ -37,6 +37,9 @@ public class LeagueOptions
         BidsOnlyBeforeNextScheduledDraft = bidsOnlyBeforeNextScheduledDraft;
 
         LeagueSlotDictionary = LeagueSlots.ToDictionary(x => x.LeagueSlotID);
+        StandardGames = LeagueSlots.Count(x => !x.CounterPick);
+        CounterPicks = LeagueSlots.Count(x => x.CounterPick);
+
     }
 
     public LeagueOptions(LeagueYearParameters parameters)
@@ -63,10 +66,12 @@ public class LeagueOptions
         BidsOnlyBeforeNextScheduledDraft = parameters.BidsOnlyBeforeNextScheduledDraft;
 
         LeagueSlotDictionary = LeagueSlots.ToDictionary(x => x.LeagueSlotID);
+        StandardGames = LeagueSlots.Count(x => !x.CounterPick);
+        CounterPicks = LeagueSlots.Count(x => x.CounterPick);
     }
 
-    public int StandardGames => LeagueSlots.Count(x => !x.CounterPick);
-    public int CounterPicks => LeagueSlots.Count(x => x.CounterPick);
+    public int StandardGames { get; }
+    public int CounterPicks { get; }
     public int UnrestrictedReleaseStatusDroppableGames { get; }
     public int WillNotReleaseDroppableGames { get; }
     public int WillReleaseDroppableGames { get; }
@@ -114,6 +119,12 @@ public class LeagueOptions
         if (requiredSpecialSlotTags.Any(x => x.SystemTagOnly))
         {
             return Result.Failure("You cannot have a slot that requires a 'system only' tag. These are for behind the scenes use only.");
+        }
+
+        var counterPickSlotsWithRequiredTags = LeagueSlots.Where(x => x.CounterPick && x.RequiredTags.Any()).ToList();
+        if (counterPickSlotsWithRequiredTags.Any())
+        {
+            return Result.Failure("Counter pick slots cannot require specific tags.");
         }
 
         var slotDuplicates = LeagueSlots
