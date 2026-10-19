@@ -41,7 +41,7 @@ public class LeagueSlot : IEquatable<LeagueSlot>
             }
         }
 
-        List<string> stringParts = [cpk, SlotNumber.ToString(), slotType];
+        List<string> stringParts = [$"{cpk}{SlotNumber}", slotType];
         if (SlotName is not null)
         {
             stringParts.Add(SlotName);

@@ -85,10 +85,10 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
 - [x] **S7.** `LeagueSlot.cs` sits at the Lib root, namespace `FantasyCritic.Lib`, rather than in `Domain/` with the
   other domain types.
   - Fixed in `87d8467c4`.
-- [ ] **S8.** `LeagueSlot.ToString` (`LeagueSlot.cs:44`) leaves a trailing `|` when the slot has no name. That string
+- [x] **S8.** `LeagueSlot.ToString` (`LeagueSlot.cs:44`) leaves a trailing `|` when the slot has no name. That string
   appeared in the settings-change log; since B1 the log no longer uses it, so this is cosmetic only.
   - The trailing `|` is gone in `87d8467c4`, but the counter-pick prefix became its own part, so a standard slot
-    now prints `|0|REG` and a counter pick `CPK-|0|REG`.
+    now prints `|0|REG` and a counter pick `CPK-|0|REG`. Fixed after that: back to `0|REG` and `CPK-0|REG`.
 - [ ] **S9.** `LeagueOptions.StandardGames`, `CounterPicks` (`:67`-`68`) and `SpecialGameSlots` (`:89`) are
   recalculated on every call, including inside per-publisher loops. `LeagueOptions` is immutable, so compute them
   once in the constructor.
