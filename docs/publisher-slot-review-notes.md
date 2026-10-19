@@ -65,24 +65,33 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
 - [ ] **S1. `Validate` gaps** (`LeagueOptions.cs:94`). It doesn't reject tags on counter-pick slots. The migration
   guarantees none exist, but `HasSpecialSlots` and `GetClaimErrorsForLeagueYear` would count them. It also doesn't
   check that slot numbers run 0..n-1, which `WithNewDraftOptions` assumes when it numbers new slots from `Count`.
-- [ ] **S2.** `Publisher.GetCounterPickedGameIsValid` (`Publisher.cs:198`) uses `LeagueSlots.Single(...)` where
+  - Counter-pick tags rejected in `87d8467c4`. Slot numbering still unchecked.
+- [x] **S2.** `Publisher.GetCounterPickedGameIsValid` (`Publisher.cs:198`) uses `LeagueSlots.Single(...)` where
   `LeagueSlotDictionary` would do.
-- [ ] **S3.** `ReorderPublisherGames` takes a mutable `Dictionary<LeagueSlot, PublisherGame?>` in
+  - Fixed in `87d8467c4`.
+- [x] **S3.** `ReorderPublisherGames` takes a mutable `Dictionary<LeagueSlot, PublisherGame?>` in
   `IFantasyCriticRepo.cs:60` and `PublisherService.cs:208`. The convention is `IReadOnlyDictionary`.
-- [ ] **S4.** The "not acquiring now" fallback in `SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult`
+  - Fixed in `87d8467c4`.
+- [x] **S4.** The "not acquiring now" fallback in `SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult`
   (`SlotEligibilityFunctions.cs:57` and `:76`) returns `LeagueSlots[0]`, a standard slot even for counter-pick bids.
   It is only a placeholder, but the first slot of the matching kind would be more honest.
-- [ ] **S5.** `SlotEligibilityFunctions.GetTradeSlotResult` (`SlotEligibilityFunctions.cs:117`) no longer uses its
+  - Fixed in `87d8467c4`.
+- [x] **S5.** `SlotEligibilityFunctions.GetTradeSlotResult` (`SlotEligibilityFunctions.cs:117`) no longer uses its
   `publisher` or `leagueYear` parameters.
+  - Fixed in `87d8467c4`.
 - [ ] **S6.** `LeagueSlot.FakeSlot` (`Guid.Empty`, `LeagueSlot.cs:6`) exists only for `RoyaleService.cs:191`. A
   `ClaimResult` that can succeed without a slot would be cleaner.
-- [ ] **S7.** `LeagueSlot.cs` sits at the Lib root, namespace `FantasyCritic.Lib`, rather than in `Domain/` with the
+- [x] **S7.** `LeagueSlot.cs` sits at the Lib root, namespace `FantasyCritic.Lib`, rather than in `Domain/` with the
   other domain types.
+  - Fixed in `87d8467c4`.
 - [ ] **S8.** `LeagueSlot.ToString` (`LeagueSlot.cs:44`) leaves a trailing `|` when the slot has no name. That string
   appeared in the settings-change log; since B1 the log no longer uses it, so this is cosmetic only.
+  - The trailing `|` is gone in `87d8467c4`, but the counter-pick prefix became its own part, so a standard slot
+    now prints `|0|REG` and a counter pick `CPK-|0|REG`.
 - [ ] **S9.** `LeagueOptions.StandardGames`, `CounterPicks` (`:67`-`68`) and `SpecialGameSlots` (`:89`) are
   recalculated on every call, including inside per-publisher loops. `LeagueOptions` is immutable, so compute them
   once in the constructor.
+  - `StandardGames` and `CounterPicks` done in `87d8467c4`. `SpecialGameSlots` is still recalculated.
 - [ ] **S10.** The `MakeSlotsConsistent` job (job type, handler, registry entry) and
   `IFantasyCriticRepo.ManualMakePublisherGameSlotsConsistent` are still in Lib. The plan deletes them with
   `OrganizeSlots`; check whether existing job rows of that type need handling. (Found while updating the plan.)
