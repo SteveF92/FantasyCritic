@@ -27,6 +27,16 @@ public class ClaimResult
         Overridable = errors.All(x => x.Overridable);
     }
 
+    private ClaimResult()
+    {
+        Success = true;
+        BestSlot = null;
+        Errors = new List<ClaimError>();
+        Overridable = true;
+    }
+
+    public static ClaimResult SuccessWithoutSlot() => new ClaimResult();
+
     public bool Success { get; }
     public LeagueSlot? BestSlot { get; }
     public IReadOnlyList<ClaimError> Errors { get; }

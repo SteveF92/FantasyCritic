@@ -80,8 +80,10 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
 - [x] **S5.** `SlotEligibilityFunctions.GetTradeSlotResult` (`SlotEligibilityFunctions.cs:117`) no longer uses its
   `publisher` or `leagueYear` parameters.
   - Fixed in `87d8467c4`.
-- [ ] **S6.** `LeagueSlot.FakeSlot` (`Guid.Empty`, `LeagueSlot.cs:6`) exists only for `RoyaleService.cs:191`. A
+- [x] **S6.** `LeagueSlot.FakeSlot` (`Guid.Empty`, `LeagueSlot.cs:6`) exists only for `RoyaleService.cs:191`. A
   `ClaimResult` that can succeed without a slot would be cleaner.
+  - Fixed: `FakeSlot` is gone and Royale returns `ClaimResult.SuccessWithoutSlot()`. The public constructors still
+    need a slot to succeed, so a league claim can't succeed without one by accident.
 - [x] **S7.** `LeagueSlot.cs` sits at the Lib root, namespace `FantasyCritic.Lib`, rather than in `Domain/` with the
   other domain types.
   - Fixed in `87d8467c4`.
