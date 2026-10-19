@@ -136,6 +136,14 @@ public class LeagueOptions
             return Result.Failure("Some of the slots specified have duplicate positions, which is invalid.");
         }
 
+        var slotNumbersHaveGaps = LeagueSlots
+            .GroupBy(x => x.CounterPick)
+            .Any(group => !group.Select(x => x.SlotNumber).Order().SequenceEqual(Enumerable.Range(0, group.Count())));
+        if (slotNumbersHaveGaps)
+        {
+            return Result.Failure("Slot positions must run in order from the first slot, with no gaps.");
+        }
+
         return Result.Success();
     }
 

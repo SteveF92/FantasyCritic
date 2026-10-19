@@ -62,10 +62,11 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
 
 ## Smaller items
 
-- [ ] **S1. `Validate` gaps** (`LeagueOptions.cs:94`). It doesn't reject tags on counter-pick slots. The migration
+- [x] **S1. `Validate` gaps** (`LeagueOptions.cs:94`). It doesn't reject tags on counter-pick slots. The migration
   guarantees none exist, but `HasSpecialSlots` and `GetClaimErrorsForLeagueYear` would count them. It also doesn't
   check that slot numbers run 0..n-1, which `WithNewDraftOptions` assumes when it numbers new slots from `Count`.
-  - Counter-pick tags rejected in `87d8467c4`. Slot numbering still unchecked.
+  - Counter-pick tags rejected in `87d8467c4`. Slot numbers are checked alongside it: standard and counter-pick
+    slots must each run 0..n-1.
 - [x] **S2.** `Publisher.GetCounterPickedGameIsValid` (`Publisher.cs:198`) uses `LeagueSlots.Single(...)` where
   `LeagueSlotDictionary` would do.
   - Fixed in `87d8467c4`.
