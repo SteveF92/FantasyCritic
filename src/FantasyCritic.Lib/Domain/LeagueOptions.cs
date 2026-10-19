@@ -39,7 +39,7 @@ public class LeagueOptions
         LeagueSlotDictionary = LeagueSlots.ToDictionary(x => x.LeagueSlotID);
         StandardGames = LeagueSlots.Count(x => !x.CounterPick);
         CounterPicks = LeagueSlots.Count(x => x.CounterPick);
-
+        SpecialGameSlots = LeagueSlots.Where(x => x.RequiredTags.Any()).ToList();
     }
 
     public LeagueOptions(LeagueYearParameters parameters)
@@ -68,6 +68,7 @@ public class LeagueOptions
         LeagueSlotDictionary = LeagueSlots.ToDictionary(x => x.LeagueSlotID);
         StandardGames = LeagueSlots.Count(x => !x.CounterPick);
         CounterPicks = LeagueSlots.Count(x => x.CounterPick);
+        SpecialGameSlots = LeagueSlots.Where(x => x.RequiredTags.Any()).ToList();
     }
 
     public int StandardGames { get; }
@@ -92,7 +93,7 @@ public class LeagueOptions
     public AnnualDate CounterPickDeadline { get; }
     public AnnualDate? MightReleaseDroppableDate { get; }
     public bool BidsOnlyBeforeNextScheduledDraft { get; }
-    public IReadOnlyList<LeagueSlot> SpecialGameSlots => LeagueSlots.Where(x => x.RequiredTags.Any()).ToList();
+    public IReadOnlyList<LeagueSlot> SpecialGameSlots { get; }
     public bool HasSpecialSlots => SpecialGameSlots.Any();
 
     public IReadOnlyDictionary<Guid, LeagueSlot> LeagueSlotDictionary { get; }

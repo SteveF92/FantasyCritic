@@ -89,10 +89,10 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
   appeared in the settings-change log; since B1 the log no longer uses it, so this is cosmetic only.
   - The trailing `|` is gone in `87d8467c4`, but the counter-pick prefix became its own part, so a standard slot
     now prints `|0|REG` and a counter pick `CPK-|0|REG`. Fixed after that: back to `0|REG` and `CPK-0|REG`.
-- [ ] **S9.** `LeagueOptions.StandardGames`, `CounterPicks` (`:67`-`68`) and `SpecialGameSlots` (`:89`) are
+- [x] **S9.** `LeagueOptions.StandardGames`, `CounterPicks` (`:67`-`68`) and `SpecialGameSlots` (`:89`) are
   recalculated on every call, including inside per-publisher loops. `LeagueOptions` is immutable, so compute them
   once in the constructor.
-  - `StandardGames` and `CounterPicks` done in `87d8467c4`. `SpecialGameSlots` is still recalculated.
+  - `StandardGames` and `CounterPicks` done in `87d8467c4`, `SpecialGameSlots` after it.
 - [ ] **S10.** The `MakeSlotsConsistent` job (job type, handler, registry entry) and
   `IFantasyCriticRepo.ManualMakePublisherGameSlotsConsistent` are still in Lib. The plan deletes them with
   `OrganizeSlots`; check whether existing job rows of that type need handling. (Found while updating the plan.)
