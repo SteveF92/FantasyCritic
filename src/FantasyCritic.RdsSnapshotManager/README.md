@@ -92,5 +92,6 @@ Do not run this tool in CI or automated agents against production AWS resources.
 Optional unit tests:
 
 ```powershell
-dotnet test src/FantasyCritic.Test/FantasyCritic.Test.csproj --filter "RdsSnapshot|BackupRemote|DatabaseEmpty"
+dotnet test src/FantasyCritic.RdsSnapshotManagerTests/FantasyCritic.RdsSnapshotManagerTests.csproj
+dotnet test src/FantasyCritic.Test/FantasyCritic.Test.csproj --filter "RdsSnapshotIdentifierValidator|BackupRemoteKeyBuilder"
 ```
