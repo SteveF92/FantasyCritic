@@ -15,6 +15,7 @@
     <Project Path="FantasyCritic.RdsSnapshotManagerTests/FantasyCritic.RdsSnapshotManagerTests.csproj" />
     <Project Path="FantasyCritic.Test/FantasyCritic.Test.csproj" />
     <Project Path="FantasyCritic.WebTests/FantasyCritic.WebTests.csproj" />
+    <Project Path="FantasyCritic.WorkerTests/FantasyCritic.WorkerTests.csproj" />
   </Folder>
   <Folder Name="/Utilities/">
     <Project Path="FantasyCritic.RdsSnapshotManager/FantasyCritic.RdsSnapshotManager.csproj" />
