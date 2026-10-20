@@ -110,11 +110,10 @@ public class CounterPickDraftRestrictionTests
         var supportedYear = new SupportedYear(year, true, true, true, new LocalDate(year - 1, 12, 8), false);
 
         var options = new LeagueOptions(
-            10, 2,
             5, 1, 0,
             false, false, false, false,
             0, true,
-            [], [],
+            [], TestSlotCreationUtilities.GetBasicSlots(10, 2),
             PickupSystem.SemiPublicBiddingSecretCounterPicks,
             ScoringSystem.GetDefaultScoringSystem(year),
             TradingSystem.Standard,
@@ -158,7 +157,7 @@ public class CounterPickDraftRestrictionTests
             false,
             null,
             new MasterGameYear(masterGameA, year),
-            1,
+            options.LeagueSlots[0].LeagueSlotID,
             null,
             null,
             null,
@@ -175,7 +174,7 @@ public class CounterPickDraftRestrictionTests
             false,
             null,
             new MasterGameYear(masterGameB, year),
-            2,
+            options.LeagueSlots[1].LeagueSlotID,
             null,
             null,
             null,

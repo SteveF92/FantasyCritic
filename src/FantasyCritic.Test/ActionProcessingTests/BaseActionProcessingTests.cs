@@ -70,7 +70,7 @@ public abstract class BaseActionProcessingTests
             x.PickupBid.Priority,
             x.PickupBid.BidAmount,
             x.ProjectedPointsAtTimeOfBid,
-            x.SlotNumber,
+            x.Slot.LeagueSlotID,
             x.Outcome,
             ConditionalDropMasterGameID = x.PickupBid.ConditionalDropPublisherGame?.MasterGame!.MasterGame.MasterGameID,
             ConditionalDropResult = x.PickupBid.ConditionalDropResult?.Result.ToString()
@@ -142,13 +142,13 @@ public abstract class BaseActionProcessingTests
             x.MasterGame!.MasterGame.MasterGameID,
             x.MasterGame!.MasterGame.GameName,
             x.CounterPick,
-            x.SlotNumber,
+            x.LeagueSlotID,
             x.BidAmount
         })
             .OrderBy(x => x.PublisherID)
             .ThenBy(x => x.MasterGameID)
             .ThenBy(x => x.CounterPick)
-            .ThenBy(x => x.SlotNumber)
+            .ThenBy(x => x.LeagueSlotID)
             .ThenBy(x => x.BidAmount)
             .ToList();
         return Verifier.Verify(testData);
@@ -159,18 +159,16 @@ public abstract class BaseActionProcessingTests
     {
         var testData = _results[ActionProcessingSetName].Results.RemovedPublisherGames.Select(x => new
         {
-            x.PublisherGame.PublisherID,
-            x.PublisherGame.MasterGame!.MasterGame.MasterGameID,
-            x.PublisherGame.MasterGame!.MasterGame.GameName,
-            x.PublisherGame.CounterPick,
-            x.PublisherGame.SlotNumber,
-            x.PublisherGame.BidAmount,
+            x.PublisherID,
+            x.MasterGame!.MasterGame.MasterGameID,
+            x.MasterGame!.MasterGame.GameName,
+            x.CounterPick,
+            x.BidAmount,
             x.RemovedNote
         })
             .OrderBy(x => x.PublisherID)
             .ThenBy(x => x.MasterGameID)
             .ThenBy(x => x.CounterPick)
-            .ThenBy(x => x.SlotNumber)
             .ThenBy(x => x.BidAmount)
             .ThenBy(x => x.RemovedNote)
             .ToList();

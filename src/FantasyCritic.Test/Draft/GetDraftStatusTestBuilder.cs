@@ -15,6 +15,7 @@ internal sealed class GetDraftStatusTestBuilder
 {
     private readonly Guid _leagueID = Guid.NewGuid();
     private readonly int _year = 2025;
+    private readonly IReadOnlyList<LeagueSlot> _leagueSlots = TestSlotCreationUtilities.GetBasicSlots(10, 5);
     private readonly List<PublisherSpec> _publisherSpecs = [];
     private readonly List<DraftSpec> _draftSpecs = [];
     private int _nextDraftNumber = 1;
@@ -78,18 +79,25 @@ internal sealed class GetDraftStatusTestBuilder
                             .ToList()))
                     .ToList();
 
-                var games = publisherSpec.Games
-                    .Select(gameSpec => CreatePublisherGame(publisherSpec.PublisherID, gameSpec))
-                    .ToList();
-
+                var takenSlotIDs = new HashSet<Guid>();
+                var games = new List<PublisherGame>();
                 foreach (var slotNumber in publisherSpec.PrefilledStandardSlots)
                 {
-                    games.Add(CreatePrefilledStandardGame(publisherSpec.PublisherID, slotNumber, null));
+                    var slot = _leagueSlots.Single(x => !x.CounterPick && x.SlotNumber == slotNumber);
+                    takenSlotIDs.Add(slot.LeagueSlotID);
+                    games.Add(CreatePrefilledStandardGame(publisherSpec.PublisherID, slot, null));
+                }
+
+                foreach (var gameSpec in publisherSpec.Games)
+                {
+                    var slot = TakeNextOpenSlot(takenSlotIDs, gameSpec.CounterPick);
+                    games.Add(CreatePublisherGame(publisherSpec.PublisherID, gameSpec, slot));
                 }
 
                 if (publisherSpec.FantasyPoints.HasValue)
                 {
-                    games.Add(CreatePrefilledStandardGame(publisherSpec.PublisherID, 0, publisherSpec.FantasyPoints));
+                    var slot = TakeNextOpenSlot(takenSlotIDs, counterPick: false);
+                    games.Add(CreatePrefilledStandardGame(publisherSpec.PublisherID, slot, publisherSpec.FantasyPoints));
                 }
 
                 return new Publisher(
@@ -126,8 +134,6 @@ internal sealed class GetDraftStatusTestBuilder
 
         var supportedYear = new SupportedYear(_year, true, true, true, new LocalDate(2024, 12, 8), false);
         var leagueOptions = new LeagueOptions(
-            10,
-            5,
             orderedDrafts.Max(x => x.GamesToDraft),
             orderedDrafts.Max(x => x.CounterPicksToDraft),
             0,
@@ -138,7 +144,7 @@ internal sealed class GetDraftStatusTestBuilder
             0,
             true,
             [new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned)],
-            [],
+            _leagueSlots,
             PickupSystem.SemiPublicBiddingSecretCounterPicks,
             ScoringSystem.GetDefaultScoringSystem(_year),
             TradingSystem.Standard,
@@ -180,7 +186,7 @@ internal sealed class GetDraftStatusTestBuilder
         publisherSpec.Skips.Add(new SkipSpec(draft.DraftNumber, counterPick, pickNumber, isManualSkip));
     }
 
-    internal void PrefillStandardSlot(int draftPosition, int slotNumber = 0)
+    internal void PrefillStandardSlot(int draftPosition, int slotNumber = 1)
     {
         var publisherSpec = _publisherSpecs.Single(x => x.DraftPosition == draftPosition);
         publisherSpec.PrefilledStandardSlots.Add(slotNumber);
@@ -188,7 +194,7 @@ internal sealed class GetDraftStatusTestBuilder
 
     internal void PrefillAllStandardSlots(int draftPosition, int slotCount = 10)
     {
-        for (var slotNumber = 0; slotNumber < slotCount; slotNumber++)
+        for (var slotNumber = 1; slotNumber <= slotCount; slotNumber++)
         {
             PrefillStandardSlot(draftPosition, slotNumber);
         }
@@ -246,19 +252,27 @@ internal sealed class GetDraftStatusTestBuilder
 
     internal static Guid DraftIDFor(int draftNumber) => Guid.Parse($"{draftNumber:D8}-0000-0000-0000-{draftNumber:D012}");
 
-    private static PublisherGame CreatePrefilledStandardGame(Guid publisherID, int slotNumber, decimal? fantasyPoints)
+    private LeagueSlot TakeNextOpenSlot(HashSet<Guid> takenSlotIDs, bool counterPick)
+    {
+        var slot = _leagueSlots.FirstOrDefault(x => x.CounterPick == counterPick && !takenSlotIDs.Contains(x.LeagueSlotID))
+            ?? throw new InvalidOperationException($"No open {(counterPick ? "counter pick" : "standard")} slot left for this publisher.");
+        takenSlotIDs.Add(slot.LeagueSlotID);
+        return slot;
+    }
+
+    private static PublisherGame CreatePrefilledStandardGame(Guid publisherID, LeagueSlot slot, decimal? fantasyPoints)
     {
         return new PublisherGame(
             publisherID,
             Guid.NewGuid(),
-            $"Prefilled standard slot {slotNumber}",
+            $"Prefilled standard slot {slot.SlotNumber}",
             Instant.FromUtc(2025, 1, 1, 0, 0),
             false,
             null,
             false,
             fantasyPoints,
             null,
-            slotNumber,
+            slot.LeagueSlotID,
             null,
             null,
             null,
@@ -266,7 +280,7 @@ internal sealed class GetDraftStatusTestBuilder
             null);
     }
 
-    private static PublisherGame CreatePublisherGame(Guid publisherID, GameSpec gameSpec)
+    private static PublisherGame CreatePublisherGame(Guid publisherID, GameSpec gameSpec, LeagueSlot slot)
     {
         var draftID = DraftIDFor(gameSpec.DraftNumber);
         return new PublisherGame(
@@ -279,7 +293,7 @@ internal sealed class GetDraftStatusTestBuilder
             false,
             null,
             null,
-            gameSpec.OverallPickNumber,
+            slot.LeagueSlotID,
             gameSpec.PickNumber,
             gameSpec.OverallPickNumber,
             null,
@@ -338,7 +352,7 @@ internal sealed class DraftScenarioBuilder
         return this;
     }
 
-    public DraftScenarioBuilder PrefillStandardSlot(int draftPosition, int slotNumber = 0)
+    public DraftScenarioBuilder PrefillStandardSlot(int draftPosition, int slotNumber = 1)
     {
         _root.PrefillStandardSlot(draftPosition, slotNumber);
         return this;

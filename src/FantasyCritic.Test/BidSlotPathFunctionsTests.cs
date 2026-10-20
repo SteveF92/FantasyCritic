@@ -212,12 +212,12 @@ public class BidSlotPathFunctionsTests
             null, standardGames, 0, false, true, PlayStatus.DraftFinal, publisherDraftInfo, null);
 
         var publisherGames = filledStandardSlotNumbers
-            .Select(slotNumber => CreatePublisherGame(publisherID, slotNumber, counterPick: false, $"Game-{slotNumber}"))
+            .Select(slotNumber => CreatePublisherGame(publisherID, options.LeagueSlots[slotNumber].LeagueSlotID, counterPick: false, $"Game-{slotNumber}"))
             .ToList();
 
         foreach (var slotNumber in filledCounterPickSlotNumbers ?? [])
         {
-            publisherGames.Add(CreatePublisherGame(publisherID, slotNumber, counterPick: true, $"CP-{slotNumber}"));
+            publisherGames.Add(CreatePublisherGame(publisherID, options.LeagueSlots[slotNumber].LeagueSlotID, counterPick: true, $"CP-{slotNumber}"));
         }
 
         var publisher = new Publisher(
@@ -237,11 +237,10 @@ public class BidSlotPathFunctionsTests
     private static LeagueOptions BuildLeagueOptions(int standardGames, int counterPicks)
     {
         return new LeagueOptions(
-            standardGames, counterPicks,
             5, 1, 0,
             false, false, false, false,
             0, false,
-            [], [],
+            [], TestSlotCreationUtilities.GetBasicSlots(standardGames, counterPicks),
             PickupSystem.SemiPublicBiddingSecretCounterPicks,
             ScoringSystem.GetDefaultScoringSystem(_year),
             TradingSystem.Standard,
@@ -253,7 +252,7 @@ public class BidSlotPathFunctionsTests
             false);
     }
 
-    private static PublisherGame CreatePublisherGame(Guid publisherID, int slotNumber, bool counterPick, string gameName)
+    private static PublisherGame CreatePublisherGame(Guid publisherID, Guid leagueSlotId, bool counterPick, string gameName)
     {
         var masterGame = new MasterGame(Guid.NewGuid(), gameName, "2026-06-01",
             new LocalDate(2026, 6, 1), new LocalDate(2026, 6, 1),
@@ -268,7 +267,7 @@ public class BidSlotPathFunctionsTests
             publisherID, Guid.NewGuid(), gameName,
             _fixtureTimestamp, counterPick, null, false, null,
             new MasterGameYear(masterGame, 2026),
-            slotNumber, null, null, null, null, null);
+            leagueSlotId, null, null, null, null, null);
     }
 
     private static DropRequest CreateDropRequest(Publisher publisher, LeagueYear leagueYear, PublisherGame publisherGame)
