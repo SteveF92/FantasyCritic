@@ -28,7 +28,7 @@
 
   <ItemGroup>
     <InternalsVisibleTo Include="FantasyCritic.ConfigurationTests" />
-    <InternalsVisibleTo Include="FantasyCritic.Test" />
+    <InternalsVisibleTo Include="FantasyCritic.HostingTests" />
   </ItemGroup>
 
   <ItemGroup>
