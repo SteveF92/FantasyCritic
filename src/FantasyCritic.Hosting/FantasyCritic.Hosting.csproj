@@ -27,6 +27,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <InternalsVisibleTo Include="FantasyCritic.ConfigurationTests" />
     <InternalsVisibleTo Include="FantasyCritic.Test" />
   </ItemGroup>
 

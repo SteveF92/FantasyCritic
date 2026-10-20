@@ -8,6 +8,7 @@
     <File Path=".editorconfig" />
   </Folder>
   <Folder Name="/Tests/">
+    <Project Path="FantasyCritic.ConfigurationTests/FantasyCritic.ConfigurationTests.csproj" />
     <Project Path="FantasyCritic.FakeRepo/FantasyCritic.FakeRepo.csproj" />
     <Project Path="FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.csproj" />
     <Project Path="FantasyCritic.Test/FantasyCritic.Test.csproj" />

@@ -30,6 +30,9 @@ dotnet test src/FantasyCritic.Test/FantasyCritic.Test.csproj
 # Single test / fixture
 dotnet test src/FantasyCritic.Test/FantasyCritic.Test.csproj --filter "FullyQualifiedName~EligibilityTests"
 
+# Configuration tests (no DB required): each host's shipped appsettings, bound and validated
+dotnet test src/FantasyCritic.ConfigurationTests/FantasyCritic.ConfigurationTests.csproj
+
 # Integration tests (Docker MySQL must be up; use -c Release if the dev web server is
 # running, since the dev server holds Debug DLL locks)
 dotnet test src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.csproj -c Release

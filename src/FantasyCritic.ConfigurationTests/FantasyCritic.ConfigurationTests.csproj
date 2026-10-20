@@ -1,0 +1,41 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <WarningLevel>5</WarningLevel>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="18.3.0" />
+    <PackageReference Include="NUnit" Version="4.5.1" />
+    <PackageReference Include="NUnit.Analyzers" Version="4.12.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="NUnit3TestAdapter" Version="6.2.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\FantasyCritic.CommandLine\FantasyCritic.CommandLine.csproj" />
+    <ProjectReference Include="..\FantasyCritic.DatabaseUpdater\FantasyCritic.DatabaseUpdater.csproj" />
+    <ProjectReference Include="..\FantasyCritic.DiscordBot\FantasyCritic.DiscordBot.csproj" />
+    <ProjectReference Include="..\FantasyCritic.Web\FantasyCritic.Web.csproj" />
+    <ProjectReference Include="..\FantasyCritic.Worker\FantasyCritic.Worker.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Each host's shipped appsettings, so the configuration tests bind what actually deploys. -->
+    <Content Include="../FantasyCritic.Web/appsettings.json" Link="Appsettings/web.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../FantasyCritic.Worker/appsettings.json" Link="Appsettings/worker.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../FantasyCritic.DiscordBot/appsettings.json" Link="Appsettings/discordbot.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../FantasyCritic.CommandLine/appsettings.json" Link="Appsettings/commandline.json" CopyToOutputDirectory="PreserveNewest" />
+    <Content Include="../FantasyCritic.DatabaseUpdater/appsettings.json" Link="Appsettings/databaseupdater.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+
+</Project>

@@ -64,7 +64,7 @@ dotnet_style_prefer_simplified_boolean_expressions = true:warning
 dotnet_style_collection_initializer = true:warning
 csharp_style_unused_value_assignment_preference = discard_variable:warning
 
-[{FantasyCritic.Test/**,FantasyCritic.IntegrationTests/**}.cs]
+[{FantasyCritic.Test/**,FantasyCritic.ConfigurationTests/**,FantasyCritic.IntegrationTests/**}.cs]
 dotnet_diagnostic.NUnit2045.severity = warning
 
 [*.{js,json,vue}]

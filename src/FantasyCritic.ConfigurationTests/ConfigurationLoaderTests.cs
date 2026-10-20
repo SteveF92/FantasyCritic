@@ -4,7 +4,7 @@ using System.IO;
 using FantasyCritic.Hosting;
 using NUnit.Framework;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.ConfigurationTests;
 
 /// <summary>
 /// How the loader finds the secret store, and how hosts name their environment. These read the process's environment

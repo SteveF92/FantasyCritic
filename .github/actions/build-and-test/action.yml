@@ -80,6 +80,16 @@ runs:
         --logger "trx;LogFileName=unit-tests.trx"
         --results-directory ${{ github.workspace }}/test-results
 
+    - name: Configuration tests
+      shell: bash
+      run: >-
+        dotnet test src/FantasyCritic.ConfigurationTests/FantasyCritic.ConfigurationTests.csproj
+        -c ${{ inputs.configuration }}
+        --no-build
+        --logger "console;verbosity=normal"
+        --logger "trx;LogFileName=configuration-tests.trx"
+        --results-directory ${{ github.workspace }}/test-results
+
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4

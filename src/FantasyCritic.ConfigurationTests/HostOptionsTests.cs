@@ -10,7 +10,7 @@ using FantasyCritic.Worker;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.ConfigurationTests;
 
 /// <summary>
 /// Each host's whole shipped appsettings, bound into its options and validated in every environment: exactly what each
