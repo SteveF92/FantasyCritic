@@ -9,6 +9,7 @@
   </Folder>
   <Folder Name="/Tests/">
     <Project Path="FantasyCritic.ConfigurationTests/FantasyCritic.ConfigurationTests.csproj" />
+    <Project Path="FantasyCritic.DiscordBotTests/FantasyCritic.DiscordBotTests.csproj" />
     <Project Path="FantasyCritic.FakeRepo/FantasyCritic.FakeRepo.csproj" />
     <Project Path="FantasyCritic.HostingTests/FantasyCritic.HostingTests.csproj" />
     <Project Path="FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.csproj" />

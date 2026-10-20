@@ -24,14 +24,15 @@ dotnet run --project src/FantasyCritic.Web/FantasyCritic.Web.csproj
 # Build everything
 dotnet build src/FantasyCritic.slnx
 
-# Unit tests (no DB required)
+# Unit tests (no DB required). FantasyCritic.Test covers Lib and MySQL and references only those
+# and FakeRepo; each other project's tests are in FantasyCritic.<Project>Tests (HostingTests,
+# WebTests, WorkerTests, DiscordBotTests, RdsSnapshotManagerTests). ConfigurationTests binds and
+# validates every host's shipped appsettings, so it references every host.
 dotnet test src/FantasyCritic.Test/FantasyCritic.Test.csproj
+dotnet test src/FantasyCritic.ConfigurationTests/FantasyCritic.ConfigurationTests.csproj
 
 # Single test / fixture
 dotnet test src/FantasyCritic.Test/FantasyCritic.Test.csproj --filter "FullyQualifiedName~EligibilityTests"
-
-# Configuration tests (no DB required): each host's shipped appsettings, bound and validated
-dotnet test src/FantasyCritic.ConfigurationTests/FantasyCritic.ConfigurationTests.csproj
 
 # Integration tests (Docker MySQL must be up; use -c Release if the dev web server is
 # running, since the dev server holds Debug DLL locks)
