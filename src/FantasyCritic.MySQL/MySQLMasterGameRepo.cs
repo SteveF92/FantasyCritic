@@ -223,18 +223,12 @@ public class MySQLMasterGameRepo : IMasterGameRepo
 
     public async Task UpdateCriticStats(MasterSubGame masterSubGame, OpenCriticGame openCriticGame)
     {
-        DateTime? releaseDate = null;
-        if (openCriticGame.ReleaseDate.HasValue)
-        {
-            releaseDate = openCriticGame.ReleaseDate.Value.ToDateTimeUnspecified();
-        }
 
         await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync("update tbl_mastergame_subgame set ReleaseDate = @releaseDate, CriticScore = @criticScore where MasterSubGameID = @masterSubGameID",
+        await connection.ExecuteAsync("update tbl_mastergame_subgame set CriticScore = @criticScore where MasterSubGameID = @masterSubGameID",
             new
             {
                 masterSubGameID = masterSubGame.MasterSubGameID,
-                releaseDate,
                 criticScore = openCriticGame.Score
             });
     }
