@@ -2,7 +2,7 @@ using FantasyCritic.RdsSnapshotManager.Configuration;
 using FantasyCritic.RdsSnapshotManager.Infrastructure;
 using NUnit.Framework;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.RdsSnapshotManagerTests;
 
 [TestFixture]
 public class LocalSnapshotConnectionStringTests

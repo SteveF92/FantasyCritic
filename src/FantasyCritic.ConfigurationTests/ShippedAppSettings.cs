@@ -3,7 +3,7 @@ using System.IO;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.ConfigurationTests;
 
 /// <summary>
 /// Each host's appsettings.json as it ships, linked into the test output by the project file.

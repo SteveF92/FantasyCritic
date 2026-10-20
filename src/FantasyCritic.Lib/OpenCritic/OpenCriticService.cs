@@ -1,5 +1,6 @@
+using System.Net;
 using System.Net.Http;
-using System.Net.Http.Json;
+using System.Text.Json;
 using FantasyCritic.Lib.Extensions;
 using Microsoft.Extensions.Logging;
 
@@ -9,7 +10,6 @@ public class OpenCriticService : IOpenCriticService
 {
     private readonly HttpClient _client;
     private readonly ILogger<OpenCriticService> _logger;
-    private readonly LocalDate DefaultOpenCriticReleaseDate = new LocalDate(2020, 12, 31);
 
     public OpenCriticService(HttpClient client, ILogger<OpenCriticService> logger)
     {
@@ -17,11 +17,45 @@ public class OpenCriticService : IOpenCriticService
         _logger = logger;
     }
 
-    public async Task<OpenCriticGame?> GetOpenCriticGame(int openCriticGameID, CancellationToken cancellationToken)
+    public Task<OpenCriticGame?> GetOpenCriticGame(MasterGame masterGame, CancellationToken cancellationToken)
+    {
+        var openCriticGameID = masterGame.OpenCriticID;
+        if (!openCriticGameID.HasValue)
+        {
+            return Task.FromResult<OpenCriticGame?>(null);
+        }
+
+        return GetOpenCriticGame(openCriticGameID.Value, masterGame.GameName, cancellationToken);
+    }
+
+    public Task<OpenCriticGame?> GetOpenCriticGame(MasterSubGame masterGame, CancellationToken cancellationToken)
+    {
+        var openCriticGameID = masterGame.OpenCriticID;
+        if (!openCriticGameID.HasValue)
+        {
+            return Task.FromResult<OpenCriticGame?>(null);
+        }
+
+        return GetOpenCriticGame(openCriticGameID.Value, masterGame.GameName, cancellationToken);
+    }
+
+    private async Task<OpenCriticGame?> GetOpenCriticGame(int openCriticGameID, string masterGameName, CancellationToken cancellationToken)
     {
         try
         {
-            var response = await _client.GetFromJsonAsync<OpenCriticGameResponse>($"game/{openCriticGameID}", cancellationToken);
+            using var httpResponse = await _client.GetAsync($"game/{openCriticGameID}", cancellationToken);
+            if (httpResponse.StatusCode == HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            httpResponse.EnsureSuccessStatusCode();
+            var body = await httpResponse.Content.ReadAsStringAsync(cancellationToken);
+            var headers = string.Join("; ", httpResponse.Headers.Concat(httpResponse.Content.Headers)
+                .Select(header => $"{header.Key}: {string.Join(", ", header.Value)}"));
+            _logger.LogInformation("OpenCritic response for game {GameName}:{OpenCriticGameID}. Headers: {Headers} Body: {Body}", masterGameName, openCriticGameID, headers, body);
+
+            var response = JsonSerializer.Deserialize<OpenCriticGameResponse>(body, JsonSerializerOptions.Web);
             if (response is null)
             {
                 return null;
@@ -29,24 +63,13 @@ public class OpenCriticService : IOpenCriticService
 
             var gameName = response.Name ?? "Unknown Open Critic Game";
 
-            LocalDate? earliestReleaseDate = null;
-            if (!string.IsNullOrWhiteSpace(response.FirstReleaseDate) &&
-                DateTime.TryParse(response.FirstReleaseDate, out var parsedDate))
-            {
-                earliestReleaseDate = LocalDate.FromDateTime(parsedDate);
-                if (earliestReleaseDate == DefaultOpenCriticReleaseDate)
-                {
-                    earliestReleaseDate = null;
-                }
-            }
-
             var score = response.TopCriticScore;
             if (score == -1m)
             {
                 score = response.AverageScore;
                 if (score != -1m)
                 {
-                    _logger.LogInformation($"Using averageScore for game: {openCriticGameID}");
+                    _logger.LogInformation("Using averageScore for game: {GameName}:{OpenCriticGameID}", masterGameName, openCriticGameID);
                 }
                 else
                 {
@@ -58,25 +81,16 @@ public class OpenCriticService : IOpenCriticService
             bool hasAnyReviews = numReviews.HasValue && numReviews > 0;
             string? slug = response.Url?.SubstringStartingFromLastInstanceOf("/");
 
-            var openCriticGame = new OpenCriticGame(openCriticGameID, gameName, score, earliestReleaseDate, hasAnyReviews, slug);
+            var openCriticGame = new OpenCriticGame(openCriticGameID, gameName, score, hasAnyReviews, slug);
             return openCriticGame;
         }
         catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             throw;
         }
-        catch (HttpRequestException httpEx)
-        {
-            if (httpEx.Message == "Response status code does not indicate success: 404 (Not Found).")
-            {
-                return null;
-            }
-            _logger.LogError(httpEx, $"Getting an open critic game failed: {openCriticGameID}");
-            throw;
-        }
         catch (Exception e)
         {
-            _logger.LogError(e, $"Getting an open critic game failed: {openCriticGameID}");
+            _logger.LogError(e, "Getting an open critic game failed: {GameName}:{OpenCriticGameID}", masterGameName, openCriticGameID);
             throw;
         }
     }

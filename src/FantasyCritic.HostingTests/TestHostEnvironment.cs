@@ -1,7 +1,7 @@
 using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Hosting;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.HostingTests;
 
 internal sealed class TestHostEnvironment : IHostEnvironment
 {
@@ -11,7 +11,7 @@ internal sealed class TestHostEnvironment : IHostEnvironment
     }
 
     public string EnvironmentName { get; set; }
-    public string ApplicationName { get; set; } = "FantasyCritic.Test";
+    public string ApplicationName { get; set; } = "FantasyCritic.HostingTests";
     public string ContentRootPath { get; set; } = "";
     public IFileProvider ContentRootFileProvider { get; set; } = new NullFileProvider();
 }

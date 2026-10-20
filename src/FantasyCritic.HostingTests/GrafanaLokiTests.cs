@@ -4,7 +4,7 @@ using FantasyCritic.Lib.Configuration;
 using NUnit.Framework;
 using Serilog;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.HostingTests;
 
 /// <summary>
 /// Hosts build their Loki logger before validating their options, so that a host refusing to start says why in Loki.

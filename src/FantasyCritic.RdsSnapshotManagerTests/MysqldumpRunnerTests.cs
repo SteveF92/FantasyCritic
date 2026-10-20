@@ -8,7 +8,7 @@ using FantasyCritic.MySQL;
 using MySqlConnector;
 using NUnit.Framework;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.RdsSnapshotManagerTests;
 
 [TestFixture]
 public class MysqldumpRunnerTests
