@@ -4,12 +4,11 @@ using System.Linq;
 using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.Jobs;
 using FantasyCritic.Web.Utilities;
-using FantasyCritic.Worker;
 using NodaTime;
 using NUnit.Framework;
 using Serilog.Events;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.WebTests;
 
 [TestFixture]
 public class GrafanaLogLinksTests
@@ -127,12 +126,6 @@ public class GrafanaLogLinksTests
             Assert.That(logLinks.ForWorker(), Is.Empty);
             Assert.That(logLinks.ForDiscordBot(), Is.Empty);
         });
-    }
-
-    [Test]
-    public void WorkerFlows_MatchTheWorkers()
-    {
-        Assert.That(new[] { GrafanaLogLinks.JobRunnerFlow, GrafanaLogLinks.SchedulerFlow, GrafanaLogLinks.CancellerFlow }, Is.EquivalentTo(WorkerLogging.Flows));
     }
 
     private static string[][] LabelFilters(IEnumerable<LogLink> links)

@@ -4,7 +4,7 @@ using NodaTime;
 using NUnit.Framework;
 using Serilog.Events;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.WebTests;
 
 [TestFixture]
 public class ErrorLogCounterTests
