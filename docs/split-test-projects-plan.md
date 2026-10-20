@@ -87,3 +87,19 @@ Commit → review.
 - `CLAUDE.md`: the unit test commands list the new projects.
 
 Commit → review.
+
+## Step 6: `Test` down to Lib and FakeRepo
+
+MySQL is the last reference `Test` doesn't need, and only two fixtures use it. A MySQL test project
+for them would invite more tests of MySQL code, which isn't wanted, so neither gets one.
+
+- `MysqldumpRunnerTests` moves to `RdsSnapshotManagerTests` (committed alone, f94e8247d).
+  RdsSnapshotManager is the runner's main caller and already reaches MySQL.
+- `MasterGameSnapshotEntityTests` becomes `IntegrationTests/Tests/FactChecker/MasterGameSnapshotTests`:
+  create a fully populated game through `IMasterGameRepo`, read its pending NewGame update back, and
+  compare the two serialized. It goes through the repo, not the API, because the API can't set
+  sub-games, scores, slugs or art, and a field empty on both sides would hide a dropped one. The
+  deleted-tag test is dropped, since it would mean deleting a tag from the shared database.
+- `Test` drops its MySQL reference; `CLAUDE.md` says `Test` covers Lib.
+
+Commit → review.
