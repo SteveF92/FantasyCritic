@@ -24,7 +24,7 @@ dotnet run --project src/FantasyCritic.Web/FantasyCritic.Web.csproj
 # Build everything
 dotnet build src/FantasyCritic.slnx
 
-# Unit tests (no DB required). FantasyCritic.Test covers Lib and MySQL and references only those
+# Unit tests (no DB required). FantasyCritic.Test covers Lib and references only it
 # and FakeRepo; each other project's tests are in FantasyCritic.<Project>Tests (HostingTests,
 # WebTests, WorkerTests, DiscordBotTests, RdsSnapshotManagerTests). ConfigurationTests binds and
 # validates every host's shipped appsettings, so it references every host.
