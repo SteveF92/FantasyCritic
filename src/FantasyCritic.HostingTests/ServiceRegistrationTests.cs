@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.HostingTests;
 
 /// <summary>
 /// The registration methods take typed sections, so passing the wrong section does not compile. These check the part the

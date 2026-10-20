@@ -70,15 +70,24 @@ runs:
       shell: bash
       run: dotnet build src/FantasyCritic.slnx -c ${{ inputs.configuration }} --no-restore
 
+    # Every unit test project, found by name so a new one runs without a change here. Each
+    # one runs even if an earlier one failed, so a run reports every failing project.
     - name: Unit tests
       shell: bash
-      run: >-
-        dotnet test src/FantasyCritic.Test/FantasyCritic.Test.csproj
-        -c ${{ inputs.configuration }}
-        --no-build
-        --logger "console;verbosity=normal"
-        --logger "trx;LogFileName=unit-tests.trx"
-        --results-directory ${{ github.workspace }}/test-results
+      run: |
+        status=0
+        for project in src/FantasyCritic.Test/FantasyCritic.Test.csproj src/FantasyCritic.*Tests/*.csproj; do
+          name=$(basename "$project" .csproj)
+          [ "$name" = FantasyCritic.IntegrationTests ] && continue
+          dotnet test "$project" \
+            -c ${{ inputs.configuration }} \
+            --no-build \
+            --logger "console;verbosity=normal" \
+            --logger "trx;LogFileName=$name.trx" \
+            --results-directory ${{ github.workspace }}/test-results \
+            || status=1
+        done
+        exit $status
 
     - name: Upload test results
       if: always()

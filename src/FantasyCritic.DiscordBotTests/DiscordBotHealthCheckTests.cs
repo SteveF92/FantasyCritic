@@ -4,7 +4,7 @@ using FantasyCritic.Lib.SharedSerialization.API;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NUnit.Framework;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.DiscordBotTests;
 
 [TestFixture]
 public class DiscordBotHealthCheckTests

@@ -3,7 +3,7 @@ using FantasyCritic.Lib.Configuration;
 using Microsoft.Extensions.Configuration;
 using NUnit.Framework;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.ConfigurationTests;
 
 /// <summary>
 /// The configuration sections and the rules for when a value counts as missing. The binding tests read each host's

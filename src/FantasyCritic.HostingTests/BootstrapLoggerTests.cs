@@ -7,7 +7,7 @@ using Serilog.Core;
 using Serilog.Events;
 using Serilog.Extensions.Hosting;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.HostingTests;
 
 /// <summary>
 /// Every host starts with a bootstrap logger and replaces it once its configuration is loaded. These pin what that

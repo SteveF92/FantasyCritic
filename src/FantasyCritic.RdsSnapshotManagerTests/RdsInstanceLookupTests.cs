@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using FantasyCritic.RdsSnapshotManager.Configuration;
 using NUnit.Framework;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.RdsSnapshotManagerTests;
 
 [TestFixture]
 public class RdsInstanceLookupTests

@@ -7,7 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using NUnit.Framework;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.HostingTests;
 
 /// <summary>
 /// Discord.Net builds a slash command's module from the service provider only when someone runs that command, so

@@ -25,7 +25,7 @@
   -->
   <ItemGroup>
     <_FormatAnalyzerTestProject Include="$(MSBuildThisFileDirectory)FantasyCritic.Test\FantasyCritic.Test.csproj" />
-    <_FormatAnalyzerTestProject Include="$(MSBuildThisFileDirectory)FantasyCritic.IntegrationTests\FantasyCritic.IntegrationTests.csproj" />
+    <_FormatAnalyzerTestProject Include="$(MSBuildThisFileDirectory)FantasyCritic.*Tests\*.csproj" />
   </ItemGroup>
 
   <Target Name="Format">

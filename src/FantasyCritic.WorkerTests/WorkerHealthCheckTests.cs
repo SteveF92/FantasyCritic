@@ -6,7 +6,7 @@ using Microsoft.Extensions.Diagnostics.HealthChecks;
 using NodaTime;
 using NUnit.Framework;
 
-namespace FantasyCritic.Test;
+namespace FantasyCritic.WorkerTests;
 
 [TestFixture]
 public class WorkerHealthCheckTests
