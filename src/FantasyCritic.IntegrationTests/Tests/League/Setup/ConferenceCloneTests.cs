@@ -181,6 +181,59 @@ public class ConferenceCloneTests : IntegrationTestBase
         }
     }
 
+    [Test]
+    public async Task AddLeagueToConference_WithSpecialSlots_CopiesTheRoster()
+    {
+        using var sessionTemp = new ApiSession(Factory);
+        var year = await LeagueTestHelpers.GetOpenYearAsync(sessionTemp);
+
+        var (emailA, passwordA, displayNameA) = NewUser();
+        var (emailB, passwordB, displayNameB) = NewUser();
+        using var sessionA = new ApiSession(Factory);
+        using var sessionB = new ApiSession(Factory);
+        await RegisterAsPlusUserAsync(sessionA, emailA, passwordA, displayNameA);
+        await sessionB.RegisterAsync(emailB, passwordB, displayNameB);
+
+        var scenario = SlotTestHelpers.Scenario("ConferenceSpecialSlots", 5, 2,
+            [[SlotTestHelpers.NewGame], [SlotTestHelpers.Remake, SlotTestHelpers.Remaster]]);
+        var conferenceID = await sessionA.Conference.CreateConferenceAsync(new CreateConferenceRequest
+        {
+            ConferenceName = $"TestConf-{Guid.NewGuid():N}"[..30],
+            PrimaryLeagueName = $"Primary-{Guid.NewGuid():N}"[..20],
+            CustomRulesConference = false,
+            LeagueYearSettings = scenario.BuildSettings(year),
+            Drafts = scenario.BuildDraftSettings().ToList(),
+        });
+        await InviteAndJoinConferenceAsync(sessionA, sessionB, conferenceID);
+        var userB = await sessionB.Account.CurrentUserAsync();
+        await sessionA.Conference.AddLeagueToConferenceAsync(new AddLeagueToConferenceRequest
+        {
+            ConferenceID = conferenceID,
+            Year = year,
+            LeagueName = $"SecondLeague-{Guid.NewGuid():N}"[..20],
+            LeagueManager = userB.UserID,
+        });
+
+        var conference = await GetConferenceAsync(sessionA, conferenceID);
+        var primaryLeagueYear = await sessionA.League.GetLeagueYearAsync(conference.PrimaryLeague.LeagueID, year, null);
+        var secondLeagueID = conference.LeaguesInConference.Single(l => l.LeagueID != conference.PrimaryLeague.LeagueID).LeagueID;
+        var secondLeagueYear = await sessionB.League.GetLeagueYearAsync(secondLeagueID, year, null);
+
+        static IReadOnlyList<string> DescribeSpecialSlots(LeagueYearViewModel leagueYear) =>
+            leagueYear.Settings.SpecialGameSlots
+                .OrderBy(s => s.SpecialSlotPosition)
+                .Select(s => $"{s.SpecialSlotPosition}: {string.Join(",", s.RequiredTags.Order())}")
+                .ToList();
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(DescribeSpecialSlots(primaryLeagueYear), Is.EqualTo(new[] { "0: NewGame", "1: Remake,Remaster" }));
+            Assert.That(secondLeagueYear.Settings.StandardGames, Is.EqualTo(5));
+            Assert.That(secondLeagueYear.Settings.CounterPicks, Is.EqualTo(2));
+            Assert.That(DescribeSpecialSlots(secondLeagueYear), Is.EqualTo(DescribeSpecialSlots(primaryLeagueYear)));
+        }
+    }
+
     // -------------------------------------------------------------------------
     // Test 2
     // -------------------------------------------------------------------------
