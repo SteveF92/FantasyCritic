@@ -147,7 +147,7 @@ public class TestDataService
         var eligibilityOverrideLookup = eligibilityOverrideEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
         var tagOverrideEntityLookup = tagOverrideEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
         var leagueTagEntityLookup = leagueTagEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
-        var specialGameSlotsDictionary = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, tagDictionary);
+        var specialGameSlotEntityLookup = specialGameSlotEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
 
         List<LeagueYear> domains = [];
         foreach (var leagueYearEntity in leagueYearEntities)
@@ -172,8 +172,10 @@ public class TestDataService
                 .GroupBy(x => x.MasterGameID)
                 .Select(x => new TagOverride(masterGameYears[x.Key].MasterGame, tags.Where(t => x.Select(e => e.TagName).Contains(t.Name))));
             var leagueTags = leagueTagEntityLookup[leagueYearKey].Select(x => x.ToDomain(tagDictionary[x.Tag]));
-            var specialGameSlots = specialGameSlotsDictionary[leagueYearKey];
-            domains.Add(leagueYearEntity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, leagueTags, specialGameSlots, null, publishersInLeague, [leagueDraft]));
+            var specialGameSlotEntitiesForLeagueYear = specialGameSlotEntityLookup[leagueYearKey];
+            var leagueSlots = BuildSlotsFromLegacyOptions(leagueYearEntity.StandardGames, leagueYearEntity.CounterPicks, specialGameSlotEntitiesForLeagueYear, tagDictionary);
+
+            domains.Add(leagueYearEntity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, leagueTags, leagueSlots, null, publishersInLeague, [leagueDraft]));
         }
 
         return domains;
@@ -287,4 +289,36 @@ public class TestDataService
         var domains = tags.Select(x => x.ToDomain()).ToList();
         return domains;
     }
+
+    private static IReadOnlyList<LeagueSlot> BuildSlotsFromLegacyOptions(int standardGames, int counterPicks, IEnumerable<SpecialGameSlotEntity> specialGameSlots, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    {
+        var specialSlotCount = specialGameSlots.Count();
+        var specialSlotLookup = specialGameSlots.ToLookup(x => x.SpecialSlotPosition);
+        var nonSpecialGamesCount = standardGames - specialSlotCount;
+
+        var leagueSlots = new List<LeagueSlot>();
+        for (int standardGameIndex = 0; standardGameIndex < standardGames; standardGameIndex++)
+        {
+            var specialSlotNumberToMatch = standardGameIndex - nonSpecialGamesCount;
+            var matchingSpecialSlotEntities = specialSlotLookup[specialSlotNumberToMatch];
+            var requiredTags = matchingSpecialSlotEntities.Select(x => tagDictionary[x.Tag]).ToList();
+            leagueSlots.Add(new LeagueSlot(Guid.NewGuid(), false, standardGameIndex, null, requiredTags));
+        }
+
+        for (int counterPickIndex = 0; counterPickIndex < counterPicks; counterPickIndex++)
+        {
+            leagueSlots.Add(new LeagueSlot(Guid.NewGuid(), true, counterPickIndex, null, []));
+        }
+
+        return leagueSlots;
+    }
+}
+
+internal class SpecialGameSlotEntity
+{
+    public Guid SpecialSlotID { get; set; }
+    public Guid LeagueID { get; set; }
+    public int Year { get; set; }
+    public int SpecialSlotPosition { get; set; }
+    public string Tag { get; set; } = null!;
 }
