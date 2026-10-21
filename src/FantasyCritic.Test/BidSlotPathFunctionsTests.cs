@@ -217,7 +217,7 @@ public class BidSlotPathFunctionsTests
 
         foreach (var slotNumber in filledCounterPickSlotNumbers ?? [])
         {
-            publisherGames.Add(CreatePublisherGame(publisherID, options.LeagueSlots[slotNumber].LeagueSlotID, counterPick: true, $"CP-{slotNumber}"));
+            publisherGames.Add(CreatePublisherGame(publisherID, options.LeagueSlots[slotNumber + standardGames].LeagueSlotID, counterPick: true, $"CP-{slotNumber}"));
         }
 
         var publisher = new Publisher(
