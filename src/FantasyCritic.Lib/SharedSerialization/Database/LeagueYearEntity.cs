@@ -69,10 +69,6 @@ public class LeagueYearEntity
     public bool? ConferenceLocked { get; set; }
     public bool UnderReview { get; set; }
 
-    //Temporary, only until we update the committed test data.
-    public int StandardGames { get; set; }
-    public int CounterPicks { get; set; }
-
     public LeagueYear ToDomain(League league, SupportedYear year, IEnumerable<EligibilityOverride> eligibilityOverrides,
         IEnumerable<TagOverride> tagOverrides, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueSlot> leagueSlots,
         FantasyCriticUser? winningUser, IEnumerable<Publisher> publishersInLeague, IEnumerable<LeagueDraft> leagueDrafts)

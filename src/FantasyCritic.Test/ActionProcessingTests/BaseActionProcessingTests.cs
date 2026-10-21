@@ -41,7 +41,7 @@ public abstract class BaseActionProcessingTests
         var masterGameYearDictionary = testDataService.GetMasterGameYears();
         var masterGameTags = testDataService.GetTags();
         var leagueSlots = testDataService.GetLeagueSlots(masterGameTags);
-        var publishers = testDataService.GetPublishers(masterGameYearDictionary, leagueSlots);
+        var publishers = testDataService.GetPublishers(masterGameYearDictionary);
         var leagueYears = testDataService.GetLeagueYears(publishers, masterGameYearDictionary, masterGameTags, leagueSlots);
         var allActiveBids = testDataService.GetActiveBids(leagueYears, masterGameYearDictionary);
         var allActiveDrops = testDataService.GetActiveDrops(leagueYears, masterGameYearDictionary);
