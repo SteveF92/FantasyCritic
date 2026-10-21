@@ -142,10 +142,7 @@ public interface IFantasyCriticRepo
     Task SetEnableAutomatedActionProcessing(bool enable);
 
     Task EditPublisher(EditPublisherRequest editValues, LeagueAction leagueAction);
-    Task DeletePublisher(Publisher publisher);
-    Task DeleteLeagueYear(LeagueYear leagueYear);
     Task DeleteLeague(League league);
-    Task DeleteLeagueActions(Publisher publisher);
 
     Task<IReadOnlyList<ActionProcessingSetMetadata>> GetActionProcessingSets();
     Task SaveProcessedActionResults(FinalizedActionProcessingResults actionProcessingResults);
