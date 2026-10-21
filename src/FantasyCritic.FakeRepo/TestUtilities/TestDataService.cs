@@ -312,23 +312,7 @@ public class TestDataService
         return leagueSlotEntities
             .OrderBy(x => x.CounterPick)
             .ThenBy(x => x.SlotNumber)
-            .Select(x => new LeagueSlot(x.LeagueSlotID, x.CounterPick, x.SlotNumber, x.SlotName, slotTagEntityLookup[x.LeagueSlotID].Select(t => tagDictionary[t.Tag])))
+            .Select(x => x.ToDomain(slotTagEntityLookup[x.LeagueSlotID].Select(t => tagDictionary[t.Tag])))
             .ToList();
     }
-}
-
-internal class LeagueSlotEntity
-{
-    public Guid LeagueSlotID { get; set; }
-    public Guid LeagueID { get; set; }
-    public int Year { get; set; }
-    public bool CounterPick { get; set; }
-    public int SlotNumber { get; set; }
-    public string? SlotName { get; set; }
-}
-
-internal class LeagueSlotRequiresTagEntity
-{
-    public Guid LeagueSlotID { get; set; }
-    public string Tag { get; set; } = null!;
 }

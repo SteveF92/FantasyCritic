@@ -1,5 +1,6 @@
 using System.Globalization;
 using CsvHelper.Configuration;
+using FantasyCritic.Lib.SharedSerialization.Database;
 
 namespace FantasyCritic.FakeRepo.TestUtilities;
 
