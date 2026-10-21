@@ -87,7 +87,7 @@ public class TestDataService
         return domainBidsDictionary.SealDictionary();
     }
 
-    public IReadOnlyList<Publisher> GetPublishers(IReadOnlyDictionary<Guid, MasterGameYear> masterGameYears)
+    public IReadOnlyList<Publisher> GetPublishers(IReadOnlyDictionary<Guid, MasterGameYear> masterGameYears, IReadOnlyDictionary<LeagueYearKey, IReadOnlyList<LeagueSlot>> leagueSlots)
     {
         var publisherEntities = GetPublisherEntities();
         var publisherGameEntities = GetPublisherGamesEntities();
@@ -96,10 +96,18 @@ public class TestDataService
         List<Publisher> domains = [];
         foreach (var entity in publisherEntities)
         {
+            var slotsForLeagueYear = leagueSlots[new LeagueYearKey(entity.LeagueID, entity.Year)];
+            var slotDictionary = slotsForLeagueYear.ToDictionary(x => (x.CounterPick, x.SlotNumber));
             var gameEntities = publisherGameLookup[entity.PublisherID];
             var domainGames = new List<PublisherGame>();
             foreach (var game in gameEntities)
             {
+                if (!slotDictionary.TryGetValue((game.CounterPick, game.SlotNumber), out var slot))
+                {
+                    throw new Exception($"Publisher game {game.PublisherGameID} has slot number {game.SlotNumber} (counter pick: {game.CounterPick}), which is outside its league year's roster.");
+                }
+
+                game.LeagueSlotID = slot.LeagueSlotID;
                 MasterGameYear? masterGameYear = masterGameYears.GetValueOrDefaultNullable(game.MasterGameID);
                 domainGames.Add(game.ToDomain(masterGameYear));
             }
@@ -131,7 +139,18 @@ public class TestDataService
         return domains.ToDictionary(x => x.MasterGame.MasterGameID);
     }
 
-    public IReadOnlyList<LeagueYear> GetLeagueYears(IReadOnlyList<Publisher> publishers, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYears, IReadOnlyList<MasterGameTag> tags)
+    public IReadOnlyDictionary<LeagueYearKey, IReadOnlyList<LeagueSlot>> GetLeagueSlots(IReadOnlyList<MasterGameTag> tags)
+    {
+        var leagueYearEntities = GetLeagueYearEntities();
+        var tagDictionary = tags.ToDictionary(x => x.Name);
+        var specialGameSlotEntityLookup = GetSpecialGameSlotEntities().ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
+
+        return leagueYearEntities.ToDictionary(x => new LeagueYearKey(x.LeagueID, x.Year),
+            x => BuildSlotsFromLegacyOptions(x.StandardGames, x.CounterPicks, specialGameSlotEntityLookup[new LeagueYearKey(x.LeagueID, x.Year)], tagDictionary));
+    }
+
+    public IReadOnlyList<LeagueYear> GetLeagueYears(IReadOnlyList<Publisher> publishers, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYears, IReadOnlyList<MasterGameTag> tags,
+        IReadOnlyDictionary<LeagueYearKey, IReadOnlyList<LeagueSlot>> leagueSlots)
     {
         var publisherLookup = publishers.ToLookup(x => x.LeagueYearKey);
         var leagueYearEntities = GetLeagueYearEntities();
@@ -142,12 +161,10 @@ public class TestDataService
         var eligibilityOverrideEntities = GetEligibilityOverrideEntities();
         var tagOverrideEntities = GetTagOverrideEntities();
         var leagueTagEntities = GetLeagueTagStatusesEntities();
-        var specialGameSlotEntities = GetSpecialGameSlotEntities();
 
         var eligibilityOverrideLookup = eligibilityOverrideEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
         var tagOverrideEntityLookup = tagOverrideEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
         var leagueTagEntityLookup = leagueTagEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
-        var specialGameSlotEntityLookup = specialGameSlotEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
 
         List<LeagueYear> domains = [];
         foreach (var leagueYearEntity in leagueYearEntities)
@@ -172,10 +189,7 @@ public class TestDataService
                 .GroupBy(x => x.MasterGameID)
                 .Select(x => new TagOverride(masterGameYears[x.Key].MasterGame, tags.Where(t => x.Select(e => e.TagName).Contains(t.Name))));
             var leagueTags = leagueTagEntityLookup[leagueYearKey].Select(x => x.ToDomain(tagDictionary[x.Tag]));
-            var specialGameSlotEntitiesForLeagueYear = specialGameSlotEntityLookup[leagueYearKey];
-            var leagueSlots = BuildSlotsFromLegacyOptions(leagueYearEntity.StandardGames, leagueYearEntity.CounterPicks, specialGameSlotEntitiesForLeagueYear, tagDictionary);
-
-            domains.Add(leagueYearEntity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, leagueTags, leagueSlots, null, publishersInLeague, [leagueDraft]));
+            domains.Add(leagueYearEntity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, leagueTags, leagueSlots[leagueYearKey], null, publishersInLeague, [leagueDraft]));
         }
 
         return domains;
@@ -232,12 +246,12 @@ public class TestDataService
         return publishers;
     }
 
-    private IReadOnlyList<PublisherGameEntity> GetPublisherGamesEntities()
+    private IReadOnlyList<TestPublisherGameEntity> GetPublisherGamesEntities()
     {
         using var reader = new StreamReader(Path.Combine(_basePath, "PublisherGames.csv"));
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
         csv.Context.RegisterClassMap<PublisherGameEntityMap>();
-        var publisherGames = csv.GetRecords<PublisherGameEntity>().ToList();
+        var publisherGames = csv.GetRecords<TestPublisherGameEntity>().ToList();
         return publisherGames;
     }
 
@@ -292,9 +306,8 @@ public class TestDataService
 
     private static IReadOnlyList<LeagueSlot> BuildSlotsFromLegacyOptions(int standardGames, int counterPicks, IEnumerable<SpecialGameSlotEntity> specialGameSlots, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        var specialSlotCount = specialGameSlots.Count();
         var specialSlotLookup = specialGameSlots.ToLookup(x => x.SpecialSlotPosition);
-        var nonSpecialGamesCount = standardGames - specialSlotCount;
+        var nonSpecialGamesCount = standardGames - specialSlotLookup.Count;
 
         var leagueSlots = new List<LeagueSlot>();
         for (int standardGameIndex = 0; standardGameIndex < standardGames; standardGameIndex++)
@@ -321,4 +334,9 @@ internal class SpecialGameSlotEntity
     public int Year { get; set; }
     public int SpecialSlotPosition { get; set; }
     public string Tag { get; set; } = null!;
+}
+
+internal class TestPublisherGameEntity : PublisherGameEntity
+{
+    public int SlotNumber { get; set; }
 }
