@@ -404,51 +404,9 @@ public class FantasyCriticService
         await _fantasyCriticRepo.ChangeLeagueOptions(league, leagueName, publicLeague, testLeague, customRulesLeague);
     }
 
-    public async Task DeleteLeague(League league)
+    public Task DeleteLeague(League league)
     {
-        var invites = await _fantasyCriticRepo.GetOutstandingInvitees(league);
-        foreach (var invite in invites)
-        {
-            await _fantasyCriticRepo.DeleteInvite(invite);
-        }
-
-        foreach (var year in league.Years)
-        {
-            var leagueYear = await _combinedDataRepo.GetLeagueYearOrThrow(league.LeagueID, year.Year);
-            var publishers = leagueYear.Publishers;
-            foreach (var publisher in publishers)
-            {
-                await _fantasyCriticRepo.DeleteLeagueActions(publisher);
-                foreach (var game in publisher.PublisherGames)
-                {
-                    await _fantasyCriticRepo.FullyRemovePublisherGame(leagueYear, publisher, game);
-                }
-
-                var bids = await _fantasyCriticRepo.GetActivePickupBids(leagueYear, publisher);
-                foreach (var bid in bids)
-                {
-                    await _fantasyCriticRepo.RemovePickupBid(bid);
-                }
-
-                var dropRequests = await _fantasyCriticRepo.GetActiveDropRequests(leagueYear, publisher);
-                foreach (var dropRequest in dropRequests)
-                {
-                    await _fantasyCriticRepo.RemoveDropRequest(dropRequest);
-                }
-
-                await _fantasyCriticRepo.DeletePublisher(publisher);
-            }
-
-            await _fantasyCriticRepo.DeleteLeagueYear(leagueYear);
-        }
-
-        var users = await _fantasyCriticRepo.GetUsersInLeague(league.LeagueID);
-        foreach (var user in users)
-        {
-            await _fantasyCriticRepo.RemovePlayerFromLeague(league, user);
-        }
-
-        await _fantasyCriticRepo.DeleteLeague(league);
+        return _fantasyCriticRepo.DeleteLeague(league);
     }
 
     public Task<IReadOnlyList<FantasyCriticUser>> GetLeagueFollowers(League league)

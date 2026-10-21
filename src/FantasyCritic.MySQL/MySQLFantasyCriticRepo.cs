@@ -3373,53 +3373,59 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await transaction.CommitAsync();
     }
 
-    public async Task DeletePublisher(Publisher publisher)
-    {
-        var deleteObject = new
-        {
-            publisherID = publisher.PublisherID
-        };
-
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync(
-            "delete from tbl_league_publisher where PublisherID = @publisherID;",
-            deleteObject);
-    }
-
-    public async Task DeleteLeagueYear(LeagueYear leagueYear)
-    {
-        var deleteObject = new
-        {
-            leagueID = leagueYear.League.LeagueID,
-            year = leagueYear.Year
-        };
-
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync(
-            "delete from tbl_league_year where LeagueID = @leagueID and Year = @year;",
-            deleteObject);
-    }
-
     public async Task DeleteLeague(League league)
     {
-        var deleteObject = new
+        string[] deleteStatements =
+        [
+            "DELETE s FROM tbl_league_draftpickskip s JOIN tbl_league_draft d ON d.DraftID = s.DraftID WHERE d.LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_draftpublisher WHERE LeagueID = @leagueID;",
+            "DELETE a FROM tbl_league_action a JOIN tbl_league_publisher p ON p.PublisherID = a.PublisherID WHERE p.LeagueID = @leagueID;",
+            "DELETE b FROM tbl_league_pickupbid b JOIN tbl_league_publisher p ON p.PublisherID = b.PublisherID WHERE p.LeagueID = @leagueID;",
+            "DELETE r FROM tbl_league_droprequest r JOIN tbl_league_publisher p ON p.PublisherID = r.PublisherID WHERE p.LeagueID = @leagueID;",
+            "DELETE q FROM tbl_league_publisherqueue q JOIN tbl_league_publisher p ON p.PublisherID = q.PublisherID WHERE p.LeagueID = @leagueID;",
+            "DELETE st FROM tbl_league_publisherstatistics st JOIN tbl_league_publisher p ON p.PublisherID = st.PublisherID WHERE p.LeagueID = @leagueID;",
+            "DELETE g FROM tbl_league_publishergame g JOIN tbl_league_publisher p ON p.PublisherID = g.PublisherID WHERE p.LeagueID = @leagueID;",
+            "DELETE g FROM tbl_league_formerpublishergame g JOIN tbl_league_publisher p ON p.PublisherID = g.PublisherID WHERE p.LeagueID = @leagueID;",
+            "DELETE v FROM tbl_league_tradevote v JOIN tbl_league_trade t ON t.TradeID = v.TradeID WHERE t.LeagueID = @leagueID;",
+            "DELETE c FROM tbl_league_tradecomponent c JOIN tbl_league_trade t ON t.TradeID = c.TradeID WHERE t.LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_trade WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_publisher WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_draft WHERE LeagueID = @leagueID;",
+            "DELETE d FROM tbl_league_managermessagedismissal d JOIN tbl_league_managermessage m ON m.MessageID = d.MessageID WHERE m.LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_managermessage WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_manageraction WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_specialauction WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_specialgameslot WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_eligibilityoverride WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_tagoverride WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_yearusestag WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_activeplayer WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_discord_leaguechannel WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_year WHERE LeagueID = @leagueID;",
+            "DELETE m FROM tbl_royale_group_member m JOIN tbl_royale_group g ON g.GroupID = m.GroupID WHERE g.LeagueID = @leagueID;",
+            "DELETE i FROM tbl_royale_group_invitelink i JOIN tbl_royale_group g ON g.GroupID = i.GroupID WHERE g.LeagueID = @leagueID;",
+            "DELETE FROM tbl_royale_group WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_invite WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_invitelink WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_user_followingleague WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_hasuser WHERE LeagueID = @leagueID;",
+            "DELETE FROM tbl_league WHERE LeagueID = @leagueID;"
+        ];
+
+        var param = new
         {
             leagueID = league.LeagueID
         };
 
         await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync("delete from tbl_league where LeagueID = @leagueID;", deleteObject);
-    }
-
-    public async Task DeleteLeagueActions(Publisher publisher)
-    {
-        var deleteObject = new
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        foreach (var statement in deleteStatements)
         {
-            publisherID = publisher.PublisherID
-        };
+            await connection.ExecuteAsync(statement, param, transaction);
+        }
 
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.ExecuteAsync("delete from tbl_league_action where PublisherID = @publisherID;", deleteObject);
+        await transaction.CommitAsync();
     }
 
     public async Task<IReadOnlyList<ActionProcessingSetMetadata>> GetActionProcessingSets()
