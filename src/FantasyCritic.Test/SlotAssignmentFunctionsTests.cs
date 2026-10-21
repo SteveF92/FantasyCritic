@@ -130,31 +130,28 @@ public class SlotAssignmentFunctionsTests
         });
     }
 
-    // ── Fallback (collision) ──────────────────────────────────────────────────
+    // ── Shrinking standard games ──────────────────────────────────────────────
 
     [Test]
-    public void GetNewSlotAssignments_WhenShiftWouldCollide_CompactsAllFilledSlots()
+    public void GetNewSlotAssignments_WhenShrinkingRemovesFilledSlots_DisplacedGamesFillOpenSlots()
     {
-        // 10 std, 2 special (special at 8, 9). All 10 slots filled.
+        // 10 std, 2 special (special at 8, 9). Normal slots 0-3 and 6-7 and both special slots filled (8 games).
         // Shrink to 8 std, 2 special (special at 6, 7).
-        // shift = (8-10)-(2-2) = -2. Special games would shift to 6 and 7,
-        // colliding with normal games already compacted there. Fallback: compact all.
-        var leagueYear = BuildLeagueYear(standardGames: 10, specialSlotCount: 2, filledStandardSlotNumbers: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
-        var publisher = leagueYear.Publishers.Single();
-        var gamesInSlotOrder = publisher.GetPublisherSlots(leagueYear)
-            .Where(slot => !slot.CounterPick && slot.PublisherGame is not null)
-            .Select(slot => slot.PublisherGame!)
-            .ToList();
+        // Normal slots 6 and 7 are removed: their games move to the open normal slots 4, 5.
+        // The special slots survive: their games (slots 8, 9) stay in them, now numbered 6, 7.
+        var leagueYear = BuildLeagueYear(standardGames: 10, specialSlotCount: 2, filledStandardSlotNumbers: [0, 1, 2, 3, 6, 7, 8, 9]);
+        var gamesBySlot = leagueYear.Publishers.Single().PublisherGames.ToDictionary(g => GetSlotNumber(leagueYear.Options, g));
         var newOptions = BuildEditedLeagueOptions(leagueYear.Options, standardGames: 8, specialSlotCount: 2);
 
         var assignments = SlotAssignmentFunctions.GetNewSlotAssignments(leagueYear, newOptions);
 
+        var expectedNewSlotByOldSlot = new Dictionary<int, int> { [0] = 0, [1] = 1, [2] = 2, [3] = 3, [6] = 4, [7] = 5, [8] = 6, [9] = 7 };
         Assert.Multiple(() =>
         {
-            foreach (var (expectedSlot, game) in gamesInSlotOrder.Select((g, i) => (i, g)))
+            foreach (var (oldSlot, newSlot) in expectedNewSlotByOldSlot)
             {
-                Assert.That(GetResultingSlot(game, assignments, newOptions)?.SlotNumber, Is.EqualTo(expectedSlot),
-                    $"Fallback should compact '{game.GameName}' to slot {expectedSlot}.");
+                Assert.That(GetResultingSlot(gamesBySlot[oldSlot], assignments, newOptions)?.SlotNumber, Is.EqualTo(newSlot),
+                    $"Game in slot {oldSlot} should move to slot {newSlot}.");
             }
         });
     }
