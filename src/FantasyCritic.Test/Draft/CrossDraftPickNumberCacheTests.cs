@@ -21,13 +21,17 @@ public class CrossDraftPickNumberCacheTests
     [Test]
     public void GetCrossDraftPickNumber_Draft1_ReturnsOverallPickNumber()
     {
+        var leagueSlots = TestSlotCreationUtilities.GetBasicSlots(10, 5);
+        var standardSlots = leagueSlots.Where(x => !x.CounterPick).ToList();
         var draftID = Guid.NewGuid();
-        var pick = CreateDraftPick(draftID, overallPickNumber: 7, timestamp: Draft1Started.Plus(Duration.FromMinutes(7)));
+        var publisherID = Guid.NewGuid();
+        var pick = CreateDraftPick(draftID, overallPickNumber: 7, timestamp: Draft1Started.Plus(Duration.FromMinutes(7)), publisherID, counterPick: false, standardSlots[0].LeagueSlotID);
         var leagueYear = BuildSingleDraftLeagueYear(
             draftID,
             Draft1Started,
             PlayStatus.DraftFinal,
-            [CreateSingleDraftPublisher(draftID, games: [pick])]);
+            leagueSlots,
+            [CreateSingleDraftPublisher(draftID, publisherID, games: [pick], formerGames: [])]);
 
         var cache = CrossDraftPickNumberCache.Build([leagueYear]);
         Assert.That(cache.GetPickNumber(pick), Is.EqualTo(7));
@@ -36,30 +40,38 @@ public class CrossDraftPickNumberCacheTests
     [Test]
     public void GetCrossDraftPickNumber_Draft2FirstPick_AfterBidsBetweenDrafts_Is15thPick()
     {
+        var leagueSlots = TestSlotCreationUtilities.GetBasicSlots(10, 5);
+        var standardSlots = leagueSlots.Where(x => !x.CounterPick).ToList();
         var draftID1 = Guid.NewGuid();
         var draftID2 = Guid.NewGuid();
         var publisherID1 = Guid.NewGuid();
         var publisherID2 = Guid.NewGuid();
 
+        // Picks alternate between the two publishers, so each publisher's nth game goes in its nth slot.
         var draft1Picks = Enumerable.Range(1, 10)
             .Select(i => CreateDraftPick(
                 draftID1,
                 overallPickNumber: i,
                 timestamp: Draft1Started.Plus(Duration.FromMinutes(i)),
-                publisherID: i % 2 == 1 ? publisherID1 : publisherID2))
+                publisherID: i % 2 == 1 ? publisherID1 : publisherID2,
+                counterPick: false,
+                slotID: standardSlots[(i - 1) / 2].LeagueSlotID))
             .ToList();
 
         var bidWins = Enumerable.Range(1, 4)
             .Select(i => CreateBidWin(
                 BetweenDrafts.Plus(Duration.FromMinutes(i)),
-                publisherID: i % 2 == 1 ? publisherID1 : publisherID2))
+                publisherID: i % 2 == 1 ? publisherID1 : publisherID2,
+                slotID: standardSlots[5 + (i - 1) / 2].LeagueSlotID))
             .ToList();
 
         var draft2FirstPick = CreateDraftPick(
             draftID2,
             overallPickNumber: 1,
             timestamp: Draft2Started.Plus(Duration.FromMinutes(1)),
-            publisherID: publisherID1);
+            publisherID: publisherID1,
+            counterPick: false,
+            slotID: standardSlots[7].LeagueSlotID);
 
         var leagueYear = BuildMultiDraftLeagueYear(
             draftID1,
@@ -68,6 +80,7 @@ public class CrossDraftPickNumberCacheTests
             Draft2Started,
             PlayStatus.DraftFinal,
             PlayStatus.Drafting,
+            leagueSlots,
             [
                 CreateMultiDraftPublisher(
                     draftID1,
@@ -76,14 +89,16 @@ public class CrossDraftPickNumberCacheTests
                     draft1Picks.Where(g => g.PublisherID == publisherID1)
                         .Concat(bidWins.Where(g => g.PublisherID == publisherID1))
                         .Append(draft2FirstPick)
-                        .ToList()),
+                        .ToList(),
+                    formerGames: []),
                 CreateMultiDraftPublisher(
                     draftID1,
                     draftID2,
                     publisherID2,
                     draft1Picks.Where(g => g.PublisherID == publisherID2)
                         .Concat(bidWins.Where(g => g.PublisherID == publisherID2))
-                        .ToList())
+                        .ToList(),
+                    formerGames: [])
             ]);
 
         var draft2 = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
@@ -101,12 +116,16 @@ public class CrossDraftPickNumberCacheTests
     [Test]
     public void GetCrossDraftPickNumber_BidGame_ReturnsNull()
     {
+        var leagueSlots = TestSlotCreationUtilities.GetBasicSlots(10, 5);
+        var standardSlots = leagueSlots.Where(x => !x.CounterPick).ToList();
         var draftID = Guid.NewGuid();
+        var publisherID = Guid.NewGuid();
         var leagueYear = BuildSingleDraftLeagueYear(
             draftID,
             Draft1Started,
             PlayStatus.DraftFinal,
-            [CreateSingleDraftPublisher(draftID, games: [CreateBidWin(BetweenDrafts)])]);
+            leagueSlots,
+            [CreateSingleDraftPublisher(draftID, publisherID, games: [CreateBidWin(BetweenDrafts, publisherID, standardSlots[0].LeagueSlotID)], formerGames: [])]);
 
         var bidGame = leagueYear.Publishers.Single().PublisherGames.Single();
 
@@ -117,15 +136,18 @@ public class CrossDraftPickNumberCacheTests
     [Test]
     public void GetStartingOverallPickNumber_TradeReceival_DoesNotDoubleCount()
     {
+        var leagueSlots = TestSlotCreationUtilities.GetBasicSlots(10, 5);
+        var standardSlots = leagueSlots.Where(x => !x.CounterPick).ToList();
         var draftID1 = Guid.NewGuid();
         var draftID2 = Guid.NewGuid();
         var sellerID = Guid.NewGuid();
         var buyerID = Guid.NewGuid();
         var tradeID = Guid.NewGuid();
 
-        var originalPick = CreateDraftPick(draftID1, overallPickNumber: 1, timestamp: Draft1Started.Plus(Duration.FromMinutes(1)), publisherID: sellerID);
+        var originalPick = CreateDraftPick(draftID1, overallPickNumber: 1, timestamp: Draft1Started.Plus(Duration.FromMinutes(1)), publisherID: sellerID, counterPick: false,
+            slotID: standardSlots[0].LeagueSlotID);
         var formerPick = originalPick.GetFormerPublisherGame(BetweenDrafts, "Traded away");
-        var tradeReceival = CreateTradeReceival(buyerID, tradeID, BetweenDrafts.Plus(Duration.FromMinutes(1)));
+        var tradeReceival = CreateTradeReceival(buyerID, tradeID, BetweenDrafts.Plus(Duration.FromMinutes(1)), standardSlots[0].LeagueSlotID);
 
         var leagueYear = BuildMultiDraftLeagueYear(
             draftID1,
@@ -134,9 +156,10 @@ public class CrossDraftPickNumberCacheTests
             Draft2Started,
             PlayStatus.DraftFinal,
             PlayStatus.Drafting,
+            leagueSlots,
             [
-                CreateMultiDraftPublisher(draftID1, draftID2, sellerID, formerGames: [formerPick]),
-                CreateMultiDraftPublisher(draftID1, draftID2, buyerID, games: [tradeReceival])
+                CreateMultiDraftPublisher(draftID1, draftID2, sellerID, games: [], formerGames: [formerPick]),
+                CreateMultiDraftPublisher(draftID1, draftID2, buyerID, games: [tradeReceival], formerGames: [])
             ]);
 
         var draft2 = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
@@ -152,11 +175,14 @@ public class CrossDraftPickNumberCacheTests
     [Test]
     public void GetStartingOverallPickNumber_FormerDroppedDraftPick_StillCounts()
     {
+        var leagueSlots = TestSlotCreationUtilities.GetBasicSlots(10, 5);
+        var standardSlots = leagueSlots.Where(x => !x.CounterPick).ToList();
         var draftID1 = Guid.NewGuid();
         var draftID2 = Guid.NewGuid();
         var publisherID = Guid.NewGuid();
 
-        var originalPick = CreateDraftPick(draftID1, overallPickNumber: 3, timestamp: Draft1Started.Plus(Duration.FromMinutes(3)), publisherID: publisherID);
+        var originalPick = CreateDraftPick(draftID1, overallPickNumber: 3, timestamp: Draft1Started.Plus(Duration.FromMinutes(3)), publisherID: publisherID, counterPick: false,
+            slotID: standardSlots[0].LeagueSlotID);
         var formerPick = originalPick.GetFormerPublisherGame(BetweenDrafts, "Dropped");
 
         var leagueYear = BuildMultiDraftLeagueYear(
@@ -166,7 +192,8 @@ public class CrossDraftPickNumberCacheTests
             Draft2Started,
             PlayStatus.DraftFinal,
             PlayStatus.Drafting,
-            [CreateMultiDraftPublisher(draftID1, draftID2, publisherID, formerGames: [formerPick])]);
+            leagueSlots,
+            [CreateMultiDraftPublisher(draftID1, draftID2, publisherID, games: [], formerGames: [formerPick])]);
 
         var draft2 = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
         var startingPoint = draft2.GetStartingOverallPickNumber(leagueYear);
@@ -181,6 +208,8 @@ public class CrossDraftPickNumberCacheTests
     [Test]
     public void GetCrossDraftPickNumber_CounterPick_UsesSeparateTrack()
     {
+        var leagueSlots = TestSlotCreationUtilities.GetBasicSlots(10, 5);
+        var counterPickSlots = leagueSlots.Where(x => x.CounterPick).ToList();
         var draftID1 = Guid.NewGuid();
         var draftID2 = Guid.NewGuid();
         var publisherID = Guid.NewGuid();
@@ -190,14 +219,16 @@ public class CrossDraftPickNumberCacheTests
             overallPickNumber: 1,
             timestamp: Draft1Started.Plus(Duration.FromMinutes(1)),
             publisherID: publisherID,
-            counterPick: true);
+            counterPick: true,
+            slotID: counterPickSlots[0].LeagueSlotID);
 
         var draft2CounterPick = CreateDraftPick(
             draftID2,
             overallPickNumber: 1,
             timestamp: Draft2Started.Plus(Duration.FromMinutes(1)),
             publisherID: publisherID,
-            counterPick: true);
+            counterPick: true,
+            slotID: counterPickSlots[1].LeagueSlotID);
 
         var leagueYear = BuildMultiDraftLeagueYear(
             draftID1,
@@ -206,7 +237,8 @@ public class CrossDraftPickNumberCacheTests
             Draft2Started,
             PlayStatus.DraftFinal,
             PlayStatus.Drafting,
-            [CreateMultiDraftPublisher(draftID1, draftID2, publisherID, games: [draft1CounterPick, draft2CounterPick])]);
+            leagueSlots,
+            [CreateMultiDraftPublisher(draftID1, draftID2, publisherID, games: [draft1CounterPick, draft2CounterPick], formerGames: [])]);
 
         var cache = CrossDraftPickNumberCache.Build([leagueYear]);
         Assert.That(cache.GetPickNumber(draft2CounterPick), Is.EqualTo(2));
@@ -215,12 +247,14 @@ public class CrossDraftPickNumberCacheTests
     [Test]
     public void GetStartingOverallPickNumber_Draft1_ReturnsZero()
     {
+        var leagueSlots = TestSlotCreationUtilities.GetBasicSlots(10, 5);
         var draftID = Guid.NewGuid();
         var leagueYear = BuildSingleDraftLeagueYear(
             draftID,
             Draft1Started,
             PlayStatus.DraftFinal,
-            [CreateSingleDraftPublisher(draftID)]);
+            leagueSlots,
+            [CreateSingleDraftPublisher(draftID, Guid.NewGuid(), games: [], formerGames: [])]);
 
         var draft1 = leagueYear.Drafts.Single();
         var startingPoint = draft1.GetStartingOverallPickNumber(leagueYear);
@@ -235,6 +269,7 @@ public class CrossDraftPickNumberCacheTests
     [Test]
     public void GetStartingOverallPickNumber_UnstartedDraft2_ReturnsFailure()
     {
+        var leagueSlots = TestSlotCreationUtilities.GetBasicSlots(10, 5);
         var draftID1 = Guid.NewGuid();
         var draftID2 = Guid.NewGuid();
         var leagueYear = BuildMultiDraftLeagueYear(
@@ -244,7 +279,8 @@ public class CrossDraftPickNumberCacheTests
             draft2Started: null,
             PlayStatus.DraftFinal,
             PlayStatus.NotStartedDraft,
-            [CreateMultiDraftPublisher(draftID1, draftID2, Guid.NewGuid())]);
+            leagueSlots,
+            [CreateMultiDraftPublisher(draftID1, draftID2, Guid.NewGuid(), games: [], formerGames: [])]);
 
         var draft2 = leagueYear.Drafts.Single(d => d.DraftNumber == 2);
         var startingPoint = draft2.GetStartingOverallPickNumber(leagueYear);
@@ -255,6 +291,8 @@ public class CrossDraftPickNumberCacheTests
     [Test]
     public void GetCrossDraftPickNumber_GameInUnstartedDraft_Throws()
     {
+        var leagueSlots = TestSlotCreationUtilities.GetBasicSlots(10, 5);
+        var standardSlots = leagueSlots.Where(x => !x.CounterPick).ToList();
         var draftID1 = Guid.NewGuid();
         var draftID2 = Guid.NewGuid();
         var publisherID = Guid.NewGuid();
@@ -263,7 +301,9 @@ public class CrossDraftPickNumberCacheTests
             draftID2,
             overallPickNumber: 1,
             timestamp: Draft2Started.Plus(Duration.FromMinutes(1)),
-            publisherID: publisherID);
+            publisherID: publisherID,
+            counterPick: false,
+            slotID: standardSlots[0].LeagueSlotID);
 
         var leagueYear = BuildMultiDraftLeagueYear(
             draftID1,
@@ -272,7 +312,8 @@ public class CrossDraftPickNumberCacheTests
             draft2Started: null,
             PlayStatus.DraftFinal,
             PlayStatus.NotStartedDraft,
-            [CreateMultiDraftPublisher(draftID1, draftID2, publisherID, games: [draft2Pick])]);
+            leagueSlots,
+            [CreateMultiDraftPublisher(draftID1, draftID2, publisherID, games: [draft2Pick], formerGames: [])]);
 
         Assert.That(() => CrossDraftPickNumberCache.Build([leagueYear]), Throws.InvalidOperationException);
     }
@@ -280,9 +321,12 @@ public class CrossDraftPickNumberCacheTests
     [Test]
     public void GetCrossDraftPickNumber_MissingOverallPickNumber_Throws()
     {
+        var leagueSlots = TestSlotCreationUtilities.GetBasicSlots(10, 5);
+        var standardSlots = leagueSlots.Where(x => !x.CounterPick).ToList();
         var draftID = Guid.NewGuid();
+        var publisherID = Guid.NewGuid();
         var invalidPick = new PublisherGame(
-            Guid.NewGuid(),
+            publisherID,
             Guid.NewGuid(),
             "Bad pick",
             Draft1Started,
@@ -291,7 +335,7 @@ public class CrossDraftPickNumberCacheTests
             false,
             null,
             null,
-            Guid.NewGuid(),
+            standardSlots[0].LeagueSlotID,
             1,
             null,
             null,
@@ -302,7 +346,8 @@ public class CrossDraftPickNumberCacheTests
             draftID,
             Draft1Started,
             PlayStatus.DraftFinal,
-            [CreateSingleDraftPublisher(draftID, games: [invalidPick])]);
+            leagueSlots,
+            [CreateSingleDraftPublisher(draftID, publisherID, games: [invalidPick], formerGames: [])]);
 
         Assert.That(() => CrossDraftPickNumberCache.Build([leagueYear]), Throws.InvalidOperationException);
     }
@@ -311,11 +356,12 @@ public class CrossDraftPickNumberCacheTests
         Guid draftID,
         int overallPickNumber,
         Instant timestamp,
-        Guid? publisherID = null,
-        bool counterPick = false)
+        Guid publisherID,
+        bool counterPick,
+        Guid slotID)
     {
         return new PublisherGame(
-            publisherID ?? Guid.NewGuid(),
+            publisherID,
             Guid.NewGuid(),
             $"Draft pick {overallPickNumber}",
             timestamp,
@@ -324,7 +370,7 @@ public class CrossDraftPickNumberCacheTests
             false,
             null,
             null,
-            Guid.NewGuid(),
+            slotID,
             1,
             overallPickNumber,
             null,
@@ -332,10 +378,10 @@ public class CrossDraftPickNumberCacheTests
             draftID);
     }
 
-    private static PublisherGame CreateBidWin(Instant timestamp, Guid? publisherID = null)
+    private static PublisherGame CreateBidWin(Instant timestamp, Guid publisherID, Guid slotID)
     {
         return new PublisherGame(
-            publisherID ?? Guid.NewGuid(),
+            publisherID,
             Guid.NewGuid(),
             "Bid win",
             timestamp,
@@ -344,7 +390,7 @@ public class CrossDraftPickNumberCacheTests
             false,
             null,
             null,
-            Guid.NewGuid(),
+            slotID,
             null,
             null,
             5,
@@ -352,7 +398,7 @@ public class CrossDraftPickNumberCacheTests
             null);
     }
 
-    private static PublisherGame CreateTradeReceival(Guid publisherID, Guid tradeID, Instant timestamp)
+    private static PublisherGame CreateTradeReceival(Guid publisherID, Guid tradeID, Instant timestamp, Guid slotID)
     {
         return new PublisherGame(
             publisherID,
@@ -364,7 +410,7 @@ public class CrossDraftPickNumberCacheTests
             false,
             null,
             null,
-            Guid.NewGuid(),
+            slotID,
             null,
             null,
             null,
@@ -374,21 +420,20 @@ public class CrossDraftPickNumberCacheTests
 
     private static Publisher CreateSingleDraftPublisher(
         Guid draftID,
-        Guid? publisherID = null,
-        IReadOnlyList<PublisherGame>? games = null,
-        IReadOnlyList<FormerPublisherGame>? formerGames = null)
+        Guid publisherID,
+        IReadOnlyList<PublisherGame> games,
+        IReadOnlyList<FormerPublisherGame> formerGames)
     {
-        publisherID ??= Guid.NewGuid();
         return new Publisher(
-            publisherID.Value,
+            publisherID,
             TestLeagueYearKey,
             FantasyCriticUser.GetFakeUser(),
             "Publisher",
             null,
             null,
-            [new PublisherDraftInfo(draftID, 1, publisherID.Value, 1, [])],
-            games?.ToList() ?? [],
-            formerGames?.ToList() ?? [],
+            [new PublisherDraftInfo(draftID, 1, publisherID, 1, [])],
+            games.ToList(),
+            formerGames.ToList(),
             100,
             0,
             0,
@@ -401,8 +446,8 @@ public class CrossDraftPickNumberCacheTests
         Guid draftID1,
         Guid draftID2,
         Guid publisherID,
-        IReadOnlyList<PublisherGame>? games = null,
-        IReadOnlyList<FormerPublisherGame>? formerGames = null)
+        IReadOnlyList<PublisherGame> games,
+        IReadOnlyList<FormerPublisherGame> formerGames)
     {
         return new Publisher(
             publisherID,
@@ -415,8 +460,8 @@ public class CrossDraftPickNumberCacheTests
                 new PublisherDraftInfo(draftID1, 1, publisherID, 1, []),
                 new PublisherDraftInfo(draftID2, 2, publisherID, 1, [])
             ],
-            games?.ToList() ?? [],
-            formerGames?.ToList() ?? [],
+            games.ToList(),
+            formerGames.ToList(),
             100,
             0,
             0,
@@ -429,6 +474,7 @@ public class CrossDraftPickNumberCacheTests
         Guid draftID,
         Instant? draftStarted,
         PlayStatus playStatus,
+        IReadOnlyList<LeagueSlot> leagueSlots,
         IReadOnlyList<Publisher> publishers)
     {
         var draftPublisherDraftInfo = publishers
@@ -449,7 +495,7 @@ public class CrossDraftPickNumberCacheTests
             draftPublisherDraftInfo,
             draftStarted);
 
-        return CreateLeagueYear([draft], publishers);
+        return CreateLeagueYear([draft], leagueSlots, publishers);
     }
 
     private static LeagueYear BuildMultiDraftLeagueYear(
@@ -459,6 +505,7 @@ public class CrossDraftPickNumberCacheTests
         Instant? draft2Started,
         PlayStatus draft1PlayStatus,
         PlayStatus draft2PlayStatus,
+        IReadOnlyList<LeagueSlot> leagueSlots,
         IReadOnlyList<Publisher> publishers)
     {
         var draft1PublisherDraftInfo = publishers
@@ -496,10 +543,10 @@ public class CrossDraftPickNumberCacheTests
             draft2PublisherDraftInfo,
             draft2Started);
 
-        return CreateLeagueYear([draft1, draft2], publishers);
+        return CreateLeagueYear([draft1, draft2], leagueSlots, publishers);
     }
 
-    private static LeagueYear CreateLeagueYear(IReadOnlyList<LeagueDraft> drafts, IReadOnlyList<Publisher> publishers)
+    private static LeagueYear CreateLeagueYear(IReadOnlyList<LeagueDraft> drafts, IReadOnlyList<LeagueSlot> leagueSlots, IReadOnlyList<Publisher> publishers)
     {
         var year = TestLeagueYearKey.Year;
         var league = new League(
@@ -520,7 +567,7 @@ public class CrossDraftPickNumberCacheTests
         return new LeagueYear(
             league,
             supportedYear,
-            CreateDefaultLeagueOptions(year),
+            CreateDefaultLeagueOptions(year, leagueSlots),
             drafts,
             [],
             [],
@@ -531,7 +578,7 @@ public class CrossDraftPickNumberCacheTests
             null);
     }
 
-    private static LeagueOptions CreateDefaultLeagueOptions(int year) => new(
+    private static LeagueOptions CreateDefaultLeagueOptions(int year, IReadOnlyList<LeagueSlot> leagueSlots) => new(
         10,
         5,
         0,
@@ -542,7 +589,7 @@ public class CrossDraftPickNumberCacheTests
         0,
         true,
         [],
-        TestSlotCreationUtilities.GetBasicSlots(10, 5),
+        leagueSlots,
         PickupSystem.SemiPublicBiddingSecretCounterPicks,
         ScoringSystem.GetDefaultScoringSystem(year),
         TradingSystem.Standard,
