@@ -1,4 +1,5 @@
 using System.Data;
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
@@ -2790,84 +2791,24 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     private static async Task MakePublisherGameSlotsConsistent(IEnumerable<LeagueYearPublisherPair> publisherPairs, MySqlConnection connection, MySqlTransaction transaction)
     {
-        var specialSlotPublisherIDs = publisherPairs.Where(x => x.LeagueYear.Options.HasSpecialSlots).Select(x => x.Publisher.PublisherID).ToHashSet();
-
-        int tempSlotNumber = 1000;
-        var preRunUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
-        var finalUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
-        foreach (var publisherPair in publisherPairs)
-        {
-            int slotNumber = 0;
-            if (!specialSlotPublisherIDs.Contains(publisherPair.Publisher.PublisherID))
-            {
-                var standardGames = publisherPair.Publisher.PublisherGames
-                    .Where(x => !x.CounterPick)
-                    .OrderBy(x => x.Timestamp).ThenBy(x => x.SlotNumber);
-                foreach (var standardGame in standardGames)
-                {
-                    preRunUpdates.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, tempSlotNumber));
-                    finalUpdates.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, slotNumber));
-                    tempSlotNumber++;
-                    slotNumber++;
-                }
-            }
-
-            //Counter Picks don't have special slots, so they should always be consistent.
-            slotNumber = 0;
-            var counterPicks = publisherPair.Publisher.PublisherGames
-                .Where(x => x.CounterPick)
-                .OrderBy(x => x.SlotNumber);
-            foreach (var counterPick in counterPicks)
-            {
-                preRunUpdates.Add(new PublisherGameSlotNumberUpdateEntity(counterPick.PublisherGameID, tempSlotNumber));
-                finalUpdates.Add(new PublisherGameSlotNumberUpdateEntity(counterPick.PublisherGameID, slotNumber));
-                tempSlotNumber++;
-                slotNumber++;
-            }
-        }
-
-        const string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
-        await connection.ExecuteAsync(sql, preRunUpdates, transaction);
-        await connection.ExecuteAsync(sql, finalUpdates, transaction);
+        var pairs = publisherPairs.ToList();
+        var slotAssignments = SlotCompactionFunctions.GetCompactedSlotAssignments(pairs);
+        var leagueYearKeyByPublisherID = pairs.ToDictionary(x => x.Publisher.PublisherID, x => x.Publisher.LeagueYearKey);
+        var moves = slotAssignments
+            .Select(x => new GameSlotMove(leagueYearKeyByPublisherID[x.Key.PublisherID], x.Key.PublisherGameID, x.Key.CounterPick, x.Value.LeagueSlotID))
+            .ToList();
+        await MoveGamesToSlots(moves, connection, transaction);
     }
 
-    private static async Task OrganizeSlots(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, MySqlConnection connection, MySqlTransaction transaction)
+    private sealed record GameSlotMove(LeagueYearKey LeagueYearKey, Guid PublisherGameID, bool CounterPick, Guid TargetLeagueSlotID);
+
+    private static async Task MoveGamesToSlots(IReadOnlyList<GameSlotMove> moves, MySqlConnection connection, MySqlTransaction transaction)
     {
-        if (!slotAssignments.Any())
+        if (!moves.Any())
         {
             return;
         }
 
-        int tempSlotNumber = 1000;
-        List<PublisherGameSlotNumberUpdateEntity> preRunUpdates = [];
-        List<PublisherGameSlotNumberUpdateEntity> finalUpdates = [];
-        foreach (var publisher in leagueYear.Publishers)
-        {
-            var nonCounterPicks = publisher.PublisherGames.Where(x => !x.CounterPick);
-            foreach (var publisherGame in nonCounterPicks)
-            {
-                var foundGame = slotAssignments.TryGetValue(publisherGame.PublisherGameID, out var newSlotNumber);
-                if (!foundGame)
-                {
-                    string error =
-                        $"Cannot figure out slots for LeagueID: {publisher.LeagueYearKey.LeagueID} PublisherID: {publisher.PublisherID} " +
-                        $"PublisherGameID: {publisherGame.PublisherGameID} GameName: {publisherGame.GameName}";
-                    throw new Exception(error);
-                }
-
-                preRunUpdates.Add(new PublisherGameSlotNumberUpdateEntity(publisherGame.PublisherGameID, tempSlotNumber));
-                finalUpdates.Add(new PublisherGameSlotNumberUpdateEntity(publisherGame.PublisherGameID, newSlotNumber));
-                tempSlotNumber++;
-            }
-        }
-
-        const string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
-        await connection.ExecuteAsync(sql, preRunUpdates, transaction);
-        await connection.ExecuteAsync(sql, finalUpdates, transaction);
-    }
-
-    public async Task ReorderPublisherGames(Publisher publisher, IReadOnlyDictionary<LeagueSlot, PublisherGame?> slotsToUpdate)
-    {
         const string insertScratchSlotSQL =
             """
             INSERT INTO tbl_league_slot (LeagueSlotID, LeagueID, Year, CounterPick, SlotNumber, SlotName)
@@ -2879,34 +2820,39 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         // The unique key on (PublisherID, LeagueSlotID) forbids two of a publisher's games sharing a slot, even briefly,
         // so each moving game waits on a scratch slot of its own kind, which only exists inside this transaction.
-        var movingGames = slotsToUpdate
-            .Where(x => x.Value is not null && x.Value.LeagueSlotID != x.Key.LeagueSlotID)
-            .Select(x => new { Game = x.Value!, TargetSlot = x.Key })
-            .ToList();
-
-        var scratchSlots = movingGames
+        var scratchSlots = moves
             .Select((x, index) => new LeagueSlotEntity
             {
                 LeagueSlotID = Guid.NewGuid(),
-                LeagueID = publisher.LeagueYearKey.LeagueID,
-                Year = publisher.LeagueYearKey.Year,
-                CounterPick = x.Game.CounterPick,
+                LeagueID = x.LeagueYearKey.LeagueID,
+                Year = x.LeagueYearKey.Year,
+                CounterPick = x.CounterPick,
                 SlotNumber = scratchSlotNumberOffset + index,
                 SlotName = null,
             })
             .ToList();
 
-        var moveToScratch = movingGames.Select((x, index) => new { publisherGameID = x.Game.PublisherGameID, leagueSlotID = scratchSlots[index].LeagueSlotID });
-        var moveToTarget = movingGames.Select(x => new { publisherGameID = x.Game.PublisherGameID, leagueSlotID = x.TargetSlot.LeagueSlotID });
+        var moveToScratch = moves.Select((x, index) => new { publisherGameID = x.PublisherGameID, leagueSlotID = scratchSlots[index].LeagueSlotID });
+        var moveToTarget = moves.Select(x => new { publisherGameID = x.PublisherGameID, leagueSlotID = x.TargetLeagueSlotID });
         var scratchSlotIDs = scratchSlots.Select(x => new { leagueSlotID = x.LeagueSlotID });
 
-        await using var connection = new MySqlConnection(_connectionString);
-        await connection.OpenAsync();
-        await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync(insertScratchSlotSQL, scratchSlots, transaction);
         await connection.ExecuteAsync(moveGameSQL, moveToScratch, transaction);
         await connection.ExecuteAsync(moveGameSQL, moveToTarget, transaction);
         await connection.ExecuteAsync(deleteScratchSlotSQL, scratchSlotIDs, transaction);
+    }
+
+    public async Task ReorderPublisherGames(Publisher publisher, IReadOnlyDictionary<LeagueSlot, PublisherGame?> slotsToUpdate)
+    {
+        var moves = slotsToUpdate
+            .Where(x => x.Value is not null && x.Value.LeagueSlotID != x.Key.LeagueSlotID)
+            .Select(x => new GameSlotMove(publisher.LeagueYearKey, x.Value!.PublisherGameID, x.Value.CounterPick, x.Key.LeagueSlotID))
+            .ToList();
+
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+        await using var transaction = await connection.BeginTransactionAsync();
+        await MoveGamesToSlots(moves, connection, transaction);
         await transaction.CommitAsync();
     }
 
