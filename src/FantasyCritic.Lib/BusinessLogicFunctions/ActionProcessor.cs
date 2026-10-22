@@ -138,7 +138,7 @@ public class ActionProcessor
         var runningActiveBids = allActiveBids;
         var runningResults = existingResults;
 
-        var successfulConditionalDropsByLeague = allActiveBids.Keys.ToDictionary(x => x, _ => new List<PublisherGame>());
+        var successfulConditionalDropsByLeague = allActiveBids.Keys.ToDictionary(x => x, _ => new List<IPublisherGame>());
         var iteration = 0;
         while (runningActiveBids.Any())
         {
@@ -206,7 +206,7 @@ public class ActionProcessor
     }
 
     private ProcessedBidSet ProcessPickupsForLeagueYear(LeagueYear leagueYear, IReadOnlyList<PickupBid> activeBidsForLeague,
-        PublisherStateSet publisherStateSet, bool specialAuctions, IReadOnlyList<PublisherGame> conditionalDropsThatHaveSucceeded)
+        PublisherStateSet publisherStateSet, bool specialAuctions, IReadOnlyList<IPublisherGame> conditionalDropsThatHaveSucceeded)
     {
         if (!leagueYear.Options.EnableBids && !specialAuctions)
         {
@@ -253,7 +253,8 @@ public class ActionProcessor
                 pickupBidWithConditionalDropResult = activeBid.WithConditionalDropResult(conditionalDropResult);
                 if (conditionalDropResult.Result.IsSuccess)
                 {
-                    validConditionalDropSlot = leagueYear.Options.LeagueSlotDictionary[activeBid.ConditionalDropPublisherGame.LeagueSlotID];
+                    var gameToDrop = bidPublisher.GetPublisherGameByPublisherGameID(activeBid.ConditionalDropPublisherGame.PublisherGameID)!;
+                    validConditionalDropSlot = leagueYear.Options.LeagueSlotDictionary[gameToDrop.LeagueSlotID];
                 }
             }
 
@@ -527,8 +528,9 @@ public class ActionProcessor
         foreach (var successfulConditionalDrop in successfulConditionalDrops)
         {
             var affectedPublisher = publisherStateSet.GetPublisher(successfulConditionalDrop.PickupBid.Publisher.PublisherID);
-            publisherStateSet.DropGameForPublisher(affectedPublisher, successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame!, successfulConditionalDrop.PickupBid.LeagueYear, false, _currentDate);
-            var formerPublisherGame = successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame!.GetFormerPublisherGame(_processingTime, $"Conditionally dropped while picking up: {successfulConditionalDrop.PickupBid.MasterGame.GameName}");
+            var gameToDrop = affectedPublisher.GetPublisherGameByPublisherGameID(successfulConditionalDrop.PickupBid.ConditionalDropPublisherGame!.PublisherGameID)!;
+            publisherStateSet.DropGameForPublisher(affectedPublisher, gameToDrop, successfulConditionalDrop.PickupBid.LeagueYear, false, _currentDate);
+            var formerPublisherGame = gameToDrop.GetFormerPublisherGame(_processingTime, $"Conditionally dropped while picking up: {successfulConditionalDrop.PickupBid.MasterGame.GameName}");
             conditionalDroppedGames.Add(formerPublisherGame);
         }
 

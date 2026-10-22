@@ -74,7 +74,7 @@ public class PickupBidEntity
     public string? Outcome { get; set; }
     public decimal? ProjectedPointsAtTimeOfBid { get; set; }
 
-    public PickupBid ToDomain(Publisher publisher, MasterGame masterGame, PublisherGame? conditionalDropPublisherGame, LeagueYear leagueYear)
+    public PickupBid ToDomain(Publisher publisher, MasterGame masterGame, IPublisherGame? conditionalDropPublisherGame, LeagueYear leagueYear)
     {
         return new PickupBid(BidID, publisher, leagueYear, masterGame, conditionalDropPublisherGame, CounterPick, BidAmount, AllowIneligibleSlot, Priority, Timestamp, Successful, ProcessSetID, Outcome, ProjectedPointsAtTimeOfBid);
     }

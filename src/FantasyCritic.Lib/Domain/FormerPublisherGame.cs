@@ -44,12 +44,5 @@ public class FormerPublisherGame : IPublisherGame
 
     public string GameName => MasterGame?.MasterGame.GameName ?? OriginalGameName;
 
-    public PublisherGame ToPublisherGame()
-    {
-        return new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick, ManualCriticScore,
-            ManualWillNotRelease, FantasyPoints, MasterGame, Guid.Empty, PickNumber, OverallPickNumber, BidAmount,
-            AcquiredInTradeID, DraftID);
-    }
-
     public override string ToString() => GameName;
 }

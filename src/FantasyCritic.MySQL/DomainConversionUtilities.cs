@@ -221,7 +221,7 @@ internal static class DomainConversionUtilities
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = masterGameDictionary[bidEntity.MasterGameID];
-            PublisherGame? conditionalDropPublisherGame = GetConditionalDropPublisherGame(bidEntity, publisherGameDictionary, formerPublisherGameDictionary, masterGameYearDictionary);
+            IPublisherGame? conditionalDropPublisherGame = GetConditionalDropPublisherGame(bidEntity, publisherGameDictionary, formerPublisherGameDictionary, masterGameYearDictionary);
             var publisher = publisherDictionary[bidEntity.PublisherID];
             PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
             activePickupBids.Add(domain);
@@ -263,7 +263,7 @@ internal static class DomainConversionUtilities
         return new PrivatePublisherData(bidsForUser, domainDrops, domainQueue);
     }
 
-    public static PublisherGame? GetConditionalDropPublisherGame(PickupBidEntity bidEntity,
+    public static IPublisherGame? GetConditionalDropPublisherGame(PickupBidEntity bidEntity,
         ILookup<(Guid PublisherID, Guid MasterGameID), PublisherGame> publisherGameLookup,
         ILookup<(Guid PublisherID, Guid MasterGameID), FormerPublisherGame> formerPublisherGameLookup,
         IReadOnlyDictionary<Guid, MasterGameYear> masterGameYearDictionary)
@@ -282,14 +282,20 @@ internal static class DomainConversionUtilities
         var formerPublisherGames = formerPublisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
         if (formerPublisherGames.Any())
         {
-            return formerPublisherGames.WhereMax(x => x.Timestamp).First().ToPublisherGame();
+            return formerPublisherGames.WhereMax(x => x.Timestamp).First();
         }
 
         var conditionalDropGame = masterGameYearDictionary[bidEntity.ConditionalDropMasterGameID.Value];
-        var fakePublisherGame = new PublisherGame(bidEntity.PublisherID, Guid.NewGuid(),
-            conditionalDropGame.MasterGame.GameName, bidEntity.Timestamp,
-            false, null, false, null, conditionalDropGame, Guid.Empty, null, null, null, null, null);
+        return GetMissingConditionalDropGame(bidEntity, conditionalDropGame);
+    }
 
-        return fakePublisherGame;
+    /// <summary>
+    /// For a bid whose dropped game has no current or former record. It is shown as a former game, since it holds no slot.
+    /// </summary>
+    public static FormerPublisherGame GetMissingConditionalDropGame(PickupBidEntity bidEntity, MasterGameYear conditionalDropGame)
+    {
+        return new FormerPublisherGame(bidEntity.PublisherID, Guid.NewGuid(), conditionalDropGame.MasterGame.GameName, bidEntity.Timestamp,
+            bidEntity.CounterPick, null, false, null, conditionalDropGame, null, null, null, null, null, bidEntity.Timestamp,
+            "No record of this game remains.");
     }
 }
