@@ -2314,9 +2314,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string sql =
             "INSERT INTO tbl_league_publishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
-            "ManualWillNotRelease,FantasyPoints,MasterGameID,SlotNumber,PickNumber,OverallPickNumber,DraftID,BidAmount) VALUES " +
+            "ManualWillNotRelease,FantasyPoints,MasterGameID,LeagueSlotID,PickNumber,OverallPickNumber,DraftID,BidAmount) VALUES " +
             "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@PickNumber,@OverallPickNumber,@DraftID,@BidAmount);";
+            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@LeagueSlotID,@PickNumber,@OverallPickNumber,@DraftID,@BidAmount);";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, entity);
     }
@@ -3377,7 +3377,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "DELETE FROM tbl_league_managermessage WHERE LeagueID = @leagueID;",
             "DELETE FROM tbl_league_manageraction WHERE LeagueID = @leagueID;",
             "DELETE FROM tbl_league_specialauction WHERE LeagueID = @leagueID;",
-            "DELETE FROM tbl_league_specialgameslot WHERE LeagueID = @leagueID;",
+            "DELETE t FROM tbl_league_slotrequirestag t JOIN tbl_league_slot s ON s.LeagueSlotID = t.LeagueSlotID WHERE s.LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_slot WHERE LeagueID = @leagueID;",
             "DELETE FROM tbl_league_eligibilityoverride WHERE LeagueID = @leagueID;",
             "DELETE FROM tbl_league_tagoverride WHERE LeagueID = @leagueID;",
             "DELETE FROM tbl_league_yearusestag WHERE LeagueID = @leagueID;",
@@ -3698,9 +3699,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         const string sql =
             "INSERT INTO tbl_league_publishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
-            "ManualWillNotRelease,FantasyPoints,MasterGameID,SlotNumber,PickNumber,OverallPickNumber,DraftID,BidAmount,AcquiredInTradeID) VALUES " +
+            "ManualWillNotRelease,FantasyPoints,MasterGameID,LeagueSlotID,PickNumber,OverallPickNumber,DraftID,BidAmount,AcquiredInTradeID) VALUES " +
             "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@PickNumber,@OverallPickNumber,@DraftID,@BidAmount,@AcquiredInTradeID);";
+            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@LeagueSlotID,@PickNumber,@OverallPickNumber,@DraftID,@BidAmount,@AcquiredInTradeID);";
         var entities = publisherGames.Select(x => new PublisherGameEntity(x));
         return connection.ExecuteAsync(sql, entities, transaction);
     }
@@ -3807,7 +3808,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
                            select lsrt.* 
                            from tbl_league_slotrequirestag lsrt
                            join tbl_league_slot ls on ls.LeagueSlotID = lsrt.LeagueSlotID
-                           where Year = @year;
+                           where ls.`Year` = @year;
                            """;
 
         await using var connection = new MySqlConnection(_connectionString);

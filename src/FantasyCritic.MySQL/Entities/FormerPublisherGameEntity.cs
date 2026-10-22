@@ -30,24 +30,24 @@ public class FormerPublisherGameEntity
 
     public FormerPublisherGameEntity(FormerPublisherGame publisherGame)
     {
-        PublisherGameID = publisherGame.PublisherGame.PublisherGameID;
-        PublisherID = publisherGame.PublisherGame.PublisherID;
-        GameName = publisherGame.PublisherGame.GameName;
-        Timestamp = publisherGame.PublisherGame.Timestamp;
-        CounterPick = publisherGame.PublisherGame.CounterPick;
-        ManualCriticScore = publisherGame.PublisherGame.ManualCriticScore;
-        ManualWillNotRelease = publisherGame.PublisherGame.ManualWillNotRelease;
-        FantasyPoints = publisherGame.PublisherGame.FantasyPoints;
+        PublisherGameID = publisherGame.PublisherGameID;
+        PublisherID = publisherGame.PublisherID;
+        GameName = publisherGame.GameName;
+        Timestamp = publisherGame.Timestamp;
+        CounterPick = publisherGame.CounterPick;
+        ManualCriticScore = publisherGame.ManualCriticScore;
+        ManualWillNotRelease = publisherGame.ManualWillNotRelease;
+        FantasyPoints = publisherGame.FantasyPoints;
 
-        PickNumber = publisherGame.PublisherGame.PickNumber;
-        OverallPickNumber = publisherGame.PublisherGame.OverallPickNumber;
-        DraftID = publisherGame.PublisherGame.DraftID;
-        if (publisherGame.PublisherGame.MasterGame is not null)
+        PickNumber = publisherGame.PickNumber;
+        OverallPickNumber = publisherGame.OverallPickNumber;
+        DraftID = publisherGame.DraftID;
+        if (publisherGame.MasterGame is not null)
         {
-            MasterGameID = publisherGame.PublisherGame.MasterGame.MasterGame.MasterGameID;
+            MasterGameID = publisherGame.MasterGame.MasterGame.MasterGameID;
         }
 
-        BidAmount = publisherGame.PublisherGame.BidAmount;
+        BidAmount = publisherGame.BidAmount;
         RemovedTimestamp = publisherGame.RemovedTimestamp;
         RemovedNote = publisherGame.RemovedNote;
     }
@@ -71,8 +71,7 @@ public class FormerPublisherGameEntity
 
     public FormerPublisherGame ToDomain(MasterGameYear? masterGame)
     {
-        PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick,
-            ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, 0, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
-        return new FormerPublisherGame(domain, RemovedTimestamp, RemovedNote);
+        return new FormerPublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick,
+            ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID, RemovedTimestamp, RemovedNote);
     }
 }

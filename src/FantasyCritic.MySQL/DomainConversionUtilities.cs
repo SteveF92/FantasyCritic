@@ -54,7 +54,7 @@ internal static class DomainConversionUtilities
         IReadOnlyList<FormerPublisherGame> domainFormerGames = ConvertFormerPublisherGameEntities(formerPublisherGameEntities, masterGameYearDictionary);
 
         var domainGameLookup = domainGames.ToLookup(x => x.PublisherID);
-        var domainFormerGameLookup = domainFormerGames.ToLookup(x => x.PublisherGame.PublisherID);
+        var domainFormerGameLookup = domainFormerGames.ToLookup(x => x.PublisherID);
 
         List<Publisher> domainPublishers = [];
         foreach (var entity in publisherEntities)
@@ -214,8 +214,8 @@ internal static class DomainConversionUtilities
 
         var formerPublisherGameDictionary = leagueYear.Publishers
             .SelectMany(x => x.FormerPublisherGames)
-            .Where(x => x.PublisherGame.MasterGame is not null)
-            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
+            .Where(x => x.MasterGame is not null)
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
         List<PickupBid> activePickupBids = [];
         foreach (var bidEntity in bidEntities)
@@ -282,13 +282,13 @@ internal static class DomainConversionUtilities
         var formerPublisherGames = formerPublisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].ToList();
         if (formerPublisherGames.Any())
         {
-            return formerPublisherGames.WhereMax(x => x.PublisherGame.Timestamp).First().PublisherGame;
+            return formerPublisherGames.WhereMax(x => x.Timestamp).First().ToPublisherGame();
         }
 
         var conditionalDropGame = masterGameYearDictionary[bidEntity.ConditionalDropMasterGameID.Value];
         var fakePublisherGame = new PublisherGame(bidEntity.PublisherID, Guid.NewGuid(),
             conditionalDropGame.MasterGame.GameName, bidEntity.Timestamp,
-            false, null, false, null, conditionalDropGame, 0, null, null, null, null, null);
+            false, null, false, null, conditionalDropGame, Guid.Empty, null, null, null, null, null);
 
         return fakePublisherGame;
     }
