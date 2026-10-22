@@ -450,7 +450,7 @@ public class DraftService
             return Result.Failure(string.Join("\n", draftValidationResult));
         }
 
-        await _fantasyCriticRepo.CreateLeagueDraft(leagueYear, draft, newDraftAction, settingsToChange);
+        await _fantasyCriticRepo.CreateLeagueDraft(draft, newDraftAction, settingsToChange);
 
         return Result.Success();
     }
