@@ -1233,12 +1233,15 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.ConferenceLocked, leagueYear.UnderReview, leagueYear.LeagueYearName);
         var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
 
-        List<SpecialGameSlotEntity> slotEntities = leagueYear.Options.SpecialGameSlots.SelectMany(slot => slot.Tags, (slot, tag) =>
-            new SpecialGameSlotEntity(Guid.NewGuid(), leagueYear.League, leagueYear.Year, slot.SpecialSlotPosition, tag)).ToList();
+        var leagueYearKey = new LeagueYearKey(leagueYear.League.LeagueID, leagueYear.Year);
+        var slotEntities = leagueYear.Options.LeagueSlots.Select(x => new LeagueSlotEntity(leagueYearKey, x)).ToList();
+        var slotRequiresTagEntities = leagueYear.Options.LeagueSlots
+            .SelectMany(slot => slot.RequiredTags.Select(tag => new LeagueSlotRequiresTagEntity(slot, tag)))
+            .ToList();
 
         const string editLeagueYearSQL =
             """
-            UPDATE tbl_league_year SET StandardGames = @StandardGames, CounterPicks = @CounterPicks,
+            UPDATE tbl_league_year SET
             UnrestrictedReleaseStatusDroppableGames = @UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames,
             DropOnlyDraftGames = @DropOnlyDraftGames, GrantSuperDrops = @GrantSuperDrops, CounterPicksBlockDrops = @CounterPicksBlockDrops,
             AllowMoveIntoIneligible = @AllowMoveIntoIneligible, MinimumBidAmount = @MinimumBidAmount, EnableBids = @EnableBids, BidsOnlyBeforeNextScheduledDraft = @BidsOnlyBeforeNextScheduledDraft,
@@ -1255,7 +1258,22 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             """;
 
         const string deleteTagsSQL = "delete from tbl_league_yearusestag where LeagueID = @leagueID AND Year = @year;";
-        const string deleteSpecialSlotsSQL = "delete from tbl_league_specialgameslot where LeagueID = @leagueID AND Year = @year;";
+
+        const string getExistingSlotIDsSQL = "select LeagueSlotID from tbl_league_slot where LeagueID = @leagueID AND Year = @year;";
+        // Renumbering would otherwise trip the unique key on (LeagueID, Year, CounterPick, SlotNumber) mid-update.
+        const string parkSlotNumbersSQL = "update tbl_league_slot set SlotNumber = SlotNumber + @offset where LeagueID = @leagueID AND Year = @year;";
+        const string updateSlotSQL = "update tbl_league_slot set SlotNumber = @SlotNumber, SlotName = @SlotName where LeagueSlotID = @LeagueSlotID;";
+        const string moveGameSQL = "update tbl_league_publishergame set LeagueSlotID = @leagueSlotID where PublisherGameID = @publisherGameID;";
+        const string deleteSlotTagsSQL =
+            """
+            delete tbl_league_slotrequirestag from tbl_league_slotrequirestag
+            join tbl_league_slot on tbl_league_slot.LeagueSlotID = tbl_league_slotrequirestag.LeagueSlotID
+            where tbl_league_slot.LeagueID = @leagueID AND tbl_league_slot.Year = @year;
+            """;
+        const string deleteRemovedSlotsSQL = "delete from tbl_league_slot where LeagueID = @leagueID AND Year = @year AND LeagueSlotID not in @keptSlotIDs;";
+        const int parkedSlotNumberOffset = 1_000_000;
+
+        var yearQuery = new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year };
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -1265,11 +1283,24 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             await connection.ExecuteAsync(editFirstDraftSQL, new { draftID = leagueYear.FirstDraft.DraftID, gamesToDraft = leagueYear.FirstDraft.GamesToDraft, counterPicksToDraft = leagueYear.FirstDraft.CounterPicksToDraft, counterPicksMustBeFromThisDraft = leagueYear.FirstDraft.CounterPicksMustBeFromThisDraft }, transaction);
         }
-        await connection.ExecuteAsync(deleteTagsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
-        await connection.ExecuteAsync(deleteSpecialSlotsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
-        await OrganizeSlots(leagueYear, slotAssignments, connection, transaction);
+        await connection.ExecuteAsync(deleteTagsSQL, yearQuery, transaction);
+
+        // Slots that survive keep their IDs, so games stay attached. Games in slots that go away move before those slots are deleted.
+        var existingSlotIDs = (await connection.QueryAsync<Guid>(getExistingSlotIDsSQL, yearQuery, transaction)).ToHashSet();
+        var newSlotEntities = slotEntities.Where(x => !existingSlotIDs.Contains(x.LeagueSlotID)).ToList();
+        var keptSlotEntities = slotEntities.Where(x => existingSlotIDs.Contains(x.LeagueSlotID)).ToList();
+
+        await connection.ExecuteAsync(parkSlotNumbersSQL, new { offset = parkedSlotNumberOffset, yearQuery.leagueID, yearQuery.year }, transaction);
+        await connection.BulkInsertAsync<LeagueSlotEntity>(newSlotEntities, "tbl_league_slot", 500, transaction);
+        await connection.ExecuteAsync(updateSlotSQL, keptSlotEntities, transaction);
+
+        var gameMoves = slotAssignments.Select(x => new { publisherGameID = x.Key.PublisherGameID, leagueSlotID = x.Value.LeagueSlotID }).ToList();
+        await connection.ExecuteAsync(moveGameSQL, gameMoves, transaction);
+
+        await connection.ExecuteAsync(deleteSlotTagsSQL, yearQuery, transaction);
+        await connection.ExecuteAsync(deleteRemovedSlotsSQL, new { yearQuery.leagueID, yearQuery.year, keptSlotIDs = slotEntities.Select(x => x.LeagueSlotID).ToList() }, transaction);
+        await connection.BulkInsertAsync<LeagueSlotRequiresTagEntity>(slotRequiresTagEntities, "tbl_league_slotrequirestag", 500, transaction);
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
-        await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
         await AddLeagueManagerAction(settingsChangeAction, connection, transaction);
         await transaction.CommitAsync();
     }
