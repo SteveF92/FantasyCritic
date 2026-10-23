@@ -50,6 +50,50 @@ public class EditLeagueYearRequest
     {
         //Just purely creating new slots will mean changing the LeagueSlotIDs on every edit
         //This will get easier when we extend the new logic all the way to the front end, but for now, we need to figure out what slots haven't changed and we should use the old ones.
-        throw new NotImplementedException();
+        return
+        [
+            ..ReconcileSlotsOfKind(existingLeagueSlots.Where(x => !x.CounterPick), newLeagueSlots.Where(x => !x.CounterPick)),
+            ..ReconcileSlotsOfKind(existingLeagueSlots.Where(x => x.CounterPick), newLeagueSlots.Where(x => x.CounterPick)),
+        ];
+    }
+
+    //A new slot first takes an existing slot with the same tags, so games stay with their tags when special slots are added or removed.
+    //Any new slot left over takes a leftover existing slot and retags it, so converting a slot is an update rather than a deletion.
+    private static IReadOnlyList<LeagueSlot> ReconcileSlotsOfKind(IEnumerable<LeagueSlot> existingSlots, IEnumerable<LeagueSlot> newSlots)
+    {
+        var unclaimedExistingSlots = existingSlots.OrderBy(x => x.SlotNumber).ToList();
+        var orderedNewSlots = newSlots.OrderBy(x => x.SlotNumber).ToList();
+        Dictionary<LeagueSlot, LeagueSlot> existingSlotByNewSlot = [];
+
+        foreach (var newSlot in orderedNewSlots)
+        {
+            var existingSlotWithSameTags = unclaimedExistingSlots.FirstOrDefault(x => x.RequiredTags.ToHashSet().SetEquals(newSlot.RequiredTags));
+            if (existingSlotWithSameTags is not null)
+            {
+                existingSlotByNewSlot.Add(newSlot, existingSlotWithSameTags);
+                unclaimedExistingSlots.Remove(existingSlotWithSameTags);
+            }
+        }
+
+        foreach (var newSlot in orderedNewSlots.Where(x => !existingSlotByNewSlot.ContainsKey(x)))
+        {
+            var leftoverExistingSlot = unclaimedExistingSlots.FirstOrDefault();
+            if (leftoverExistingSlot is not null)
+            {
+                existingSlotByNewSlot.Add(newSlot, leftoverExistingSlot);
+                unclaimedExistingSlots.Remove(leftoverExistingSlot);
+            }
+        }
+
+        return orderedNewSlots.Select(newSlot =>
+        {
+            var existingSlot = existingSlotByNewSlot.GetValueOrDefault(newSlot);
+            if (existingSlot is null)
+            {
+                return newSlot;
+            }
+
+            return new LeagueSlot(existingSlot.LeagueSlotID, newSlot.CounterPick, newSlot.SlotNumber, newSlot.SlotName, newSlot.RequiredTags);
+        }).ToList();
     }
 }

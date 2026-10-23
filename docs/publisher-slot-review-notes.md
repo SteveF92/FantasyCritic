@@ -51,6 +51,14 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
     the same transient unique-key problem as reorder, so the repo needs that trick in one more place.
   - Proposed: this matching lives in Lib, since it is the "keep IDs" rule; Web only translates request shapes.
   - Shapes D3 and the Step 4 settings-edit repo work, so settle it first.
+  - Implemented in Web (`EditLeagueYearRequest.ReconcileOldAndNewSlots`), since it only exists to bridge the
+    count-plus-special-slots request and goes away when the front end sends slots. Per kind, each requested slot
+    first takes the lowest unclaimed existing row with the same tag set (regular slots match regular rows, specials
+    match specials with their tags), then leftover requested slots take leftover rows in slot order and are retagged.
+    Rows left over after that are deleted. Every kept row takes the requested slot number, so specials end up last.
+    Checked in a scratch project: no change keeps every ID and number; removing either special at the same size, or
+    turning a regular slot into a special, deletes nothing; the 10-to-9 example above deletes only regular row 7;
+    a D3 layout (special in the middle) round-trips with the special renumbered to last and its ID kept.
 - [x] **D2. The placement rule on contraction.** Settled in `13e78ea92`/`4fb37155c`: eligible under the new options,
   then regular before tag-restricted, then lowest number, then any open slot. Recorded in the plan (Steps 2 and 5).
 - [ ] **D3. Special slots are no longer always last.** `WithNewDraftOptions` appends new regular slots after the
