@@ -39,21 +39,17 @@ public record CreateLeagueDraftRequest(
             GamesToDraft, CounterPicksToDraft, CounterPicksMustBeFromThisDraft, additionalSlots);
     }
 
-    public static IReadOnlyList<RequestedNewDraftSlot> ConvertToDomainSlots(int standardGames, int counterPicks, IEnumerable<SpecialGameSlotViewModel> specialGameSlots, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    public static IReadOnlyList<RequestedNewDraftSlot> ConvertToDomainSlots(int standardGames, int counterPicks, IReadOnlyList<SpecialGameSlotViewModel> specialGameSlots, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
+        //Special slots are counted in standardGames, and are the last of the new standard slots.
+        int regularSlotCount = standardGames - specialGameSlots.Count;
         List<RequestedNewDraftSlot> newSlots =
         [
-            ..Enumerable.Range(0, standardGames).Select(x => new RequestedNewDraftSlot(false, x, null, [])),
+            ..Enumerable.Range(0, regularSlotCount).Select(x => new RequestedNewDraftSlot(false, x, null, [])),
+            ..specialGameSlots.OrderBy(x => x.SpecialSlotPosition)
+                .Select((x, index) => new RequestedNewDraftSlot(false, regularSlotCount + index, null, x.GetRequiredTags(tagDictionary))),
             ..Enumerable.Range(0, counterPicks).Select(x => new RequestedNewDraftSlot(true, x, null, [])),
         ];
-
-        int nextSlotNumber = standardGames + counterPicks;
-        foreach (var specialGameSlot in specialGameSlots.OrderBy(x => x.SpecialSlotPosition))
-        {
-            var requiredSlots = specialGameSlot.RequiredTags.Select(x => tagDictionary[x]).ToList();
-            newSlots.Add(new RequestedNewDraftSlot(false, nextSlotNumber, null, requiredSlots));
-            nextSlotNumber++;
-        }
 
         return newSlots;
     }

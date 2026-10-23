@@ -18,7 +18,7 @@ public class LeagueSlot : IEquatable<LeagueSlot>
     public string? SlotName { get; }
     public IReadOnlyList<MasterGameTag> RequiredTags { get; }
 
-    public bool IsSpecial => SlotName is not null || RequiredTags.Any();
+    public bool IsSpecial => RequiredTags.Any();
 
     public int GetOverallSlotNumber(LeagueOptions leagueOptions)
     {
@@ -37,8 +37,7 @@ public class LeagueSlot : IEquatable<LeagueSlot>
             return null;
         }
 
-        var standardSlotsBeforeThisOne = leagueOptions.LeagueSlots.Count(x => x.IsSpecial && x.SlotNumber < SlotNumber);
-        return standardSlotsBeforeThisOne;
+        return leagueOptions.SpecialGameSlots.Count(x => x.SlotNumber < SlotNumber);
     }
 
     public override string ToString()

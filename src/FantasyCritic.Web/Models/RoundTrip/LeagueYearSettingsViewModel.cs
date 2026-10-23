@@ -162,6 +162,16 @@ public class LeagueYearSettingsViewModel
             return Result.Failure($"The 'might release droppable date' must be in {Year}.");
         }
 
+        if (SpecialGameSlots.Count > StandardGames)
+        {
+            return Result.Failure("You cannot have more special game slots than the number of games per player.");
+        }
+
+        if (SpecialGameSlots.Any(x => !x.RequiredTags.Any()))
+        {
+            return Result.Failure("All of your special slots must list at least one tag.");
+        }
+
         return Result.Success();
     }
 
@@ -206,21 +216,17 @@ public class LeagueYearSettingsViewModel
         return parameters;
     }
 
-    public static IReadOnlyList<LeagueSlot> ConvertToDomainSlots(int standardGames, int counterPicks, IEnumerable<SpecialGameSlotViewModel> specialGameSlots, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    public static IReadOnlyList<LeagueSlot> ConvertToDomainSlots(int standardGames, int counterPicks, IReadOnlyList<SpecialGameSlotViewModel> specialGameSlots, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
+        //Special slots are counted in standardGames, and are the last of the standard slots.
+        int regularSlotCount = standardGames - specialGameSlots.Count;
         List<LeagueSlot> slots =
         [
-            ..Enumerable.Range(0, standardGames).Select(x => new LeagueSlot(Guid.NewGuid(), false, x, null, [])),
+            ..Enumerable.Range(0, regularSlotCount).Select(x => new LeagueSlot(Guid.NewGuid(), false, x, null, [])),
+            ..specialGameSlots.OrderBy(x => x.SpecialSlotPosition)
+                .Select((x, index) => new LeagueSlot(Guid.NewGuid(), false, regularSlotCount + index, null, x.GetRequiredTags(tagDictionary))),
             ..Enumerable.Range(0, counterPicks).Select(x => new LeagueSlot(Guid.NewGuid(), true, x, null, [])),
         ];
-
-        int nextSlotNumber = standardGames + counterPicks;
-        foreach (var specialGameSlot in specialGameSlots.OrderBy(x => x.SpecialSlotPosition))
-        {
-            var requiredSlots = specialGameSlot.RequiredTags.Select(x => tagDictionary[x]).ToList();
-            slots.Add(new LeagueSlot(Guid.NewGuid(), false, nextSlotNumber, null, requiredSlots));
-            nextSlotNumber++;
-        }
 
         return slots;
     }
