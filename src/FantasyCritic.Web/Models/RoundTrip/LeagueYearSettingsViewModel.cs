@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using FantasyCritic.Lib.Discord.Commands;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 
@@ -198,11 +199,30 @@ public class LeagueYearSettingsViewModel
         }
 
         var leagueTags = Tags.ToDomain(tagDictionary);
-        var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
+        var leagueSlots = ConvertToDomainSlots(StandardGames, CounterPicks, SpecialGameSlots, tagDictionary);
 
-        LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName, StandardGames, CounterPicks,
+        LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName,
             unrestrictedReleaseStatusDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount, EnableBids,
-            leagueTags, specialGameSlots, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
+            leagueTags, leagueSlots, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
         return parameters;
+    }
+
+    public static IReadOnlyList<LeagueSlot> ConvertToDomainSlots(int standardGames, int counterPicks, IEnumerable<SpecialGameSlotViewModel> specialGameSlots, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    {
+        List<LeagueSlot> slots =
+        [
+            ..Enumerable.Range(0, standardGames).Select(x => new LeagueSlot(Guid.NewGuid(), false, x, null, [])),
+            ..Enumerable.Range(0, counterPicks).Select(x => new LeagueSlot(Guid.NewGuid(), true, x, null, [])),
+        ];
+
+        int nextSlotNumber = standardGames + counterPicks;
+        foreach (var specialGameSlot in specialGameSlots.OrderBy(x => x.SpecialSlotPosition))
+        {
+            var requiredSlots = specialGameSlot.RequiredTags.Select(x => tagDictionary[x]).ToList();
+            slots.Add(new LeagueSlot(Guid.NewGuid(), false, nextSlotNumber, null, requiredSlots));
+            nextSlotNumber++;
+        }
+
+        return slots;
     }
 }

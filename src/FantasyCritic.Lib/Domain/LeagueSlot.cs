@@ -18,6 +18,29 @@ public class LeagueSlot : IEquatable<LeagueSlot>
     public string? SlotName { get; }
     public IReadOnlyList<MasterGameTag> RequiredTags { get; }
 
+    public bool IsSpecial => SlotName is not null || RequiredTags.Any();
+
+    public int GetOverallSlotNumber(LeagueOptions leagueOptions)
+    {
+        if (!CounterPick)
+        {
+            return SlotNumber;
+        }
+
+        return leagueOptions.StandardGames + SlotNumber;
+    }
+
+    public int? GetSpecialSlotPosition(LeagueOptions leagueOptions)
+    {
+        if (!IsSpecial)
+        {
+            return null;
+        }
+
+        var standardSlotsBeforeThisOne = leagueOptions.LeagueSlots.Count(x => x.IsSpecial && x.SlotNumber < SlotNumber);
+        return standardSlotsBeforeThisOne;
+    }
+
     public override string ToString()
     {
         var cpk = "";

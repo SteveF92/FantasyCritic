@@ -33,10 +33,28 @@ public record CreateLeagueDraftRequest(
 
     public CreateLeagueDraftParameters ToDomain(IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
     {
-        var specialGameSlots = NewSpecialGameSlots.Select(x => x.ToDomain(tagDictionary)).ToList();
+        var additionalSlots = ConvertToDomainSlots(AdditionalStandardGames, AdditionalCounterPicks, NewSpecialGameSlots, tagDictionary);
 
         return new CreateLeagueDraftParameters(new LeagueYearKey(LeagueID, Year), Name, ScheduledDate,
-            GamesToDraft, CounterPicksToDraft, CounterPicksMustBeFromThisDraft, AdditionalStandardGames, AdditionalCounterPicks,
-            specialGameSlots);
+            GamesToDraft, CounterPicksToDraft, CounterPicksMustBeFromThisDraft, additionalSlots);
+    }
+
+    public static IReadOnlyList<RequestedNewDraftSlot> ConvertToDomainSlots(int standardGames, int counterPicks, IEnumerable<SpecialGameSlotViewModel> specialGameSlots, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    {
+        List<RequestedNewDraftSlot> newSlots =
+        [
+            ..Enumerable.Range(0, standardGames).Select(x => new RequestedNewDraftSlot(false, x, null, [])),
+            ..Enumerable.Range(0, counterPicks).Select(x => new RequestedNewDraftSlot(true, x, null, [])),
+        ];
+
+        int nextSlotNumber = standardGames + counterPicks;
+        foreach (var specialGameSlot in specialGameSlots.OrderBy(x => x.SpecialSlotPosition))
+        {
+            var requiredSlots = specialGameSlot.RequiredTags.Select(x => tagDictionary[x]).ToList();
+            newSlots.Add(new RequestedNewDraftSlot(false, nextSlotNumber, null, requiredSlots));
+            nextSlotNumber++;
+        }
+
+        return newSlots;
     }
 }
