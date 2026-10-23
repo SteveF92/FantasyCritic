@@ -45,18 +45,6 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
 
     public string GameName => MasterGame?.MasterGame.GameName ?? OriginalGameName;
 
-    public WillReleaseStatus WillRelease(LeagueYear leagueYear)
-    {
-        IPublisherGame thisGameAsInterface = this;
-        return thisGameAsInterface.WillRelease(leagueYear);
-    }
-
-    public bool CouldRelease(LeagueYear leagueYear)
-    {
-        IPublisherGame thisGameAsInterface = this;
-        return thisGameAsInterface.CouldRelease(leagueYear);
-    }
-
     public PublisherGame GetUpdatedPublisherGameWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
         if (!calculatedStats.TryGetValue(PublisherGameID, out var stats))

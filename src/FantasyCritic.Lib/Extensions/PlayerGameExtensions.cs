@@ -40,6 +40,34 @@ public static class PlayerGameExtensions
         return containsGame;
     }
 
+    public static WillReleaseStatus WillRelease(this IPublisherGame publisherGame, LeagueYear leagueYear)
+    {
+        if (publisherGame.ManualWillNotRelease)
+        {
+            return WillReleaseStatus.WillNotRelease;
+        }
+
+        if (publisherGame.MasterGame is null)
+        {
+            return WillReleaseStatus.WillRelease;
+        }
+
+        var willReleaseStatus = publisherGame.MasterGame.GetWillReleaseStatus();
+
+        var countsAsWillRelease = willReleaseStatus.CountAsWillRelease;
+        var plannedForEarlyAccess = publisherGame.MasterGame.MasterGame.Tags.Any(x => x.Name == "PlannedForEarlyAccess" || x.Name == "CurrentlyInEarlyAccess");
+        var leagueUsesOnlyNeedsScore = leagueYear.Options.ReleaseSystem.Equals(ReleaseSystem.OnlyNeedsScore);
+
+        if (!countsAsWillRelease && plannedForEarlyAccess && leagueUsesOnlyNeedsScore)
+        {
+            return WillReleaseStatus.WillReleaseEarlyAccessOnly;
+        }
+
+        return willReleaseStatus;
+    }
+
+    public static bool CouldRelease(this IPublisherGame publisherGame, LeagueYear leagueYear) => publisherGame.WillRelease(leagueYear).CountAsWillRelease;
+
     public static bool CounterPickedGameIsManualWillNotRelease(LeagueYear leagueYear, bool counterPick, MasterGame? masterGame)
     {
         if (!counterPick || masterGame is null)

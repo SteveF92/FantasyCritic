@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Extensions;
+
 namespace FantasyCritic.Web.Models.Responses;
 
 public class PublisherViewModel

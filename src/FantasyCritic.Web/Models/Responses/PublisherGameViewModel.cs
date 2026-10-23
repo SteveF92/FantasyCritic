@@ -1,3 +1,5 @@
+using FantasyCritic.Lib.Extensions;
+
 namespace FantasyCritic.Web.Models.Responses;
 
 public class PublisherGameViewModel
@@ -90,7 +92,7 @@ public class PublisherGameViewModel
         DraftID = publisherGame.DraftID;
         BidAmount = publisherGame.BidAmount;
         AcquiredInTradeID = publisherGame.AcquiredInTradeID;
-        SlotNumber = 0; //TODO this is a small, SlotNumber should probably be nullable at the view model layer. But this is how the old system worked, so we're preserving it for now.
+        SlotNumber = 0; //TODO this is a smell, SlotNumber should probably be nullable at the view model layer. But this is how the old system worked, so we're preserving it for now.
         RemovedTimestamp = publisherGame.RemovedTimestamp;
         RemovedNote = publisherGame.RemovedNote;
     }
