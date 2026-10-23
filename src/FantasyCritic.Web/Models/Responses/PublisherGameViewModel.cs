@@ -43,7 +43,7 @@ public class PublisherGameViewModel
         DraftID = publisherGame.DraftID;
         BidAmount = publisherGame.BidAmount;
         AcquiredInTradeID = publisherGame.AcquiredInTradeID;
-        SlotNumber = publisherGame.SlotNumber;
+        SlotNumber = leagueYear.Options.LeagueSlotDictionary[publisherGame.LeagueSlotID].SlotNumber;
         CounterPicked = counterPickedBy is not null;
         CounterPickedBy = counterPickedBy?.PublisherName;
         DropBlocked = CounterPicked && counterPicksBlockDrops;
@@ -90,7 +90,7 @@ public class PublisherGameViewModel
         DraftID = publisherGame.DraftID;
         BidAmount = publisherGame.BidAmount;
         AcquiredInTradeID = publisherGame.AcquiredInTradeID;
-        SlotNumber = publisherGame.SlotNumber;
+        SlotNumber = 0; //TODO this is a small, SlotNumber should probably be nullable at the view model layer. But this is how the old system worked, so we're preserving it for now.
         RemovedTimestamp = publisherGame.RemovedTimestamp;
         RemovedNote = publisherGame.RemovedNote;
     }

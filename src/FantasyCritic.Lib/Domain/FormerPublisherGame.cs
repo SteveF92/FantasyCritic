@@ -45,4 +45,16 @@ public class FormerPublisherGame : IPublisherGame
     public string GameName => MasterGame?.MasterGame.GameName ?? OriginalGameName;
 
     public override string ToString() => GameName;
+
+    public WillReleaseStatus WillRelease(LeagueYear leagueYear)
+    {
+        IPublisherGame thisGameAsInterface = this;
+        return thisGameAsInterface.WillRelease(leagueYear);
+    }
+
+    public bool CouldRelease(LeagueYear leagueYear)
+    {
+        IPublisherGame thisGameAsInterface = this;
+        return thisGameAsInterface.CouldRelease(leagueYear);
+    }
 }
