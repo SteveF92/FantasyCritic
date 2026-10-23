@@ -1673,7 +1673,13 @@ public class LeagueController : BaseLeagueController
             return BadRequest();
         }
 
-        var reorderResult = await _publisherService.ReorderPublisherGames(leagueYear, publisher, request.SlotStates);
+        var desiredSlotStates = MapDesiredSlotStates(request.SlotStates, leagueYear, publisher);
+        if (desiredSlotStates.IsFailure)
+        {
+            return BadRequest(desiredSlotStates.Error);
+        }
+
+        var reorderResult = await _publisherService.ReorderPublisherGames(leagueYear, publisher, desiredSlotStates.Value);
         if (reorderResult.IsFailure)
         {
             return BadRequest(reorderResult.Error);
@@ -1682,6 +1688,27 @@ public class LeagueController : BaseLeagueController
         await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear);
 
         return Ok();
+    }
+
+    private static Result<IReadOnlyDictionary<LeagueSlot, PublisherGame?>> MapDesiredSlotStates(Dictionary<int, Guid?> requestedSlotStates, LeagueYear leagueYear, Publisher publisher)
+    {
+        var requestedSlotList = new List<KeyValuePair<LeagueSlot, PublisherGame?>>();
+
+        //For the time being, only standard games can move slots
+        var standardSlotsByPosition = leagueYear.Options.LeagueSlots.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
+        var publisherGameDictionary = publisher.PublisherGames.ToDictionary(x => x.PublisherGameID);
+        foreach (var requestedSlotState in requestedSlotStates)
+        {
+            LeagueSlot desiredSlot = standardSlotsByPosition[requestedSlotState.Key];
+            PublisherGame? requestedGame = requestedSlotState.Value.HasValue ? publisherGameDictionary.GetValueOrDefault(requestedSlotState.Value.Value) : null;
+            if (requestedGame?.CounterPick == true)
+            {
+                return Result.Failure<IReadOnlyDictionary<LeagueSlot, PublisherGame?>>("Counter picks cannot be moved.");
+            }
+            requestedSlotList.Add(new KeyValuePair<LeagueSlot, PublisherGame?>(desiredSlot, requestedGame));
+        }
+
+        return Result.Success<IReadOnlyDictionary<LeagueSlot, PublisherGame?>>(requestedSlotList.ToDictionary(x => x.Key, y => y.Value));
     }
 
     [HttpPost]
