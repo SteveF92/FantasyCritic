@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
-using FantasyCritic.Lib.Discord.Commands;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
 
@@ -103,7 +102,7 @@ public class LeagueYearSettingsViewModel
             .ToList();
 
         Tags = new LeagueTagOptionsViewModel(bannedTags, requiredTags);
-        SpecialGameSlots = leagueYear.Options.SpecialGameSlots.Select(x => new SpecialGameSlotViewModel(x)).ToList();
+        SpecialGameSlots = leagueYear.Options.SpecialGameSlots.Select(x => new SpecialGameSlotViewModel(x, leagueYear.Options)).ToList();
         HasSpecialSlots = leagueYear.Options.HasSpecialSlots;
     }
 

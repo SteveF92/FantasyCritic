@@ -51,46 +51,46 @@ public class PublisherGameViewModel
 
     public PublisherGameViewModel(FormerPublisherGame publisherGame, LeagueYear leagueYear, Publisher publishedBy, LocalDate currentDate)
     {
-        PublisherGameID = publisherGame.PublisherGame.PublisherGameID;
-        GameName = publisherGame.PublisherGame.GameName;
+        PublisherGameID = publisherGame.PublisherGameID;
+        GameName = publisherGame.GameName;
 
-        Timestamp = publisherGame.PublisherGame.Timestamp.ToDateTimeUtc();
-        CounterPick = publisherGame.PublisherGame.CounterPick;
-        FantasyPoints = publisherGame.PublisherGame.FantasyPoints;
+        Timestamp = publisherGame.Timestamp.ToDateTimeUtc();
+        CounterPick = publisherGame.CounterPick;
+        FantasyPoints = publisherGame.FantasyPoints;
 
-        Linked = publisherGame.PublisherGame.MasterGame is not null;
+        Linked = publisherGame.MasterGame is not null;
         if (Linked)
         {
-            GameName = publisherGame.PublisherGame.MasterGame!.MasterGame.GameName;
-            EstimatedReleaseDate = publisherGame.PublisherGame.MasterGame.MasterGame.EstimatedReleaseDate;
-            if (publisherGame.PublisherGame.MasterGame.MasterGame.ReleaseDate.HasValue)
+            GameName = publisherGame.MasterGame!.MasterGame.GameName;
+            EstimatedReleaseDate = publisherGame.MasterGame.MasterGame.EstimatedReleaseDate;
+            if (publisherGame.MasterGame.MasterGame.ReleaseDate.HasValue)
             {
-                ReleaseDate = publisherGame.PublisherGame.MasterGame.MasterGame.ReleaseDate.Value.ToDateTimeUnspecified();
+                ReleaseDate = publisherGame.MasterGame.MasterGame.ReleaseDate.Value.ToDateTimeUnspecified();
             }
 
-            CriticScore = publisherGame.PublisherGame.MasterGame.MasterGame.CriticScore;
-            Released = publisherGame.PublisherGame.MasterGame.MasterGame.IsReleased(currentDate);
-            if (publisherGame.PublisherGame.MasterGame is not null)
+            CriticScore = publisherGame.MasterGame.MasterGame.CriticScore;
+            Released = publisherGame.MasterGame.MasterGame.IsReleased(currentDate);
+            if (publisherGame.MasterGame is not null)
             {
-                MasterGame = new MasterGameYearViewModel(publisherGame.PublisherGame.MasterGame, currentDate);
+                MasterGame = new MasterGameYearViewModel(publisherGame.MasterGame, currentDate);
             }
         }
 
-        if (publisherGame.PublisherGame.ManualCriticScore.HasValue)
+        if (publisherGame.ManualCriticScore.HasValue)
         {
-            CriticScore = publisherGame.PublisherGame.ManualCriticScore;
+            CriticScore = publisherGame.ManualCriticScore;
             ManualCriticScore = true;
         }
 
         PublisherName = publishedBy.PublisherName;
-        WillRelease = publisherGame.PublisherGame.CouldRelease(leagueYear);
-        WillReleaseEarlyAccessOnly = publisherGame.PublisherGame.WillRelease(leagueYear).Equals(WillReleaseStatus.WillReleaseEarlyAccessOnly);
-        ManualWillNotRelease = publisherGame.PublisherGame.ManualWillNotRelease;
-        OverallPickNumber = publisherGame.PublisherGame.OverallPickNumber;
-        DraftID = publisherGame.PublisherGame.DraftID;
-        BidAmount = publisherGame.PublisherGame.BidAmount;
-        AcquiredInTradeID = publisherGame.PublisherGame.AcquiredInTradeID;
-        SlotNumber = publisherGame.PublisherGame.SlotNumber;
+        WillRelease = publisherGame.CouldRelease(leagueYear);
+        WillReleaseEarlyAccessOnly = publisherGame.WillRelease(leagueYear).Equals(WillReleaseStatus.WillReleaseEarlyAccessOnly);
+        ManualWillNotRelease = publisherGame.ManualWillNotRelease;
+        OverallPickNumber = publisherGame.OverallPickNumber;
+        DraftID = publisherGame.DraftID;
+        BidAmount = publisherGame.BidAmount;
+        AcquiredInTradeID = publisherGame.AcquiredInTradeID;
+        SlotNumber = publisherGame.SlotNumber;
         RemovedTimestamp = publisherGame.RemovedTimestamp;
         RemovedNote = publisherGame.RemovedNote;
     }

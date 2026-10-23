@@ -14,7 +14,7 @@ public class PublisherSlotViewModel
 
         if (slot.LeagueSlot.IsSpecial)
         {
-            SpecialSlot = new SpecialGameSlotViewModel(slot.LeagueSlot);
+            SpecialSlot = new SpecialGameSlotViewModel(slot.LeagueSlot, leagueYear.Options);
         }
 
         if (slot.PublisherGame is not null)

@@ -226,7 +226,7 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
-        var (domainSettings, firstDraft) = request.ToDomain(tagDictionary);
+        var (domainSettings, firstDraft) = request.ToDomain(leagueYear, tagDictionary);
         Result result = await _fantasyCriticService.EditLeague(leagueYear, domainSettings, firstDraft);
         if (result.IsFailure)
         {

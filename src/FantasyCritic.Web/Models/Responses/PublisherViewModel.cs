@@ -30,7 +30,7 @@ public class PublisherViewModel
             .Select(x => new PublisherGameViewModel(x, leagueYear, currentDate, publisher, counterPickedByDictionary.GetValueOrDefault(x), leagueYear.Options.CounterPicksBlockDrops))
             .ToList();
         FormerGames = publisher.FormerPublisherGames
-            .OrderBy(x => x.PublisherGame.Timestamp)
+            .OrderBy(x => x.Timestamp)
             .Select(x => new PublisherGameViewModel(x, leagueYear, publisher, currentDate))
             .ToList();
         GameSlots = publisher.GetPublisherSlots(leagueYear)
