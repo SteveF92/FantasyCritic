@@ -264,12 +264,13 @@ public class LeagueOptions
         return new LeagueOptionsDifferences(differences);
     }
 
-    public LeagueOptions UpdateOptionsForYear(int requestYear)
+    public LeagueOptions CopyForNewLeagueYear(int year)
     {
-        var newScoringSystem = ScoringSystem.SupportedInYear(requestYear) ? ScoringSystem : ScoringSystem.GetDefaultScoringSystem(requestYear);
+        var newScoringSystem = ScoringSystem.SupportedInYear(year) ? ScoringSystem : ScoringSystem.GetDefaultScoringSystem(year);
+        var newLeagueSlots = LeagueSlots.Select(x => new LeagueSlot(Guid.NewGuid(), x.CounterPick, x.SlotNumber, x.SlotName, x.RequiredTags));
         LeagueOptions options = new LeagueOptions(UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
-            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, LeagueSlots,
+            AllowMoveIntoIneligible, MinimumBidAmount, EnableBids, LeagueTags, newLeagueSlots,
             PickupSystem, newScoringSystem, TradingSystem, TiebreakSystem, ReleaseSystem, IneligibleGameSystem,
             CounterPickDeadline, MightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
         return options;

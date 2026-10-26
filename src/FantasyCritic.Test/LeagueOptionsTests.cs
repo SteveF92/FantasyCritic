@@ -11,7 +11,7 @@ using NUnit.Framework;
 namespace FantasyCritic.Test;
 
 [TestFixture]
-public class LeagueOptionsNewDraftTests
+public class LeagueOptionsTests
 {
     private static readonly MasterGameTag _newGame = BuildTag("NewGame", "New Game");
     private static readonly MasterGameTag _remake = BuildTag("Remake", "Remake");
@@ -90,6 +90,28 @@ public class LeagueOptionsNewDraftTests
         var changes = options.WithNewDraftOptions(BuildParameters([]), _timestamp);
 
         Assert.That(changes, Is.Null);
+    }
+
+    [Test]
+    public void CopyForNewLeagueYear_GivesEverySlotANewID_AndKeepsTheRestOfTheSlot()
+    {
+        List<LeagueSlot> slots =
+        [
+            .. BuildRegularSlots(2),
+            new LeagueSlot(Guid.NewGuid(), false, 2, "Indie Darling", [_newGame, _remake]),
+            new LeagueSlot(Guid.NewGuid(), true, 0, null, []),
+        ];
+        var options = BuildLeagueOptions(slots);
+
+        var copy = options.CopyForNewLeagueYear(2027);
+
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(copy.LeagueSlots.Select(x => x.LeagueSlotID).Intersect(slots.Select(x => x.LeagueSlotID)), Is.Empty);
+            Assert.That(copy.LeagueSlots.Select(x => x.LeagueSlotID).Distinct().Count(), Is.EqualTo(slots.Count));
+            Assert.That(copy.LeagueSlots.Select(x => (x.CounterPick, x.SlotNumber, x.SlotName, Tags: string.Join(",", x.RequiredTags.Select(t => t.Name)))),
+                Is.EqualTo(options.LeagueSlots.Select(x => (x.CounterPick, x.SlotNumber, x.SlotName, Tags: string.Join(",", x.RequiredTags.Select(t => t.Name))))));
+        }
     }
 
     private static List<LeagueSlot> BuildRegularSlots(int count)

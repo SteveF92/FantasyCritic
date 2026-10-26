@@ -167,7 +167,7 @@ public class LeagueManagerController : BaseLeagueController
             throw new Exception("Most recent league year could not be found");
         }
 
-        var updatedOptions = mostRecentLeagueYear.Options.UpdateOptionsForYear(request.Year);
+        var updatedOptions = mostRecentLeagueYear.Options.CopyForNewLeagueYear(request.Year);
         await _fantasyCriticService.AddNewLeagueYear(league, request.Year, updatedOptions, mostRecentLeagueYear);
 
         return Ok();
