@@ -76,6 +76,19 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
     `EditLeagueYear` (park numbers, insert new rows, update kept rows), rather than only inserting the new rows.
   - This is a phase 1 rule. The phase 2 slot editor lets managers place slots themselves, and removes it along with
     the count-plus-special-slots request shape.
+- [ ] **D5. Copying options to a new league year reused slot IDs.** `LeagueOptions` carries slot identity, but four
+  paths copied one league year's options, IDs included, into another, and failed on `tbl_league_slot`'s primary key:
+  league renewal (`UpdateOptionsForYear` passed `LeagueSlots` through), adding a league to a conference, renewing a
+  conference league, and starting a new conference year. Only the conference clone had tests (found 2026-10-25,
+  `ConferenceCloneTests`).
+  - Decided 2026-10-25: a slot ID means something only inside its league year, and a new league year has nothing to
+    keep, so every copy gets fresh IDs. `LeagueOptions.CopyForNewLeagueYear(year)` replaces `UpdateOptionsForYear`:
+    each slot gets a new ID and keeps its number, name and tags, and the scoring system falls back to that year's
+    default when unsupported. All four paths use it, so the two conference renewal paths now get the scoring
+    fallback too, which they lacked on `main`. A path that forgets it still fails loudly on the primary key.
+  - Rejected: the repo minting IDs on insert (it would silently rewrite domain IDs, and ID creation would be split
+    between Lib and MySQL), and a separate slot-definition type without IDs (cleaner, but a refactor better done with
+    the phase 2 slot editor).
 - [x] **D4. Two sources of truth in `LeagueYearParameters`.** It still has `StandardGames` and `CounterPicks`, which
   `LeagueOptions(LeagueYearParameters)` ignores. Drop them, or validate that they match the slots.
 

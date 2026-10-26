@@ -62,6 +62,9 @@ update on one row: no game moves because a slot's rules changed.
 - **Special slots stay last in this phase** (D3). Adding a draft shifts the existing special slots up past the new
   regular slots, and new special slots go after them, so the count-plus-special-slots settings request round-trips
   without renumbering anything. Games follow their slot IDs. The phase 2 slot editor removes the rule.
+- **A new league year gets new slot IDs** (D5). Renewing a league, adding a league to a conference and starting a
+  new conference year copy options through `LeagueOptions.CopyForNewLeagueYear`, which mints a fresh ID for every
+  slot. Slot IDs are kept only within a league year: across settings edits and new drafts.
 - **Phase 2 (custom named slots)** is out of scope here, but the schema is ready for it: `SlotName` exists, and a
   slot may have tags, a name, or both. When it arrives, `HasSpecialSlots` (which flips projected scoring for
   ineligible games) must come to mean "has tag-restricted slots", not "has any non-regular slot", and the slot
