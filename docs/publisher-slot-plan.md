@@ -59,6 +59,9 @@ update on one row: no game moves because a slot's rules changed.
   rows. Either way it's contained in `ReorderPublisherGames`.
 - **The migration fails loudly rather than guessing.** Any game whose slot number is past the roster blocks the
   `NOT NULL` step before anything is dropped. Such data is fixed by hand first.
+- **Special slots stay last in this phase** (D3). Adding a draft shifts the existing special slots up past the new
+  regular slots, and new special slots go after them, so the count-plus-special-slots settings request round-trips
+  without renumbering anything. Games follow their slot IDs. The phase 2 slot editor removes the rule.
 - **Phase 2 (custom named slots)** is out of scope here, but the schema is ready for it: `SlotName` exists, and a
   slot may have tags, a name, or both. When it arrives, `HasSpecialSlots` (which flips projected scoring for
   ineligible games) must come to mean "has tag-restricted slots", not "has any non-regular slot", and the slot

@@ -61,10 +61,21 @@ When an item is done, tick it and add the commit. When one is dropped, tick it a
     a D3 layout (special in the middle) round-trips with the special renumbered to last and its ID kept.
 - [x] **D2. The placement rule on contraction.** Settled in `13e78ea92`/`4fb37155c`: eligible under the new options,
   then regular before tag-restricted, then lowest number, then any open slot. Recorded in the plan (Steps 2 and 5).
-- [ ] **D3. Special slots are no longer always last.** `WithNewDraftOptions` appends new regular slots after the
+- [x] **D3. Special slots are no longer always last.** `WithNewDraftOptions` appends new regular slots after the
   existing specials. Fine for the domain, but the Web layer's `SpecialSlotPosition` and `OverallSlotNumber` assume
   specials are last. Under D1 as proposed, the next settings round trip renumbers the rows and games follow their IDs;
   under number matching it would retag them.
+  - Decided 2026-10-25: **special slots stay last in this phase.** The client copes with a special slot anywhere
+    (rosters sort by `OverallSlotNumber`, reorder is keyed by slot number), but the settings request is "count plus
+    special slots" and can't say where a special sits, so `ToDomain` numbers specials last. Left mid-roster after a
+    new draft, the special would jump to the end on the manager's next settings save, even one that changed nothing,
+    and the save would log slot moves.
+  - `WithNewDraftOptions` numbers new regular slots straight after the existing regular slots, shifts the existing
+    specials up past them, and puts new specials after those. Games reference slot IDs, so no game moves; only slot
+    rows are renumbered. `CreateLeagueDraft` in the repo saves the full slot list through the same reconcile as
+    `EditLeagueYear` (park numbers, insert new rows, update kept rows), rather than only inserting the new rows.
+  - This is a phase 1 rule. The phase 2 slot editor lets managers place slots themselves, and removes it along with
+    the count-plus-special-slots request shape.
 - [x] **D4. Two sources of truth in `LeagueYearParameters`.** It still has `StandardGames` and `CounterPicks`, which
   `LeagueOptions(LeagueYearParameters)` ignores. Drop them, or validate that they match the slots.
 
