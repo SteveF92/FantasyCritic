@@ -20,6 +20,8 @@ public class LeagueSlot : IEquatable<LeagueSlot>
 
     public bool IsSpecial => RequiredTags.Any();
 
+    public LeagueSlot WithSlotNumber(int slotNumber) => new LeagueSlot(LeagueSlotID, CounterPick, slotNumber, SlotName, RequiredTags);
+
     public int GetOverallSlotNumber(LeagueOptions leagueOptions)
     {
         if (!CounterPick)

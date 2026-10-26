@@ -277,33 +277,27 @@ public class LeagueOptions
 
     public NewDraftLeagueSettingsChanges? WithNewDraftOptions(CreateLeagueDraftParameters newParameters, Instant currentTimestamp)
     {
-        var newSlots = new List<LeagueSlot>();
+        var existingStandardSlots = LeagueSlots.Where(x => !x.CounterPick).ToList();
+        var newStandardSlots = GetNewSlotsOfKind(newParameters.AdditionalSlots, false);
 
-        int standardSlotNumber = StandardGames;
-        var newStandardSlots = newParameters.AdditionalSlots
-            .Where(x => !x.CounterPick)
-            .OrderBy(x => x.SlotNumberWithinNewDraft)
+        //Special slots stay last until managers can place slots themselves, so existing special slots move past the new regular slots.
+        List<LeagueSlot> standardSlotsInOrder =
+        [
+            ..existingStandardSlots.Where(x => !x.IsSpecial),
+            ..newStandardSlots.Where(x => !x.IsSpecial),
+            ..existingStandardSlots.Where(x => x.IsSpecial),
+            ..newStandardSlots.Where(x => x.IsSpecial),
+        ];
+
+        List<LeagueSlot> counterPickSlotsInOrder =
+        [
+            ..LeagueSlots.Where(x => x.CounterPick),
+            ..GetNewSlotsOfKind(newParameters.AdditionalSlots, true),
+        ];
+
+        var allSlots = standardSlotsInOrder.Select((slot, index) => slot.WithSlotNumber(index))
+            .Concat(counterPickSlotsInOrder.Select((slot, index) => slot.WithSlotNumber(index)))
             .ToList();
-        foreach (var newStandardSlot in newStandardSlots)
-        {
-            var numberedNewSlot = new LeagueSlot(Guid.NewGuid(), false, standardSlotNumber, newStandardSlot.SlotName, newStandardSlot.RequiredTags);
-            newSlots.Add(numberedNewSlot);
-            standardSlotNumber++;
-        }
-
-        int counterPickSlotNumber = CounterPicks;
-        var newCounterPickSlots = newParameters.AdditionalSlots
-            .Where(x => x.CounterPick)
-            .OrderBy(x => x.SlotNumberWithinNewDraft)
-            .ToList();
-        foreach (var newCounterPickSlot in newCounterPickSlots)
-        {
-            var numberedNewSlot = new LeagueSlot(Guid.NewGuid(), true, counterPickSlotNumber, newCounterPickSlot.SlotName, newCounterPickSlot.RequiredTags);
-            newSlots.Add(numberedNewSlot);
-            counterPickSlotNumber++;
-        }
-
-        var allSlots = LeagueSlots.Concat(newSlots).ToList();
 
         LeagueOptions newOptions = new LeagueOptions(UnrestrictedReleaseStatusDroppableGames,
             WillNotReleaseDroppableGames, WillReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops,
@@ -318,7 +312,16 @@ public class LeagueOptions
         }
 
         var settingsChangeAction = new LeagueManagerAction(newParameters.LeagueYearKey, currentTimestamp, "League Year Settings Changed While Adding New Draft", differences.ToString());
-        var settingsChanges = new NewDraftLeagueSettingsChanges(newOptions, newSlots, settingsChangeAction);
+        var settingsChanges = new NewDraftLeagueSettingsChanges(newOptions, settingsChangeAction);
         return settingsChanges;
+    }
+
+    private static IReadOnlyList<LeagueSlot> GetNewSlotsOfKind(IReadOnlyList<RequestedNewDraftSlot> requestedSlots, bool counterPick)
+    {
+        return requestedSlots
+            .Where(x => x.CounterPick == counterPick)
+            .OrderBy(x => x.SlotNumberWithinNewDraft)
+            .Select(x => new LeagueSlot(Guid.NewGuid(), counterPick, x.SlotNumberWithinNewDraft, x.SlotName, x.RequiredTags))
+            .ToList();
     }
 }
