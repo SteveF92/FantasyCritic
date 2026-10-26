@@ -11,7 +11,7 @@ public class SucceededPickupBid : IProcessedBid
     }
 
     public PickupBid PickupBid { get; }
-    public LeagueSlot Slot{ get; }
+    public LeagueSlot Slot { get; }
     public string Outcome { get; }
     public decimal ProjectedPointsAtTimeOfBid { get; }
 

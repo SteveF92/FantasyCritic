@@ -11,6 +11,6 @@ public static class TestSlotCreationUtilities
     {
         var standardGameSlots = Enumerable.Range(1, standardGames).Select(x => new LeagueSlot(Guid.NewGuid(), false, x, null, [])).ToList();
         var counterPickSlots = Enumerable.Range(1, counterPicks).Select(x => new LeagueSlot(Guid.NewGuid(), true, x, null, [])).ToList();
-        return [..standardGameSlots, ..counterPickSlots];
+        return [.. standardGameSlots, .. counterPickSlots];
     }
 }

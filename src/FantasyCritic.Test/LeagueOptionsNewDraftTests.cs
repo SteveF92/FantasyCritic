@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using FantasyCritic.Lib;
 using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Domain.ScoringSystems;
