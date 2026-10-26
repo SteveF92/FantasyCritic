@@ -35,13 +35,15 @@ public class ActionProcessingResults
         var publisherPairsToInclude = SuccessBids.Select(x => x.PickupBid.GetLeagueYearPublisherPair())
             .Concat(FailedBids.Select(x => x.PickupBid.GetLeagueYearPublisherPair()))
             .Concat(SuccessDrops.Select(x => x.GetLeagueYearPublisherPair()))
-            .Concat(FailedDrops.Select(x => x.GetLeagueYearPublisherPair()));
+            .Concat(FailedDrops.Select(x => x.GetLeagueYearPublisherPair()))
+            .Distinct()
+            .ToList();
 
         List<LeagueYearPublisherPair> updatedPublisherPairs = [];
         foreach (var publisherPair in publisherPairsToInclude)
         {
             var updatedPublisher = PublisherStateSet.GetPublisher(publisherPair.Publisher.PublisherID);
-            updatedPublisherPairs.Add(new LeagueYearPublisherPair(publisherPair.LeagueYear, updatedPublisher));
+            updatedPublisherPairs.Add(publisherPair with { Publisher = updatedPublisher });
         }
 
         return updatedPublisherPairs;
