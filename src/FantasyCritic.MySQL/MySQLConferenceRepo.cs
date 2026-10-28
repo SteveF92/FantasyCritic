@@ -120,12 +120,12 @@ public class MySQLConferenceRepo : IConferenceRepo
         await transaction.CommitAsync();
     }
 
-    public async Task AddLeagueToConference(Conference conference, LeagueYear primaryLeagueYear, League newLeague, IReadOnlyList<LeagueDraft> drafts)
+    public async Task AddLeagueToConference(Conference conference, int year, LeagueOptions options, League newLeague, IReadOnlyList<LeagueDraft> drafts)
     {
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await _fantasyCriticRepo.CreateLeagueInTransaction(newLeague, primaryLeagueYear.Year, primaryLeagueYear.Options, drafts, true, connection, transaction);
+        await _fantasyCriticRepo.CreateLeagueInTransaction(newLeague, year, options, drafts, true, connection, transaction);
         await transaction.CommitAsync();
     }
 
@@ -179,7 +179,8 @@ public class MySQLConferenceRepo : IConferenceRepo
                 d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
                 false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
             .ToList();
-        await _fantasyCriticRepo.AddNewLeagueYearInTransaction(primaryLeaguePreviousLeagueYear.League, year, primaryLeaguePreviousLeagueYear.Options, mostRecentActivePrimaryLeaguePlayers, clonedDrafts, connection, transaction);
+        var newOptions = primaryLeaguePreviousLeagueYear.Options.CopyForNewLeagueYear(year);
+        await _fantasyCriticRepo.AddNewLeagueYearInTransaction(primaryLeaguePreviousLeagueYear.League, year, newOptions, mostRecentActivePrimaryLeaguePlayers, clonedDrafts, connection, transaction);
         await transaction.CommitAsync();
         return Result.Success();
     }

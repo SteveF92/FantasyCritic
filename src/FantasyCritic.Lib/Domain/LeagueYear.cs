@@ -35,6 +35,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         LeagueYearName = leagueYearName;
 
         _publisherDictionary = publishers.ToDictionary(x => x.PublisherID);
+        ValidatePublisherGameSlots(Key, Options, _publisherDictionary.Values);
 
         StandardGamesTaken = _publisherDictionary.Values.SelectMany(x => x.PublisherGames).Count(x => !x.CounterPick);
     }
@@ -131,6 +132,28 @@ public class LeagueYear : IEquatable<LeagueYear>
 
     public string GetGroupName => $"{League.LeagueID}|{Year}";
 
+    private static void ValidatePublisherGameSlots(LeagueYearKey key, LeagueOptions options, IEnumerable<Publisher> publishers)
+    {
+        foreach (var publisher in publishers)
+        {
+            HashSet<Guid> filledSlotIDs = [];
+            foreach (var publisherGame in publisher.PublisherGames)
+            {
+                var slot = options.LeagueSlotDictionary.GetValueOrDefault(publisherGame.LeagueSlotID);
+                if (slot is null || slot.CounterPick != publisherGame.CounterPick)
+                {
+                    throw new Exception($"Publisher game {publisherGame.PublisherGameID} is in slot {publisherGame.LeagueSlotID}, which is not one of league year {key}'s " +
+                                        $"{(publisherGame.CounterPick ? "counter pick" : "standard")} slots.");
+                }
+
+                if (!filledSlotIDs.Add(publisherGame.LeagueSlotID))
+                {
+                    throw new Exception($"Publisher {publisher.PublisherID} has more than one game in slot {publisherGame.LeagueSlotID}.");
+                }
+            }
+        }
+    }
+
     public MasterGameWithEligibilityFactors GetEligibilityFactorsForMasterGame(MasterGame masterGame, LocalDate dateOfPotentialAcquisition)
     {
         bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
@@ -138,7 +161,10 @@ public class LeagueYear : IEquatable<LeagueYear>
         return new MasterGameWithEligibilityFactors(masterGame, Options, eligibilityOverride, tagOverrides, dateOfPotentialAcquisition);
     }
 
-    public MasterGameWithEligibilityFactors? GetEligibilityFactorsForSlot(PublisherSlot publisherSlot)
+    public MasterGameWithEligibilityFactors? GetEligibilityFactorsForSlot(PublisherSlot publisherSlot) => GetEligibilityFactorsForSlot(publisherSlot, Options);
+
+    //For options other than this year's own, such as a settings edit not yet saved. The overrides are still this year's.
+    public MasterGameWithEligibilityFactors? GetEligibilityFactorsForSlot(PublisherSlot publisherSlot, LeagueOptions options)
     {
         if (publisherSlot.PublisherGame?.MasterGame is null)
         {
@@ -149,7 +175,7 @@ public class LeagueYear : IEquatable<LeagueYear>
         bool? eligibilityOverride = GetOverriddenEligibility(masterGame);
         IReadOnlyList<MasterGameTag> tagOverrides = GetOverriddenTags(masterGame);
         var acquisitionDate = publisherSlot.PublisherGame.Timestamp.ToEasternDate();
-        return new MasterGameWithEligibilityFactors(publisherSlot.PublisherGame.MasterGame.MasterGame, Options, eligibilityOverride, tagOverrides, acquisitionDate);
+        return new MasterGameWithEligibilityFactors(publisherSlot.PublisherGame.MasterGame.MasterGame, options, eligibilityOverride, tagOverrides, acquisitionDate);
     }
 
     public bool GameIsEligibleInAnySlot(MasterGame masterGame, LocalDate dateOfPotentialAcquisition)

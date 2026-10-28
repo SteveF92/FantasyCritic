@@ -12,8 +12,8 @@ public class PublisherSlotRequirementsViewModel
         }
         else
         {
-            var distinctSpecialSlots = options.SpecialGameSlots.DistinctBy(x => string.Join(",", x.Tags.OrderBy(y => y.Name))).ToList();
-            var specialSlotRequiredTags = distinctSpecialSlots.SelectMany(x => x.Tags.Select(y => y.Name)).Distinct().ToList();
+            var distinctSpecialSlots = options.SpecialGameSlots.DistinctBy(x => string.Join(",", x.RequiredTags.OrderBy(y => y.Name))).ToList();
+            var specialSlotRequiredTags = distinctSpecialSlots.SelectMany(x => x.RequiredTags.Select(y => y.Name)).Distinct().ToList();
             var regularBannedTags = options.LeagueTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag.Name).ToList();
             var overallBannedTags = regularBannedTags.Except(specialSlotRequiredTags).ToList();
             OverallSlot = new PublisherSingleSlotRequirementsViewModel(overallBannedTags);
@@ -22,7 +22,7 @@ public class PublisherSlotRequirementsViewModel
             foreach (var specialSlot in distinctSpecialSlots)
             {
                 var specialSlotTags = options.LeagueTags.ToList();
-                specialSlotTags.AddRange(specialSlot.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required)));
+                specialSlotTags.AddRange(specialSlot.RequiredTags.Select(x => new LeagueTagStatus(x, TagStatus.Required)));
                 specialSlots.Add(new PublisherSingleSlotRequirementsViewModel(specialSlotTags));
             }
 

@@ -131,7 +131,19 @@ public class TestDataService
         return domains.ToDictionary(x => x.MasterGame.MasterGameID);
     }
 
-    public IReadOnlyList<LeagueYear> GetLeagueYears(IReadOnlyList<Publisher> publishers, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYears, IReadOnlyList<MasterGameTag> tags)
+    public IReadOnlyDictionary<LeagueYearKey, IReadOnlyList<LeagueSlot>> GetLeagueSlots(IReadOnlyList<MasterGameTag> tags)
+    {
+        var leagueYearEntities = GetLeagueYearEntities();
+        var tagDictionary = tags.ToDictionary(x => x.Name);
+        var leagueSlotEntityLookup = GetLeagueSlotEntities().ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
+        var slotTagEntityLookup = GetLeagueSlotRequiresTagEntities().ToLookup(x => x.LeagueSlotID);
+
+        return leagueYearEntities.ToDictionary(x => new LeagueYearKey(x.LeagueID, x.Year),
+            x => BuildSlots(leagueSlotEntityLookup[new LeagueYearKey(x.LeagueID, x.Year)], slotTagEntityLookup, tagDictionary));
+    }
+
+    public IReadOnlyList<LeagueYear> GetLeagueYears(IReadOnlyList<Publisher> publishers, IReadOnlyDictionary<Guid, MasterGameYear> masterGameYears, IReadOnlyList<MasterGameTag> tags,
+        IReadOnlyDictionary<LeagueYearKey, IReadOnlyList<LeagueSlot>> leagueSlots)
     {
         var publisherLookup = publishers.ToLookup(x => x.LeagueYearKey);
         var leagueYearEntities = GetLeagueYearEntities();
@@ -142,19 +154,17 @@ public class TestDataService
         var eligibilityOverrideEntities = GetEligibilityOverrideEntities();
         var tagOverrideEntities = GetTagOverrideEntities();
         var leagueTagEntities = GetLeagueTagStatusesEntities();
-        var specialGameSlotEntities = GetSpecialGameSlotEntities();
 
         var eligibilityOverrideLookup = eligibilityOverrideEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
         var tagOverrideEntityLookup = tagOverrideEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
         var leagueTagEntityLookup = leagueTagEntities.ToLookup(x => new LeagueYearKey(x.LeagueID, x.Year));
-        var specialGameSlotsDictionary = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(specialGameSlotEntities, tagDictionary);
 
         List<LeagueYear> domains = [];
         foreach (var leagueYearEntity in leagueYearEntities)
         {
             var leagueYearKey = new LeagueYearKey(leagueYearEntity.LeagueID, leagueYearEntity.Year);
             var leagueDraftEntity = draftByLeagueYear[(leagueYearEntity.LeagueID, leagueYearEntity.Year)];
-            leagueYearEntity.EnableBids = TestLeagueYearDefaults.DeriveEnableBids(leagueYearEntity, leagueDraftEntity);
+            leagueYearEntity.EnableBids = TestLeagueYearDefaults.DeriveEnableBids(leagueYearEntity, leagueDraftEntity, leagueSlots[leagueYearKey]);
 
             var playStatus = PlayStatus.FromValue(leagueDraftEntity.PlayStatus);
             var league = new League(leagueYearEntity.LeagueID, "LeagueName", FantasyCriticUser.GetFakeUser().ToMinimal(), null, null,
@@ -172,8 +182,7 @@ public class TestDataService
                 .GroupBy(x => x.MasterGameID)
                 .Select(x => new TagOverride(masterGameYears[x.Key].MasterGame, tags.Where(t => x.Select(e => e.TagName).Contains(t.Name))));
             var leagueTags = leagueTagEntityLookup[leagueYearKey].Select(x => x.ToDomain(tagDictionary[x.Tag]));
-            var specialGameSlots = specialGameSlotsDictionary[leagueYearKey];
-            domains.Add(leagueYearEntity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, leagueTags, specialGameSlots, null, publishersInLeague, [leagueDraft]));
+            domains.Add(leagueYearEntity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, leagueTags, leagueSlots[leagueYearKey], null, publishersInLeague, [leagueDraft]));
         }
 
         return domains;
@@ -271,12 +280,21 @@ public class TestDataService
         return tagStatuses;
     }
 
-    private IReadOnlyList<SpecialGameSlotEntity> GetSpecialGameSlotEntities()
+    private IReadOnlyList<LeagueSlotEntity> GetLeagueSlotEntities()
     {
-        using var reader = new StreamReader(Path.Combine(_basePath, "SpecialGameSlots.csv"));
+        using var reader = new StreamReader(Path.Combine(_basePath, "LeagueSlots.csv"));
         using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
-        var specialGameSlots = csv.GetRecords<SpecialGameSlotEntity>().ToList();
-        return specialGameSlots;
+        csv.Context.RegisterClassMap<LeagueSlotEntityMap>();
+        var leagueSlots = csv.GetRecords<LeagueSlotEntity>().ToList();
+        return leagueSlots;
+    }
+
+    private IReadOnlyList<LeagueSlotRequiresTagEntity> GetLeagueSlotRequiresTagEntities()
+    {
+        using var reader = new StreamReader(Path.Combine(_basePath, "LeagueSlotRequiresTags.csv"));
+        using var csv = new CsvReader(reader, CultureInfo.InvariantCulture);
+        var slotTags = csv.GetRecords<LeagueSlotRequiresTagEntity>().ToList();
+        return slotTags;
     }
 
     public IReadOnlyList<MasterGameTag> GetTags()
@@ -286,5 +304,15 @@ public class TestDataService
         var tags = csv.GetRecords<MasterGameTagEntity>().ToList();
         var domains = tags.Select(x => x.ToDomain()).ToList();
         return domains;
+    }
+
+    private static IReadOnlyList<LeagueSlot> BuildSlots(IEnumerable<LeagueSlotEntity> leagueSlotEntities, ILookup<Guid, LeagueSlotRequiresTagEntity> slotTagEntityLookup,
+        IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    {
+        return leagueSlotEntities
+            .OrderBy(x => x.CounterPick)
+            .ThenBy(x => x.SlotNumber)
+            .Select(x => x.ToDomain(slotTagEntityLookup[x.LeagueSlotID].Select(t => tagDictionary[t.Tag])))
+            .ToList();
     }
 }

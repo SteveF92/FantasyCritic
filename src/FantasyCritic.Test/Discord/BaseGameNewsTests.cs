@@ -57,8 +57,8 @@ internal abstract class BaseGameNewsTests
             new LeagueTagStatus(MasterGameTagDictionary.TagDictionary["PRT"], TagStatus.Banned)
         };
 
-        var leagueOptions = new LeagueOptions(10, 5, 2, 1, 0, false, false, false, false, 0, true, leagueTags,
-            new List<SpecialGameSlot>(),
+        var leagueOptions = new LeagueOptions(2, 1, 0, false, false, false, false, 0, true, leagueTags,
+            TestSlotCreationUtilities.GetBasicSlots(10, 5),
             PickupSystem.SemiPublicBiddingSecretCounterPicks, ScoringSystem.GetDefaultScoringSystem(2025),
             TradingSystem.Standard, TiebreakSystem.LowestProjectedPoints, ReleaseSystem.MustBeReleased,
             IneligibleGameSystem.CaseByCase,
@@ -71,7 +71,7 @@ internal abstract class BaseGameNewsTests
         {
             var game = CreateBasicMasterGame(new LocalDate(2025, 3, 26), new LocalDate(2025, 3, 26), MasterGameTagDictionary.TagDictionary["NGF"]);
             var gameYear = new MasterGameYear(game, 2025);
-            games.Add(new PublisherGame(Guid.Empty, Guid.Empty, "Game", Instant.MinValue, false, null, false, null, gameYear, 1, 1, 1, null, null, null));
+            games.Add(new PublisherGame(Guid.Empty, Guid.Empty, "Game", Instant.MinValue, false, null, false, null, gameYear, leagueOptions.LeagueSlots[0].LeagueSlotID, 1, 1, null, null, null));
         }
         var draftInfos = new[] { new PublisherDraftInfo(draftID, 1, Guid.Empty, 1, new List<PublisherDraftPickSkip>()) };
         var publishers = new List<Publisher>

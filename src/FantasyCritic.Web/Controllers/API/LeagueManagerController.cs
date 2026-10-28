@@ -167,7 +167,7 @@ public class LeagueManagerController : BaseLeagueController
             throw new Exception("Most recent league year could not be found");
         }
 
-        var updatedOptions = mostRecentLeagueYear.Options.UpdateOptionsForYear(request.Year);
+        var updatedOptions = mostRecentLeagueYear.Options.CopyForNewLeagueYear(request.Year);
         await _fantasyCriticService.AddNewLeagueYear(league, request.Year, updatedOptions, mostRecentLeagueYear);
 
         return Ok();
@@ -226,7 +226,7 @@ public class LeagueManagerController : BaseLeagueController
         }
 
         var tagDictionary = await _interLeagueService.GetMasterGameTagDictionary();
-        var (domainSettings, firstDraft) = request.ToDomain(tagDictionary);
+        var (domainSettings, firstDraft) = request.ToDomain(leagueYear, tagDictionary);
         Result result = await _fantasyCriticService.EditLeague(leagueYear, domainSettings, firstDraft);
         if (result.IsFailure)
         {

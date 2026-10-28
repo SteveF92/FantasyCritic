@@ -84,9 +84,16 @@ BEGIN
   
   
   SELECT *
-  FROM tbl_league_specialgameslot
+  FROM tbl_league_slot
   WHERE LeagueID = P_LeagueID
     AND YEAR = P_Year;
+  
+  
+  SELECT tbl_league_slotrequirestag.*
+  FROM tbl_league_slotrequirestag
+  JOIN tbl_league_slot ON tbl_league_slot.LeagueSlotID = tbl_league_slotrequirestag.LeagueSlotID
+  WHERE tbl_league_slot.LeagueID = P_LeagueID
+    AND tbl_league_slot.YEAR = P_Year;
   
   
   SELECT *

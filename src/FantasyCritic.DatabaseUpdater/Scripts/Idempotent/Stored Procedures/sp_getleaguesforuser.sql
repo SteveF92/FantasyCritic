@@ -68,8 +68,8 @@ BEGIN
             CASE
                 WHEN COUNT(ld.DraftID) > 1 THEN 'MultiDraft'
                 WHEN tbl_league_year.EnableBids = 0
-                     AND tbl_league_year.StandardGames = COALESCE(SUM(ld.GamesToDraft), 0)
-                     AND tbl_league_year.CounterPicks = COALESCE(SUM(ld.CounterPicksToDraft), 0)
+                     AND slot_counts.StandardGames = COALESCE(SUM(ld.GamesToDraft), 0)
+                     AND slot_counts.CounterPicks = COALESCE(SUM(ld.CounterPicksToDraft), 0)
                      AND tbl_league_year.UnrestrictedReleaseStatusDroppableGames = 0
                      AND tbl_league_year.WillNotReleaseDroppableGames = 0
                      AND tbl_league_year.WillReleaseDroppableGames = 0
@@ -82,8 +82,14 @@ BEGIN
                                ORDER BY tbl_league_year.Year DESC) AS rn
      FROM tbl_league_year
      LEFT JOIN tbl_league_draft ld ON ld.LeagueID = tbl_league_year.LeagueID AND ld.Year = tbl_league_year.Year
-     GROUP BY tbl_league_year.LeagueID, tbl_league_year.Year, tbl_league_year.EnableBids, tbl_league_year.StandardGames,
-              tbl_league_year.CounterPicks, tbl_league_year.UnrestrictedReleaseStatusDroppableGames,
+     LEFT JOIN
+       (SELECT LeagueID, Year,
+               COALESCE(SUM(CounterPick = 0), 0) AS StandardGames,
+               COALESCE(SUM(CounterPick = 1), 0) AS CounterPicks
+        FROM tbl_league_slot
+        GROUP BY LeagueID, Year) AS slot_counts ON slot_counts.LeagueID = tbl_league_year.LeagueID AND slot_counts.Year = tbl_league_year.Year
+     GROUP BY tbl_league_year.LeagueID, tbl_league_year.Year, tbl_league_year.EnableBids, slot_counts.StandardGames,
+              slot_counts.CounterPicks, tbl_league_year.UnrestrictedReleaseStatusDroppableGames,
               tbl_league_year.WillNotReleaseDroppableGames, tbl_league_year.WillReleaseDroppableGames,
               tbl_league_year.GrantSuperDrops, tbl_league_year.TradingSystem) AS most_recent_ly ON vw_league.LeagueID = most_recent_ly.LeagueID
   AND most_recent_ly.rn = 1

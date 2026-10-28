@@ -4,9 +4,10 @@ namespace FantasyCritic.Lib.Domain.Requests;
 
 public class LeagueYearParameters
 {
-    public LeagueYearParameters(Guid leagueID, int year, string? leagueYearName, int standardGames, int counterPicks,
+    public LeagueYearParameters(Guid leagueID, int year, string? leagueYearName,
         int unrestrictedReleaseStatusDroppableGames, int willNotReleaseDroppableGames, int willReleaseDroppableGames, bool dropOnlyDraftGames, bool grantSuperDrops,
-        bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount, bool enableBids, IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<SpecialGameSlot> specialGameSlots,
+        bool counterPicksBlockDrops, bool allowMoveIntoIneligible, int minimumBidAmount, bool enableBids,
+        IEnumerable<LeagueTagStatus> leagueTags, IEnumerable<LeagueSlot> leagueSlots,
         PickupSystem pickupSystem, ScoringSystem scoringSystem, TradingSystem tradingSystem, TiebreakSystem tiebreakSystem, ReleaseSystem releaseSystem,
         IneligibleGameSystem ineligibleGameSystem,
         AnnualDate counterPickDeadline, AnnualDate? mightReleaseDroppableDate, bool bidsOnlyBeforeNextScheduledDraft)
@@ -14,8 +15,6 @@ public class LeagueYearParameters
         LeagueID = leagueID;
         Year = year;
         LeagueYearName = leagueYearName;
-        StandardGames = standardGames;
-        CounterPicks = counterPicks;
         UnrestrictedReleaseStatusDroppableGames = unrestrictedReleaseStatusDroppableGames;
         WillNotReleaseDroppableGames = willNotReleaseDroppableGames;
         WillReleaseDroppableGames = willReleaseDroppableGames;
@@ -26,7 +25,7 @@ public class LeagueYearParameters
         MinimumBidAmount = minimumBidAmount;
         EnableBids = enableBids;
         LeagueTags = leagueTags.ToList();
-        SpecialGameSlots = specialGameSlots.ToList();
+        LeagueSlots = leagueSlots.ToList();
         PickupSystem = pickupSystem;
         ScoringSystem = scoringSystem;
         TradingSystem = tradingSystem;
@@ -41,8 +40,6 @@ public class LeagueYearParameters
     public Guid LeagueID { get; }
     public int Year { get; }
     public string? LeagueYearName { get; }
-    public int StandardGames { get; }
-    public int CounterPicks { get; }
     public int UnrestrictedReleaseStatusDroppableGames { get; }
     public int WillNotReleaseDroppableGames { get; }
     public int WillReleaseDroppableGames { get; }
@@ -53,7 +50,7 @@ public class LeagueYearParameters
     public int MinimumBidAmount { get; }
     public bool EnableBids { get; }
     public IReadOnlyList<LeagueTagStatus> LeagueTags { get; }
-    public IReadOnlyList<SpecialGameSlot> SpecialGameSlots { get; }
+    public IReadOnlyList<LeagueSlot> LeagueSlots { get; }
     public PickupSystem PickupSystem { get; }
     public ScoringSystem ScoringSystem { get; }
     public TradingSystem TradingSystem { get; }

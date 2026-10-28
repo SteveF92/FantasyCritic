@@ -9,12 +9,12 @@ public class PublisherSlotViewModel
         SystemWideValues systemWideValues, IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary)
     {
         SlotNumber = slot.SlotNumber;
-        OverallSlotNumber = slot.OverallSlotNumber;
+        OverallSlotNumber = slot.LeagueSlot.GetOverallSlotNumber(leagueYear.Options);
         CounterPick = slot.CounterPick;
 
-        if (slot.SpecialGameSlot is not null)
+        if (slot.LeagueSlot.IsSpecial)
         {
-            SpecialSlot = new SpecialGameSlotViewModel(slot.SpecialGameSlot);
+            SpecialSlot = new SpecialGameSlotViewModel(slot.LeagueSlot, leagueYear.Options);
         }
 
         if (slot.PublisherGame is not null)

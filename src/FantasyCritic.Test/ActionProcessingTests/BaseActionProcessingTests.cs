@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using FantasyCritic.FakeRepo.TestUtilities;
 using FantasyCritic.Lib.BusinessLogicFunctions;
+using FantasyCritic.Lib.Domain;
 using FantasyCritic.Lib.Domain.LeagueActions;
 using FantasyCritic.Lib.Extensions;
 using NodaTime;
@@ -16,6 +17,8 @@ namespace FantasyCritic.Test.ActionProcessingTests;
 public abstract class BaseActionProcessingTests
 {
     private readonly Dictionary<string, FinalizedActionProcessingResults> _results = [];
+    private IReadOnlyDictionary<Guid, LeagueSlot> _slotsByID = new Dictionary<Guid, LeagueSlot>();
+    private IReadOnlyDictionary<Guid, int> _originalSlotNumbersByPublisherGameID = new Dictionary<Guid, int>();
 
     protected abstract Instant ProcessingTime { get; }
     protected abstract string ActionProcessingSetName { get; }
@@ -36,11 +39,14 @@ public abstract class BaseActionProcessingTests
         var testDataService = new TestDataService($"../../../TestData/{ActionProcessingSetName}/", DefaultAllowIneligible);
         var systemWideValues = testDataService.GetSystemWideValues();
         var masterGameYearDictionary = testDataService.GetMasterGameYears();
-        var publishers = testDataService.GetPublishers(masterGameYearDictionary);
         var masterGameTags = testDataService.GetTags();
-        var leagueYears = testDataService.GetLeagueYears(publishers, masterGameYearDictionary, masterGameTags);
+        var leagueSlots = testDataService.GetLeagueSlots(masterGameTags);
+        var publishers = testDataService.GetPublishers(masterGameYearDictionary);
+        var leagueYears = testDataService.GetLeagueYears(publishers, masterGameYearDictionary, masterGameTags, leagueSlots);
         var allActiveBids = testDataService.GetActiveBids(leagueYears, masterGameYearDictionary);
         var allActiveDrops = testDataService.GetActiveDrops(leagueYears, masterGameYearDictionary);
+        _slotsByID = leagueSlots.Values.SelectMany(x => x).ToDictionary(x => x.LeagueSlotID);
+        _originalSlotNumbersByPublisherGameID = publishers.SelectMany(x => x.PublisherGames).ToDictionary(x => x.PublisherGameID, x => _slotsByID[x.LeagueSlotID].SlotNumber);
 
         if (OnlyRunLeagueID.HasValue)
         {
@@ -70,7 +76,7 @@ public abstract class BaseActionProcessingTests
             x.PickupBid.Priority,
             x.PickupBid.BidAmount,
             x.ProjectedPointsAtTimeOfBid,
-            x.SlotNumber,
+            x.Slot.SlotNumber,
             x.Outcome,
             ConditionalDropMasterGameID = x.PickupBid.ConditionalDropPublisherGame?.MasterGame!.MasterGame.MasterGameID,
             ConditionalDropResult = x.PickupBid.ConditionalDropResult?.Result.ToString()
@@ -142,7 +148,7 @@ public abstract class BaseActionProcessingTests
             x.MasterGame!.MasterGame.MasterGameID,
             x.MasterGame!.MasterGame.GameName,
             x.CounterPick,
-            x.SlotNumber,
+            _slotsByID[x.LeagueSlotID].SlotNumber,
             x.BidAmount
         })
             .OrderBy(x => x.PublisherID)
@@ -159,12 +165,12 @@ public abstract class BaseActionProcessingTests
     {
         var testData = _results[ActionProcessingSetName].Results.RemovedPublisherGames.Select(x => new
         {
-            x.PublisherGame.PublisherID,
-            x.PublisherGame.MasterGame!.MasterGame.MasterGameID,
-            x.PublisherGame.MasterGame!.MasterGame.GameName,
-            x.PublisherGame.CounterPick,
-            x.PublisherGame.SlotNumber,
-            x.PublisherGame.BidAmount,
+            x.PublisherID,
+            x.MasterGame!.MasterGame.MasterGameID,
+            x.MasterGame!.MasterGame.GameName,
+            x.CounterPick,
+            SlotNumber = _originalSlotNumbersByPublisherGameID[x.PublisherGameID],
+            x.BidAmount,
             x.RemovedNote
         })
             .OrderBy(x => x.PublisherID)

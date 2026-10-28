@@ -164,29 +164,19 @@ public class Publisher : IEquatable<Publisher>
     public static IReadOnlyList<PublisherSlot> GetPublisherSlots(LeagueYear leagueYear, IReadOnlyList<PublisherGame> publisherGames, IReadOnlyList<PublisherGame> otherPublisherGames)
     {
         var leagueOptions = leagueYear.Options;
-        List<PublisherSlot> publisherSlots = [];
-
-        int overallSlotNumber = 0;
-        var standardGamesBySlot = publisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
-        for (int standardGameIndex = 0; standardGameIndex < leagueOptions.StandardGames; standardGameIndex++)
-        {
-            PublisherGame? standardGame = standardGamesBySlot.GetValueOrDefault(standardGameIndex);
-            SpecialGameSlot? specialSlot = leagueOptions.GetSpecialGameSlotByOverallSlotNumber(standardGameIndex);
-
-            publisherSlots.Add(new PublisherSlot(standardGameIndex, overallSlotNumber, false, specialSlot, standardGame, null));
-            overallSlotNumber++;
-        }
-
+        var gamesByLeagueSlot = publisherGames.ToDictionary(x => x.LeagueSlotID);
         var publisherGameLookup = otherPublisherGames.Where(x => x.MasterGame is not null).ToLookup(x => x.MasterGame!.MasterGame);
 
-        var counterPicksBySlot = publisherGames.Where(x => x.CounterPick).ToDictionary(x => x.SlotNumber);
-        for (int counterPickIndex = 0; counterPickIndex < leagueOptions.CounterPicks; counterPickIndex++)
+        List<PublisherSlot> publisherSlots = [];
+        foreach (var leagueSlot in leagueOptions.LeagueSlots)
         {
-            PublisherGame? counterPick = counterPicksBySlot.GetValueOrDefault(counterPickIndex);
-            var counterPickedGameIsValid = GetCounterPickedGameIsValid(counterPick, leagueYear, publisherGameLookup);
-
-            publisherSlots.Add(new PublisherSlot(counterPickIndex, overallSlotNumber, true, null, counterPick, counterPickedGameIsValid));
-            overallSlotNumber++;
+            var publisherGame = gamesByLeagueSlot.GetValueOrDefault(leagueSlot.LeagueSlotID);
+            bool? counterPickedGameIsValid = null;
+            if (leagueSlot.CounterPick && publisherGame is not null)
+            {
+                counterPickedGameIsValid = GetCounterPickedGameIsValid(publisherGame, leagueYear, publisherGameLookup);
+            }
+            publisherSlots.Add(new PublisherSlot(leagueSlot, publisherGame, counterPickedGameIsValid));
         }
 
         return publisherSlots;
@@ -205,8 +195,8 @@ public class Publisher : IEquatable<Publisher>
             var counterPickedGame = publisherGameLookup[publisherGame.MasterGame.MasterGame].FirstOrDefault(x => !x.CounterPick);
             if (counterPickedGame is not null)
             {
-                var relevantSpecialGameSlot = leagueYear.Options.GetSpecialGameSlotByOverallSlotNumber(counterPickedGame.SlotNumber);
-                var slotForGame = new PublisherSlot(counterPickedGame.SlotNumber, counterPickedGame.SlotNumber, counterPickedGame.CounterPick, relevantSpecialGameSlot, counterPickedGame, null);
+                var relevantLeagueSlot = leagueYear.Options.LeagueSlotDictionary[counterPickedGame.LeagueSlotID];
+                var slotForGame = new PublisherSlot(relevantLeagueSlot, counterPickedGame, null);
                 counterPickedGameIsValid = slotForGame.SlotIsValid(leagueYear);
             }
             else
@@ -243,6 +233,13 @@ public class Publisher : IEquatable<Publisher>
     public Publisher GetUpdatedPublisherWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
         var newPublisherGames = PublisherGames.Select(x => x.GetUpdatedPublisherGameWithNewScores(calculatedStats)).ToList();
+        return new Publisher(PublisherID, LeagueYearKey, User, PublisherName, PublisherIcon, PublisherSlogan, DraftInfos, newPublisherGames,
+            FormerPublisherGames, Budget, UnrestrictedReleaseStatusGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftSettings);
+    }
+
+    public Publisher GetUpdatedPublisherWithNewSlots(IReadOnlyDictionary<PublisherGame, LeagueSlot> slotAssignments)
+    {
+        var newPublisherGames = PublisherGames.Select(x => slotAssignments.TryGetValue(x, out var newSlot) ? x.GetWithNewSlot(newSlot) : x).ToList();
         return new Publisher(PublisherID, LeagueYearKey, User, PublisherName, PublisherIcon, PublisherSlogan, DraftInfos, newPublisherGames,
             FormerPublisherGames, Budget, UnrestrictedReleaseStatusGamesDropped, WillNotReleaseGamesDropped, WillReleaseGamesDropped, SuperDropsAvailable, AutoDraftSettings);
     }

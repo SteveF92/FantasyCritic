@@ -27,7 +27,7 @@ public static class SlotEligibilityFunctions
     }
 
     public static PublisherSlotAcquisitionResult GetPublisherSlotAcquisitionResult(Publisher publisher, LeagueYear leagueYear, MasterGameWithEligibilityFactors? eligibilityFactors,
-        bool counterPick, int? validDropSlot, bool acquiringNow, bool managerOverride, bool allowIneligibleSlot, IReadOnlyList<MasterGameTag> allTags)
+        bool counterPick, LeagueSlot? validDropSlot, bool acquiringNow, bool managerOverride, bool allowIneligibleSlot, IReadOnlyList<MasterGameTag> allTags)
     {
         string filledSpacesText = "User's game spaces are filled.";
         if (counterPick)
@@ -36,7 +36,7 @@ public static class SlotEligibilityFunctions
         }
 
         var slots = publisher.GetPublisherSlots(leagueYear);
-        var openSlots = slots.Where(x => x.CounterPick == counterPick && (x.PublisherGame is null || (validDropSlot.HasValue && validDropSlot.Value == x.SlotNumber)))
+        var openSlots = slots.Where(x => x.CounterPick == counterPick && (x.PublisherGame is null || (validDropSlot is not null && validDropSlot.Equals(x.LeagueSlot))))
             .OrderBy(x => x.SlotNumber).ToList();
         if (eligibilityFactors is null)
         {
@@ -44,17 +44,17 @@ public static class SlotEligibilityFunctions
             if (openSlots.Any())
             {
                 var firstSlot = openSlots.First();
-                return new PublisherSlotAcquisitionResult(firstSlot.SlotNumber);
+                return new PublisherSlotAcquisitionResult(firstSlot.LeagueSlot);
             }
 
-            if (validDropSlot.HasValue)
+            if (validDropSlot is not null)
             {
-                return new PublisherSlotAcquisitionResult(validDropSlot.Value);
+                return new PublisherSlotAcquisitionResult(validDropSlot);
             }
 
             if (!acquiringNow)
             {
-                return new PublisherSlotAcquisitionResult(1);
+                return new PublisherSlotAcquisitionResult(leagueYear.Options.LeagueSlots.First(x => x.CounterPick == counterPick));
             }
 
             return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError(filledSpacesText, false, true) });
@@ -73,7 +73,7 @@ public static class SlotEligibilityFunctions
         {
             if (!acquiringNow)
             {
-                return new PublisherSlotAcquisitionResult(1);
+                return new PublisherSlotAcquisitionResult(leagueYear.Options.LeagueSlots[0]);
             }
 
             return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError(filledSpacesText, false, true) });
@@ -82,14 +82,14 @@ public static class SlotEligibilityFunctions
         var bestEligibleSlot = GetBestEligibleSlot(openSlots, eligibilityFactors, allTags);
         if (bestEligibleSlot is not null)
         {
-            return new PublisherSlotAcquisitionResult(bestEligibleSlot.SlotNumber);
+            return new PublisherSlotAcquisitionResult(bestEligibleSlot.LeagueSlot);
         }
 
         if (allowIneligibleSlot)
         {
             //This game isn't eligible in any slots, so we will just take the first open one.
             var bestSlot = openSlots.First();
-            return new PublisherSlotAcquisitionResult(bestSlot.SlotNumber);
+            return new PublisherSlotAcquisitionResult(bestSlot.LeagueSlot);
         }
 
         return new PublisherSlotAcquisitionResult(new List<ClaimError>() { new ClaimError("Game is not eligible in any open slots.", false, false, true) });
@@ -114,11 +114,9 @@ public static class SlotEligibilityFunctions
         return bestSlot;
     }
 
-    public static int? GetTradeSlotResult(Publisher publisher, LeagueYear leagueYear, MasterGameYearWithCounterPick masterGameYearWithCounterPick,
-        MasterGameWithEligibilityFactors eligibilityFactors, IEnumerable<int> openSlotNumbers, IReadOnlyList<MasterGameTag> allTags)
+    public static PublisherSlot? GetTradeSlotResult(MasterGameYearWithCounterPick masterGameYearWithCounterPick, MasterGameWithEligibilityFactors eligibilityFactors,
+        IReadOnlyList<PublisherSlot> openSlots, IReadOnlyList<MasterGameTag> allTags)
     {
-        var slots = publisher.GetPublisherSlots(leagueYear);
-        var openSlots = slots.Where(x => x.CounterPick == masterGameYearWithCounterPick.CounterPick && openSlotNumbers.Contains(x.SlotNumber)).OrderBy(x => x.SlotNumber).ToList();
         if (!openSlots.Any())
         {
             return null;
@@ -127,12 +125,12 @@ public static class SlotEligibilityFunctions
         var bestEligibleSlot = GetBestEligibleSlot(openSlots, eligibilityFactors, allTags);
         if (bestEligibleSlot is not null)
         {
-            return bestEligibleSlot.SlotNumber;
+            return bestEligibleSlot;
         }
 
         //This game isn't eligible in any slots, so we will just take the first open one.
         var bestSlot = openSlots.First();
-        return bestSlot.SlotNumber;
+        return bestSlot;
     }
 
     public static IReadOnlyList<ClaimError> GetClaimErrorsForLeagueYear(MasterGameWithEligibilityFactors eligibilityFactors)
@@ -154,10 +152,10 @@ public static class SlotEligibilityFunctions
             return baseEligibilityResult;
         }
 
-        var specialGameSlots = eligibilityFactors.Options.SpecialGameSlots;
-        foreach (var specialGameSlot in specialGameSlots)
+        var slotsWithRequiredTags = eligibilityFactors.Options.LeagueSlots.Where(x => x.RequiredTags.Any());
+        foreach (var slotWithRequiredTags in slotsWithRequiredTags)
         {
-            var tagsForSlot = specialGameSlot.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
+            var tagsForSlot = slotWithRequiredTags.RequiredTags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
             var specialEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, tagsForSlot);
             if (!specialEligibilityResult.Any())
             {
@@ -187,14 +185,14 @@ public static class SlotEligibilityFunctions
             return new List<ClaimError>() { new ClaimError("That game has been specifically banned by your league.", false) };
         }
 
-        if (publisherSlot.SpecialGameSlot is null)
+        if (!publisherSlot.LeagueSlot.RequiredTags.Any())
         {
             var baseEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, new List<LeagueTagStatus>());
             return baseEligibilityResult;
         }
 
         //This is a special slot
-        var tagsForSlot = publisherSlot.SpecialGameSlot.Tags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
+        var tagsForSlot = publisherSlot.LeagueSlot.RequiredTags.Select(x => new LeagueTagStatus(x, TagStatus.Required));
         var specialEligibilityResult = eligibilityFactors.CheckGameAgainstTags(eligibilityFactors.Options.LeagueTags, tagsForSlot);
         return specialEligibilityResult;
     }

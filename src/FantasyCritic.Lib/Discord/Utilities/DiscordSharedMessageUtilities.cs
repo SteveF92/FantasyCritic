@@ -2,6 +2,7 @@ using FantasyCritic.Lib.Discord.Models;
 using FantasyCritic.Lib.Discord.UrlBuilders;
 using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Domain.LeagueActions;
+using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
 
 namespace FantasyCritic.Lib.Discord.Utilities;

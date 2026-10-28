@@ -6,13 +6,9 @@ namespace FantasyCritic.Lib.Domain;
 
 public class PublisherSlot
 {
-    public PublisherSlot(int slotNumber, int overallSlotNumber, bool counterPick, SpecialGameSlot? specialGameSlot,
-        PublisherGame? publisherGame, bool? counterPickedGameIsValid)
+    public PublisherSlot(LeagueSlot leagueSlot, PublisherGame? publisherGame, bool? counterPickedGameIsValid)
     {
-        SlotNumber = slotNumber;
-        OverallSlotNumber = overallSlotNumber;
-        CounterPick = counterPick;
-        SpecialGameSlot = specialGameSlot;
+        LeagueSlot = leagueSlot;
         PublisherGame = publisherGame;
 
         if (publisherGame is not null && publisherGame.CounterPick != CounterPick)
@@ -23,10 +19,9 @@ public class PublisherSlot
         CounterPickedGameIsValid = counterPickedGameIsValid;
     }
 
-    public int SlotNumber { get; }
-    public int OverallSlotNumber { get; }
-    public bool CounterPick { get; }
-    public SpecialGameSlot? SpecialGameSlot { get; }
+    public LeagueSlot LeagueSlot { get; }
+    public int SlotNumber => LeagueSlot.SlotNumber;
+    public bool CounterPick => LeagueSlot.CounterPick;
     public PublisherGame? PublisherGame { get; }
     public bool? CounterPickedGameIsValid { get; }
 
@@ -150,24 +145,6 @@ public class PublisherSlot
 
     public override string ToString()
     {
-        var cp = "";
-        if (CounterPick)
-        {
-            cp = "CP-";
-        }
-        var slotType = "REG";
-        if (SpecialGameSlot is not null)
-        {
-            if (SpecialGameSlot.Tags.Count > 1)
-            {
-                slotType = "FLX";
-            }
-            else
-            {
-                slotType = SpecialGameSlot.Tags[0].ShortName;
-            }
-        }
-
         var gameName = "Empty";
         if (PublisherGame is not null)
         {
@@ -178,19 +155,19 @@ public class PublisherSlot
             }
         }
 
-        return $"{cp}{OverallSlotNumber}|{slotType}|{gameName}";
+        return $"{LeagueSlot}|{gameName}";
     }
 
     public PublisherSlot GetWithReplacedGame(PublisherGame newPublisherGame)
     {
-        return new PublisherSlot(SlotNumber, OverallSlotNumber, CounterPick, SpecialGameSlot, newPublisherGame, CounterPickedGameIsValid);
+        return new PublisherSlot(LeagueSlot, newPublisherGame, CounterPickedGameIsValid);
     }
 
     public IReadOnlyList<MasterGameTag> GetAllowedTags(LeagueOptions options, IReadOnlyList<MasterGameTag> allTags)
     {
-        if (SpecialGameSlot is not null)
+        if (LeagueSlot.RequiredTags.Any())
         {
-            return SpecialGameSlot.Tags;
+            return LeagueSlot.RequiredTags;
         }
 
         return allTags.Except(options.LeagueTags.Where(x => x.Status.Equals(TagStatus.Banned)).Select(x => x.Tag)).ToList();

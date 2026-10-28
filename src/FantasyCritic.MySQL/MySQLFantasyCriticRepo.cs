@@ -1,4 +1,5 @@
 using System.Data;
+using FantasyCritic.Lib.BusinessLogicFunctions;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Domain.Calculations;
 using FantasyCritic.Lib.Domain.Combinations;
@@ -116,10 +117,11 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         _logger.Information("Getting all league years for year {Year}", year);
         var allLeagueTags = await GetLeagueYearTagEntities(year);
-        var allSpecialGameSlots = await GetSpecialGameSlotEntities(year);
+        var allLeagueSlotEntities = await GetLeagueSlotEntities(year);
+        var leagueSlotTagRequirementEntities = await GetLeagueSlotTagRequirements(year);
         var leagueTagsByLeague = allLeagueTags.ToLookup(x => x.LeagueID);
         var tagDictionary = await _masterGameRepo.GetMasterGameTagDictionary();
-        var domainSpecialGameSlots = SpecialGameSlotEntity.ConvertSpecialGameSlotEntities(allSpecialGameSlots, tagDictionary);
+        var slotLookup = LeagueSlotEntity.ConvertLeagueSlotEntities(allLeagueSlotEntities, leagueSlotTagRequirementEntities, tagDictionary);
         var supportedYear = await GetSupportedYear(year);
         var allEligibilityOverrides = await GetAllEligibilityOverrides(year);
         var allTagOverrides = await GetAllTagOverrides(year);
@@ -143,11 +145,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var draftsByLeagueID = draftEntities.ToLookup(x => x.LeagueID);
         var draftPublisherLookupByDraftID = draftPublisherEntities.ToLookup(x => x.DraftID);
-        var draftNumberByDraftID = draftEntities.ToDictionary(x => x.DraftID, x => x.DraftNumber);
         var pickSkipLookup = draftPickSkipEntities.ToLookup(x => (x.DraftID, x.PublisherID));
-        var draftInfosByPublisherID = draftPublisherEntities
-            .ToLookup(x => x.PublisherID, x => new PublisherDraftInfo(x.DraftID, draftNumberByDraftID[x.DraftID], x.PublisherID, x.DraftPosition,
-                pickSkipLookup[(x.DraftID, x.PublisherID)].Select(s => s.ToDomain()).ToList()));
+
 
         List<LeagueYear> leagueYears = [];
 
@@ -171,7 +170,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
             var leagueYearKey = new LeagueYearKey(entity.LeagueID, entity.Year);
             var domainLeagueTags = leagueTagsByLeague[entity.LeagueID].Select(x => x.ToDomain(tagDictionary[x.Tag])).ToList();
-            var specialGameSlotsForLeagueYear = domainSpecialGameSlots[leagueYearKey];
+            var leagueSlotsForLeagueYear = slotLookup[leagueYearKey];
 
             var leagueDrafts = draftsByLeagueID[entity.LeagueID]
                 .Select(d => d.ToDomain(draftPublisherLookupByDraftID[d.DraftID]
@@ -182,7 +181,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var winningUser = await _userStore.GetUserThatMightExist(entity.WinningUserID);
             var publishers = publisherLookup[leagueYearKey].ToList();
 
-            LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, specialGameSlotsForLeagueYear, winningUser, publishers, leagueDrafts);
+            LeagueYear leagueYear = entity.ToDomain(league, supportedYear, eligibilityOverrides, tagOverrides, domainLeagueTags, leagueSlotsForLeagueYear, winningUser, publishers, leagueDrafts);
             leagueYears.Add(leagueYear);
         }
 
@@ -489,8 +488,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
         var formerPublisherGameDictionary = publisher.FormerPublisherGames
-            .Where(x => x.PublisherGame.MasterGame is not null)
-            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
+            .Where(x => x.MasterGame is not null)
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
         const string sql = "select * from vw_league_pickupbid where PublisherID = @publisherID and Successful is NULL";
         var queryObject = new
@@ -503,7 +502,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
-            PublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
+            IPublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
             PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
             domainBids.Add(domain);
         }
@@ -522,8 +521,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var formerPublisherGameDictionary = leagueYear.Publishers
             .SelectMany(x => x.FormerPublisherGames)
-            .Where(x => x.PublisherGame.MasterGame is not null)
-            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
+            .Where(x => x.MasterGame is not null)
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
         const string sql = "select * from vw_league_pickupbid where LeagueID = @leagueID and Year = @year and Successful is NULL";
         var queryObject = new
@@ -537,7 +536,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
-            PublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
+            IPublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
             var publisher = publisherDictionary[bidEntity.PublisherID];
             PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
             domainBids.Add(domain);
@@ -559,8 +558,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var formerPublisherGameDictionary = allPublishersForYear
             .SelectMany(x => x.FormerPublisherGames)
-            .Where(x => x.PublisherGame.MasterGame is not null)
-            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
+            .Where(x => x.MasterGame is not null)
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
         const string sql = "select * from vw_league_pickupbid where Year = @year AND Successful is NULL";
         var queryObject = new
@@ -575,7 +574,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
             var publisher = publisherDictionary[bidEntity.PublisherID];
             var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
-            PublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
+            IPublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
             PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
             domainBids.Add(domain);
         }
@@ -606,8 +605,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var formerPublisherGameDictionary = leagueYear.Publishers
             .SelectMany(x => x.FormerPublisherGames)
-            .Where(x => x.PublisherGame.MasterGame is not null)
-            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
+            .Where(x => x.MasterGame is not null)
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
         const string sql = "select * from vw_league_pickupbid where LeagueID = @leagueID and Year = @year and Successful IS NOT NULL";
         var queryObject = new
@@ -624,7 +623,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         foreach (var bidEntity in bidEntities)
         {
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
-            PublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
+            IPublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
             PickupBid domain = bidEntity.ToDomain(publisherDictionary[bidEntity.PublisherID], masterGame, conditionalDropPublisherGame, leagueYear);
             domainBids.Add(domain);
         }
@@ -651,8 +650,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var formerPublisherGameDictionary = allPublishersForYear
             .SelectMany(x => x.FormerPublisherGames)
-            .Where(x => x.PublisherGame.MasterGame is not null)
-            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
+            .Where(x => x.MasterGame is not null)
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
         await using var connection = new MySqlConnection(_connectionString);
         var bidEntities = await connection.QueryAsync<PickupBidEntity>(sql, new { year });
@@ -664,7 +663,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
             var publisher = publisherDictionary[bidEntity.PublisherID];
             var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
-            PublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
+            IPublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
             PickupBid domainPickup = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
             pickupBidsByLeagueYear[leagueYear].Add(domainPickup);
         }
@@ -773,8 +772,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         var formerPublisherGameDictionary = allPublishersWithBids
             .SelectMany(x => x.FormerPublisherGames)
-            .Where(x => x.PublisherGame.MasterGame is not null)
-            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
+            .Where(x => x.MasterGame is not null)
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
         List<PickupBid> domainBids = [];
         foreach (var bidEntity in bidEntities)
@@ -782,7 +781,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             var masterGame = await _masterGameRepo.GetMasterGameOrThrow(bidEntity.MasterGameID);
             var publisher = publisherDictionary[bidEntity.PublisherID];
             var leagueYear = leagueYearDictionary[publisher.LeagueYearKey];
-            PublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
+            IPublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
             PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
             domainBids.Add(domain);
         }
@@ -1144,10 +1143,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
         var formerPublisherGameDictionary = publisher.FormerPublisherGames
-            .Where(x => x.PublisherGame.MasterGame is not null)
-            .ToLookup(x => (x.PublisherGame.PublisherID, x.PublisherGame.MasterGame!.MasterGame.MasterGameID));
+            .Where(x => x.MasterGame is not null)
+            .ToLookup(x => (x.PublisherID, x.MasterGame!.MasterGame.MasterGameID));
 
-        PublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
+        IPublisherGame? conditionalDropPublisherGame = await GetConditionalDropPublisherGame(bidEntity, leagueYear.Year, publisherGameDictionary, formerPublisherGameDictionary);
 
         PickupBid domain = bidEntity.ToDomain(publisher, masterGame, conditionalDropPublisherGame, leagueYear);
         return domain;
@@ -1173,8 +1172,12 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         LeagueEntity entity = new LeagueEntity(league);
         LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, initialYear, options, conferenceLocked, false, null);
         var tagEntities = options.LeagueTags.Select(x => new LeagueYearTagEntity(league, initialYear, x));
-        List<SpecialGameSlotEntity> slotEntities = options.SpecialGameSlots.SelectMany(slot => slot.Tags, (slot, tag) =>
-            new SpecialGameSlotEntity(Guid.NewGuid(), league, initialYear, slot.SpecialSlotPosition, tag)).ToList();
+
+        var leagueYearKey = new LeagueYearKey(league.LeagueID, initialYear);
+        var slotEntities = options.LeagueSlots.Select(x => new LeagueSlotEntity(leagueYearKey, x)).ToList();
+        var slotRequiresTagEntities = options.LeagueSlots
+            .SelectMany(slot => slot.RequiredTags.Select(tag => new LeagueSlotRequiresTagEntity(slot, tag)))
+            .ToList();
 
         const string createLeagueSQL =
             """
@@ -1185,10 +1188,10 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string createLeagueYearSQL =
             """
             INSERT INTO tbl_league_year
-            (LeagueID,Year,StandardGames,CounterPicks,UnrestrictedReleaseStatusDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
+            (LeagueID,Year,UnrestrictedReleaseStatusDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
             GrantSuperDrops,CounterPicksBlockDrops,AllowMoveIntoIneligible,MinimumBidAmount,EnableBids,BidsOnlyBeforeNextScheduledDraft,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,IneligibleGameSystem,
             CounterPickDeadlineMonth,CounterPickDeadlineDay,MightReleaseDroppableMonth,MightReleaseDroppableDay,ConferenceLocked,UnderReview,LeagueYearName) VALUES
-            (@LeagueID,@Year,@StandardGames,@CounterPicks,@UnrestrictedReleaseStatusDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
+            (@LeagueID,@Year,@UnrestrictedReleaseStatusDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
             @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@AllowMoveIntoIneligible,@MinimumBidAmount,@EnableBids,@BidsOnlyBeforeNextScheduledDraft,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
             @ReleaseSystem,@IneligibleGameSystem,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay,@ConferenceLocked,0,@LeagueYearName);
             """;
@@ -1221,21 +1224,19 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             await connection.ExecuteAsync(createInitialDraftSQL, draftRow, transaction);
         }
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
-        await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
+        await connection.BulkInsertAsync<LeagueSlotEntity>(slotEntities, "tbl_league_slot", 500, transaction);
+        await connection.BulkInsertAsync<LeagueSlotRequiresTagEntity>(slotRequiresTagEntities, "tbl_league_slotrequirestag", 500, transaction);
         await AddPlayerToLeagueInternal(league, league.LeagueManager.UserID, initialYear, true, connection, transaction);
     }
 
-    public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, LeagueManagerAction settingsChangeAction)
+    public async Task EditLeagueYear(LeagueYear leagueYear, IReadOnlyDictionary<PublisherGame, LeagueSlot> slotAssignments, LeagueManagerAction settingsChangeAction)
     {
         LeagueYearEntity leagueYearEntity = new LeagueYearEntity(leagueYear.League, leagueYear.Year, leagueYear.Options, leagueYear.ConferenceLocked, leagueYear.UnderReview, leagueYear.LeagueYearName);
         var tagEntities = leagueYear.Options.LeagueTags.Select(x => new LeagueYearTagEntity(leagueYear.League, leagueYear.Year, x));
 
-        List<SpecialGameSlotEntity> slotEntities = leagueYear.Options.SpecialGameSlots.SelectMany(slot => slot.Tags, (slot, tag) =>
-            new SpecialGameSlotEntity(Guid.NewGuid(), leagueYear.League, leagueYear.Year, slot.SpecialSlotPosition, tag)).ToList();
-
         const string editLeagueYearSQL =
             """
-            UPDATE tbl_league_year SET StandardGames = @StandardGames, CounterPicks = @CounterPicks,
+            UPDATE tbl_league_year SET
             UnrestrictedReleaseStatusDroppableGames = @UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames,
             DropOnlyDraftGames = @DropOnlyDraftGames, GrantSuperDrops = @GrantSuperDrops, CounterPicksBlockDrops = @CounterPicksBlockDrops,
             AllowMoveIntoIneligible = @AllowMoveIntoIneligible, MinimumBidAmount = @MinimumBidAmount, EnableBids = @EnableBids, BidsOnlyBeforeNextScheduledDraft = @BidsOnlyBeforeNextScheduledDraft,
@@ -1252,7 +1253,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             """;
 
         const string deleteTagsSQL = "delete from tbl_league_yearusestag where LeagueID = @leagueID AND Year = @year;";
-        const string deleteSpecialSlotsSQL = "delete from tbl_league_specialgameslot where LeagueID = @leagueID AND Year = @year;";
+
+        var yearQuery = new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year };
 
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
@@ -1262,17 +1264,55 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         {
             await connection.ExecuteAsync(editFirstDraftSQL, new { draftID = leagueYear.FirstDraft.DraftID, gamesToDraft = leagueYear.FirstDraft.GamesToDraft, counterPicksToDraft = leagueYear.FirstDraft.CounterPicksToDraft, counterPicksMustBeFromThisDraft = leagueYear.FirstDraft.CounterPicksMustBeFromThisDraft }, transaction);
         }
-        await connection.ExecuteAsync(deleteTagsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
-        await connection.ExecuteAsync(deleteSpecialSlotsSQL, new { leagueID = leagueYear.League.LeagueID, year = leagueYear.Year }, transaction);
-        await OrganizeSlots(leagueYear, slotAssignments, connection, transaction);
+        await connection.ExecuteAsync(deleteTagsSQL, yearQuery, transaction);
+        await SaveLeagueSlots(leagueYear.Key, leagueYear.Options.LeagueSlots, slotAssignments, connection, transaction);
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
-        await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
         await AddLeagueManagerAction(settingsChangeAction, connection, transaction);
         await transaction.CommitAsync();
     }
 
-    public async Task CreateLeagueDraft(LeagueYear leagueYear, LeagueDraft draft, LeagueManagerAction newDraftAction,
-        NewDraftLeagueSettingsChanges? settingsToChange)
+    private static async Task SaveLeagueSlots(LeagueYearKey leagueYearKey, IReadOnlyList<LeagueSlot> leagueSlots, IReadOnlyDictionary<PublisherGame, LeagueSlot> slotAssignments,
+        MySqlConnection connection, MySqlTransaction transaction)
+    {
+        var slotEntities = leagueSlots.Select(x => new LeagueSlotEntity(leagueYearKey, x)).ToList();
+        var slotRequiresTagEntities = leagueSlots
+            .SelectMany(slot => slot.RequiredTags.Select(tag => new LeagueSlotRequiresTagEntity(slot, tag)))
+            .ToList();
+
+        const string getExistingSlotIDsSQL = "select LeagueSlotID from tbl_league_slot where LeagueID = @leagueID AND Year = @year;";
+        // Renumbering would otherwise trip the unique key on (LeagueID, Year, CounterPick, SlotNumber) mid-update.
+        const string parkSlotNumbersSQL = "update tbl_league_slot set SlotNumber = SlotNumber + @offset where LeagueID = @leagueID AND Year = @year;";
+        const string updateSlotSQL = "update tbl_league_slot set SlotNumber = @SlotNumber, SlotName = @SlotName where LeagueSlotID = @LeagueSlotID;";
+        const string moveGameSQL = "update tbl_league_publishergame set LeagueSlotID = @leagueSlotID where PublisherGameID = @publisherGameID;";
+        const string deleteSlotTagsSQL =
+            """
+            delete tbl_league_slotrequirestag from tbl_league_slotrequirestag
+            join tbl_league_slot on tbl_league_slot.LeagueSlotID = tbl_league_slotrequirestag.LeagueSlotID
+            where tbl_league_slot.LeagueID = @leagueID AND tbl_league_slot.Year = @year;
+            """;
+        const string deleteRemovedSlotsSQL = "delete from tbl_league_slot where LeagueID = @leagueID AND Year = @year AND LeagueSlotID not in @keptSlotIDs;";
+        const int parkedSlotNumberOffset = 1_000_000;
+
+        var yearQuery = new { leagueID = leagueYearKey.LeagueID, year = leagueYearKey.Year };
+
+        // Slots that survive keep their IDs, so games stay attached. Games in slots that go away move before those slots are deleted.
+        var existingSlotIDs = (await connection.QueryAsync<Guid>(getExistingSlotIDsSQL, yearQuery, transaction)).ToHashSet();
+        var newSlotEntities = slotEntities.Where(x => !existingSlotIDs.Contains(x.LeagueSlotID)).ToList();
+        var keptSlotEntities = slotEntities.Where(x => existingSlotIDs.Contains(x.LeagueSlotID)).ToList();
+
+        await connection.ExecuteAsync(parkSlotNumbersSQL, new { offset = parkedSlotNumberOffset, yearQuery.leagueID, yearQuery.year }, transaction);
+        await connection.BulkInsertAsync<LeagueSlotEntity>(newSlotEntities, "tbl_league_slot", 500, transaction);
+        await connection.ExecuteAsync(updateSlotSQL, keptSlotEntities, transaction);
+
+        var gameMoves = slotAssignments.Select(x => new { publisherGameID = x.Key.PublisherGameID, leagueSlotID = x.Value.LeagueSlotID }).ToList();
+        await connection.ExecuteAsync(moveGameSQL, gameMoves, transaction);
+
+        await connection.ExecuteAsync(deleteSlotTagsSQL, yearQuery, transaction);
+        await connection.ExecuteAsync(deleteRemovedSlotsSQL, new { yearQuery.leagueID, yearQuery.year, keptSlotIDs = slotEntities.Select(x => x.LeagueSlotID).ToList() }, transaction);
+        await connection.BulkInsertAsync<LeagueSlotRequiresTagEntity>(slotRequiresTagEntities, "tbl_league_slotrequirestag", 500, transaction);
+    }
+
+    public async Task CreateLeagueDraft(LeagueDraft draft, LeagueManagerAction newDraftAction, NewDraftLeagueSettingsChanges? settingsToChange)
     {
         const string insertDraftSQL =
             """
@@ -1281,8 +1321,6 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             """;
         const string insertDraftPublisherSQL =
             "INSERT INTO tbl_league_draftpublisher (LeagueID, Year, DraftID, PublisherID, DraftPosition) VALUES (@LeagueID, @Year, @DraftID, @PublisherID, @DraftPosition);";
-        const string updateLeagueYearSQL =
-            "UPDATE tbl_league_year SET StandardGames = @standardGames, CounterPicks = @counterPicks WHERE LeagueID = @leagueID AND Year = @year;";
 
         var draftRow = new
         {
@@ -1310,34 +1348,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         if (settingsToChange is not null)
         {
-            await connection.ExecuteAsync(updateLeagueYearSQL, new
-            {
-                standardGames = settingsToChange.NewLeagueOptions.StandardGames,
-                counterPicks = settingsToChange.NewLeagueOptions.CounterPicks,
-                leagueID = draft.LeagueYearKey.LeagueID,
-                year = draft.LeagueYearKey.Year,
-            }, transaction);
-
-            if (settingsToChange.NewSpecialGameSlots.Count > 0)
-            {
-                var slotEntities = settingsToChange.NewSpecialGameSlots
-                    .SelectMany(slot => slot.Tags, (slot, tag) => new SpecialGameSlotEntity
-                    {
-                        SpecialSlotID = Guid.NewGuid(),
-                        LeagueID = draft.LeagueYearKey.LeagueID,
-                        Year = draft.LeagueYearKey.Year,
-                        SpecialSlotPosition = slot.SpecialSlotPosition,
-                        Tag = tag.Name,
-                    })
-                    .ToList();
-                await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
-            }
-
-            if (settingsToChange.SlotAssignments.Count > 0)
-            {
-                await OrganizeSlots(leagueYear, settingsToChange.SlotAssignments, connection, transaction);
-            }
-
+            await SaveLeagueSlots(draft.LeagueYearKey, settingsToChange.NewLeagueOptions.LeagueSlots, new Dictionary<PublisherGame, LeagueSlot>(), connection, transaction);
             await AddLeagueManagerAction(settingsToChange.LeagueManagerAction, connection, transaction);
         }
 
@@ -1408,16 +1419,19 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         LeagueYearEntity leagueYearEntity = new LeagueYearEntity(league, year, options, conferenceLocked, false, null);
         var tagEntities = options.LeagueTags.Select(x => new LeagueYearTagEntity(league, year, x));
 
-        List<SpecialGameSlotEntity> slotEntities = options.SpecialGameSlots.SelectMany(slot => slot.Tags, (slot, tag) =>
-            new SpecialGameSlotEntity(Guid.NewGuid(), league, year, slot.SpecialSlotPosition, tag)).ToList();
+        var leagueYearKey = new LeagueYearKey(league.LeagueID, year);
+        var slotEntities = options.LeagueSlots.Select(x => new LeagueSlotEntity(leagueYearKey, x)).ToList();
+        var slotRequiresTagEntities = options.LeagueSlots
+            .SelectMany(slot => slot.RequiredTags.Select(tag => new LeagueSlotRequiresTagEntity(slot, tag)))
+            .ToList();
 
         const string newLeagueYearSQL =
             """
             INSERT INTO tbl_league_year
-            (LeagueID,Year,StandardGames,CounterPicks,UnrestrictedReleaseStatusDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
+            (LeagueID,Year,UnrestrictedReleaseStatusDroppableGames,WillNotReleaseDroppableGames,WillReleaseDroppableGames,DropOnlyDraftGames,
             GrantSuperDrops,CounterPicksBlockDrops,AllowMoveIntoIneligible,MinimumBidAmount,EnableBids,BidsOnlyBeforeNextScheduledDraft,PickupSystem,TiebreakSystem,ScoringSystem,TradingSystem,ReleaseSystem,IneligibleGameSystem,
             CounterPickDeadlineMonth,CounterPickDeadlineDay,MightReleaseDroppableMonth,MightReleaseDroppableDay,ConferenceLocked,UnderReview) VALUES
-            (@LeagueID,@Year,@StandardGames,@CounterPicks,@UnrestrictedReleaseStatusDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
+            (@LeagueID,@Year,@UnrestrictedReleaseStatusDroppableGames,@WillNotReleaseDroppableGames,@WillReleaseDroppableGames,
             @DropOnlyDraftGames,@GrantSuperDrops,@CounterPicksBlockDrops,@AllowMoveIntoIneligible,@MinimumBidAmount,@EnableBids,@BidsOnlyBeforeNextScheduledDraft,@PickupSystem,@TiebreakSystem,@ScoringSystem,@TradingSystem,
             @ReleaseSystem,@IneligibleGameSystem,@CounterPickDeadlineMonth,@CounterPickDeadlineDay,@MightReleaseDroppableMonth,@MightReleaseDroppableDay,@ConferenceLocked,0);
             """;
@@ -1455,7 +1469,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await connection.ExecuteAsync(newLeagueYearSQL, leagueYearEntity, transaction);
         await connection.ExecuteAsync(createDraftSQL, draftRows, transaction);
         await connection.BulkInsertAsync<LeagueYearTagEntity>(tagEntities, "tbl_league_yearusestag", 500, transaction);
-        await connection.BulkInsertAsync<SpecialGameSlotEntity>(slotEntities, "tbl_league_specialgameslot", 500, transaction);
+        await connection.BulkInsertAsync<LeagueSlotEntity>(slotEntities, "tbl_league_slot", 500, transaction);
+        await connection.BulkInsertAsync<LeagueSlotRequiresTagEntity>(slotRequiresTagEntities, "tbl_league_slotrequirestag", 500, transaction);
         await connection.ExecuteAsync(activePlayersSQL, activePlayersObjects, transaction: transaction);
     }
 
@@ -2090,7 +2105,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         IReadOnlyList<PublisherGame> allDomainGames = await GetAllPublisherGamesForYear(year, includeDeleted);
         IReadOnlyList<FormerPublisherGame> allDomainFormerGames = await GetAllFormerPublisherGamesForYear(year, includeDeleted);
         var domainGameLookup = allDomainGames.ToLookup(x => x.PublisherID);
-        var domainFormerGameLookup = allDomainFormerGames.ToLookup(x => x.PublisherGame.PublisherID);
+        var domainFormerGameLookup = allDomainFormerGames.ToLookup(x => x.PublisherID);
 
         var draftEntities = await connection.QueryAsync<LeagueDraftEntity>(draftSql, query);
         var draftPublisherEntities = await connection.QueryAsync<LeagueDraftPublisherEntity>(draftPublisherSql, query);
@@ -2299,9 +2314,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string sql =
             "INSERT INTO tbl_league_publishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
-            "ManualWillNotRelease,FantasyPoints,MasterGameID,SlotNumber,PickNumber,OverallPickNumber,DraftID,BidAmount) VALUES " +
+            "ManualWillNotRelease,FantasyPoints,MasterGameID,LeagueSlotID,PickNumber,OverallPickNumber,DraftID,BidAmount) VALUES " +
             "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@PickNumber,@OverallPickNumber,@DraftID,@BidAmount);";
+            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@LeagueSlotID,@PickNumber,@OverallPickNumber,@DraftID,@BidAmount);";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.ExecuteAsync(sql, entity);
     }
@@ -2623,8 +2638,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         await UpdatePublisherBudgetsAndDroppedGames(executedTrade.UpdatedPublishers, connection, transaction);
 
-        var flatRemovedPublisherGames = executedTrade.RemovedPublisherGames.Select(x => x.PublisherGame).ToList();
-        await DeletePublisherGames(flatRemovedPublisherGames, connection, transaction);
+        var removedPublisherGameIDs = executedTrade.RemovedPublisherGames.Select(x => x.PublisherGameID).ToList();
+        await DeletePublisherGames(removedPublisherGameIDs, connection, transaction);
         await AddFormerPublisherGames(executedTrade.RemovedPublisherGames, connection, transaction);
         await AddPublisherGames(executedTrade.AddedPublisherGames, connection, transaction);
         await MakePublisherGameSlotsConsistent(executedTrade.Trade.LeagueYear, executedTrade.UpdatedPublishers, connection, transaction);
@@ -2776,101 +2791,68 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
     private static async Task MakePublisherGameSlotsConsistent(IEnumerable<LeagueYearPublisherPair> publisherPairs, MySqlConnection connection, MySqlTransaction transaction)
     {
-        var specialSlotPublisherIDs = publisherPairs.Where(x => x.LeagueYear.Options.HasSpecialSlots).Select(x => x.Publisher.PublisherID).ToHashSet();
-
-        int tempSlotNumber = 1000;
-        var preRunUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
-        var finalUpdates = new List<PublisherGameSlotNumberUpdateEntity>();
-        foreach (var publisherPair in publisherPairs)
-        {
-            int slotNumber = 0;
-            if (!specialSlotPublisherIDs.Contains(publisherPair.Publisher.PublisherID))
-            {
-                var standardGames = publisherPair.Publisher.PublisherGames
-                    .Where(x => !x.CounterPick)
-                    .OrderBy(x => x.Timestamp).ThenBy(x => x.SlotNumber);
-                foreach (var standardGame in standardGames)
-                {
-                    preRunUpdates.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, tempSlotNumber));
-                    finalUpdates.Add(new PublisherGameSlotNumberUpdateEntity(standardGame.PublisherGameID, slotNumber));
-                    tempSlotNumber++;
-                    slotNumber++;
-                }
-            }
-
-            //Counter Picks don't have special slots, so they should always be consistent.
-            slotNumber = 0;
-            var counterPicks = publisherPair.Publisher.PublisherGames
-                .Where(x => x.CounterPick)
-                .OrderBy(x => x.SlotNumber);
-            foreach (var counterPick in counterPicks)
-            {
-                preRunUpdates.Add(new PublisherGameSlotNumberUpdateEntity(counterPick.PublisherGameID, tempSlotNumber));
-                finalUpdates.Add(new PublisherGameSlotNumberUpdateEntity(counterPick.PublisherGameID, slotNumber));
-                tempSlotNumber++;
-                slotNumber++;
-            }
-        }
-
-        const string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
-        await connection.ExecuteAsync(sql, preRunUpdates, transaction);
-        await connection.ExecuteAsync(sql, finalUpdates, transaction);
+        var pairs = publisherPairs.ToList();
+        var slotAssignments = SlotCompactionFunctions.GetCompactedSlotAssignments(pairs);
+        var leagueYearKeyByPublisherID = pairs.ToDictionary(x => x.Publisher.PublisherID, x => x.Publisher.LeagueYearKey);
+        var moves = slotAssignments
+            .Select(x => new GameSlotMove(leagueYearKeyByPublisherID[x.Key.PublisherID], x.Key.PublisherGameID, x.Key.CounterPick, x.Value.LeagueSlotID))
+            .ToList();
+        await MoveGamesToSlots(moves, connection, transaction);
     }
 
-    private static async Task OrganizeSlots(LeagueYear leagueYear, IReadOnlyDictionary<Guid, int> slotAssignments, MySqlConnection connection, MySqlTransaction transaction)
+    private sealed record GameSlotMove(LeagueYearKey LeagueYearKey, Guid PublisherGameID, bool CounterPick, Guid TargetLeagueSlotID);
+
+    private static async Task MoveGamesToSlots(IReadOnlyList<GameSlotMove> moves, MySqlConnection connection, MySqlTransaction transaction)
     {
-        if (!slotAssignments.Any())
+        if (!moves.Any())
         {
             return;
         }
 
-        int tempSlotNumber = 1000;
-        List<PublisherGameSlotNumberUpdateEntity> preRunUpdates = [];
-        List<PublisherGameSlotNumberUpdateEntity> finalUpdates = [];
-        foreach (var publisher in leagueYear.Publishers)
-        {
-            var nonCounterPicks = publisher.PublisherGames.Where(x => !x.CounterPick);
-            foreach (var publisherGame in nonCounterPicks)
+        const string insertScratchSlotSQL =
+            """
+            INSERT INTO tbl_league_slot (LeagueSlotID, LeagueID, Year, CounterPick, SlotNumber, SlotName)
+            VALUES (@LeagueSlotID, @LeagueID, @Year, @CounterPick, @SlotNumber, NULL);
+            """;
+        const string moveGameSQL = "UPDATE tbl_league_publishergame SET LeagueSlotID = @leagueSlotID WHERE PublisherGameID = @publisherGameID;";
+        const string deleteScratchSlotSQL = "DELETE FROM tbl_league_slot WHERE LeagueSlotID = @leagueSlotID;";
+        const int scratchSlotNumberOffset = 1_000_000;
+
+        // The unique key on (PublisherID, LeagueSlotID) forbids two of a publisher's games sharing a slot, even briefly,
+        // so each moving game waits on a scratch slot of its own kind, which only exists inside this transaction.
+        var scratchSlots = moves
+            .Select((x, index) => new LeagueSlotEntity
             {
-                var foundGame = slotAssignments.TryGetValue(publisherGame.PublisherGameID, out var newSlotNumber);
-                if (!foundGame)
-                {
-                    string error =
-                        $"Cannot figure out slots for LeagueID: {publisher.LeagueYearKey.LeagueID} PublisherID: {publisher.PublisherID} " +
-                        $"PublisherGameID: {publisherGame.PublisherGameID} GameName: {publisherGame.GameName}";
-                    throw new Exception(error);
-                }
+                LeagueSlotID = Guid.NewGuid(),
+                LeagueID = x.LeagueYearKey.LeagueID,
+                Year = x.LeagueYearKey.Year,
+                CounterPick = x.CounterPick,
+                SlotNumber = scratchSlotNumberOffset + index,
+                SlotName = null,
+            })
+            .ToList();
 
-                preRunUpdates.Add(new PublisherGameSlotNumberUpdateEntity(publisherGame.PublisherGameID, tempSlotNumber));
-                finalUpdates.Add(new PublisherGameSlotNumberUpdateEntity(publisherGame.PublisherGameID, newSlotNumber));
-                tempSlotNumber++;
-            }
-        }
+        var moveToScratch = moves.Select((x, index) => new { publisherGameID = x.PublisherGameID, leagueSlotID = scratchSlots[index].LeagueSlotID });
+        var moveToTarget = moves.Select(x => new { publisherGameID = x.PublisherGameID, leagueSlotID = x.TargetLeagueSlotID });
+        var scratchSlotIDs = scratchSlots.Select(x => new { leagueSlotID = x.LeagueSlotID });
 
-        const string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
-        await connection.ExecuteAsync(sql, preRunUpdates, transaction);
-        await connection.ExecuteAsync(sql, finalUpdates, transaction);
+        await connection.ExecuteAsync(insertScratchSlotSQL, scratchSlots, transaction);
+        await connection.ExecuteAsync(moveGameSQL, moveToScratch, transaction);
+        await connection.ExecuteAsync(moveGameSQL, moveToTarget, transaction);
+        await connection.ExecuteAsync(deleteScratchSlotSQL, scratchSlotIDs, transaction);
     }
 
-    public async Task ReorderPublisherGames(Publisher publisher, IReadOnlyDictionary<int, Guid?> slotStates)
+    public async Task ReorderPublisherGames(Publisher publisher, IReadOnlyDictionary<LeagueSlot, PublisherGame?> slotsToUpdate)
     {
-        var realOrderEntities = new List<PublisherGameSlotNumberUpdateEntity>();
-        var tempOrderEntities = new List<PublisherGameSlotNumberUpdateEntity>();
+        var moves = slotsToUpdate
+            .Where(x => x.Value is not null && x.Value.LeagueSlotID != x.Key.LeagueSlotID)
+            .Select(x => new GameSlotMove(publisher.LeagueYearKey, x.Value!.PublisherGameID, x.Value.CounterPick, x.Key.LeagueSlotID))
+            .ToList();
 
-        int tempSlotNumber = 10_000;
-        foreach (var slotState in slotStates)
-        {
-            tempOrderEntities.Add(new PublisherGameSlotNumberUpdateEntity(slotState.Value, tempSlotNumber));
-            realOrderEntities.Add(new PublisherGameSlotNumberUpdateEntity(slotState.Value, slotState.Key));
-            tempSlotNumber++;
-        }
-
-        const string sql = "UPDATE tbl_league_publishergame SET SlotNumber = @SlotNumber WHERE PublisherGameID = @PublisherGameID;";
         await using var connection = new MySqlConnection(_connectionString);
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
-        await connection.ExecuteAsync(sql, tempOrderEntities, transaction);
-        await connection.ExecuteAsync(sql, realOrderEntities, transaction);
+        await MoveGamesToSlots(moves, connection, transaction);
         await transaction.CommitAsync();
     }
 
@@ -3395,7 +3377,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             "DELETE FROM tbl_league_managermessage WHERE LeagueID = @leagueID;",
             "DELETE FROM tbl_league_manageraction WHERE LeagueID = @leagueID;",
             "DELETE FROM tbl_league_specialauction WHERE LeagueID = @leagueID;",
-            "DELETE FROM tbl_league_specialgameslot WHERE LeagueID = @leagueID;",
+            "DELETE t FROM tbl_league_slotrequirestag t JOIN tbl_league_slot s ON s.LeagueSlotID = t.LeagueSlotID WHERE s.LeagueID = @leagueID;",
+            "DELETE FROM tbl_league_slot WHERE LeagueID = @leagueID;",
             "DELETE FROM tbl_league_eligibilityoverride WHERE LeagueID = @leagueID;",
             "DELETE FROM tbl_league_tagoverride WHERE LeagueID = @leagueID;",
             "DELETE FROM tbl_league_yearusestag WHERE LeagueID = @leagueID;",
@@ -3453,8 +3436,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         await AddLeagueActions(actionProcessingResults.Results.LeagueActions, connection, transaction);
         await UpdatePublisherBudgetsAndDroppedGames(actionProcessingResults.Results.PublisherStateSet.Publishers, connection, transaction);
 
-        var flatRemovedPublisherGames = actionProcessingResults.Results.RemovedPublisherGames.Select(x => x.PublisherGame).ToList();
-        await DeletePublisherGames(flatRemovedPublisherGames, connection, transaction);
+        var removedPublisherGameIDs = actionProcessingResults.Results.RemovedPublisherGames.Select(x => x.PublisherGameID).ToList();
+        await DeletePublisherGames(removedPublisherGameIDs, connection, transaction);
         await AddFormerPublisherGames(actionProcessingResults.Results.RemovedPublisherGames, connection, transaction);
         await AddPublisherGames(actionProcessingResults.Results.AddedPublisherGames, connection, transaction);
 
@@ -3716,9 +3699,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         const string sql =
             "INSERT INTO tbl_league_publishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
-            "ManualWillNotRelease,FantasyPoints,MasterGameID,SlotNumber,PickNumber,OverallPickNumber,DraftID,BidAmount,AcquiredInTradeID) VALUES " +
+            "ManualWillNotRelease,FantasyPoints,MasterGameID,LeagueSlotID,PickNumber,OverallPickNumber,DraftID,BidAmount,AcquiredInTradeID) VALUES " +
             "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@SlotNumber,@PickNumber,@OverallPickNumber,@DraftID,@BidAmount,@AcquiredInTradeID);";
+            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@LeagueSlotID,@PickNumber,@OverallPickNumber,@DraftID,@BidAmount,@AcquiredInTradeID);";
         var entities = publisherGames.Select(x => new PublisherGameEntity(x));
         return connection.ExecuteAsync(sql, entities, transaction);
     }
@@ -3734,9 +3717,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return connection.ExecuteAsync(sql, entities, transaction);
     }
 
-    private static Task DeletePublisherGames(IEnumerable<PublisherGame> publisherGames, MySqlConnection connection, MySqlTransaction transaction)
+    private static Task DeletePublisherGames(IEnumerable<Guid> publisherGameIDs, MySqlConnection connection, MySqlTransaction transaction)
     {
-        var publisherGameIDs = publisherGames.Select(x => x.PublisherGameID);
         return connection.ExecuteAsync(
             "delete from tbl_league_publishergame where PublisherGameID in @publisherGameIDs;", new { publisherGameIDs }, transaction);
     }
@@ -3810,14 +3792,29 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         return entities.ToList();
     }
 
-    private async Task<IReadOnlyList<SpecialGameSlotEntity>> GetSpecialGameSlotEntities(int year)
+    private async Task<IReadOnlyList<LeagueSlotEntity>> GetLeagueSlotEntities(int year)
     {
-        const string sql = "select * from tbl_league_specialgameslot where Year = @year;";
+        const string sql = "select * from tbl_league_slot where Year = @year;";
 
         await using var connection = new MySqlConnection(_connectionString);
-        IEnumerable<SpecialGameSlotEntity> entities = await connection.QueryAsync<SpecialGameSlotEntity>(sql, new { year });
+        IEnumerable<LeagueSlotEntity> entities = await connection.QueryAsync<LeagueSlotEntity>(sql, new { year });
         return entities.ToList();
     }
+
+    private async Task<IReadOnlyList<LeagueSlotRequiresTagEntity>> GetLeagueSlotTagRequirements(int year)
+    {
+        const string sql = """
+                           select lsrt.* 
+                           from tbl_league_slotrequirestag lsrt
+                           join tbl_league_slot ls on ls.LeagueSlotID = lsrt.LeagueSlotID
+                           where ls.`Year` = @year;
+                           """;
+
+        await using var connection = new MySqlConnection(_connectionString);
+        IEnumerable<LeagueSlotRequiresTagEntity> entities = await connection.QueryAsync<LeagueSlotRequiresTagEntity>(sql, new { year });
+        return entities.ToList();
+    }
+
 
     public async Task PostNewManagerMessage(LeagueYear leagueYear, ManagerMessage message)
     {
@@ -3918,7 +3915,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         _supportedYearCache = null;
     }
 
-    private async Task<PublisherGame?> GetConditionalDropPublisherGame(PickupBidEntity bidEntity, int year,
+    private async Task<IPublisherGame?> GetConditionalDropPublisherGame(PickupBidEntity bidEntity, int year,
         ILookup<(Guid PublisherID, Guid MasterGameID), PublisherGame> publisherGameLookup,
         ILookup<(Guid PublisherID, Guid MasterGameID), FormerPublisherGame> formerPublisherGameLookup)
     {
@@ -3933,18 +3930,14 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
             return currentPublisherGames.WhereMax(x => x.Timestamp).First();
         }
 
-        var formerPublisherGames = formerPublisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].Where(x => x.PublisherGame.CounterPick == bidEntity.CounterPick).ToList();
+        var formerPublisherGames = formerPublisherGameLookup[(bidEntity.PublisherID, bidEntity.ConditionalDropMasterGameID.Value)].Where(x => x.CounterPick == bidEntity.CounterPick).ToList();
         if (formerPublisherGames.Any())
         {
-            return formerPublisherGames.WhereMax(x => x.PublisherGame.Timestamp).First().PublisherGame;
+            return formerPublisherGames.WhereMax(x => x.Timestamp).First();
         }
 
         var conditionalDropGame = await _masterGameRepo.GetMasterGameYearOrThrow(bidEntity.ConditionalDropMasterGameID.Value, year);
-        var fakePublisherGame = new PublisherGame(bidEntity.PublisherID, Guid.NewGuid(),
-            conditionalDropGame.MasterGame.GameName, bidEntity.Timestamp,
-            false, null, false, null, conditionalDropGame, 0, null, null, null, null, null);
-
-        return fakePublisherGame;
+        return DomainConversionUtilities.GetMissingConditionalDropGame(bidEntity, conditionalDropGame);
     }
 
     public async Task<IReadOnlyList<SingleGameNews>> GetMyGameNews(FantasyCriticUser user)

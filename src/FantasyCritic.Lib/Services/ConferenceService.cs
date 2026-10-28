@@ -92,7 +92,7 @@ public class ConferenceService
                 d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
                 false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
             .ToList();
-        await _conferenceRepo.AddLeagueToConference(conference, primaryLeagueYear, newLeague, clonedDrafts);
+        await _conferenceRepo.AddLeagueToConference(conference, year, primaryLeagueYear.Options.CopyForNewLeagueYear(year), newLeague, clonedDrafts);
         return Result.Success();
     }
 
@@ -122,7 +122,7 @@ public class ConferenceService
                 d.GamesToDraft, d.CounterPicksToDraft, d.CounterPicksMustBeFromThisDraft,
                 false, PlayStatus.NotStartedDraft, new List<PublisherDraftInfo>(), null))
             .ToList();
-        await _fantasyCriticRepo.AddNewLeagueYear(leagueToRenew, year, primaryLeagueYear.Options, mostRecentActivePlayers, clonedDrafts);
+        await _fantasyCriticRepo.AddNewLeagueYear(leagueToRenew, year, primaryLeagueYear.Options.CopyForNewLeagueYear(year), mostRecentActivePlayers, clonedDrafts);
         return Result.Success();
     }
 

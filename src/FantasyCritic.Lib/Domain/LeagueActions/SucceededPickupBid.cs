@@ -2,16 +2,16 @@ namespace FantasyCritic.Lib.Domain.LeagueActions;
 
 public class SucceededPickupBid : IProcessedBid
 {
-    public SucceededPickupBid(PickupBid pickupBid, int slotNumber, string outcome, SystemWideValues systemWideValues)
+    public SucceededPickupBid(PickupBid pickupBid, LeagueSlot slot, string outcome, SystemWideValues systemWideValues)
     {
         PickupBid = pickupBid;
-        SlotNumber = slotNumber;
+        Slot = slot;
         Outcome = outcome;
         ProjectedPointsAtTimeOfBid = PickupBid.Publisher.GetProjectedFantasyPoints(pickupBid.LeagueYear, systemWideValues);
     }
 
     public PickupBid PickupBid { get; }
-    public int SlotNumber { get; }
+    public LeagueSlot Slot { get; }
     public string Outcome { get; }
     public decimal ProjectedPointsAtTimeOfBid { get; }
 

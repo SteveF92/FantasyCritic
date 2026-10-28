@@ -7,7 +7,7 @@ namespace FantasyCritic.Lib.BusinessLogicFunctions;
 
 public static class GameEligibilityFunctions
 {
-    public static ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, int? validDropSlot, bool acquiringNow, Guid? draftID,
+    public static ClaimResult CanClaimGame(ClaimGameDomainRequest request, Instant? nextBidTime, LeagueSlot? validDropSlot, bool acquiringNow, Guid? draftID,
         bool partOfSpecialAuction, bool counterPickWillBeConditionallyDropped, LocalDate currentDate, bool allowIneligibleSlot, IReadOnlyList<MasterGameTag> allTags)
     {
         var dateOfPotentialAcquisition = currentDate;
@@ -101,16 +101,16 @@ public static class GameEligibilityFunctions
 
         var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(request.Publisher, leagueYear, eligibilityFactors,
             request.CounterPick, validDropSlot, acquiringNow, request.ManagerOverride, allowIneligibleSlot, allTags);
-        if (!slotResult.SlotNumber.HasValue)
+        if (slotResult.Slot is null)
         {
             claimErrors.AddRange(slotResult.ClaimErrors);
             return new ClaimResult(claimErrors, null);
         }
 
-        var result = new ClaimResult(claimErrors, slotResult.SlotNumber.Value);
+        var result = new ClaimResult(claimErrors, slotResult.Slot);
         if (result.Overridable && request.ManagerOverride)
         {
-            return new ClaimResult(slotResult.SlotNumber.Value);
+            return new ClaimResult(slotResult.Slot);
         }
 
         return result;
@@ -315,10 +315,11 @@ public static class GameEligibilityFunctions
             }
         }
 
-        var result = new ClaimResult(associationErrors, request.PublisherGame.SlotNumber);
+        var slot = request.LeagueYear.Options.LeagueSlotDictionary[request.PublisherGame.LeagueSlotID];
+        var result = new ClaimResult(associationErrors, slot);
         if (result.Overridable && request.ManagerOverride)
         {
-            return new ClaimResult(request.PublisherGame.SlotNumber);
+            return new ClaimResult(slot);
         }
 
         return result;

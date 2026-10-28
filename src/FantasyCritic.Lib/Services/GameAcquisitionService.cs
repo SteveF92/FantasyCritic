@@ -40,7 +40,7 @@ public class GameAcquisitionService
         }
 
         PublisherGame playerGame = new PublisherGame(request.Publisher.PublisherID, Guid.NewGuid(), request.GameName, _clock.GetCurrentInstant(), request.CounterPick, null, false, null,
-            masterGameYear, claimResult.BestSlotNumber!.Value, request.PickNumber, request.OverallPickNumber, null, null, draftID);
+            masterGameYear, claimResult.BestSlot!.LeagueSlotID, request.PickNumber, request.OverallPickNumber, null, null, draftID);
 
         LeagueAction leagueAction = new LeagueAction(request, _clock.GetCurrentInstant(), managerAction, draftID.HasValue, request.AutoDraft);
         await _fantasyCriticRepo.AddLeagueAction(leagueAction);
@@ -111,7 +111,7 @@ public class GameAcquisitionService
         var activeSpecialAuctionForGame = specialAuctions.SingleOrDefault(x => !x.Processed && x.MasterGameYear.MasterGame.Equals(masterGame));
         bool partOfSpecialAuction = activeSpecialAuctionForGame is not null;
 
-        int? validDropSlot = null;
+        LeagueSlot? validDropSlot = null;
         if (conditionalDropPublisherGame is not null)
         {
             if (counterPick)
@@ -125,7 +125,7 @@ public class GameAcquisitionService
                 return new ClaimResult(dropResult.Result.Error);
             }
 
-            validDropSlot = conditionalDropPublisherGame.SlotNumber;
+            validDropSlot = leagueYear.Options.LeagueSlotDictionary[conditionalDropPublisherGame.LeagueSlotID];
         }
 
         var allTags = await _masterGameRepo.GetMasterGameTags();
@@ -275,7 +275,7 @@ public class GameAcquisitionService
             return new ClaimResult(new ClaimError("Can't edit a bid after the special auction has locked.", false));
         }
 
-        int? validDropSlot = null;
+        LeagueSlot? validDropSlot = null;
         if (conditionalDropPublisherGame is not null)
         {
             if (bid.CounterPick)
@@ -289,7 +289,7 @@ public class GameAcquisitionService
                 return new ClaimResult(dropResult.Result.Error);
             }
 
-            validDropSlot = conditionalDropPublisherGame.SlotNumber;
+            validDropSlot = bid.LeagueYear.Options.LeagueSlotDictionary[conditionalDropPublisherGame.LeagueSlotID];
         }
 
         IReadOnlyList<DropRequest> activeDropRequests =
@@ -305,14 +305,14 @@ public class GameAcquisitionService
         var allTags = await _masterGameRepo.GetMasterGameTags();
         MasterGameWithEligibilityFactors eligibilityFactors = bid.LeagueYear.GetEligibilityFactorsForMasterGame(bid.MasterGame, currentDate);
         var slotResult = SlotEligibilityFunctions.GetPublisherSlotAcquisitionResult(bid.Publisher, bid.LeagueYear, eligibilityFactors, bid.CounterPick, validDropSlot, false, false, allowIneligibleSlot, allTags);
-        if (!slotResult.SlotNumber.HasValue)
+        if (slotResult.Slot is null)
         {
             return new ClaimResult(slotResult.ClaimErrors, null);
         }
 
         await _fantasyCriticRepo.EditPickupBid(bid, conditionalDropPublisherGame, bidAmount, allowIneligibleSlot);
 
-        return new ClaimResult(slotResult.SlotNumber.Value);
+        return new ClaimResult(slotResult.Slot);
     }
 
     public async Task<Result> RemovePickupBid(PickupBid bid)

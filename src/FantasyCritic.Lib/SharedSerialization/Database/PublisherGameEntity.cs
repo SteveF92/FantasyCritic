@@ -18,7 +18,7 @@ public class PublisherGameEntity
         ManualWillNotRelease = publisherGame.ManualWillNotRelease;
         FantasyPoints = publisherGame.FantasyPoints;
 
-        SlotNumber = publisherGame.SlotNumber;
+        LeagueSlotID = publisherGame.LeagueSlotID;
         PickNumber = publisherGame.PickNumber;
         OverallPickNumber = publisherGame.OverallPickNumber;
         DraftID = publisherGame.DraftID;
@@ -40,7 +40,7 @@ public class PublisherGameEntity
     public bool ManualWillNotRelease { get; set; }
     public decimal? FantasyPoints { get; set; }
     public Guid? MasterGameID { get; set; }
-    public int SlotNumber { get; set; }
+    public Guid LeagueSlotID { get; set; }
     public int? PickNumber { get; set; }
     public int? OverallPickNumber { get; set; }
     public Guid? DraftID { get; set; }
@@ -50,7 +50,7 @@ public class PublisherGameEntity
     public PublisherGame ToDomain(MasterGameYear? masterGame)
     {
         PublisherGame domain = new PublisherGame(PublisherID, PublisherGameID, GameName, Timestamp, CounterPick,
-            ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, SlotNumber, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
+            ManualCriticScore, ManualWillNotRelease, FantasyPoints, masterGame, LeagueSlotID, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
         return domain;
     }
 }

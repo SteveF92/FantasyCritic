@@ -5,7 +5,7 @@ namespace FantasyCritic.Lib.Domain.LeagueActions;
 
 public class PickupBid : IEquatable<PickupBid>
 {
-    public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, PublisherGame? conditionalDropPublisherGame,
+    public PickupBid(Guid bidID, Publisher publisher, LeagueYear leagueYear, MasterGame masterGame, IPublisherGame? conditionalDropPublisherGame,
         bool counterPick, uint bidAmount, bool allowIneligibleSlot, int priority, Instant timestamp, bool? successful, Guid? processSetID, string? outcome,
         decimal? projectedPointsAtTimeOfBid, DropResult? conditionalDropResult = null)
     {
@@ -30,7 +30,7 @@ public class PickupBid : IEquatable<PickupBid>
     public Publisher Publisher { get; }
     public LeagueYear LeagueYear { get; }
     public MasterGame MasterGame { get; }
-    public PublisherGame? ConditionalDropPublisherGame { get; }
+    public IPublisherGame? ConditionalDropPublisherGame { get; }
     public bool CounterPick { get; }
     public uint BidAmount { get; }
     public bool AllowIneligibleSlot { get; }

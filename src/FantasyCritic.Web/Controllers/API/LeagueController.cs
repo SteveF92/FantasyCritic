@@ -1665,15 +1665,13 @@ public class LeagueController : BaseLeagueController
         var leagueYear = validResult.LeagueYear;
         var publisher = validResult.Publisher;
 
-        var publisherGameIDsBeingEdited = request.SlotStates.Where(x => x.Value.HasValue).Select(x => x.Value!.Value);
-        var publisherGameIDs = publisher.PublisherGames.Select(x => x.PublisherGameID);
-        var gamesNotForPublisher = publisherGameIDsBeingEdited.Except(publisherGameIDs);
-        if (gamesNotForPublisher.Any())
+        var desiredSlotStates = MapDesiredSlotStates(request.SlotStates, leagueYear, publisher);
+        if (desiredSlotStates.IsFailure)
         {
-            return BadRequest();
+            return BadRequest(desiredSlotStates.Error);
         }
 
-        var reorderResult = await _publisherService.ReorderPublisherGames(leagueYear, publisher, request.SlotStates);
+        var reorderResult = await _publisherService.ReorderPublisherGames(leagueYear, publisher, desiredSlotStates.Value);
         if (reorderResult.IsFailure)
         {
             return BadRequest(reorderResult.Error);
@@ -1682,6 +1680,27 @@ public class LeagueController : BaseLeagueController
         await _fantasyCriticService.UpdatePublisherGameCalculatedStats(leagueYear);
 
         return Ok();
+    }
+
+    private static Result<IReadOnlyDictionary<LeagueSlot, PublisherGame?>> MapDesiredSlotStates(Dictionary<int, Guid?> requestedSlotStates, LeagueYear leagueYear, Publisher publisher)
+    {
+        //For the time being, only standard games can move slots
+        var standardSlotsByNumber = leagueYear.Options.LeagueSlots.Where(x => !x.CounterPick).ToDictionary(x => x.SlotNumber);
+        var standardGamesByID = publisher.PublisherGames.Where(x => !x.CounterPick).ToDictionary(x => x.PublisherGameID);
+
+        //The request must be a complete rearrangement: every standard slot, and every standard game exactly once.
+        var requestedGameIDs = requestedSlotStates.Values.Where(x => x.HasValue).Select(x => x!.Value).ToList();
+        bool coversEverySlot = requestedSlotStates.Keys.ToHashSet().SetEquals(standardSlotsByNumber.Keys);
+        bool placesEveryGameOnce = requestedGameIDs.Count == standardGamesByID.Count && requestedGameIDs.ToHashSet().SetEquals(standardGamesByID.Keys);
+        if (!coversEverySlot || !placesEveryGameOnce)
+        {
+            return Result.Failure<IReadOnlyDictionary<LeagueSlot, PublisherGame?>>("Invalid movement. Please refresh the page and try again.");
+        }
+
+        Dictionary<LeagueSlot, PublisherGame?> slotStates = requestedSlotStates.ToDictionary(
+            x => standardSlotsByNumber[x.Key],
+            x => x.Value.HasValue ? standardGamesByID[x.Value.Value] : null);
+        return Result.Success<IReadOnlyDictionary<LeagueSlot, PublisherGame?>>(slotStates);
     }
 
     [HttpPost]

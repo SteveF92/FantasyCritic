@@ -79,6 +79,7 @@ public class Program
                     .WithScript("2026-08-09_002_processSetCleanup.cs", new ProcessSetCleanupMigration(repositoryConfiguration, Log.ForContext<ProcessSetCleanupMigration>()))
                     .WithScript("2026-08-31_001_topBidsAndDropsBackfill.cs", new TopBidsAndDropsBackfillMigration(repositoryConfiguration, Log.ForContext<TopBidsAndDropsBackfillMigration>()))
                     .WithScript("2026-09-02_001_topBidsAndDropsRecompute.cs", new TopBidsAndDropsRecomputeMigration(repositoryConfiguration, Log.ForContext<TopBidsAndDropsRecomputeMigration>()))
+                    .WithScript("2026-10-09_001_publisherSlotData.cs", new PublisherSlotDataMigration(repositoryConfiguration, Log.ForContext<PublisherSlotDataMigration>()))
                     .WithExecutionTimeout(TimeSpan.FromMinutes(30))
                     .LogTo(loggerFactory)
                     .Build();

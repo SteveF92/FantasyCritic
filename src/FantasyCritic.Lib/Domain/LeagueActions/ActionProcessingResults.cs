@@ -35,13 +35,15 @@ public class ActionProcessingResults
         var publisherPairsToInclude = SuccessBids.Select(x => x.PickupBid.GetLeagueYearPublisherPair())
             .Concat(FailedBids.Select(x => x.PickupBid.GetLeagueYearPublisherPair()))
             .Concat(SuccessDrops.Select(x => x.GetLeagueYearPublisherPair()))
-            .Concat(FailedDrops.Select(x => x.GetLeagueYearPublisherPair()));
+            .Concat(FailedDrops.Select(x => x.GetLeagueYearPublisherPair()))
+            .Distinct()
+            .ToList();
 
         List<LeagueYearPublisherPair> updatedPublisherPairs = [];
         foreach (var publisherPair in publisherPairsToInclude)
         {
             var updatedPublisher = PublisherStateSet.GetPublisher(publisherPair.Publisher.PublisherID);
-            updatedPublisherPairs.Add(new LeagueYearPublisherPair(publisherPair.LeagueYear, updatedPublisher));
+            updatedPublisherPairs.Add(publisherPair with { Publisher = updatedPublisher });
         }
 
         return updatedPublisherPairs;
@@ -84,7 +86,7 @@ public class ActionProcessingResults
             LeagueActions.Concat(subProcessingResults.LeagueActions).DistinctBy(x => x.ActionInternalID),
             subProcessingResults.PublisherStateSet,
             AddedPublisherGames.Concat(subProcessingResults.AddedPublisherGames).DistinctBy(x => x.PublisherGameID),
-            RemovedPublisherGames.Concat(subProcessingResults.RemovedPublisherGames).DistinctBy(x => x.PublisherGame.PublisherGameID),
+            RemovedPublisherGames.Concat(subProcessingResults.RemovedPublisherGames).DistinctBy(x => x.PublisherGameID),
             LeagueManagerActions.Concat(subProcessingResults.LeagueManagerActions));
     }
 }

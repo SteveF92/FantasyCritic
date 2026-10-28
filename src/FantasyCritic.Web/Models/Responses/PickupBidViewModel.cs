@@ -20,7 +20,18 @@ public class PickupBidViewModel
 
         if (pickupBid.ConditionalDropPublisherGame is not null)
         {
-            ConditionalDropPublisherGame = new PublisherGameViewModel(pickupBid.ConditionalDropPublisherGame, pickupBid.LeagueYear, currentDate, pickupBid.Publisher, null, false);
+            if (pickupBid.ConditionalDropPublisherGame is PublisherGame publisherGame)
+            {
+                ConditionalDropPublisherGame = new PublisherGameViewModel(publisherGame, pickupBid.LeagueYear, currentDate, pickupBid.Publisher, null, false);
+            }
+            else if (pickupBid.ConditionalDropPublisherGame is FormerPublisherGame formerPublisherGame)
+            {
+                ConditionalDropPublisherGame = new PublisherGameViewModel(formerPublisherGame, pickupBid.LeagueYear, pickupBid.Publisher, currentDate);
+            }
+            else
+            {
+                throw new Exception($"Unknown publisher game type: PublisherGameID:{pickupBid.ConditionalDropPublisherGame.PublisherGameID}|{pickupBid.ConditionalDropPublisherGame}");
+            }
         }
 
         CounterPick = pickupBid.CounterPick;

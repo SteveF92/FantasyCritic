@@ -7,7 +7,7 @@ namespace FantasyCritic.Lib.Domain;
 public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
 {
     public PublisherGame(Guid publisherID, Guid publisherGameID, string gameName, Instant timestamp, bool counterPick, decimal? manualCriticScore, bool manualWillNotRelease,
-        decimal? fantasyPoints, MasterGameYear? masterGame, int slotNumber, int? pickNumber, int? overallPickNumber, uint? bidAmount, Guid? acquiredInTradeID, Guid? draftID)
+        decimal? fantasyPoints, MasterGameYear? masterGame, Guid leagueSlotID, int? pickNumber, int? overallPickNumber, uint? bidAmount, Guid? acquiredInTradeID, Guid? draftID)
     {
         PublisherID = publisherID;
         PublisherGameID = publisherGameID;
@@ -18,7 +18,7 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
         ManualWillNotRelease = manualWillNotRelease;
         FantasyPoints = fantasyPoints;
         MasterGame = masterGame;
-        SlotNumber = slotNumber;
+        LeagueSlotID = leagueSlotID;
         PickNumber = pickNumber;
         OverallPickNumber = overallPickNumber;
         BidAmount = bidAmount;
@@ -35,7 +35,7 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
     public bool ManualWillNotRelease { get; }
     public decimal? FantasyPoints { get; }
     public MasterGameYear? MasterGame { get; }
-    public int SlotNumber { get; }
+    public Guid LeagueSlotID { get; }
     public int? PickNumber { get; }
     public int? OverallPickNumber { get; }
     public Guid? DraftID { get; }
@@ -45,34 +45,6 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
 
     public string GameName => MasterGame?.MasterGame.GameName ?? OriginalGameName;
 
-    public WillReleaseStatus WillRelease(LeagueYear leagueYear)
-    {
-        if (ManualWillNotRelease)
-        {
-            return WillReleaseStatus.WillNotRelease;
-        }
-
-        if (MasterGame is null)
-        {
-            return WillReleaseStatus.WillRelease;
-        }
-
-        var willReleaseStatus = MasterGame.GetWillReleaseStatus();
-
-        var countsAsWillRelease = willReleaseStatus.CountAsWillRelease;
-        var plannedForEarlyAccess = (MasterGame?.MasterGame.Tags ?? []).Any(x => x.Name == "PlannedForEarlyAccess" || x.Name == "CurrentlyInEarlyAccess");
-        var leagueUsesOnlyNeedsScore = leagueYear.Options.ReleaseSystem.Equals(ReleaseSystem.OnlyNeedsScore);
-
-        if (!countsAsWillRelease && plannedForEarlyAccess && leagueUsesOnlyNeedsScore)
-        {
-            return WillReleaseStatus.WillReleaseEarlyAccessOnly;
-        }
-
-        return willReleaseStatus;
-    }
-
-    public bool CouldRelease(LeagueYear leagueYear) => WillRelease(leagueYear).CountAsWillRelease;
-
     public PublisherGame GetUpdatedPublisherGameWithNewScores(IReadOnlyDictionary<Guid, PublisherGameCalculatedStats> calculatedStats)
     {
         if (!calculatedStats.TryGetValue(PublisherGameID, out var stats))
@@ -81,10 +53,21 @@ public class PublisherGame : IEquatable<PublisherGame>, IPublisherGame
         }
 
         return new PublisherGame(PublisherID, PublisherGameID, OriginalGameName, Timestamp, CounterPick, ManualCriticScore, ManualWillNotRelease,
-            stats.FantasyPoints, MasterGame, SlotNumber, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
+            stats.FantasyPoints, MasterGame, LeagueSlotID, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
     }
 
-    public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote) => new FormerPublisherGame(this, removedTimestamp, removedNote);
+    public PublisherGame GetWithNewSlot(LeagueSlot leagueSlot)
+    {
+        return new PublisherGame(PublisherID, PublisherGameID, OriginalGameName, Timestamp, CounterPick, ManualCriticScore, ManualWillNotRelease,
+            FantasyPoints, MasterGame, leagueSlot.LeagueSlotID, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID);
+    }
+
+    public FormerPublisherGame GetFormerPublisherGame(Instant removedTimestamp, string removedNote)
+    {
+        return new FormerPublisherGame(PublisherID, PublisherGameID, OriginalGameName, Timestamp, CounterPick, ManualCriticScore, ManualWillNotRelease,
+            FantasyPoints, MasterGame, PickNumber, OverallPickNumber, BidAmount, AcquiredInTradeID, DraftID, removedTimestamp, removedNote);
+    }
+
     public MasterGameYearWithCounterPick? GetMasterGameYearWithCounterPick()
     {
         if (MasterGame is null)

@@ -102,7 +102,7 @@ public class LeagueYearSettingsViewModel
             .ToList();
 
         Tags = new LeagueTagOptionsViewModel(bannedTags, requiredTags);
-        SpecialGameSlots = leagueYear.Options.SpecialGameSlots.Select(x => new SpecialGameSlotViewModel(x)).ToList();
+        SpecialGameSlots = leagueYear.Options.SpecialGameSlots.Select(x => new SpecialGameSlotViewModel(x, leagueYear.Options)).ToList();
         HasSpecialSlots = leagueYear.Options.HasSpecialSlots;
     }
 
@@ -162,6 +162,16 @@ public class LeagueYearSettingsViewModel
             return Result.Failure($"The 'might release droppable date' must be in {Year}.");
         }
 
+        if (SpecialGameSlots.Count > StandardGames)
+        {
+            return Result.Failure("You cannot have more special game slots than the number of games per player.");
+        }
+
+        if (SpecialGameSlots.Any(x => !x.RequiredTags.Any()))
+        {
+            return Result.Failure("All of your special slots must list at least one tag.");
+        }
+
         return Result.Success();
     }
 
@@ -198,11 +208,26 @@ public class LeagueYearSettingsViewModel
         }
 
         var leagueTags = Tags.ToDomain(tagDictionary);
-        var specialGameSlots = SpecialGameSlots.Select(x => x.ToDomain(tagDictionary));
+        var leagueSlots = ConvertToDomainSlots(StandardGames, CounterPicks, SpecialGameSlots, tagDictionary);
 
-        LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName, StandardGames, CounterPicks,
+        LeagueYearParameters parameters = new LeagueYearParameters(LeagueID, Year, LeagueYearName,
             unrestrictedReleaseStatusDroppableGames, willNotReleaseDroppableGames, willReleaseDroppableGames, DropOnlyDraftGames, GrantSuperDrops, CounterPicksBlockDrops, AllowMoveIntoIneligible, MinimumBidAmount, EnableBids,
-            leagueTags, specialGameSlots, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
+            leagueTags, leagueSlots, pickupSystem, scoringSystem, tradingSystem, tiebreakSystem, releaseSystem, ineligibleGameSystem, counterPickDeadline, mightReleaseDroppableDate, BidsOnlyBeforeNextScheduledDraft);
         return parameters;
+    }
+
+    public static IReadOnlyList<LeagueSlot> ConvertToDomainSlots(int standardGames, int counterPicks, IReadOnlyList<SpecialGameSlotViewModel> specialGameSlots, IReadOnlyDictionary<string, MasterGameTag> tagDictionary)
+    {
+        //Special slots are counted in standardGames, and are the last of the standard slots.
+        int regularSlotCount = standardGames - specialGameSlots.Count;
+        List<LeagueSlot> slots =
+        [
+            ..Enumerable.Range(0, regularSlotCount).Select(x => new LeagueSlot(Guid.NewGuid(), false, x, null, [])),
+            ..specialGameSlots.OrderBy(x => x.SpecialSlotPosition)
+                .Select((x, index) => new LeagueSlot(Guid.NewGuid(), false, regularSlotCount + index, null, x.GetRequiredTags(tagDictionary))),
+            ..Enumerable.Range(0, counterPicks).Select(x => new LeagueSlot(Guid.NewGuid(), true, x, null, [])),
+        ];
+
+        return slots;
     }
 }

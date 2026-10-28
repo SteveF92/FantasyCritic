@@ -188,8 +188,7 @@ public class RoyaleService
         RoyalePublisherGame game = new RoyalePublisherGame(publisher.PublisherID, publisher.YearQuarter, masterGame, now, gameCost, 0m, null);
         RoyaleAction action = new RoyaleAction(publisher, masterGame, "Purchased Game", $"Purchased '{masterGame.MasterGame.GameName}' at a cost of ${gameCost:F2}.", now);
         await _royaleRepo.PurchaseGame(game, action);
-        var nextSlot = publisher.PublisherGames.Count;
-        return new ClaimResult(nextSlot);
+        return ClaimResult.SuccessWithoutSlot();
     }
 
     public async Task<Result> SellGame(RoyalePublisher publisher, RoyalePublisherGame publisherGame, decimal expectedRefundAmount, decimal expectedAdvertisingMoney)

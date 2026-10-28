@@ -82,11 +82,19 @@ BEGIN
     AND YEAR = P_Year;
   
   
-  SELECT *
-  FROM tbl_league_specialgameslot
-  JOIN tbl_league on tbl_league.LeagueID = tbl_league_specialgameslot.LeagueID
+  SELECT tbl_league_slot.*
+  FROM tbl_league_slot
+  JOIN tbl_league on tbl_league.LeagueID = tbl_league_slot.LeagueID
   WHERE ConferenceID = P_ConferenceID
     AND YEAR = P_Year;
+  
+  
+  SELECT tbl_league_slotrequirestag.*
+  FROM tbl_league_slotrequirestag
+  JOIN tbl_league_slot ON tbl_league_slot.LeagueSlotID = tbl_league_slotrequirestag.LeagueSlotID
+  JOIN tbl_league on tbl_league.LeagueID = tbl_league_slot.LeagueID
+  WHERE ConferenceID = P_ConferenceID
+    AND tbl_league_slot.YEAR = P_Year;
   
   
   SELECT *
