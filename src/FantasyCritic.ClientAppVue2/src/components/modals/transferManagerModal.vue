@@ -28,7 +28,7 @@ export default {
   },
   computed: {
     players() {
-      return this.league.players.filter((x) => x.userID !== this.userInfo.userID);
+      return this.league.players.filter((x) => x.userID !== this.userInfo?.userID);
     }
   },
   methods: {
