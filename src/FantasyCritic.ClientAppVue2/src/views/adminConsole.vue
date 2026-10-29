@@ -64,29 +64,21 @@
         <div v-if="isActionRunner" class="mb-3">
           <h4>Action Processing</h4>
           <div v-if="bidTimes" class="mb-2">
-            <toggle-button
+            <toggleSwitch
               v-model="actionProcessingModeSwitch"
               class="toggle align-middle"
-              :sync="true"
               :disabled="isBusy"
               :labels="{ checked: 'On', unchecked: 'Off' }"
-              :css-colors="true"
-              :font-size="13"
-              :width="60"
               :height="24"
               @change="changeActionProcessingMode" />
             <span class="ml-2 align-middle">Action processing mode</span>
           </div>
           <div v-if="automatedActionProcessingLoaded" class="mb-2">
-            <toggle-button
+            <toggleSwitch
               v-model="automatedActionProcessingSwitch"
               class="toggle align-middle"
-              :sync="true"
               :disabled="isBusy"
               :labels="{ checked: 'On', unchecked: 'Off' }"
-              :css-colors="true"
-              :font-size="13"
-              :width="60"
               :height="24"
               @change="changeAutomatedActionProcessing" />
             <span class="ml-2 align-middle">Automated action processing</span>
@@ -268,17 +260,17 @@
 </template>
 <script>
 import { mapGetters } from 'vuex';
-import { ToggleButton } from 'vue-js-toggle-button';
 
 import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from '@/api/clients';
 import RecentJobsTable from '@/components/recentJobsTable.vue';
 import ServiceMonitor from '@/components/serviceMonitor.vue';
+import ToggleSwitch from '@/components/toggleSwitch.vue';
 
 export default {
   components: {
     RecentJobsTable,
     ServiceMonitor,
-    ToggleButton
+    ToggleSwitch
   },
   data() {
     return {
@@ -426,8 +418,7 @@ export default {
     syncActionProcessingModeSwitch() {
       this.actionProcessingModeSwitch = !!this.bidTimes && this.bidTimes.actionProcessingMode;
     },
-    async changeActionProcessingMode(event) {
-      const enabled = event.value;
+    async changeActionProcessingMode(enabled) {
       const label = enabled ? 'Turn on action processing mode' : 'Turn off action processing mode';
       const call = enabled ? () => actionRunnerClient.turnOnActionProcessingMode() : () => actionRunnerClient.turnOffActionProcessingMode();
       await this.runAction(label, call);
@@ -436,8 +427,7 @@ export default {
       await this.$store.dispatch('fetchBasicData');
       this.syncActionProcessingModeSwitch();
     },
-    async changeAutomatedActionProcessing(event) {
-      const enabled = event.value;
+    async changeAutomatedActionProcessing(enabled) {
       const label = enabled ? 'Turn on automated action processing' : 'Turn off automated action processing';
       const call = enabled ? () => actionRunnerClient.turnOnAutomatedActionProcessing() : () => actionRunnerClient.turnOffAutomatedActionProcessing();
       await this.runAction(label, call);
