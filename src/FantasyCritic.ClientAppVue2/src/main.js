@@ -3,7 +3,6 @@ import BootstrapVue from 'bootstrap-vue';
 import { ValidationProvider, ValidationObserver, extend, localize } from 'vee-validate';
 import * as rules from 'vee-validate/dist/rules';
 import en from 'vee-validate/dist/locale/en.json';
-import VueGtag from 'vue-gtag';
 import VueClipboard from 'vue-clipboard2';
 
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, Filler } from 'chart.js';
@@ -67,14 +66,6 @@ extend('password', {
 localize({
   en
 });
-
-Vue.use(
-  VueGtag,
-  {
-    config: { id: 'UA-131370681-1' }
-  },
-  router
-);
 
 // Registration of global components
 Vue.component('FontAwesomeIcon', FontAwesomeIcon);
