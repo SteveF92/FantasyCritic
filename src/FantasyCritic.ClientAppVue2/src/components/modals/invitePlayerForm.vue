@@ -78,7 +78,7 @@ export default {
         leagueID: this.league.leagueID,
         inviteEmail: this.inviteEmail,
         inviteDisplayName: this.inviteDisplayName,
-        inviteDisplayNumber: this.inviteDisplayNumber
+        inviteDisplayNumber: this.inviteDisplayNumber === '' ? null : Number(this.inviteDisplayNumber)
       };
       axios
         .post('/api/leagueManager/InvitePlayer', model)
