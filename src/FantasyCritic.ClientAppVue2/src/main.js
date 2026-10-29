@@ -15,7 +15,6 @@ import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './ico
 
 import './filters';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-import 'bootstrap/dist/js/bootstrap.bundle.js';
 import VueFlatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
 import vueAwesomeCountdown from 'vue-awesome-countdown';
