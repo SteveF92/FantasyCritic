@@ -48,6 +48,9 @@ export default [
     rules: {
       "vue/multi-word-component-names": "off", // Retaining rules from original config
       "vue/valid-v-slot": ["error", { allowModifiers: true }],
+      // Vue 3 deprecations already cleared from the codebase, kept out ahead of the upgrade
+      "vue/no-deprecated-slot-attribute": "error",
+      "vue/no-deprecated-slot-scope-attribute": "error",
       "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
       "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     },
