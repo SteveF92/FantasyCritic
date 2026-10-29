@@ -49,13 +49,6 @@ extend('max_value', {
 extend('integer', {
   ...rules.integer
 });
-extend('password', {
-  params: ['target'],
-  validate(value, { target }) {
-    return value === target;
-  },
-  message: 'Entered passwords do not match'
-});
 
 localize({
   en
