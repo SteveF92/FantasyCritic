@@ -16,13 +16,11 @@ import './filters';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import VueFlatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';
-import vueAwesomeCountdown from 'vue-awesome-countdown';
 
 import BasicMixin from './mixins/basicMixin';
 
 Vue.use(BootstrapVue);
 Vue.use(VueFlatPickr);
-Vue.use(vueAwesomeCountdown, 'vac');
 
 //Vee-validate registration
 Vue.component('ValidationProvider', ValidationProvider);

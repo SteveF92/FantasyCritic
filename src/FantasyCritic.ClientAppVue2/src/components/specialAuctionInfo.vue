@@ -5,11 +5,11 @@
         Special Auction in progress for:
         <masterGamePopover :master-game="specialAuction.masterGameYear"></masterGamePopover>
         <div>Bids will process for this game only on: {{ scheduledEndTime | dateTimeAt }}</div>
-        <vac :end-time="scheduledEndTime" @finish="endTimeElapsed">
-          <template #process="{ timeObj }">
-            <span class="countdown">Time Remaining: {{ `${timeObj.d} Days, ${timeObj.h} Hours, ${timeObj.m} Minutes, ${timeObj.s} Seconds` }}</span>
+        <countdown :end-time="specialAuction.scheduledEndTime" @finish="endTimeElapsed">
+          <template #default="{ timeRemaining }">
+            <span class="countdown">Time Remaining: {{ timeRemaining }}</span>
           </template>
-        </vac>
+        </countdown>
       </div>
       <b-button v-if="league.userIsInLeague" v-b-modal="`bidGameForm-${specialAuction.masterGameYear.masterGameID}`" variant="primary" class="bid-button">Place Bid</b-button>
     </div>
@@ -24,12 +24,14 @@
 
 <script>
 import { DateTime } from 'luxon';
+import Countdown from '@/components/countdown.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import BidGameForm from '@/components/modals/bidGameForm.vue';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {
+    Countdown,
     MasterGamePopover,
     BidGameForm
   },
