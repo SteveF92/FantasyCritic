@@ -1,4 +1,3 @@
-import GraphemeBreaker from 'grapheme-breaker-mjs';
 import { DateTime } from 'luxon';
 import type { LeagueDraftViewModel, PublisherGameViewModel } from '@/api/clients';
 
@@ -6,8 +5,8 @@ export function publisherIconIsValid(publisherIcon: string): boolean {
   if (!publisherIcon) {
     return true;
   }
-  const length = GraphemeBreaker.countBreaks(publisherIcon);
-  return length === 1;
+  const graphemes = [...new Intl.Segmenter().segment(publisherIcon)];
+  return graphemes.length === 1;
 }
 
 export function ordinal_suffix_of(i: number): string {

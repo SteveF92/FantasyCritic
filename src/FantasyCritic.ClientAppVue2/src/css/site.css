@@ -153,16 +153,6 @@ div.alert {
   margin-right: 10px;
 }
 
-.toggle .v-switch-core {
-  background-color: #414141 !important;
-}
-.toggle .v-switch-core .v-switch-button {
-  background-color: white !important;
-}
-.toggle-on .v-switch-core {
-  background-color: #d6993a !important;
-}
-
 .pagination-dark li a,
 .pagination-dark li span,
 .pagination-dark li button {

@@ -6,7 +6,7 @@
         <span>Share</span>
       </b-button>
       <label>Cover Art Mode</label>
-      <toggle-button v-model="editableCoverArtMode" class="toggle" :sync="true" :labels="{ checked: 'On', unchecked: 'Off' }" :css-colors="true" :font-size="13" :width="60" :height="28" />
+      <toggleSwitch v-model="editableCoverArtMode" class="toggle" :labels="{ checked: 'On', unchecked: 'Off' }" />
     </div>
     <div v-show="!coverArtMode">
       <div class="publisher-header">
@@ -73,15 +73,7 @@
           <b-form-checkbox v-show="sortOrderMode && hasFormerGames" v-model="editableIncludeRemovedInSorted">
             <span class="checkbox-label">Include Dropped Games</span>
           </b-form-checkbox>
-          <toggle-button
-            v-model="editableSortOrderMode"
-            class="toggle"
-            :sync="true"
-            :labels="{ checked: 'Sort Mode', unchecked: 'Slot Mode' }"
-            :css-colors="true"
-            :font-size="13"
-            :width="107"
-            :height="28" />
+          <toggleSwitch v-model="editableSortOrderMode" class="toggle" :labels="{ checked: 'Sort Mode', unchecked: 'Slot Mode' }" :width="107" />
         </template>
       </div>
 
@@ -134,17 +126,17 @@
 
 <script>
 import html2canvas from 'html2canvas';
-import { ToggleButton } from 'vue-js-toggle-button';
 
 import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
 import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
+import ToggleSwitch from '@/components/toggleSwitch.vue';
 import { publisherIconIsValid } from '@/globalFunctions';
 import PublisherMixin from '@/mixins/publisherMixin.js';
 
 export default {
   components: {
     PlayerGameTable,
-    ToggleButton,
+    ToggleSwitch,
     PublisherCoverView
   },
   mixins: [PublisherMixin],

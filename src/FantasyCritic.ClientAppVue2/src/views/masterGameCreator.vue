@@ -8,7 +8,7 @@
     <hr />
     <div v-if="createdGame" class="alert alert-success">
       Master Game created: {{ createdGame.masterGameID }}
-      <b-button v-clipboard:copy="createdGame.masterGameID" variant="info" size="sm">Copy</b-button>
+      <b-button variant="info" size="sm" @click="copyMasterGameID">Copy</b-button>
       <b-button class="warning" :to="{ name: 'masterGameEditor', params: { mastergameid: createdGame.masterGameID } }">Edit Master Game</b-button>
     </div>
     <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
@@ -208,6 +208,9 @@ export default {
       } catch (error) {
         this.errorInfo = error;
       }
+    },
+    async copyMasterGameID() {
+      await navigator.clipboard.writeText(this.createdGame.masterGameID);
     },
     async parseEstimatedReleaseDate() {
       try {

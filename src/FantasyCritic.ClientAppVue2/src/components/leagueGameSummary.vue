@@ -2,21 +2,13 @@
   <div class="container-fluid">
     <span class="full-toggle-section">
       <span v-if="leagueYear.settings.hasSpecialSlots" class="single-toggle-section">
-        <label c>View Mode</label>
-        <toggle-button
-          v-model="editableDraftOrderView"
-          class="toggle"
-          :sync="true"
-          :labels="{ checked: 'Draft Order', unchecked: 'Slot Order' }"
-          :css-colors="true"
-          :font-size="13"
-          :width="107"
-          :height="28" />
+        <label>View Mode</label>
+        <toggleSwitch v-model="editableDraftOrderView" class="toggle" :labels="{ checked: 'Draft Order', unchecked: 'Slot Order' }" :width="107" />
       </span>
 
       <span class="single-toggle-section">
         <label>Show Projections</label>
-        <toggle-button v-model="editableShowProjections" class="toggle" :sync="true" :labels="{ checked: 'On', unchecked: 'Off' }" :css-colors="true" :font-size="13" :width="60" :height="28" />
+        <toggleSwitch v-model="editableShowProjections" class="toggle" :labels="{ checked: 'On', unchecked: 'Off' }" />
       </span>
     </span>
     <div class="row league-summary">
@@ -29,13 +21,13 @@
 </template>
 <script>
 import MinimalPlayerGameTable from '@/components/gameTables/minimalPlayerGameTable.vue';
-import { ToggleButton } from 'vue-js-toggle-button';
+import ToggleSwitch from '@/components/toggleSwitch.vue';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {
     MinimalPlayerGameTable,
-    ToggleButton
+    ToggleSwitch
   },
   mixins: [LeagueMixin],
   computed: {

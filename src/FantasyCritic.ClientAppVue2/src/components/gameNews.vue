@@ -9,16 +9,7 @@
         <h3 v-show="!recentReleasesMode">My Upcoming Releases</h3>
         <h3 v-show="recentReleasesMode">My Recent Releases</h3>
       </template>
-      <toggle-button
-        v-if="isPlusUser"
-        v-model="recentReleasesMode"
-        class="toggle"
-        :sync="true"
-        :labels="{ checked: 'Recent', unchecked: 'Upcoming' }"
-        :css-colors="true"
-        :font-size="13"
-        :width="100"
-        :height="28" />
+      <toggleSwitch v-if="isPlusUser" v-model="recentReleasesMode" class="toggle" :labels="{ checked: 'Recent', unchecked: 'Upcoming' }" :width="100" />
     </span>
     <div v-if="gameNewsItems && gameNewsItems.length > 0">
       <b-table
@@ -72,12 +63,12 @@
 <script>
 import { DateTime } from 'luxon';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
-import { ToggleButton } from 'vue-js-toggle-button';
+import ToggleSwitch from '@/components/toggleSwitch.vue';
 
 export default {
   components: {
     MasterGamePopover,
-    ToggleButton
+    ToggleSwitch
   },
   props: {
     gameNews: { type: Object, required: true },
