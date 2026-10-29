@@ -12,7 +12,6 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 import App from './App.vue';
 import router from './router/index';
 import store from './store';
-import { sync } from 'vuex-router-sync';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 
 import './filters';
@@ -83,8 +82,6 @@ Vue.component('FontAwesomeLayers', FontAwesomeLayers);
 Vue.component('FontAwesomeLayersText', FontAwesomeLayersText);
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, Filler, annotationPlugin);
-
-sync(store, router);
 
 Vue.config.productionTip = false;
 
