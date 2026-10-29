@@ -120,7 +120,7 @@
               <div class="job-error">
                 <div class="d-flex align-items-start">
                   <div class="job-error-message flex-grow-1">{{ errorParts(row.item).message }}</div>
-                  <b-button v-clipboard:copy="row.item.errorMessage" v-clipboard:success="errorCopied" variant="secondary" size="sm" class="ml-2">Copy</b-button>
+                  <b-button variant="secondary" size="sm" class="ml-2" @click="copyError(row.item)">Copy</b-button>
                 </div>
                 <pre v-if="errorParts(row.item).trace" class="job-error-trace">{{ errorParts(row.item).trace }}</pre>
               </div>
@@ -442,7 +442,8 @@ export default {
 
       return { message: job.errorMessage.slice(0, firstLineEnd).trim(), trace: job.errorMessage.slice(firstLineEnd + 1) };
     },
-    errorCopied() {
+    async copyError(job) {
+      await navigator.clipboard.writeText(job.errorMessage);
       this.makeToast('Error copied to clipboard.');
     },
     //There is no worker heartbeat, so a job whose worker died stays Running forever. Flag it rather than hide it.

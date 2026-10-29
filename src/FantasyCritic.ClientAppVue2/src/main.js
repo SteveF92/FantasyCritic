@@ -3,7 +3,6 @@ import BootstrapVue from 'bootstrap-vue';
 import { ValidationProvider, ValidationObserver, extend, localize } from 'vee-validate';
 import * as rules from 'vee-validate/dist/rules';
 import en from 'vee-validate/dist/locale/en.json';
-import VueClipboard from 'vue-clipboard2';
 
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, Filler } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
@@ -21,8 +20,6 @@ import vueAwesomeCountdown from 'vue-awesome-countdown';
 
 import BasicMixin from './mixins/basicMixin';
 
-VueClipboard.config.autoSetContainer = true;
-Vue.use(VueClipboard);
 Vue.use(BootstrapVue);
 Vue.use(VueFlatPickr);
 Vue.use(vueAwesomeCountdown, 'vac');

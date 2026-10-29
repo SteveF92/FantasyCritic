@@ -12,7 +12,7 @@
         <label>This is the easiest way to invite players. Just send one link to anyone you want to invite.</label>
         <div v-for="inviteLink in inviteLinks" :key="inviteLink.inviteID" class="invite-link">
           <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly />
-          <b-button v-clipboard:copy="inviteLink.fullInviteLink" v-clipboard:success="inviteLinkCopied" variant="info" size="sm">Copy</b-button>
+          <b-button variant="info" size="sm" @click="copyInviteLink(inviteLink)">Copy</b-button>
           <b-button variant="danger" size="sm" @click="deleteInviteLink(inviteLink)">Delete</b-button>
         </div>
         <br />
@@ -108,7 +108,8 @@ export default {
           this.errorInfo = error.response.data;
         });
     },
-    inviteLinkCopied() {
+    async copyInviteLink(inviteLink) {
+      await navigator.clipboard.writeText(inviteLink.fullInviteLink);
       this.makeToast('Invite Link copied to clipboard.');
     },
     deleteInviteLink(inviteLink) {

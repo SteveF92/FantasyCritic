@@ -4,7 +4,7 @@
     <label>Send one of these links to anyone you want to invite to the group.</label>
     <div v-for="link in activeLinks" :key="link.inviteID" class="invite-link">
       <input type="text" class="form-control input" :value="inviteLinkUrl(link.inviteCode)" readonly />
-      <b-button variant="info" size="sm" v-clipboard:copy="inviteLinkUrl(link.inviteCode)" v-clipboard:success="linkCopied">Copy</b-button>
+      <b-button variant="info" size="sm" @click="copyInviteLink(link)">Copy</b-button>
       <b-button variant="danger" size="sm" @click="deactivateLink(link.inviteID)">Deactivate</b-button>
     </div>
     <div class="create-button">
@@ -43,7 +43,8 @@ export default {
     inviteLinkUrl(inviteCode) {
       return `${window.location.origin}/royaleGroup/${this.groupid}?inviteCode=${inviteCode}`;
     },
-    linkCopied() {
+    async copyInviteLink(link) {
+      await navigator.clipboard.writeText(this.inviteLinkUrl(link.inviteCode));
       this.$bvToast.toast('Invite link copied to clipboard!', { variant: 'success', solid: true, noCloseButton: true });
     },
     async createInviteLink() {
