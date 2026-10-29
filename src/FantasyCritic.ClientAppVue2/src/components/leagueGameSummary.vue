@@ -2,7 +2,7 @@
   <div class="container-fluid">
     <span class="full-toggle-section">
       <span v-if="leagueYear.settings.hasSpecialSlots" class="single-toggle-section">
-        <label c>View Mode</label>
+        <label>View Mode</label>
         <toggleSwitch v-model="editableDraftOrderView" class="toggle" :labels="{ checked: 'Draft Order', unchecked: 'Slot Order' }" :width="107" />
       </span>
 
