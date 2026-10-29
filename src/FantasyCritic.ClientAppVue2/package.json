@@ -23,6 +23,7 @@
     "axios": "^1.13.2",
     "bootstrap": "^4.6.2",
     "bootstrap-vue": "^2.23.1",
+    "chart.js": "^3.9.1",
     "chartjs-plugin-annotation": "^2.2.1",
     "html2canvas": "^1.4.1",
     "luxon": "^3.7.2",
