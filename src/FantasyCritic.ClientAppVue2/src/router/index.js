@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import { vuexStore } from '../store';
+import { vuexStore } from '../store/vuex';
 import { routes } from './routes';
 
 const originalPush = VueRouter.prototype.push;
