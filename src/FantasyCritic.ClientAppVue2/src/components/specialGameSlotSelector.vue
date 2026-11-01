@@ -24,6 +24,7 @@
 
 <script>
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -67,7 +68,8 @@ export default {
       this.$emit('input', returnValue);
     },
     getTags(tagNames) {
-      let allTags = this.$store.getters.allTags;
+      const interLeagueStore = useInterLeagueStore();
+      let allTags = interLeagueStore.allTags;
       let matchingTags = [];
       tagNames.forEach((tagName) => {
         const match = allTags.find((x) => x.name === tagName);

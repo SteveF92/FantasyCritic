@@ -127,11 +127,13 @@
 <script>
 import html2canvas from 'html2canvas';
 
+import PublisherMixin from '@/mixins/publisherMixin.js';
+import { usePublisherStore } from '@/store/publisherStore';
+
 import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
 import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
 import { publisherIconIsValid } from '@/globalFunctions';
-import PublisherMixin from '@/mixins/publisherMixin.js';
 
 export default {
   components: {
@@ -154,7 +156,8 @@ export default {
       return publisherIconIsValid(this.publisher.publisherIcon);
     },
     moveGameError() {
-      return this.$store.getters.moveGameError;
+      const publisherStore = usePublisherStore();
+      return publisherStore.moveGameError;
     },
     hasIneligibleGame() {
       return this.publisher.gameSlots.some((x) => !x.gameMeetsSlotCriteria);

@@ -161,6 +161,7 @@
 <script>
 import axios from 'axios';
 import * as signalR from '@microsoft/signalr';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 import LeagueGameSummary from '@/components/leagueGameSummary.vue';
 import LeagueYearStandings from '@/components/leagueYearStandings.vue';
@@ -223,7 +224,8 @@ export default {
         return false;
       }
 
-      let revealIsNext = this.$store.getters.bidTimes.nextPublicBiddingTime < this.$store.getters.bidTimes.nextBidLockTime;
+      const interLeagueStore = useInterLeagueStore();
+      let revealIsNext = interLeagueStore.bidTimes.nextPublicBiddingTime < interLeagueStore.bidTimes.nextBidLockTime;
       return revealIsNext;
     },
     hasActiveTrade() {

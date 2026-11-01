@@ -45,6 +45,7 @@ import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
 import GGMixin from '@/mixins/ggMixin.js';
 import { formatPublisherGameReleaseDate, roundNumber } from '@/globalFunctions';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -136,7 +137,8 @@ export default {
     formatPublisherGameReleaseDate,
     roundNumber,
     getTag(tagName) {
-      return this.$store.getters.allTags.find((x) => x.name === tagName);
+      const interLeagueStore = useInterLeagueStore();
+      return interLeagueStore.allTags.find((x) => x.name === tagName);
     },
     getMultiBadgeColor(tagNames) {
       let colorString = '';

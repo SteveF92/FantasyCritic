@@ -19,6 +19,7 @@
 
 <script>
 import Countdown from '@/components/countdown.vue';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -38,17 +39,20 @@ export default {
         return null;
       }
 
-      return this.$store.getters.bidTimes.nextPublicBiddingTime;
+      const interLeagueStore = useInterLeagueStore();
+      return interLeagueStore.bidTimes.nextPublicBiddingTime;
     },
     nextBidTime() {
       if (this.mode !== 'NextBid') {
         return null;
       }
 
-      return this.$store.getters.bidTimes.nextBidLockTime;
+      const interLeagueStore = useInterLeagueStore();
+      return interLeagueStore.bidTimes.nextBidLockTime;
     },
     actionProcessing() {
-      return this.forceActionProcessing || this.$store.getters.bidTimes.actionProcessingMode;
+      const interLeagueStore = useInterLeagueStore();
+      return this.forceActionProcessing || interLeagueStore.bidTimes.actionProcessingMode;
     }
   },
   methods: {

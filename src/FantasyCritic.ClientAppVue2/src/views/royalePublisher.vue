@@ -163,6 +163,7 @@
 
 <script>
 import axios from 'axios';
+import { useAuthStore } from '@/store/authStore';
 import { DateTime } from 'luxon';
 
 import MasterGamePopover from '@/components/masterGamePopover.vue';
@@ -215,7 +216,8 @@ export default {
   },
   computed: {
     userIsPublisher() {
-      return this.isAuth && this.publisher.userID === this.$store.getters.userInfo.userID;
+      const authStore = useAuthStore();
+      return this.isAuth && this.publisher.userID === authStore.userInfo.userID;
     },
     allGameFields() {
       let allFields = this.gameFields.slice();

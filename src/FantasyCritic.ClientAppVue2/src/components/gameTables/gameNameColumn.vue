@@ -41,6 +41,8 @@
   </span>
 </template>
 <script>
+import { usePublisherStore } from '@/store/publisherStore';
+
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
 import BasicMixin from '@/mixins/basicMixin.js';
@@ -65,10 +67,12 @@ export default {
       return this.$store.state.league.leagueYear;
     },
     moveMode() {
-      return this.$store.getters.moveMode;
+      const publisherStore = usePublisherStore();
+      return publisherStore.moveMode;
     },
     holdingGame() {
-      return this.$store.getters.holdingGame;
+      const publisherStore = usePublisherStore();
+      return publisherStore.holdingGame;
     },
     counterPickSourcePublisher() {
       if (!this.gameSlot.counterPick || !this.game?.masterGame || !this.leagueYear?.publishers) {

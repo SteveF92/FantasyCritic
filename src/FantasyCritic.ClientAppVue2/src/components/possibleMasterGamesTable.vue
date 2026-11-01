@@ -40,6 +40,7 @@
 <script>
 import StatusBadge from '@/components/statusBadge.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -132,7 +133,8 @@ export default {
      * @returns {Date} The next relevant bidding time as a Date object.
      */
     retrieveNextOpenBiddingTime() {
-      const bidTimes = this.$store.getters.bidTimes;
+      const interLeagueStore = useInterLeagueStore();
+      const bidTimes = interLeagueStore.bidTimes;
       if (this.pickupSystem === 'SecretBidding') {
         return new Date(bidTimes.nextBidLockTime);
       }
