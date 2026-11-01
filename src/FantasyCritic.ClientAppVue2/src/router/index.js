@@ -1,8 +1,12 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import { vuexStore } from '../store/vuex';
-import { routes } from './routes';
+import { useAuthStore } from '@/store/authStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { useLeagueStore } from '@/store/leagueStore';
+import { usePublisherStore } from '@/store/publisherStore';
+
+import { routes } from './routes.js';
 
 const originalPush = VueRouter.prototype.push;
 VueRouter.prototype.push = function push(location, onResolve, onReject) {
@@ -12,7 +16,7 @@ VueRouter.prototype.push = function push(location, onResolve, onReject) {
 
 Vue.use(VueRouter);
 
-let router = new VueRouter({
+const router = new VueRouter({
   scrollBehavior(to, from) {
     if (to.hash) {
       const smoothParams = {
@@ -37,17 +41,22 @@ let router = new VueRouter({
 });
 
 router.beforeEach(async function (toRoute, fromRoute, next) {
+  const authStore = useAuthStore();
+  const interLeagueStore = useInterLeagueStore();
+  const leagueStore = useLeagueStore();
+  const publisherStore = usePublisherStore();
+
   if (toRoute.path !== fromRoute.path) {
-    vuexStore.commit('clearPublisherStoreData');
-    vuexStore.commit('clearLeagueStoreData');
+    publisherStore.clearPublisherStoreData();
+    leagueStore.clearLeagueStoreData();
   }
 
-  if (!vuexStore.getters.interLeagueDataLoaded && !vuexStore.getters.interLeagueIsBusy) {
-    await vuexStore.dispatch('fetchBasicData');
+  if (!interLeagueStore.getters.interLeagueDataLoaded && !interLeagueStore.getters.interLeagueIsBusy) {
+    await interLeagueStore.fetchBasicData();
   }
 
   //If we are current, we're good to go
-  if (vuexStore.getters.isAuth) {
+  if (authStore.getters.isAuth) {
     if (toRoute.meta.publicOnly) {
       next({ path: '/home' });
       return;
@@ -57,8 +66,8 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
   }
 
   try {
-    await vuexStore.dispatch('getUserInfo');
-    if (vuexStore.getters.isAuth) {
+    await authStore.getUserInfo();
+    if (authStore.getters.isAuth) {
       if (toRoute.meta.publicOnly) {
         next({ path: '/home' });
         return;
@@ -69,13 +78,13 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
     if (toRoute.meta.isPublic) {
       return next();
     } else {
-      vuexStore.commit('clearUserInfo');
+      authStore.clearUserInfo();
       window.location.href = '/Account/Login';
       return;
     }
   } catch {
     console.log('Router error');
-    vuexStore.commit('clearUserInfo');
+    authStore.clearUserInfo();
     window.location.href = '/Account/Login';
   }
 });
