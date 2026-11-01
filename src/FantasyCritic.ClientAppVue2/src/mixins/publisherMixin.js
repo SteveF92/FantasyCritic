@@ -18,7 +18,7 @@ const publisherMixin = {
     ]),
     userIsPublisher() {
       const publisherStore = usePublisherStore();
-      return publisherStore.getters.userInfo && this.publisher.userID === publisherStore.getters.userInfo.userID;
+      return publisherStore.userInfo && this.publisher.userID === publisherStore.userInfo.userID;
     },
     hasFormerGames() {
       return this.publisher && this.publisher.formerGames.length > 0;

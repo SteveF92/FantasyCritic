@@ -51,8 +51,8 @@ export const useLeagueStore = defineStore('league', {
           leagueYear: response.data,
           userID: undefined
         };
-        if (this.getters.userInfo) {
-          leagueYearPayload.userID = this.getters.userInfo.userID;
+        if (this.userInfo) {
+          leagueYearPayload.userID = this.userInfo.userID;
         }
 
         this.setLeagueYear(leagueYearPayload);

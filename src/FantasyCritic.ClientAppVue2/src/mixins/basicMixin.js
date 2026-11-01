@@ -10,10 +10,10 @@ const basicMixin = {
     ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'possibleLeagueOptions', 'supportedYears', 'activeRoyaleQuarter']),
     displayName() {
       const authStore = useAuthStore();
-      if (!authStore.getters.userInfo) {
+      if (!authStore.userInfo) {
         return;
       }
-      return authStore.getters.userInfo.displayName;
+      return authStore.userInfo.displayName;
     },
     isDevelopment() {
       return process.env.NODE_ENV === 'development';

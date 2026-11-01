@@ -9,7 +9,7 @@ export const useAdminStore = defineStore('admin', {
   actions: {
     async fetchAdminTaskCounts() {
       //The endpoint is only available to fact checkers and admins, so don't bother calling it for anyone else.
-      if (!this.getters.isFactChecker && !this.getters.isAdmin) {
+      if (!this.isFactChecker && !this.isAdmin) {
         return;
       }
 

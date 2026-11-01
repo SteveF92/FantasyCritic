@@ -52,12 +52,12 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
     leagueStore.clearLeagueStoreData();
   }
 
-  if (!interLeagueStore.getters.interLeagueDataLoaded && !interLeagueStore.getters.interLeagueIsBusy) {
+  if (!interLeagueStore.interLeagueDataLoaded && !interLeagueStore.interLeagueIsBusy) {
     await interLeagueStore.fetchBasicData();
   }
 
   //If we are current, we're good to go
-  if (authStore.getters.isAuth) {
+  if (authStore.isAuth) {
     if (toRoute.meta.publicOnly) {
       next({ path: '/home' });
       return;
@@ -68,7 +68,7 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
 
   try {
     await authStore.getUserInfo();
-    if (authStore.getters.isAuth) {
+    if (authStore.isAuth) {
       if (toRoute.meta.publicOnly) {
         next({ path: '/home' });
         return;
