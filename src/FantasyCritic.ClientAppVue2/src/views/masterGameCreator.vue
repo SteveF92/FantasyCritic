@@ -74,7 +74,7 @@
 
             <div class="form-group">
               <label for="releaseDate" class="control-label">Release Date</label>
-              <b-form-datepicker v-model="releaseDate" class="form-control"></b-form-datepicker>
+              <dateInput id="releaseDate" v-model="releaseDate" />
             </div>
 
             <b-button variant="info" size="sm" @click="propagateDate">Propagate Date</b-button>
@@ -87,19 +87,19 @@
             </div>
             <div class="form-group">
               <label for="minimumReleaseDate" class="control-label">Minimum Release Date</label>
-              <b-form-datepicker v-model="minimumReleaseDate" class="form-control"></b-form-datepicker>
+              <dateInput id="minimumReleaseDate" v-model="minimumReleaseDate" />
             </div>
             <div class="form-group">
               <label for="maximumReleaseDate" class="control-label">Maximum Release Date</label>
-              <b-form-datepicker v-model="maximumReleaseDate" class="form-control"></b-form-datepicker>
+              <dateInput id="maximumReleaseDate" v-model="maximumReleaseDate" />
             </div>
             <div class="form-group">
               <label for="earlyAccessReleaseDate" class="control-label">Early Access Release Date</label>
-              <b-form-datepicker v-model="earlyAccessReleaseDate" class="form-control"></b-form-datepicker>
+              <dateInput id="earlyAccessReleaseDate" v-model="earlyAccessReleaseDate" />
             </div>
             <div class="form-group">
               <label for="internationalReleaseDate" class="control-label">International Release Date</label>
-              <b-form-datepicker v-model="internationalReleaseDate" class="form-control"></b-form-datepicker>
+              <dateInput id="internationalReleaseDate" v-model="internationalReleaseDate" />
             </div>
 
             <div class="form-group">
@@ -134,12 +134,14 @@
 <script>
 import axios from 'axios';
 
+import DateInput from '@/components/dateInput.vue';
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 import LeagueOptionsModal from '@/components/modals/leagueOptionsModal.vue';
 import BasicMixin from '@/mixins/basicMixin.js';
 
 export default {
   components: {
+    DateInput,
     MasterGameTagSelector,
     LeagueOptionsModal
   },

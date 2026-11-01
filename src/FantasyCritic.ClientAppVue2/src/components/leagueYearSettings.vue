@@ -282,7 +282,7 @@
         </div>
         <div class="form-group">
           <label for="counterPickDeadline" class="control-label">Counter Pick Deadline</label>
-          <b-form-datepicker v-model="internalValue.counterPickDeadline" class="form-control"></b-form-datepicker>
+          <dateInput id="counterPickDeadline" v-model="internalValue.counterPickDeadline" />
           <p>
             After this date, a game without a confirmed release date can no longer be counter picked. This is only relevant if your league has "pickup counter picks". The intention for this is to
             prevent players from waiting until the very end of the year to counter pick a game that is almost certain to not release this year.
@@ -293,7 +293,7 @@
         <div class="form-group">
           <label for="mightReleaseDroppableDate" class="control-label">Might Release Droppable Date</label>
           <div class="clearable-date">
-            <b-form-datepicker v-model="internalValue.mightReleaseDroppableDate" class="form-control"></b-form-datepicker>
+            <dateInput id="mightReleaseDroppableDate" v-model="internalValue.mightReleaseDroppableDate" />
             <b-button variant="warning" size="sm" @click="internalValue.mightReleaseDroppableDate = null">Clear</b-button>
           </div>
 
@@ -312,6 +312,7 @@
   </div>
 </template>
 <script>
+import DateInput from '@/components/dateInput.vue';
 import LeagueTagSelector from '@/components/leagueTagSelector.vue';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
 import { computeSpecialSlots } from '@/utilities/leagueCreationPresets';
@@ -333,6 +334,7 @@ const DEFAULT_COUNTER_PICK_HANDLING = 'SemiPublicBiddingSecretCounterPicks';
 
 export default {
   components: {
+    DateInput,
     LeagueTagSelector,
     SpecialGameSlotSelector
   },
