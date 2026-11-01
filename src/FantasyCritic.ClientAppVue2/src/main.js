@@ -9,7 +9,7 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 
 import App from './App.vue';
 import router from './router/index';
-import store from './store';
+import { vuexStore } from './store';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 
 import './filters';
@@ -65,6 +65,6 @@ Vue.config.productionTip = false;
 
 new Vue({
   router,
-  store,
+  store: vuexStore,
   render: (h) => h(App)
 }).$mount('#app');

@@ -9,7 +9,7 @@ import publisher from './publisherStore';
 
 Vue.use(Vuex);
 
-export default new Vuex.Store({
+const vuexStore = new Vuex.Store({
   modules: {
     admin,
     auth,
@@ -19,3 +19,5 @@ export default new Vuex.Store({
     publisher
   }
 });
+
+export { vuexStore };

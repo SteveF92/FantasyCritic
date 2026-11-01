@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
-import store from '../store';
+import { vuexStore } from '../store';
 import { routes } from './routes';
 
 const originalPush = VueRouter.prototype.push;
@@ -38,16 +38,16 @@ let router = new VueRouter({
 
 router.beforeEach(async function (toRoute, fromRoute, next) {
   if (toRoute.path !== fromRoute.path) {
-    store.commit('clearPublisherStoreData');
-    store.commit('clearLeagueStoreData');
+    vuexStore.commit('clearPublisherStoreData');
+    vuexStore.commit('clearLeagueStoreData');
   }
 
-  if (!store.getters.interLeagueDataLoaded && !store.getters.interLeagueIsBusy) {
-    await store.dispatch('fetchBasicData');
+  if (!vuexStore.getters.interLeagueDataLoaded && !vuexStore.getters.interLeagueIsBusy) {
+    await vuexStore.dispatch('fetchBasicData');
   }
 
   //If we are current, we're good to go
-  if (store.getters.isAuth) {
+  if (vuexStore.getters.isAuth) {
     if (toRoute.meta.publicOnly) {
       next({ path: '/home' });
       return;
@@ -57,8 +57,8 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
   }
 
   try {
-    await store.dispatch('getUserInfo');
-    if (store.getters.isAuth) {
+    await vuexStore.dispatch('getUserInfo');
+    if (vuexStore.getters.isAuth) {
       if (toRoute.meta.publicOnly) {
         next({ path: '/home' });
         return;
@@ -69,13 +69,13 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
     if (toRoute.meta.isPublic) {
       return next();
     } else {
-      store.commit('clearUserInfo');
+      vuexStore.commit('clearUserInfo');
       window.location.href = '/Account/Login';
       return;
     }
   } catch {
     console.log('Router error');
-    store.commit('clearUserInfo');
+    vuexStore.commit('clearUserInfo');
     window.location.href = '/Account/Login';
   }
 });
