@@ -70,6 +70,7 @@ All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-
 | State | Vuex 3 to **Pinia 2.3** (`~2.3.1`; Pinia 3 dropped Vue 2), led by Steve. A 1:1 port of all six stores at once rather than store by store: same stores, state and action names. Mutations became actions or direct assignments, and getters that only returned state were dropped, since Pinia exposes state directly. The mixins stay, on Pinia's `mapState`. The stores are now `.ts` files (`auth.ts` became `authStore.ts`) but have no types yet. `store/pinia.js` holds the one Pinia instance, which the router guard passes to each `useXStore(pinia)`, because the router's first navigation runs before Pinia is active. `adminStore` and `authStore` use the NSwag client; the other four are still on axios. Lints and builds clean. |
 | Filters | The 11 `Vue.filter`s in `filters.js` became plain functions in `utilities/formatters.ts` (`formatScore`, `formatCurrency`, `formatDateTime`, `formatDateTimeAt`, `formatDateIso`, `formatDateLong`, `formatYesNo`, `formatApprovedRejected`, `formatPercent`, `formatThousands`, `selectTextFromPossibleOptions`), with the behaviour copied unchanged. All 139 uses in 49 files are now `{{ formatX(value, args) }}`, and each component imports what it uses and lists it under `methods`, the same way it already does for `globalFunctions`. `filters.js` is gone and `vue/no-deprecated-filter` is on. `globalFunctions.ts` still has `roundNumber`, `formatMoney` and `formatLongDate`, which differ from `formatScore`, `formatCurrency` and `formatDateLong` only in how they treat empty and non-numeric input; folding them together is a possible tidy-up. Lints and builds clean, and the games table on a production API renders scores and percentages correctly. |
 | Datepickers | The 14 `b-form-datepicker`s (master game creator, editor and request, and league year settings) became `components/dateInput.vue`, a native `<input type="date" class="form-control">`. bootstrap-vue-next has no datepicker, and the draft pages already used native date inputs. The value is the same `YYYY-MM-DD` string, so nothing that reads it changed. The wrapper emits `null` instead of `''` when the input is cleared, since a native input can be cleared from the keyboard and `''` isn't a valid `LocalDate`. Each input now has the `id` its label's `for` already named. Checked by mounting the component on the dev server (typing, clearing and setting from the model); **the four pages themselves are unchecked, since they need a logged-in session.** |
+| Date-time pickers | The two `flat-pickr`s (site announcements and special auctions) are native `<input type="datetime-local">`s, and `vue-flatpickr-component` and `flatpickr` are gone. The value is a local `yyyy-MM-ddTHH:mm` string, which `new Date(...)` already read as local time, so the `toISOString()` calls are unchanged. Editing an announcement formats its stored instant with Luxon instead of passing the picker a `Date`. Checked by mounting the announcements page on the dev server: a stored UTC time shows in local time and converts back to the same instant. The special auctions modal is unchecked, since it needs a league manager. |
 
 **Still to verify by hand:**
 
@@ -84,6 +85,8 @@ All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-
   count; royale pages; the admin console's bid times.
 - The date inputs on the master game creator, editor and request pages and in league year
   settings: an existing date loads, a new one saves, and Clear still works.
+- Creating a special auction, and creating and editing a site announcement, with the new
+  date-time inputs.
 
 ---
 
@@ -122,11 +125,6 @@ client come in. Counts are as of 2026-10-28.
   selects `.form-group`. That's 172 uses in 63 files. The other Bootstrap 5 renames (`ml-` to
   `ms-`, `badge-*` to `bg-*`, `text-left` to `text-start`, `sr-only`) don't exist in Bootstrap 4
   and wait for the UI swap. `form-row`/`form-inline` (4 uses) need a look.
-- **Date-time pickers.** The two `flat-pickr`s (`adminSiteAnnouncements.vue` and
-  `specialAuctionsModal.vue`) could become native `type="datetime-local"` inputs, which would take
-  `flatpickr` and `vue-flatpickr-component` out and remove an item from the flip. Editing an
-  existing announcement passes a `Date` object to the picker, so it would need formatting as
-  `yyyy-MM-ddTHH:mm`.
 - **Small items.**
   - `leagueActions.vue` mounts about 30 manager-only modals for every viewer, while publisher
     modals are already behind `v-if="userPublisher"`. Gating them behind `league.isManager`
@@ -157,7 +155,6 @@ Follow the migration build guide. Packages that change together:
 - `vue-router` 3 to 4 (Router 5 requires Vite 7 or later)
 - `@fortawesome/vue-fontawesome` 2 to 3
 - `vue-multiselect` 2 to 3 (2 components)
-- `vue-flatpickr-component` 8 to 12 (2 uses), or a native `datetime-local` input
 - `@vue/test-utils` v1 to v2
 - bootstrap-vue **stays**, running on its compat support
 
