@@ -24,7 +24,7 @@
     </div>
     <div class="form-group">
       <label for="announcementPostedAt">Posted at (in your local time zone)</label>
-      <flat-pickr id="announcementPostedAt" v-model="form.postedAt" :config="datePickerConfig" class="form-control"></flat-pickr>
+      <input id="announcementPostedAt" v-model="form.postedAt" type="datetime-local" class="form-control" />
       <small class="text-muted">Announcements are shown newest first. Leave blank on a new announcement to use the current time.</small>
     </div>
     <div class="form-row">
@@ -63,6 +63,7 @@
 
 <script>
 import axios from 'axios';
+import { DateTime } from 'luxon';
 import { formatDateTime } from '@/utilities/formatters';
 
 export default {
@@ -81,9 +82,6 @@ export default {
         postedAt: null,
         linkAddress: '',
         linkLabel: ''
-      },
-      datePickerConfig: {
-        enableTime: true
       },
       announcementFields: [
         { key: 'title', label: 'Title', thClass: 'bg-primary' },
@@ -129,7 +127,7 @@ export default {
       this.form = {
         title: announcement.title,
         body: announcement.body,
-        postedAt: new Date(announcement.postedAt),
+        postedAt: DateTime.fromISO(announcement.postedAt).toFormat("yyyy-MM-dd'T'HH:mm"),
         linkAddress: announcement.linkAddress || '',
         linkLabel: announcement.linkLabel || ''
       };

@@ -48,7 +48,7 @@
       </div>
       <hr />
       <label>Auction End Time (In your local time zone)</label>
-      <flat-pickr v-model="scheduledEndTime" :config="datePickerConfig" class="form-control"></flat-pickr>
+      <input v-model="scheduledEndTime" type="datetime-local" class="form-control" />
       <b-button variant="success" class="create-button" @click="createSpecialAuction">Create Special Auction</b-button>
     </div>
     <br />
@@ -85,10 +85,7 @@ export default {
         { key: 'masterGame', label: 'Game', thClass: ['bg-primary'] },
         { key: 'creationTime', label: 'Creation Time', thClass: ['bg-primary'] },
         { key: 'scheduledEndTime', label: 'End Time', thClass: ['bg-primary'] }
-      ],
-      datePickerConfig: {
-        enableTime: true
-      }
+      ]
     };
   },
   computed: {
