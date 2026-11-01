@@ -384,6 +384,9 @@ serves the SPA from S3 behind CloudFront.
 
 **Goal:** A Vue 3 site is built incrementally in parallel and eventually replaces the Vue 2 site.
 
+> **Superseded in planning.** The Vue 3 upgrade happens in place, on the existing site, with no
+> parallel site and no dependency on 7a or 7c. Plan: [vue3-upgrade-plan.md](vue3-upgrade-plan.md).
+
 - `new.fantasycritic.games` is another S3 bucket and CloudFront distribution, allowed in
   the API's CORS policy. The shared auth cookie works across subdomains.
 - When ready: point `www` at the new distribution, move the old one to
@@ -422,7 +425,8 @@ well-known one where infrastructure absorbs two years and the rewrite never star
   web app.
 - **5 before 6.** ECS is Terraform anyway.
 - **7a before 7c.** Auth flows break first when hosts split.
-- **7c before 8.** `new.*` needs `api.*` to exist.
+- ~~**7c before 8.**~~ No longer applies: Phase 8 became an in-place upgrade that needs no
+  `new.*` site.
 - Everything else can be reordered or interleaved with feature work.
 
 ## Cost summary

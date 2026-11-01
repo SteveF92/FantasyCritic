@@ -1,13 +1,14 @@
 <template>
-  <LineChartGenerator ref="lineChartRef" :chart-id="chartId" dataset-id-key="label" :height="chartHeight" :styles="canvasStyles" :chart-options="chartOptions" :chart-data="chartData" />
+  <LineChartGenerator ref="lineChartRef" :chart-id="chartId" dataset-id-key="label" :height="chartHeight" :styles="canvasStyles" :options="chartOptions" :data="chartData" />
 </template>
 <script lang="ts">
-import { Line as LineChartGenerator } from 'vue-chartjs/legacy';
+import { markRaw } from 'vue';
+import { Line as LineChartGenerator } from 'vue-chartjs';
 import { RoyalePublisher } from '@/models/royale/RoyalePublisher.ts';
 
 const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
 
-/** Chart instance exposed by vue-chartjs (Vue 2) on the line component. */
+/** Chart instance exposed by vue-chartjs on the line component. */
 type ChartjsLegendHost = {
   data: { datasets: unknown[] };
   isDatasetVisible: (index: number) => boolean;
@@ -16,7 +17,7 @@ type ChartjsLegendHost = {
   update: () => void;
 };
 
-type LineChartVueRef = { $data?: { _chart?: ChartjsLegendHost } };
+type LineChartVueRef = { chart?: ChartjsLegendHost };
 
 export default {
   components: { LineChartGenerator },
@@ -129,7 +130,8 @@ export default {
       return annotations;
     },
     chartOptions() {
-      return {
+      // markRaw keeps Vue 2 from recursing into Chart.js's option objects.
+      return markRaw({
         maintainAspectRatio: false,
         layout: {
           padding: {
@@ -181,11 +183,11 @@ export default {
             grid: { color: 'rgba(255, 255, 255, 0.08)' }
           }
         }
-      };
+      });
     },
     chartData() {
       if (!this.showChart) {
-        return { labels: [], datasets: [] };
+        return markRaw({ labels: [], datasets: [] });
       }
       const labels = this.chartLabels;
       const datasets = this.royalePublishers.map((member, i) => {
@@ -199,7 +201,7 @@ export default {
           data: this.alignPublisherStatsToLabels(member, labels)
         };
       });
-      return { labels, datasets };
+      return markRaw({ labels, datasets });
     }
   },
   watch: {
@@ -216,7 +218,7 @@ export default {
   methods: {
     syncLegendVisibilityFromChartIfReady() {
       const holder = this.$refs.lineChartRef as LineChartVueRef | undefined;
-      const chart = holder?.$data?._chart;
+      const chart = holder?.chart;
       if (!chart?.data?.datasets?.length) {
         return;
       }

@@ -15,12 +15,12 @@
 
     <div class="player-drag-list bg-secondary">
       <h4 class="player-header">Unassigned Players</h4>
-      <draggable :list="editableUnassignedPlayers" group="players">
+      <VueDraggable v-model="editableUnassignedPlayers" group="players">
         <div v-for="element in editableUnassignedPlayers" :key="element.userID" class="player-drag-item">
           <font-awesome-icon icon="bars" />
           {{ element.displayName }}
         </div>
-      </draggable>
+      </VueDraggable>
     </div>
 
     <div class="player-flex-container">
@@ -53,13 +53,12 @@
           </h4>
 
           <template v-if="!leaguesCollapsed[leagueID]">
-            <draggable v-if="!leaguesLocked[leagueID]" :list="value" group="players">
+            <VueDraggable v-if="!leaguesLocked[leagueID]" v-model="editableLeagueAssignments[leagueID]" group="players">
               <div v-for="element in value" :key="element.userID" class="player-drag-item">
                 <font-awesome-icon icon="bars" />
                 {{ element.displayName }}
               </div>
-              <template #header></template>
-            </draggable>
+            </VueDraggable>
             <ol v-if="leaguesLocked[leagueID]">
               <li v-for="element in value" :key="element.userID">
                 {{ element.displayName }}
@@ -77,13 +76,13 @@
 </template>
 <script>
 import axios from 'axios';
-import draggable from 'vuedraggable';
+import { VueDraggable } from 'vue-draggable-plus';
 
 import ConferenceMixin from '@/mixins/conferenceMixin.js';
 
 export default {
   components: {
-    draggable
+    VueDraggable
   },
   mixins: [ConferenceMixin],
   data() {
