@@ -69,6 +69,7 @@ All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-
 | Drag and drop | `vuedraggable` 2 to `vue-draggable-plus` 0.6 (`VueDraggable`, `v-model`) in `assignPlayers`, `currentBidsForm`, `editDraftOrderForm`, `gameQueueForm` and `leagueTagSelector`. The draft order list lost its `transition-group` (it has Sortable's `animation` instead), and the tag selector's list headers moved out of the draggable. Builds and lints clean, and the component renders and attaches Sortable on Vue 2.7; **drag-and-drop itself is untested, since it needs a logged-in session.** |
 | State | Vuex 3 to **Pinia 2.3** (`~2.3.1`; Pinia 3 dropped Vue 2), led by Steve. A 1:1 port of all six stores at once rather than store by store: same stores, state and action names. Mutations became actions or direct assignments, and getters that only returned state were dropped, since Pinia exposes state directly. The mixins stay, on Pinia's `mapState`. The stores are now `.ts` files (`auth.ts` became `authStore.ts`) but have no types yet. `store/pinia.js` holds the one Pinia instance, which the router guard passes to each `useXStore(pinia)`, because the router's first navigation runs before Pinia is active. `adminStore` and `authStore` use the NSwag client; the other four are still on axios. Lints and builds clean. |
 | Filters | The 11 `Vue.filter`s in `filters.js` became plain functions in `utilities/formatters.ts` (`formatScore`, `formatCurrency`, `formatDateTime`, `formatDateTimeAt`, `formatDateIso`, `formatDateLong`, `formatYesNo`, `formatApprovedRejected`, `formatPercent`, `formatThousands`, `selectTextFromPossibleOptions`), with the behaviour copied unchanged. All 139 uses in 49 files are now `{{ formatX(value, args) }}`, and each component imports what it uses and lists it under `methods`, the same way it already does for `globalFunctions`. `filters.js` is gone and `vue/no-deprecated-filter` is on. `globalFunctions.ts` still has `roundNumber`, `formatMoney` and `formatLongDate`, which differ from `formatScore`, `formatCurrency` and `formatDateLong` only in how they treat empty and non-numeric input; folding them together is a possible tidy-up. Lints and builds clean, and the games table on a production API renders scores and percentages correctly. |
+| Datepickers | The 14 `b-form-datepicker`s (master game creator, editor and request, and league year settings) became `components/dateInput.vue`, a native `<input type="date" class="form-control">`. bootstrap-vue-next has no datepicker, and the draft pages already used native date inputs. The value is the same `YYYY-MM-DD` string, so nothing that reads it changed. The wrapper emits `null` instead of `''` when the input is cleared, since a native input can be cleared from the keyboard and `''` isn't a valid `LocalDate`. Each input now has the `id` its label's `for` already named. Checked by mounting the component on the dev server (typing, clearing and setting from the model); **the four pages themselves are unchecked, since they need a logged-in session.** |
 
 **Still to verify by hand:**
 
@@ -81,6 +82,8 @@ All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-
   logged in and logged out; the league page's toggles and bid reveal, league history; your own
   publisher page's move mode and toggles; a conference page and modal; the home page's admin task
   count; royale pages; the admin console's bid times.
+- The date inputs on the master game creator, editor and request pages and in league year
+  settings: an existing date loads, a new one saves, and Clear still works.
 
 ---
 
@@ -119,10 +122,11 @@ client come in. Counts are as of 2026-10-28.
   selects `.form-group`. That's 172 uses in 63 files. The other Bootstrap 5 renames (`ml-` to
   `ms-`, `badge-*` to `bg-*`, `text-left` to `text-start`, `sr-only`) don't exist in Bootstrap 4
   and wait for the UI swap. `form-row`/`form-inline` (4 uses) need a look.
-- **Datepickers.** 14 `b-form-datepicker`s in 4 files, mostly the master game creator and
-  editor. bootstrap-vue-next has no datepicker. **Decision needed:** `b-form-input type="date"`
-  exists in both libraries and could replace them now, at the cost of the browser's native picker
-  instead of bootstrap-vue's calendar. flatpickr, already a dependency, is the other option.
+- **Date-time pickers.** The two `flat-pickr`s (`adminSiteAnnouncements.vue` and
+  `specialAuctionsModal.vue`) could become native `type="datetime-local"` inputs, which would take
+  `flatpickr` and `vue-flatpickr-component` out and remove an item from the flip. Editing an
+  existing announcement passes a `Date` object to the picker, so it would need formatting as
+  `yyyy-MM-ddTHH:mm`.
 - **Small items.**
   - `leagueActions.vue` mounts about 30 manager-only modals for every viewer, while publisher
     modals are already behind `v-if="userPublisher"`. Gating them behind `league.isManager`
@@ -191,7 +195,6 @@ TypeScript across the rest of the app.
 ## Open decisions
 
 - **vee-validate:** our own validation now, or vee-validate 4 after the flip.
-- **Datepickers:** native `type="date"`, or flatpickr.
 - **Analytics:** a GA4 property, or none. Either way `about.vue` needs rewording.
 - **Style for new components:** Options API or `<script setup lang="ts">`. `countdown.vue` and
   `toggleSwitch.vue` use the Options API in plain JS, to match the codebase.
