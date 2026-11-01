@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
+import { pinia } from '@/store/pinia';
 import { useAuthStore } from '@/store/authStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { useLeagueStore } from '@/store/leagueStore';
@@ -41,10 +42,10 @@ const router = new VueRouter({
 });
 
 router.beforeEach(async function (toRoute, fromRoute, next) {
-  const authStore = useAuthStore();
-  const interLeagueStore = useInterLeagueStore();
-  const leagueStore = useLeagueStore();
-  const publisherStore = usePublisherStore();
+  const authStore = useAuthStore(pinia);
+  const interLeagueStore = useInterLeagueStore(pinia);
+  const leagueStore = useLeagueStore(pinia);
+  const publisherStore = usePublisherStore(pinia);
 
   if (toRoute.path !== fromRoute.path) {
     publisherStore.clearPublisherStoreData();

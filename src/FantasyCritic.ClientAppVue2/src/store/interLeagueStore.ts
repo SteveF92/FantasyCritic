@@ -6,8 +6,7 @@ export const useInterLeagueStore = defineStore('interLeague', {
   getters: {
     interLeagueIsBusy: (state) => state.isBusy,
     interLeagueDataLoaded: (state) => state.dataLoaded,
-    allTags: (state) => state.tags,
-    bidTimes: (state) => state.bidTimes
+    allTags: (state) => state.tags
   },
   actions: {
     async fetchBasicData() {

@@ -15,18 +15,6 @@ export const usePublisherStore = defineStore('publisher', {
     coverArtMode: false,
     includeRemovedInSorted: false
   }),
-  getters: {
-    publisher: (state) => state.publisher,
-    leagueYear: (state) => state.leagueYear,
-    gameSlots: (state) => state.editableGameSlots,
-    moveMode: (state) => state.moveMode,
-    desiredPositions: (state) => state.desiredPositions,
-    holdingGame: (state) => !!state.heldSlot,
-    moveGameError: (state) => state.moveGameError,
-    sortOrderMode: (state) => state.sortOrderMode,
-    coverArtMode: (state) => state.coverArtMode,
-    includeRemovedInSorted: (state) => state.includeRemovedInSorted
-  },
   actions: {
     async initializePublisherPage(publisherID) {
       try {
@@ -47,10 +35,10 @@ export const usePublisherStore = defineStore('publisher', {
       this.setDesiredPositions();
     },
     async confirmPositions() {
-      const existingPublisherObject = this.getters.publisher;
+      const existingPublisherObject = this.publisher;
       const request = {
         publisherID: existingPublisherObject.publisherID,
-        slotStates: this.getters.desiredPositions
+        slotStates: this.desiredPositions
       };
 
       try {
