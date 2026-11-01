@@ -131,6 +131,7 @@ import axios from 'axios';
 import ConferenceMixin from '@/mixins/conferenceMixin.js';
 import ConferenceManagerActions from '@/components/conferenceManagerActions.vue';
 import ConferenceYearStandings from '@/components/conferenceYearStandings.vue';
+import { useConferenceStore } from '@/store/conferenceStore';
 
 export default {
   components: {
@@ -221,7 +222,8 @@ export default {
       this.selectedYear = this.year;
       const inviteCode = this.$route.query.inviteCode;
       const conferencePageParams = { conferenceID: this.conferenceid, year: this.year, inviteCode };
-      await this.$store.dispatch('initializeConferencePage', conferencePageParams);
+      const conferenceStore = useConferenceStore();
+      await conferenceStore.initializeConferencePage(conferencePageParams);
       this.fetchRoyaleGroupForConference();
     },
     changeConferenceYear(newVal) {

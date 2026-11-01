@@ -18,6 +18,7 @@
 <script>
 import axios from 'axios';
 import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { useConferenceStore } from '@/store/conferenceStore';
 
 export default {
   mixins: [ConferenceMixin],
@@ -39,7 +40,8 @@ export default {
     async initializePage() {
       this.selectedYear = this.year;
       const conferencePageParams = { conferenceID: this.conferenceid, year: this.year };
-      await this.$store.dispatch('initializeConferencePage', conferencePageParams);
+      const conferenceStore = useConferenceStore();
+      await conferenceStore.initializeConferencePage(conferencePageParams);
     },
     async deleteMessage(message) {
       const model = {

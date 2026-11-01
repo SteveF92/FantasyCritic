@@ -219,7 +219,8 @@ export default {
   },
   methods: {
     async initializePage() {
-      await this.$store.dispatch('initializePublisherPage', this.publisherid);
+      const publisherStore = usePublisherStore();
+      await publisherStore.initializePublisherPage(this.publisherid);
     },
     getDropStatus(dropped, droppable) {
       if (!droppable) {
@@ -245,10 +246,10 @@ export default {
       const publisherStore = usePublisherStore();
       publisherStore.cancelMoveMode();
     },
-    confirmPositions() {
-      this.$store.dispatch('confirmPositions').then(() => {
-        this.$emit('gamesMoved');
-      });
+    async confirmPositions() {
+      const publisherStore = usePublisherStore();
+      await publisherStore.confirmPositions();
+      this.$emit('gamesMoved');
     },
     prepareSnapshot() {
       this.renderingSnapshot = true;

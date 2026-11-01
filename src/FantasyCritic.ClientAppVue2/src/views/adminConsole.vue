@@ -266,6 +266,7 @@ import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from
 import RecentJobsTable from '@/components/recentJobsTable.vue';
 import ServiceMonitor from '@/components/serviceMonitor.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -339,7 +340,8 @@ export default {
     }
   },
   async created() {
-    await this.$store.dispatch('fetchAdminTaskCounts');
+    const adminStore = useAdminStore();
+    await adminStore.fetchAdminTaskCounts();
     await this.fetchBuildInfo();
     await this.fetchAutomatedActionProcessing();
   },
@@ -425,7 +427,8 @@ export default {
       await this.runAction(label, call);
 
       //The server is the truth. If the request failed, this also puts the switch back where it was.
-      await this.$store.dispatch('fetchBasicData');
+      const interLeagueStore = useInterLeagueStore();
+      await interLeagueStore.fetchBasicData();
       this.syncActionProcessingModeSwitch();
     },
     async changeAutomatedActionProcessing(enabled) {

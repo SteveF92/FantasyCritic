@@ -132,10 +132,12 @@
 import axios from 'axios';
 import { VueDraggable } from 'vue-draggable-plus';
 
+import LeagueMixin from '@/mixins/leagueMixin.js';
+import { useLeagueStore } from '@/store/leagueStore';
+
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import StatusBadge from '@/components/statusBadge.vue';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
@@ -194,7 +196,8 @@ export default {
         });
     },
     async onOpen() {
-      await this.$store.dispatch('refreshLeagueYear');
+      const leagueStore = useLeagueStore();
+      await leagueStore.refreshLeagueYear();
       await this.getTopGames();
     },
     async getTopGames() {

@@ -169,8 +169,9 @@ export default {
     }
   },
   async created() {
+    const adminStore = useAdminStore();
     this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
-    await Promise.all([this.fetchHomePageData(), this.fetchSiteAnnouncements(), this.$store.dispatch('fetchAdminTaskCounts')]);
+    await Promise.all([this.fetchHomePageData(), this.fetchSiteAnnouncements(), adminStore.fetchAdminTaskCounts()]);
   },
   methods: {
     async fetchSiteAnnouncements() {
