@@ -34,8 +34,7 @@
     "vue-draggable-plus": "^0.6.1",
     "vue-flatpickr-component": "^8.1.8",
     "vue-multiselect": "^2.1.9",
-    "vue-router": "^3.6.5",
-    "vuex": "^3.6.2"
+    "vue-router": "^3.6.5"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",

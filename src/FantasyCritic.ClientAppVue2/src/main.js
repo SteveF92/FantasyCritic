@@ -10,7 +10,6 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 import App from './App.vue';
 import router from './router/index';
 
-import { vuexStore } from './store/vuex/index.js';
 import { createPinia, PiniaVuePlugin } from 'pinia';
 
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
@@ -71,7 +70,6 @@ Vue.config.productionTip = false;
 
 new Vue({
   router,
-  store: vuexStore,
   pinia,
   render: (h) => h(App)
 }).$mount('#app');
