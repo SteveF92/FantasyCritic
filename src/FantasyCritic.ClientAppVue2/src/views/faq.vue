@@ -1159,6 +1159,7 @@
 <script>
 import CollapseCard from '@/components/collapseCard.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -1172,7 +1173,8 @@ export default {
   },
   computed: {
     allTags() {
-      return this.$store.getters.allTags;
+      const interLeagueStore = useInterLeagueStore();
+      return interLeagueStore.allTags;
     }
   },
   methods: {

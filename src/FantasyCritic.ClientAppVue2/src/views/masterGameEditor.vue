@@ -148,6 +148,7 @@
 </template>
 <script>
 import axios from 'axios';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 
@@ -223,7 +224,8 @@ export default {
       this.masterGame.estimatedReleaseDate = this.masterGame.releaseDate;
     },
     populateTags() {
-      let allTags = this.$store.getters.allTags;
+      const interLeagueStore = useInterLeagueStore();
+      let allTags = interLeagueStore.allTags;
       let masterGameTagNames = this.masterGame.tags;
       let matchingTags = allTags.filter((x) => masterGameTagNames.includes(x.name));
       this.tags = matchingTags;

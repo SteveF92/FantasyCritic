@@ -9,7 +9,10 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 
 import App from './App.vue';
 import router from './router/index';
-import store from './store';
+
+import { PiniaVuePlugin } from 'pinia';
+import { pinia } from '@/store/pinia';
+
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 
 import './filters';
@@ -21,6 +24,8 @@ import BasicMixin from './mixins/basicMixin';
 
 Vue.use(BootstrapVue);
 Vue.use(VueFlatPickr);
+
+Vue.use(PiniaVuePlugin);
 
 //Vee-validate registration
 Vue.component('ValidationProvider', ValidationProvider);
@@ -65,6 +70,6 @@ Vue.config.productionTip = false;
 
 new Vue({
   router,
-  store,
+  pinia,
   render: (h) => h(App)
 }).$mount('#app');

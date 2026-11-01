@@ -161,6 +161,7 @@
 <script>
 import axios from 'axios';
 import * as signalR from '@microsoft/signalr';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 import LeagueGameSummary from '@/components/leagueGameSummary.vue';
 import LeagueYearStandings from '@/components/leagueYearStandings.vue';
@@ -175,6 +176,7 @@ import LeagueMixin from '@/mixins/leagueMixin.js';
 import SpecialAuctionInfo from '@/components/specialAuctionInfo.vue';
 import DraftReadinessBanner from '@/components/draftReadinessBanner.vue';
 import DraftStatusHeader from '@/components/draftStatusHeader.vue';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   components: {
@@ -223,7 +225,8 @@ export default {
         return false;
       }
 
-      let revealIsNext = this.$store.getters.bidTimes.nextPublicBiddingTime < this.$store.getters.bidTimes.nextBidLockTime;
+      const interLeagueStore = useInterLeagueStore();
+      let revealIsNext = interLeagueStore.bidTimes.nextPublicBiddingTime < interLeagueStore.bidTimes.nextBidLockTime;
       return revealIsNext;
     },
     hasActiveTrade() {
@@ -274,16 +277,17 @@ export default {
       this.selectedYear = this.year;
       const inviteCode = this.$route.query.inviteCode;
       const leaguePageParams = { leagueID: this.leagueid, year: this.year, inviteCode };
-      await this.$store.dispatch('initializeLeaguePage', leaguePageParams);
+      const leagueStore = useLeagueStore();
+      await leagueStore.initializeLeaguePage(leaguePageParams);
       await this.startHubConnection();
       this.fetchRoyaleGroupForLeague();
     },
     refreshLeagueYear() {
-      return this.$store.dispatch('refreshLeagueYear');
+      const leagueStore = useLeagueStore();
+      return leagueStore.refreshLeagueYear();
     },
     async revealPublicBids() {
       await this.refreshLeagueYear();
-      this.$store.dispatch('getBidTimes');
     },
     changeLeagueYear(newVal) {
       const parameters = {

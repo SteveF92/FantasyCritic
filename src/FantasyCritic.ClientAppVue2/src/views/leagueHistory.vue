@@ -75,6 +75,7 @@ import LeagueActionSet from '@/components/leagueActionSet.vue';
 import CollapseCard from '@/components/collapseCard.vue';
 import TradeSummary from '@/components/tradeSummary.vue';
 import LeagueMixin from '@/mixins/leagueMixin.js';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   components: {
@@ -120,7 +121,8 @@ export default {
   methods: {
     initializePage() {
       const leaguePageParams = { leagueID: this.leagueid, year: this.year };
-      this.$store.dispatch('initializeHistoryPage', leaguePageParams);
+      const leagueStore = useLeagueStore();
+      leagueStore.initializeHistoryPage(leaguePageParams);
     },
     getCollapseID() {
       let thisID = this.lastID;

@@ -17,6 +17,7 @@
 </template>
 <script>
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -29,7 +30,8 @@ export default {
   },
   methods: {
     getTag(tagName) {
-      return this.$store.getters.allTags.find((x) => x.name === tagName);
+      const interLeagueStore = useInterLeagueStore();
+      return interLeagueStore.allTags.find((x) => x.name === tagName);
     },
     getMultiBadgeColor(tagNames) {
       let colorString = '';

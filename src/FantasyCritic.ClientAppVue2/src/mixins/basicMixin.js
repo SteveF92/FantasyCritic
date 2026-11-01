@@ -1,19 +1,19 @@
-import { mapGetters, mapState } from 'vuex';
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
+
 import { formatLongDateTime, formatLongDate } from '@/globalFunctions';
 
-let basicMixin = {
+const basicMixin = {
   computed: {
-    ...mapGetters(['interLeagueDataLoaded', 'isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'isActionRunner', 'isJobManager', 'authIsBusy']),
-    ...mapState({
-      possibleLeagueOptions: (state) => state.interLeague.possibleLeagueOptions,
-      supportedYears: (state) => state.interLeague.supportedYears,
-      activeRoyaleQuarter: (state) => state.interLeague.activeRoyaleQuarter
-    }),
+    ...mapState(useAuthStore, ['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'isActionRunner', 'isJobManager', 'authIsBusy']),
+    ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'possibleLeagueOptions', 'supportedYears', 'activeRoyaleQuarter']),
     displayName() {
-      if (!this.$store.getters.userInfo) {
+      const authStore = useAuthStore();
+      if (!authStore.userInfo) {
         return;
       }
-      return this.$store.getters.userInfo.displayName;
+      return authStore.userInfo.displayName;
     },
     isDevelopment() {
       return process.env.NODE_ENV === 'development';

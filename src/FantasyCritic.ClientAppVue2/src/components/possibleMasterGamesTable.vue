@@ -40,6 +40,8 @@
 <script>
 import StatusBadge from '@/components/statusBadge.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   components: {
@@ -70,13 +72,11 @@ export default {
   },
   computed: {
     /**
-     * The league's bidding system. League page modals are the only consumers of this component, so the league store is
-     * always the one populated - note that Vuex nests module state under the module key.
-     *
      * @returns {string|undefined} The pickup system value, or undefined outside a league page.
      */
     pickupSystem() {
-      return this.$store.state.league.leagueYear?.settings?.pickupSystem;
+      const leagueStore = useLeagueStore();
+      return leagueStore.leagueYear?.settings?.pickupSystem;
     },
     rows() {
       return this.possibleGames.length;
@@ -132,7 +132,8 @@ export default {
      * @returns {Date} The next relevant bidding time as a Date object.
      */
     retrieveNextOpenBiddingTime() {
-      const bidTimes = this.$store.getters.bidTimes;
+      const interLeagueStore = useInterLeagueStore();
+      const bidTimes = interLeagueStore.bidTimes;
       if (this.pickupSystem === 'SecretBidding') {
         return new Date(bidTimes.nextBidLockTime);
       }

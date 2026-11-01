@@ -64,6 +64,7 @@
 import { DateTime } from 'luxon';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
@@ -91,7 +92,8 @@ export default {
   },
   computed: {
     isPlusUser() {
-      return this.$store.getters.isPlusUser;
+      const authStore = useAuthStore();
+      return authStore.isPlusUser;
     },
     gameNewsFields() {
       if (this.mode === 'user') {

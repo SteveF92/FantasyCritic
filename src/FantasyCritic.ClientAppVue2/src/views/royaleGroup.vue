@@ -75,6 +75,8 @@
 
 <script>
 import axios from 'axios';
+import { useAuthStore } from '@/store/authStore';
+
 import RoyaleGroupInviteLinksModal from '@/components/modals/royaleGroupInviteLinksModal.vue';
 
 export default {
@@ -127,18 +129,21 @@ export default {
       return statsFields;
     },
     isManager() {
-      return this.isAuth && this.group && this.group.managerUserID && this.$store.getters.userInfo.userID === this.group.managerUserID;
+      const authStore = useAuthStore();
+      return this.isAuth && this.group && this.group.managerUserID && authStore.userInfo.userID === this.group.managerUserID;
     },
     showManagerActions() {
       return this.group.groupType === 'Manual';
     },
     isMember() {
       if (!this.isAuth || !this.members) return false;
-      return this.members.some((m) => m.userID === this.$store.getters.userInfo.userID);
+      const authStore = useAuthStore();
+      return this.members.some((m) => m.userID === authStore.userInfo.userID);
     },
     isMemberNotManager() {
       if (!this.isAuth || !this.group || !this.members) return false;
-      const uid = this.$store.getters.userInfo.userID;
+      const authStore = useAuthStore();
+      const uid = authStore.userInfo.userID;
       return uid !== this.group.managerUserID && this.members.some((m) => m.userID === uid);
     },
     pendingInviteCode() {

@@ -1,14 +1,10 @@
-// auth.js
+import { defineStore } from 'pinia';
 import { accountClient } from '@/api/clients';
 
-export default {
-  state: {
-    userInfo: null,
-    isBusy: false
-  },
+export const useAuthStore = defineStore('auth', {
+  state: () => ({ userInfo: null, isBusy: false }),
   getters: {
     isAuth: (state) => !!state.userInfo,
-    userInfo: (state) => state.userInfo,
     authIsBusy: (state) => state.isBusy,
     isAdmin: (state) => state.userInfo && state.userInfo.roles.includes('Admin'),
     isActionRunner: (state) => state.userInfo && state.userInfo.roles.includes('ActionRunner'),
@@ -18,31 +14,20 @@ export default {
     isPlusUser: (state) => state.userInfo && state.userInfo.roles.includes('PlusUser')
   },
   actions: {
-    async getUserInfo(context) {
-      context.commit('setBusy', true);
+    async getUserInfo() {
+      this.isBusy = true;
       try {
         const userInfo = await accountClient.currentUser();
         if (!userInfo.userID) {
-          context.commit('clearUserInfo');
+          this.userInfo = null;
         } else {
-          context.commit('setUserInfo', userInfo);
+          this.userInfo = userInfo;
         }
       } catch {
-        context.commit('clearUserInfo');
+        this.userInfo = null;
       } finally {
-        context.commit('setBusy', false);
+        this.isBusy = false;
       }
     }
-  },
-  mutations: {
-    setUserInfo(state, userInfo) {
-      state.userInfo = userInfo;
-    },
-    clearUserInfo(state) {
-      state.userInfo = null;
-    },
-    setBusy(state, isBusyFlag) {
-      state.isBusy = isBusyFlag;
-    }
   }
-};
+});

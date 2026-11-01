@@ -18,6 +18,7 @@
 <script>
 import Multiselect from 'vue-multiselect';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -35,10 +36,11 @@ export default {
   },
   computed: {
     tagOptions() {
+      const interLeagueStore = useInterLeagueStore();
       if (this.includeSystem) {
-        return this.$store.getters.allTags;
+        return interLeagueStore.allTags;
       }
-      return this.$store.getters.allTags.filter((x) => !x.systemTagOnly);
+      return interLeagueStore.allTags.filter((x) => !x.systemTagOnly);
     }
   },
   watch: {

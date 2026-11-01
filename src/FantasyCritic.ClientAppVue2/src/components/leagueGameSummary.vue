@@ -20,9 +20,11 @@
   </div>
 </template>
 <script>
+import LeagueMixin from '@/mixins/leagueMixin.js';
+import { useLeagueStore } from '@/store/leagueStore';
+
 import MinimalPlayerGameTable from '@/components/gameTables/minimalPlayerGameTable.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {
@@ -36,7 +38,8 @@ export default {
         return this.showProjections;
       },
       set(value) {
-        this.$store.commit('setShowProjections', value);
+        const leagueStore = useLeagueStore();
+        leagueStore.setShowProjections(value);
       }
     },
     editableDraftOrderView: {
@@ -44,7 +47,8 @@ export default {
         return this.draftOrderView;
       },
       set(value) {
-        this.$store.commit('setDraftOrderView', value);
+        const leagueStore = useLeagueStore();
+        leagueStore.setDraftOrderView(value);
       }
     }
   }

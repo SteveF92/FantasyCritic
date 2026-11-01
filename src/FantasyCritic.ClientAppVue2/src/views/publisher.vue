@@ -127,11 +127,13 @@
 <script>
 import html2canvas from 'html2canvas';
 
+import PublisherMixin from '@/mixins/publisherMixin.js';
+import { usePublisherStore } from '@/store/publisherStore';
+
 import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
 import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
 import { publisherIconIsValid } from '@/globalFunctions';
-import PublisherMixin from '@/mixins/publisherMixin.js';
 
 export default {
   components: {
@@ -154,7 +156,8 @@ export default {
       return publisherIconIsValid(this.publisher.publisherIcon);
     },
     moveGameError() {
-      return this.$store.getters.moveGameError;
+      const publisherStore = usePublisherStore();
+      return publisherStore.moveGameError;
     },
     hasIneligibleGame() {
       return this.publisher.gameSlots.some((x) => !x.gameMeetsSlotCriteria);
@@ -167,7 +170,8 @@ export default {
         return this.sortOrderMode;
       },
       set(value) {
-        this.$store.commit('setSortOrderMode', value);
+        const publisherStore = usePublisherStore();
+        publisherStore.setSortOrderMode(value);
       }
     },
     editableCoverArtMode: {
@@ -175,7 +179,8 @@ export default {
         return this.coverArtMode;
       },
       set(value) {
-        this.$store.commit('setCoverArtMode', value);
+        const publisherStore = usePublisherStore();
+        publisherStore.setCoverArtMode(value);
       }
     },
     editableIncludeRemovedInSorted: {
@@ -183,7 +188,8 @@ export default {
         return this.includeRemovedInSorted;
       },
       set(value) {
-        this.$store.commit('setIncludeRemovedInSorted', value);
+        const publisherStore = usePublisherStore();
+        publisherStore.setIncludeRemovedInSorted(value);
       }
     },
     nextPublisher() {
@@ -213,7 +219,8 @@ export default {
   },
   methods: {
     async initializePage() {
-      await this.$store.dispatch('initializePublisherPage', this.publisherid);
+      const publisherStore = usePublisherStore();
+      await publisherStore.initializePublisherPage(this.publisherid);
     },
     getDropStatus(dropped, droppable) {
       if (!droppable) {
@@ -232,15 +239,17 @@ export default {
       return notPublisherText;
     },
     enterMoveMode() {
-      this.$store.commit('enterMoveMode');
+      const publisherStore = usePublisherStore();
+      publisherStore.enterMoveMode();
     },
     cancelMoveMode() {
-      this.$store.commit('cancelMoveMode');
+      const publisherStore = usePublisherStore();
+      publisherStore.cancelMoveMode();
     },
-    confirmPositions() {
-      this.$store.dispatch('confirmPositions').then(() => {
-        this.$emit('gamesMoved');
-      });
+    async confirmPositions() {
+      const publisherStore = usePublisherStore();
+      await publisherStore.confirmPositions();
+      this.$emit('gamesMoved');
     },
     prepareSnapshot() {
       this.renderingSnapshot = true;

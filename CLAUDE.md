@@ -88,7 +88,7 @@ Integration tests and the Vue client both consume clients generated from the Ope
 
 ### Frontend
 
-Vue 2.7 (Options API — match the file you're editing) + Vite + Bootstrap 4/bootstrap-vue + Vuex + Luxon + axios. Generated TS client at `src/FantasyCritic.ClientAppVue2/src/api/generated/` with hand-written singletons in `src/FantasyCritic.ClientAppVue2/src/api/clients.ts`.
+Vue 2.7 (Options API — match the file you're editing) + Vite + Bootstrap 4/bootstrap-vue + Pinia 2 + Luxon + axios. Generated TS client at `src/FantasyCritic.ClientAppVue2/src/api/generated/` with hand-written singletons in `src/FantasyCritic.ClientAppVue2/src/api/clients.ts`.
 
 ## C# conventions
 

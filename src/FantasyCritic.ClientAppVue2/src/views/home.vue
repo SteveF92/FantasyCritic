@@ -112,7 +112,8 @@
 
 <script>
 import axios from 'axios';
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+import { useAdminStore } from '@/store/adminStore';
 
 import TopBidsAndDrops from '@/components/topBidsAndDropsWidget.vue';
 import LeagueTable from '@/components/leagueTable.vue';
@@ -150,7 +151,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['adminTaskCounts']),
+    ...mapState(useAdminStore, ['adminTaskCounts']),
     adminTaskTotalCount() {
       return this.adminTaskCounts ? this.adminTaskCounts.totalCount : 0;
     },
@@ -168,8 +169,9 @@ export default {
     }
   },
   async created() {
+    const adminStore = useAdminStore();
     this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
-    await Promise.all([this.fetchHomePageData(), this.fetchSiteAnnouncements(), this.$store.dispatch('fetchAdminTaskCounts')]);
+    await Promise.all([this.fetchHomePageData(), this.fetchSiteAnnouncements(), adminStore.fetchAdminTaskCounts()]);
   },
   methods: {
     async fetchSiteAnnouncements() {

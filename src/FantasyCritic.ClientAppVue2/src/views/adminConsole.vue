@@ -259,7 +259,9 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapState } from 'pinia';
+import { useAdminStore } from '@/store/adminStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from '@/api/clients';
 import RecentJobsTable from '@/components/recentJobsTable.vue';
@@ -294,7 +296,8 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['adminTaskCounts', 'bidTimes']),
+    ...mapState(useAdminStore, ['adminTaskCounts']),
+    ...mapState(useInterLeagueStore, ['bidTimes']),
     //The template calls the clients directly. Computed rather than data so Vue does not try to make the singletons reactive.
     actionRunnerClient() {
       return actionRunnerClient;
@@ -338,7 +341,8 @@ export default {
     }
   },
   async created() {
-    await this.$store.dispatch('fetchAdminTaskCounts');
+    const adminStore = useAdminStore();
+    await adminStore.fetchAdminTaskCounts();
     await this.fetchBuildInfo();
     await this.fetchAutomatedActionProcessing();
   },
@@ -424,7 +428,8 @@ export default {
       await this.runAction(label, call);
 
       //The server is the truth. If the request failed, this also puts the switch back where it was.
-      await this.$store.dispatch('fetchBasicData');
+      const interLeagueStore = useInterLeagueStore();
+      await interLeagueStore.fetchBasicData();
       this.syncActionProcessingModeSwitch();
     },
     async changeAutomatedActionProcessing(enabled) {

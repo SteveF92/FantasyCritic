@@ -50,6 +50,7 @@
 import { VueDraggable } from 'vue-draggable-plus';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { intersection } from '@/globalFunctions';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -76,7 +77,8 @@ export default {
   },
   computed: {
     tagOptions() {
-      return this.$store.getters.allTags.filter((x) => !x.systemTagOnly);
+      const interLeagueStore = useInterLeagueStore();
+      return interLeagueStore.allTags.filter((x) => !x.systemTagOnly);
     },
     showWarning() {
       let recommendedAllowedTags = ['Reimagining'];

@@ -23,6 +23,8 @@
   </span>
 </template>
 <script>
+import { useInterLeagueStore } from '@/store/interLeagueStore';
+
 export default {
   props: {
     tagName: { type: String, required: true },
@@ -31,7 +33,8 @@ export default {
   },
   computed: {
     tag() {
-      return this.$store.getters.allTags.find((x) => x.name === this.tagName);
+      const interLeagueStore = useInterLeagueStore();
+      return interLeagueStore.allTags.find((x) => x.name === this.tagName);
     },
     badgeColor() {
       return {

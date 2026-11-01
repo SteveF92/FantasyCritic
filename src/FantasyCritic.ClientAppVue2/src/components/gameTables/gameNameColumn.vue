@@ -41,9 +41,12 @@
   </span>
 </template>
 <script>
+import { usePublisherStore } from '@/store/publisherStore';
+
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
 import BasicMixin from '@/mixins/basicMixin.js';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   components: {
@@ -62,13 +65,16 @@ export default {
       return this.gameSlot.publisherGame;
     },
     leagueYear() {
-      return this.$store.state.league.leagueYear;
+      const leagueStore = useLeagueStore();
+      return leagueStore.leagueYear;
     },
     moveMode() {
-      return this.$store.getters.moveMode;
+      const publisherStore = usePublisherStore();
+      return publisherStore.moveMode;
     },
     holdingGame() {
-      return this.$store.getters.holdingGame;
+      const publisherStore = usePublisherStore();
+      return publisherStore.holdingGame;
     },
     counterPickSourcePublisher() {
       if (!this.gameSlot.counterPick || !this.game?.masterGame || !this.leagueYear?.publishers) {
@@ -307,10 +313,12 @@ export default {
   },
   methods: {
     holdGame() {
-      this.$store.commit('holdGame', this.gameSlot);
+      const publisherStore = usePublisherStore();
+      publisherStore.holdGame(this.gameSlot);
     },
     placeGame() {
-      this.$store.dispatch('moveGame', this.gameSlot);
+      const publisherStore = usePublisherStore();
+      publisherStore.moveGame(this.gameSlot);
     }
   }
 };
