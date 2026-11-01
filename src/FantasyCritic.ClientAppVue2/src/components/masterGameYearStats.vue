@@ -46,8 +46,8 @@
             dataset-id-key="label"
             :height="chartHeight"
             :styles="chartCanvasStyles"
-            :chart-options="chartOptions"
-            :chart-data="chartData" />
+            :options="chartOptions"
+            :data="chartData" />
         </div>
       </div>
     </div>
@@ -56,7 +56,8 @@
 
 <script>
 import axios from 'axios';
-import { Line as LineChartGenerator } from 'vue-chartjs/legacy';
+import { markRaw } from 'vue';
+import { Line as LineChartGenerator } from 'vue-chartjs';
 
 const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
 
@@ -147,7 +148,7 @@ export default {
     },
     chartData() {
       if (!this.chartHasData) {
-        return { labels: [], datasets: [] };
+        return markRaw({ labels: [], datasets: [] });
       }
       const labels = this.chartLabels;
       const rows = this.statisticsRowsSorted;
@@ -164,10 +165,11 @@ export default {
           data: rows.map((row) => valueForChart(series, row[series.key]))
         };
       });
-      return { labels, datasets };
+      // markRaw keeps Vue 2 from recursing into Chart.js's objects.
+      return markRaw({ labels, datasets });
     },
     chartOptions() {
-      return {
+      return markRaw({
         maintainAspectRatio: false,
         layout: {
           padding: {
@@ -218,7 +220,7 @@ export default {
             grid: { color: 'rgba(255, 255, 255, 0.08)' }
           }
         }
-      };
+      });
     }
   },
   watch: {
