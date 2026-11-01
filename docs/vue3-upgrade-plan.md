@@ -54,7 +54,8 @@ branch. Two lessons:
 
 ## Done
 
-All on `vue3-upgrade`, as of 2026-10-28. The first production release of this work is pending.
+All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-pinia` as of
+2026-11-01. The first production release of this work is pending.
 
 | Area | Change |
 |---|---|
@@ -66,10 +67,19 @@ All on `vue3-upgrade`, as of 2026-10-28. The first production release of this wo
 | Fixed in passing | `transferManagerModal.vue` threw for logged-out viewers of public leagues. |
 | Charts | `vue-chartjs` 5, Chart.js 4 and `chartjs-plugin-annotation` 3, on the `data`/`options` props. The chart options and data are `markRaw`, which stops Vue 2's reactivity recursing into Chart.js objects (the `Maximum call stack size exceeded` the game page's stats chart threw). `royalePublisherGraph.vue` reads the chart from the component's `chart` ref. Checked on a production build against live data: both charts draw, with no console errors. **Check charts with `vite build` and `vite preview`, not the dev server**, which leaves them blank. |
 | Drag and drop | `vuedraggable` 2 to `vue-draggable-plus` 0.6 (`VueDraggable`, `v-model`) in `assignPlayers`, `currentBidsForm`, `editDraftOrderForm`, `gameQueueForm` and `leagueTagSelector`. The draft order list lost its `transition-group` (it has Sortable's `animation` instead), and the tag selector's list headers moved out of the draggable. Builds and lints clean, and the component renders and attaches Sortable on Vue 2.7; **drag-and-drop itself is untested, since it needs a logged-in session.** |
+| State | Vuex 3 to **Pinia 2.3** (`~2.3.1`; Pinia 3 dropped Vue 2), led by Steve. A 1:1 port of all six stores at once rather than store by store: same stores, state and action names. Mutations became actions or direct assignments, and getters that only returned state were dropped, since Pinia exposes state directly. The mixins stay, on Pinia's `mapState`. The stores are now `.ts` files (`auth.ts` became `authStore.ts`) but have no types yet. `store/pinia.js` holds the one Pinia instance, which the router guard passes to each `useXStore(pinia)`, because the router's first navigation runs before Pinia is active. `adminStore` and `authStore` use the NSwag client; the other four are still on axios. Lints and builds clean. |
 
-**Still to verify by hand:** drag-and-drop in all five places above (including dragging between lists in the conference player assignment and the tag selector, and the draggable table rows in bids and the watchlist), a Copy button in a real browser (the built-in browser pane refuses
-clipboard writes), and the admin console's two toggles on beta, since flipping them really turns
-action processing on or off.
+**Still to verify by hand:**
+
+- Drag-and-drop in all five places above, including dragging between lists in the conference
+  player assignment and the tag selector, and the draggable table rows in bids and the watchlist.
+- A Copy button in a real browser. The built-in browser pane refuses clipboard writes.
+- The admin console's two toggles, on beta only, since flipping them really turns action
+  processing on or off.
+- Every page that reads a store, since the Pinia port changed them all at once. The router guard
+  logged in and logged out; the league page's toggles and bid reveal, league history; your own
+  publisher page's move mode and toggles; a conference page and modal; the home page's admin task
+  count; royale pages; the admin console's bid times.
 
 ---
 
@@ -84,32 +94,6 @@ client come in. Counts are as of 2026-10-28.
 | Package | Where | Move |
 |---|---|---|
 | `vee-validate` 3 | 22 `ValidationProvider` in 13 files, 7 `ValidationObserver` | **Decision needed.** The rules in use are `required`, `integer`, `min_value`, `max_value`, `email` and `min` (`max` is registered but unused), and the observers only read `invalid`. Replacing it with our own code now would also remove a compat risk; the alternative is vee-validate 4 after the flip, whose `<Field>`/`<Form>` have nearly the same slot shape. |
-| `vuex` 3 | 6 stores: `adminStore`, `auth.ts`, `conferenceStore`, `interLeagueStore`, `leagueStore`, `publisherStore`. `this.$store` in 28 files, map helpers in 5. | **Pinia 2.3**, which supports Vue 2.7 and 3, so the Vuex 4 step in the guide can be skipped. Move to current Pinia after the flip. See [Vuex to Pinia](#vuex-to-pinia). |
-
-### Vuex to Pinia
-
-Steve is leading this one.
-
-- **A 1:1 port.** Same stores, same state, same action names. The mixins stay: Pinia's
-  `mapState(useLeagueStore, [...])` replaces Vuex's `mapState` inside `LeagueMixin` and the
-  others, so the components that use them don't change. Mixins to composables, and the stores'
-  axios calls to the NSwag client, are separate changes.
-- **Pinia 2.3.x, not 3.** Pinia 3 dropped Vue 2. On Vue 2.7 it installs with
-  `Vue.use(PiniaVuePlugin)` and `pinia: createPinia()` on `new Vue`. The v2 docs site is down,
-  but the core API (`defineStore`, `mapState`/`mapStores`/`mapActions`) is the same as in the
-  current docs.
-- **Store by store.** Vuex and Pinia can run side by side, so each store can move and ship on
-  its own. `adminStore` and `interLeagueStore` look smallest.
-- **What changes besides the stores** (counts as of 2026-10-31):
-  - The Vuex modules aren't namespaced, so getters are global. Each of the 33
-    `$store.getters.x` reads (19 files) and 8 `mapGetters` (4 files) needs its owning store.
-  - Pinia has no mutations. The 8 `$store.commit` calls (3 files) become actions or direct
-    state assignments.
-  - 17 `$store.dispatch` (12 files), 4 Vuex `mapState` (2 files), 2 `$store.state`.
-  - Inside a store, `context.dispatch('fetchLeagueYear')` becomes `this.fetchLeagueYear()`,
-    and a call into another store becomes `useOtherStore()` in the action.
-  - Outside components (the router, for one), call `useXStore()` inside the function or guard,
-    not when the module loads, since Pinia has to be installed first.
 
 ### Code
 
@@ -119,15 +103,16 @@ Steve is leading this one.
   filters as compile errors, so they have to go before the flip regardless. Mechanical, and a
   good candidate for one bulk sweep.
 - **axios to the generated NSwag client.** 100 files import axios; 10 use `@/api/clients`. Not a
-  flip blocker, since axios works on Vue 3, but the target is the typed client everywhere. Best
-  done store by store alongside Pinia, and component by component as files are touched. The
-  admin console and job pages are already on it and are the pattern to follow. The Pinia port
-  leaves the stores on axios; moving them is a follow-up, store by store.
+  flip blocker, since axios works on Vue 3, but the target is the typed client everywhere. Do it
+  store by store (`conferenceStore`, `interLeagueStore`, `leagueStore` and `publisherStore` are
+  still on axios), and component by component as files are touched. The admin console and job
+  pages are already on it and are the pattern to follow.
 - **Mixins to composables or plain functions.** 86 components use a mixin: `LeagueMixin` 61,
   `ConferenceMixin` 13, `GGMixin` 5, `PublisherMixin` 4, `BasicMixin` 4. `BasicMixin` is also
   registered globally with `Vue.mixin`, which is where `userInfo` and `makeToast` come from
   invisibly. Most of `LeagueMixin`'s computed properties are pure functions of `leagueYear`, so
-  they can become plain, testable functions. Not tied to Pinia: the port keeps the mixins.
+  they can become plain, testable functions. The mixins read the stores through Pinia's
+  `mapState`, which works on Vue 3 too, so this isn't a flip blocker.
 - **TypeScript.** 4 of 171 components use `lang="ts"`. Seven hand-written models (`models/`)
   duplicate generated types. Adding a `vue-tsc` type check to CI (it supports a Vue 2.7 target)
   gives the conversions teeth. Convert as files are touched.
@@ -224,6 +209,8 @@ TypeScript across the rest of the app.
 - To check something against production data without the back end, `npm run client` serves the
   SPA on port 5001 with the API proxied to fantasycritic.games. `vite preview` with the same
   config serves a production build through the same proxy.
+- To inspect Pinia stores on Vue 2.7, use the legacy Vue.js devtools extension (v6). The current
+  Vue DevTools (v7) supports only Vue 3.
 - The built-in browser pane refuses clipboard writes, and when it's hidden it stops animation
   frames, so CSS transitions and Chart.js drawing stall there. Measure with the DOM, or check in
   a real browser.
