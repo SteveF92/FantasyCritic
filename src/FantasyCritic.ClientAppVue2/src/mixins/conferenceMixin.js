@@ -1,4 +1,4 @@
-import { mapGetters } from 'vuex';
+import { mapGetters } from 'pinia';
 
 let conferenceMixin = {
   computed: {

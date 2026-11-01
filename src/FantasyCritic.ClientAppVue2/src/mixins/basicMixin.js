@@ -1,4 +1,4 @@
-import { mapGetters, mapState } from 'vuex';
+import { mapGetters, mapState } from 'pinia';
 import { formatLongDateTime, formatLongDate } from '@/globalFunctions';
 
 let basicMixin = {

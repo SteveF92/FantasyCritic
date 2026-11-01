@@ -259,7 +259,7 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'vuex';
+import { mapGetters } from 'pinia';
 
 import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from '@/api/clients';
 import RecentJobsTable from '@/components/recentJobsTable.vue';

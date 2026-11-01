@@ -112,7 +112,7 @@
 
 <script>
 import axios from 'axios';
-import { mapGetters } from 'vuex';
+import { mapGetters } from 'pinia';
 
 import TopBidsAndDrops from '@/components/topBidsAndDropsWidget.vue';
 import LeagueTable from '@/components/leagueTable.vue';

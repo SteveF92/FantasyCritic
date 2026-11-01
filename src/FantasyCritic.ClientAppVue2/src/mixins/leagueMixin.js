@@ -1,4 +1,4 @@
-import { mapState } from 'vuex';
+import { mapState } from 'pinia';
 import { DateTime } from 'luxon';
 
 let leagueMixin = {
