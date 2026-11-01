@@ -4,10 +4,7 @@ import axios from 'axios';
 export const useConferenceStore = defineStore('conference', {
   state: () => ({ hasError: false, conferenceYear: null, conferenceInviteCode: false }),
   getters: {
-    hasError: (state) => state.hasError,
-    conferenceYear: (state) => state.conferenceYear,
-    conference: (state) => state.conferenceYear.conference,
-    conferenceInviteCode: (state) => state.conferenceInviteCode
+    conference: (state) => state.conferenceYear.conference
   },
   actions: {
     async initializeConferencePage(conferencePageParams) {

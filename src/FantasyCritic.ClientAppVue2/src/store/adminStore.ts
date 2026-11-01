@@ -3,9 +3,6 @@ import { combinedDataClient } from '@/api/clients';
 
 export const useAdminStore = defineStore('admin', {
   state: () => ({ adminTaskCounts: null }),
-  getters: {
-    adminTaskCounts: (state) => state.adminTaskCounts
-  },
   actions: {
     async fetchAdminTaskCounts() {
       //The endpoint is only available to fact checkers and admins, so don't bother calling it for anyone else.
