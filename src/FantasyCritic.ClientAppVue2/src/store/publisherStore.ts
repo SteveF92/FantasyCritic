@@ -15,6 +15,9 @@ export const usePublisherStore = defineStore('publisher', {
     coverArtMode: false,
     includeRemovedInSorted: false
   }),
+  getters: {
+    gameSlots: (state) => state.editableGameSlots
+  },
   actions: {
     async initializePublisherPage(publisherID) {
       try {
