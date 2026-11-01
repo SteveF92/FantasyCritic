@@ -64,38 +64,35 @@ export const useLeagueStore = defineStore('league', {
         this.setError(err.response);
       }
     },
-    fetchHistoryData(context) {
-      const leagueActionsPromise = context.dispatch('fetchLeagueActions');
-      const leagueActionSetsPromise = context.dispatch('fetchLeagueActionSets');
-      const historicalTradesPromise = context.dispatch('fetchHistoricalTrades');
-      return Promise.all([leagueActionsPromise, leagueActionSetsPromise, historicalTradesPromise]);
+    fetchHistoryData() {
+      return Promise.all([this.fetchLeagueActions(), this.fetchLeagueActionSets(), this.fetchHistoricalTrades()]);
     },
-    fetchLeagueActions(context) {
-      const queryURL = '/api/League/GetLeagueActions?leagueID=' + context.this.leagueYear.leagueID + '&year=' + context.this.leagueYear.year;
+    fetchLeagueActions() {
+      const queryURL = '/api/League/GetLeagueActions?leagueID=' + this.leagueYear.leagueID + '&year=' + this.leagueYear.year;
       return axios
         .get(queryURL)
         .then((response) => {
           this.leagueActions = response.data;
         })
-        .catch((err) => context.setError(err.response));
+        .catch((err) => this.setError(err.response));
     },
-    fetchLeagueActionSets(context) {
-      const queryURL = '/api/League/GetLeagueActionSets?leagueID=' + context.this.leagueYear.leagueID + '&year=' + context.this.leagueYear.year;
+    fetchLeagueActionSets() {
+      const queryURL = '/api/League/GetLeagueActionSets?leagueID=' + this.leagueYear.leagueID + '&year=' + this.leagueYear.year;
       return axios
         .get(queryURL)
         .then((response) => {
           this.leagueActionSets = response.data;
         })
-        .catch((err) => context.setError(err.response));
+        .catch((err) => this.setError(err.response));
     },
-    fetchHistoricalTrades(context) {
-      const queryURL = '/api/League/TradeHistory?leagueID=' + context.this.leagueYear.leagueID + '&year=' + context.this.leagueYear.year;
+    fetchHistoricalTrades() {
+      const queryURL = '/api/League/TradeHistory?leagueID=' + this.leagueYear.leagueID + '&year=' + this.leagueYear.year;
       return axios
         .get(queryURL)
         .then((response) => {
           this.historicalTrades = response.data;
         })
-        .catch((err) => context.setError(err.response));
+        .catch((err) => this.setError(err.response));
     },
     clearLeagueStoreData() {
       this.hasError = false;
