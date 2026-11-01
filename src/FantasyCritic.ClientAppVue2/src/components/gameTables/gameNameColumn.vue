@@ -46,6 +46,7 @@ import { usePublisherStore } from '@/store/publisherStore';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
 import BasicMixin from '@/mixins/basicMixin.js';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   components: {
@@ -64,7 +65,8 @@ export default {
       return this.gameSlot.publisherGame;
     },
     leagueYear() {
-      return this.$store.state.league.leagueYear;
+      const leagueStore = useLeagueStore();
+      return leagueStore.leagueYear;
     },
     moveMode() {
       const publisherStore = usePublisherStore();
