@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import { useAuthStore } from './authStore';
+import { usePublisherStore } from './publisherStore';
 
 import axios from 'axios';
 
@@ -22,13 +23,15 @@ export const useLeagueStore = defineStore('league', {
       const showProjections = localStorage.getItem('showProjections');
       this.setDraftOrderView(draftOrderView === 'true');
       this.setShowProjections(showProjections === 'true');
-      this.clearPublisherStoreData();
+      const publisherStore = usePublisherStore();
+      publisherStore.clearPublisherStoreData();
       this.clearLeagueStoreData();
       this.inviteCode = leaguePageParams.inviteCode;
       await this.fetchLeagueYear(leaguePageParams);
     },
     async initializeHistoryPage(leaguePageParams) {
-      this.clearPublisherStoreData();
+      const publisherStore = usePublisherStore();
+      publisherStore.clearPublisherStoreData();
       this.clearLeagueStoreData();
       await this.fetchLeagueYear(leaguePageParams);
       await this.fetchHistoryData();
@@ -56,7 +59,7 @@ export const useLeagueStore = defineStore('league', {
 
         const authStore = useAuthStore();
         if (authStore.userInfo) {
-          leagueYearPayload.userID = this.userInfo.userID;
+          leagueYearPayload.userID = authStore.userInfo.userID;
         }
 
         this.setLeagueYear(leagueYearPayload);
