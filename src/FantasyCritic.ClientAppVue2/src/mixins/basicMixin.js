@@ -4,13 +4,12 @@ import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 import { formatLongDateTime, formatLongDate } from '@/globalFunctions';
 
-const authStore = useAuthStore();
-
 const basicMixin = {
   computed: {
     ...mapState(useAuthStore, ['isPlusUser', 'isAuth', 'userInfo', 'isAdmin', 'isBetaTester', 'isFactChecker', 'isActionRunner', 'isJobManager', 'authIsBusy']),
     ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'possibleLeagueOptions', 'supportedYears', 'activeRoyaleQuarter']),
     displayName() {
+      const authStore = useAuthStore();
       if (!authStore.getters.userInfo) {
         return;
       }

@@ -3,8 +3,6 @@ import { DateTime } from 'luxon';
 
 import { useLeagueStore } from '@/store/leagueStore';
 
-const leagueStore = useLeagueStore();
-
 const leagueMixin = {
   computed: {
     ...mapState(useLeagueStore, ['hasError', 'forbidden', 'inviteCode', 'leagueYear', 'userPublisher', 'leagueActions', 'leagueActionSets', 'historicalTrades', 'showProjections', 'draftOrderView']),
@@ -180,6 +178,7 @@ const leagueMixin = {
   methods: {
     async notifyAction(message, refresh = true) {
       if (refresh) {
+        const leagueStore = useLeagueStore();
         await leagueStore.refreshLeagueYear();
       }
       if (message) {
