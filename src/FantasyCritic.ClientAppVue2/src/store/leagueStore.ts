@@ -1,4 +1,6 @@
 import { defineStore } from 'pinia';
+import { useAuthStore } from './authStore';
+
 import axios from 'axios';
 
 export const useLeagueStore = defineStore('league', {
@@ -51,7 +53,9 @@ export const useLeagueStore = defineStore('league', {
           leagueYear: response.data,
           userID: undefined
         };
-        if (this.userInfo) {
+
+        const authStore = useAuthStore();
+        if (authStore.userInfo) {
           leagueYearPayload.userID = this.userInfo.userID;
         }
 
