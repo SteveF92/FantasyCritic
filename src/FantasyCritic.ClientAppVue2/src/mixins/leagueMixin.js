@@ -1,20 +1,13 @@
 import { mapState } from 'pinia';
 import { DateTime } from 'luxon';
 
-let leagueMixin = {
+import { useLeagueStore } from '@/store/leagueStore';
+
+const leagueStore = useLeagueStore();
+
+const leagueMixin = {
   computed: {
-    ...mapState({
-      hasError: (state) => state.league.hasError,
-      forbidden: (state) => state.league.forbidden,
-      inviteCode: (state) => state.league.inviteCode,
-      leagueYear: (state) => state.league.leagueYear,
-      userPublisher: (state) => state.league.userPublisher,
-      leagueActions: (state) => state.league.leagueActions,
-      leagueActionSets: (state) => state.league.leagueActionSets,
-      historicalTrades: (state) => state.league.historicalTrades,
-      showProjections: (state) => state.league.showProjections,
-      draftOrderView: (state) => state.league.draftOrderView
-    }),
+    ...mapState(useLeagueStore, ['hasError', 'forbidden', 'inviteCode', 'leagueYear', 'userPublisher', 'leagueActions', 'leagueActionSets', 'historicalTrades', 'showProjections', 'draftOrderView']),
     league() {
       if (!this.leagueYear) {
         return;
@@ -187,7 +180,7 @@ let leagueMixin = {
   methods: {
     async notifyAction(message, refresh = true) {
       if (refresh) {
-        await this.$store.dispatch('refreshLeagueYear');
+        await leagueStore.refreshLeagueYear();
       }
       if (message) {
         this.makeToast(message);
