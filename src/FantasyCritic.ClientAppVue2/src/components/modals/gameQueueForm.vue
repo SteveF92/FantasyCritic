@@ -83,7 +83,7 @@
             <th scope="col"></th>
           </tr>
         </thead>
-        <draggable v-model="desiredQueueRanks" tag="tbody" handle=".handle">
+        <VueDraggable v-model="desiredQueueRanks" tag="tbody" handle=".handle">
           <tr v-for="queuedGame in desiredQueueRanks" :key="queuedGame.rank">
             <td scope="row" class="handle">
               <font-awesome-icon icon="bars" size="lg" />
@@ -115,7 +115,7 @@
               </b-button>
             </td>
           </tr>
-        </draggable>
+        </VueDraggable>
       </table>
     </div>
     <b-modal id="editWatchlistNotesModal" :title="notesModalTitle" ok-title="Save Notes" @ok="saveNotes" @hidden="clearNotesData">
@@ -130,7 +130,7 @@
 
 <script>
 import axios from 'axios';
-import draggable from 'vuedraggable';
+import { VueDraggable } from 'vue-draggable-plus';
 
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import StatusBadge from '@/components/statusBadge.vue';
@@ -140,7 +140,7 @@ import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {
-    draggable,
+    VueDraggable,
     PossibleMasterGamesTable,
     StatusBadge,
     SearchSlotTypeBadge,

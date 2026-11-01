@@ -65,8 +65,9 @@ All on `vue3-upgrade`, as of 2026-10-28. The first production release of this wo
 | Housekeeping | `npm audit fix` (axios 1.21; only low-severity advisories against Vue 2 itself remain), `chart.js` as a direct dependency, the unused vee-validate `password` rule deleted. |
 | Fixed in passing | `transferManagerModal.vue` threw for logged-out viewers of public leagues. |
 | Charts | `vue-chartjs` 5, Chart.js 4 and `chartjs-plugin-annotation` 3, on the `data`/`options` props. The chart options and data are `markRaw`, which stops Vue 2's reactivity recursing into Chart.js objects (the `Maximum call stack size exceeded` the game page's stats chart threw). `royalePublisherGraph.vue` reads the chart from the component's `chart` ref. Checked on a production build against live data: both charts draw, with no console errors. **Check charts with `vite build` and `vite preview`, not the dev server**, which leaves them blank. |
+| Drag and drop | `vuedraggable` 2 to `vue-draggable-plus` 0.6 (`VueDraggable`, `v-model`) in `assignPlayers`, `currentBidsForm`, `editDraftOrderForm`, `gameQueueForm` and `leagueTagSelector`. The draft order list lost its `transition-group` (it has Sortable's `animation` instead), and the tag selector's list headers moved out of the draggable. Builds and lints clean, and the component renders and attaches Sortable on Vue 2.7; **drag-and-drop itself is untested, since it needs a logged-in session.** |
 
-**Still to verify by hand:** a Copy button in a real browser (the built-in browser pane refuses
+**Still to verify by hand:** drag-and-drop in all five places above (including dragging between lists in the conference player assignment and the tag selector, and the draggable table rows in bids and the watchlist), a Copy button in a real browser (the built-in browser pane refuses
 clipboard writes), and the admin console's two toggles on beta, since flipping them really turns
 action processing on or off.
 
@@ -82,7 +83,6 @@ client come in. Counts are as of 2026-10-28.
 
 | Package | Where | Move |
 |---|---|---|
-| `vuedraggable` 2 | `assignPlayers`, `currentBidsForm`, `editDraftOrderForm`, `gameQueueForm`, `leagueTagSelector` | **vue-draggable-plus**, which supports Vue 2.7 and 3. The official Vue 3 build, `vuedraggable@next`, hasn't been published since 2023. These include drag-and-drop between lists and draggable `tbody` rows, and they can only be tested logged in. |
 | `vee-validate` 3 | 22 `ValidationProvider` in 13 files, 7 `ValidationObserver` | **Decision needed.** The rules in use are `required`, `integer`, `min_value`, `max_value`, `email` and `min` (`max` is registered but unused), and the observers only read `invalid`. Replacing it with our own code now would also remove a compat risk; the alternative is vee-validate 4 after the flip, whose `<Field>`/`<Form>` have nearly the same slot shape. |
 | `vuex` 3 | 6 stores: `adminStore`, `auth.ts`, `conferenceStore`, `interLeagueStore`, `leagueStore`, `publisherStore`. `this.$store` in 28 files, map helpers in 5. | **Pinia 2.3**, which supports Vue 2.7 and 3, so the Vuex 4 step in the guide can be skipped. This is the biggest dependency item and it pairs with the mixin work, because `LeagueMixin` is mostly reads from the league store. Move to current Pinia after the flip. |
 

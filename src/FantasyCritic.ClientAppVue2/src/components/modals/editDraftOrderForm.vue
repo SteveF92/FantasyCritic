@@ -27,15 +27,13 @@
     <div v-show="showManualSettings">
       <label>Drag and drop to change order.</label>
       <div class="fluid container draft-order-editor bg-secondary">
-        <draggable v-model="desiredDraftOrder" class="list-group" element="ul" :options="dragOptions" handle=".handle" @start="isDragging = true" @end="isDragging = false">
-          <transition-group type="transition" :name="'flip-list'">
-            <li v-for="(publisher, index) in desiredDraftOrder" :key="publisher.draftPosition" class="draft-order-item">
-              <font-awesome-icon icon="bars" class="handle" />
-              <span class="badge">{{ index + 1 }}</span>
-              {{ publisher.publisherName }} ({{ publisher.playerName }})
-            </li>
-          </transition-group>
-        </draggable>
+        <VueDraggable v-model="desiredDraftOrder" tag="ul" class="list-group" :animation="150" handle=".handle">
+          <li v-for="(publisher, index) in desiredDraftOrder" :key="publisher.draftPosition" class="draft-order-item">
+            <font-awesome-icon icon="bars" class="handle" />
+            <span class="badge">{{ index + 1 }}</span>
+            {{ publisher.publisherName }} ({{ publisher.playerName }})
+          </li>
+        </VueDraggable>
       </div>
 
       <b-button class="confirm-button" variant="primary" size="sm" @click="setDraftOrder('Manual')">Confirm Draft Order</b-button>
@@ -45,47 +43,27 @@
 
 <script>
 import axios from 'axios';
-import draggable from 'vuedraggable';
+import { VueDraggable } from 'vue-draggable-plus';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 
 export default {
   components: {
-    draggable
+    VueDraggable
   },
   mixins: [LeagueMixin],
   data() {
     return {
       showManualSettings: false,
       desiredDraftOrder: [],
-      isDragging: false,
-      delayedDragging: false,
       errorInfo: null
     };
   },
   computed: {
-    dragOptions() {
-      return {
-        animation: 0,
-        group: 'description',
-        disabled: false
-      };
-    },
     hasPreviousYear() {
       return this.league.years.includes(this.leagueYear.year - 1);
     },
     isFirstDraft() {
       return (this.pendingDraft?.draftNumber ?? 1) === 1;
-    }
-  },
-  watch: {
-    isDragging(newValue) {
-      if (newValue) {
-        this.delayedDragging = true;
-        return;
-      }
-      this.$nextTick(() => {
-        this.delayedDragging = false;
-      });
     }
   },
   created() {
@@ -125,14 +103,6 @@ export default {
   padding-right: 20px;
   padding-top: 5px;
   padding-bottom: 5px;
-}
-
-.flip-list-move {
-  transition: transform 0.5s;
-}
-
-.no-move {
-  transition: transform 0s;
 }
 
 .ghost {

@@ -20,40 +20,40 @@
     </div>
     <div class="tag-flex-container">
       <div class="tag-flex-drag">
-        <draggable class="tag-drag-list bg-secondary" :list="internalValue.banned" group="tags" @change="onChange">
-          <div v-for="element in internalValue.banned" :key="element" class="tag-drag-item">
-            <font-awesome-icon icon="bars" />
-            <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
-          </div>
-          <template #header>
-            <span class="tag-header">Banned Tags</span>
-          </template>
-        </draggable>
+        <div class="tag-drag-list bg-secondary">
+          <span class="tag-header">Banned Tags</span>
+          <VueDraggable v-model="internalValue.banned" class="tag-drag-items" group="tags" @update:model-value="onChange">
+            <div v-for="element in internalValue.banned" :key="element" class="tag-drag-item">
+              <font-awesome-icon icon="bars" />
+              <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
+            </div>
+          </VueDraggable>
+        </div>
       </div>
 
       <div class="tag-flex-drag">
-        <draggable class="tag-drag-list bg-secondary" :list="internalValue.allowed" group="tags" @change="onChange">
-          <div v-for="element in internalValue.allowed" :key="element" class="tag-drag-item">
-            <font-awesome-icon icon="bars" />
-            <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
-          </div>
-          <template #header>
-            <span class="tag-header">Allowed Tags</span>
-          </template>
-        </draggable>
+        <div class="tag-drag-list bg-secondary">
+          <span class="tag-header">Allowed Tags</span>
+          <VueDraggable v-model="internalValue.allowed" class="tag-drag-items" group="tags" @update:model-value="onChange">
+            <div v-for="element in internalValue.allowed" :key="element" class="tag-drag-item">
+              <font-awesome-icon icon="bars" />
+              <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
+            </div>
+          </VueDraggable>
+        </div>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import draggable from 'vuedraggable';
+import { VueDraggable } from 'vue-draggable-plus';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { intersection } from '@/globalFunctions';
 
 export default {
   components: {
-    draggable,
+    VueDraggable,
     MasterGameTagBadge
   },
   props: {
@@ -165,6 +165,9 @@ export default {
 .tag-drag-list {
   border-radius: 10px;
   padding: 5px;
+}
+.tag-drag-items {
+  min-height: 40px;
 }
 .tag-drag-item {
   margin: 10px;
