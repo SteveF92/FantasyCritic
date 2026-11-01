@@ -259,7 +259,8 @@
   </div>
 </template>
 <script>
-import { mapGetters } from 'pinia';
+import { mapState } from 'pinia';
+import { useAdminStore } from '@/store/adminStore';
 
 import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from '@/api/clients';
 import RecentJobsTable from '@/components/recentJobsTable.vue';
@@ -294,7 +295,7 @@ export default {
     };
   },
   computed: {
-    ...mapGetters(['adminTaskCounts', 'bidTimes']),
+    ...mapState(useAdminStore, ['adminTaskCounts', 'bidTimes']),
     //The template calls the clients directly. Computed rather than data so Vue does not try to make the singletons reactive.
     actionRunnerClient() {
       return actionRunnerClient;
