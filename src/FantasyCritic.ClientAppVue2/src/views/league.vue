@@ -57,7 +57,7 @@
       </div>
 
       <b-alert v-if="mostRecentManagerMessage" show dismissible @dismissed="dismissRecentManagerMessage">
-        <h5>Manager's Message ({{ mostRecentManagerMessage.timestamp | dateTime }})</h5>
+        <h5>Manager's Message ({{ formatDateTime(mostRecentManagerMessage.timestamp) }})</h5>
         <div class="preserve-whitespace">{{ mostRecentManagerMessage.messageText }}</div>
       </b-alert>
 
@@ -177,6 +177,7 @@ import SpecialAuctionInfo from '@/components/specialAuctionInfo.vue';
 import DraftReadinessBanner from '@/components/draftReadinessBanner.vue';
 import DraftStatusHeader from '@/components/draftStatusHeader.vue';
 import { useLeagueStore } from '@/store/leagueStore';
+import { formatDateTime } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -273,6 +274,7 @@ export default {
     await this.initializePage();
   },
   methods: {
+    formatDateTime,
     async initializePage() {
       this.selectedYear = this.year;
       const inviteCode = this.$route.query.inviteCode;

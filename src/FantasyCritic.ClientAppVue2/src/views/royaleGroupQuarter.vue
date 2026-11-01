@@ -54,7 +54,7 @@
           <template v-else>--</template>
         </template>
         <template #cell(budget)="data">
-          <template v-if="data.item.hasPublisher">{{ data.item.budget | money(2) }}</template>
+          <template v-if="data.item.hasPublisher">{{ formatCurrency(data.item.budget, 2) }}</template>
           <template v-else>--</template>
         </template>
         <template #cell(gamesPurchased)="data">
@@ -90,6 +90,7 @@ import axios from 'axios';
 
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 import { orderBy } from '@/globalFunctions';
+import { formatCurrency } from '@/utilities/formatters';
 
 export default {
   components: { RoyalePublisherGraph },
@@ -144,6 +145,7 @@ export default {
     await this.fetchData();
   },
   methods: {
+    formatCurrency,
     async fetchData() {
       try {
         const [quarterResponse, allQuartersResponse] = await Promise.all([

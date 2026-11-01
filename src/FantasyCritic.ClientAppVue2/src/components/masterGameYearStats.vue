@@ -10,17 +10,17 @@
         </b-dropdown>
       </h2>
       <ul>
-        <li>Drafted or picked up in {{ selectedMasterGameYear.eligiblePercentStandardGame | percent(1) }} of leagues where it is eligible.</li>
+        <li>Drafted or picked up in {{ formatPercent(selectedMasterGameYear.eligiblePercentStandardGame, 1) }} of leagues where it is eligible.</li>
 
-        <li v-if="selectedMasterGameYear.averageDraftPosition">Average Draft Position: {{ selectedMasterGameYear.averageDraftPosition | score(1) }}</li>
+        <li v-if="selectedMasterGameYear.averageDraftPosition">Average Draft Position: {{ formatScore(selectedMasterGameYear.averageDraftPosition, 1) }}</li>
         <li v-else>Average Draft Position: Undrafted</li>
 
-        <li v-if="selectedMasterGameYear.dateAdjustedHypeFactor">Hype Factor: {{ selectedMasterGameYear.dateAdjustedHypeFactor | score(1) }}</li>
+        <li v-if="selectedMasterGameYear.dateAdjustedHypeFactor">Hype Factor: {{ formatScore(selectedMasterGameYear.dateAdjustedHypeFactor, 1) }}</li>
         <li v-else>Hype Factor: Unhyped...</li>
 
         <template v-if="selectedMasterGameYear.year >= 2022 && selectedMasterGameYear.peakHypeFactor > selectedMasterGameYear.dateAdjustedHypeFactor">
           <li v-if="selectedMasterGameYear.peakHypeFactor">
-            Peak Hype Factor: {{ selectedMasterGameYear.peakHypeFactor | score(1) }}
+            Peak Hype Factor: {{ formatScore(selectedMasterGameYear.peakHypeFactor, 1) }}
             <font-awesome-icon v-b-popover.hover.top="peakHypeFactorText" color="white" size="lg" icon="info-circle" />
           </li>
           <li v-else>
@@ -29,10 +29,10 @@
           </li>
         </template>
 
-        <li v-if="selectedMasterGameYear.projectedFantasyPoints">Projected Points: ~{{ selectedMasterGameYear.projectedFantasyPoints | score(1) }}</li>
+        <li v-if="selectedMasterGameYear.projectedFantasyPoints">Projected Points: ~{{ formatScore(selectedMasterGameYear.projectedFantasyPoints, 1) }}</li>
 
-        <li>Counter Picked in {{ selectedMasterGameYear.adjustedPercentCounterPick | percent(1) }} of leagues where it is published.</li>
-        <li>Counter Picked in {{ selectedMasterGameYear.percentCounterPick | percent(1) }} of leagues total.</li>
+        <li>Counter Picked in {{ formatPercent(selectedMasterGameYear.adjustedPercentCounterPick, 1) }} of leagues where it is published.</li>
+        <li>Counter Picked in {{ formatPercent(selectedMasterGameYear.percentCounterPick, 1) }} of leagues total.</li>
       </ul>
 
       <div v-if="statisticsLoadError" class="alert alert-warning small mt-3" role="alert">{{ statisticsLoadError }}</div>
@@ -58,6 +58,7 @@
 import axios from 'axios';
 import { markRaw } from 'vue';
 import { Line as LineChartGenerator } from 'vue-chartjs';
+import { formatPercent, formatScore } from '@/utilities/formatters';
 
 const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
 
@@ -237,6 +238,8 @@ export default {
     this.selectedYear = Math.max(...this.masterGameYears.map((y) => y.year));
   },
   methods: {
+    formatPercent,
+    formatScore,
     selectYear(year) {
       this.selectedYear = year;
     },

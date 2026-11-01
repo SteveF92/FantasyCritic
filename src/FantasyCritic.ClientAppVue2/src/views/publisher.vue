@@ -27,7 +27,7 @@
             <router-link :to="{ name: 'league', params: { leagueid: publisher.leagueID, year: publisher.year } }">League: {{ publisher.leagueName }}</router-link>
           </h4>
           <ul>
-            <li>Budget: {{ publisher.budget | money(0) }}</li>
+            <li>Budget: {{ formatCurrency(publisher.budget, 0) }}</li>
             <li>Will Release Games Dropped: {{ getDropStatus(publisher.willReleaseGamesDropped, publisher.willReleaseDroppableGames) }}</li>
             <li>Will Not Release Games Dropped: {{ getDropStatus(publisher.willNotReleaseGamesDropped, publisher.willNotReleaseDroppableGames) }}</li>
             <li>"Any Unreleased" Games Dropped: {{ getDropStatus(publisher.unrestrictedReleaseStatusGamesDropped, publisher.unrestrictedReleaseStatusDroppableGames) }}</li>
@@ -134,6 +134,7 @@ import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
 import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
 import { publisherIconIsValid } from '@/globalFunctions';
+import { formatCurrency } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -218,6 +219,7 @@ export default {
     await this.initializePage();
   },
   methods: {
+    formatCurrency,
     async initializePage() {
       const publisherStore = usePublisherStore();
       await publisherStore.initializePublisherPage(this.publisherid);

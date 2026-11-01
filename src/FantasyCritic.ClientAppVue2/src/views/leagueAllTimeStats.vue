@@ -28,16 +28,16 @@
             </div>
           </template>
           <template #cell(totalFantasyPoints)="data">
-            {{ data.item.totalFantasyPoints | score(2) }}
+            {{ formatScore(data.item.totalFantasyPoints, 2) }}
           </template>
           <template #cell(averageFinishRanking)="data">
-            {{ data.item.averageFinishRanking | score(2) }}
+            {{ formatScore(data.item.averageFinishRanking, 2) }}
           </template>
           <template #cell(averageFantasyPoints)="data">
-            {{ data.item.averageFantasyPoints | score(2) }}
+            {{ formatScore(data.item.averageFantasyPoints, 2) }}
           </template>
           <template #cell(averageCriticScore)="data">
-            {{ data.item.averageCriticScore | score(2) }}
+            {{ formatScore(data.item.averageCriticScore, 2) }}
           </template>
         </b-table>
 
@@ -62,10 +62,10 @@
             <span class="standings-position">{{ ordinal_suffix_of(data.item.ranking) }}</span>
           </template>
           <template #cell(totalFantasyPoints)="data">
-            {{ data.item.totalFantasyPoints | score(2) }}
+            {{ formatScore(data.item.totalFantasyPoints, 2) }}
           </template>
           <template #cell(averageCriticScore)="data">
-            {{ data.item.averageCriticScore | score(2) }}
+            {{ formatScore(data.item.averageCriticScore, 2) }}
           </template>
         </b-table>
       </div>
@@ -79,6 +79,7 @@
 import axios from 'axios';
 import { ordinal_suffix_of } from '@/globalFunctions';
 import HallOfFameSection from '@/components/hallOfFameSection.vue';
+import { formatScore } from '@/utilities/formatters';
 
 export default {
   components: { HallOfFameSection },
@@ -145,6 +146,7 @@ export default {
     await this.initializePage();
   },
   methods: {
+    formatScore,
     ordinal_suffix_of,
     downloadFullLeagueArchive() {
       window.location.href = `/api/league/DownloadConsolidatedLeagueData/${this.leagueid}`;

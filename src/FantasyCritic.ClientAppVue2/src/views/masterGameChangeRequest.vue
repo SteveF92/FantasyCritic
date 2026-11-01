@@ -124,7 +124,7 @@
                   <span v-else>&lt;Pending&gt;</span>
                 </td>
                 <td>
-                  <span v-if="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
+                  <span v-if="request.responseTimestamp">{{ formatDateTime(request.responseTimestamp) }}</span>
                   <span v-else>&lt;Pending&gt;</span>
                 </td>
                 <td class="select-cell">
@@ -144,6 +144,7 @@ import axios from 'axios';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
 import GGMixin from '@/mixins/ggMixin.js';
+import { formatDateTime } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -206,6 +207,7 @@ export default {
     }
   },
   methods: {
+    formatDateTime,
     async fetchMyRequests() {
       const response = await axios.get('/api/game/MyMasterGameChangeRequests');
       this.myRequests = response.data;

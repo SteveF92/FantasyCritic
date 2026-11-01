@@ -31,7 +31,7 @@
           </span>
         </template>
         <template #cell(masterGame.addedTimestamp)="data">
-          {{ data.item.masterGame.addedTimestamp | date }}
+          {{ formatDateIso(data.item.masterGame.addedTimestamp) }}
         </template>
       </b-table>
     </div>
@@ -48,6 +48,7 @@ import { DateTime } from 'luxon';
 import { formatMasterGameReleaseDate } from '@/globalFunctions';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import { formatDateIso } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -113,6 +114,7 @@ export default {
     this.fetchGames();
   },
   methods: {
+    formatDateIso,
     getReleaseDate(game) {
       return formatMasterGameReleaseDate(game);
     },

@@ -14,7 +14,7 @@
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
         <template #cell(timestamp)="data">
-          {{ data.item.change.timestamp | longDate }}
+          {{ formatDateLong(data.item.change.timestamp) }}
         </template>
         <template #cell(description)="data">
           {{ data.item.change.description }}
@@ -34,6 +34,7 @@
 <script>
 import axios from 'axios';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { formatDateLong } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -75,6 +76,7 @@ export default {
     await this.fetchRecentChanges();
   },
   methods: {
+    formatDateLong,
     async fetchRecentChanges() {
       this.isBusy = true;
       const response = await axios.get('/api/game/GetRecentMasterGameChanges', {

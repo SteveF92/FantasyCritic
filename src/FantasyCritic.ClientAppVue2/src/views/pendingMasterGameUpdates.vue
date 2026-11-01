@@ -42,8 +42,8 @@
         <tbody>
           <tr v-for="update in pendingUpdates.scoreUpdates" :key="update.masterGameUpdateID">
             <td><masterGamePopover :master-game="update.masterGame"></masterGamePopover></td>
-            <td>{{ update.oldCriticScore | score(1) }}</td>
-            <td>{{ update.newCriticScore | score(1) }}</td>
+            <td>{{ formatScore(update.oldCriticScore, 1) }}</td>
+            <td>{{ formatScore(update.newCriticScore, 1) }}</td>
             <td class="select-cell">
               <b-button variant="danger" size="sm" :disabled="isBusy" @click="deleteUpdate(update)">Delete</b-button>
             </td>
@@ -83,6 +83,7 @@
 <script>
 import { ApiException, factCheckerClient } from '@/api/clients';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { formatScore } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -99,6 +100,7 @@ export default {
     await this.fetchPendingUpdates();
   },
   methods: {
+    formatScore,
     async fetchPendingUpdates() {
       try {
         this.pendingUpdates = await factCheckerClient.pendingMasterGameUpdates();

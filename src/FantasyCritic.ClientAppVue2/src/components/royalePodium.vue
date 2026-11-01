@@ -21,7 +21,7 @@
           <div class="podium-player">
             <router-link :to="{ name: 'royaleHistory', params: { userid: entry.userID } }">{{ entry.playerName }}</router-link>
           </div>
-          <div class="podium-points">{{ entry.totalFantasyPoints | score(2) }} points</div>
+          <div class="podium-points">{{ formatScore(entry.totalFantasyPoints, 2) }} points</div>
         </div>
         <div class="podium-step">{{ place.ranking }}</div>
       </div>
@@ -31,6 +31,7 @@
 
 <script>
 import { publisherIconIsValid } from '@/globalFunctions';
+import { formatScore } from '@/utilities/formatters';
 
 const standOrder = [2, 1, 3];
 
@@ -54,6 +55,7 @@ export default {
     }
   },
   methods: {
+    formatScore,
     iconIsValid(publisherIcon) {
       return publisherIconIsValid(publisherIcon);
     }

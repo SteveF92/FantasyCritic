@@ -29,7 +29,7 @@
             <template v-else>--</template>
           </template>
           <template #cell(totalFantasyPoints)="data">
-            {{ data.item.totalFantasyPoints | score(2) }}
+            {{ formatScore(data.item.totalFantasyPoints, 2) }}
           </template>
         </b-table>
       </div>
@@ -43,6 +43,7 @@
 
 <script>
 import axios from 'axios';
+import { formatScore } from '@/utilities/formatters';
 
 export default {
   props: {
@@ -68,6 +69,7 @@ export default {
     await this.fetchHistory();
   },
   methods: {
+    formatScore,
     async fetchHistory() {
       try {
         const response = await axios.get('/api/Royale/UserRoyaleHistory/' + this.userid);

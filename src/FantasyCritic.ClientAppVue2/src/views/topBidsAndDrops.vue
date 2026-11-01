@@ -4,7 +4,7 @@
     <hr />
 
     <div v-if="processDateInternal && selectedYear && selectedMonthString" class="header-area">
-      <h2>For Week Ending {{ processDateInternal | longDate }}</h2>
+      <h2>For Week Ending {{ formatDateLong(processDateInternal) }}</h2>
       <div>
         <b-dropdown id="year-dropdown" :text="selectedYear.toString()">
           <b-dropdown-item v-for="year in years" :key="year" :active="selectedYear === year" @click="selectedYear = year">
@@ -51,7 +51,7 @@
               <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
             </template>
             <template #cell(totalStandardBidAmount)="data">
-              {{ data.item.totalStandardBidAmount | money(0) }}
+              {{ formatCurrency(data.item.totalStandardBidAmount, 0) }}
             </template>
           </b-table>
         </b-tab>
@@ -61,7 +61,7 @@
               <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
             </template>
             <template #cell(totalCounterPickBidAmount)="data">
-              {{ data.item.totalCounterPickBidAmount | money(0) }}
+              {{ formatCurrency(data.item.totalCounterPickBidAmount, 0) }}
             </template>
           </b-table>
         </b-tab>
@@ -82,6 +82,7 @@ import axios from 'axios';
 import { DateTime } from 'luxon';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { orderBy, orderByDescending } from '@/globalFunctions';
+import { formatCurrency, formatDateLong } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -172,6 +173,8 @@ export default {
     await this.initializePage();
   },
   methods: {
+    formatCurrency,
+    formatDateLong,
     async initializePage() {
       try {
         this.allTopBidsAndDrops = null;

@@ -62,6 +62,7 @@ export default [
       "vue/no-deprecated-dollar-listeners-api": "error",
       "vue/no-deprecated-dollar-scopedslots-api": "error",
       "vue/no-deprecated-events-api": "error",
+      "vue/no-deprecated-filter": "error",
       "vue/no-deprecated-functional-template": "error",
       "vue/no-deprecated-html-element-is": "error",
       "vue/no-deprecated-inline-template": "error",

@@ -37,15 +37,15 @@
 
     <template #cell(publisherGame.masterGame.criticScore)="data">
       <template v-if="data.item.publisherGame">
-        {{ data.item.publisherGame.criticScore | score(2) }}
+        {{ formatScore(data.item.publisherGame.criticScore, 2) }}
       </template>
     </template>
 
-    <template #cell(projectedFantasyPoints)="data">~{{ data.item.projectedFantasyPoints | score(2) }}</template>
+    <template #cell(projectedFantasyPoints)="data">~{{ formatScore(data.item.projectedFantasyPoints, 2) }}</template>
 
     <template #cell(publisherGame.fantasyPoints)="data">
       <template v-if="data.item.publisherGame">
-        {{ data.item.publisherGame.fantasyPoints | score(2) }}
+        {{ formatScore(data.item.publisherGame.fantasyPoints, 2) }}
       </template>
       <template v-if="!data.item.publisherGame && data.item.counterPick && leagueYear.supportedYear.finished">-15</template>
     </template>
@@ -67,9 +67,9 @@
         </b-td>
         <b-td></b-td>
         <b-td></b-td>
-        <b-td class="average-critic-column">{{ publisher.averageCriticScore | score(2) }} (Average)</b-td>
-        <b-td class="total-column projected-text bg-info">~{{ publisher.totalProjectedPoints | score(2) }}</b-td>
-        <b-td class="total-column bg-success">{{ publisher.totalFantasyPoints | score(2) }}</b-td>
+        <b-td class="average-critic-column">{{ formatScore(publisher.averageCriticScore, 2) }} (Average)</b-td>
+        <b-td class="total-column projected-text bg-info">~{{ formatScore(publisher.totalProjectedPoints, 2) }}</b-td>
+        <b-td class="total-column bg-success">{{ formatScore(publisher.totalFantasyPoints, 2) }}</b-td>
       </b-tr>
     </template>
   </b-table>
@@ -79,6 +79,7 @@
 import { formatPublisherGameReleaseDate, formatPublisherGameAcquiredDate, formatPublisherGameRemovedDate } from '@/globalFunctions';
 import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 import PublisherMixin from '@/mixins/publisherMixin.js';
+import { formatScore } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -164,6 +165,7 @@ export default {
     }
   },
   methods: {
+    formatScore,
     getReleaseDate(publisherGame) {
       return formatPublisherGameReleaseDate(publisherGame);
     },

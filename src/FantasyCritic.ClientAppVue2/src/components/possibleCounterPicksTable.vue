@@ -21,7 +21,7 @@
       </template>
       <template #cell(masterGame.dateAdjustedHypeFactor)="data">
         <span v-if="data.item.masterGame">
-          {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
+          {{ formatScore(data.item.masterGame.dateAdjustedHypeFactor, 1) }}
         </span>
         <span v-else>N/A</span>
       </template>
@@ -36,6 +36,7 @@
 </template>
 <script>
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { formatScore } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -78,6 +79,7 @@ export default {
     }
   },
   methods: {
+    formatScore,
     selectGame(publisherGame) {
       this.selectedPublisherGame = publisherGame;
       this.$emit('input', this.selectedPublisherGame);

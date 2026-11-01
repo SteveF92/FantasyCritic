@@ -25,7 +25,7 @@
             </option>
           </b-form-select>
 
-          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money(0) }})</label>
+          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget, 0) }})</label>
 
           <ValidationProvider v-slot="{ errors }" rules="required|integer">
             <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
@@ -50,6 +50,7 @@
 <script>
 import axios from 'axios';
 import LeagueMixin from '@/mixins/leagueMixin.js';
+import { formatCurrency } from '@/utilities/formatters';
 
 export default {
   mixins: [LeagueMixin],
@@ -90,6 +91,7 @@ export default {
     }
   },
   methods: {
+    formatCurrency,
     getPossibleCounterPicks() {
       this.clearData();
       this.isBusy = true;

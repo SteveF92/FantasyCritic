@@ -49,7 +49,7 @@
     </div>
     <p v-if="announcements && !announcements.length" class="text-muted">No announcements have been posted yet.</p>
     <b-table v-else-if="announcements" :items="announcements" :fields="announcementFields" striped bordered responsive>
-      <template #cell(postedAt)="row">{{ row.item.postedAt | dateTime }}</template>
+      <template #cell(postedAt)="row">{{ formatDateTime(row.item.postedAt) }}</template>
       <template #cell(link)="row">
         <b-link v-if="row.item.linkAddress" :href="row.item.linkAddress" target="_blank" rel="noopener">{{ row.item.linkLabel || row.item.linkAddress }}</b-link>
       </template>
@@ -63,6 +63,7 @@
 
 <script>
 import axios from 'axios';
+import { formatDateTime } from '@/utilities/formatters';
 
 export default {
   data() {
@@ -112,6 +113,7 @@ export default {
     }
   },
   methods: {
+    formatDateTime,
     clearForm() {
       this.editingAnnouncementID = null;
       this.form = {

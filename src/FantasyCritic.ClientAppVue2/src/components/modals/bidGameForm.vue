@@ -79,7 +79,7 @@
         <masterGameSummary :master-game="bidMasterGame"></masterGameSummary>
         <hr />
         <div class="form-group">
-          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money }})</label>
+          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget) }})</label>
 
           <ValidationProvider v-slot="{ errors }" rules="required|integer">
             <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
@@ -141,6 +141,7 @@ import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue'
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
 import LeagueMixin from '@/mixins/leagueMixin.js';
+import { formatCurrency } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -229,6 +230,7 @@ export default {
     }
   },
   methods: {
+    formatCurrency,
     searchGame() {
       this.clearDataExceptSearch();
       this.isBusy = true;

@@ -10,7 +10,7 @@
       <tbody>
         <tr v-for="eligibilityOverride in leagueYear.eligibilityOverrides" :key="eligibilityOverride.masterGame.masterGameID">
           <td>{{ eligibilityOverride.masterGame.gameName }}</td>
-          <td>{{ eligibilityOverride.eligible | yesNo }}</td>
+          <td>{{ formatYesNo(eligibilityOverride.eligible) }}</td>
         </tr>
       </tbody>
     </table>
@@ -18,8 +18,12 @@
 </template>
 <script>
 import LeagueMixin from '@/mixins/leagueMixin.js';
+import { formatYesNo } from '@/utilities/formatters';
 
 export default {
-  mixins: [LeagueMixin]
+  mixins: [LeagueMixin],
+  methods: {
+    formatYesNo
+  }
 };
 </script>

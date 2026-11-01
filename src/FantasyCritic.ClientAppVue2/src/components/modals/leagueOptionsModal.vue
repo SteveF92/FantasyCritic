@@ -51,46 +51,46 @@
         </tr>
         <tr>
           <th class="bg-primary">Drop Only Drafted Games</th>
-          <td>{{ leagueYearOptions.dropOnlyDraftGames | yesNo }}</td>
+          <td>{{ formatYesNo(leagueYearOptions.dropOnlyDraftGames) }}</td>
         </tr>
         <tr>
           <th class="bg-primary">Automatic Super Drops</th>
           <td>
-            <span>{{ leagueYearOptions.grantSuperDrops | yesNo }}</span>
-            <span v-if="leagueYearOptions.grantSuperDrops && superDropPointCutoff" class="point-cutoff">(Point Cutoff: {{ superDropPointCutoff | score(2) }})</span>
+            <span>{{ formatYesNo(leagueYearOptions.grantSuperDrops) }}</span>
+            <span v-if="leagueYearOptions.grantSuperDrops && superDropPointCutoff" class="point-cutoff">(Point Cutoff: {{ formatScore(superDropPointCutoff, 2) }})</span>
           </td>
         </tr>
         <tr>
           <th class="bg-primary">Counter Picks Block Drops</th>
-          <td>{{ leagueYearOptions.counterPicksBlockDrops | yesNo }}</td>
+          <td>{{ formatYesNo(leagueYearOptions.counterPicksBlockDrops) }}</td>
         </tr>
         <tr>
           <th class="bg-primary">Allow Games to be moved into ineligible slots</th>
-          <td>{{ leagueYearOptions.allowMoveIntoIneligible | yesNo }}</td>
+          <td>{{ formatYesNo(leagueYearOptions.allowMoveIntoIneligible) }}</td>
         </tr>
         <tr>
           <th class="bg-primary">Bidding System</th>
-          <td>{{ leagueYearOptions.pickupSystem | selectTextFromPossibleOptions(possibleLeagueOptions.pickupSystems) }}</td>
+          <td>{{ selectTextFromPossibleOptions(leagueYearOptions.pickupSystem, possibleLeagueOptions.pickupSystems) }}</td>
         </tr>
         <tr>
           <th class="bg-primary">Tiebreak System</th>
-          <td>{{ leagueYearOptions.tiebreakSystem | selectTextFromPossibleOptions(possibleLeagueOptions.tiebreakSystems) }}</td>
+          <td>{{ selectTextFromPossibleOptions(leagueYearOptions.tiebreakSystem, possibleLeagueOptions.tiebreakSystems) }}</td>
         </tr>
         <tr>
           <th class="bg-primary">Trading System</th>
-          <td>{{ leagueYearOptions.tradingSystem | selectTextFromPossibleOptions(possibleLeagueOptions.tradingSystems) }}</td>
+          <td>{{ selectTextFromPossibleOptions(leagueYearOptions.tradingSystem, possibleLeagueOptions.tradingSystems) }}</td>
         </tr>
         <tr>
           <th class="bg-primary">Game Release Rule</th>
-          <td>{{ leagueYearOptions.releaseSystem | selectTextFromPossibleOptions(possibleLeagueOptions.releaseSystems) }}</td>
+          <td>{{ selectTextFromPossibleOptions(leagueYearOptions.releaseSystem, possibleLeagueOptions.releaseSystems) }}</td>
         </tr>
         <tr>
           <th class="bg-primary">Ineligible games on roster</th>
-          <td>{{ leagueYearOptions.ineligibleGameSystem | selectTextFromPossibleOptions(possibleLeagueOptions.ineligibleGameSystems) }}</td>
+          <td>{{ selectTextFromPossibleOptions(leagueYearOptions.ineligibleGameSystem, possibleLeagueOptions.ineligibleGameSystems) }}</td>
         </tr>
         <tr>
           <th class="bg-primary">Scoring Rule</th>
-          <td>{{ leagueYearOptions.scoringSystem | selectTextFromPossibleOptions(possibleLeagueOptions.scoringSystems) }}</td>
+          <td>{{ selectTextFromPossibleOptions(leagueYearOptions.scoringSystem, possibleLeagueOptions.scoringSystems) }}</td>
         </tr>
 
         <tr>
@@ -109,15 +109,15 @@
         <template v-if="league">
           <tr>
             <th class="bg-primary">Public League</th>
-            <td>{{ league.publicLeague | yesNo }}</td>
+            <td>{{ formatYesNo(league.publicLeague) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Custom Rules League</th>
-            <td>{{ league.customRulesLeague | yesNo }}</td>
+            <td>{{ formatYesNo(league.customRulesLeague) }}</td>
           </tr>
           <tr>
             <th class="bg-primary">Test League</th>
-            <td>{{ league.testLeague | yesNo }}</td>
+            <td>{{ formatYesNo(league.testLeague) }}</td>
           </tr>
         </template>
       </tbody>
@@ -128,6 +128,7 @@
 <script>
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import BasicMixin from '@/mixins/basicMixin.js';
+import { formatScore, formatYesNo, selectTextFromPossibleOptions } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -148,6 +149,11 @@ export default {
     firstDraft() {
       return this.drafts[0];
     }
+  },
+  methods: {
+    formatScore,
+    formatYesNo,
+    selectTextFromPossibleOptions
   }
 };
 </script>

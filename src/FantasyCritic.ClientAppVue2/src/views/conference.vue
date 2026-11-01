@@ -102,7 +102,7 @@
       </div>
 
       <b-alert v-if="mostRecentManagerMessage" show dismissible @dismissed="dismissRecentManagerMessage">
-        <h5>Manager's Message ({{ mostRecentManagerMessage.timestamp | dateTime }})</h5>
+        <h5>Manager's Message ({{ formatDateTime(mostRecentManagerMessage.timestamp) }})</h5>
         <div class="preserve-whitespace">{{ mostRecentManagerMessage.messageText }}</div>
       </b-alert>
 
@@ -132,6 +132,7 @@ import ConferenceMixin from '@/mixins/conferenceMixin.js';
 import ConferenceManagerActions from '@/components/conferenceManagerActions.vue';
 import ConferenceYearStandings from '@/components/conferenceYearStandings.vue';
 import { useConferenceStore } from '@/store/conferenceStore';
+import { formatDateTime } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -218,6 +219,7 @@ export default {
     await this.initializePage();
   },
   methods: {
+    formatDateTime,
     async initializePage() {
       this.selectedYear = this.year;
       const inviteCode = this.$route.query.inviteCode;

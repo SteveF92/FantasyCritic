@@ -16,7 +16,7 @@
         </template>
         <p>
           Money to receive:
-          <strong>{{ (publisherGame.refundAmount + publisherGame.advertisingMoney) | money }}</strong>
+          <strong>{{ formatCurrency(publisherGame.refundAmount + publisherGame.advertisingMoney) }}</strong>
         </p>
       </div>
       <div v-else>
@@ -28,18 +28,21 @@
         <p>You'll also get back any advertising money currently assigned to it.</p>
         <p>
           Money to recieve:
-          <strong>{{ (publisherGame.refundAmount + publisherGame.advertisingMoney) | money }}</strong>
+          <strong>{{ formatCurrency(publisherGame.refundAmount + publisherGame.advertisingMoney) }}</strong>
         </p>
       </div>
     </template>
   </b-modal>
 </template>
 <script>
+import { formatCurrency } from '@/utilities/formatters';
+
 export default {
   props: {
     publisherGame: { type: Object, default: null }
   },
   methods: {
+    formatCurrency,
     sellGame() {
       if (!this.publisherGame) {
         return;

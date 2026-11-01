@@ -19,7 +19,7 @@
         <tbody>
           <tr v-for="eligibilityOverride in leagueYear.eligibilityOverrides" :key="eligibilityOverride.masterGame.masterGameID">
             <td>{{ eligibilityOverride.masterGame.gameName }}</td>
-            <td>{{ eligibilityOverride.eligible | yesNo }}</td>
+            <td>{{ formatYesNo(eligibilityOverride.eligible) }}</td>
             <td class="select-cell">
               <b-button variant="danger" @click="resetEligibility(eligibilityOverride)">Reset</b-button>
             </td>
@@ -61,6 +61,7 @@
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import LeagueMixin from '@/mixins/leagueMixin.js';
+import { formatYesNo } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -81,6 +82,7 @@ export default {
     }
   },
   methods: {
+    formatYesNo,
     resetEligibility(eligibilityOverride) {
       const model = {
         leagueID: this.leagueYear.leagueID,

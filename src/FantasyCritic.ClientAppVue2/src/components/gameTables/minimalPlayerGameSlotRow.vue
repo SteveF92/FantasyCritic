@@ -4,13 +4,13 @@
       <gameNameColumn :game-slot="gameSlot" :has-special-slots="hasSpecialSlots" :supported-year="supportedYear" :counter-pick-deadline="leagueYear.settings.counterPickDeadline"></gameNameColumn>
     </td>
     <td class="score-column">
-      <template v-if="scoreColumnMode === 'RealScore'">{{ game.criticScore | score(decimalsToShow) }}</template>
+      <template v-if="scoreColumnMode === 'RealScore'">{{ formatScore(game.criticScore, decimalsToShow) }}</template>
       <template v-if="scoreColumnMode === 'Empty'"></template>
     </td>
 
     <td class="score-column" :class="{ 'projected-text': showProjectedScore }">
-      <template v-if="scoreColumnMode === 'RealScore'">{{ game.fantasyPoints | score(decimalsToShow) }}</template>
-      <template v-if="scoreColumnMode === 'ProjectedPoints'">~{{ gameSlot.projectedFantasyPoints | score(decimalsToShow) }}</template>
+      <template v-if="scoreColumnMode === 'RealScore'">{{ formatScore(game.fantasyPoints, decimalsToShow) }}</template>
+      <template v-if="scoreColumnMode === 'ProjectedPoints'">~{{ formatScore(gameSlot.projectedFantasyPoints, decimalsToShow) }}</template>
       <template v-if="scoreColumnMode === 'Empty'">{{ emptySlotScore }}</template>
     </td>
   </tr>
@@ -18,6 +18,7 @@
 <script>
 import LeagueMixin from '@/mixins/leagueMixin.js';
 import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
+import { formatScore } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -51,6 +52,9 @@ export default {
 
       return '';
     }
+  },
+  methods: {
+    formatScore
   }
 };
 </script>

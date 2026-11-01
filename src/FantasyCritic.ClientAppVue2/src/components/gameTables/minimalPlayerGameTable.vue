@@ -29,7 +29,7 @@
     <div class="publisher-stats-container">
       <div class="publisher-stats">
         <span class="publisher-stat">
-          <span class="stat-value">{{ publisher.budget | money(0) }}</span>
+          <span class="stat-value">{{ formatCurrency(publisher.budget, 0) }}</span>
           <span class="stat-label">Budget</span>
         </span>
         <span class="publisher-stat">
@@ -80,11 +80,11 @@
             <span v-else id="total-description-text">Projected Fantasy Points</span>
           </td>
           <template v-if="!showProjections">
-            <td id="total-column" class="bg-success" colspan="2">{{ publisher.totalFantasyPoints | score(decimalsToShow) }}</td>
+            <td id="total-column" class="bg-success" colspan="2">{{ formatScore(publisher.totalFantasyPoints, decimalsToShow) }}</td>
           </template>
           <template v-else>
             <td id="total-column" class="bg-info" colspan="2">
-              <em>~{{ publisher.totalProjectedPoints | score(decimalsToShow) }}</em>
+              <em>~{{ formatScore(publisher.totalProjectedPoints, decimalsToShow) }}</em>
             </td>
           </template>
         </tr>
@@ -98,6 +98,7 @@ import html2canvas from 'html2canvas';
 import LeagueMixin from '@/mixins/leagueMixin.js';
 import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow.vue';
 import { orderBy, publisherIconIsValid } from '@/globalFunctions';
+import { formatCurrency, formatScore } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -179,6 +180,8 @@ export default {
     }
   },
   methods: {
+    formatCurrency,
+    formatScore,
     dropStatus(dropped, droppable) {
       if (droppable === -1) {
         return '\u221E';

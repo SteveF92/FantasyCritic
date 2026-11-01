@@ -94,7 +94,7 @@
               <span>{{ queuedGame.masterGame.estimatedReleaseDate }}</span>
               <span v-show="queuedGame.masterGame.isReleased">(Released)</span>
             </td>
-            <td class="hype-column" data-label="Hype Factor">{{ queuedGame.masterGame.dateAdjustedHypeFactor | score(1) }}</td>
+            <td class="hype-column" data-label="Hype Factor">{{ formatScore(queuedGame.masterGame.dateAdjustedHypeFactor, 1) }}</td>
             <td class="notes-cell" data-label="Notes">
               <div class="notes-display">
                 <span v-if="queuedGame.notes" class="notes-text">{{ queuedGame.notes }}</span>
@@ -139,6 +139,7 @@ import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue'
 import StatusBadge from '@/components/statusBadge.vue';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { formatScore } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -178,6 +179,7 @@ export default {
     this.initializeDesiredRankings();
   },
   methods: {
+    formatScore,
     initializeDesiredRankings() {
       this.desiredQueueRanks = this.queuedGames;
     },

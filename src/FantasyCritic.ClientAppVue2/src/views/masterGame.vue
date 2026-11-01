@@ -56,7 +56,7 @@
           <h2>Change Log</h2>
           <b-table :items="changeLog" :fields="changeLogFields" bordered striped responsive small>
             <template #cell(timestamp)="data">
-              {{ data.item.timestamp | longDate }}
+              {{ formatDateLong(data.item.timestamp) }}
             </template>
             <template #cell(changedByUser)="data">
               {{ data.item.changedByUser.displayName }}
@@ -91,6 +91,7 @@ import axios from 'axios';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
 import MasterGameYearStats from '@/components/masterGameYearStats.vue';
 import GGMixin from '@/mixins/ggMixin.js';
+import { formatDateLong } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -142,6 +143,7 @@ export default {
     await this.loadAll();
   },
   methods: {
+    formatDateLong,
     async loadAll() {
       await this.fetchMasterGame();
       const tasks = [this.fetchMasterGameChangeLog(), this.fetchMasterGameYears(), this.fetchLeaguesWithMasterGame()];

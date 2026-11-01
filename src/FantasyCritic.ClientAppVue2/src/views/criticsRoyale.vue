@@ -70,7 +70,7 @@
               <font-awesome-icon v-if="data.item.oneTimeWinner && !data.item.previousQuarterWinner" v-b-popover.hover.focus="'Previous Champion'" icon="crown" class="onetime-winner" />
             </template>
             <template #cell(budget)="data">
-              <span>{{ data.item.budget | money(2) }}</span>
+              <span>{{ formatCurrency(data.item.budget, 2) }}</span>
             </template>
           </b-table>
           <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
@@ -120,6 +120,7 @@ import RoyalePodium from '@/components/royalePodium.vue';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 import CriticsRoyaleInfo from '@/components/criticsRoyaleInfo.vue';
 import { orderBy } from '@/globalFunctions';
+import { formatCurrency } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -199,6 +200,7 @@ export default {
     await this.initializePage();
   },
   methods: {
+    formatCurrency,
     async initializePage() {
       if (!this.year || !this.quarter) {
         await this.fetchRoyaleQuarters();

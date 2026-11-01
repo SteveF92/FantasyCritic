@@ -196,19 +196,19 @@
                 </tr>
                 <tr v-if="buildInfo.commitDate">
                   <th>Commit date</th>
-                  <td>{{ buildInfo.commitDate | dateTime }}</td>
+                  <td>{{ formatDateTime(buildInfo.commitDate) }}</td>
                 </tr>
                 <tr v-if="buildInfo.deployedAt">
                   <th>Deployed</th>
-                  <td>{{ buildInfo.deployedAt | dateTime }}</td>
+                  <td>{{ formatDateTime(buildInfo.deployedAt) }}</td>
                 </tr>
                 <tr>
                   <th>Running since</th>
-                  <td>{{ buildInfo.processStartedAt | dateTime }}</td>
+                  <td>{{ formatDateTime(buildInfo.processStartedAt) }}</td>
                 </tr>
                 <tr v-if="buildInfo.builtAt">
                   <th>Built</th>
-                  <td>{{ buildInfo.builtAt | dateTime }}</td>
+                  <td>{{ formatDateTime(buildInfo.builtAt) }}</td>
                 </tr>
                 <tr v-if="buildInfo.releaseID">
                   <th>Release</th>
@@ -267,6 +267,7 @@ import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from
 import RecentJobsTable from '@/components/recentJobsTable.vue';
 import ServiceMonitor from '@/components/serviceMonitor.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
+import { formatDateTime } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -347,6 +348,7 @@ export default {
     await this.fetchAutomatedActionProcessing();
   },
   methods: {
+    formatDateTime,
     async fetchAutomatedActionProcessing() {
       if (!this.isActionRunner) {
         return;

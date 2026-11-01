@@ -29,10 +29,10 @@
           <div class="history-table">
             <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="dryRunResults.leagueActions" :fields="actionFields" bordered striped responsive>
               <template #cell(timestamp)="data">
-                {{ data.item.timestamp | dateTime }}
+                {{ formatDateTime(data.item.timestamp) }}
               </template>
               <template #cell(managerAction)="data">
-                {{ data.item.managerAction | yesNo }}
+                {{ formatYesNo(data.item.managerAction) }}
               </template>
             </b-table>
           </div>
@@ -57,6 +57,7 @@
 import axios from 'axios';
 import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
 import LeagueActionSet from '@/components/leagueActionSet.vue';
+import { formatDateTime, formatYesNo } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -82,6 +83,8 @@ export default {
     this.fetchActionedGames();
   },
   methods: {
+    formatDateTime,
+    formatYesNo,
     fetchActionedGames() {
       axios
         .get('/api/ActionRunner/ActionProcessingDryRun')

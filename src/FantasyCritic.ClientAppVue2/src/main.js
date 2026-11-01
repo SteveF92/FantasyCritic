@@ -15,7 +15,6 @@ import { pinia } from '@/store/pinia';
 
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 
-import './filters';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 import VueFlatPickr from 'vue-flatpickr-component';
 import 'flatpickr/dist/flatpickr.css';

@@ -13,7 +13,7 @@
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
         <template #cell(masterGame.maximumReleaseDate)="data">
-          {{ data.item.masterGame.maximumReleaseDate | longDate }}
+          {{ formatDateLong(data.item.masterGame.maximumReleaseDate) }}
         </template>
         <template #cell(openCriticLink)="data">
           <a v-if="data.item.masterGame.openCriticID" :href="openCriticLink(data.item.masterGame)" target="_blank">
@@ -37,6 +37,7 @@
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { formatDateLong } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -104,6 +105,7 @@ export default {
     }
   },
   methods: {
+    formatDateLong,
     openCriticLink(game) {
       return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
     }

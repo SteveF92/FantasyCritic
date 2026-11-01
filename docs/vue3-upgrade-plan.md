@@ -60,7 +60,7 @@ All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-
 | Area | Change |
 |---|---|
 | Template syntax | The last `slot="..."` is now `v-slot`. |
-| Lint ratchet | All 17 `vue/no-deprecated-*` rules the codebase already passes are on as errors, in their own block of `eslint.config.mjs`. |
+| Lint ratchet | All 18 `vue/no-deprecated-*` rules the codebase already passes are on as errors, in their own block of `eslint.config.mjs`. |
 | Removed | `register-service-worker` (unused), `vuex-router-sync` (nothing read `state.route`), `vue-gtag` (it reported to a Universal Analytics property, dead since July 2023), and the `bootstrap.bundle.js` import (bootstrap-vue does that work; dropping it took jQuery out of the bundle, about 180 KB of JS). |
 | Replaced with our own code | `vue-clipboard2` with `navigator.clipboard`, `grapheme-breaker-mjs` with `Intl.Segmenter`, `vue-awesome-countdown` with `components/countdown.vue`, and `vue-js-toggle-button` with `components/toggleSwitch.vue`. |
 | Housekeeping | `npm audit fix` (axios 1.21; only low-severity advisories against Vue 2 itself remain), `chart.js` as a direct dependency, the unused vee-validate `password` rule deleted. |
@@ -68,6 +68,7 @@ All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-
 | Charts | `vue-chartjs` 5, Chart.js 4 and `chartjs-plugin-annotation` 3, on the `data`/`options` props. The chart options and data are `markRaw`, which stops Vue 2's reactivity recursing into Chart.js objects (the `Maximum call stack size exceeded` the game page's stats chart threw). `royalePublisherGraph.vue` reads the chart from the component's `chart` ref. Checked on a production build against live data: both charts draw, with no console errors. **Check charts with `vite build` and `vite preview`, not the dev server**, which leaves them blank. |
 | Drag and drop | `vuedraggable` 2 to `vue-draggable-plus` 0.6 (`VueDraggable`, `v-model`) in `assignPlayers`, `currentBidsForm`, `editDraftOrderForm`, `gameQueueForm` and `leagueTagSelector`. The draft order list lost its `transition-group` (it has Sortable's `animation` instead), and the tag selector's list headers moved out of the draggable. Builds and lints clean, and the component renders and attaches Sortable on Vue 2.7; **drag-and-drop itself is untested, since it needs a logged-in session.** |
 | State | Vuex 3 to **Pinia 2.3** (`~2.3.1`; Pinia 3 dropped Vue 2), led by Steve. A 1:1 port of all six stores at once rather than store by store: same stores, state and action names. Mutations became actions or direct assignments, and getters that only returned state were dropped, since Pinia exposes state directly. The mixins stay, on Pinia's `mapState`. The stores are now `.ts` files (`auth.ts` became `authStore.ts`) but have no types yet. `store/pinia.js` holds the one Pinia instance, which the router guard passes to each `useXStore(pinia)`, because the router's first navigation runs before Pinia is active. `adminStore` and `authStore` use the NSwag client; the other four are still on axios. Lints and builds clean. |
+| Filters | The 11 `Vue.filter`s in `filters.js` became plain functions in `utilities/formatters.ts` (`formatScore`, `formatCurrency`, `formatDateTime`, `formatDateTimeAt`, `formatDateIso`, `formatDateLong`, `formatYesNo`, `formatApprovedRejected`, `formatPercent`, `formatThousands`, `selectTextFromPossibleOptions`), with the behaviour copied unchanged. All 139 uses in 49 files are now `{{ formatX(value, args) }}`, and each component imports what it uses and lists it under `methods`, the same way it already does for `globalFunctions`. `filters.js` is gone and `vue/no-deprecated-filter` is on. `globalFunctions.ts` still has `roundNumber`, `formatMoney` and `formatLongDate`, which differ from `formatScore`, `formatCurrency` and `formatDateLong` only in how they treat empty and non-numeric input; folding them together is a possible tidy-up. Lints and builds clean, and the games table on a production API renders scores and percentages correctly. |
 
 **Still to verify by hand:**
 
@@ -97,11 +98,6 @@ client come in. Counts are as of 2026-10-28.
 
 ### Code
 
-- **Filters to functions.** There are 11 filters in `filters.js` (`score`, `money`, `dateTime`,
-  `dateTimeAt`, `date`, `longDate`, `yesNo`, `approvedRejected`, `percent`, `thousands`,
-  `selectTextFromPossibleOptions`), used about 139 times in 49 files. The migration build treats
-  filters as compile errors, so they have to go before the flip regardless. Mechanical, and a
-  good candidate for one bulk sweep.
 - **axios to the generated NSwag client.** 100 files import axios; 10 use `@/api/clients`. Not a
   flip blocker, since axios works on Vue 3, but the target is the typed client everywhere. Do it
   store by store (`conferenceStore`, `interLeagueStore`, `leagueStore` and `publisherStore` are
@@ -142,7 +138,6 @@ non-zero:
 
 | Rule | Count | When it can reach zero |
 |---|---|---|
-| `no-deprecated-filter` | 139 | Before the flip |
 | `no-deprecated-v-bind-sync` | 48 in 19 files | At the flip (needs `v-model:prop`) |
 | `no-deprecated-v-on-native-modifier` | 15 in 5 files | At the flip |
 | `no-deprecated-destroyed-lifecycle` | 1 (`countdown.vue`) | At the flip (`beforeUnmount`) |

@@ -4,7 +4,7 @@
       <div>
         Special Auction in progress for:
         <masterGamePopover :master-game="specialAuction.masterGameYear"></masterGamePopover>
-        <div>Bids will process for this game only on: {{ scheduledEndTime | dateTimeAt }}</div>
+        <div>Bids will process for this game only on: {{ formatDateTimeAt(scheduledEndTime) }}</div>
         <countdown :end-time="specialAuction.scheduledEndTime" @finish="endTimeElapsed">
           <template #default="{ timeRemaining }">
             <span class="countdown">Time Remaining: {{ timeRemaining }}</span>
@@ -14,7 +14,7 @@
       <b-button v-if="league.userIsInLeague" v-b-modal="`bidGameForm-${specialAuction.masterGameYear.masterGameID}`" variant="primary" class="bid-button">Place Bid</b-button>
     </div>
     <div v-else>
-      <div>Auction closed at: {{ scheduledEndTime | dateTime }}</div>
+      <div>Auction closed at: {{ formatDateTime(scheduledEndTime) }}</div>
       <h3>This auction is now locked, and will process shortly.</h3>
       On a good day, bids process within 10 minutes. If it's been more than 20 minutes, contact us on Discord.
     </div>
@@ -28,6 +28,7 @@ import Countdown from '@/components/countdown.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import BidGameForm from '@/components/modals/bidGameForm.vue';
 import LeagueMixin from '@/mixins/leagueMixin.js';
+import { formatDateTime, formatDateTimeAt } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -53,6 +54,8 @@ export default {
     }
   },
   methods: {
+    formatDateTime,
+    formatDateTimeAt,
     endTimeElapsed() {
       this.forceLocked = true;
     }

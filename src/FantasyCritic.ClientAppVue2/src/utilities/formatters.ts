@@ -1,7 +1,6 @@
-import Vue from 'vue';
 import { DateTime } from 'luxon';
 
-Vue.filter('score', function (value, decimals) {
+export function formatScore(value: number | null | undefined, decimals?: number): number | string {
   if (value === 0) {
     return 0;
   }
@@ -13,11 +12,10 @@ Vue.filter('score', function (value, decimals) {
     decimals = 0;
   }
 
-  value = Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
-  return value;
-});
+  return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals);
+}
 
-Vue.filter('money', function (value, decimals) {
+export function formatCurrency<T>(value: T, decimals?: number): T | string {
   if (typeof value !== 'number') {
     return value;
   }
@@ -33,67 +31,61 @@ Vue.filter('money', function (value, decimals) {
     maximumFractionDigits: decimals
   });
   return formatter.format(value);
-});
+}
 
-Vue.filter('dateTime', function (value) {
+export function formatDateTime(value: string | null | undefined): string {
   if (value) {
     return DateTime.fromISO(String(value)).toLocaleString(DateTime.DATETIME_FULL);
   }
   return '';
-});
+}
 
-Vue.filter('dateTimeAt', function (value) {
+export function formatDateTimeAt(value: string | null | undefined): string {
   if (value) {
     return DateTime.fromISO(value).toFormat("MMMM dd, yyyy, 'at' h:mm:ss a");
   }
   return '';
-});
+}
 
-Vue.filter('date', function (value) {
+export function formatDateIso(value: string | null | undefined): string {
   if (value) {
     return DateTime.fromISO(value).toFormat('yyyy-MM-dd');
   }
   return '';
-});
+}
 
-Vue.filter('longDate', function (value) {
+export function formatDateLong(value: string | null | undefined): string {
   if (value) {
     return DateTime.fromISO(value).toFormat('MMMM dd, yyyy');
   }
   return '';
-});
+}
 
-Vue.filter('yesNo', function (value) {
-  if (value) {
-    return 'Yes';
-  }
-  return 'No';
-});
+export function formatYesNo(value: unknown): string {
+  return value ? 'Yes' : 'No';
+}
 
-Vue.filter('approvedRejected', function (value) {
-  if (value) {
-    return 'Approved';
-  }
-  return 'Rejected';
-});
+export function formatApprovedRejected(value: unknown): string {
+  return value ? 'Approved' : 'Rejected';
+}
 
-Vue.filter('percent', function (value, decimals) {
+export function formatPercent(value: number | null | undefined, decimals?: number): string {
   if (!value) value = 0;
   if (!decimals) decimals = 0;
 
   value = value * 100;
   return Math.round(value * Math.pow(10, decimals)) / Math.pow(10, decimals) + '%';
-});
+}
 
-Vue.filter('thousands', function (value) {
+export function formatThousands(value: number): string {
   return new Intl.NumberFormat().format(value);
-});
+}
 
-Vue.filter('selectTextFromPossibleOptions', function (value, possibleOptions) {
+export function selectTextFromPossibleOptions<T>(value: T, possibleOptions: { value: unknown; text: string }[]): T | string {
   const matchingValue = possibleOptions.find((x) => x.value === value);
   if (matchingValue) {
     return matchingValue.text;
   }
 
   return value;
-});
+}
