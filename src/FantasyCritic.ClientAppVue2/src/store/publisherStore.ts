@@ -20,18 +20,14 @@ export const usePublisherStore = defineStore('publisher', {
   },
   actions: {
     async initializePublisherPage(publisherID) {
-      try {
-        this.clearPublisherStoreData();
-        const leagueYearResponse = await axios.get('/api/League/GetLeagueYearForPublisher/' + publisherID);
-        const leagueYear = leagueYearResponse.data;
-        const publisher = leagueYear.publishers.filter((x) => x.publisherID === publisherID)[0];
+      this.clearPublisherStoreData();
+      const leagueYearResponse = await axios.get('/api/League/GetLeagueYearForPublisher/' + publisherID);
+      const leagueYear = leagueYearResponse.data;
+      const publisher = leagueYear.publishers.filter((x) => x.publisherID === publisherID)[0];
 
-        const initializeParams = { publisher, leagueYear };
-        this.initializeInternal(initializeParams);
-        this.setDesiredPositions();
-      } catch (error) {
-        this.errorInfo = error;
-      }
+      const initializeParams = { publisher, leagueYear };
+      this.initializeInternal(initializeParams);
+      this.setDesiredPositions();
     },
     moveGame(moveIntoSlot) {
       this.moveGameInternal(moveIntoSlot);
@@ -114,6 +110,9 @@ export const usePublisherStore = defineStore('publisher', {
     },
     setCoverArtMode(coverArtMode) {
       this.coverArtMode = coverArtMode;
+    },
+    setIncludeRemovedInSorted(includeRemovedInSorted) {
+      this.includeRemovedInSorted = includeRemovedInSorted;
     }
   }
 });

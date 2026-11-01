@@ -288,7 +288,6 @@ export default {
     },
     async revealPublicBids() {
       await this.refreshLeagueYear();
-      //this.$store.dispatch('getBidTimes'); Claude I think this is uneeded, should have been removed a long time ago
     },
     changeLeagueYear(newVal) {
       const parameters = {

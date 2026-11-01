@@ -72,9 +72,6 @@ export default {
   },
   computed: {
     /**
-     * The league's bidding system. League page modals are the only consumers of this component, so the league store is
-     * always the one populated - note that Vuex nests module state under the module key.
-     *
      * @returns {string|undefined} The pickup system value, or undefined outside a league page.
      */
     pickupSystem() {

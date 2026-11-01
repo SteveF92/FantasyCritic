@@ -261,12 +261,12 @@
 <script>
 import { mapState } from 'pinia';
 import { useAdminStore } from '@/store/adminStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from '@/api/clients';
 import RecentJobsTable from '@/components/recentJobsTable.vue';
 import ServiceMonitor from '@/components/serviceMonitor.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -296,7 +296,8 @@ export default {
     };
   },
   computed: {
-    ...mapState(useAdminStore, ['adminTaskCounts', 'bidTimes']),
+    ...mapState(useAdminStore, ['adminTaskCounts']),
+    ...mapState(useInterLeagueStore, ['bidTimes']),
     //The template calls the clients directly. Computed rather than data so Vue does not try to make the singletons reactive.
     actionRunnerClient() {
       return actionRunnerClient;

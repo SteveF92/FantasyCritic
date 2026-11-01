@@ -12,13 +12,13 @@ const conferenceMixin = {
     }
   },
   methods: {
-    refreshConferenceYear() {
+    async refreshConferenceYear() {
       const conferenceStore = useConferenceStore();
-      conferenceStore.refreshConferenceYear();
+      await conferenceStore.refreshConferenceYear();
     },
     async notifyAction(message) {
       const conferenceStore = useConferenceStore();
-      conferenceStore.refreshConferenceYear();
+      await conferenceStore.refreshConferenceYear();
       if (message) {
         this.makeToast(message);
       }

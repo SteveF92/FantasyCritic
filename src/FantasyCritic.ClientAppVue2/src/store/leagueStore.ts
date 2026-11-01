@@ -103,7 +103,6 @@ export const useLeagueStore = defineStore('league', {
       this.inviteCode = null;
       this.leagueYear = null;
       this.userPublisher = null;
-      this.gameNews = null;
 
       this.leagueActions = null;
       this.leagueActionSets = null;
