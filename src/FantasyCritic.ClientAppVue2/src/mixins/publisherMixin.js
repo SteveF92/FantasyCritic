@@ -1,28 +1,24 @@
-let publisherMixin = {
+import { mapState } from 'pinia';
+
+import { usePublisherStore } from '@/store/publisherStore';
+
+const publisherMixin = {
   computed: {
-    moveMode() {
-      return this.$store.getters.moveMode;
-    },
-    publisher() {
-      return this.$store.getters.publisher;
-    },
-    leagueYear() {
-      return this.$store.getters.leagueYear;
-    },
-    gameSlots() {
-      return this.$store.getters.gameSlots;
-    },
-    sortOrderMode() {
-      return this.$store.getters.sortOrderMode;
-    },
-    coverArtMode() {
-      return this.$store.getters.coverArtMode;
-    },
-    includeRemovedInSorted() {
-      return this.$store.getters.includeRemovedInSorted;
-    },
+    ...mapState(usePublisherStore, [
+      'moveMode',
+      'publisher',
+      'leagueYear',
+      'gameSlots',
+      'sortOrderMode',
+      'coverArtMode',
+      'includeRemovedInSorted',
+      'historicalTrades',
+      'showProjections',
+      'draftOrderView'
+    ]),
     userIsPublisher() {
-      return this.$store.getters.userInfo && this.publisher.userID === this.$store.getters.userInfo.userID;
+      const publisherStore = usePublisherStore();
+      return publisherStore.getters.userInfo && this.publisher.userID === publisherStore.getters.userInfo.userID;
     },
     hasFormerGames() {
       return this.publisher && this.publisher.formerGames.length > 0;
@@ -30,7 +26,8 @@ let publisherMixin = {
   },
   methods: {
     async notifyAction(message) {
-      await this.$store.dispatch('refreshPublisher');
+      const publisherStore = usePublisherStore();
+      await publisherStore.refreshPublisher();
       if (message) {
         this.makeToast(message);
       }

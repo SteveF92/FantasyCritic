@@ -1,8 +1,9 @@
-import { mapGetters } from 'pinia';
+import { mapState } from 'pinia';
+import { useConferenceStore } from '@/store/conferenceStore';
 
-let conferenceMixin = {
+const conferenceMixin = {
   computed: {
-    ...mapGetters(['conference', 'conferenceYear', 'hasError', 'conferenceInviteCode']),
+    ...mapState(useConferenceStore, ['conference', 'conferenceYear', 'hasError', 'conferenceInviteCode']),
     isConferenceManager() {
       return this.conference && this.conference.isManager;
     },
@@ -12,10 +13,12 @@ let conferenceMixin = {
   },
   methods: {
     refreshConferenceYear() {
-      return this.$store.dispatch('refreshConferenceYear');
+      const conferenceStore = useConferenceStore();
+      conferenceStore.refreshConferenceYear();
     },
     async notifyAction(message) {
-      await this.$store.dispatch('refreshConferenceYear');
+      const conferenceStore = useConferenceStore();
+      conferenceStore.refreshConferenceYear();
       if (message) {
         this.makeToast(message);
       }
