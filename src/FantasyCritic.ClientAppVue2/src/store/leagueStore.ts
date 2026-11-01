@@ -75,27 +75,27 @@ export const useLeagueStore = defineStore('league', {
       return axios
         .get(queryURL)
         .then((response) => {
-          context.commit('setLeagueActions', response.data);
+          this.leagueActions = response.data;
         })
-        .catch((err) => context.commit('setError', err.response));
+        .catch((err) => context.setError(err.response));
     },
     fetchLeagueActionSets(context) {
       const queryURL = '/api/League/GetLeagueActionSets?leagueID=' + context.this.leagueYear.leagueID + '&year=' + context.this.leagueYear.year;
       return axios
         .get(queryURL)
         .then((response) => {
-          context.commit('setLeagueActionSets', response.data);
+          this.leagueActionSets = response.data;
         })
-        .catch((err) => context.commit('setError', err.response));
+        .catch((err) => context.setError(err.response));
     },
     fetchHistoricalTrades(context) {
       const queryURL = '/api/League/TradeHistory?leagueID=' + context.this.leagueYear.leagueID + '&year=' + context.this.leagueYear.year;
       return axios
         .get(queryURL)
         .then((response) => {
-          context.commit('setHistoricalTrades', response.data);
+          this.historicalTrades = response.data;
         })
-        .catch((err) => context.commit('setError', err.response));
+        .catch((err) => context.setError(err.response));
     },
     clearLeagueStoreData() {
       this.hasError = false;
