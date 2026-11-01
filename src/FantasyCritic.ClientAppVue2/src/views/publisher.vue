@@ -170,7 +170,8 @@ export default {
         return this.sortOrderMode;
       },
       set(value) {
-        this.$store.commit('setSortOrderMode', value);
+        const publisherStore = usePublisherStore();
+        publisherStore.setSortOrderMode(value);
       }
     },
     editableCoverArtMode: {
@@ -178,7 +179,8 @@ export default {
         return this.coverArtMode;
       },
       set(value) {
-        this.$store.commit('setCoverArtMode', value);
+        const publisherStore = usePublisherStore();
+        publisherStore.setCoverArtMode(value);
       }
     },
     editableIncludeRemovedInSorted: {
@@ -186,7 +188,8 @@ export default {
         return this.includeRemovedInSorted;
       },
       set(value) {
-        this.$store.commit('setIncludeRemovedInSorted', value);
+        const publisherStore = usePublisherStore();
+        publisherStore.setIncludeRemovedInSorted(value);
       }
     },
     nextPublisher() {
@@ -235,10 +238,12 @@ export default {
       return notPublisherText;
     },
     enterMoveMode() {
-      this.$store.commit('enterMoveMode');
+      const publisherStore = usePublisherStore();
+      publisherStore.enterMoveMode();
     },
     cancelMoveMode() {
-      this.$store.commit('cancelMoveMode');
+      const publisherStore = usePublisherStore();
+      publisherStore.cancelMoveMode();
     },
     confirmPositions() {
       this.$store.dispatch('confirmPositions').then(() => {

@@ -311,10 +311,12 @@ export default {
   },
   methods: {
     holdGame() {
-      this.$store.commit('holdGame', this.gameSlot);
+      const publisherStore = usePublisherStore();
+      publisherStore.holdGame(this.gameSlot);
     },
     placeGame() {
-      this.$store.dispatch('moveGame', this.gameSlot);
+      const publisherStore = usePublisherStore();
+      publisherStore.moveGame(this.gameSlot);
     }
   }
 };

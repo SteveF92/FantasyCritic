@@ -72,6 +72,9 @@ export const usePublisherStore = defineStore('publisher', {
       this.heldSlot = null;
       this.editableGameSlots = [];
     },
+    enterMoveMode() {
+      this.moveMode = true;
+    },
     cancelMoveMode() {
       this.moveMode = false;
       this.desiredPositions = null;
@@ -82,6 +85,9 @@ export const usePublisherStore = defineStore('publisher', {
       this.moveMode = false;
       this.desiredPositions = null;
       this.heldSlot = null;
+    },
+    holdGame(holdSlot) {
+      this.heldSlot = holdSlot;
     },
     moveGameInternal(moveIntoSlot) {
       const tempSlot = structuredClone(moveIntoSlot);
@@ -99,6 +105,12 @@ export const usePublisherStore = defineStore('publisher', {
           this.desiredPositions[slot.slotNumber] = null;
         }
       });
+    },
+    setSortOrderMode(sortOrderMode) {
+      this.sortOrderMode = sortOrderMode;
+    },
+    setCoverArtMode(coverArtMode) {
+      this.coverArtMode = coverArtMode;
     }
   }
 });
