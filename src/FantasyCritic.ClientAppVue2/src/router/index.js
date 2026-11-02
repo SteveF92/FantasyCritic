@@ -79,13 +79,11 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
     if (toRoute.meta.isPublic) {
       return next();
     } else {
-      authStore.clearUserInfo();
       window.location.href = '/Account/Login';
       return;
     }
   } catch {
     console.log('Router error');
-    authStore.clearUserInfo();
     window.location.href = '/Account/Login';
   }
 });
