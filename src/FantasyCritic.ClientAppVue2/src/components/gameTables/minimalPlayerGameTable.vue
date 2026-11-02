@@ -115,6 +115,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isPlusUser', 'userInfo']),
     ...mapState(useLeagueStore, ['leagueYear', 'showProjections', 'draftOrderView']),
     ...mapState(useAuthStore, ['decimalsToShow']),
     userIsPublisher() {

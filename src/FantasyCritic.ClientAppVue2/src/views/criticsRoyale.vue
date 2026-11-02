@@ -122,6 +122,8 @@ import CriticsRoyaleInfo from '@/components/criticsRoyaleInfo.vue';
 import { orderBy } from '@/globalFunctions';
 import { formatCurrency } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
@@ -171,6 +173,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isAuth']),
     rows() {
       return this.royaleStandings.length;
     },

@@ -268,6 +268,7 @@ import RecentJobsTable from '@/components/recentJobsTable.vue';
 import ServiceMonitor from '@/components/serviceMonitor.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
 import { formatDateTime } from '@/utilities/formatters';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
@@ -297,6 +298,10 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isAdmin', 'isFactChecker', 'isActionRunner', 'isJobManager']),
+    isDevelopment() {
+      return process.env.NODE_ENV === 'development';
+    },
     ...mapState(useAdminStore, ['adminTaskCounts']),
     ...mapState(useInterLeagueStore, ['bidTimes']),
     //The template calls the clients directly. Computed rather than data so Vue does not try to make the singletons reactive.

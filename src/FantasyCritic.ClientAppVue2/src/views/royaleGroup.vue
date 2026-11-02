@@ -78,6 +78,7 @@ import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 
 import RoyaleGroupInviteLinksModal from '@/components/modals/royaleGroupInviteLinksModal.vue';
+import { mapState } from 'pinia';
 
 export default {
   components: { RoyaleGroupInviteLinksModal },
@@ -121,6 +122,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isAuth']),
     memberFields() {
       const statsFields = [this.displayNameField, this.quartersParticipatedField, this.averageRankField, this.averageRankOverallField, this.totalPointsField];
       if (this.isManager && this.showManagerActions) {

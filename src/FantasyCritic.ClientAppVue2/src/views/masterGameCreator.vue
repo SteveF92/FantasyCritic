@@ -137,7 +137,8 @@ import axios from 'axios';
 import DateInput from '@/components/dateInput.vue';
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 import LeagueOptionsModal from '@/components/modals/leagueOptionsModal.vue';
-import BasicMixin from '@/mixins/basicMixin.js';
+import { mapState } from 'pinia';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -145,7 +146,6 @@ export default {
     MasterGameTagSelector,
     LeagueOptionsModal
   },
-  mixins: [BasicMixin],
   data() {
     return {
       createdGame: null,
@@ -167,6 +167,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useInterLeagueStore, ['supportedYears']),
     openCriticLink() {
       return `https://opencritic.com/game/${this.openCriticID}/a`;
     },

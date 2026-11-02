@@ -177,6 +177,7 @@ import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 import { publisherIconIsValid } from '@/globalFunctions';
 import { formatCurrency, formatDateIso, formatDateTime, formatScore } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
+import { mapState } from 'pinia';
 
 export default {
   components: {
@@ -217,6 +218,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isPlusUser', 'isAuth']),
     userIsPublisher() {
       const authStore = useAuthStore();
       return this.isAuth && this.publisher.userID === authStore.userInfo.userID;

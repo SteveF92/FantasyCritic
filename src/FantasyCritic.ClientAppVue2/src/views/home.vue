@@ -120,6 +120,8 @@ import LeagueTable from '@/components/leagueTable.vue';
 import ConferenceTable from '@/components/conferenceTable.vue';
 import GameNews from '@/components/gameNews.vue';
 import SiteAnnouncementsWidget from '@/components/siteAnnouncementsWidget.vue';
+import { useAuthStore } from '@/store/authStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -151,6 +153,8 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isPlusUser', 'userInfo', 'isAdmin', 'isFactChecker']),
+    ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'supportedYears']),
     ...mapState(useAdminStore, ['adminTaskCounts']),
     adminTaskTotalCount() {
       return this.adminTaskCounts ? this.adminTaskCounts.totalCount : 0;

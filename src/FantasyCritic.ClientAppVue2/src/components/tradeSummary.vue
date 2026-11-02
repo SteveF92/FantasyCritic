@@ -158,8 +158,9 @@ import { mapState, mapActions } from 'pinia';
 import { useLeagueStore } from '@/store/leagueStore';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import CollapseCard from '@/components/collapseCard.vue';
-import { except, startCase } from '@/globalFunctions';
+import { except, startCase, formatLongDateTime } from '@/globalFunctions';
 import { formatApprovedRejected, formatDateTimeAt } from '@/utilities/formatters';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
@@ -182,6 +183,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'league']),
     recievesVerbiage() {
       if (this.tradeIsActive) {
@@ -228,6 +230,7 @@ export default {
     }
   },
   methods: {
+    formatLongDateTime,
     ...mapActions(useLeagueStore, ['notifyAction']),
     formatApprovedRejected,
     formatDateTimeAt,

@@ -88,6 +88,8 @@ import { DateTime } from 'luxon';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { getGGLinkForGame, getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import { formatPercent, formatScore } from '@/utilities/formatters';
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
@@ -103,6 +105,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isFactChecker']),
     ggCoverArtLink() {
       return getGGCoverArtLinkForGame(this.masterGame, 165);
     },

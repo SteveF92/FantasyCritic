@@ -20,6 +20,7 @@
 import axios from 'axios';
 import { mapState, mapActions } from 'pinia';
 import { useConferenceStore } from '@/store/conferenceStore';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   data() {
@@ -29,6 +30,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useConferenceStore, ['conference']),
     players() {
       return this.conference.players.filter((x) => x.userID !== this.userInfo.userID);

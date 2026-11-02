@@ -134,6 +134,8 @@ import ConferenceYearStandings from '@/components/conferenceYearStandings.vue';
 import { useConferenceStore } from '@/store/conferenceStore';
 import { formatDateTime } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
+import { useAuthStore } from '@/store/authStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -156,6 +158,8 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isPlusUser', 'isAuth']),
+    ...mapState(useInterLeagueStore, ['activeRoyaleQuarter']),
     ...mapState(useConferenceStore, ['conference', 'conferenceYear', 'hasError', 'conferenceInviteCode', 'isConferenceManager']),
     numberOfPlayersActiveForYear() {
       return this.conferenceYear.playersForYear.length;

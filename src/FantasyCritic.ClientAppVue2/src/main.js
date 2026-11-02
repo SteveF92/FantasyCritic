@@ -17,8 +17,6 @@ import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './ico
 
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-import BasicMixin from './mixins/basicMixin';
-
 Vue.use(BootstrapVue);
 
 Vue.use(PiniaVuePlugin);
@@ -26,8 +24,6 @@ Vue.use(PiniaVuePlugin);
 //Vee-validate registration
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
-
-Vue.mixin(BasicMixin);
 
 extend('required', {
   ...rules.required

@@ -19,6 +19,7 @@
 import axios from 'axios';
 import { mapState, mapActions } from 'pinia';
 import { useLeagueStore } from '@/store/leagueStore';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   data() {
@@ -27,6 +28,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useLeagueStore, ['league']),
     players() {
       return this.league.players.filter((x) => x.userID !== this.userInfo?.userID);

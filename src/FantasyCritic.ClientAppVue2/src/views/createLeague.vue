@@ -111,6 +111,8 @@ import LeagueYearSettings from '@/components/leagueYearSettings.vue';
 import LeagueCreationPresets from '@/components/leagueCreationPresets.vue';
 import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
 import { buildOneShotDraft } from '@/utilities/leagueCreationPresets';
+import { mapState } from 'pinia';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -134,6 +136,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
     readyToSetupLeagueYear() {
       return !!this.leagueName && !!this.initialYear;
     },

@@ -135,6 +135,7 @@ import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
 import { publisherIconIsValid } from '@/globalFunctions';
 import { formatCurrency } from '@/utilities/formatters';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
@@ -152,6 +153,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isPlusUser']),
     ...mapState(usePublisherStore, ['publisher', 'leagueYear', 'moveMode', 'sortOrderMode', 'coverArtMode', 'includeRemovedInSorted', 'userIsPublisher', 'hasFormerGames']),
     iconIsValid() {
       return publisherIconIsValid(this.publisher.publisherIcon);

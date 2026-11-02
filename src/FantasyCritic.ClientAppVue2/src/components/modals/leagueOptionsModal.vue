@@ -127,14 +127,15 @@
 
 <script>
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import BasicMixin from '@/mixins/basicMixin.js';
 import { formatScore, formatYesNo, selectTextFromPossibleOptions } from '@/utilities/formatters';
+import { mapState } from 'pinia';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { formatLongDate } from '@/globalFunctions';
 
 export default {
   components: {
     MasterGameTagBadge
   },
-  mixins: [BasicMixin],
   props: {
     leagueYearOptions: { type: Object, required: true },
     league: { type: Object, required: false },
@@ -143,6 +144,7 @@ export default {
     superDropPointCutoff: { type: Number, required: false }
   },
   computed: {
+    ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
     isSingleDraft() {
       return this.drafts.length > 0 && this.drafts.length < 2;
     },
@@ -151,6 +153,7 @@ export default {
     }
   },
   methods: {
+    formatLongDate,
     formatScore,
     formatYesNo,
     selectTextFromPossibleOptions

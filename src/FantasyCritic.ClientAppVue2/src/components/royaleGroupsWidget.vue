@@ -63,6 +63,9 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
+
 export default {
   props: {
     myGroups: { type: Array, default: null },
@@ -76,6 +79,9 @@ export default {
     return {
       groupFields: [{ key: 'groupName', label: '' }]
     };
+  },
+  computed: {
+    ...mapState(useAuthStore, ['isAuth'])
   },
   methods: {
     groupQuarterLink(groupID) {

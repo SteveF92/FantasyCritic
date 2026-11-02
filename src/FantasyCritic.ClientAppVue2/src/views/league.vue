@@ -179,6 +179,7 @@ import DraftStatusHeader from '@/components/draftStatusHeader.vue';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatDateTime } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
@@ -208,6 +209,8 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isAuth']),
+    ...mapState(useInterLeagueStore, ['activeRoyaleQuarter']),
     ...mapState(useLeagueStore, [
       'hasError',
       'forbidden',

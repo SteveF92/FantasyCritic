@@ -64,6 +64,9 @@
 </template>
 <script>
 import axios from 'axios';
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   props: {
@@ -77,6 +80,10 @@ export default {
     return {
       leagueFields: [{ key: 'leagueName' }]
     };
+  },
+  computed: {
+    ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useInterLeagueStore, ['activeRoyaleQuarter'])
   },
   methods: {
     setArchive(league, status) {

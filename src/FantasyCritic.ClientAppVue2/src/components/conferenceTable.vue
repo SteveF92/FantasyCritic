@@ -19,6 +19,9 @@
   </b-table>
 </template>
 <script>
+import { mapState } from 'pinia';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
+
 export default {
   props: {
     conferences: { type: Array, required: true }
@@ -27,6 +30,9 @@ export default {
     return {
       conferenceFields: [{ key: 'conferenceName' }]
     };
+  },
+  computed: {
+    ...mapState(useInterLeagueStore, ['activeRoyaleQuarter'])
   }
 };
 </script>

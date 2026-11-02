@@ -269,6 +269,8 @@ import UnderReviewModal from '@/components/modals/underReviewModal.vue';
 import DraftScheduleModal from '@/components/modals/draftScheduleModal.vue';
 
 import { publisherIconIsValid } from '@/globalFunctions';
+import { useAuthStore } from '@/store/authStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -322,6 +324,8 @@ export default {
     DraftScheduleModal
   },
   computed: {
+    ...mapState(useAuthStore, ['isPlusUser']),
+    ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
     ...mapState(useLeagueStore, [
       'leagueYear',
       'userPublisher',

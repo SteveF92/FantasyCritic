@@ -316,6 +316,8 @@ import DateInput from '@/components/dateInput.vue';
 import LeagueTagSelector from '@/components/leagueTagSelector.vue';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
 import { computeSpecialSlots } from '@/utilities/leagueCreationPresets';
+import { mapState } from 'pinia';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 const SECRET_BIDDING = 'SecretBidding';
 
@@ -358,6 +360,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
     biddingModeOptions() {
       return [
         { value: SECRET_BIDDING, text: 'Secret Bidding' },

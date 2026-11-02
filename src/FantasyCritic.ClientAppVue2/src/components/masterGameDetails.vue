@@ -75,6 +75,8 @@
 import { DateTime } from 'luxon';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { formatScore } from '@/utilities/formatters';
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
@@ -83,6 +85,9 @@ export default {
   props: {
     masterGame: { type: Object, required: true },
     hideNotes: { type: Boolean, default: false }
+  },
+  computed: {
+    ...mapState(useAuthStore, ['isFactChecker'])
   },
   methods: {
     formatScore,

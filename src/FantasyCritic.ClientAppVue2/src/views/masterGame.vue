@@ -92,6 +92,8 @@ import MasterGameDetails from '@/components/masterGameDetails.vue';
 import MasterGameYearStats from '@/components/masterGameYearStats.vue';
 import { getGGLinkForGame, getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import { formatDateLong } from '@/utilities/formatters';
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
@@ -116,6 +118,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isFactChecker']),
     ggCoverArtLink() {
       return getGGCoverArtLinkForGame(this.masterGame, 307);
     },
