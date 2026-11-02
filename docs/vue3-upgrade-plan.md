@@ -70,6 +70,7 @@ All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-
 | State | Vuex 3 to **Pinia 2.3** (`~2.3.1`; Pinia 3 dropped Vue 2), led by Steve. A 1:1 port of all six stores at once rather than store by store: same stores, state and action names. Mutations became actions or direct assignments, and getters that only returned state were dropped, since Pinia exposes state directly. The mixins stay, on Pinia's `mapState`. The stores are now `.ts` files (`auth.ts` became `authStore.ts`) but have no types yet. `store/pinia.js` holds the one Pinia instance, which the router guard passes to each `useXStore(pinia)`, because the router's first navigation runs before Pinia is active. `adminStore` and `authStore` use the NSwag client; the other four are still on axios. Lints and builds clean. |
 | Filters | The 11 `Vue.filter`s in `filters.js` became plain functions in `utilities/formatters.ts` (`formatScore`, `formatCurrency`, `formatDateTime`, `formatDateTimeAt`, `formatDateIso`, `formatDateLong`, `formatYesNo`, `formatApprovedRejected`, `formatPercent`, `formatThousands`, `selectTextFromPossibleOptions`), with the behaviour copied unchanged. All 139 uses in 49 files are now `{{ formatX(value, args) }}`, and each component imports what it uses and lists it under `methods`, the same way it already does for `globalFunctions`. `filters.js` is gone and `vue/no-deprecated-filter` is on. `globalFunctions.ts` still has `roundNumber`, `formatMoney` and `formatLongDate`, which differ from `formatScore`, `formatCurrency` and `formatDateLong` only in how they treat empty and non-numeric input; folding them together is a possible tidy-up. Lints and builds clean, and the games table on a production API renders scores and percentages correctly. |
 | Datepickers | The 14 `b-form-datepicker`s (master game creator, editor and request, and league year settings) became `components/dateInput.vue`, a native `<input type="date" class="form-control">`. bootstrap-vue-next has no datepicker, and the draft pages already used native date inputs. The value is the same `YYYY-MM-DD` string, so nothing that reads it changed. The wrapper emits `null` instead of `''` when the input is cleared, since a native input can be cleared from the keyboard and `''` isn't a valid `LocalDate`. Each input now has the `id` its label's `for` already named. Checked by mounting the component on the dev server (typing, clearing and setting from the model); **the four pages themselves are unchecked, since they need a logged-in session.** |
+| Toasts | Every toast goes through `makeToast(message, variant = 'info')` in `utilities/toast.ts`, a plain function that adds the toast to `toastStore`. `components/toastHost.vue`, mounted once in `App.vue`, renders the store's toasts as declarative `b-toast`s and removes each when it hides. The old `makeToast` lived in `BasicMixin`, built its body with Vue 2's `$createElement`, and toasted through the calling component's `$bvToast`, which destroys the toast along with the component. The two direct `$bvToast` calls (critics royale's error, the royale group invite link) now use the shared function, so they have its close icon too. Checked on the dev server: toasts render in both variants, the close icon closes only its own toast, auto-hide removes them from the store, and a toast survives a route change. |
 | Date-time pickers | The two `flat-pickr`s (site announcements and special auctions) are native `<input type="datetime-local">`s, and `vue-flatpickr-component` and `flatpickr` are gone. The value is a local `yyyy-MM-ddTHH:mm` string, which `new Date(...)` already read as local time, so the `toISOString()` calls are unchanged. Editing an announcement formats its stored instant with Luxon instead of passing the picker a `Date`. Checked by mounting the announcements page on the dev server: a stored UTC time shows in local time and converts back to the same instant. The special auctions modal is unchecked, since it needs a league manager. |
 
 **Still to verify by hand:**
@@ -111,8 +112,8 @@ client come in. Counts are as of 2026-10-28.
   pages are already on it and are the pattern to follow.
 - **Mixins to composables or plain functions.** 86 components use a mixin: `LeagueMixin` 61,
   `ConferenceMixin` 13, `GGMixin` 5, `PublisherMixin` 4, `BasicMixin` 4. `BasicMixin` is also
-  registered globally with `Vue.mixin`, which is where `userInfo` and `makeToast` come from
-  invisibly. Most of `LeagueMixin`'s computed properties are pure functions of `leagueYear`, so
+  registered globally with `Vue.mixin`, which is where `userInfo` and the other auth flags come
+  from invisibly. Most of `LeagueMixin`'s computed properties are pure functions of `leagueYear`, so
   they can become plain, testable functions. The mixins read the stores through Pinia's
   `mapState`, which works on Vue 3 too, so this isn't a flip blocker.
 - **TypeScript.** 4 of 171 components use `lang="ts"`. Seven hand-written models (`models/`)
@@ -176,8 +177,8 @@ Ship to production on compat once the app runs cleanly, then drive the warnings 
   jQuery (still in `node_modules` as Bootstrap 4's peer dependency) leave with them.
 - The surface is mostly trivial in volume: 258 `b-button`, 54 `b-form-select`. The real work is
   in the modals (74 `b-modal`, 76 `v-b-modal`, 58 modal components, 62 `$refs`), the 47
-  `b-table`s, the 53 `v-b-popover`s, and `$bvModal` (12), `$bvToast` (4) and `makeToast` (14),
-  which become bootstrap-vue-next's composables.
+  `b-table`s, the 53 `v-b-popover`s, and `$bvModal` (12), which becomes bootstrap-vue-next's
+  composable. Toasts are all in `toastHost.vue`, so they change in one file.
 - **Choose one modal pattern before touching any of them.** Modals are where 2023 stopped.
 - The Bootstrap 5 class renames, and 24 deep selectors to recheck.
 - Remove `@vue/compat`.
