@@ -26,12 +26,12 @@ export const usePublisherStore = defineStore('publisher', {
       const publisher = leagueYear.publishers.filter((x) => x.publisherID === publisherID)[0];
 
       const initializeParams = { publisher, leagueYear };
-      this.initializeInternal(initializeParams);
-      this.setDesiredPositions();
+      initializeInternal(this, initializeParams);
+      setDesiredPositions(this);
     },
     moveGame(moveIntoSlot) {
-      this.moveGameInternal(moveIntoSlot);
-      this.setDesiredPositions();
+      moveGameInternal(this, moveIntoSlot);
+      setDesiredPositions(this);
     },
     async confirmPositions() {
       const existingPublisherObject = this.publisher;
@@ -42,7 +42,7 @@ export const usePublisherStore = defineStore('publisher', {
 
       try {
         await axios.post('/api/League/ReorderPublisherGames', request);
-        this.completeMoveMode();
+        completeMoveMode(this);
 
         const publisherResponse = await axios.get('/api/League/GetPublisher/' + existingPublisherObject.publisherID);
         const publisher = publisherResponse.data;
@@ -50,18 +50,12 @@ export const usePublisherStore = defineStore('publisher', {
         const leagueYear = leagueYearResponse.data;
 
         const initializeParams = { publisher, leagueYear };
-        this.initializeInternal(initializeParams);
-        this.setDesiredPositions();
+        initializeInternal(this, initializeParams);
+        setDesiredPositions(this);
       } catch (error) {
         this.moveGameError = error.response.data;
         this.cancelMoveMode();
       }
-    },
-    initializeInternal(initializeParams) {
-      this.publisher = initializeParams.publisher;
-      this.leagueYear = initializeParams.leagueYear;
-      this.cleanGameSlots = structuredClone(this.publisher.gameSlots);
-      this.editableGameSlots = structuredClone(this.publisher.gameSlots);
     },
     clearPublisherStoreData() {
       this.publisher = null;
@@ -80,30 +74,8 @@ export const usePublisherStore = defineStore('publisher', {
       this.heldSlot = null;
       this.editableGameSlots = structuredClone(this.cleanGameSlots);
     },
-    completeMoveMode() {
-      this.moveMode = false;
-      this.desiredPositions = null;
-      this.heldSlot = null;
-    },
     holdGame(holdSlot) {
       this.heldSlot = holdSlot;
-    },
-    moveGameInternal(moveIntoSlot) {
-      const tempSlot = structuredClone(moveIntoSlot);
-      moveIntoSlot.publisherGame = structuredClone(this.heldSlot.publisherGame);
-      this.heldSlot.publisherGame = structuredClone(tempSlot.publisherGame);
-      this.heldSlot = null;
-    },
-    setDesiredPositions() {
-      const standardSlotsOnly = this.editableGameSlots.filter((x) => !x.counterPick);
-      this.desiredPositions = {};
-      standardSlotsOnly.forEach((slot) => {
-        if (slot.publisherGame) {
-          this.desiredPositions[slot.slotNumber] = slot.publisherGame.publisherGameID;
-        } else {
-          this.desiredPositions[slot.slotNumber] = null;
-        }
-      });
     },
     setSortOrderMode(sortOrderMode) {
       this.sortOrderMode = sortOrderMode;
@@ -116,3 +88,35 @@ export const usePublisherStore = defineStore('publisher', {
     }
   }
 });
+
+function initializeInternal(store, initializeParams) {
+  store.publisher = initializeParams.publisher;
+  store.leagueYear = initializeParams.leagueYear;
+  store.cleanGameSlots = structuredClone(store.publisher.gameSlots);
+  store.editableGameSlots = structuredClone(store.publisher.gameSlots);
+}
+
+function completeMoveMode(store) {
+  store.moveMode = false;
+  store.desiredPositions = null;
+  store.heldSlot = null;
+}
+
+function moveGameInternal(store, moveIntoSlot) {
+  const tempSlot = structuredClone(moveIntoSlot);
+  moveIntoSlot.publisherGame = structuredClone(store.heldSlot.publisherGame);
+  store.heldSlot.publisherGame = structuredClone(tempSlot.publisherGame);
+  store.heldSlot = null;
+}
+
+function setDesiredPositions(store) {
+  const standardSlotsOnly = store.editableGameSlots.filter((x) => !x.counterPick);
+  store.desiredPositions = {};
+  standardSlotsOnly.forEach((slot) => {
+    if (slot.publisherGame) {
+      store.desiredPositions[slot.slotNumber] = slot.publisherGame.publisherGameID;
+    } else {
+      store.desiredPositions[slot.slotNumber] = null;
+    }
+  });
+}

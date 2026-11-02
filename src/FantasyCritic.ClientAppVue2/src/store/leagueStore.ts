@@ -34,7 +34,7 @@ export const useLeagueStore = defineStore('league', {
       publisherStore.clearPublisherStoreData();
       this.clearLeagueStoreData();
       await this.fetchLeagueYear(leaguePageParams);
-      await this.fetchHistoryData();
+      await fetchHistoryData(this);
     },
     async refreshLeagueYear() {
       const leaguePageParams = {
@@ -62,40 +62,10 @@ export const useLeagueStore = defineStore('league', {
           leagueYearPayload.userID = authStore.userInfo.userID;
         }
 
-        this.setLeagueYear(leagueYearPayload);
+        setLeagueYear(this, leagueYearPayload);
       } catch (err) {
-        this.setError(err.response);
+        setError(this, err.response);
       }
-    },
-    fetchHistoryData() {
-      return Promise.all([this.fetchLeagueActions(), this.fetchLeagueActionSets(), this.fetchHistoricalTrades()]);
-    },
-    fetchLeagueActions() {
-      const queryURL = '/api/League/GetLeagueActions?leagueID=' + this.leagueYear.leagueID + '&year=' + this.leagueYear.year;
-      return axios
-        .get(queryURL)
-        .then((response) => {
-          this.leagueActions = response.data;
-        })
-        .catch((err) => this.setError(err.response));
-    },
-    fetchLeagueActionSets() {
-      const queryURL = '/api/League/GetLeagueActionSets?leagueID=' + this.leagueYear.leagueID + '&year=' + this.leagueYear.year;
-      return axios
-        .get(queryURL)
-        .then((response) => {
-          this.leagueActionSets = response.data;
-        })
-        .catch((err) => this.setError(err.response));
-    },
-    fetchHistoricalTrades() {
-      const queryURL = '/api/League/TradeHistory?leagueID=' + this.leagueYear.leagueID + '&year=' + this.leagueYear.year;
-      return axios
-        .get(queryURL)
-        .then((response) => {
-          this.historicalTrades = response.data;
-        })
-        .catch((err) => this.setError(err.response));
     },
     clearLeagueStoreData() {
       this.hasError = false;
@@ -108,21 +78,6 @@ export const useLeagueStore = defineStore('league', {
       this.leagueActionSets = null;
       this.historicalTrades = null;
     },
-    setError(response) {
-      if (response.status === 401 || response.status === 403) {
-        this.forbidden = true;
-      } else {
-        this.hasError = true;
-      }
-    },
-    setLeagueYear(leagueYearPayload) {
-      this.leagueYear = leagueYearPayload.leagueYear;
-      document.title = leagueYearPayload.leagueYear.league.leagueName + ' - Fantasy Critic';
-
-      if (leagueYearPayload.userID) {
-        this.userPublisher = leagueYearPayload.leagueYear.publishers.find((x) => x.userID === leagueYearPayload.userID);
-      }
-    },
     setShowProjections(showProjections) {
       this.showProjections = showProjections;
       localStorage.setItem('showProjections', showProjections.toString());
@@ -133,3 +88,54 @@ export const useLeagueStore = defineStore('league', {
     }
   }
 });
+
+function fetchHistoryData(store) {
+  return Promise.all([fetchLeagueActions(store), fetchLeagueActionSets(store), fetchHistoricalTrades(store)]);
+}
+
+function fetchLeagueActions(store) {
+  const queryURL = '/api/League/GetLeagueActions?leagueID=' + store.leagueYear.leagueID + '&year=' + store.leagueYear.year;
+  return axios
+    .get(queryURL)
+    .then((response) => {
+      store.leagueActions = response.data;
+    })
+    .catch((err) => setError(store, err.response));
+}
+
+function fetchLeagueActionSets(store) {
+  const queryURL = '/api/League/GetLeagueActionSets?leagueID=' + store.leagueYear.leagueID + '&year=' + store.leagueYear.year;
+  return axios
+    .get(queryURL)
+    .then((response) => {
+      store.leagueActionSets = response.data;
+    })
+    .catch((err) => setError(store, err.response));
+}
+
+function fetchHistoricalTrades(store) {
+  const queryURL = '/api/League/TradeHistory?leagueID=' + store.leagueYear.leagueID + '&year=' + store.leagueYear.year;
+  return axios
+    .get(queryURL)
+    .then((response) => {
+      store.historicalTrades = response.data;
+    })
+    .catch((err) => setError(store, err.response));
+}
+
+function setError(store, response) {
+  if (response.status === 401 || response.status === 403) {
+    store.forbidden = true;
+  } else {
+    store.hasError = true;
+  }
+}
+
+function setLeagueYear(store, leagueYearPayload) {
+  store.leagueYear = leagueYearPayload.leagueYear;
+  document.title = leagueYearPayload.leagueYear.league.leagueName + ' - Fantasy Critic';
+
+  if (leagueYearPayload.userID) {
+    store.userPublisher = leagueYearPayload.leagueYear.publishers.find((x) => x.userID === leagueYearPayload.userID);
+  }
+}
