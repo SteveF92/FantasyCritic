@@ -86,14 +86,13 @@
 <script>
 import { DateTime } from 'luxon';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import GGMixin from '@/mixins/ggMixin.js';
+import { getGGLinkForGame, getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import { formatPercent, formatScore } from '@/utilities/formatters';
 
 export default {
   components: {
     MasterGameTagBadge
   },
-  mixins: [GGMixin],
   props: {
     masterGame: { type: Object, required: true },
     hideImage: { type: Boolean }
@@ -105,10 +104,10 @@ export default {
   },
   computed: {
     ggCoverArtLink() {
-      return this.getGGCoverArtLinkForGame(this.masterGame, 165);
+      return getGGCoverArtLinkForGame(this.masterGame, 165);
     },
     ggLink() {
-      return this.getGGLinkForGame(this.masterGame);
+      return getGGLinkForGame(this.masterGame);
     },
     releaseDate() {
       return DateTime.fromISO(this.masterGame.releaseDate).toFormat('MMMM dd, yyyy');

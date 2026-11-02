@@ -90,7 +90,7 @@
 import axios from 'axios';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
 import MasterGameYearStats from '@/components/masterGameYearStats.vue';
-import GGMixin from '@/mixins/ggMixin.js';
+import { getGGLinkForGame, getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import { formatDateLong } from '@/utilities/formatters';
 
 export default {
@@ -98,7 +98,6 @@ export default {
     MasterGameDetails,
     MasterGameYearStats
   },
-  mixins: [GGMixin],
   props: {
     mastergameid: { type: String, required: true }
   },
@@ -118,10 +117,10 @@ export default {
   },
   computed: {
     ggCoverArtLink() {
-      return this.getGGCoverArtLinkForGame(this.masterGame, 307);
+      return getGGCoverArtLinkForGame(this.masterGame, 307);
     },
     ggLink() {
-      return this.getGGLinkForGame(this.masterGame);
+      return getGGLinkForGame(this.masterGame);
     },
     changeLogFields() {
       if (this.isFactChecker) {

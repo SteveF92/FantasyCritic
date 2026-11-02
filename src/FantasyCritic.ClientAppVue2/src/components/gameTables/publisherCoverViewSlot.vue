@@ -43,7 +43,7 @@
 import PublisherMixin from '@/mixins/publisherMixin.js';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
-import GGMixin from '@/mixins/ggMixin.js';
+import { getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import { formatPublisherGameReleaseDate, roundNumber } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
@@ -52,7 +52,7 @@ export default {
     MasterGameSummary,
     SlotTypeBadge
   },
-  mixins: [PublisherMixin, GGMixin],
+  mixins: [PublisherMixin],
   props: {
     gameSlot: { type: Object, required: true }
   },
@@ -89,7 +89,7 @@ export default {
         width = 125;
       }
 
-      return this.getGGCoverArtLinkForGame(this.masterGame, width);
+      return getGGCoverArtLinkForGame(this.masterGame, width);
     },
     popoverID() {
       return `mg-popover-${this._uid}`;

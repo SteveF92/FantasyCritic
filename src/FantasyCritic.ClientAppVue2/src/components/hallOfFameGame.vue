@@ -31,13 +31,12 @@
 
 <script>
 import MasterGameSummary from '@/components/masterGameSummary.vue';
-import GGMixin from '@/mixins/ggMixin.js';
+import { getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import { roundNumber, formatMoney } from '@/globalFunctions';
 export default {
   components: {
     MasterGameSummary
   },
-  mixins: [GGMixin],
   props: {
     hallOfFameGame: { type: Object, required: true }
   },
@@ -61,7 +60,7 @@ export default {
         width = 125;
       }
 
-      return this.getGGCoverArtLinkForGame(this.masterGame, width);
+      return getGGCoverArtLinkForGame(this.masterGame, width);
     }
   },
   methods: {

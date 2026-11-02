@@ -143,7 +143,7 @@
 import axios from 'axios';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
-import GGMixin from '@/mixins/ggMixin.js';
+import { getGGLinkForGame, getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import { formatDateTime } from '@/utilities/formatters';
 
 export default {
@@ -151,7 +151,6 @@ export default {
     MasterGamePopover,
     MasterGameDetails
   },
-  mixins: [GGMixin],
   data() {
     return {
       myRequests: [],
@@ -182,11 +181,11 @@ export default {
   computed: {
     coverArtLink() {
       if (!this.masterGame) return null;
-      return this.getGGCoverArtLinkForGame(this.masterGame, 150);
+      return getGGCoverArtLinkForGame(this.masterGame, 150);
     },
     gameGGLink() {
       if (!this.masterGame) return null;
-      return this.getGGLinkForGame(this.masterGame);
+      return getGGLinkForGame(this.masterGame);
     },
     gameOpenCriticLink() {
       if (!this.masterGame || !this.masterGame.openCriticID) return null;
