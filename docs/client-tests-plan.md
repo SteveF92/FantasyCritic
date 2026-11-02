@@ -35,9 +35,9 @@ committed to `docs/client-tests-plan.md` first.
 - Verified on 26.13.0: `npm ci`, `npm run build`, `npm run lint:check` and
   `npm run format:check` pass. The Docker image is unbuilt until CI's image job runs.
 
-### 2. Vitest and the first leagueStore tests
+### 2. Vitest and the first leagueStore tests — done
 
-- devDependencies: `vitest` (4.x; supports Vite 6) and `jsdom`.
+- devDependencies: `vitest` 5 (supports Vite 6.4) and `jsdom` 30.
 - New `vitest.config.js`, separate from `vite.config.js` (which reads the dev HTTPS cert at load
   and would fail in CI). Same shape as `vite.build.config.js` — `@vitejs/plugin-vue2` and the
   `@` alias — plus `test: { environment: 'jsdom', include: ['tests/**/*.test.{js,ts}'] }`.
@@ -63,8 +63,10 @@ committed to `docs/client-tests-plan.md` first.
     overdue; within seven days), and `hasPendingOrActiveDraft`.
 - Importing `leagueStore` pulls in `authStore` → `@/api/clients` → the gitignored NSwag
   TypeScript client, so tests need the generated client to exist, as the build already does.
-- Verify: `npm test` passes; break a getter on purpose and see it fail; `npm run lint:check` and
-  `npm run format:check` pass.
+- Verified: 29 tests pass in about 1.4 seconds warm (the first run took 19, loading jsdom).
+  Loosening the seven-day check to `< 7` and making counter pick bidding always open after the
+  reveal each failed the expected tests. Lint and the Prettier check pass, and `tsc` reports
+  nothing in `tests/` (its one error, in `src/api/clients.ts`, was already there).
 
 ### 3. @vue/test-utils v1 and a first component test
 

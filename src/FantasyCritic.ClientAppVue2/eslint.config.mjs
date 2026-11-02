@@ -24,7 +24,7 @@ export default [
   },
   // Root-level Node scripts (dev server setup, Vite config) run outside the browser
   {
-    files: ["aspnetcore-https.js", "vite.config.js", "vite.client.config.js", "vite.build.config.js", "eslint.config.mjs"],
+    files: ["aspnetcore-https.js", "vite.config.js", "vite.client.config.js", "vite.build.config.js", "vitest.config.js", "eslint.config.mjs"],
     languageOptions: {
       globals: {
         ...globals.node,
