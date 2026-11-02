@@ -13,16 +13,18 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { makeToast } from '@/utilities/toast';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       resetConfirmation: ''
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league', 'activeDraft']),
     resetConfirmed() {
       let upperCase = this.resetConfirmation.toUpperCase();
       return upperCase === 'RESET DRAFT';
@@ -40,7 +42,7 @@ export default {
       axios
         .post('/api/leagueManager/ResetDraft', model)
         .then(() => {
-          this.notifyAction('Draft has been reset.', false);
+          makeToast('Draft has been reset.');
         })
         .catch(() => {});
     },

@@ -60,14 +60,14 @@
 <script>
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import { formatYesNo } from '@/utilities/formatters';
 
 export default {
   components: {
     PossibleMasterGamesTable
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       searchGameName: '',
@@ -77,11 +77,13 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear']),
     formIsValid() {
       return this.overrideMasterGame;
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     formatYesNo,
     resetEligibility(eligibilityOverride) {
       const model = {

@@ -54,11 +54,11 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import { makeToast } from '@/utilities/toast';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       inviteEmail: '',
@@ -69,11 +69,13 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['league', 'playStarted']),
     valuesEntered() {
       return this.inviteEmail || (this.inviteDisplayName && this.inviteDisplayNumber);
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     invitePlayer() {
       const model = {
         leagueID: this.league.leagueID,

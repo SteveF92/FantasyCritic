@@ -61,7 +61,8 @@ import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   components: {
@@ -69,7 +70,6 @@ export default {
     MasterGameTagBadge,
     MasterGameTagSelector
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       searchGameName: '',
@@ -80,11 +80,13 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear']),
     formIsValid() {
       return this.overrideMasterGame;
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     resetTags(tagOverride) {
       const model = {
         leagueID: this.leagueYear.leagueID,

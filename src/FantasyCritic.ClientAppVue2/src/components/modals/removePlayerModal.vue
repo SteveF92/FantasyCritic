@@ -28,10 +28,10 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       playerToRemove: null,
@@ -39,11 +39,13 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['league']),
     removablePlayers() {
       return this.league.players.filter((x) => x.userID !== this.league.leagueManager.userID);
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     async removePlayer() {
       const player = this.playerToRemove;
       const model = {

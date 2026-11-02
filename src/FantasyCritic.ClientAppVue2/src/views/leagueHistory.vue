@@ -74,7 +74,7 @@ import axios from 'axios';
 import LeagueActionSet from '@/components/leagueActionSet.vue';
 import CollapseCard from '@/components/collapseCard.vue';
 import TradeSummary from '@/components/tradeSummary.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatDateLong, formatDateTime, formatYesNo } from '@/utilities/formatters';
 
@@ -84,7 +84,6 @@ export default {
     CollapseCard,
     TradeSummary
   },
-  mixins: [LeagueMixin],
   props: {
     leagueid: { type: String, required: true },
     year: { type: Number, required: true }
@@ -115,6 +114,7 @@ export default {
     this.initializePage();
   },
   computed: {
+    ...mapState(useLeagueStore, ['forbidden', 'leagueYear', 'leagueActions', 'leagueActionSets', 'historicalTrades', 'league']),
     canDownloadYearExports() {
       return this.league && this.leagueYear && ((this.league.userIsInLeague && this.leagueYear.userIsActive) || this.league.isManager);
     }

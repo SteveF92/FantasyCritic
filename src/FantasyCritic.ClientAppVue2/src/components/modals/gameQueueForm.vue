@@ -132,7 +132,7 @@
 import axios from 'axios';
 import { VueDraggable } from 'vue-draggable-plus';
 
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
 import { useLeagueStore } from '@/store/leagueStore';
 
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
@@ -149,7 +149,6 @@ export default {
     SearchSlotTypeBadge,
     MasterGamePopover
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       searchGameName: null,
@@ -168,6 +167,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'queuedGames']),
     otherPublishers() {
       return this.leagueYear.allPublishersForUser.filter((p) => p.publisherID !== this.userPublisher.publisherID);
     },
@@ -179,6 +179,7 @@ export default {
     this.initializeDesiredRankings();
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     formatScore,
     initializeDesiredRankings() {
       this.desiredQueueRanks = this.queuedGames;

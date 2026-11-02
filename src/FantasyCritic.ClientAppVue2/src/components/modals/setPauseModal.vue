@@ -6,10 +6,14 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { makeToast } from '@/utilities/toast';
 
 export default {
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league', 'activeDraft', 'draftIsPaused'])
+  },
   methods: {
     async setPause() {
       let newPause = !this.draftIsPaused;
@@ -25,7 +29,7 @@ export default {
         if (!newPause) {
           pauseMessage = 'Draft has been un-paused.';
         }
-        this.notifyAction(pauseMessage, false);
+        makeToast(pauseMessage);
         this.$refs.setPauseModalRef.hide();
       } catch (error) {
         console.log(error);

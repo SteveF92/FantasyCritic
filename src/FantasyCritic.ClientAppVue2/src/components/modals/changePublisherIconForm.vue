@@ -24,10 +24,10 @@
 <script>
 import axios from 'axios';
 import { publisherIconIsValid } from '@/globalFunctions';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       newPublisherIcon: '',
@@ -35,6 +35,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['userPublisher']),
     iconIsValid() {
       return publisherIconIsValid(this.newPublisherIcon);
     }
@@ -43,6 +44,7 @@ export default {
     this.clearData();
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     changePublisherIcon() {
       const model = {
         publisherID: this.userPublisher.publisherID,

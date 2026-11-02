@@ -20,7 +20,7 @@
   </div>
 </template>
 <script>
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
 import { useLeagueStore } from '@/store/leagueStore';
 
 import MinimalPlayerGameTable from '@/components/gameTables/minimalPlayerGameTable.vue';
@@ -31,8 +31,8 @@ export default {
     MinimalPlayerGameTable,
     ToggleSwitch
   },
-  mixins: [LeagueMixin],
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'showProjections', 'draftOrderView', 'publishers']),
     editableShowProjections: {
       get() {
         return this.showProjections;

@@ -47,12 +47,12 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import { maxBy, ordinal_suffix_of } from '@/globalFunctions';
 import { formatCurrency, formatScore } from '@/utilities/formatters';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       leadingFields: [
@@ -86,6 +86,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league', 'pendingDraft', 'publishersThatCanWin', 'topPublisher', 'oneShotMode', 'playStarted', 'firstDraftFinished', 'hasPendingOrActiveDraft']),
     standingFields() {
       if (!this.firstDraftFinished) {
         return [...this.leadingFields, ...this.preDraftFields];
@@ -124,6 +125,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     formatCurrency,
     formatScore,
     rescindInvite(inviteID, inviteName) {

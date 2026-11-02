@@ -44,13 +44,13 @@
 <script>
 import axios from 'axios';
 import { VueDraggable } from 'vue-draggable-plus';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   components: {
     VueDraggable
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       showManualSettings: false,
@@ -59,6 +59,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league', 'pendingDraft']),
     hasPreviousYear() {
       return this.league.years.includes(this.leagueYear.year - 1);
     },
@@ -70,6 +71,7 @@ export default {
     this.clearData();
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     async setDraftOrder(draftOrderType) {
       const model = {
         leagueID: this.leagueYear.leagueID,

@@ -27,7 +27,8 @@ import { DateTime } from 'luxon';
 import Countdown from '@/components/countdown.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import BidGameForm from '@/components/modals/bidGameForm.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import { formatDateTime, formatDateTimeAt } from '@/utilities/formatters';
 
 export default {
@@ -36,7 +37,6 @@ export default {
     MasterGamePopover,
     BidGameForm
   },
-  mixins: [LeagueMixin],
   props: {
     specialAuction: { type: Object, required: true }
   },
@@ -46,6 +46,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['league']),
     scheduledEndTime() {
       return DateTime.fromISO(this.specialAuction.scheduledEndTime).toFormat('yyyy-MM-dd HH:mm:ss');
     },

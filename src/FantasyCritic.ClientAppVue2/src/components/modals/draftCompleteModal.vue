@@ -35,11 +35,12 @@
   </b-modal>
 </template>
 <script>
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league', 'oneShotMode']),
     isMultiDraft() {
       return (this.leagueYear?.drafts?.length ?? 0) >= 2;
     }

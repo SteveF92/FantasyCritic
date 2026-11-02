@@ -30,10 +30,10 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       publisherToDisconnect: null,
@@ -41,11 +41,13 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['league', 'publishers']),
     disconnectablePublishers() {
       return this.publishers.filter((x) => !!x.userID && x.userID !== this.league.leagueManager.userID);
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     async disconnectPlayer() {
       const publisher = this.publisherToDisconnect;
       const model = {

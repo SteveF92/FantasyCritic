@@ -11,10 +11,14 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { makeToast } from '@/utilities/toast';
 
 export default {
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league', 'activeDraft'])
+  },
   methods: {
     undoLastDraftAction() {
       this.$refs.undoLastDraftActionModalRef.hide();
@@ -26,7 +30,7 @@ export default {
       axios
         .post('/api/leagueManager/UndoLastDraftAction', model)
         .then(() => {
-          this.notifyAction('Last action was undone.', false);
+          makeToast('Last action was undone.');
         })
         .catch(() => {});
     }

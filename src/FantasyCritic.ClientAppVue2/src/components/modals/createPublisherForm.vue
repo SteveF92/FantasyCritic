@@ -13,10 +13,13 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['leagueYear'])
+  },
   data() {
     return {
       publisherName: '',
@@ -24,6 +27,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     createPublisher() {
       const model = {
         leagueID: this.leagueYear.leagueID,

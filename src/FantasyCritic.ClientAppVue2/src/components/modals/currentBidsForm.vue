@@ -109,7 +109,8 @@ import axios from 'axios';
 import { VueDraggable } from 'vue-draggable-plus';
 
 import MasterGameSummary from '@/components/masterGameSummary.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import { formatCurrency, formatYesNo } from '@/utilities/formatters';
 
 export default {
@@ -117,7 +118,6 @@ export default {
     VueDraggable,
     MasterGameSummary
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       desiredBidPriorities: [],
@@ -133,6 +133,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'currentBids', 'currentDrops']),
     droppableGames() {
       return this.userPublisher.games.filter((x) => !x.counterPick);
     },
@@ -174,6 +175,7 @@ export default {
     this.clearData();
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     formatCurrency,
     formatYesNo,
     async setBidPriorityOrder() {

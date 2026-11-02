@@ -16,7 +16,9 @@
   </tr>
 </template>
 <script>
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { useAuthStore } from '@/store/authStore';
 import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 import { formatScore } from '@/utilities/formatters';
 
@@ -24,11 +26,12 @@ export default {
   components: {
     GameNameColumn
   },
-  mixins: [LeagueMixin],
   props: {
     gameSlot: { type: Object, required: true }
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'showProjections', 'hasSpecialSlots', 'supportedYear']),
+    ...mapState(useAuthStore, ['decimalsToShow']),
     game() {
       return this.gameSlot.publisherGame;
     },

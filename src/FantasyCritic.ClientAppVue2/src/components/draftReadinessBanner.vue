@@ -75,11 +75,12 @@
 </template>
 <script>
 import { DateTime } from 'luxon';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league', 'pendingDraft', 'isManager', 'pendingDraftIsFirst', 'pendingDraftIsOverdue', 'pendingDraftIsImminent', 'pendingDraftCalloutVisible']),
     bannerClass() {
       return this.pendingDraft?.readyToDraft ? 'alert alert-success' : 'alert alert-warning';
     },

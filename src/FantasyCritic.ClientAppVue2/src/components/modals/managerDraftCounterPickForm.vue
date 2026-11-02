@@ -41,10 +41,14 @@
 
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { makeToast } from '@/utilities/toast';
 
 export default {
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['nextPublisherUp'])
+  },
   data() {
     return {
       selectedCounterPick: null,
@@ -77,7 +81,7 @@ export default {
           }
 
           this.$refs.managerDraftCounterPickFormRef.hide();
-          this.notifyAction(this.selectedCounterPick.gameName + ' selected as a counter pick by ' + this.nextPublisherUp.publisherName, false);
+          makeToast(this.selectedCounterPick.gameName + ' selected as a counter pick by ' + this.nextPublisherUp.publisherName);
           this.selectedCounterPick = null;
         })
         .catch(() => {

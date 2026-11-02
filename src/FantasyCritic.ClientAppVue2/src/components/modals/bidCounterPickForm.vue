@@ -49,11 +49,11 @@
 
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import { formatCurrency } from '@/utilities/formatters';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       bidCounterPick: null,
@@ -65,6 +65,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'counterPickBiddingAllowed']),
     formIsValid() {
       return !!this.bidCounterPick;
     },
@@ -91,6 +92,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     formatCurrency,
     getPossibleCounterPicks() {
       this.clearData();

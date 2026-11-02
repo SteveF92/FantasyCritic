@@ -154,7 +154,8 @@
 <script>
 import axios from 'axios';
 
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import CollapseCard from '@/components/collapseCard.vue';
 import { except, startCase } from '@/globalFunctions';
@@ -165,7 +166,6 @@ export default {
     MasterGamePopover,
     CollapseCard
   },
-  mixins: [LeagueMixin],
   props: {
     trade: { type: Object, required: true },
     defaultVisible: { type: Boolean }
@@ -182,6 +182,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'league']),
     recievesVerbiage() {
       if (this.tradeIsActive) {
         return 'Receives';
@@ -227,6 +228,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     formatApprovedRejected,
     formatDateTimeAt,
     acceptTrade() {

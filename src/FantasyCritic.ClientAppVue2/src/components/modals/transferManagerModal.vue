@@ -17,21 +17,23 @@
 
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       newManager: null
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['league']),
     players() {
       return this.league.players.filter((x) => x.userID !== this.userInfo?.userID);
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     async promoteNewManager() {
       const model = {
         leagueID: this.league.leagueID,

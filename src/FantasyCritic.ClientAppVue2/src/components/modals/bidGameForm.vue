@@ -140,7 +140,8 @@ import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import { formatCurrency } from '@/utilities/formatters';
 
 export default {
@@ -149,7 +150,6 @@ export default {
     MasterGameSummary,
     SearchSlotTypeBadge
   },
-  mixins: [LeagueMixin],
   props: {
     specialAuction: { type: Object, required: false, default: null }
   },
@@ -173,6 +173,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'currentDrops']),
     formIsValid() {
       return !!this.bidMasterGame;
     },
@@ -230,6 +231,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     formatCurrency,
     searchGame() {
       this.clearDataExceptSearch();

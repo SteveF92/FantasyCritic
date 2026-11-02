@@ -17,11 +17,14 @@
   </b-modal>
 </template>
 <script>
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import { formatYesNo } from '@/utilities/formatters';
 
 export default {
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['leagueYear'])
+  },
   methods: {
     formatYesNo
   }

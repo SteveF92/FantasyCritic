@@ -36,14 +36,18 @@
 import axios from 'axios';
 import PossibleCounterPicksTable from '@/components/possibleCounterPicksTable.vue';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { makeToast } from '@/utilities/toast';
 
 export default {
   components: {
     PossibleCounterPicksTable,
     MasterGameSummary
   },
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['userPublisher'])
+  },
   data() {
     return {
       selectedCounterPick: null,
@@ -75,7 +79,7 @@ export default {
         }
 
         this.$refs.playerDraftCounterPickFormRef.hide();
-        this.notifyAction('You have selected ' + this.selectedCounterPick.gameName + ' as a counter pick.', false);
+        makeToast('You have selected ' + this.selectedCounterPick.gameName + ' as a counter pick.');
         this.selectedCounterPick = null;
       } catch {
         this.isBusy = false;

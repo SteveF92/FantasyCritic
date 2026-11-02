@@ -214,7 +214,8 @@
   </div>
 </template>
 <script>
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 import BidGameForm from '@/components/modals/bidGameForm.vue';
 import BidCounterPickForm from '@/components/modals/bidCounterPickForm.vue';
@@ -320,8 +321,26 @@ export default {
     UnderReviewModal,
     DraftScheduleModal
   },
-  mixins: [LeagueMixin],
   computed: {
+    ...mapState(useLeagueStore, [
+      'leagueYear',
+      'userPublisher',
+      'league',
+      'publishers',
+      'supportedYear',
+      'activeDraft',
+      'userIsNextInDraft',
+      'playStarted',
+      'readyToSetDraftOrder',
+      'firstDraftFinished',
+      'hasPendingOrActiveDraft',
+      'draftIsActiveOrPaused',
+      'biddingAllowed',
+      'tradesAllowed',
+      'dropsAllowed',
+      'postDraftPlayable',
+      'postDraftEditable'
+    ]),
     iconIsValid() {
       return publisherIconIsValid(this.userPublisher.publisherIcon);
     },

@@ -108,7 +108,9 @@ import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { makeToast } from '@/utilities/toast';
 
 export default {
   components: {
@@ -116,7 +118,6 @@ export default {
     MasterGameSummary,
     SearchSlotTypeBadge
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       searchGameName: null,
@@ -134,6 +135,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'nextPublisherUp']),
     formIsValid() {
       return this.draftUnlistedGame || this.draftMasterGame;
     }
@@ -225,7 +227,7 @@ export default {
           }
 
           this.$refs.managerDraftGameFormRef.hide();
-          this.notifyAction(gameName + ' drafted by ' + this.nextPublisherUp.publisherName, false);
+          makeToast(gameName + ' drafted by ' + this.nextPublisherUp.publisherName);
           this.clearData();
         })
         .catch(() => {});

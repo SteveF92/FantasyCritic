@@ -95,7 +95,9 @@
 <script>
 import html2canvas from 'html2canvas';
 
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { useAuthStore } from '@/store/authStore';
 import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow.vue';
 import { orderBy, publisherIconIsValid } from '@/globalFunctions';
 import { formatCurrency, formatScore } from '@/utilities/formatters';
@@ -104,7 +106,6 @@ export default {
   components: {
     MinimalPlayerGameSlotRow
   },
-  mixins: [LeagueMixin],
   props: {
     publisher: { type: Object, required: true }
   },
@@ -114,6 +115,8 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'showProjections', 'draftOrderView']),
+    ...mapState(useAuthStore, ['decimalsToShow']),
     userIsPublisher() {
       return this.userInfo && this.publisher.userID === this.userInfo.userID;
     },

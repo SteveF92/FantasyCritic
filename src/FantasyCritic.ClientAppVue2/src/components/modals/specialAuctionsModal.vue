@@ -62,7 +62,8 @@
 <script>
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { formatDateTime } from '@/utilities/formatters';
@@ -73,7 +74,6 @@ export default {
     MasterGameSummary,
     MasterGamePopover
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       searchGameName: '',
@@ -89,11 +89,13 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear']),
     formIsValid() {
       return this.specialAuctionMasterGame;
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     formatDateTime,
     async createSpecialAuction() {
       const dateObject = new Date(this.scheduledEndTime);

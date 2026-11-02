@@ -10,20 +10,21 @@
 </template>
 
 <script>
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import TradeSummary from '@/components/tradeSummary.vue';
 
 export default {
   components: {
     TradeSummary
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       errorInfo: ''
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear']),
     activeTrades() {
       return this.leagueYear.activeTrades;
     }

@@ -31,10 +31,13 @@
 
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['userPublisher', 'currentDrops'])
+  },
   data() {
     return {
       dropToCancel: null,
@@ -45,6 +48,7 @@ export default {
     this.clearData();
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     confirmCancelDrop(drop) {
       this.errorInfo = null;
       this.dropToCancel = drop;

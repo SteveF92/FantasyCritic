@@ -172,7 +172,7 @@ import DraftCompleteModal from '@/components/modals/draftCompleteModal.vue';
 import GameNews from '@/components/gameNews.vue';
 import ActiveBids from '@/components/activeBids.vue';
 import BidCountdowns from '@/components/bidCountdowns.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
 import SpecialAuctionInfo from '@/components/specialAuctionInfo.vue';
 import DraftReadinessBanner from '@/components/draftReadinessBanner.vue';
 import DraftStatusHeader from '@/components/draftStatusHeader.vue';
@@ -195,7 +195,6 @@ export default {
     DraftReadinessBanner,
     DraftStatusHeader
   },
-  mixins: [LeagueMixin],
   props: {
     leagueid: { type: String, required: true },
     year: { type: Number, required: true }
@@ -209,6 +208,23 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, [
+      'hasError',
+      'forbidden',
+      'inviteCode',
+      'leagueYear',
+      'userPublisher',
+      'league',
+      'pendingDraft',
+      'activeDraft',
+      'userIsNextInDraft',
+      'topPublisher',
+      'gameNews',
+      'oneShotMode',
+      'playStarted',
+      'biddingAllowed',
+      'postDraftPlayable'
+    ]),
     mostRecentManagerMessage() {
       if (!this.leagueYear || !this.leagueYear.managerMessages || this.leagueYear.managerMessages.length === 0) {
         return null;
