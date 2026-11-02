@@ -14,5 +14,12 @@ alwaysApply: false
 
 ## Style
 
-- Follow colocated patterns in `src/` (components, views, mixins, utilities) and existing **eslint / prettier** scripts in `package.json`.
+- Follow colocated patterns in `src/` (components, views, store, utilities) and existing **eslint / prettier** scripts in `package.json`.
 - API field names typically follow **JSON/camelCase** as emitted from the server; align with existing components rather than inventing new naming.
+
+## Tests
+
+- **Vitest** with **@vue/test-utils v1** (v2 comes with Vue 3). Tests live in `tests/`, mirroring `src/` (`tests/store/leagueStore.test.ts`), and import through the `@/` alias.
+- `npm test` runs them once, `npm run test:watch` watches. They need the regenerated TypeScript client, since the stores import it.
+- Import `describe`/`it`/`expect` from `vitest`; globals are off.
+- Store getters: `setActivePinia(createPinia())` in `beforeEach`, then set state on the store directly. Fix the clock with `vi.useFakeTimers()` + `vi.setSystemTime(...)` for anything date-relative.

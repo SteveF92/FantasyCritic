@@ -84,29 +84,34 @@ committed to `docs/client-tests-plan.md` first.
   dependencies (`vue-template-compiler`, and `js-beautify` → `glob`/`editorconfig`). There's no
   fixed v1; they leave with it at the flip.
 
-### 4. CI and docs
+### 4. CI and docs — done, CI run unverified
 
-- `.github/actions/build-and-test/action.yml`: a "Client unit tests" step after "Unit tests"
-  (the generated TS client exists by then), in `src/FantasyCritic.ClientAppVue2`, running
-  `npm test -- --reporter=default --reporter=junit --outputFile=${{ github.workspace }}/test-results/client.xml`
-  so the existing upload step picks it up. `deploy.yml` uses this action too, so deploys gate on
-  the client tests as well.
-- `CLAUDE.md`: add `npm test` / `npm run test:watch` to the client app line.
-- `docs/vue3-upgrade-plan.md`: move Tests from "Before the flip" to the Done table (what's
-  covered, where tests live, that `@vue/test-utils` moves to v2 at the flip — already listed
-  there), and note Node 26.
-- Verify: push the branch and confirm the CI step runs and the results artifact contains
-  `client.xml`.
+- `.github/actions/build-and-test/action.yml`: a "Client unit tests" step after "Unit tests",
+  in `src/FantasyCritic.ClientAppVue2`, running
+  `npm test -- --reporter=default --reporter=junit --outputFile.junit=${{ github.workspace }}/test-results/client.xml`
+  so the existing upload step picks it up. It runs whenever "Generate API clients" succeeded
+  (that step now has `id: generate`), so a failing .NET test project doesn't hide client
+  results, but a broken build doesn't produce a confusing missing-module failure. `deploy.yml`
+  uses this action too, so deploys gate on the client tests as well.
+- `CLAUDE.md`: `npm test` / `npm run test:watch` on the client app line, and stopping the dev
+  server before `npm ci`.
+- `README.md`: a short client tests paragraph under the integration tests, for contributors.
+- `.cursor/rules/fantasy-critic-frontend.mdc`: a Tests section (where they live, how store tests
+  are set up), and "mixins" dropped from the folders it names.
+- `docs/vue3-upgrade-plan.md`: Tests moved from "Before the flip" to the Done table.
+- Verified locally: the CI command passes and writes a 33-test `client.xml`. **Left:** push the
+  branch and confirm the step runs on GitHub and the results artifact contains `client.xml`.
 
 ## Files
 
 - `src/FantasyCritic.ClientAppVue2/package.json`, `vitest.config.js` (new), `tsconfig.json`,
   `eslint.config.mjs`
 - `src/FantasyCritic.ClientAppVue2/tests/store/leagueStore.test.ts` (new),
-  `tests/components/dateInput.test.ts` (new)
+  `tests/components/dateInput.test.ts` (new), `tests/shims-vue.d.ts` (new)
 - `.github/actions/setup-build/action.yml`, `.github/actions/build-and-test/action.yml`
 - `src/FantasyCritic.Web/Dockerfile`
-- `CLAUDE.md`, `docs/vue3-upgrade-plan.md`, `docs/client-tests-plan.md` (new)
+- `CLAUDE.md`, `README.md`, `.cursor/rules/fantasy-critic-frontend.mdc`,
+  `docs/vue3-upgrade-plan.md`, `docs/client-tests-plan.md` (new)
 
 ## Notes
 

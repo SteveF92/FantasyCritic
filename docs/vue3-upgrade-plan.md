@@ -55,7 +55,8 @@ branch. Two lessons:
 ## Done
 
 All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-pinia` as of
-2026-11-01. The first production release of this work is pending.
+2026-11-01, and tests, which are on `vue3-upgrade-final-prep` as of 2026-11-01. The first
+production release of this work is pending.
 
 | Area | Change |
 |---|---|
@@ -73,6 +74,7 @@ All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-
 | Toasts | Every toast goes through `makeToast(message, variant = 'info')` in `utilities/toast.ts`, a plain function that adds the toast to `toastStore`. `components/toastHost.vue`, mounted once in `App.vue`, renders the store's toasts as declarative `b-toast`s and removes each when it hides. The old `makeToast` lived in `BasicMixin`, built its body with Vue 2's `$createElement`, and toasted through the calling component's `$bvToast`, which destroys the toast along with the component. The two direct `$bvToast` calls (critics royale's error, the royale group invite link) now use the shared function, so they have its close icon too. Checked on the dev server: toasts render in both variants, the close icon closes only its own toast, auto-hide removes them from the store, and a toast survives a route change. |
 | Date-time pickers | The two `flat-pickr`s (site announcements and special auctions) are native `<input type="datetime-local">`s, and `vue-flatpickr-component` and `flatpickr` are gone. The value is a local `yyyy-MM-ddTHH:mm` string, which `new Date(...)` already read as local time, so the `toISOString()` calls are unchanged. Editing an announcement formats its stored instant with Luxon instead of passing the picker a `Date`. Checked by mounting the announcements page on the dev server: a stored UTC time shows in local time and converts back to the same instant. The special auctions modal is unchecked, since it needs a league manager. |
 | Mixins | All five are gone, along with `mixins/` and the global `Vue.mixin`. `GGMixin` became typed functions in `utilities/ggLinks.ts`. The conference, publisher and league mixins' derived values became getters on their stores, `notifyAction` became a store action that refreshes and then toasts, and `decimalsToShow` is an `authStore` getter; the draft modals that toasted without refreshing call `makeToast`. Each component maps only the state and actions it reads, found by compiling its template and collecting its `this.` uses and `watch` keys. `BasicMixin` was global, so the 29 components that relied on it, `topNavBar.vue` among them with no script of its own, now map the `authStore` and `interLeagueStore` state they read and import `formatLongDate`/`formatLongDateTime`. The league getters were compared against the old mixin code on 120 public leagues and 297 synthetic draft and bidding states, with no differences beyond `undefined` becoming `null` or `false`. With no mixins left, every name a component reads must be one it defines, and a static check over all components confirms that for everything the mixins provided. Public pages and the league page's 50 modals show no Vue warnings logged out. |
+| Tests | Vitest 5 with `@vue/test-utils` v1 and jsdom, set up in [client-tests-plan.md](client-tests-plan.md). Tests live in `tests/`, mirroring `src/`; `npm test` runs them, and CI runs them after generating the API clients, so deploys gate on them too. They need the generated TypeScript client because the stores import it. 33 so far: `counterPickBiddingAllowed`, `hasPendingOrActiveDraft` and the `pendingDraft*` getters on `leagueStore`, with the clock fixed, and `dateInput.vue`, which proves components compile and mount. Node moved to 26, the current LTS, locally, in CI and in the web image. test-utils v1 adds five moderate dev-only `npm audit` findings, which go when it moves to v2 at the flip. |
 
 **Still to verify by hand:**
 
@@ -117,9 +119,6 @@ client come in. Counts are as of 2026-10-28.
 - **TypeScript.** 4 of 171 components use `lang="ts"`. Seven hand-written models (`models/`)
   duplicate generated types. Adding a `vue-tsc` type check to CI (it supports a Vue 2.7 target)
   gives the conversions teeth. Convert as files are touched.
-- **Tests.** There are none. Set up Vitest with `@vue/test-utils` v1 now and move to v2 at the
-  flip. Start with the `leagueStore` getters that came out of `LeagueMixin`, for example
-  `counterPickBiddingAllowed` and the `pendingDraft*` set.
 - **Bootstrap classes that work in both versions.** `form-group` becomes `mb-3`: Bootstrap 4's
   `form-group` is exactly a 1rem bottom margin, `mb-3` is the same in both versions, and no CSS
   selects `.form-group`. That's 172 uses in 63 files. The other Bootstrap 5 renames (`ml-` to

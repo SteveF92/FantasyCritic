@@ -59,6 +59,7 @@ runs:
       run: dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj -c ${{ inputs.configuration }} --no-restore
 
     - name: Generate API clients
+      id: generate
       # Both generated clients are gitignored, so CI has to produce them the same way the
       # server used to. The C# client is what makes FantasyCritic.IntegrationTests compile.
       shell: bash
@@ -88,6 +89,14 @@ runs:
             || status=1
         done
         exit $status
+
+    - name: Client unit tests
+      # Runs even if a .NET test project failed, but needs the generated TypeScript client,
+      # which the stores import.
+      if: ${{ !cancelled() && steps.generate.outcome == 'success' }}
+      shell: bash
+      working-directory: src/FantasyCritic.ClientAppVue2
+      run: npm test -- --reporter=default --reporter=junit --outputFile.junit=${{ github.workspace }}/test-results/client.xml
 
     - name: Upload test results
       if: always()

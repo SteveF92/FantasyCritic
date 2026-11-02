@@ -54,7 +54,7 @@ scripts/Format.ps1          # apply
 scripts/Format.ps1 -Check   # verify only (CI-style)
 ```
 
-Client app (`src/FantasyCritic.ClientAppVue2`): `npm install` first; `npm run lint` / `npm run format` for JS-only passes; `npm run client` runs the SPA standalone against the production API.
+Client app (`src/FantasyCritic.ClientAppVue2`): `npm install` first; `npm test` runs the Vitest unit tests in `tests/` (`npm run test:watch` to watch; they need the regenerated TypeScript client); `npm run lint` / `npm run format` for JS-only passes; `npm run client` runs the SPA standalone against the production API. Stop the Vite dev server before `npm ci`, which can't replace the `esbuild.exe` it holds open.
 
 ## Architecture
 
