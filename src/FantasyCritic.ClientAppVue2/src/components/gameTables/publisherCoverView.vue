@@ -7,14 +7,17 @@
 </template>
 
 <script>
-import PublisherMixin from '@/mixins/publisherMixin.js';
+import { mapState } from 'pinia';
+import { usePublisherStore } from '@/store/publisherStore';
 import PublisherCoverViewSlot from '@/components/gameTables/publisherCoverViewSlot.vue';
 
 export default {
   components: {
     PublisherCoverViewSlot
   },
-  mixins: [PublisherMixin]
+  computed: {
+    ...mapState(usePublisherStore, ['gameSlots'])
+  }
 };
 </script>
 <style scoped>

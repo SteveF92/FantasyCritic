@@ -127,7 +127,7 @@
 <script>
 import html2canvas from 'html2canvas';
 
-import PublisherMixin from '@/mixins/publisherMixin.js';
+import { mapState } from 'pinia';
 import { usePublisherStore } from '@/store/publisherStore';
 
 import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
@@ -142,7 +142,6 @@ export default {
     ToggleSwitch,
     PublisherCoverView
   },
-  mixins: [PublisherMixin],
   props: {
     publisherid: { type: String, required: true }
   },
@@ -153,6 +152,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(usePublisherStore, ['publisher', 'leagueYear', 'moveMode', 'sortOrderMode', 'coverArtMode', 'includeRemovedInSorted', 'userIsPublisher', 'hasFormerGames']),
     iconIsValid() {
       return publisherIconIsValid(this.publisher.publisherIcon);
     },

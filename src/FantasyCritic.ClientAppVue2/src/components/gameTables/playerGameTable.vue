@@ -78,14 +78,14 @@
 <script>
 import { formatPublisherGameReleaseDate, formatPublisherGameAcquiredDate, formatPublisherGameRemovedDate } from '@/globalFunctions';
 import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
-import PublisherMixin from '@/mixins/publisherMixin.js';
+import { mapState } from 'pinia';
+import { usePublisherStore } from '@/store/publisherStore';
 import { formatScore } from '@/utilities/formatters';
 
 export default {
   components: {
     GameNameColumn
   },
-  mixins: [PublisherMixin],
   data() {
     return {
       sortBy: 'overallSlotNumber',
@@ -93,6 +93,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(usePublisherStore, ['publisher', 'leagueYear', 'gameSlots', 'sortOrderMode', 'includeRemovedInSorted']),
     tableItems() {
       if (!this.sortOrderMode) {
         return this.gameSlots;

@@ -40,7 +40,8 @@
   </div>
 </template>
 <script>
-import PublisherMixin from '@/mixins/publisherMixin.js';
+import { mapState } from 'pinia';
+import { usePublisherStore } from '@/store/publisherStore';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
 import { getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
@@ -52,11 +53,11 @@ export default {
     MasterGameSummary,
     SlotTypeBadge
   },
-  mixins: [PublisherMixin],
   props: {
     gameSlot: { type: Object, required: true }
   },
   computed: {
+    ...mapState(usePublisherStore, ['leagueYear']),
     useSmallImages() {
       if (window.innerWidth < 500) {
         return true;
