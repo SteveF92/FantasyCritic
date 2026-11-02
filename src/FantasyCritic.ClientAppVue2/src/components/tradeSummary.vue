@@ -134,7 +134,7 @@
 
               <template #cell(comment)="data">
                 {{ data.item.comment }}
-                <template v-if="data.item.userID === userInfo.userID && !trade.completedTimestamp">
+                <template v-if="data.item.userID === userInfo?.userID && !trade.completedTimestamp">
                   <b-button variant="danger" size="sm" @click="deleteVote">Delete Vote</b-button>
                 </template>
               </template>
@@ -207,11 +207,11 @@ export default {
       let involvedParties = [this.trade.proposerUserID, this.trade.counterPartyUserID];
       let allUserIDsInLeague = this.leagueYear.players.filter((x) => !!x.user).map((x) => x.user.userID);
       let nonInvolvedParties = except(allUserIDsInLeague, involvedParties);
-      return nonInvolvedParties.includes(this.userInfo.userID);
+      return nonInvolvedParties.includes(this.userInfo?.userID);
     },
     canVote() {
       let votedUserIDs = this.trade.votes.map((x) => x.userID);
-      let alreadyVoted = votedUserIDs.includes(this.userInfo.userID);
+      let alreadyVoted = votedUserIDs.includes(this.userInfo?.userID);
       return this.isInLeagueButNotInvolved && !alreadyVoted;
     },
     header() {
