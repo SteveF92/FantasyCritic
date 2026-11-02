@@ -107,7 +107,7 @@ client come in. Counts are as of 2026-10-28.
 
 | Package | Where | Move |
 |---|---|---|
-| `vee-validate` 3 | 22 `ValidationProvider` in 13 files, 7 `ValidationObserver` | **Decision needed.** The rules in use are `required`, `integer`, `min_value`, `max_value`, `email` and `min` (`max` is registered but unused), and the observers only read `invalid`. Replacing it with our own code now would also remove a compat risk; the alternative is vee-validate 4 after the flip, whose `<Field>`/`<Form>` have nearly the same slot shape. |
+| `vee-validate` 3 | 22 `ValidationProvider` in 13 files, 7 `ValidationObserver` | **Left for the flip** (decided 2026-11-01). The rules in use are `required`, `integer`, `min_value`, `max_value`, `email` and `min` (`max` is registered but unused), and the observers only read `invalid`. See the flip section. |
 
 ### Code
 
@@ -158,6 +158,10 @@ Follow the migration build guide. Packages that change together:
 - `vue-multiselect` 2 to 3 (2 components)
 - `@vue/test-utils` v1 to v2
 - bootstrap-vue **stays**, running on its compat support
+- `vee-validate` 3 is the one dependency whose behaviour on compat is unknown. It supports only
+  Vue 2, and `ValidationProvider` finds its input by walking Vue 2 vnodes for `v-model`, so
+  expect it to break. Check the 13 forms that use it first. If it breaks, the choice is
+  vee-validate 4 (`<Field>`/`<Form>` have nearly the same slot shape) or our own code.
 
 Code that changes with it:
 
@@ -191,7 +195,6 @@ the app.
 
 ## Open decisions
 
-- **vee-validate:** our own validation now, or vee-validate 4 after the flip.
 - **Analytics:** a GA4 property, or none. Either way `about.vue` needs rewording.
 - **Style for new components:** Options API or `<script setup lang="ts">`. `countdown.vue` and
   `toggleSwitch.vue` use the Options API in plain JS, to match the codebase.
