@@ -68,15 +68,21 @@ committed to `docs/client-tests-plan.md` first.
   reveal each failed the expected tests. Lint and the Prettier check pass, and `tsc` reports
   nothing in `tests/` (its one error, in `src/api/clients.ts`, was already there).
 
-### 3. @vue/test-utils v1 and a first component test
+### 3. @vue/test-utils v1 and a first component test — done
 
-- devDependency `@vue/test-utils@^1.3.6` (its `vue-template-compiler` peer must match the
-  installed `vue` 2.7.x exactly; pin it if npm doesn't pick the same version).
+- devDependency `@vue/test-utils@^1.3.6`. npm installs its `vue-template-compiler` peer at
+  2.7.16, matching `vue`; that's the final Vue 2 release, so the two can't drift apart.
+- `tests/shims-vue.d.ts` declares `*.vue` modules so a `.ts` test can import a component. A
+  `vue-tsc` check would replace it.
 - `tests/components/dateInput.test.ts`: mount `@/components/dateInput.vue` with a value and
-  check the input shows it; set a date and check it emits `input` with `YYYY-MM-DD`; clear it and
-  check it emits `null`, not `''`. Small, but it proves SFC compilation and mounting work, which
-  is what moves to v2 at the flip.
-- Verify: `npm test` runs both files green.
+  check the input shows it and follows a new one; set a date and check it emits `input` with
+  `YYYY-MM-DD`; clear it and check it emits `null`, not `''`. Small, but it proves SFC
+  compilation and mounting work, which is what moves to v2 at the flip.
+- Verified: 33 tests pass with no Vue warnings; emitting `''` on clear fails the clearing test.
+  Lint, Prettier and `tsc` are clean apart from the existing `clients.ts` error.
+- `npm audit` goes from 22 to 27 findings, all moderate and dev-only, from test-utils' own
+  dependencies (`vue-template-compiler`, and `js-beautify` → `glob`/`editorconfig`). There's no
+  fixed v1; they leave with it at the flip.
 
 ### 4. CI and docs
 
