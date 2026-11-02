@@ -1,188 +1,65 @@
 import { mapState } from 'pinia';
-import { DateTime } from 'luxon';
 
+import { useAuthStore } from '@/store/authStore';
 import { useLeagueStore } from '@/store/leagueStore';
 import { makeToast } from '@/utilities/toast';
 
 const leagueMixin = {
   computed: {
-    ...mapState(useLeagueStore, ['hasError', 'forbidden', 'inviteCode', 'leagueYear', 'userPublisher', 'leagueActions', 'leagueActionSets', 'historicalTrades', 'showProjections', 'draftOrderView']),
-    league() {
-      if (!this.leagueYear) {
-        return;
-      }
-      return this.leagueYear.league;
-    },
-    publishers() {
-      return this.leagueYear.publishers;
-    },
-    players() {
-      return this.leagueYear.players;
-    },
-    hasSpecialSlots() {
-      return this.leagueYear.settings.hasSpecialSlots;
-    },
-    supportedYear() {
-      return this.leagueYear.supportedYear;
-    },
-    firstDraft() {
-      if (!this.leagueYear?.drafts || this.leagueYear.drafts.length === 0) {
-        return null;
-      }
-      return this.leagueYear.drafts[0];
-    },
-    pendingDraft() {
-      return this.leagueYear.drafts.find((d) => d.playStatus === 'NotStartedDraft') ?? null;
-    },
-    activeDraft() {
-      return this.leagueYear.drafts.find((d) => d.draftIsActive || d.draftIsPaused) ?? null;
-    },
-    nextPublisherUp() {
-      if (!this.leagueYear || !this.leagueYear.publishers) {
-        return null;
-      }
-      let next = this.leagueYear.publishers.find((x) => x.nextToDraft);
-      return next;
-    },
-    userIsNextInDraft() {
-      if (this.nextPublisherUp && this.leagueYear && this.userPublisher) {
-        return this.nextPublisherUp.publisherID === this.userPublisher.publisherID;
-      }
-
-      return false;
-    },
-    draftIsPaused() {
-      return this.activeDraft?.draftIsPaused ?? false;
-    },
-    isManager() {
-      return this.league && this.league.isManager;
-    },
-    publishersThatCanWin() {
-      // Publishers with no user stay in the standings, but can't win.
-      return (this.leagueYear.publishers ?? []).filter((x) => !!x.userID);
-    },
-    topPublisher() {
-      // The server picks it, so ties break the same way as the recorded winner.
-      return (this.leagueYear.publishers ?? []).find((x) => x.publisherID === this.leagueYear.winningPublisherID) ?? null;
-    },
-    currentBids() {
-      if (!this.leagueYear || !this.leagueYear.privatePublisherData) {
-        return [];
-      }
-
-      return this.leagueYear.privatePublisherData.myActiveBids;
-    },
-    currentDrops() {
-      if (!this.leagueYear || !this.leagueYear.privatePublisherData) {
-        return [];
-      }
-
-      return this.leagueYear.privatePublisherData.myActiveDrops;
-    },
-    queuedGames() {
-      if (!this.leagueYear || !this.leagueYear.privatePublisherData) {
-        return [];
-      }
-
-      return this.leagueYear.privatePublisherData.queuedGames;
-    },
-    gameNews() {
-      if (!this.leagueYear || !this.leagueYear.gameNews) {
-        return [];
-      }
-
-      return this.leagueYear.gameNews;
-    },
-    oneShotMode() {
-      return this.leagueYear.settings.oneShotMode;
-    },
-    playStarted() {
-      return this.firstDraft?.playStarted ?? false;
-    },
-    readyToSetDraftOrder() {
-      return this.pendingDraft?.readyToSetDraftOrder ?? false;
-    },
-    firstDraftFinished() {
-      return this.firstDraft?.draftFinished ?? false;
-    },
-    hasPendingOrActiveDraft() {
-      return this.pendingDraft !== null || this.activeDraft !== null;
-    },
-    pendingDraftIsFirst() {
-      return this.pendingDraft?.draftNumber === 1;
-    },
-    pendingDraftIsWithinSevenDays() {
-      if (!this.pendingDraft?.scheduledDate) return false;
-      const scheduled = DateTime.fromISO(this.pendingDraft.scheduledDate).startOf('day');
-      const today = DateTime.local().startOf('day');
-      return scheduled.diff(today, 'days').days <= 7;
-    },
-    pendingDraftIsOverdue() {
-      if (!this.pendingDraft?.scheduledDate) return false;
-      const scheduled = DateTime.fromISO(this.pendingDraft.scheduledDate).startOf('day');
-      const today = DateTime.local().startOf('day');
-      return scheduled < today;
-    },
-    pendingDraftIsImminent() {
-      if (!this.pendingDraft) return false;
-      if (this.pendingDraftIsFirst) return true;
-      if (this.pendingDraft.draftOrderSet && !this.pendingDraft.scheduledDate) return true;
-      return this.pendingDraftIsWithinSevenDays;
-    },
-    pendingDraftCalloutVisible() {
-      if (!this.pendingDraft || this.activeDraft) return false;
-      if (this.pendingDraftIsFirst) return true;
-      if (this.pendingDraftIsOverdue) return true;
-      return this.pendingDraftIsWithinSevenDays;
-    },
-    draftIsActiveOrPaused() {
-      return this.activeDraft !== null;
-    },
-    biddingAllowed() {
-      return this.firstDraftFinished && !this.activeDraft && this.leagueYear.enableBids;
-    },
-    counterPickBiddingAllowed() {
-      if (!this.biddingAllowed) {
-        return false;
-      }
-
-      const publicBiddingGames = this.leagueYear.publicBiddingGames;
-      if (this.leagueYear.settings.pickupSystem !== 'SemiPublicBiddingSemiPublicCounterPicks' || !publicBiddingGames) {
-        return true;
-      }
-
-      // The reveal told the league only whether anything is being counter picked. While that answer is already 'yes',
-      // another counter pick bid can't change it, so bidding stays open. While it's 'no', any counter pick bid would
-      // flip it, so bidding is closed for the rest of the week.
-      return publicBiddingGames.anyHiddenCounterPickBids;
-    },
-    tradesAllowed() {
-      return this.firstDraftFinished && !this.activeDraft && this.leagueYear.settings.tradingSystem !== 'NoTrades';
-    },
-    dropsAllowed() {
-      return this.firstDraftFinished && !this.activeDraft && !this.oneShotMode;
-    },
-    postDraftPlayable() {
-      return this.firstDraftFinished && !this.leagueYear.supportedYear.finished;
-    },
-    postDraftEditable() {
-      return this.firstDraftFinished && (!this.leagueYear.supportedYear.finished || this.leagueYear.underReview);
-    },
-    decimalsToShow() {
-      if (this.userInfo?.showDecimalPoints) {
-        return 1;
-      }
-
-      return 0;
-    }
+    ...mapState(useLeagueStore, [
+      'hasError',
+      'forbidden',
+      'inviteCode',
+      'leagueYear',
+      'userPublisher',
+      'leagueActions',
+      'leagueActionSets',
+      'historicalTrades',
+      'showProjections',
+      'draftOrderView',
+      'league',
+      'publishers',
+      'players',
+      'hasSpecialSlots',
+      'supportedYear',
+      'firstDraft',
+      'pendingDraft',
+      'activeDraft',
+      'nextPublisherUp',
+      'userIsNextInDraft',
+      'draftIsPaused',
+      'isManager',
+      'publishersThatCanWin',
+      'topPublisher',
+      'currentBids',
+      'currentDrops',
+      'queuedGames',
+      'gameNews',
+      'oneShotMode',
+      'playStarted',
+      'readyToSetDraftOrder',
+      'firstDraftFinished',
+      'hasPendingOrActiveDraft',
+      'pendingDraftIsFirst',
+      'pendingDraftIsWithinSevenDays',
+      'pendingDraftIsOverdue',
+      'pendingDraftIsImminent',
+      'pendingDraftCalloutVisible',
+      'draftIsActiveOrPaused',
+      'biddingAllowed',
+      'counterPickBiddingAllowed',
+      'tradesAllowed',
+      'dropsAllowed',
+      'postDraftPlayable',
+      'postDraftEditable'
+    ]),
+    ...mapState(useAuthStore, ['decimalsToShow'])
   },
   methods: {
     async notifyAction(message, refresh = true) {
       if (refresh) {
-        const leagueStore = useLeagueStore();
-        await leagueStore.refreshLeagueYear();
-      }
-      if (message) {
+        await useLeagueStore().notifyAction(message);
+      } else if (message) {
         makeToast(message);
       }
     }
