@@ -11,7 +11,7 @@ them, and a place for tests to accumulate as files are touched.
 Decisions taken:
 - **Tests live in `tests/`**, mirroring `src/` (`tests/store/leagueStore.test.ts`). Colocation's
   only real advantage is seeing the test beside the file; not worth overriding the preference.
-- **Node goes to the current LTS (24)** locally, in CI and in the web Dockerfile, so all three
+- **Node goes to the current LTS (26)** locally, in CI and in the web Dockerfile, so all three
   match. Vitest 4 needs Node 20+, so 22 would work, but there's no reason to stay behind.
 - Tests import `describe`/`it`/`expect` from `vitest` explicitly rather than turning on globals,
   so no ambient types are needed.
@@ -25,13 +25,15 @@ unless they start at the repo root.
 One commit per step, stopping for review after each, per CLAUDE.md. The plan itself gets
 committed to `docs/client-tests-plan.md` first.
 
-### 1. Node 24 LTS
+### 1. Node 26 LTS — done
 
-- Local: Steve installs Node 24 LTS (e.g. `winget upgrade OpenJS.NodeJS.LTS`, or the nodejs.org
-  installer). Worth also deleting the stale nvm v16 that shadows it in the Bash tool.
-- `.github/actions/setup-build/action.yml`: `node-version: '24'`.
-- `src/FantasyCritic.Web/Dockerfile`: `setup_22.x` → `setup_24.x`.
-- Verify: `node -v` in PowerShell; `npm ci`, `npm run build`, `npm run lint:check` still pass.
+- Local: Node 26.13.0 through nvm-for-Windows (`nvm install` / `nvm use`), whose symlink is on
+  the system PATH, so Visual Studio and `dotnet run` get it too, not only shells. The stale
+  nvm-sh v16 is deleted.
+- `.github/actions/setup-build/action.yml`: `node-version: '26'`.
+- `src/FantasyCritic.Web/Dockerfile`: `setup_22.x` → `setup_26.x`.
+- Verified on 26.13.0: `npm ci`, `npm run build`, `npm run lint:check` and
+  `npm run format:check` pass. The Docker image is unbuilt until CI's image job runs.
 
 ### 2. Vitest and the first leagueStore tests
 
@@ -84,7 +86,7 @@ committed to `docs/client-tests-plan.md` first.
 - `CLAUDE.md`: add `npm test` / `npm run test:watch` to the client app line.
 - `docs/vue3-upgrade-plan.md`: move Tests from "Before the flip" to the Done table (what's
   covered, where tests live, that `@vue/test-utils` moves to v2 at the flip — already listed
-  there), and note Node 24.
+  there), and note Node 26.
 - Verify: push the branch and confirm the CI step runs and the results artifact contains
   `client.xml`.
 
@@ -100,6 +102,7 @@ committed to `docs/client-tests-plan.md` first.
 
 ## Notes
 
-- Run npm through the PowerShell tool, not Bash (the Bash tool resolves the stale nvm Node).
+- Stop the Vite dev server before `npm ci`: it holds `esbuild.exe` open, and `npm ci` fails
+  after it has already deleted half of `node_modules`.
 - `scripts/Format.ps1` / `format.sh` call `npm run format(:check)`, so widening those scripts
   covers `tests/` with no change to the PowerShell or shell scripts.
