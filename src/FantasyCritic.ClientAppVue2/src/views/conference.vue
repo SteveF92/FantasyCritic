@@ -128,7 +128,7 @@
 <script>
 import axios from 'axios';
 
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState, mapActions } from 'pinia';
 import ConferenceManagerActions from '@/components/conferenceManagerActions.vue';
 import ConferenceYearStandings from '@/components/conferenceYearStandings.vue';
 import { useConferenceStore } from '@/store/conferenceStore';
@@ -140,7 +140,6 @@ export default {
     ConferenceManagerActions,
     ConferenceYearStandings
   },
-  mixins: [ConferenceMixin],
   props: {
     conferenceid: { type: String, required: true },
     year: { type: Number, required: true }
@@ -157,6 +156,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useConferenceStore, ['conference', 'conferenceYear', 'hasError', 'conferenceInviteCode', 'isConferenceManager']),
     numberOfPlayersActiveForYear() {
       return this.conferenceYear.playersForYear.length;
     },
@@ -220,6 +220,7 @@ export default {
     await this.initializePage();
   },
   methods: {
+    ...mapActions(useConferenceStore, ['refreshConferenceYear']),
     formatDateTime,
     async initializePage() {
       this.selectedYear = this.year;

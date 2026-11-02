@@ -18,10 +18,10 @@
 
 <script>
 import axios from 'axios';
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useConferenceStore } from '@/store/conferenceStore';
 
 export default {
-  mixins: [ConferenceMixin],
   data() {
     return {
       newManager: null,
@@ -29,11 +29,13 @@ export default {
     };
   },
   computed: {
+    ...mapState(useConferenceStore, ['conference']),
     players() {
       return this.conference.players.filter((x) => x.userID !== this.userInfo.userID);
     }
   },
   methods: {
+    ...mapActions(useConferenceStore, ['notifyAction']),
     async promoteNewManager() {
       const model = {
         conferenceID: this.conference.conferenceID,

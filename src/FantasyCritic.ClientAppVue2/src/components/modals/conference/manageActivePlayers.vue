@@ -29,10 +29,13 @@
 <script>
 import axios from 'axios';
 
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useConferenceStore } from '@/store/conferenceStore';
 
 export default {
-  mixins: [ConferenceMixin],
+  computed: {
+    ...mapState(useConferenceStore, ['conference', 'conferenceYear'])
+  },
   data() {
     return {
       showTable: false,
@@ -44,6 +47,7 @@ export default {
     this.setCurrentActivePlayers();
   },
   methods: {
+    ...mapActions(useConferenceStore, ['notifyAction']),
     userIsActive(user) {
       let matchingPlayer = this.conferenceYear.playersForYear.find((item) => item.userID === user.userID);
       return !!matchingPlayer;

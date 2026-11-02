@@ -78,13 +78,16 @@
 import axios from 'axios';
 import { VueDraggable } from 'vue-draggable-plus';
 
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useConferenceStore } from '@/store/conferenceStore';
 
 export default {
   components: {
     VueDraggable
   },
-  mixins: [ConferenceMixin],
+  computed: {
+    ...mapState(useConferenceStore, ['conference', 'conferenceYear'])
+  },
   data() {
     return {
       errorInfo: null,
@@ -102,6 +105,7 @@ export default {
     this.initialize();
   },
   methods: {
+    ...mapActions(useConferenceStore, ['notifyAction']),
     initialize() {
       let unassignedPlayers = [];
       for (const player of this.conferenceYear.playersForYear) {

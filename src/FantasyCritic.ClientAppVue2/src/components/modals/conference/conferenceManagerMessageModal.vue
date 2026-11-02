@@ -18,18 +18,21 @@
 
 <script>
 import axios from 'axios';
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useConferenceStore } from '@/store/conferenceStore';
 
 export default {
-  mixins: [ConferenceMixin],
   data() {
     return {
       messageText: null,
       isPublic: false
     };
   },
-  computed: {},
+  computed: {
+    ...mapState(useConferenceStore, ['conference', 'conferenceYear'])
+  },
   methods: {
+    ...mapActions(useConferenceStore, ['notifyAction']),
     postNewMessage() {
       const model = {
         conferenceID: this.conference.conferenceID,

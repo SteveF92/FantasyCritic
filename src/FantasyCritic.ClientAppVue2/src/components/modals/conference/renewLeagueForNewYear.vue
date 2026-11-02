@@ -25,10 +25,13 @@
 </template>
 <script>
 import axios from 'axios';
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useConferenceStore } from '@/store/conferenceStore';
 
 export default {
-  mixins: [ConferenceMixin],
+  computed: {
+    ...mapState(useConferenceStore, ['conference', 'conferenceYear'])
+  },
   data() {
     return {
       renewableLeagues: null,
@@ -41,6 +44,7 @@ export default {
     await this.initialize();
   },
   methods: {
+    ...mapActions(useConferenceStore, ['notifyAction']),
     async initialize() {
       const response = await axios.get('/api/Conference/GetConference/' + this.conference.conferenceID);
       const leaguesAlreadyRenewed = this.conferenceYear.leagueYears.map((x) => x.leagueID);

@@ -1,10 +1,13 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import { makeToast } from '@/utilities/toast';
 
 export const useConferenceStore = defineStore('conference', {
   state: () => ({ hasError: false, conferenceYear: null, conferenceInviteCode: false }),
   getters: {
-    conference: (state) => state.conferenceYear.conference
+    conference: (state) => state.conferenceYear?.conference,
+    isConferenceManager: (state) => state.conferenceYear?.conference?.isManager ?? false,
+    playStarted: (state) => state.conferenceYear?.leagueYears.some((x) => x.draftFinished) ?? false
   },
   actions: {
     async initializeConferencePage(conferencePageParams) {
@@ -19,6 +22,12 @@ export const useConferenceStore = defineStore('conference', {
         year: this.conferenceYear.year
       };
       await fetchConferenceYear(this, conferencePageParams);
+    },
+    async notifyAction(message) {
+      await this.refreshConferenceYear();
+      if (message) {
+        makeToast(message);
+      }
     }
   }
 });
