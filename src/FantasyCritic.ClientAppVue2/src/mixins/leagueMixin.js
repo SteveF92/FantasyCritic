@@ -2,6 +2,7 @@ import { mapState } from 'pinia';
 import { DateTime } from 'luxon';
 
 import { useLeagueStore } from '@/store/leagueStore';
+import { makeToast } from '@/utilities/toast';
 
 const leagueMixin = {
   computed: {
@@ -182,7 +183,7 @@ const leagueMixin = {
         await leagueStore.refreshLeagueYear();
       }
       if (message) {
-        this.makeToast(message);
+        makeToast(message);
       }
     }
   }

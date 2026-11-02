@@ -1,5 +1,6 @@
 import { mapState } from 'pinia';
 import { useConferenceStore } from '@/store/conferenceStore';
+import { makeToast } from '@/utilities/toast';
 
 const conferenceMixin = {
   computed: {
@@ -20,7 +21,7 @@ const conferenceMixin = {
       const conferenceStore = useConferenceStore();
       await conferenceStore.refreshConferenceYear();
       if (message) {
-        this.makeToast(message);
+        makeToast(message);
       }
     }
   }

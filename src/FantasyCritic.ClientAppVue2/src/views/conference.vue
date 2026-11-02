@@ -133,6 +133,7 @@ import ConferenceManagerActions from '@/components/conferenceManagerActions.vue'
 import ConferenceYearStandings from '@/components/conferenceYearStandings.vue';
 import { useConferenceStore } from '@/store/conferenceStore';
 import { formatDateTime } from '@/utilities/formatters';
+import { makeToast } from '@/utilities/toast';
 
 export default {
   components: {
@@ -250,7 +251,7 @@ export default {
     },
     async copyConferenceID() {
       await navigator.clipboard.writeText(this.conferenceid);
-      this.makeToast('Conference ID copied to clipboard.');
+      makeToast('Conference ID copied to clipboard.');
     },
     async dismissRecentManagerMessage() {
       const model = {

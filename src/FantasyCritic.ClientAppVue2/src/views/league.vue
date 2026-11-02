@@ -178,6 +178,7 @@ import DraftReadinessBanner from '@/components/draftReadinessBanner.vue';
 import DraftStatusHeader from '@/components/draftStatusHeader.vue';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatDateTime } from '@/utilities/formatters';
+import { makeToast } from '@/utilities/toast';
 
 export default {
   components: {
@@ -406,7 +407,7 @@ export default {
     },
     async copyLeagueID() {
       await navigator.clipboard.writeText(this.leagueid);
-      this.makeToast('League ID copied to clipboard.');
+      makeToast('League ID copied to clipboard.');
     },
     async fetchRoyaleGroupForLeague() {
       try {

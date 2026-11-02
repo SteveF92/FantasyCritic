@@ -176,6 +176,7 @@ import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
 import { publisherIconIsValid } from '@/globalFunctions';
 import { formatCurrency, formatDateIso, formatDateTime, formatScore } from '@/utilities/formatters';
+import { makeToast } from '@/utilities/toast';
 
 export default {
   components: {
@@ -274,22 +275,22 @@ export default {
     async gamePurchased(purchaseInfo) {
       await this.fetchPublisher();
       let message = purchaseInfo.gameName + ' was purchased for ' + this.$options.filters.money(purchaseInfo.purchaseCost);
-      this.makeToast(message);
+      makeToast(message);
     },
     async publisherNameChanged() {
       await this.fetchPublisher();
       let message = 'Publisher name changed.';
-      this.makeToast(message);
+      makeToast(message);
     },
     async publisherIconChanged() {
       await this.fetchPublisher();
       let message = 'Publisher icon changed.';
-      this.makeToast(message);
+      makeToast(message);
     },
     async publisherSloganChanged() {
       await this.fetchPublisher();
       let message = 'Publisher slogan changed.';
-      this.makeToast(message);
+      makeToast(message);
     },
     setGameToSell(publisherGame) {
       this.gameToModify = publisherGame;
@@ -306,7 +307,7 @@ export default {
         await axios.post('/api/royale/SellGame', request);
         await this.fetchPublisher();
         let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.refundAmount);
-        this.makeToast(message);
+        makeToast(message);
       } catch (error) {
         this.errorInfo = "You can't sell that game. " + error.response.data;
         await this.fetchPublisher();

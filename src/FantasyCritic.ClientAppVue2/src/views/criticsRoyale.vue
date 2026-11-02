@@ -121,6 +121,7 @@ import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 import CriticsRoyaleInfo from '@/components/criticsRoyaleInfo.vue';
 import { orderBy } from '@/globalFunctions';
 import { formatCurrency } from '@/utilities/formatters';
+import { makeToast } from '@/utilities/toast';
 
 export default {
   components: {
@@ -274,7 +275,7 @@ export default {
         this.$router.push({ name: 'royaleGroup', params: { groupid: response.data.groupID } });
       } catch (error) {
         const message = error.response?.data || 'Failed to create group.';
-        this.$bvToast.toast(message, { variant: 'danger', solid: true });
+        makeToast(message, 'danger');
       }
     },
     onGroupSearchQueryChange(value) {

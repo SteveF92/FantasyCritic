@@ -2,6 +2,7 @@ import { mapState } from 'pinia';
 
 import { useAuthStore } from '@/store/authStore';
 import { usePublisherStore } from '@/store/publisherStore';
+import { makeToast } from '@/utilities/toast';
 
 const publisherMixin = {
   computed: {
@@ -19,7 +20,7 @@ const publisherMixin = {
       const publisherStore = usePublisherStore();
       await publisherStore.refreshPublisher();
       if (message) {
-        this.makeToast(message);
+        makeToast(message);
       }
     }
   }

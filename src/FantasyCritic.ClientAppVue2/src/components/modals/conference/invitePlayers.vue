@@ -28,6 +28,7 @@
 <script>
 import axios from 'axios';
 import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { makeToast } from '@/utilities/toast';
 
 export default {
   mixins: [ConferenceMixin],
@@ -58,7 +59,7 @@ export default {
     },
     async copyInviteLink(inviteLink) {
       await navigator.clipboard.writeText(inviteLink.fullInviteLink);
-      this.makeToast('Invite Link copied to clipboard.');
+      makeToast('Invite Link copied to clipboard.');
     },
     async deleteInviteLink(inviteLink) {
       const model = {
