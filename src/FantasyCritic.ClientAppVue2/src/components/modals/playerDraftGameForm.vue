@@ -220,7 +220,7 @@ export default {
       const request = {
         publisherID: this.userPublisher.publisherID,
         gameName: gameName,
-        counterPick: this.draftCounterPick,
+        counterPick: false,
         masterGameID: masterGameID,
         managerOverride: this.draftOverride,
         allowIneligibleSlot: this.allowIneligibleSlot

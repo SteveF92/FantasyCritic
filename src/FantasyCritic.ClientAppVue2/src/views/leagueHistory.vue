@@ -140,7 +140,7 @@ export default {
         messageID: message.messageID
       };
       await axios.post('/api/leagueManager/DeleteManagerMessage', model);
-      this.fetchLeagueYear();
+      await useLeagueStore().refreshLeagueYear();
     },
     exportHistoryToCsv() {
       window.location.href = `/api/league/ExportLeagueActionSetsToCSV?leagueID=${this.leagueid}&year=${this.year}`;

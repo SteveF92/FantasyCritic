@@ -98,7 +98,7 @@ export default {
       editableLeagueAssignments: null,
       leaguesCollapsed: null,
       leaguesLocked: null,
-      leaguesDraftsStarted: null
+      leaguesDraftStarted: null
     };
   },
   created() {

@@ -50,10 +50,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['userPublisher']),
-    formIsValid() {
-      return this.dropMasterGame;
-    }
+    ...mapState(useLeagueStore, ['userPublisher'])
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),

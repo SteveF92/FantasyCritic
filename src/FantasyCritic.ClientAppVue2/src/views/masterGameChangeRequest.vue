@@ -264,7 +264,7 @@ export default {
         const response = await axios.get('/api/game/MasterGame/' + masterGameID);
         this.masterGame = response.data;
       } catch (error) {
-        this.error = error.response.data;
+        this.errorInfo = error.response.data;
       }
     }
   }

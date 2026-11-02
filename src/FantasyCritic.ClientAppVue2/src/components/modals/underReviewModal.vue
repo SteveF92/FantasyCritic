@@ -69,7 +69,7 @@ export default {
 
       try {
         await axios.post('/api/leagueManager/SetUnderReviewStatus', model);
-        if (this.newValue) {
+        if (newValue) {
           this.notifyAction("League has been marked as 'under review'.");
         } else {
           this.notifyAction("League is no longer in 'under review' status.");

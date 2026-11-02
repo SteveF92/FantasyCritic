@@ -61,9 +61,6 @@ export default {
   },
   computed: {
     ...mapState(useLeagueStore, ['userPublisher']),
-    formIsValid() {
-      return this.dropMasterGame;
-    },
     droppableGames() {
       return this.userPublisher.games.filter((x) => !x.counterPick);
     }

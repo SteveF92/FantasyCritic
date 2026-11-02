@@ -263,7 +263,7 @@ export default {
         messageID: this.mostRecentManagerMessage.messageID
       };
       await axios.post('/api/conference/DismissManagerMessage', model);
-      this.refreshLeagueYear();
+      await this.refreshConferenceYear();
     },
     async fetchRoyaleGroupForConference() {
       try {

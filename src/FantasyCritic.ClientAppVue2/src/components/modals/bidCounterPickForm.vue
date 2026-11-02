@@ -15,7 +15,7 @@
 
     <div v-if="publisherSlotsAreFilled" class="alert alert-danger">You have already filled all of your counter pick slots!</div>
 
-    <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
+    <form method="post" class="form-horizontal" role="form" @submit.prevent>
       <div class="search-results">
         <ValidationObserver>
           <h3 class="text-black">Available Counter Picks</h3>
@@ -77,9 +77,6 @@ export default {
       let counterPickSlots = this.leagueYear.settings.counterPicks;
       let counterPicks = userGames.filter((x) => x.counterPick);
       return counterPicks.length >= counterPickSlots;
-    },
-    droppableGames() {
-      return this.publisher.games.filter((x) => !x.counterPick);
     },
     bidButtonText() {
       return 'Place Counter Pick Bid';
