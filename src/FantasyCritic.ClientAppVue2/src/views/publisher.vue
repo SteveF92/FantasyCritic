@@ -146,6 +146,7 @@ export default {
   props: {
     publisherid: { type: String, required: true }
   },
+  emits: ['gamesMoved'],
   data() {
     return {
       errorInfo: '',

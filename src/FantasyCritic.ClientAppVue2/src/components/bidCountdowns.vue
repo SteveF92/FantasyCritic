@@ -28,6 +28,7 @@ export default {
   props: {
     mode: { type: String, required: true }
   },
+  emits: ['publicBidRevealTimeElapsed'],
   data() {
     return {
       forceActionProcessing: false

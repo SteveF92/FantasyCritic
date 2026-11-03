@@ -19,6 +19,7 @@ export default {
   props: {
     userRoyalePublisher: { type: Object, required: true }
   },
+  emits: ['publisherSloganChanged'],
   data() {
     return {
       newPublisherSlogan: '',

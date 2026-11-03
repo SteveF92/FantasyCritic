@@ -75,6 +75,7 @@ export default {
     groupSearchQuery: { type: String, default: '' },
     groupSearchResults: { type: Array, default: null }
   },
+  emits: ['search-query-change', 'search-request'],
   data() {
     return {
       groupFields: [{ key: 'groupName', label: '' }]

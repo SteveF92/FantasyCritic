@@ -6,6 +6,7 @@
 </template>
 <script>
 export default {
+  emits: ['draftStarted'],
   methods: {
     startDraft() {
       this.$refs.startDraftRef.hide();

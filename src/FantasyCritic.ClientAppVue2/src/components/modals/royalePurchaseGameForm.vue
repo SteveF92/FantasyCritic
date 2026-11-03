@@ -67,6 +67,7 @@ import { formatCurrency } from '@/utilities/formatters';
 export default {
   components: { PossibleRoyaleMasterGamesTable },
   props: { yearQuarter: { type: Object, required: true }, userRoyalePublisher: { type: Object, required: true } },
+  emits: ['gamePurchased'],
   data() {
     return {
       searchGameName: null,

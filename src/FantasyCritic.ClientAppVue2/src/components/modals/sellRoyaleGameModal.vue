@@ -41,6 +41,7 @@ export default {
   props: {
     publisherGame: { type: Object, default: null }
   },
+  emits: ['sellGame'],
   methods: {
     formatCurrency,
     sellGame() {

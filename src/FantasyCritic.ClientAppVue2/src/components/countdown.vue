@@ -11,6 +11,7 @@ export default {
   props: {
     endTime: { type: String, required: true }
   },
+  emits: ['finish'],
   data() {
     return {
       now: Date.now(),

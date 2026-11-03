@@ -76,6 +76,7 @@ export default {
     showUnArchive: { type: Boolean },
     showUnfollow: { type: Boolean }
   },
+  emits: ['league-unfollowed'],
   data() {
     return {
       leagueFields: [{ key: 'leagueName' }]

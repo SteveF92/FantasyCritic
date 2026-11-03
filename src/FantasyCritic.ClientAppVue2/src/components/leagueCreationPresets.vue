@@ -44,6 +44,7 @@ export default {
       default: 'How many players do you think will be in this league?'
     }
   },
+  emits: ['preset-applied'],
   data() {
     return {
       playerCount: null,

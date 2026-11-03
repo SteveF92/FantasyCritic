@@ -29,6 +29,7 @@ export default {
   props: {
     userRoyalePublisher: { type: Object, required: true }
   },
+  emits: ['publisherIconChanged'],
   data() {
     return {
       newPublisherIcon: '',
