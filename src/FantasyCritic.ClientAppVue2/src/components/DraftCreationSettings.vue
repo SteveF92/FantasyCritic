@@ -60,14 +60,16 @@
 import { getDefaultDraft, getDefaultDraftName } from '@/utilities/leagueCreationPresets';
 
 export default {
+  compatConfig: { COMPONENT_V_MODEL: false },
   name: 'DraftCreationSettings',
   props: {
-    value: { type: Array, required: true },
+    modelValue: { type: Array, required: true },
     standardGames: { type: Number, default: 0 },
     gameMode: { type: String, default: 'Standard' },
     editMode: { type: Boolean, default: false },
     bidsOnlyBeforeNextScheduledDraft: { type: Boolean, default: false }
   },
+  emits: ['update:modelValue'],
   data() {
     return {
       internalDrafts: []
@@ -82,7 +84,7 @@ export default {
     }
   },
   watch: {
-    value: {
+    modelValue: {
       immediate: true,
       handler(newVal) {
         const normalized = newVal.map((d, index) => ({
@@ -101,7 +103,7 @@ export default {
   methods: {
     emitUpdate() {
       this.$emit(
-        'input',
+        'update:modelValue',
         this.internalDrafts.map((d) => ({ ...d }))
       );
     },
