@@ -40,15 +40,21 @@
   </div>
 </template>
 <script>
+import { useId } from 'vue';
+
 import { mapState } from 'pinia';
+
 import { usePublisherStore } from '@/store/publisherStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
 import { getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import { formatPublisherGameReleaseDate, roundNumber } from '@/globalFunctions';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
+  setup() {
+    return { popoverID: `mg-popover-${useId()}` };
+  },
   components: {
     MasterGameSummary,
     SlotTypeBadge
@@ -91,9 +97,6 @@ export default {
       }
 
       return getGGCoverArtLinkForGame(this.masterGame, width);
-    },
-    popoverID() {
-      return `mg-popover-${this.$.uid}`;
     },
     slotLabel() {
       if (this.gameSlot.counterPick) {

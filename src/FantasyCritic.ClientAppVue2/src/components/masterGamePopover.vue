@@ -12,20 +12,20 @@
 </template>
 
 <script>
+import { useId } from 'vue';
+
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 
 export default {
+  setup() {
+    return { popoverID: `mg-popover-${useId()}` };
+  },
   components: {
     MasterGameSummary
   },
   props: {
     masterGame: { type: Object, required: true },
     showAsWarning: { type: Boolean }
-  },
-  computed: {
-    popoverID() {
-      return `mg-popover-${this.$.uid}`;
-    }
   }
 };
 </script>

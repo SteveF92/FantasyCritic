@@ -23,9 +23,14 @@
   </span>
 </template>
 <script>
+import { useId } from 'vue';
+
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
+  setup() {
+    return { popoverID: `mg-popover-${useId()}` };
+  },
   props: {
     tagName: { type: String, required: true },
     short: { type: Boolean },
@@ -40,9 +45,6 @@ export default {
       return {
         backgroundColor: '#' + this.tag.badgeColor
       };
-    },
-    popoverID() {
-      return `mg-badge-popover-${this.$.uid}`;
     }
   }
 };

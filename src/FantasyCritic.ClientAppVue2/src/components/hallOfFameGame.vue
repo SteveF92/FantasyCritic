@@ -30,10 +30,16 @@
 </template>
 
 <script>
+import { useId } from 'vue';
+
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import { getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import { roundNumber, formatMoney } from '@/globalFunctions';
+
 export default {
+  setup() {
+    return { popoverID: `mg-popover-${useId()}` };
+  },
   components: {
     MasterGameSummary
   },
@@ -50,9 +56,6 @@ export default {
       }
 
       return false;
-    },
-    popoverID() {
-      return `mg-popover-${this.$.uid}`;
     },
     ggCoverArtLink() {
       let width = 165;
