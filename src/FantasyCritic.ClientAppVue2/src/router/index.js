@@ -1,5 +1,4 @@
-import Vue from 'vue';
-import VueRouter from 'vue-router';
+import { createRouter, createWebHistory } from 'vue-router';
 
 import { pinia } from '@/store/pinia';
 import { useAuthStore } from '@/store/authStore';
@@ -9,35 +8,35 @@ import { usePublisherStore } from '@/store/publisherStore';
 
 import { routes } from './routes.js';
 
-const originalPush = VueRouter.prototype.push;
-VueRouter.prototype.push = function push(location, onResolve, onReject) {
-  if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject);
-  return originalPush.call(this, location).catch((err) => err);
-};
+// const originalPush = VueRouter.prototype.push;
+// VueRouter.prototype.push = function push(location, onResolve, onReject) {
+//   if (onResolve || onReject) return originalPush.call(this, location, onResolve, onReject);
+//   return originalPush.call(this, location).catch((err) => err);
+// };
 
-Vue.use(VueRouter);
+function scrollBehavior(to, from) {
+  if (to.hash) {
+    const smoothParams = {
+      el: to.hash,
+      behavior: 'smooth'
+    };
 
-const router = new VueRouter({
-  scrollBehavior(to, from) {
-    if (to.hash) {
-      const smoothParams = {
-        selector: to.hash,
-        behavior: 'smooth'
-      };
-
-      if (!to.meta.delayScroll || to.path === from.path) {
-        return smoothParams;
-      }
-
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve(smoothParams);
-        }, 500);
-      });
+    if (!to.meta.delayScroll || to.path === from.path) {
+      return smoothParams;
     }
-    return { x: 0, y: 0 }; // Go to the top of the page if no hash
-  },
-  mode: 'history',
+
+    return new Promise((resolve) => {
+      setTimeout(() => {
+        resolve(smoothParams);
+      }, 500);
+    });
+  }
+  return { left: 0, top: 0 }; // Go to the top of the page if no hash
+}
+
+const router = createRouter({
+  scrollBehavior,
+  history: createWebHistory(),
   routes
 });
 

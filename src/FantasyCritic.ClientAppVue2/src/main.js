@@ -1,4 +1,4 @@
-import { createApp, h } from 'vue';
+import { createApp } from 'vue';
 
 import BootstrapVue from 'bootstrap-vue';
 import { ValidationProvider, ValidationObserver, extend, localize } from 'vee-validate';
@@ -17,12 +17,10 @@ import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './ico
 
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-const app = createApp({
-  router,
-  render: () => h(App)
-});
+const app = createApp(App);
 
 app.use(pinia);
+app.use(router);
 
 app.use(BootstrapVue);
 

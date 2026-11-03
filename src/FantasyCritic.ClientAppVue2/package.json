@@ -36,7 +36,7 @@
     "vue-chartjs": "^5.3.4",
     "vue-draggable-plus": "^0.6.1",
     "vue-multiselect": "^3.5.0",
-    "vue-router": "^3.6.5"
+    "vue-router": "^4.0.13"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.2",
