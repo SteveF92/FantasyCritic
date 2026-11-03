@@ -289,7 +289,7 @@ export default {
 }
 
 /* Match heading scale while keeping Bootstrap-Vue dropdown toggle (same pattern as criticsRoyale.vue). */
-.stats-title-row ::v-deep .btn.dropdown-toggle {
+.stats-title-row :deep(.btn.dropdown-toggle) {
   font-size: 1.5rem;
   font-weight: 500;
   line-height: 1.3;
