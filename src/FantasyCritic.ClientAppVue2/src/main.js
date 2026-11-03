@@ -1,4 +1,5 @@
-import Vue from 'vue';
+import { createApp } from 'vue';
+
 import BootstrapVue from 'bootstrap-vue';
 import { ValidationProvider, ValidationObserver, extend, localize } from 'vee-validate';
 import * as rules from 'vee-validate/dist/rules';
@@ -17,13 +18,15 @@ import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './ico
 
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-Vue.use(BootstrapVue);
+const app = createApp(App);
 
-Vue.use(PiniaVuePlugin);
+app.use(BootstrapVue);
+
+app.use(PiniaVuePlugin);
 
 //Vee-validate registration
-Vue.component('ValidationProvider', ValidationProvider);
-Vue.component('ValidationObserver', ValidationObserver);
+app.component('ValidationProvider', ValidationProvider);
+app.component('ValidationObserver', ValidationObserver);
 
 extend('required', {
   ...rules.required
@@ -52,16 +55,15 @@ localize({
 });
 
 // Registration of global components
-Vue.component('FontAwesomeIcon', FontAwesomeIcon);
-Vue.component('FontAwesomeLayers', FontAwesomeLayers);
-Vue.component('FontAwesomeLayersText', FontAwesomeLayersText);
+app.component('FontAwesomeIcon', FontAwesomeIcon);
+app.component('FontAwesomeLayers', FontAwesomeLayers);
+app.component('FontAwesomeLayersText', FontAwesomeLayersText);
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, Filler, annotationPlugin);
 
-Vue.config.productionTip = false;
+app.config.productionTip = false;
 
-new Vue({
-  router,
-  pinia,
-  render: (h) => h(App)
-}).$mount('#app');
+app.use(pinia);
+app.use(router);
+
+app.mount('#app');
