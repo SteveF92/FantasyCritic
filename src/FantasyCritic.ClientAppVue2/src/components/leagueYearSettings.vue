@@ -327,6 +327,8 @@
   </div>
 </template>
 <script>
+import { toRaw } from 'vue';
+
 import DateInput from '@/components/dateInput.vue';
 import LeagueTagSelector from '@/components/leagueTagSelector.vue';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
@@ -443,7 +445,7 @@ export default {
     }
   },
   created() {
-    this.internalValue = structuredClone(this.modelValue);
+    this.internalValue = structuredClone(toRaw(this.modelValue));
     if (this.internalValue.pickupSystem !== SECRET_BIDDING) {
       this.lastCounterPickHandling = this.internalValue.pickupSystem;
     }

@@ -47,6 +47,8 @@
 </template>
 
 <script>
+import { toRaw } from 'vue';
+
 import { VueDraggable } from 'vue-draggable-plus';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { intersection } from '@/globalFunctions';
@@ -118,7 +120,7 @@ export default {
       this.$emit('update:modelValue', this.internalValue);
     },
     resetValues() {
-      this.internalValue = structuredClone(this.initialValue);
+      this.internalValue = structuredClone(toRaw(this.initialValue));
     },
     initializeValues() {
       this.initialValue = {
@@ -146,7 +148,7 @@ export default {
         this.initialValue.allowed.push(tag.name);
       });
 
-      this.internalValue = structuredClone(this.initialValue);
+      this.internalValue = structuredClone(toRaw(this.initialValue));
     }
   }
 };

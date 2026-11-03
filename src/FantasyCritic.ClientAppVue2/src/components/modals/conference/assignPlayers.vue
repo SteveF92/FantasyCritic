@@ -75,6 +75,7 @@
   </b-modal>
 </template>
 <script>
+import { toRaw } from 'vue';
 import axios from 'axios';
 import { VueDraggable } from 'vue-draggable-plus';
 
@@ -145,8 +146,8 @@ export default {
       this.leaguesLocked = leaguesLocked;
       this.leaguesDraftStarted = leaguesDraftStarted;
 
-      this.editableUnassignedPlayers = structuredClone(this.initialUnassignedPlayers);
-      this.editableLeagueAssignments = structuredClone(this.initialLeagueAssignments);
+      this.editableUnassignedPlayers = structuredClone(toRaw(this.initialUnassignedPlayers));
+      this.editableLeagueAssignments = structuredClone(toRaw(this.initialLeagueAssignments));
     },
     collapseLeague(leagueID) {
       this.leaguesCollapsed[leagueID] = true;
@@ -169,8 +170,8 @@ export default {
       }
     },
     resetChanges() {
-      this.editableUnassignedPlayers = structuredClone(this.initialUnassignedPlayers);
-      this.editableLeagueAssignments = structuredClone(this.initialLeagueAssignments);
+      this.editableUnassignedPlayers = structuredClone(toRaw(this.initialUnassignedPlayers));
+      this.editableLeagueAssignments = structuredClone(toRaw(this.initialLeagueAssignments));
     },
     clearData() {
       this.errorInfo = null;

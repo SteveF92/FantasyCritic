@@ -16,6 +16,8 @@
 </template>
 
 <script>
+import { toRaw } from 'vue';
+
 import Multiselect from 'vue-multiselect';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
@@ -58,7 +60,7 @@ export default {
       this.$emit('update:modelValue', this.internalValue);
     },
     updateInternal() {
-      this.internalValue = structuredClone(this.modelValue);
+      this.internalValue = structuredClone(toRaw(this.modelValue));
     }
   }
 };
