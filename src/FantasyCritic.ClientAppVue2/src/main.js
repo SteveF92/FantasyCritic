@@ -1,4 +1,4 @@
-import { createApp } from 'vue';
+import { createApp, h } from 'vue';
 
 import BootstrapVue from 'bootstrap-vue';
 import { ValidationProvider, ValidationObserver, extend, localize } from 'vee-validate';
@@ -11,18 +11,20 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 import App from './App.vue';
 import router from './router/index';
 
-import { PiniaVuePlugin } from 'pinia';
 import { pinia } from '@/store/pinia';
 
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 
 import 'bootstrap-vue/dist/bootstrap-vue.css';
 
-const app = createApp(App);
+const app = createApp({
+  router,
+  render: () => h(App)
+});
+
+app.use(pinia);
 
 app.use(BootstrapVue);
-
-app.use(PiniaVuePlugin);
 
 //Vee-validate registration
 app.component('ValidationProvider', ValidationProvider);
@@ -60,10 +62,5 @@ app.component('FontAwesomeLayers', FontAwesomeLayers);
 app.component('FontAwesomeLayersText', FontAwesomeLayersText);
 
 ChartJS.register(Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, Filler, annotationPlugin);
-
-app.config.productionTip = false;
-
-app.use(pinia);
-app.use(router);
 
 app.mount('#app');
