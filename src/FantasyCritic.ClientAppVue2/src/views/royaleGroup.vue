@@ -39,7 +39,7 @@
 
       <h3>Members</h3>
       <div v-if="members && members.length > 0">
-        <b-table striped bordered small responsive :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="members" :fields="memberFields">
+        <b-table striped bordered small responsive v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="members" :fields="memberFields">
           <template #cell(displayName)="data">
             <router-link :to="{ name: 'royaleHistory', params: { userid: data.item.userID } }">{{ data.item.displayName }}</router-link>
           </template>

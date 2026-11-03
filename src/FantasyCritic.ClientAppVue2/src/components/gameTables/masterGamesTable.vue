@@ -48,8 +48,8 @@
     </b-row>
 
     <b-table
-      :sort-by.sync="sortBy"
-      :sort-desc.sync="sortDesc"
+      v-model:sort-by="sortBy"
+      v-model:sort-desc="sortDesc"
       :items="gameRows"
       :fields="gameFields"
       :filter="filter"

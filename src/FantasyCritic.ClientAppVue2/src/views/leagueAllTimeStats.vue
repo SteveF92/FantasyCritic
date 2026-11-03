@@ -17,7 +17,7 @@
       <hr />
       <div v-if="league.years.length > 2">
         <h2>Player Stats</h2>
-        <b-table :sort-by.sync="playerSortBy" :sort-desc.sync="playerSortDesc" :items="leagueAllTimeStats.playerAllTimeStats" :fields="playerStatFields" bordered small responsive striped>
+        <b-table v-model:sort-by="playerSortBy" v-model:sort-desc="playerSortDesc" :items="leagueAllTimeStats.playerAllTimeStats" :fields="playerStatFields" bordered small responsive striped>
           <template #cell(playerName)="data">
             <div>{{ data.item.playerName }}</div>
             <div class="won-years">
@@ -47,7 +47,7 @@
           </div>
         </div>
         <h2>Individual Year Stats</h2>
-        <b-table :sort-by.sync="individualSortBy" :sort-desc.sync="individualSortDesc" :items="leagueAllTimeStats.publishers" :fields="publisherFields" bordered small responsive striped>
+        <b-table v-model:sort-by="individualSortBy" v-model:sort-desc="individualSortDesc" :items="leagueAllTimeStats.publishers" :fields="publisherFields" bordered small responsive striped>
           <template #cell(publisherName)="data">
             <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID } }">
               {{ data.item.publisherName }}

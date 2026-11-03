@@ -2,7 +2,7 @@
   <div>
     <h2>Standings</h2>
 
-    <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
+    <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
       <template #cell(leagueName)="data">
         <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.year } }" class="league-link">
           {{ data.item.leagueName }}

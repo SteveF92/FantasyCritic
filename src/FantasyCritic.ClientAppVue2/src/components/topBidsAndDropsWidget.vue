@@ -14,7 +14,7 @@
     <div v-if="this.topBidsAndDrops && this.topBidsAndDrops.length === 0">No Bids and Drops Found.</div>
     <b-tabs v-if="this.topBidsAndDrops && this.topBidsAndDrops.length > 0" pills class="top-bids-and-drops-tabs">
       <b-tab title="Top Bids" title-item-class="tab-header">
-        <b-table :items="topBids" :fields="standardBidFields" :sort-by.sync="standardSortBy" :sort-desc.sync="sortDesc" bordered striped responsive class="top-bids-drops-widget-table">
+        <b-table :items="topBids" :fields="standardBidFields" v-model:sort-by="standardSortBy" v-model:sort-desc="sortDesc" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
           </template>
@@ -24,7 +24,7 @@
         </b-table>
       </b-tab>
       <b-tab title="Top Counter Picks" title-item-class="tab-header">
-        <b-table :items="topCounterPicks" :fields="counterPickFields" :sort-by.sync="counterPickSortBy" :sort-desc.sync="sortDesc" bordered striped responsive class="top-bids-drops-widget-table">
+        <b-table :items="topCounterPicks" :fields="counterPickFields" v-model:sort-by="counterPickSortBy" v-model:sort-desc="sortDesc" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
           </template>
@@ -34,7 +34,7 @@
         </b-table>
       </b-tab>
       <b-tab title="Top Drops" title-item-class="tab-header">
-        <b-table :items="topDrops" :fields="dropFields" :sort-by.sync="dropSortBy" :sort-desc.sync="sortDesc" bordered striped responsive class="top-bids-drops-widget-table">
+        <b-table :items="topDrops" :fields="dropFields" v-model:sort-by="dropSortBy" v-model:sort-desc="sortDesc" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
           </template>

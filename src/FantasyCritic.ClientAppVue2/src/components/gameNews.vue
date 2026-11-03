@@ -13,8 +13,8 @@
     </span>
     <div v-if="gameNewsItems && gameNewsItems.length > 0">
       <b-table
-        :sort-by.sync="sortBy"
-        :sort-desc.sync="sortDesc"
+        v-model:sort-by="sortBy"
+        v-model:sort-desc="sortDesc"
         :items="gameNewsItems"
         :fields="gameNewsFields"
         bordered
