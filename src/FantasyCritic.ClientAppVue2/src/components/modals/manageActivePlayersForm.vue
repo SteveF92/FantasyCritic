@@ -28,10 +28,13 @@
 <script>
 import axios from 'axios';
 
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league'])
+  },
   data() {
     return {
       showTable: false,
@@ -43,6 +46,7 @@ export default {
     this.setCurrentActivePlayers();
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     userIsActive(user) {
       let matchingPlayer = this.leagueYear.players.find((item) => item.user && item.user.userID === user.userID);
       return !!matchingPlayer;

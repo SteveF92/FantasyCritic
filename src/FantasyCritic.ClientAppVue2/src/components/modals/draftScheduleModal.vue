@@ -12,10 +12,13 @@
   </b-modal>
 </template>
 <script>
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['leagueYear'])
+  },
   data() {
     return {
       fields: [

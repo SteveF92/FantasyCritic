@@ -18,18 +18,21 @@
 
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       messageText: null,
       isPublic: false
     };
   },
-  computed: {},
+  computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league'])
+  },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     postNewMessage() {
       const model = {
         leagueID: this.league.leagueID,

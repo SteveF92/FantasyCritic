@@ -15,23 +15,15 @@ import { pinia } from '@/store/pinia';
 
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 
-import './filters';
 import 'bootstrap-vue/dist/bootstrap-vue.css';
-import VueFlatPickr from 'vue-flatpickr-component';
-import 'flatpickr/dist/flatpickr.css';
-
-import BasicMixin from './mixins/basicMixin';
 
 Vue.use(BootstrapVue);
-Vue.use(VueFlatPickr);
 
 Vue.use(PiniaVuePlugin);
 
 //Vee-validate registration
 Vue.component('ValidationProvider', ValidationProvider);
 Vue.component('ValidationObserver', ValidationObserver);
-
-Vue.mixin(BasicMixin);
 
 extend('required', {
   ...rules.required

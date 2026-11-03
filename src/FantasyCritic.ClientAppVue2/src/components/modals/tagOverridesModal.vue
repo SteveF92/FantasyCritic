@@ -23,14 +23,15 @@
 
 <script>
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   components: {
     MasterGameTagBadge
   },
-  mixins: [LeagueMixin],
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear']),
     tagOverrides() {
       return this.leagueYear.tagOverrides;
     }

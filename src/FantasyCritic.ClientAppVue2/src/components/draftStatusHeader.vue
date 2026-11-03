@@ -48,11 +48,12 @@
 </template>
 
 <script>
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   computed: {
+    ...mapState(useLeagueStore, ['userPublisher', 'league', 'activeDraft', 'nextPublisherUp', 'userIsNextInDraft', 'pendingDraftCalloutVisible']),
     userHasAutoDraft() {
       if (this.userPublisher?.autoDraftMode === 'Off') return false;
       if (this.activeDraft) return true;

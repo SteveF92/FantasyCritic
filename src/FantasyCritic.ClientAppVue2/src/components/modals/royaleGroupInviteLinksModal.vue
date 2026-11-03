@@ -14,6 +14,7 @@
 </template>
 <script>
 import axios from 'axios';
+import { makeToast } from '@/utilities/toast';
 
 export default {
   props: {
@@ -45,7 +46,7 @@ export default {
     },
     async copyInviteLink(link) {
       await navigator.clipboard.writeText(this.inviteLinkUrl(link.inviteCode));
-      this.$bvToast.toast('Invite link copied to clipboard!', { variant: 'success', solid: true, noCloseButton: true });
+      makeToast('Invite link copied to clipboard!', 'success');
     },
     async createInviteLink() {
       try {

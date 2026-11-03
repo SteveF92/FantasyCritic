@@ -57,7 +57,7 @@
       </div>
 
       <b-alert v-if="mostRecentManagerMessage" show dismissible @dismissed="dismissRecentManagerMessage">
-        <h5>Manager's Message ({{ mostRecentManagerMessage.timestamp | dateTime }})</h5>
+        <h5>Manager's Message ({{ formatDateTime(mostRecentManagerMessage.timestamp) }})</h5>
         <div class="preserve-whitespace">{{ mostRecentManagerMessage.messageText }}</div>
       </b-alert>
 
@@ -172,11 +172,14 @@ import DraftCompleteModal from '@/components/modals/draftCompleteModal.vue';
 import GameNews from '@/components/gameNews.vue';
 import ActiveBids from '@/components/activeBids.vue';
 import BidCountdowns from '@/components/bidCountdowns.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
 import SpecialAuctionInfo from '@/components/specialAuctionInfo.vue';
 import DraftReadinessBanner from '@/components/draftReadinessBanner.vue';
 import DraftStatusHeader from '@/components/draftStatusHeader.vue';
 import { useLeagueStore } from '@/store/leagueStore';
+import { formatDateTime } from '@/utilities/formatters';
+import { makeToast } from '@/utilities/toast';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
@@ -193,7 +196,6 @@ export default {
     DraftReadinessBanner,
     DraftStatusHeader
   },
-  mixins: [LeagueMixin],
   props: {
     leagueid: { type: String, required: true },
     year: { type: Number, required: true }
@@ -207,6 +209,25 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isAuth']),
+    ...mapState(useInterLeagueStore, ['activeRoyaleQuarter']),
+    ...mapState(useLeagueStore, [
+      'hasError',
+      'forbidden',
+      'inviteCode',
+      'leagueYear',
+      'userPublisher',
+      'league',
+      'pendingDraft',
+      'activeDraft',
+      'userIsNextInDraft',
+      'topPublisher',
+      'gameNews',
+      'oneShotMode',
+      'playStarted',
+      'biddingAllowed',
+      'postDraftPlayable'
+    ]),
     mostRecentManagerMessage() {
       if (!this.leagueYear || !this.leagueYear.managerMessages || this.leagueYear.managerMessages.length === 0) {
         return null;
@@ -273,6 +294,7 @@ export default {
     await this.initializePage();
   },
   methods: {
+    formatDateTime,
     async initializePage() {
       this.selectedYear = this.year;
       const inviteCode = this.$route.query.inviteCode;
@@ -404,7 +426,7 @@ export default {
     },
     async copyLeagueID() {
       await navigator.clipboard.writeText(this.leagueid);
-      this.makeToast('League ID copied to clipboard.');
+      makeToast('League ID copied to clipboard.');
     },
     async fetchRoyaleGroupForLeague() {
       try {

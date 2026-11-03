@@ -80,7 +80,7 @@
         <b-nav-item-dropdown v-if="isAuth && userInfo" right>
           <!-- Using 'button-content' slot -->
           <template #button-content>
-            <span class="user-text">{{ displayName }}</span>
+            <span class="user-text">{{ userInfo.displayName }}</span>
           </template>
           <b-dropdown-item href="/Account/Manage">Manage Account</b-dropdown-item>
           <b-dropdown-item href="/Account/Logout">Log Off</b-dropdown-item>
@@ -99,6 +99,16 @@
     </b-collapse>
   </b-navbar>
 </template>
+<script>
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
+
+export default {
+  computed: {
+    ...mapState(useAuthStore, ['isPlusUser', 'authIsBusy', 'isAuth', 'userInfo'])
+  }
+};
+</script>
 <style scoped>
 .main-nav {
   padding-top: 0;

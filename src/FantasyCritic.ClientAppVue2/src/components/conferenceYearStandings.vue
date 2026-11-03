@@ -15,11 +15,11 @@
       </template>
 
       <template #cell(projectedFantasyPoints)="data">
-        {{ data.item.projectedFantasyPoints | score(2) }}
+        {{ formatScore(data.item.projectedFantasyPoints, 2) }}
         <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isProjectedTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.projectedRanking) }}</span>
       </template>
       <template #cell(totalFantasyPoints)="data">
-        {{ data.item.totalFantasyPoints | score(2) }}
+        {{ formatScore(data.item.totalFantasyPoints, 2) }}
         <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.ranking) }}</span>
       </template>
 
@@ -30,11 +30,12 @@
   </div>
 </template>
 <script>
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState } from 'pinia';
+import { useConferenceStore } from '@/store/conferenceStore';
 import { maxBy, ordinal_suffix_of } from '@/globalFunctions';
+import { formatScore } from '@/utilities/formatters';
 
 export default {
-  mixins: [ConferenceMixin],
   data() {
     return {
       standingFieldsInternal: [
@@ -50,6 +51,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useConferenceStore, ['conferenceYear', 'playStarted']),
     standingFields() {
       if (!this.conferenceYear.supportedYear.finished) {
         return this.standingFieldsInternal;
@@ -93,6 +95,7 @@ export default {
     }
   },
   methods: {
+    formatScore,
     isTopPublisher(publisher) {
       if (!publisher) {
         return false;

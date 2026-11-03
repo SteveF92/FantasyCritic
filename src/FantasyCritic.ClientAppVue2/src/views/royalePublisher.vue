@@ -30,7 +30,7 @@
       <div class="row">
         <div class="col-md-12 col-lg-8">
           <h2>Total Points: {{ publisher.totalFantasyPoints }}</h2>
-          <h4>Remaining Budget: {{ publisher.budget | money }}</h4>
+          <h4>Remaining Budget: {{ formatCurrency(publisher.budget) }}</h4>
         </div>
 
         <div class="col-md-12 col-lg-4">
@@ -76,23 +76,23 @@
           <template v-else>--</template>
         </template>
         <template #cell(amountSpent)="data">
-          <template v-if="data.item.masterGame">{{ data.item.amountSpent | money }}</template>
+          <template v-if="data.item.masterGame">{{ formatCurrency(data.item.amountSpent) }}</template>
           <template v-else>--</template>
         </template>
         <template #cell(advertisingMoney)="data">
-          {{ data.item.advertisingMoney | money }}
+          {{ formatCurrency(data.item.advertisingMoney) }}
           <b-button v-if="userIsPublisher && !data.item.locked && !quarterIsFinished" variant="info" size="sm" @click="setGameToSetBudget(data.item)">Set Budget</b-button>
         </template>
         <template #cell(masterGame.criticScore)="data">
           <template v-if="data.item.masterGame">
-            {{ data.item.masterGame.criticScore | score(2) }}
+            {{ formatScore(data.item.masterGame.criticScore, 2) }}
           </template>
         </template>
         <template #cell(fantasyPoints)="data">
-          {{ data.item.fantasyPoints | score(2) }}
+          {{ formatScore(data.item.fantasyPoints, 2) }}
         </template>
         <template #cell(timestamp)="data">
-          {{ data.item.timestamp | date }}
+          {{ formatDateIso(data.item.timestamp) }}
         </template>
         <template #cell(lockDateTime)="data">
           {{ getLockCountdown(data.item.lockDateTime) }}
@@ -136,7 +136,7 @@
       <h2>Action History</h2>
       <b-table striped bordered small responsive :items="publisher.publisherActions" :fields="actionFields" :tbody-tr-class="publisherGameRowClass">
         <template #cell(timestamp)="data">
-          {{ data.item.timestamp | dateTime }}
+          {{ formatDateTime(data.item.timestamp) }}
         </template>
         <template #cell(masterGame.gameName)="data">
           <template v-if="data.item.masterGame">
@@ -175,6 +175,9 @@ import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal.vue';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
 import { publisherIconIsValid } from '@/globalFunctions';
+import { formatCurrency, formatDateIso, formatDateTime, formatScore } from '@/utilities/formatters';
+import { makeToast } from '@/utilities/toast';
+import { mapState } from 'pinia';
 
 export default {
   components: {
@@ -215,6 +218,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isPlusUser', 'isAuth']),
     userIsPublisher() {
       const authStore = useAuthStore();
       return this.isAuth && this.publisher.userID === authStore.userInfo.userID;
@@ -258,6 +262,10 @@ export default {
     await this.fetchPublisher();
   },
   methods: {
+    formatCurrency,
+    formatDateIso,
+    formatDateTime,
+    formatScore,
     async fetchPublisher() {
       try {
         const response = await axios.get('/api/Royale/GetRoyalePublisher/' + this.publisherid);
@@ -269,22 +277,22 @@ export default {
     async gamePurchased(purchaseInfo) {
       await this.fetchPublisher();
       let message = purchaseInfo.gameName + ' was purchased for ' + this.$options.filters.money(purchaseInfo.purchaseCost);
-      this.makeToast(message);
+      makeToast(message);
     },
     async publisherNameChanged() {
       await this.fetchPublisher();
       let message = 'Publisher name changed.';
-      this.makeToast(message);
+      makeToast(message);
     },
     async publisherIconChanged() {
       await this.fetchPublisher();
       let message = 'Publisher icon changed.';
-      this.makeToast(message);
+      makeToast(message);
     },
     async publisherSloganChanged() {
       await this.fetchPublisher();
       let message = 'Publisher slogan changed.';
-      this.makeToast(message);
+      makeToast(message);
     },
     setGameToSell(publisherGame) {
       this.gameToModify = publisherGame;
@@ -301,7 +309,7 @@ export default {
         await axios.post('/api/royale/SellGame', request);
         await this.fetchPublisher();
         let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.refundAmount);
-        this.makeToast(message);
+        makeToast(message);
       } catch (error) {
         this.errorInfo = "You can't sell that game. " + error.response.data;
         await this.fetchPublisher();

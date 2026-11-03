@@ -46,7 +46,7 @@
 
     <div class="form-horizontal">
       <div>
-        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="isBusy" @click="addGame">Purchase Game for {{ purchaseRoyaleGame.cost | money }}</b-button>
+        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="isBusy" @click="addGame">Purchase Game for {{ formatCurrency(purchaseRoyaleGame.cost) }}</b-button>
       </div>
       <div v-if="purchaseResult && !purchaseResult.success" class="alert purchase-error" :class="{ 'alert-danger': !purchaseResult.overridable, 'alert-warning': purchaseResult.overridable }">
         <h3 v-if="purchaseResult.overridable" class="alert-heading">Warning!</h3>
@@ -62,6 +62,7 @@
 <script>
 import axios from 'axios';
 import PossibleRoyaleMasterGamesTable from '@/components/possibleRoyaleMasterGamesTable.vue';
+import { formatCurrency } from '@/utilities/formatters';
 
 export default {
   components: { PossibleRoyaleMasterGamesTable },
@@ -95,6 +96,7 @@ export default {
     await this.searchGame();
   },
   methods: {
+    formatCurrency,
     async listGames() {
       this.searchGameName = null;
       await this.searchGame();

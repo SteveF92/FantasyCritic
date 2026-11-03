@@ -11,7 +11,8 @@ export const useAuthStore = defineStore('auth', {
     isFactChecker: (state) => state.userInfo && state.userInfo.roles.includes('FactChecker'),
     isJobManager: (state) => state.userInfo && state.userInfo.roles.includes('JobManager'),
     isBetaTester: (state) => state.userInfo && state.userInfo.roles.includes('BetaTester'),
-    isPlusUser: (state) => state.userInfo && state.userInfo.roles.includes('PlusUser')
+    isPlusUser: (state) => state.userInfo && state.userInfo.roles.includes('PlusUser'),
+    decimalsToShow: (state) => (state.userInfo?.showDecimalPoints ? 1 : 0)
   },
   actions: {
     async getUserInfo() {

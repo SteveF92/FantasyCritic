@@ -45,7 +45,7 @@
         <label v-if="masterGame.averagedScore">This is an episodic game. We have caluclated an average score.</label>
         <div>
           <span class="detail-label">Critic Score:</span>
-          {{ masterGame.criticScore | score(2) }}
+          {{ formatScore(masterGame.criticScore, 2) }}
           <span v-if="masterGame.averagedScore">(Averaged Score)</span>
         </div>
       </li>
@@ -74,6 +74,9 @@
 <script>
 import { DateTime } from 'luxon';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import { formatScore } from '@/utilities/formatters';
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
@@ -83,7 +86,11 @@ export default {
     masterGame: { type: Object, required: true },
     hideNotes: { type: Boolean, default: false }
   },
+  computed: {
+    ...mapState(useAuthStore, ['isFactChecker'])
+  },
   methods: {
+    formatScore,
     formatDate(releaseDate) {
       if (releaseDate === '9999-12-31') {
         return 'No Maximum Release Date';

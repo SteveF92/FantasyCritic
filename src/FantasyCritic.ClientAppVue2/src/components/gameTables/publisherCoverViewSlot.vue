@@ -40,10 +40,11 @@
   </div>
 </template>
 <script>
-import PublisherMixin from '@/mixins/publisherMixin.js';
+import { mapState } from 'pinia';
+import { usePublisherStore } from '@/store/publisherStore';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
-import GGMixin from '@/mixins/ggMixin.js';
+import { getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import { formatPublisherGameReleaseDate, roundNumber } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
@@ -52,11 +53,11 @@ export default {
     MasterGameSummary,
     SlotTypeBadge
   },
-  mixins: [PublisherMixin, GGMixin],
   props: {
     gameSlot: { type: Object, required: true }
   },
   computed: {
+    ...mapState(usePublisherStore, ['leagueYear']),
     useSmallImages() {
       if (window.innerWidth < 500) {
         return true;
@@ -89,7 +90,7 @@ export default {
         width = 125;
       }
 
-      return this.getGGCoverArtLinkForGame(this.masterGame, width);
+      return getGGCoverArtLinkForGame(this.masterGame, width);
     },
     popoverID() {
       return `mg-popover-${this._uid}`;

@@ -39,6 +39,8 @@
 
 <script>
 import axios from 'axios';
+import { mapState } from 'pinia';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   data() {
@@ -58,6 +60,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'supportedYears']),
     rows() {
       return this.publicLeagues.length;
     }

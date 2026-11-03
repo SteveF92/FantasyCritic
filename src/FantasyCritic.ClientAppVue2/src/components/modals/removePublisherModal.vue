@@ -30,10 +30,10 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       publisherToRemove: null,
@@ -42,6 +42,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['publishers', 'playStarted']),
     removablePublishers() {
       return this.publishers.filter((x) => !x.userID);
     },
@@ -53,6 +54,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     async removePublisher() {
       const publisher = this.publisherToRemove;
       const model = {

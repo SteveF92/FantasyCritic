@@ -22,10 +22,13 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['userPublisher'])
+  },
   data() {
     return {
       autoDraftMode: null,
@@ -42,6 +45,7 @@ export default {
     this.onlyDraftFromWatchlist = this.userPublisher.onlyAutoDraftFromWatchlist;
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     onModeChange(newMode) {
       if (newMode === 'Off') {
         this.onlyDraftFromWatchlist = false;

@@ -30,7 +30,7 @@
             </b-form-checkbox>
             <div v-if="hasReleaseDate">
               <label for="releaseDate" class="control-label">Release Date</label>
-              <b-form-datepicker v-model="releaseDate" class="form-control"></b-form-datepicker>
+              <dateInput id="releaseDate" v-model="releaseDate" />
             </div>
             <div v-if="!hasReleaseDate">
               <div class="alert alert-info">
@@ -127,7 +127,7 @@
                 <span v-else>&lt;Pending&gt;</span>
               </td>
               <td>
-                <span v-if="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
+                <span v-if="request.responseTimestamp">{{ formatDateTime(request.responseTimestamp) }}</span>
                 <span v-else>&lt;Pending&gt;</span>
               </td>
               <td class="select-cell">
@@ -144,10 +144,13 @@
 <script>
 import { gameClient } from '@/api/clients';
 
+import DateInput from '@/components/dateInput.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { formatDateTime } from '@/utilities/formatters';
 
 export default {
   components: {
+    DateInput,
     MasterGamePopover
   },
   data() {
@@ -200,6 +203,7 @@ export default {
     await this.fetchMyRequests();
   },
   methods: {
+    formatDateTime,
     async fetchMyRequests() {
       this.myRequests = await gameClient.myMasterGameRequests();
     },

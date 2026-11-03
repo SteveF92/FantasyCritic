@@ -30,10 +30,10 @@
 
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       error: '',
@@ -41,6 +41,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league']),
     modalTitle() {
       return this.leagueYear.underReview ? 'Disable Under Review' : 'Mark Under Review';
     },
@@ -49,6 +50,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     onShow() {
       this.error = '';
       this.isSubmitting = false;
@@ -67,7 +69,7 @@ export default {
 
       try {
         await axios.post('/api/leagueManager/SetUnderReviewStatus', model);
-        if (this.newValue) {
+        if (newValue) {
           this.notifyAction("League has been marked as 'under review'.");
         } else {
           this.notifyAction("League is no longer in 'under review' status.");

@@ -37,10 +37,13 @@
 </template>
 <script>
 import axios from 'axios';
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useConferenceStore } from '@/store/conferenceStore';
 
 export default {
-  mixins: [ConferenceMixin],
+  computed: {
+    ...mapState(useConferenceStore, ['conference', 'conferenceYear'])
+  },
   data() {
     return {
       newLeagueName: '',
@@ -52,6 +55,7 @@ export default {
     this.clearData();
   },
   methods: {
+    ...mapActions(useConferenceStore, ['notifyAction']),
     async addNewLeague() {
       const model = {
         conferenceID: this.conference.conferenceID,

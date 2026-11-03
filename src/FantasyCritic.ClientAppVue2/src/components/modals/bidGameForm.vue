@@ -79,7 +79,7 @@
         <masterGameSummary :master-game="bidMasterGame"></masterGameSummary>
         <hr />
         <div class="form-group">
-          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money }})</label>
+          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget) }})</label>
 
           <ValidationProvider v-slot="{ errors }" rules="required|integer">
             <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
@@ -140,7 +140,9 @@ import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { formatCurrency } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -148,7 +150,6 @@ export default {
     MasterGameSummary,
     SearchSlotTypeBadge
   },
-  mixins: [LeagueMixin],
   props: {
     specialAuction: { type: Object, required: false, default: null }
   },
@@ -172,6 +173,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'currentDrops']),
     formIsValid() {
       return !!this.bidMasterGame;
     },
@@ -229,6 +231,8 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
+    formatCurrency,
     searchGame() {
       this.clearDataExceptSearch();
       this.isBusy = true;

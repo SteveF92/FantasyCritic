@@ -47,10 +47,10 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       publisherToReassign: null,
@@ -60,6 +60,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'publishers']),
     readyToConfirm() {
       return !!this.publisherToReassign && !!this.newUser;
     },
@@ -73,6 +74,7 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     async reassignPublisher() {
       const model = {
         leagueID: this.leagueYear.leagueID,

@@ -56,7 +56,7 @@
           <h2>Change Log</h2>
           <b-table :items="changeLog" :fields="changeLogFields" bordered striped responsive small>
             <template #cell(timestamp)="data">
-              {{ data.item.timestamp | longDate }}
+              {{ formatDateLong(data.item.timestamp) }}
             </template>
             <template #cell(changedByUser)="data">
               {{ data.item.changedByUser.displayName }}
@@ -90,14 +90,16 @@
 import axios from 'axios';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
 import MasterGameYearStats from '@/components/masterGameYearStats.vue';
-import GGMixin from '@/mixins/ggMixin.js';
+import { getGGLinkForGame, getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
+import { formatDateLong } from '@/utilities/formatters';
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
     MasterGameDetails,
     MasterGameYearStats
   },
-  mixins: [GGMixin],
   props: {
     mastergameid: { type: String, required: true }
   },
@@ -116,11 +118,12 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isFactChecker']),
     ggCoverArtLink() {
-      return this.getGGCoverArtLinkForGame(this.masterGame, 307);
+      return getGGCoverArtLinkForGame(this.masterGame, 307);
     },
     ggLink() {
-      return this.getGGLinkForGame(this.masterGame);
+      return getGGLinkForGame(this.masterGame);
     },
     changeLogFields() {
       if (this.isFactChecker) {
@@ -142,6 +145,7 @@ export default {
     await this.loadAll();
   },
   methods: {
+    formatDateLong,
     async loadAll() {
       await this.fetchMasterGame();
       const tasks = [this.fetchMasterGameChangeLog(), this.fetchMasterGameYears(), this.fetchLeaguesWithMasterGame()];

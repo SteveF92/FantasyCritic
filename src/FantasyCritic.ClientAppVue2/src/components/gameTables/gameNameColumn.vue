@@ -45,15 +45,14 @@ import { usePublisherStore } from '@/store/publisherStore';
 
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
-import BasicMixin from '@/mixins/basicMixin.js';
 import { useLeagueStore } from '@/store/leagueStore';
+import { formatLongDate } from '@/globalFunctions';
 
 export default {
   components: {
     MasterGamePopover,
     SlotTypeBadge
   },
-  mixins: [BasicMixin],
   props: {
     gameSlot: { type: Object, required: true },
     supportedYear: { type: Object, required: true },
@@ -312,6 +311,7 @@ export default {
     }
   },
   methods: {
+    formatLongDate,
     holdGame() {
       const publisherStore = usePublisherStore();
       publisherStore.holdGame(this.gameSlot);

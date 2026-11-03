@@ -24,7 +24,7 @@
         <h2>Manager's Messages</h2>
         <div v-for="message in leagueYear.managerMessages" :key="message.messageID" class="alert alert-info">
           <b-button v-if="league.isManager" class="delete-button" variant="warning" @click="deleteMessage(message)">Delete</b-button>
-          <h5>{{ message.timestamp | dateTime }}</h5>
+          <h5>{{ formatDateTime(message.timestamp) }}</h5>
           <div class="preserve-whitespace">{{ message.messageText }}</div>
         </div>
         <hr />
@@ -35,7 +35,7 @@
         <div v-for="leagueActionSet in leagueActionSets" :key="leagueActionSet.processSetID" class="history-table">
           <collapseCard>
             <template #header>
-              {{ leagueActionSet.processTime | longDate }}
+              {{ formatDateLong(leagueActionSet.processTime) }}
               <template v-if="leagueActionSet.isSpecialAuction">(Special Auction)</template>
             </template>
             <template #body>
@@ -54,7 +54,7 @@
       <div class="history-table">
         <b-table :sort-by.sync="sortBy" :sort-desc.sync="sortDesc" :items="leagueActions" :fields="actionFields" bordered striped responsive>
           <template #cell(timestamp)="data">
-            {{ data.item.timestamp | dateTime }}
+            {{ formatDateTime(data.item.timestamp) }}
           </template>
           <template #cell(description)="data">
             <span class="preserve-whitespace">
@@ -62,7 +62,7 @@
             </span>
           </template>
           <template #cell(managerAction)="data">
-            {{ data.item.managerAction | yesNo }}
+            {{ formatYesNo(data.item.managerAction) }}
           </template>
         </b-table>
       </div>
@@ -74,8 +74,9 @@ import axios from 'axios';
 import LeagueActionSet from '@/components/leagueActionSet.vue';
 import CollapseCard from '@/components/collapseCard.vue';
 import TradeSummary from '@/components/tradeSummary.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
 import { useLeagueStore } from '@/store/leagueStore';
+import { formatDateLong, formatDateTime, formatYesNo } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -83,7 +84,6 @@ export default {
     CollapseCard,
     TradeSummary
   },
-  mixins: [LeagueMixin],
   props: {
     leagueid: { type: String, required: true },
     year: { type: Number, required: true }
@@ -114,11 +114,15 @@ export default {
     this.initializePage();
   },
   computed: {
+    ...mapState(useLeagueStore, ['forbidden', 'leagueYear', 'leagueActions', 'leagueActionSets', 'historicalTrades', 'league']),
     canDownloadYearExports() {
       return this.league && this.leagueYear && ((this.league.userIsInLeague && this.leagueYear.userIsActive) || this.league.isManager);
     }
   },
   methods: {
+    formatDateLong,
+    formatDateTime,
+    formatYesNo,
     initializePage() {
       const leaguePageParams = { leagueID: this.leagueid, year: this.year };
       const leagueStore = useLeagueStore();
@@ -136,7 +140,7 @@ export default {
         messageID: message.messageID
       };
       await axios.post('/api/leagueManager/DeleteManagerMessage', model);
-      this.fetchLeagueYear();
+      await useLeagueStore().refreshLeagueYear();
     },
     exportHistoryToCsv() {
       window.location.href = `/api/league/ExportLeagueActionSetsToCSV?leagueID=${this.leagueid}&year=${this.year}`;

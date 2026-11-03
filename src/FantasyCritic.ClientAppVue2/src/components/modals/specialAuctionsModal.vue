@@ -11,10 +11,10 @@
           <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
         </template>
         <template #cell(creationTime)="data">
-          {{ data.item.creationTime | dateTime }}
+          {{ formatDateTime(data.item.creationTime) }}
         </template>
         <template #cell(scheduledEndTime)="data">
-          {{ data.item.scheduledEndTime | dateTime }}
+          {{ formatDateTime(data.item.scheduledEndTime) }}
           <b-badge v-if="data.item.isLocked" variant="danger">Ended</b-badge>
           <b-button v-else variant="danger" @click="cancelSpecialAuction(data.item.masterGameYear)">Cancel</b-button>
         </template>
@@ -48,7 +48,7 @@
       </div>
       <hr />
       <label>Auction End Time (In your local time zone)</label>
-      <flat-pickr v-model="scheduledEndTime" :config="datePickerConfig" class="form-control"></flat-pickr>
+      <input v-model="scheduledEndTime" type="datetime-local" class="form-control" />
       <b-button variant="success" class="create-button" @click="createSpecialAuction">Create Special Auction</b-button>
     </div>
     <br />
@@ -62,9 +62,11 @@
 <script>
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { formatDateTime } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -72,7 +74,6 @@ export default {
     MasterGameSummary,
     MasterGamePopover
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       searchGameName: '',
@@ -84,18 +85,18 @@ export default {
         { key: 'masterGame', label: 'Game', thClass: ['bg-primary'] },
         { key: 'creationTime', label: 'Creation Time', thClass: ['bg-primary'] },
         { key: 'scheduledEndTime', label: 'End Time', thClass: ['bg-primary'] }
-      ],
-      datePickerConfig: {
-        enableTime: true
-      }
+      ]
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear']),
     formIsValid() {
       return this.specialAuctionMasterGame;
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
+    formatDateTime,
     async createSpecialAuction() {
       const dateObject = new Date(this.scheduledEndTime);
       const utcDate = dateObject.toISOString();

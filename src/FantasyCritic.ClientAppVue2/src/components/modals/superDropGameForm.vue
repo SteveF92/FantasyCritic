@@ -37,10 +37,10 @@
 
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       dropResult: null,
@@ -50,11 +50,10 @@ export default {
     };
   },
   computed: {
-    formIsValid() {
-      return this.dropMasterGame;
-    }
+    ...mapState(useLeagueStore, ['userPublisher'])
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     async dropGame() {
       const request = {
         publisherID: this.userPublisher.publisherID,

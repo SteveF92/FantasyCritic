@@ -7,7 +7,7 @@
       <h2>Manager's Messages</h2>
       <div v-for="message in conferenceYear.managerMessages" :key="message.messageID" class="alert alert-info">
         <b-button v-if="conference.isManager" class="delete-button" variant="warning" @click="deleteMessage(message)">Delete</b-button>
-        <h5>{{ message.timestamp | dateTime }}</h5>
+        <h5>{{ formatDateTime(message.timestamp) }}</h5>
         <div class="preserve-whitespace">{{ message.messageText }}</div>
       </div>
       <hr />
@@ -17,11 +17,14 @@
 </template>
 <script>
 import axios from 'axios';
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState, mapActions } from 'pinia';
 import { useConferenceStore } from '@/store/conferenceStore';
+import { formatDateTime } from '@/utilities/formatters';
 
 export default {
-  mixins: [ConferenceMixin],
+  computed: {
+    ...mapState(useConferenceStore, ['conference', 'conferenceYear'])
+  },
   props: {
     conferenceid: { type: String, required: true },
     year: { type: Number, required: true }
@@ -37,6 +40,8 @@ export default {
     await this.initializePage();
   },
   methods: {
+    ...mapActions(useConferenceStore, ['refreshConferenceYear']),
+    formatDateTime,
     async initializePage() {
       this.selectedYear = this.year;
       const conferencePageParams = { conferenceID: this.conferenceid, year: this.year };

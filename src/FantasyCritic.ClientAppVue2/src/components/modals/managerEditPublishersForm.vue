@@ -56,10 +56,13 @@
 
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['publishers'])
+  },
   data() {
     return {
       editPublisher: null,
@@ -73,6 +76,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     selectPublisher(selectedPublisher) {
       this.newPublisherName = selectedPublisher.publisherName;
       this.newBudget = selectedPublisher.budget;

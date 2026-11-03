@@ -100,6 +100,14 @@ dotnet test src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.cs
 
 The integration tests spin up the full ASP.NET Core stack in-process and talk to the Docker MySQL database, so the database must be running (step 1) before running the tests.
 
+The client app's unit tests (Vitest, under `src/FantasyCritic.ClientAppVue2/tests`) need only the regenerated TypeScript client. From `src/FantasyCritic.ClientAppVue2`:
+
+```sh
+npm test
+```
+
+`npm run test:watch` reruns them as files change.
+
 #### 5. Code formatting
 
 From the repo root, `scripts/Format.ps1` (Windows) and `scripts/format.sh` (Linux/macOS) apply every agreed formatting rule in one pass:

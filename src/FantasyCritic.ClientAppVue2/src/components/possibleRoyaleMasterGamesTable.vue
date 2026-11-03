@@ -13,13 +13,13 @@
         </div>
       </template>
       <template #cell(masterGame.dateAdjustedHypeFactor)="data">
-        {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
+        {{ formatScore(data.item.masterGame.dateAdjustedHypeFactor, 1) }}
       </template>
       <template #cell(status)="data">
         <statusBadge :possible-master-game="data.item" strip-that></statusBadge>
       </template>
       <template #cell(cost)="data">
-        {{ data.item.cost | money }}
+        {{ formatCurrency(data.item.cost) }}
       </template>
       <template #cell(select)="data">
         <b-button size="sm" variant="info" @click="selectGame(data.item)">Select</b-button>
@@ -30,6 +30,7 @@
 <script>
 import StatusBadge from '@/components/statusBadge.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { formatCurrency, formatScore } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -62,6 +63,8 @@ export default {
     }
   },
   methods: {
+    formatCurrency,
+    formatScore,
     selectGame(possibleRoyaleGame) {
       this.selectedPossibleRoyaleGame = possibleRoyaleGame;
       this.$emit('input', this.selectedPossibleRoyaleGame);

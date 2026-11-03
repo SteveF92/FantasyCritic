@@ -34,17 +34,17 @@
 
 <script>
 import axios from 'axios';
-import BasicMixin from '@/mixins/basicMixin.js';
 import { formatMasterGameReleaseDate } from '@/globalFunctions';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import { mapState } from 'pinia';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
     MasterGamePopover,
     MasterGameTagBadge
   },
-  mixins: [BasicMixin],
   data() {
     return {
       games: null,
@@ -62,6 +62,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useInterLeagueStore, ['supportedYears']),
     dreamsDashedYearOptions() {
       return [{ value: null, text: 'All Time' }, ...this.supportedYears.filter((y) => y.finished).map((y) => ({ value: y.year, text: String(y.year) }))];
     },

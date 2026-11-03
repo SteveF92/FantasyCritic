@@ -15,7 +15,7 @@
 
     <div v-if="publisherSlotsAreFilled" class="alert alert-danger">You have already filled all of your counter pick slots!</div>
 
-    <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
+    <form method="post" class="form-horizontal" role="form" @submit.prevent>
       <div class="search-results">
         <ValidationObserver>
           <h3 class="text-black">Available Counter Picks</h3>
@@ -25,7 +25,7 @@
             </option>
           </b-form-select>
 
-          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ userPublisher.budget | money(0) }})</label>
+          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget, 0) }})</label>
 
           <ValidationProvider v-slot="{ errors }" rules="required|integer">
             <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
@@ -49,10 +49,11 @@
 
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { formatCurrency } from '@/utilities/formatters';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       bidCounterPick: null,
@@ -64,6 +65,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'counterPickBiddingAllowed']),
     formIsValid() {
       return !!this.bidCounterPick;
     },
@@ -76,9 +78,6 @@ export default {
       let counterPicks = userGames.filter((x) => x.counterPick);
       return counterPicks.length >= counterPickSlots;
     },
-    droppableGames() {
-      return this.publisher.games.filter((x) => !x.counterPick);
-    },
     bidButtonText() {
       return 'Place Counter Pick Bid';
     },
@@ -90,6 +89,8 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
+    formatCurrency,
     getPossibleCounterPicks() {
       this.clearData();
       this.isBusy = true;

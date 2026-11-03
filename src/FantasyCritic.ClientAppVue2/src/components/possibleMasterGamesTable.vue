@@ -26,7 +26,7 @@
         </div>
       </template>
       <template #cell(masterGame.dateAdjustedHypeFactor)="data">
-        {{ data.item.masterGame.dateAdjustedHypeFactor | score(1) }}
+        {{ formatScore(data.item.masterGame.dateAdjustedHypeFactor, 1) }}
       </template>
       <template #cell(status)="data">
         <statusBadge :possible-master-game="data.item"></statusBadge>
@@ -42,6 +42,7 @@ import StatusBadge from '@/components/statusBadge.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { useLeagueStore } from '@/store/leagueStore';
+import { formatScore } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -93,6 +94,7 @@ export default {
     }
   },
   methods: {
+    formatScore,
     selectGame(masterGame) {
       this.selectedMasterGame = masterGame;
       this.$emit('input', this.selectedMasterGame);

@@ -19,7 +19,7 @@
         <tbody>
           <tr v-for="eligibilityOverride in leagueYear.eligibilityOverrides" :key="eligibilityOverride.masterGame.masterGameID">
             <td>{{ eligibilityOverride.masterGame.gameName }}</td>
-            <td>{{ eligibilityOverride.eligible | yesNo }}</td>
+            <td>{{ formatYesNo(eligibilityOverride.eligible) }}</td>
             <td class="select-cell">
               <b-button variant="danger" @click="resetEligibility(eligibilityOverride)">Reset</b-button>
             </td>
@@ -60,13 +60,14 @@
 <script>
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { formatYesNo } from '@/utilities/formatters';
 
 export default {
   components: {
     PossibleMasterGamesTable
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       searchGameName: '',
@@ -76,11 +77,14 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear']),
     formIsValid() {
       return this.overrideMasterGame;
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
+    formatYesNo,
     resetEligibility(eligibilityOverride) {
       const model = {
         leagueID: this.leagueYear.leagueID,

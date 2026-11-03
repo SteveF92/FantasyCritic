@@ -102,7 +102,7 @@
       </div>
 
       <b-alert v-if="mostRecentManagerMessage" show dismissible @dismissed="dismissRecentManagerMessage">
-        <h5>Manager's Message ({{ mostRecentManagerMessage.timestamp | dateTime }})</h5>
+        <h5>Manager's Message ({{ formatDateTime(mostRecentManagerMessage.timestamp) }})</h5>
         <div class="preserve-whitespace">{{ mostRecentManagerMessage.messageText }}</div>
       </b-alert>
 
@@ -128,17 +128,20 @@
 <script>
 import axios from 'axios';
 
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState, mapActions } from 'pinia';
 import ConferenceManagerActions from '@/components/conferenceManagerActions.vue';
 import ConferenceYearStandings from '@/components/conferenceYearStandings.vue';
 import { useConferenceStore } from '@/store/conferenceStore';
+import { formatDateTime } from '@/utilities/formatters';
+import { makeToast } from '@/utilities/toast';
+import { useAuthStore } from '@/store/authStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
     ConferenceManagerActions,
     ConferenceYearStandings
   },
-  mixins: [ConferenceMixin],
   props: {
     conferenceid: { type: String, required: true },
     year: { type: Number, required: true }
@@ -155,6 +158,9 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isPlusUser', 'isAuth']),
+    ...mapState(useInterLeagueStore, ['activeRoyaleQuarter']),
+    ...mapState(useConferenceStore, ['conference', 'conferenceYear', 'hasError', 'conferenceInviteCode', 'isConferenceManager']),
     numberOfPlayersActiveForYear() {
       return this.conferenceYear.playersForYear.length;
     },
@@ -218,6 +224,8 @@ export default {
     await this.initializePage();
   },
   methods: {
+    ...mapActions(useConferenceStore, ['refreshConferenceYear']),
+    formatDateTime,
     async initializePage() {
       this.selectedYear = this.year;
       const inviteCode = this.$route.query.inviteCode;
@@ -248,14 +256,14 @@ export default {
     },
     async copyConferenceID() {
       await navigator.clipboard.writeText(this.conferenceid);
-      this.makeToast('Conference ID copied to clipboard.');
+      makeToast('Conference ID copied to clipboard.');
     },
     async dismissRecentManagerMessage() {
       const model = {
         messageID: this.mostRecentManagerMessage.messageID
       };
       await axios.post('/api/conference/DismissManagerMessage', model);
-      this.refreshLeagueYear();
+      await this.refreshConferenceYear();
     },
     async fetchRoyaleGroupForConference() {
       try {

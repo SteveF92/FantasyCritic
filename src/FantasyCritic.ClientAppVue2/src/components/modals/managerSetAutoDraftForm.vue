@@ -27,11 +27,14 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   name: 'ManagerSetAutoDraftForm',
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'publishers'])
+  },
   data() {
     return {
       localPublisherSettings: [],
@@ -44,6 +47,7 @@ export default {
   },
 
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     onShow() {
       this.localPublisherSettings = this.publishers.map((p) => ({
         publisherID: p.publisherID,

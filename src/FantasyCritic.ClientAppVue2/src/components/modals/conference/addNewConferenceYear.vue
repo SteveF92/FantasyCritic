@@ -24,10 +24,13 @@
 </template>
 <script>
 import axios from 'axios';
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState } from 'pinia';
+import { useConferenceStore } from '@/store/conferenceStore';
 
 export default {
-  mixins: [ConferenceMixin],
+  computed: {
+    ...mapState(useConferenceStore, ['conference'])
+  },
   data() {
     return {
       availableYears: [],

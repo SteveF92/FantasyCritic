@@ -10,16 +10,23 @@
       <tbody>
         <tr v-for="eligibilityOverride in leagueYear.eligibilityOverrides" :key="eligibilityOverride.masterGame.masterGameID">
           <td>{{ eligibilityOverride.masterGame.gameName }}</td>
-          <td>{{ eligibilityOverride.eligible | yesNo }}</td>
+          <td>{{ formatYesNo(eligibilityOverride.eligible) }}</td>
         </tr>
       </tbody>
     </table>
   </b-modal>
 </template>
 <script>
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { formatYesNo } from '@/utilities/formatters';
 
 export default {
-  mixins: [LeagueMixin]
+  computed: {
+    ...mapState(useLeagueStore, ['leagueYear'])
+  },
+  methods: {
+    formatYesNo
+  }
 };
 </script>

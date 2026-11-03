@@ -24,7 +24,7 @@ export default [
   },
   // Root-level Node scripts (dev server setup, Vite config) run outside the browser
   {
-    files: ["aspnetcore-https.js", "vite.config.js", "vite.client.config.js", "vite.build.config.js", "eslint.config.mjs"],
+    files: ["aspnetcore-https.js", "vite.config.js", "vite.client.config.js", "vite.build.config.js", "vitest.config.js", "eslint.config.mjs"],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -62,6 +62,7 @@ export default [
       "vue/no-deprecated-dollar-listeners-api": "error",
       "vue/no-deprecated-dollar-scopedslots-api": "error",
       "vue/no-deprecated-events-api": "error",
+      "vue/no-deprecated-filter": "error",
       "vue/no-deprecated-functional-template": "error",
       "vue/no-deprecated-html-element-is": "error",
       "vue/no-deprecated-inline-template": "error",

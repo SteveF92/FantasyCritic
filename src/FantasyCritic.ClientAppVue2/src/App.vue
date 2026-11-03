@@ -13,17 +13,20 @@
       </div>
       <footerModule></footerModule>
     </div>
+    <toastHost></toastHost>
   </div>
 </template>
 
 <script>
 import TopNavbar from '@/components/topNavBar.vue';
 import FooterModule from '@/components/footerModule.vue';
+import ToastHost from '@/components/toastHost.vue';
 
 export default {
   components: {
     TopNavbar,
-    FooterModule
+    FooterModule,
+    ToastHost
   }
 };
 </script>

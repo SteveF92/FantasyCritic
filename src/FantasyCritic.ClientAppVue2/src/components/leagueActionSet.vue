@@ -12,13 +12,13 @@
           </router-link>
         </template>
         <template #cell(timestamp)="data">
-          {{ data.item.timestamp | dateTime }}
+          {{ formatDateTime(data.item.timestamp) }}
         </template>
         <template #cell(masterGame)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
         <template #cell(successful)="data">
-          {{ data.item.successful | yesNo }}
+          {{ formatYesNo(data.item.successful) }}
         </template>
       </b-table>
     </div>
@@ -31,24 +31,24 @@
           </router-link>
         </template>
         <template #cell(timestamp)="data">
-          {{ data.item.timestamp | dateTime }}
+          {{ formatDateTime(data.item.timestamp) }}
         </template>
         <template #cell(masterGame)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
           <span v-if="data.item.counterPick">(Counter Pick)</span>
         </template>
         <template #cell(counterPick)="data">
-          {{ data.item.counterPick | yesNo }}
+          {{ formatYesNo(data.item.counterPick) }}
         </template>
         <template #cell(conditionalDropPublisherGame)="data">
           <masterGamePopover v-if="data.item.conditionalDropPublisherGame" :master-game="data.item.conditionalDropPublisherGame.masterGame"></masterGamePopover>
           <span v-else>None</span>
         </template>
         <template #cell(projectedPointsAtTimeOfBid)="data">
-          {{ data.item.projectedPointsAtTimeOfBid | score(2) }}
+          {{ formatScore(data.item.projectedPointsAtTimeOfBid, 2) }}
         </template>
         <template #cell(successful)="data">
-          {{ data.item.successful | yesNo }}
+          {{ formatYesNo(data.item.successful) }}
         </template>
       </b-table>
     </div>
@@ -56,6 +56,7 @@
 </template>
 <script>
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { formatDateTime, formatScore, formatYesNo } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -87,6 +88,11 @@ export default {
       sortBy: 'timestamp',
       sortDesc: true
     };
+  },
+  methods: {
+    formatDateTime,
+    formatScore,
+    formatYesNo
   }
 };
 </script>

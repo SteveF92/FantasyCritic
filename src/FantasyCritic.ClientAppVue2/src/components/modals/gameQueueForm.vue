@@ -94,7 +94,7 @@
               <span>{{ queuedGame.masterGame.estimatedReleaseDate }}</span>
               <span v-show="queuedGame.masterGame.isReleased">(Released)</span>
             </td>
-            <td class="hype-column" data-label="Hype Factor">{{ queuedGame.masterGame.dateAdjustedHypeFactor | score(1) }}</td>
+            <td class="hype-column" data-label="Hype Factor">{{ formatScore(queuedGame.masterGame.dateAdjustedHypeFactor, 1) }}</td>
             <td class="notes-cell" data-label="Notes">
               <div class="notes-display">
                 <span v-if="queuedGame.notes" class="notes-text">{{ queuedGame.notes }}</span>
@@ -132,13 +132,14 @@
 import axios from 'axios';
 import { VueDraggable } from 'vue-draggable-plus';
 
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
 import { useLeagueStore } from '@/store/leagueStore';
 
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import StatusBadge from '@/components/statusBadge.vue';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { formatScore } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -148,7 +149,6 @@ export default {
     SearchSlotTypeBadge,
     MasterGamePopover
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       searchGameName: null,
@@ -167,6 +167,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'queuedGames']),
     otherPublishers() {
       return this.leagueYear.allPublishersForUser.filter((p) => p.publisherID !== this.userPublisher.publisherID);
     },
@@ -178,6 +179,8 @@ export default {
     this.initializeDesiredRankings();
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
+    formatScore,
     initializeDesiredRankings() {
       this.desiredQueueRanks = this.queuedGames;
     },

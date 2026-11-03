@@ -3,19 +3,19 @@
     <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1">
       <div class="row">
         <div class="col-6 col-sm-3">
-          <h3>{{ siteCounts.userCount | thousands }}</h3>
+          <h3>{{ formatThousands(siteCounts.userCount) }}</h3>
           <h4>Users Joined</h4>
         </div>
         <div class="col-6 col-sm-3">
-          <h3>{{ siteCounts.leagueCount | thousands }}</h3>
+          <h3>{{ formatThousands(siteCounts.leagueCount) }}</h3>
           <h4>Leagues Created</h4>
         </div>
         <div class="col-6 col-sm-3">
-          <h3>{{ siteCounts.masterGameCount | thousands }}</h3>
+          <h3>{{ formatThousands(siteCounts.masterGameCount) }}</h3>
           <h4>Unique Games</h4>
         </div>
         <div class="col-6 col-sm-3">
-          <h3>{{ siteCounts.publisherGameCount | thousands }}</h3>
+          <h3>{{ formatThousands(siteCounts.publisherGameCount) }}</h3>
           <h4>Games Drafted</h4>
         </div>
       </div>
@@ -25,6 +25,7 @@
 
 <script>
 import { generalClient } from '@/api/clients';
+import { formatThousands } from '@/utilities/formatters';
 
 export default {
   data() {
@@ -36,6 +37,7 @@ export default {
     await this.fetchSiteCounts();
   },
   methods: {
+    formatThousands,
     async fetchSiteCounts() {
       this.siteCounts = await generalClient.siteCounts();
     }

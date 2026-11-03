@@ -59,13 +59,16 @@
 <script>
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   components: {
     PossibleMasterGamesTable
   },
-  mixins: [LeagueMixin],
+  computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'publishers'])
+  },
   data() {
     return {
       searchGameName: '',
@@ -78,6 +81,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     searchGame() {
       this.possibleMasterGames = [];
       this.associateResult = null;

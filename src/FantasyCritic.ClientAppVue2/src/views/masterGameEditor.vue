@@ -45,7 +45,7 @@
 
               <div class="form-group">
                 <label for="releaseDate" class="control-label">Release Date</label>
-                <b-form-datepicker v-model="masterGame.releaseDate" class="form-control"></b-form-datepicker>
+                <dateInput id="releaseDate" v-model="masterGame.releaseDate" />
               </div>
 
               <b-button variant="info" size="sm" @click="propagateDate">Propagate Date</b-button>
@@ -58,23 +58,23 @@
               </div>
               <div class="form-group">
                 <label for="minimumReleaseDate" class="control-label">Minimum Release Date</label>
-                <b-form-datepicker v-model="masterGame.minimumReleaseDate" class="form-control"></b-form-datepicker>
+                <dateInput id="minimumReleaseDate" v-model="masterGame.minimumReleaseDate" />
               </div>
               <div class="form-group">
                 <label for="maximumReleaseDate" class="control-label">Maximum Release Date</label>
-                <b-form-datepicker v-model="masterGame.maximumReleaseDate" class="form-control"></b-form-datepicker>
+                <dateInput id="maximumReleaseDate" v-model="masterGame.maximumReleaseDate" />
               </div>
               <div class="form-group">
                 <label for="earlyAccessReleaseDate" class="control-label">Early Access Release Date</label>
-                <b-form-datepicker v-model="masterGame.earlyAccessReleaseDate" class="form-control"></b-form-datepicker>
+                <dateInput id="earlyAccessReleaseDate" v-model="masterGame.earlyAccessReleaseDate" />
               </div>
               <div class="form-group">
                 <label for="internationalReleaseDate" class="control-label">International Release Date</label>
-                <b-form-datepicker v-model="masterGame.internationalReleaseDate" class="form-control"></b-form-datepicker>
+                <dateInput id="internationalReleaseDate" v-model="masterGame.internationalReleaseDate" />
               </div>
               <div class="form-group">
                 <label for="announcementDate" class="control-label">Announcement Date</label>
-                <b-form-datepicker v-model="masterGame.announcementDate" class="form-control"></b-form-datepicker>
+                <dateInput id="announcementDate" v-model="masterGame.announcementDate" />
               </div>
 
               <div class="form-group">
@@ -150,10 +150,12 @@
 import axios from 'axios';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
+import DateInput from '@/components/dateInput.vue';
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 
 export default {
   components: {
+    DateInput,
     MasterGameTagSelector
   },
   props: {

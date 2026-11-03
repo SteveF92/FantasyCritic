@@ -33,26 +33,26 @@
       </div>
       <div>
         <span class="detail-label">Percent Published:</span>
-        {{ masterGame.eligiblePercentStandardGame | percent(1) }}
+        {{ formatPercent(masterGame.eligiblePercentStandardGame, 1) }}
       </div>
       <div>
         <span class="detail-label">Percent Counterpicked:</span>
-        {{ masterGame.adjustedPercentCounterPick | percent(1) }}
+        {{ formatPercent(masterGame.adjustedPercentCounterPick, 1) }}
       </div>
       <div>
         <span class="detail-label">Average Draft Position:</span>
-        <span v-if="masterGame.averageDraftPosition">{{ masterGame.averageDraftPosition | score(1) }}</span>
+        <span v-if="masterGame.averageDraftPosition">{{ formatScore(masterGame.averageDraftPosition, 1) }}</span>
         <span v-else>Undrafted</span>
       </div>
       <div>
         <span class="detail-label">Hype Factor:</span>
-        <span v-if="masterGame.dateAdjustedHypeFactor">{{ masterGame.dateAdjustedHypeFactor | score(1) }}</span>
+        <span v-if="masterGame.dateAdjustedHypeFactor">{{ formatScore(masterGame.dateAdjustedHypeFactor, 1) }}</span>
         <span v-else>Unhyped...</span>
       </div>
       <div v-if="masterGame.projectedFantasyPoints">
         <span v-if="!masterGame.criticScore" class="detail-label">Projected Points:</span>
         <span v-else class="detail-label">Pre-Release Projected Points:</span>
-        <span>~{{ masterGame.projectedFantasyPoints | score(1) }}</span>
+        <span>~{{ formatScore(masterGame.projectedFantasyPoints, 1) }}</span>
       </div>
       <div v-if="masterGame.openCriticID">
         <a :href="openCriticLink" target="_blank">
@@ -86,13 +86,15 @@
 <script>
 import { DateTime } from 'luxon';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import GGMixin from '@/mixins/ggMixin.js';
+import { getGGLinkForGame, getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
+import { formatPercent, formatScore } from '@/utilities/formatters';
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
     MasterGameTagBadge
   },
-  mixins: [GGMixin],
   props: {
     masterGame: { type: Object, required: true },
     hideImage: { type: Boolean }
@@ -103,11 +105,12 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isFactChecker']),
     ggCoverArtLink() {
-      return this.getGGCoverArtLinkForGame(this.masterGame, 165);
+      return getGGCoverArtLinkForGame(this.masterGame, 165);
     },
     ggLink() {
-      return this.getGGLinkForGame(this.masterGame);
+      return getGGLinkForGame(this.masterGame);
     },
     releaseDate() {
       return DateTime.fromISO(this.masterGame.releaseDate).toFormat('MMMM dd, yyyy');
@@ -115,6 +118,10 @@ export default {
     openCriticLink() {
       return `https://opencritic.com/game/${this.masterGame.openCriticID}/${this.masterGame.openCriticSlug ?? 'b'}`;
     }
+  },
+  methods: {
+    formatPercent,
+    formatScore
   }
 };
 </script>

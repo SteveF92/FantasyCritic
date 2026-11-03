@@ -16,16 +16,18 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
+import { makeToast } from '@/utilities/toast';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       skipConfirmation: ''
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league', 'activeDraft']),
     skipConfirmed() {
       return this.skipConfirmation.toUpperCase() === 'SKIP TURN';
     }
@@ -42,7 +44,7 @@ export default {
       axios
         .post('/api/leagueManager/SkipCurrentDraftPick', model)
         .then(() => {
-          this.notifyAction('Turn was skipped.', false);
+          makeToast('Turn was skipped.');
         })
         .catch(() => {});
     },

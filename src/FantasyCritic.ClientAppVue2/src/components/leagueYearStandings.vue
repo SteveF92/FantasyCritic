@@ -26,11 +26,11 @@
         </span>
       </template>
       <template #cell(projectedFantasyPoints)="data">
-        {{ data.item.projectedFantasyPoints | score(2) }}
+        {{ formatScore(data.item.projectedFantasyPoints, 2) }}
         <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isProjectedTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.projectedRanking) }}</span>
       </template>
       <template #cell(totalFantasyPoints)="data">
-        {{ data.item.totalFantasyPoints | score(2) }}
+        {{ formatScore(data.item.totalFantasyPoints, 2) }}
         <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.ranking) }}</span>
       </template>
       <template #cell(gamesReleased)="data">
@@ -40,18 +40,19 @@
         <span v-if="data.item.publisher">{{ data.item.publisher.gamesWillRelease }}</span>
       </template>
       <template #cell(budget)="data">
-        <span v-if="data.item.publisher">{{ data.item.publisher.budget | money(0) }}</span>
+        <span v-if="data.item.publisher">{{ formatCurrency(data.item.publisher.budget, 0) }}</span>
       </template>
     </b-table>
   </div>
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import { maxBy, ordinal_suffix_of } from '@/globalFunctions';
+import { formatCurrency, formatScore } from '@/utilities/formatters';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       leadingFields: [
@@ -85,6 +86,7 @@ export default {
     }
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'league', 'pendingDraft', 'publishersThatCanWin', 'topPublisher', 'oneShotMode', 'playStarted', 'firstDraftFinished', 'hasPendingOrActiveDraft']),
     standingFields() {
       if (!this.firstDraftFinished) {
         return [...this.leadingFields, ...this.preDraftFields];
@@ -123,6 +125,9 @@ export default {
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
+    formatCurrency,
+    formatScore,
     rescindInvite(inviteID, inviteName) {
       const model = {
         leagueID: this.leagueYear.league.leagueID,

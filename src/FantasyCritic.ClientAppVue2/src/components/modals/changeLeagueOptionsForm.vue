@@ -50,10 +50,10 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
-  mixins: [LeagueMixin],
   data() {
     return {
       newleagueName: '',
@@ -64,6 +64,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['league']),
     showDiscordWarning() {
       return this.league.publicLeague && !this.publicLeague;
     }
@@ -75,6 +76,7 @@ export default {
     this.customRulesLeague = this.league.customRulesLeague;
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     async changeleagueName() {
       const model = {
         leagueID: this.league.leagueID,

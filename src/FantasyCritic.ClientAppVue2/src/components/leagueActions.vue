@@ -214,7 +214,8 @@
   </div>
 </template>
 <script>
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 import BidGameForm from '@/components/modals/bidGameForm.vue';
 import BidCounterPickForm from '@/components/modals/bidCounterPickForm.vue';
@@ -268,6 +269,8 @@ import UnderReviewModal from '@/components/modals/underReviewModal.vue';
 import DraftScheduleModal from '@/components/modals/draftScheduleModal.vue';
 
 import { publisherIconIsValid } from '@/globalFunctions';
+import { useAuthStore } from '@/store/authStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -320,8 +323,28 @@ export default {
     UnderReviewModal,
     DraftScheduleModal
   },
-  mixins: [LeagueMixin],
   computed: {
+    ...mapState(useAuthStore, ['isPlusUser']),
+    ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
+    ...mapState(useLeagueStore, [
+      'leagueYear',
+      'userPublisher',
+      'league',
+      'publishers',
+      'supportedYear',
+      'activeDraft',
+      'userIsNextInDraft',
+      'playStarted',
+      'readyToSetDraftOrder',
+      'firstDraftFinished',
+      'hasPendingOrActiveDraft',
+      'draftIsActiveOrPaused',
+      'biddingAllowed',
+      'tradesAllowed',
+      'dropsAllowed',
+      'postDraftPlayable',
+      'postDraftEditable'
+    ]),
     iconIsValid() {
       return publisherIconIsValid(this.userPublisher.publisherIcon);
     },

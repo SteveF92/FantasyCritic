@@ -55,19 +55,26 @@ branch. Two lessons:
 ## Done
 
 All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-pinia` as of
-2026-11-01. The first production release of this work is pending.
+2026-11-01, and tests, which are on `vue3-upgrade-final-prep` as of 2026-11-01. The first
+production release of this work is pending.
 
 | Area | Change |
 |---|---|
 | Template syntax | The last `slot="..."` is now `v-slot`. |
-| Lint ratchet | All 17 `vue/no-deprecated-*` rules the codebase already passes are on as errors, in their own block of `eslint.config.mjs`. |
+| Lint ratchet | All 18 `vue/no-deprecated-*` rules the codebase already passes are on as errors, in their own block of `eslint.config.mjs`. |
 | Removed | `register-service-worker` (unused), `vuex-router-sync` (nothing read `state.route`), `vue-gtag` (it reported to a Universal Analytics property, dead since July 2023), and the `bootstrap.bundle.js` import (bootstrap-vue does that work; dropping it took jQuery out of the bundle, about 180 KB of JS). |
 | Replaced with our own code | `vue-clipboard2` with `navigator.clipboard`, `grapheme-breaker-mjs` with `Intl.Segmenter`, `vue-awesome-countdown` with `components/countdown.vue`, and `vue-js-toggle-button` with `components/toggleSwitch.vue`. |
 | Housekeeping | `npm audit fix` (axios 1.21; only low-severity advisories against Vue 2 itself remain), `chart.js` as a direct dependency, the unused vee-validate `password` rule deleted. |
-| Fixed in passing | `transferManagerModal.vue` threw for logged-out viewers of public leagues. |
+| Fixed in passing | `transferManagerModal.vue` threw for logged-out viewers of public leagues. `tradeSummary.vue` threw for logged-out viewers of trade votes, so league history's votes tables failed to render. The league year API had not sent `settings.oneShotMode` since March 2023, so the client treated every league as not one-shot. Names read but never defined, found once the mixins were gone: dismissing a conference manager's message and deleting a league manager's message from league history called methods that don't exist, so the page didn't refresh; the under review toast always said the league was no longer under review; Enter in the counter pick bid form called a missing `searchGame`; the conference player assignment's "draft started" locks read a misspelt `data` key, so they weren't reactive; and the master game change request page dropped its error when the game failed to load. Dead computed properties reading undefined names went from the counter pick, drop and super drop forms, and the player draft form sends `counterPick: false` rather than an undefined value. |
 | Charts | `vue-chartjs` 5, Chart.js 4 and `chartjs-plugin-annotation` 3, on the `data`/`options` props. The chart options and data are `markRaw`, which stops Vue 2's reactivity recursing into Chart.js objects (the `Maximum call stack size exceeded` the game page's stats chart threw). `royalePublisherGraph.vue` reads the chart from the component's `chart` ref. Checked on a production build against live data: both charts draw, with no console errors. **Check charts with `vite build` and `vite preview`, not the dev server**, which leaves them blank. |
 | Drag and drop | `vuedraggable` 2 to `vue-draggable-plus` 0.6 (`VueDraggable`, `v-model`) in `assignPlayers`, `currentBidsForm`, `editDraftOrderForm`, `gameQueueForm` and `leagueTagSelector`. The draft order list lost its `transition-group` (it has Sortable's `animation` instead), and the tag selector's list headers moved out of the draggable. Builds and lints clean, and the component renders and attaches Sortable on Vue 2.7; **drag-and-drop itself is untested, since it needs a logged-in session.** |
 | State | Vuex 3 to **Pinia 2.3** (`~2.3.1`; Pinia 3 dropped Vue 2), led by Steve. A 1:1 port of all six stores at once rather than store by store: same stores, state and action names. Mutations became actions or direct assignments, and getters that only returned state were dropped, since Pinia exposes state directly. The mixins stay, on Pinia's `mapState`. The stores are now `.ts` files (`auth.ts` became `authStore.ts`) but have no types yet. `store/pinia.js` holds the one Pinia instance, which the router guard passes to each `useXStore(pinia)`, because the router's first navigation runs before Pinia is active. `adminStore` and `authStore` use the NSwag client; the other four are still on axios. Lints and builds clean. |
+| Filters | The 11 `Vue.filter`s in `filters.js` became plain functions in `utilities/formatters.ts` (`formatScore`, `formatCurrency`, `formatDateTime`, `formatDateTimeAt`, `formatDateIso`, `formatDateLong`, `formatYesNo`, `formatApprovedRejected`, `formatPercent`, `formatThousands`, `selectTextFromPossibleOptions`), with the behaviour copied unchanged. All 139 uses in 49 files are now `{{ formatX(value, args) }}`, and each component imports what it uses and lists it under `methods`, the same way it already does for `globalFunctions`. `filters.js` is gone and `vue/no-deprecated-filter` is on. `globalFunctions.ts` still has `roundNumber`, `formatMoney` and `formatLongDate`, which differ from `formatScore`, `formatCurrency` and `formatDateLong` only in how they treat empty and non-numeric input; folding them together is a possible tidy-up. Lints and builds clean, and the games table on a production API renders scores and percentages correctly. |
+| Datepickers | The 14 `b-form-datepicker`s (master game creator, editor and request, and league year settings) became `components/dateInput.vue`, a native `<input type="date" class="form-control">`. bootstrap-vue-next has no datepicker, and the draft pages already used native date inputs. The value is the same `YYYY-MM-DD` string, so nothing that reads it changed. The wrapper emits `null` instead of `''` when the input is cleared, since a native input can be cleared from the keyboard and `''` isn't a valid `LocalDate`. Each input now has the `id` its label's `for` already named. Checked by mounting the component on the dev server (typing, clearing and setting from the model); **the four pages themselves are unchecked, since they need a logged-in session.** |
+| Toasts | Every toast goes through `makeToast(message, variant = 'info')` in `utilities/toast.ts`, a plain function that adds the toast to `toastStore`. `components/toastHost.vue`, mounted once in `App.vue`, renders the store's toasts as declarative `b-toast`s and removes each when it hides. The old `makeToast` lived in `BasicMixin`, built its body with Vue 2's `$createElement`, and toasted through the calling component's `$bvToast`, which destroys the toast along with the component. The two direct `$bvToast` calls (critics royale's error, the royale group invite link) now use the shared function, so they have its close icon too. Checked on the dev server: toasts render in both variants, the close icon closes only its own toast, auto-hide removes them from the store, and a toast survives a route change. |
+| Date-time pickers | The two `flat-pickr`s (site announcements and special auctions) are native `<input type="datetime-local">`s, and `vue-flatpickr-component` and `flatpickr` are gone. The value is a local `yyyy-MM-ddTHH:mm` string, which `new Date(...)` already read as local time, so the `toISOString()` calls are unchanged. Editing an announcement formats its stored instant with Luxon instead of passing the picker a `Date`. Checked by mounting the announcements page on the dev server: a stored UTC time shows in local time and converts back to the same instant. The special auctions modal is unchecked, since it needs a league manager. |
+| Mixins | All five are gone, along with `mixins/` and the global `Vue.mixin`. `GGMixin` became typed functions in `utilities/ggLinks.ts`. The conference, publisher and league mixins' derived values became getters on their stores, `notifyAction` became a store action that refreshes and then toasts, and `decimalsToShow` is an `authStore` getter; the draft modals that toasted without refreshing call `makeToast`. Each component maps only the state and actions it reads, found by compiling its template and collecting its `this.` uses and `watch` keys. `BasicMixin` was global, so the 29 components that relied on it, `topNavBar.vue` among them with no script of its own, now map the `authStore` and `interLeagueStore` state they read and import `formatLongDate`/`formatLongDateTime`. The league getters were compared against the old mixin code on 120 public leagues and 297 synthetic draft and bidding states, with no differences beyond `undefined` becoming `null` or `false`. With no mixins left, every name a component reads must be one it defines, and a static check over all components confirms that for everything the mixins provided. Public pages and the league page's 50 modals show no Vue warnings logged out. |
+| Tests | Vitest 5 with `@vue/test-utils` v1 and jsdom, set up in [client-tests-plan.md](client-tests-plan.md). Tests live in `tests/`, mirroring `src/`; `npm test` runs them, and CI runs them after generating the API clients, so deploys gate on them too. They need the generated TypeScript client because the stores import it. 33 so far: `counterPickBiddingAllowed`, `hasPendingOrActiveDraft` and the `pendingDraft*` getters on `leagueStore`, with the clock fixed, and `dateInput.vue`, which proves components compile and mount. Node moved to 26, the current LTS, locally, in CI and in the web image. test-utils v1 adds five moderate dev-only `npm audit` findings, which go when it moves to v2 at the flip. |
 
 **Still to verify by hand:**
 
@@ -80,6 +87,13 @@ All on `vue3-upgrade` as of 2026-10-28, except Pinia, which is on `vue3-upgrade-
   logged in and logged out; the league page's toggles and bid reveal, league history; your own
   publisher page's move mode and toggles; a conference page and modal; the home page's admin task
   count; royale pages; the admin console's bid times.
+- The date inputs on the master game creator, editor and request pages and in league year
+  settings: an existing date loads, a new one saves, and Clear still works.
+- Creating a special auction, and creating and editing a site announcement, with the new
+  date-time inputs.
+- After the mixins: a manager action and a player action on a league page refresh it and toast,
+  the draft modals toast during a draft, the nav bar logged in, and the admin console's sections
+  for each role.
 
 ---
 
@@ -93,40 +107,23 @@ client come in. Counts are as of 2026-10-28.
 
 | Package | Where | Move |
 |---|---|---|
-| `vee-validate` 3 | 22 `ValidationProvider` in 13 files, 7 `ValidationObserver` | **Decision needed.** The rules in use are `required`, `integer`, `min_value`, `max_value`, `email` and `min` (`max` is registered but unused), and the observers only read `invalid`. Replacing it with our own code now would also remove a compat risk; the alternative is vee-validate 4 after the flip, whose `<Field>`/`<Form>` have nearly the same slot shape. |
+| `vee-validate` 3 | 22 `ValidationProvider` in 13 files, 7 `ValidationObserver` | **Left for the flip** (decided 2026-11-01). The rules in use are `required`, `integer`, `min_value`, `max_value`, `email` and `min` (`max` is registered but unused), and the observers only read `invalid`. See the flip section. |
 
 ### Code
 
-- **Filters to functions.** There are 11 filters in `filters.js` (`score`, `money`, `dateTime`,
-  `dateTimeAt`, `date`, `longDate`, `yesNo`, `approvedRejected`, `percent`, `thousands`,
-  `selectTextFromPossibleOptions`), used about 139 times in 49 files. The migration build treats
-  filters as compile errors, so they have to go before the flip regardless. Mechanical, and a
-  good candidate for one bulk sweep.
 - **axios to the generated NSwag client.** 100 files import axios; 10 use `@/api/clients`. Not a
   flip blocker, since axios works on Vue 3, but the target is the typed client everywhere. Do it
   store by store (`conferenceStore`, `interLeagueStore`, `leagueStore` and `publisherStore` are
   still on axios), and component by component as files are touched. The admin console and job
   pages are already on it and are the pattern to follow.
-- **Mixins to composables or plain functions.** 86 components use a mixin: `LeagueMixin` 61,
-  `ConferenceMixin` 13, `GGMixin` 5, `PublisherMixin` 4, `BasicMixin` 4. `BasicMixin` is also
-  registered globally with `Vue.mixin`, which is where `userInfo` and `makeToast` come from
-  invisibly. Most of `LeagueMixin`'s computed properties are pure functions of `leagueYear`, so
-  they can become plain, testable functions. The mixins read the stores through Pinia's
-  `mapState`, which works on Vue 3 too, so this isn't a flip blocker.
 - **TypeScript.** 4 of 171 components use `lang="ts"`. Seven hand-written models (`models/`)
   duplicate generated types. Adding a `vue-tsc` type check to CI (it supports a Vue 2.7 target)
   gives the conversions teeth. Convert as files are touched.
-- **Tests.** There are none. Set up Vitest with `@vue/test-utils` v1 now and move to v2 at the
-  flip. Start with the logic pulled out of `LeagueMixin`, for example `counterPickBiddingAllowed`.
 - **Bootstrap classes that work in both versions.** `form-group` becomes `mb-3`: Bootstrap 4's
   `form-group` is exactly a 1rem bottom margin, `mb-3` is the same in both versions, and no CSS
   selects `.form-group`. That's 172 uses in 63 files. The other Bootstrap 5 renames (`ml-` to
   `ms-`, `badge-*` to `bg-*`, `text-left` to `text-start`, `sr-only`) don't exist in Bootstrap 4
   and wait for the UI swap. `form-row`/`form-inline` (4 uses) need a look.
-- **Datepickers.** 14 `b-form-datepicker`s in 4 files, mostly the master game creator and
-  editor. bootstrap-vue-next has no datepicker. **Decision needed:** `b-form-input type="date"`
-  exists in both libraries and could replace them now, at the cost of the browser's native picker
-  instead of bootstrap-vue's calendar. flatpickr, already a dependency, is the other option.
 - **Small items.**
   - `leagueActions.vue` mounts about 30 manager-only modals for every viewer, while publisher
     modals are already behind `v-if="userPublisher"`. Gating them behind `league.isManager`
@@ -134,6 +131,8 @@ client come in. Counts are as of 2026-10-28.
   - `about.vue` still says the site uses Google Analytics.
   - The vee-validate `max` rule is registered but unused.
   - `jsconfig.json` sits alongside `tsconfig.json`.
+  - About 20 names are assigned with `this.x = ...` without being declared in `data`, so they
+    aren't reactive. The static check from the mixin work lists them.
 
 ### The lint ratchet
 
@@ -142,7 +141,6 @@ non-zero:
 
 | Rule | Count | When it can reach zero |
 |---|---|---|
-| `no-deprecated-filter` | 139 | Before the flip |
 | `no-deprecated-v-bind-sync` | 48 in 19 files | At the flip (needs `v-model:prop`) |
 | `no-deprecated-v-on-native-modifier` | 15 in 5 files | At the flip |
 | `no-deprecated-destroyed-lifecycle` | 1 (`countdown.vue`) | At the flip (`beforeUnmount`) |
@@ -158,9 +156,12 @@ Follow the migration build guide. Packages that change together:
 - `vue-router` 3 to 4 (Router 5 requires Vite 7 or later)
 - `@fortawesome/vue-fontawesome` 2 to 3
 - `vue-multiselect` 2 to 3 (2 components)
-- `vue-flatpickr-component` 8 to 12 (2 uses), or a native `datetime-local` input
 - `@vue/test-utils` v1 to v2
 - bootstrap-vue **stays**, running on its compat support
+- `vee-validate` 3 is the one dependency whose behaviour on compat is unknown. It supports only
+  Vue 2, and `ValidationProvider` finds its input by walking Vue 2 vnodes for `v-model`, so
+  expect it to break. Check the 13 forms that use it first. If it breaks, the choice is
+  vee-validate 4 (`<Field>`/`<Form>` have nearly the same slot shape) or our own code.
 
 Code that changes with it:
 
@@ -168,8 +169,7 @@ Code that changes with it:
 - Components with a custom `v-model` (9 `$emit('input')`) move to `modelValue` and
   `update:modelValue`.
 - `beforeDestroy` in `countdown.vue` becomes `beforeUnmount`.
-- `main.js` moves to `createApp`, and the `Vue.use`, `Vue.component` and `Vue.mixin` calls
-  move onto the app.
+- `main.js` moves to `createApp`, and the `Vue.use` and `Vue.component` calls move onto the app.
 - Transition class names change without a runtime warning; search for them.
 
 Ship to production on compat once the app runs cleanly, then drive the warnings to zero.
@@ -180,23 +180,21 @@ Ship to production on compat once the app runs cleanly, then drive the warnings 
   jQuery (still in `node_modules` as Bootstrap 4's peer dependency) leave with them.
 - The surface is mostly trivial in volume: 258 `b-button`, 54 `b-form-select`. The real work is
   in the modals (74 `b-modal`, 76 `v-b-modal`, 58 modal components, 62 `$refs`), the 47
-  `b-table`s, the 53 `v-b-popover`s, and `$bvModal` (12), `$bvToast` (4) and `makeToast` (14),
-  which become bootstrap-vue-next's composables.
+  `b-table`s, the 53 `v-b-popover`s, and `$bvModal` (12), which becomes bootstrap-vue-next's
+  composable. Toasts are all in `toastHost.vue`, so they change in one file.
 - **Choose one modal pattern before touching any of them.** Modals are where 2023 stopped.
 - The Bootstrap 5 class renames, and 24 deep selectors to recheck.
 - Remove `@vue/compat`.
 
 ## After
 
-The consistency pass: current Pinia, whatever axios is left, the remaining mixins, and
-TypeScript across the rest of the app.
+The consistency pass: current Pinia, whatever axios is left, and TypeScript across the rest of
+the app.
 
 ---
 
 ## Open decisions
 
-- **vee-validate:** our own validation now, or vee-validate 4 after the flip.
-- **Datepickers:** native `type="date"`, or flatpickr.
 - **Analytics:** a GA4 property, or none. Either way `about.vue` needs rewording.
 - **Style for new components:** Options API or `<script setup lang="ts">`. `countdown.vue` and
   `toggleSwitch.vue` use the Options API in plain JS, to match the codebase.

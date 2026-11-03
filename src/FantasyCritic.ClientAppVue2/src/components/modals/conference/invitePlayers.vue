@@ -27,10 +27,14 @@
 </template>
 <script>
 import axios from 'axios';
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useConferenceStore } from '@/store/conferenceStore';
+import { makeToast } from '@/utilities/toast';
 
 export default {
-  mixins: [ConferenceMixin],
+  computed: {
+    ...mapState(useConferenceStore, ['conference'])
+  },
   data() {
     return {
       inviteLinks: null,
@@ -44,6 +48,7 @@ export default {
     };
   },
   methods: {
+    ...mapActions(useConferenceStore, ['refreshConferenceYear']),
     async createInviteLink() {
       const model = {
         conferenceID: this.conference.conferenceID
@@ -58,7 +63,7 @@ export default {
     },
     async copyInviteLink(inviteLink) {
       await navigator.clipboard.writeText(inviteLink.fullInviteLink);
-      this.makeToast('Invite Link copied to clipboard.');
+      makeToast('Invite Link copied to clipboard.');
     },
     async deleteInviteLink(inviteLink) {
       const model = {

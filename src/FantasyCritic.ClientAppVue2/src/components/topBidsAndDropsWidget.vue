@@ -19,7 +19,7 @@
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
           </template>
           <template #cell(totalStandardBidAmount)="data">
-            {{ data.item.totalStandardBidAmount | money(0) }}
+            {{ formatCurrency(data.item.totalStandardBidAmount, 0) }}
           </template>
         </b-table>
       </b-tab>
@@ -29,7 +29,7 @@
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
           </template>
           <template #cell(totalCounterPickBidAmount)="data">
-            {{ data.item.totalCounterPickBidAmount | money(0) }}
+            {{ formatCurrency(data.item.totalCounterPickBidAmount, 0) }}
           </template>
         </b-table>
       </b-tab>
@@ -47,6 +47,7 @@
 <script>
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { orderByDescending } from '@/globalFunctions';
+import { formatCurrency } from '@/utilities/formatters';
 
 export default {
   components: {
@@ -91,6 +92,9 @@ export default {
       let relevant = this.topBidsAndDrops.filter((x) => x.totalDropCount > 0);
       return orderByDescending(relevant, (x) => x.successfulDrops).slice(0, 25);
     }
+  },
+  methods: {
+    formatCurrency
   }
 };
 </script>

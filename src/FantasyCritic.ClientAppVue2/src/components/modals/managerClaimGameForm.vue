@@ -83,14 +83,14 @@
 import axios from 'axios';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   components: {
     PossibleMasterGamesTable,
     MasterGameSummary
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       searchGameName: null,
@@ -107,11 +107,13 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear', 'publishers']),
     formIsValid() {
       return (this.claimUnlistedGame || this.claimMasterGame) && this.claimPublisher;
     }
   },
   methods: {
+    ...mapActions(useLeagueStore, ['notifyAction']),
     searchGame() {
       this.clearDataExceptSearch();
       this.isBusy = true;

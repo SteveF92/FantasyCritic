@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
+import { useAuthStore } from '@/store/authStore';
 
 export const usePublisherStore = defineStore('publisher', {
   state: () => ({
@@ -16,7 +17,12 @@ export const usePublisherStore = defineStore('publisher', {
     includeRemovedInSorted: false
   }),
   getters: {
-    gameSlots: (state) => state.editableGameSlots
+    gameSlots: (state) => state.editableGameSlots,
+    userIsPublisher(state) {
+      const authStore = useAuthStore();
+      return !!authStore.userInfo && state.publisher?.userID === authStore.userInfo.userID;
+    },
+    hasFormerGames: (state) => (state.publisher?.formerGames.length ?? 0) > 0
   },
   actions: {
     async initializePublisherPage(publisherID) {

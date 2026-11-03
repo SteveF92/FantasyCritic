@@ -124,7 +124,7 @@
                   <span v-else>&lt;Pending&gt;</span>
                 </td>
                 <td>
-                  <span v-if="request.responseTimestamp">{{ request.responseTimestamp | dateTime }}</span>
+                  <span v-if="request.responseTimestamp">{{ formatDateTime(request.responseTimestamp) }}</span>
                   <span v-else>&lt;Pending&gt;</span>
                 </td>
                 <td class="select-cell">
@@ -143,14 +143,14 @@
 import axios from 'axios';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
-import GGMixin from '@/mixins/ggMixin.js';
+import { getGGLinkForGame, getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
+import { formatDateTime } from '@/utilities/formatters';
 
 export default {
   components: {
     MasterGamePopover,
     MasterGameDetails
   },
-  mixins: [GGMixin],
   data() {
     return {
       myRequests: [],
@@ -181,11 +181,11 @@ export default {
   computed: {
     coverArtLink() {
       if (!this.masterGame) return null;
-      return this.getGGCoverArtLinkForGame(this.masterGame, 150);
+      return getGGCoverArtLinkForGame(this.masterGame, 150);
     },
     gameGGLink() {
       if (!this.masterGame) return null;
-      return this.getGGLinkForGame(this.masterGame);
+      return getGGLinkForGame(this.masterGame);
     },
     gameOpenCriticLink() {
       if (!this.masterGame || !this.masterGame.openCriticID) return null;
@@ -206,6 +206,7 @@ export default {
     }
   },
   methods: {
+    formatDateTime,
     async fetchMyRequests() {
       const response = await axios.get('/api/game/MyMasterGameChangeRequests');
       this.myRequests = response.data;
@@ -263,7 +264,7 @@ export default {
         const response = await axios.get('/api/game/MasterGame/' + masterGameID);
         this.masterGame = response.data;
       } catch (error) {
-        this.error = error.response.data;
+        this.errorInfo = error.response.data;
       }
     }
   }

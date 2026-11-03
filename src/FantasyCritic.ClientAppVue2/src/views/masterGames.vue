@@ -65,6 +65,9 @@
 import axios from 'axios';
 
 import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
+import { mapState } from 'pinia';
+import { useAuthStore } from '@/store/authStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {
@@ -84,6 +87,8 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['isPlusUser', 'isAuth']),
+    ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'supportedYears']),
     selectableYears() {
       return this.supportedYears.map((x) => x.year);
     },

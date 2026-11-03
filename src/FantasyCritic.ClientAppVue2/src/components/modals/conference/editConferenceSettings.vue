@@ -26,10 +26,13 @@
 </template>
 <script>
 import axios from 'axios';
-import ConferenceMixin from '@/mixins/conferenceMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useConferenceStore } from '@/store/conferenceStore';
 
 export default {
-  mixins: [ConferenceMixin],
+  computed: {
+    ...mapState(useConferenceStore, ['conference'])
+  },
   data() {
     return {
       newConferenceName: '',
@@ -42,6 +45,7 @@ export default {
     this.customRulesConference = this.conference.customRulesConference;
   },
   methods: {
+    ...mapActions(useConferenceStore, ['notifyAction']),
     async changeConferenceSettings() {
       const model = {
         conferenceID: this.conference.conferenceID,

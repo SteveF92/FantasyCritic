@@ -28,16 +28,16 @@
       </div>
       <div class="trade-status-list">
         <h5>Action Log</h5>
-        <div>• Trade proposed by '{{ trade.proposerPublisherName }}' on {{ trade.proposedTimestamp | dateTimeAt }}.</div>
+        <div>• Trade proposed by '{{ trade.proposerPublisherName }}' on {{ formatDateTimeAt(trade.proposedTimestamp) }}.</div>
         <label>Message from {{ trade.proposerPublisherName }}:</label>
         <p class="component-row">{{ trade.message }}</p>
-        <div v-if="trade.acceptedTimestamp">• Trade accepted by '{{ trade.counterPartyPublisherName }}' on {{ trade.acceptedTimestamp | dateTimeAt }}.</div>
+        <div v-if="trade.acceptedTimestamp">• Trade accepted by '{{ trade.counterPartyPublisherName }}' on {{ formatDateTimeAt(trade.acceptedTimestamp) }}.</div>
 
-        <div v-if="trade.status === 'RejectedByCounterParty'">• Trade rejected by '{{ trade.counterPartyPublisherName }}' on {{ trade.completedTimestamp | dateTimeAt }}.</div>
-        <div v-if="trade.status === 'RejectedByManager'">• Trade rejected by league manager on {{ trade.completedTimestamp | dateTimeAt }}.</div>
-        <div v-if="trade.status === 'Rescinded'">• Trade rescinded by '{{ trade.proposerPublisherName }}' on {{ trade.completedTimestamp | dateTimeAt }}.</div>
-        <div v-if="trade.status === 'Executed'">• Trade executed by league manager on {{ trade.completedTimestamp | dateTimeAt }}.</div>
-        <div v-if="trade.status === 'Expired'">• Trade expired automatically on {{ trade.completedTimestamp | dateTimeAt }}.</div>
+        <div v-if="trade.status === 'RejectedByCounterParty'">• Trade rejected by '{{ trade.counterPartyPublisherName }}' on {{ formatDateTimeAt(trade.completedTimestamp) }}.</div>
+        <div v-if="trade.status === 'RejectedByManager'">• Trade rejected by league manager on {{ formatDateTimeAt(trade.completedTimestamp) }}.</div>
+        <div v-if="trade.status === 'Rescinded'">• Trade rescinded by '{{ trade.proposerPublisherName }}' on {{ formatDateTimeAt(trade.completedTimestamp) }}.</div>
+        <div v-if="trade.status === 'Executed'">• Trade executed by league manager on {{ formatDateTimeAt(trade.completedTimestamp) }}.</div>
+        <div v-if="trade.status === 'Expired'">• Trade expired automatically on {{ formatDateTimeAt(trade.completedTimestamp) }}.</div>
 
         <div v-if="tradeIsActive && trade.error">
           <div v-if="trade.error" class="alert alert-warning">
@@ -63,23 +63,23 @@
         <div v-else>
           <div v-if="trade.status === 'Proposed' && !isCounterParty" class="alert alert-info">
             Trade is waiting for approval from '{{ trade.counterPartyPublisherName }}'.
-            <div>Trade will expire on {{ trade.willExpireTimestamp | dateTimeAt }}.</div>
+            <div>Trade will expire on {{ formatDateTimeAt(trade.willExpireTimestamp) }}.</div>
             <b-button v-if="isProposer" variant="danger" @click="rescindTrade">Rescind Trade</b-button>
           </div>
           <div v-if="trade.status === 'Accepted' && isProposer" class="alert alert-info">
             Trade has been accepted by '{{ trade.counterPartyPublisherName }}', but you can still rescind it.
-            <div>Trade will expire on {{ trade.willExpireTimestamp | dateTimeAt }}.</div>
+            <div>Trade will expire on {{ formatDateTimeAt(trade.willExpireTimestamp) }}.</div>
             <b-button variant="danger" @click="rescindTrade">Rescind Trade</b-button>
           </div>
           <div v-if="trade.status === 'Proposed' && isCounterParty" class="alert alert-info">
             This trade is waiting for your approval.
-            <div>Trade will expire on {{ trade.willExpireTimestamp | dateTimeAt }}.</div>
+            <div>Trade will expire on {{ formatDateTimeAt(trade.willExpireTimestamp) }}.</div>
             <b-button variant="success" @click="acceptTrade">Accept</b-button>
             <b-button variant="danger" @click="rejectTrade">Reject</b-button>
           </div>
           <div v-if="trade.status === 'Accepted' && isCounterParty" class="alert alert-info">
             You accepted this trade, but you are free to change your mind.
-            <div>Trade will expire on {{ trade.willExpireTimestamp | dateTimeAt }}.</div>
+            <div>Trade will expire on {{ formatDateTimeAt(trade.willExpireTimestamp) }}.</div>
             <b-button variant="danger" @click="rejectTrade">Reject Trade</b-button>
           </div>
 
@@ -129,12 +129,12 @@
             <h4>Votes</h4>
             <b-table-lite :items="trade.votes" :fields="voteFields" bordered responsive striped>
               <template #cell(approved)="data">
-                {{ data.item.approved | approvedRejected }}
+                {{ formatApprovedRejected(data.item.approved) }}
               </template>
 
               <template #cell(comment)="data">
                 {{ data.item.comment }}
-                <template v-if="data.item.userID === userInfo.userID && !trade.completedTimestamp">
+                <template v-if="data.item.userID === userInfo?.userID && !trade.completedTimestamp">
                   <b-button variant="danger" size="sm" @click="deleteVote">Delete Vote</b-button>
                 </template>
               </template>
@@ -154,17 +154,19 @@
 <script>
 import axios from 'axios';
 
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState, mapActions } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import CollapseCard from '@/components/collapseCard.vue';
-import { except, startCase } from '@/globalFunctions';
+import { except, startCase, formatLongDateTime } from '@/globalFunctions';
+import { formatApprovedRejected, formatDateTimeAt } from '@/utilities/formatters';
+import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {
     MasterGamePopover,
     CollapseCard
   },
-  mixins: [LeagueMixin],
   props: {
     trade: { type: Object, required: true },
     defaultVisible: { type: Boolean }
@@ -181,6 +183,8 @@ export default {
     };
   },
   computed: {
+    ...mapState(useAuthStore, ['userInfo']),
+    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'league']),
     recievesVerbiage() {
       if (this.tradeIsActive) {
         return 'Receives';
@@ -205,11 +209,11 @@ export default {
       let involvedParties = [this.trade.proposerUserID, this.trade.counterPartyUserID];
       let allUserIDsInLeague = this.leagueYear.players.filter((x) => !!x.user).map((x) => x.user.userID);
       let nonInvolvedParties = except(allUserIDsInLeague, involvedParties);
-      return nonInvolvedParties.includes(this.userInfo.userID);
+      return nonInvolvedParties.includes(this.userInfo?.userID);
     },
     canVote() {
       let votedUserIDs = this.trade.votes.map((x) => x.userID);
-      let alreadyVoted = votedUserIDs.includes(this.userInfo.userID);
+      let alreadyVoted = votedUserIDs.includes(this.userInfo?.userID);
       return this.isInLeagueButNotInvolved && !alreadyVoted;
     },
     header() {
@@ -226,6 +230,10 @@ export default {
     }
   },
   methods: {
+    formatLongDateTime,
+    ...mapActions(useLeagueStore, ['notifyAction']),
+    formatApprovedRejected,
+    formatDateTimeAt,
     acceptTrade() {
       this.sendGenericTradeRequest('league/AcceptTrade', 'You accepted a trade.');
     },

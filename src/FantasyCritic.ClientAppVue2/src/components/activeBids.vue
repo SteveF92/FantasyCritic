@@ -34,13 +34,13 @@
 <script>
 import { DateTime } from 'luxon';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
-import LeagueMixin from '@/mixins/leagueMixin.js';
+import { mapState } from 'pinia';
+import { useLeagueStore } from '@/store/leagueStore';
 
 export default {
   components: {
     MasterGamePopover
   },
-  mixins: [LeagueMixin],
   data() {
     return {
       sortBy: 'maximumReleaseDate',
@@ -52,6 +52,7 @@ export default {
     };
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear']),
     counterPickText() {
       return {
         html: true,
