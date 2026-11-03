@@ -63,9 +63,6 @@
     },
     "vee-validate": {
       "vue": "$vue"
-    },
-    "vue-router": {
-      "vue": "$vue"
     }
   }
 }
