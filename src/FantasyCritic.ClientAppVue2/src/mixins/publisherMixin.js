@@ -13,15 +13,6 @@ const publisherMixin = {
     hasFormerGames() {
       return this.publisher && this.publisher.formerGames.length > 0;
     }
-  },
-  methods: {
-    async notifyAction(message) {
-      const publisherStore = usePublisherStore();
-      await publisherStore.refreshPublisher();
-      if (message) {
-        this.makeToast(message);
-      }
-    }
   }
 };
 
