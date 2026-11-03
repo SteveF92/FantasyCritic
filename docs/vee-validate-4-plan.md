@@ -108,7 +108,10 @@ server, rendering the real components in the app's context:
 A dev server that was already running before the install keeps serving its pre-bundled
 vee-validate 3 ("504 Outdated Optimize Dep"), so restart it once.
 
-### 2. Check every form in the running app
+### 2. Check every form in the running app — done
+
+Steve checked the forms on 2026-11-03, and they work. The master game creator first needed the
+`structuredClone(toRaw(...))` fix: `structuredClone` can't copy Vue 3's reactive proxies.
 
 Most of these pages need a login, so Steve clicks through them. For each form: type an invalid
 value, see the message, fix it, and check the submit button where there is one.
@@ -124,4 +127,4 @@ value, see the message, fix it, and check the submit button where there is one.
 - Master game request, creator, editor and change request: required fields and the submit
   buttons.
 
-Then update the vee-validate row in `docs/vue3-upgrade-plan.md`.
+Then update the vee-validate entries in `docs/vue3-upgrade-plan.md` (done).

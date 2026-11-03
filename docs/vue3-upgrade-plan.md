@@ -107,7 +107,7 @@ client come in. Counts are as of 2026-10-28.
 
 | Package | Where | Move |
 |---|---|---|
-| `vee-validate` 3 | 22 `ValidationProvider` in 13 files, 7 `ValidationObserver` | **Left for the flip** (decided 2026-11-01). The rules in use are `required`, `integer`, `min_value`, `max_value`, `email` and `min` (`max` is registered but unused), and the observers only read `invalid`. See the flip section. |
+| `vee-validate` 3 | 22 `ValidationProvider` in 13 files, 7 `ValidationObserver` | **Done at the flip** (2026-11-03): vee-validate 4 as a 1:1 swap. See [vee-validate-4-plan.md](vee-validate-4-plan.md). |
 
 ### Code
 
@@ -129,7 +129,6 @@ client come in. Counts are as of 2026-10-28.
     modals are already behind `v-if="userPublisher"`. Gating them behind `league.isManager`
     needs a check of which ones non-managers use (the active trades modal, for one).
   - `about.vue` still says the site uses Google Analytics.
-  - The vee-validate `max` rule is registered but unused.
   - `jsconfig.json` sits alongside `tsconfig.json`.
   - About 20 names are assigned with `this.x = ...` without being declared in `data`, so they
     aren't reactive. The static check from the mixin work lists them.
@@ -158,10 +157,8 @@ Follow the migration build guide. Packages that change together:
 - `vue-multiselect` 2 to 3 (2 components)
 - `@vue/test-utils` v1 to v2
 - bootstrap-vue **stays**, running on its compat support
-- `vee-validate` 3 is the one dependency whose behaviour on compat is unknown. It supports only
-  Vue 2, and `ValidationProvider` finds its input by walking Vue 2 vnodes for `v-model`, so
-  expect it to break. Check the 13 forms that use it first. If it breaks, the choice is
-  vee-validate 4 (`<Field>`/`<Form>` have nearly the same slot shape) or our own code.
+- `vee-validate` 3 to 4, as a 1:1 swap. The components are registered as `ValidationField` and
+  `ValidationForm`. See [vee-validate-4-plan.md](vee-validate-4-plan.md).
 
 Code that changes with it:
 
