@@ -21,18 +21,18 @@
 
       <div class="form-group">
         <label :for="`gamesToDraft-${index}`" class="control-label">Games to Draft</label>
-        <ValidationProvider v-slot="{ errors }" rules="required|min_value:1|max_value:50|integer">
+        <ValidationField v-slot="{ errors }" :model-value="draft.gamesToDraft" :name="`gamesToDraft-${index}`" rules="required|min_value:1|max_value:50|integer">
           <input :id="`gamesToDraft-${index}`" v-model.number="draft.gamesToDraft" type="text" class="form-control input" @input="emitUpdate" />
           <span class="text-danger">{{ errors[0] }}</span>
-        </ValidationProvider>
+        </ValidationField>
       </div>
 
       <div class="form-group">
         <label :for="`counterPicksToDraft-${index}`" class="control-label">Counter Picks to Draft</label>
-        <ValidationProvider v-slot="{ errors }" rules="required|min_value:0|max_value:50|integer">
+        <ValidationField v-slot="{ errors }" :model-value="draft.counterPicksToDraft" :name="`counterPicksToDraft-${index}`" rules="required|min_value:0|max_value:50|integer">
           <input :id="`counterPicksToDraft-${index}`" v-model.number="draft.counterPicksToDraft" type="text" class="form-control input" @input="emitUpdate" />
           <span class="text-danger">{{ errors[0] }}</span>
-        </ValidationProvider>
+        </ValidationField>
       </div>
 
       <div v-if="gameMode === 'Multi Draft' && draft.counterPicksToDraft > 0" class="form-group">

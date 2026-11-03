@@ -18,10 +18,10 @@
           <h2>Basic Settings</h2>
           <div class="form-group">
             <label for="leagueName" class="control-label">League Name</label>
-            <ValidationProvider v-slot="{ errors }" rules="required" name="League Name">
+            <ValidationField v-slot="{ errors }" :model-value="leagueName" name="League Name" rules="required">
               <input id="leagueName" v-model="leagueName" name="leagueName" type="text" class="form-control input" />
               <span class="text-danger">{{ errors[0] }}</span>
-            </ValidationProvider>
+            </ValidationField>
           </div>
           <hr />
           <div class="form-group">

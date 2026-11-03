@@ -16,10 +16,10 @@
           <h2>Basic Settings</h2>
           <div class="form-group">
             <label for="conferenceName" class="control-label">Conference Name</label>
-            <ValidationProvider v-slot="{ errors }" rules="required" name="Conference Name">
+            <ValidationField v-slot="{ errors }" :model-value="conferenceName" name="Conference Name" rules="required">
               <input id="conferenceName" v-model="conferenceName" name="conferenceName" type="text" class="form-control input" />
               <span class="text-danger">{{ errors[0] }}</span>
-            </ValidationProvider>
+            </ValidationField>
           </div>
 
           <div class="alert alert-info">
@@ -29,10 +29,10 @@
 
           <div class="form-group">
             <label for="primaryLeagueName" class="control-label">Primary League Name</label>
-            <ValidationProvider v-slot="{ errors }" rules="required" name="Primary League Name">
+            <ValidationField v-slot="{ errors }" :model-value="primaryLeagueName" name="Primary League Name" rules="required">
               <input id="primaryLeagueName" v-model="primaryLeagueName" name="primaryLeagueName" type="text" class="form-control input" />
               <span class="text-danger">{{ errors[0] }}</span>
-            </ValidationProvider>
+            </ValidationField>
           </div>
           <hr />
           <div class="form-group">

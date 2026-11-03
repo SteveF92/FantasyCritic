@@ -57,14 +57,14 @@
 
           <hr />
 
-          <ValidationObserver v-slot="{ invalid }">
+          <ValidationForm v-slot="{ meta }" as="">
             <form @submit.prevent="sendMasterGameChangeRequestRequest">
               <div class="form-group">
                 <label for="requestNote" class="control-label">What seems to be the issue?</label>
-                <ValidationProvider v-slot="{ errors }" rules="required">
+                <ValidationField v-slot="{ errors }" :model-value="requestNote" name="Request Note" rules="required">
                   <input id="requestNote" v-model="requestNote" name="Request Note" type="text" class="form-control input" />
                   <span class="text-danger">{{ errors[0] }}</span>
-                </ValidationProvider>
+                </ValidationField>
               </div>
 
               <div class="form-group">
@@ -84,11 +84,11 @@
 
               <div class="form-group">
                 <div class="right-button">
-                  <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || isBusy || invalidOpenCriticRequest" />
+                  <input type="submit" class="btn btn-primary" value="Submit" :disabled="!meta.valid || isBusy || invalidOpenCriticRequest" />
                 </div>
               </div>
             </form>
-          </ValidationObserver>
+          </ValidationForm>
         </div>
       </div>
       <div v-if="myRequests.length !== 0">

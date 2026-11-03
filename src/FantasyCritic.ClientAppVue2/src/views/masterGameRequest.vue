@@ -13,15 +13,15 @@
         </strong>
       </p>
 
-      <ValidationObserver v-slot="{ invalid }">
+      <ValidationForm v-slot="{ meta }" as="">
         <hr />
         <form @submit.prevent="sendMasterGameRequestRequest">
           <div class="form-group">
             <label for="gameName" class="control-label">Game Name</label>
-            <ValidationProvider v-slot="{ errors }" rules="required">
+            <ValidationField v-slot="{ errors }" :model-value="gameName" name="Game Name" rules="required">
               <input id="gameName" v-model="gameName" name="Game Name" type="text" class="form-control input" />
               <span class="text-danger">{{ errors[0] }}</span>
-            </ValidationProvider>
+            </ValidationField>
           </div>
 
           <div class="form-group">
@@ -68,10 +68,10 @@
               drafted by anyone doesn't do much for the site, other than requiring effort to make sure the game's info is up to date (for example, release date changes). Please don't request a game
               "just for the sake of having it on the site".
             </div>
-            <ValidationProvider v-slot="{ errors }" rules="required|min:30">
+            <ValidationField v-slot="{ errors }" :model-value="requestNote" name="Request Note" rules="required|min:30">
               <input id="requestNote" v-model="requestNote" name="Request Note" class="form-control input" />
               <span class="text-danger">{{ errors[0] }}</span>
-            </ValidationProvider>
+            </ValidationField>
           </div>
 
           <div v-if="showUnannouncedWarning" class="alert alert-warning">
@@ -91,11 +91,11 @@
 
           <div class="form-group">
             <div class="right-button">
-              <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid || !validRequest || isBusy" />
+              <input type="submit" class="btn btn-primary" value="Submit" :disabled="!meta.valid || !validRequest || isBusy" />
             </div>
           </div>
         </form>
-      </ValidationObserver>
+      </ValidationForm>
     </div>
     <div v-if="myRequests.length !== 0">
       <div class="row">

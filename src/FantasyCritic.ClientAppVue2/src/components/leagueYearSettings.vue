@@ -17,10 +17,10 @@
         <label for="standardGames" class="control-label">Total Number of Games</label>
         <p>This is the total number of games that each player will have on their roster.</p>
 
-        <ValidationProvider v-slot="{ errors }" rules="required|min_value:1|max_value:50|integer">
+        <ValidationField v-slot="{ errors }" :model-value="internalValue.standardGames" name="Total Number of Games" rules="required|min_value:1|max_value:50|integer">
           <input id="standardGames" v-model="internalValue.standardGames" name="Total Number of Games" type="text" class="form-control input" @input="autoUpdateSpecialSlotOptions()" />
           <span class="text-danger">{{ errors[0] }}</span>
-        </ValidationProvider>
+        </ValidationField>
       </div>
 
       <div class="form-group">
@@ -30,10 +30,10 @@
           <a href="/faq#scoring" target="_blank">click here.</a>
         </p>
 
-        <ValidationProvider v-slot="{ errors }" rules="required|max_value:50|integer">
+        <ValidationField v-slot="{ errors }" :model-value="internalValue.counterPicks" name="Number of Counter picks" rules="required|max_value:50|integer">
           <input id="counterPicks" v-model="internalValue.counterPicks" name="Number of Counter picks" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
-        </ValidationProvider>
+        </ValidationField>
       </div>
 
       <slot name="draft-settings"></slot>
@@ -89,10 +89,10 @@
 
         <div class="form-group">
           <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
-          <ValidationProvider v-slot="{ errors }" rules="required|min_value:0|max_value:100|integer">
+          <ValidationField v-slot="{ errors }" :model-value="internalValue.minimumBidAmount" name="Minimum Bid Amount" rules="required|min_value:0|max_value:100|integer">
             <input id="minimumBidAmount" v-model="internalValue.minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" :disabled="!internalValue.enableBids" />
             <span class="text-danger">{{ errors[0] }}</span>
-          </ValidationProvider>
+          </ValidationField>
           <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
         </div>
 
@@ -138,10 +138,15 @@
             <tr>
               <th scope="row">Will Release</th>
               <td>
-                <ValidationProvider v-if="!internalValue.unlimitedWillReleaseDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
+                <ValidationField
+                  v-if="!internalValue.unlimitedWillReleaseDroppableGames"
+                  v-slot="{ errors }"
+                  :model-value="internalValue.willReleaseDroppableGames"
+                  name="Will Release Droppable Games"
+                  rules="required|max_value:100|integer">
                   <input id="willReleaseDroppableGames" v-model="internalValue.willReleaseDroppableGames" name="Will Release Droppable Games" type="text" class="form-control input drop-number" />
                   <span class="text-danger">{{ errors[0] }}</span>
-                </ValidationProvider>
+                </ValidationField>
               </td>
               <td>
                 <b-form-checkbox v-model="internalValue.unlimitedWillReleaseDroppableGames" class="unlimited-checkbox" @change="$forceUpdate()"></b-form-checkbox>
@@ -150,7 +155,12 @@
             <tr>
               <th scope="row">Will Not Release</th>
               <td>
-                <ValidationProvider v-if="!internalValue.unlimitedWillNotReleaseDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
+                <ValidationField
+                  v-if="!internalValue.unlimitedWillNotReleaseDroppableGames"
+                  v-slot="{ errors }"
+                  :model-value="internalValue.willNotReleaseDroppableGames"
+                  name="Will Not Release Droppable Games"
+                  rules="required|max_value:100|integer">
                   <input
                     id="willNotReleaseDroppableGames"
                     v-model="internalValue.willNotReleaseDroppableGames"
@@ -158,7 +168,7 @@
                     type="text"
                     class="form-control input drop-number" />
                   <span class="text-danger">{{ errors[0] }}</span>
-                </ValidationProvider>
+                </ValidationField>
               </td>
               <td>
                 <b-form-checkbox v-model="internalValue.unlimitedWillNotReleaseDroppableGames" class="unlimited-checkbox" @change="$forceUpdate()"></b-form-checkbox>
@@ -167,7 +177,12 @@
             <tr>
               <th scope="row">Any Unreleased</th>
               <td>
-                <ValidationProvider v-if="!internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames" v-slot="{ errors }" rules="required|max_value:100|integer">
+                <ValidationField
+                  v-if="!internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames"
+                  v-slot="{ errors }"
+                  :model-value="internalValue.unrestrictedReleaseStatusDroppableGames"
+                  name="Unrestricted Droppable Games"
+                  rules="required|max_value:100|integer">
                   <input
                     id="unrestrictedReleaseStatusDroppableGames"
                     v-model="internalValue.unrestrictedReleaseStatusDroppableGames"
@@ -175,7 +190,7 @@
                     type="text"
                     class="form-control input drop-number" />
                   <span class="text-danger">{{ errors[0] }}</span>
-                </ValidationProvider>
+                </ValidationField>
               </td>
               <td>
                 <b-form-checkbox v-model="internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames" class="unlimited-checkbox" @change="$forceUpdate()"></b-form-checkbox>

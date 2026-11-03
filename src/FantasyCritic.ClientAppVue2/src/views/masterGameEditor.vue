@@ -33,14 +33,14 @@
 
       <div class="row">
         <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
-          <ValidationObserver v-slot="{ invalid }">
+          <ValidationForm v-slot="{ meta }" as="">
             <form @submit.prevent="sendEditMasterGameRequest">
               <div class="form-group">
                 <label for="gameName" class="control-label">Game Name</label>
-                <ValidationProvider v-slot="{ errors }" rules="required">
+                <ValidationField v-slot="{ errors }" :model-value="masterGame.gameName" name="Game Name" rules="required">
                   <input id="gameName" v-model="masterGame.gameName" name="Game Name" type="text" class="form-control input" />
                   <span class="text-danger">{{ errors[0] }}</span>
-                </ValidationProvider>
+                </ValidationField>
               </div>
 
               <div class="form-group">
@@ -134,13 +134,13 @@
               </div>
 
               <div class="submit-button">
-                <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
+                <input type="submit" class="btn btn-primary" value="Submit" :disabled="!meta.valid" />
                 <b-form-checkbox v-model="minorEdit">
                   <span class="checkbox-label">Minor Edit (Will not push to Discord)</span>
                 </b-form-checkbox>
               </div>
             </form>
-          </ValidationObserver>
+          </ValidationForm>
         </div>
       </div>
     </div>

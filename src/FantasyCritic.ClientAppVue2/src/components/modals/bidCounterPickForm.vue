@@ -17,31 +17,29 @@
 
     <form method="post" class="form-horizontal" role="form" @submit.prevent>
       <div class="search-results">
-        <ValidationObserver>
-          <h3 class="text-black">Available Counter Picks</h3>
-          <b-form-select v-model="bidCounterPick">
-            <option v-for="publisherGame in availableCounterPicks" :key="publisherGame.publisherGameID" :value="publisherGame">
-              {{ publisherGame.gameName }}
-            </option>
-          </b-form-select>
+        <h3 class="text-black">Available Counter Picks</h3>
+        <b-form-select v-model="bidCounterPick">
+          <option v-for="publisherGame in availableCounterPicks" :key="publisherGame.publisherGameID" :value="publisherGame">
+            {{ publisherGame.gameName }}
+          </option>
+        </b-form-select>
 
-          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget, 0) }})</label>
+        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget, 0) }})</label>
 
-          <ValidationProvider v-slot="{ errors }" rules="required|integer">
-            <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
-            <span class="text-danger">{{ errors[0] }}</span>
-          </ValidationProvider>
+        <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" rules="required|integer">
+          <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
+          <span class="text-danger">{{ errors[0] }}</span>
+        </ValidationField>
 
-          <div v-show="counterPickInvalid" class="alert alert-warning" role="alert">Unfortunately, you cannot make a counter pick bid for a game that is not linked to a master game.</div>
+        <div v-show="counterPickInvalid" class="alert alert-warning" role="alert">Unfortunately, you cannot make a counter pick bid for a game that is not linked to a master game.</div>
 
-          <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="!canPlaceCounterPickBid" @click="bidGame">{{ bidButtonText }}</b-button>
-          <div v-if="bidResult && !bidResult.success" class="alert alert-danger bid-error">
-            <h3 class="alert-heading">Error!</h3>
-            <ul>
-              <li v-for="error in bidResult.errors" :key="error">{{ error }}</li>
-            </ul>
-          </div>
-        </ValidationObserver>
+        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="!canPlaceCounterPickBid" @click="bidGame">{{ bidButtonText }}</b-button>
+        <div v-if="bidResult && !bidResult.success" class="alert alert-danger bid-error">
+          <h3 class="alert-heading">Error!</h3>
+          <ul>
+            <li v-for="error in bidResult.errors" :key="error">{{ error }}</li>
+          </ul>
+        </div>
       </div>
     </form>
   </b-modal>

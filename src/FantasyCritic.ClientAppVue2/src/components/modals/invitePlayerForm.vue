@@ -1,5 +1,5 @@
 <template>
-  <ValidationObserver v-slot="{ invalid }">
+  <ValidationForm v-slot="{ meta }" as="">
     <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" @hidden="clearData" @show="fetchInviteLinks">
       <div v-show="errorInfo" class="alert alert-danger">
         {{ errorInfo }}
@@ -24,10 +24,10 @@
         <div class="form-horizontal">
           <div class="form-group email-form">
             <label for="inviteEmail" class="control-label">Email Address</label>
-            <ValidationProvider v-slot="{ errors }" rules="email" name="Email Address">
+            <ValidationField v-slot="{ errors }" :model-value="inviteEmail" name="Email Address" rules="email">
               <input id="inviteEmail" v-model="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
               <span class="text-danger">{{ errors[0] }}</span>
-            </ValidationProvider>
+            </ValidationField>
           </div>
         </div>
 
@@ -39,18 +39,18 @@
           </div>
           <div class="form-group">
             <label for="inviteDisplayNumber" class="control-label">Display Number (Found in the username dropdown)</label>
-            <ValidationProvider v-slot="{ errors }" rules="min_value:1000|max_value:9999" name="Display Number">
+            <ValidationField v-slot="{ errors }" :model-value="inviteDisplayNumber" name="Display Number" rules="min_value:1000|max_value:9999">
               <input id="inviteDisplayNumber" v-model="inviteDisplayNumber" name="inviteDisplayNumber" type="number" class="form-control input" />
               <span class="text-danger">{{ errors[0] }}</span>
-            </ValidationProvider>
+            </ValidationField>
           </div>
         </div>
       </div>
       <template #modal-footer>
-        <input type="submit" class="btn btn-primary" value="Send Invite" :disabled="invalid || !valuesEntered" @click="invitePlayer" />
+        <input type="submit" class="btn btn-primary" value="Send Invite" :disabled="!meta.valid || !valuesEntered" @click="invitePlayer" />
       </template>
     </b-modal>
-  </ValidationObserver>
+  </ValidationForm>
 </template>
 <script>
 import axios from 'axios';

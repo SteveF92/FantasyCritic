@@ -60,10 +60,10 @@
       <div class="form-group">
         <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget, 0) }})</label>
 
-        <ValidationProvider v-slot="{ errors }" rules="required|integer">
+        <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" rules="required|integer">
           <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
-        </ValidationProvider>
+        </ValidationField>
       </div>
       <div v-if="!bidBeingEdited.counterPick" class="form-group">
         <label for="conditionalDrop" class="control-label">Conditional Drop</label>

@@ -74,62 +74,58 @@
     </form>
 
     <div v-if="bidMasterGame">
-      <ValidationObserver>
-        <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
-        <masterGameSummary :master-game="bidMasterGame"></masterGameSummary>
-        <hr />
-        <div class="form-group">
-          <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget) }})</label>
+      <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
+      <masterGameSummary :master-game="bidMasterGame"></masterGameSummary>
+      <hr />
+      <div class="form-group">
+        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget) }})</label>
 
-          <ValidationProvider v-slot="{ errors }" rules="required|integer">
-            <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
-            <span class="text-danger">{{ errors[0] }}</span>
-          </ValidationProvider>
+        <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" rules="required|integer">
+          <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
+          <span class="text-danger">{{ errors[0] }}</span>
+        </ValidationField>
+      </div>
+      <div class="form-group">
+        <label for="conditionalDrop" class="control-label">
+          Conditional Drop (Optional)
+          <font-awesome-icon v-b-popover.hover.focus="'You can use this to drop a game only if your bid succeeds.'" icon="info-circle" />
+        </label>
+        <b-form-select v-model="conditionalDrop">
+          <template #first>
+            <option :value="null">None</option>
+          </template>
+          <option v-for="publisherGame in droppableGames" :key="publisherGame.publisherGameID" :value="publisherGame">
+            {{ publisherGame.gameName }}
+          </option>
+        </b-form-select>
+      </div>
+
+      <b-alert :show="!bidMasterGame.willRelease && bidMasterGame.tags.filter((x) => x.includes('EarlyAccess').length > 0) && leagueYear.settings.releaseSystem === 'OnlyNeedsScore'" variant="warning">
+        Warning! This game is not planned for full release this year, but your league does allow games that are in early access and get an OpenCritic score to count for points. The system will let you
+        bid for it (provided there are no other reasons it could be banned), but do so at your own risk, as early access games don't often get reviewed.
+      </b-alert>
+
+      <div v-if="leagueYear.settings.hasSpecialSlots" class="form-check">
+        <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
+        <label class="form-check-label">
+          Allow bid to succeed even if there are no slots this game is eligible in.
+          <font-awesome-icon v-b-popover.hover.focus="allowIneligibleText" icon="info-circle" />
+        </label>
+      </div>
+
+      <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="!canPlaceBid" @click="bidGame">Place Bid</b-button>
+      <div v-if="bidResult && !bidResult.success" class="alert bid-error" :class="{ 'alert-danger': !bidResult.showAsWarning, 'alert-warning': bidResult.showAsWarning }">
+        <h3 v-if="bidResult.showAsWarning" class="alert-heading">Warning!</h3>
+        <h3 v-else class="alert-heading">Error!</h3>
+        <ul>
+          <li v-for="error in bidResult.errors" :key="error">{{ error }}</li>
+        </ul>
+
+        <div v-if="bidResult.noEligibleSpaceError">
+          <div class="text-white">If you do not move, drop, or trade a game, this game will end up in an ineligible slot.</div>
+          <div class="text-white">Check the box above if you are sure you want to make this bid.</div>
         </div>
-        <div class="form-group">
-          <label for="conditionalDrop" class="control-label">
-            Conditional Drop (Optional)
-            <font-awesome-icon v-b-popover.hover.focus="'You can use this to drop a game only if your bid succeeds.'" icon="info-circle" />
-          </label>
-          <b-form-select v-model="conditionalDrop">
-            <template #first>
-              <option :value="null">None</option>
-            </template>
-            <option v-for="publisherGame in droppableGames" :key="publisherGame.publisherGameID" :value="publisherGame">
-              {{ publisherGame.gameName }}
-            </option>
-          </b-form-select>
-        </div>
-
-        <b-alert
-          :show="!bidMasterGame.willRelease && bidMasterGame.tags.filter((x) => x.includes('EarlyAccess').length > 0) && leagueYear.settings.releaseSystem === 'OnlyNeedsScore'"
-          variant="warning">
-          Warning! This game is not planned for full release this year, but your league does allow games that are in early access and get an OpenCritic score to count for points. The system will let
-          you bid for it (provided there are no other reasons it could be banned), but do so at your own risk, as early access games don't often get reviewed.
-        </b-alert>
-
-        <div v-if="leagueYear.settings.hasSpecialSlots" class="form-check">
-          <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
-          <label class="form-check-label">
-            Allow bid to succeed even if there are no slots this game is eligible in.
-            <font-awesome-icon v-b-popover.hover.focus="allowIneligibleText" icon="info-circle" />
-          </label>
-        </div>
-
-        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="!canPlaceBid" @click="bidGame">Place Bid</b-button>
-        <div v-if="bidResult && !bidResult.success" class="alert bid-error" :class="{ 'alert-danger': !bidResult.showAsWarning, 'alert-warning': bidResult.showAsWarning }">
-          <h3 v-if="bidResult.showAsWarning" class="alert-heading">Warning!</h3>
-          <h3 v-else class="alert-heading">Error!</h3>
-          <ul>
-            <li v-for="error in bidResult.errors" :key="error">{{ error }}</li>
-          </ul>
-
-          <div v-if="bidResult.noEligibleSpaceError">
-            <div class="text-white">If you do not move, drop, or trade a game, this game will end up in an ineligible slot.</div>
-            <div class="text-white">Check the box above if you are sure you want to make this bid.</div>
-          </div>
-        </div>
-      </ValidationObserver>
+      </div>
     </div>
   </b-modal>
 </template>

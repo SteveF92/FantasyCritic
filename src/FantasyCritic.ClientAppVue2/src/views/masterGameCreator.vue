@@ -62,14 +62,14 @@
     </div>
     <div class="row">
       <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
-        <ValidationObserver v-slot="{ invalid }">
+        <ValidationForm v-slot="{ meta }" as="">
           <form @submit.prevent="createMasterGame">
             <div class="form-group">
               <label for="gameName" class="control-label">Game Name</label>
-              <ValidationProvider v-slot="{ errors }" rules="required">
+              <ValidationField v-slot="{ errors }" :model-value="gameName" name="Game Name" rules="required">
                 <input id="gameName" v-model="gameName" name="Game Name" type="text" class="form-control input" />
                 <span class="text-danger">{{ errors[0] }}</span>
-              </ValidationProvider>
+              </ValidationField>
             </div>
 
             <div class="form-group">
@@ -122,11 +122,11 @@
 
             <div class="form-group">
               <div class="col-md-offset-2 col-md-4">
-                <input type="submit" class="btn btn-primary" value="Submit" :disabled="invalid" />
+                <input type="submit" class="btn btn-primary" value="Submit" :disabled="!meta.valid" />
               </div>
             </div>
           </form>
-        </ValidationObserver>
+        </ValidationForm>
       </div>
     </div>
   </div>
