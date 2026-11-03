@@ -42,7 +42,7 @@ export default {
       };
     },
     popoverID() {
-      return `mg-badge-popover-${this._uid}`;
+      return `mg-badge-popover-${this.$.uid}`;
     }
   }
 };

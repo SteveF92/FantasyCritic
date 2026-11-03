@@ -24,7 +24,7 @@ export default {
   },
   computed: {
     popoverID() {
-      return `mg-popover-${this._uid}`;
+      return `mg-popover-${this.$.uid}`;
     }
   }
 };

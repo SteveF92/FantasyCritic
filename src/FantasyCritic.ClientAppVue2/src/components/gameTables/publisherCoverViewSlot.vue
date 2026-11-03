@@ -93,7 +93,7 @@ export default {
       return getGGCoverArtLinkForGame(this.masterGame, width);
     },
     popoverID() {
-      return `mg-popover-${this._uid}`;
+      return `mg-popover-${this.$.uid}`;
     },
     slotLabel() {
       if (this.gameSlot.counterPick) {
