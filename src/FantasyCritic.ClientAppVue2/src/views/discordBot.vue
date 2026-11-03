@@ -32,19 +32,19 @@
             <li>Click the link above to invite the bot to your Discord server. It requires all permissions that it requests.</li>
             <li>
               Set up the bot in your Discord server's preferred channel(s). You can do this in any of the following ways (see
-              <router-link :to="{ hash: '#how-to-use' }" @click.native="showCollapse('how-to-use')">How To Use The Bot</router-link>
+              <router-link :to="{ hash: '#how-to-use' }" @click="showCollapse('how-to-use')">How To Use The Bot</router-link>
               below for more info):
               <ul>
                 <li>
                   For
-                  <router-link :to="{ hash: '#set-league' }" @click.native="showCollapse('set-league')">League Updates</router-link>
+                  <router-link :to="{ hash: '#set-league' }" @click="showCollapse('set-league')">League Updates</router-link>
                   use the
                   <code>/set-league</code>
                   command in the appropriate channel(s).
                 </li>
                 <li>
                   For
-                  <router-link :to="{ hash: '#game-news-settings' }" @click.native="showCollapse('game-news-settings')">Game News</router-link>
+                  <router-link :to="{ hash: '#game-news-settings' }" @click="showCollapse('game-news-settings')">Game News</router-link>
                   use the
                   <code>/game-news-settings</code>
                   command in the appropriate channel(s).
