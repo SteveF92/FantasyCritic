@@ -16,8 +16,8 @@
       </div>
       <hr />
       <div class="master-games-nav">
-        <template v-for="(item, index) in navItems">
-          <router-link :key="item.name" :to="{ name: item.name }" class="master-games-nav-link text-primary">{{ item.label }}</router-link>
+        <template v-for="(item, index) in navItems" :key="item.name">
+          <router-link :to="{ name: item.name }" class="master-games-nav-link text-primary">{{ item.label }}</router-link>
           <span v-if="index < navItems.length - 1" :key="item.name + '-sep'" class="master-games-nav-sep">|</span>
         </template>
       </div>

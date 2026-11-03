@@ -3,8 +3,8 @@
     <h1>Advanced Game Stats</h1>
 
     <div class="advanced-stats-nav">
-      <template v-for="(section, index) in sections">
-        <router-link :key="section.hash" :to="{ hash: '#' + section.hash }" class="advanced-stats-nav-link text-primary" :class="{ 'active-section': activeSection === section.hash }">
+      <template v-for="(section, index) in sections" :key="section.hash">
+        <router-link :to="{ hash: '#' + section.hash }" class="advanced-stats-nav-link text-primary" :class="{ 'active-section': activeSection === section.hash }">
           {{ section.label }}
         </router-link>
         <span v-if="index < sections.length - 1" :key="section.hash + '-sep'" class="advanced-stats-nav-sep">|</span>
