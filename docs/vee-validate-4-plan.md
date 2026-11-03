@@ -58,9 +58,13 @@ Checked in the 4.15.1 source:
 - **Register the components globally as `ValidationField` and `ValidationForm`.** That keeps the
   global registration v3 had. It also avoids `Form` and `Field`, which collide with HTML's
   `<form>` under `vue/no-reserved-component-names`.
-- **Register them with `compatConfig: { MODE: 3 }`.** vee-validate 4 has no compat opt-out of its
-  own (vue-multiselect 3 does), so `@vue/compat` would rewrite `:model-value` into Vue 2's
-  `value` prop and break every field. The opt-out goes when compat does.
+- **No compat opt-out is needed.** vee-validate 4 has none of its own (vue-multiselect 3 does).
+  But `@vue/compat` only rewrites a prop literally named `modelValue` into Vue 2's `value`, and
+  the template compiler passes `:model-value` through in kebab case. Checked in the running app
+  on compat, with and without `compatConfig: { MODE: 3 }`: both behave the same. Writing
+  `v-model` or `:modelValue` on a `ValidationField` would get rewritten, so don't.
+- **The setup lives in `src/validation.js`**, next to `icons.js`. It defines the rules and
+  messages and exports the two components, so `main.js` and the tests share it.
 - **Keep every field's v3 message name**, passed as `name`. That includes the ones v3 got from an
   input attribute: `bidAmount` on the bid forms, and `gamesToDraft-0` / `counterPicksToDraft-0`
   (from the input `id`) in `DraftCreationSettings`. They read badly, but changing them isn't 1:1.
@@ -75,15 +79,15 @@ Checked in the 4.15.1 source:
 One commit per step, stopping for review after each, per CLAUDE.md. The plan itself gets
 committed first.
 
-### 1. Swap the packages and convert every form
+### 1. Swap the packages and convert every form — done
 
 This can't be split. Once vee-validate 3 is uninstalled, any form not yet converted stops
 rendering its fields.
 
 - `package.json`: remove `vee-validate` 3 and its `overrides` entry. Add `vee-validate`,
   `@vee-validate/rules` and `@vee-validate/i18n`, all 4.15.1.
-- `main.js`: `defineRule` the six rules, `configure` the English messages, and register
-  `ValidationField` and `ValidationForm` with the compat opt-out.
+- `src/validation.js`: `defineRule` the six rules and `configure` the English messages.
+  `main.js` registers `ValidationField` and `ValidationForm` from it.
 - The 13 files: each `ValidationProvider` becomes a `ValidationField` with `:model-value` and
   `name`. Each `ValidationObserver` with a slot becomes `<ValidationForm v-slot="{ meta }" as="">`,
   with `invalid` replaced by `!meta.valid`.
@@ -93,6 +97,16 @@ rendering its fields.
   - `meta.valid` follows the fields
   - an empty optional `email` field is valid
 - Check `npm test`, lint, format and a production build.
+
+Done: tests (38), lint, format and the production build pass. These were checked on a compat dev
+server, rendering the real components in the app's context:
+- The Invite Player modal: the field errors appear, and Send Invite disables for a bad email or
+  display number and enables once they're fixed. The form state does get through the
+  `b-modal` portal.
+- The `gamesToDraft-0` message in `DraftCreationSettings`.
+
+A dev server that was already running before the install keeps serving its pre-bundled
+vee-validate 3 ("504 Outdated Optimize Dep"), so restart it once.
 
 ### 2. Check every form in the running app
 
