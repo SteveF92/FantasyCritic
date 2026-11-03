@@ -34,7 +34,7 @@ export default {
   created() {
     this.tick();
   },
-  beforeDestroy() {
+  beforeUnmount() {
     clearTimeout(this.timer);
   },
   methods: {
