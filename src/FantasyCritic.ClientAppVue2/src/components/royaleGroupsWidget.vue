@@ -122,15 +122,15 @@ export default {
   max-height: 420px;
 }
 
-div >>> .hidden_header {
+div :deep(.hidden_header) {
   display: none;
 }
 
-div >>> .tab-header {
+div :deep(.tab-header) {
   margin-bottom: 5px;
 }
 
-div >>> .tab-header a {
+div :deep(.tab-header a) {
   border-radius: 0px;
   font-weight: bolder;
   color: white;

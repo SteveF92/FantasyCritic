@@ -234,11 +234,11 @@ export default {
   margin-top: 20px;
 }
 
-div >>> .tab-header {
+div :deep(.tab-header) {
   margin-bottom: 5px;
 }
 
-div >>> .tab-header a {
+div :deep(.tab-header a) {
   border-radius: 0px;
   font-weight: bolder;
   color: white;
