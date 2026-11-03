@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia';
 import axios from 'axios';
-import { makeToast } from '@/utilities/toast';
 
 export const useConferenceStore = defineStore('conference', {
   state: () => ({ hasError: false, conferenceYear: null, conferenceInviteCode: false }),
@@ -22,12 +21,6 @@ export const useConferenceStore = defineStore('conference', {
         year: this.conferenceYear.year
       };
       await fetchConferenceYear(this, conferencePageParams);
-    },
-    async notifyAction(message) {
-      await this.refreshConferenceYear();
-      if (message) {
-        makeToast(message);
-      }
     }
   }
 });

@@ -1,8 +1,8 @@
 <template>
   <span class="game-name-column">
     <span class="game-name-side">
-      <b-button v-show="moveMode && game && !holdingGame && !gameSlot.counterPick" variant="danger" class="move-button" @click="holdGame">Move</b-button>
-      <b-button v-show="holdingGame && !gameSlot.counterPick" variant="success" class="move-button" @click="placeGame">Here</b-button>
+      <b-button v-show="moveMode && game && !heldSlot && !gameSlot.counterPick" variant="danger" class="move-button" @click="holdGame">Move</b-button>
+      <b-button v-show="heldSlot && !gameSlot.counterPick" variant="success" class="move-button" @click="placeGame">Here</b-button>
       <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick || gameSlot.dropped" :game-slot="gameSlot"></slotTypeBadge>
       <span v-if="game" class="master-game-popover">
         <masterGamePopover v-if="game.linked" :master-game="game.masterGame" :show-as-warning="gameSlot.showWarningRow"></masterGamePopover>
@@ -71,9 +71,9 @@ export default {
       const publisherStore = usePublisherStore();
       return publisherStore.moveMode;
     },
-    holdingGame() {
+    heldSlot() {
       const publisherStore = usePublisherStore();
-      return publisherStore.holdingGame;
+      return publisherStore.heldSlot;
     },
     counterPickSourcePublisher() {
       if (!this.gameSlot.counterPick || !this.game?.masterGame || !this.leagueYear?.publishers) {
