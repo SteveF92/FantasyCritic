@@ -335,13 +335,14 @@ const COUNTER_PICK_HANDLING_OPTIONS = [
 const DEFAULT_COUNTER_PICK_HANDLING = 'SemiPublicBiddingSecretCounterPicks';
 
 export default {
+  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     DateInput,
     LeagueTagSelector,
     SpecialGameSlotSelector
   },
   props: {
-    value: { type: Object, required: true },
+    modelValue: { type: Object, required: true },
     year: { type: Number, required: true },
     editMode: { type: Boolean },
     currentNumberOfPlayers: { type: Number, default: null },
@@ -352,6 +353,7 @@ export default {
     gameMode: { type: String, default: 'Standard' },
     experienceLevel: { type: String, default: 'Standard' }
   },
+  emits: ['update:modelValue'],
   data() {
     return {
       internalValue: null,
@@ -426,7 +428,7 @@ export default {
     }
   },
   created() {
-    this.internalValue = structuredClone(this.value);
+    this.internalValue = structuredClone(this.modelValue);
     if (this.internalValue.pickupSystem !== SECRET_BIDDING) {
       this.lastCounterPickHandling = this.internalValue.pickupSystem;
     }
@@ -436,7 +438,7 @@ export default {
   },
   methods: {
     updateInternalValue() {
-      this.$emit('input', this.internalValue);
+      this.$emit('update:modelValue', this.internalValue);
     },
     fullAutoUpdate() {
       this.autoUpdateSpecialSlotOptions();

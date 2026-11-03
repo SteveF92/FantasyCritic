@@ -1,15 +1,17 @@
 <template>
-  <input type="date" class="form-control" :value="value" @input="update" />
+  <input type="date" class="form-control" :value="modelValue" @input="update" />
 </template>
 
 <script>
 export default {
+  compatConfig: { COMPONENT_V_MODEL: false },
   props: {
-    value: { type: String, default: null }
+    modelValue: { type: String, default: null }
   },
+  emits: ['update:modelValue'],
   methods: {
     update(event) {
-      this.$emit('input', event.target.value || null);
+      this.$emit('update:modelValue', event.target.value || null);
     }
   }
 };

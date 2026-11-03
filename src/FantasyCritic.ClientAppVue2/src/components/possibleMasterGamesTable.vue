@@ -45,15 +45,17 @@ import { useLeagueStore } from '@/store/leagueStore';
 import { formatScore } from '@/utilities/formatters';
 
 export default {
+  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     StatusBadge,
     MasterGamePopover
   },
   props: {
-    value: { type: Object, default: null },
+    modelValue: { type: Object, default: null },
     possibleGames: { type: Array, required: true },
     bidMode: { type: Boolean, required: false, default: false }
   },
+  emits: ['update:modelValue'],
   data() {
     return {
       selectedMasterGame: null,
@@ -97,7 +99,7 @@ export default {
     formatScore,
     selectGame(masterGame) {
       this.selectedMasterGame = masterGame;
-      this.$emit('input', this.selectedMasterGame);
+      this.$emit('update:modelValue', this.selectedMasterGame);
     },
     /**
      * Determines the bid eligibility status for a given master game based on its release date.

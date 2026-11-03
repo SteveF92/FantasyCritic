@@ -39,13 +39,15 @@ import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { formatScore } from '@/utilities/formatters';
 
 export default {
+  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     MasterGamePopover
   },
   props: {
-    value: { type: Object, default: null },
+    modelValue: { type: Object, default: null },
     possibleGames: { type: Array, required: true }
   },
+  emits: ['update:modelValue'],
   data() {
     return {
       selectedPublisherGame: null,
@@ -82,7 +84,7 @@ export default {
     formatScore,
     selectGame(publisherGame) {
       this.selectedPublisherGame = publisherGame;
-      this.$emit('input', this.selectedPublisherGame);
+      this.$emit('update:modelValue', this.selectedPublisherGame);
     }
   }
 };

@@ -53,14 +53,16 @@ import { intersection } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
+  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     VueDraggable,
     MasterGameTagBadge
   },
   props: {
-    value: { type: Object, required: true },
+    modelValue: { type: Object, required: true },
     gameMode: { type: String, required: true }
   },
+  emits: ['update:modelValue'],
   data() {
     return {
       initialValue: {
@@ -113,7 +115,7 @@ export default {
   },
   methods: {
     onChange() {
-      this.$emit('input', this.internalValue);
+      this.$emit('update:modelValue', this.internalValue);
     },
     resetValues() {
       this.internalValue = structuredClone(this.initialValue);
@@ -132,11 +134,11 @@ export default {
       };
 
       this.tagOptions.forEach((tag) => {
-        if (this.value.banned.includes(tag.name)) {
+        if (this.modelValue.banned.includes(tag.name)) {
           this.initialValue.banned.push(tag.name);
           return;
         }
-        if (this.value.required.includes(tag.name)) {
+        if (this.modelValue.required.includes(tag.name)) {
           this.initialValue.required.push(tag.name);
           return;
         }

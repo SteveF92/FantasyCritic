@@ -27,12 +27,14 @@ import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
+  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     MasterGameTagSelector
   },
   props: {
-    value: { type: Array, default: () => [] }
+    modelValue: { type: Array, default: () => [] }
   },
+  emits: ['update:modelValue'],
   data() {
     return {
       internalValue: []
@@ -47,7 +49,7 @@ export default {
     }
   },
   watch: {
-    value() {
+    modelValue() {
       this.updateInternal();
     }
   },
@@ -65,7 +67,7 @@ export default {
         returnValue.push(newReturnItem);
       });
 
-      this.$emit('input', returnValue);
+      this.$emit('update:modelValue', returnValue);
     },
     getTags(tagNames) {
       const interLeagueStore = useInterLeagueStore();
@@ -99,7 +101,7 @@ export default {
     updateInternal() {
       this.internalValue = [];
 
-      this.value.forEach((singleValue) => {
+      this.modelValue.forEach((singleValue) => {
         let newInternalItem = {
           specialSlotPosition: singleValue.specialSlotPosition,
           requiredTags: this.getTags(singleValue.requiredTags)

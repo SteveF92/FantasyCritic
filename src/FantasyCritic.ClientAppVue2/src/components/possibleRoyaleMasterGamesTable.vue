@@ -33,14 +33,16 @@ import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { formatCurrency, formatScore } from '@/utilities/formatters';
 
 export default {
+  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     StatusBadge,
     MasterGamePopover
   },
   props: {
-    value: { type: Object },
+    modelValue: { type: Object },
     possibleGames: { type: Array, required: true }
   },
+  emits: ['update:modelValue'],
   data() {
     return {
       perPage: 10,
@@ -67,7 +69,7 @@ export default {
     formatScore,
     selectGame(possibleRoyaleGame) {
       this.selectedPossibleRoyaleGame = possibleRoyaleGame;
-      this.$emit('input', this.selectedPossibleRoyaleGame);
+      this.$emit('update:modelValue', this.selectedPossibleRoyaleGame);
     }
   }
 };

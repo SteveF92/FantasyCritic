@@ -1,11 +1,11 @@
 <template>
   <label class="toggle-switch" :class="{ disabled }">
-    <input type="checkbox" class="toggle-switch-input" :checked="value" :disabled="disabled" @change.stop="toggle" />
+    <input type="checkbox" class="toggle-switch-input" :checked="modelValue" :disabled="disabled" @change.stop="toggle" />
     <span class="toggle-switch-core" :style="coreStyle">
       <span class="toggle-switch-button" :style="buttonStyle"></span>
     </span>
-    <span class="toggle-switch-label" :class="value ? 'checked' : 'unchecked'" :style="labelStyle">
-      {{ value ? labels.checked : labels.unchecked }}
+    <span class="toggle-switch-label" :class="modelValue ? 'checked' : 'unchecked'" :style="labelStyle">
+      {{ modelValue ? labels.checked : labels.unchecked }}
     </span>
   </label>
 </template>
@@ -14,13 +14,15 @@
 const buttonMargin = 3;
 
 export default {
+  compatConfig: { COMPONENT_V_MODEL: false },
   props: {
-    value: { type: Boolean, required: true },
+    modelValue: { type: Boolean, required: true },
     labels: { type: Object, required: true },
     width: { type: Number, default: 60 },
     height: { type: Number, default: 28 },
     disabled: { type: Boolean, default: false }
   },
+  emits: ['update:modelValue', 'change'],
   computed: {
     coreStyle() {
       return {
@@ -31,7 +33,7 @@ export default {
     },
     buttonStyle() {
       const size = this.height - buttonMargin * 2;
-      const left = this.value ? this.width - this.height + buttonMargin : buttonMargin;
+      const left = this.modelValue ? this.width - this.height + buttonMargin : buttonMargin;
       return {
         width: `${size}px`,
         height: `${size}px`,
@@ -46,8 +48,8 @@ export default {
   },
   methods: {
     toggle() {
-      const toggled = !this.value;
-      this.$emit('input', toggled);
+      const toggled = !this.modelValue;
+      this.$emit('update:modelValue', toggled);
       this.$emit('change', toggled);
     }
   }

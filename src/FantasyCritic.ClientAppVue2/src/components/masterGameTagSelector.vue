@@ -21,14 +21,16 @@ import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
+  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     Multiselect,
     MasterGameTagBadge
   },
   props: {
-    value: { type: Array, default: null },
+    modelValue: { type: Array, default: null },
     includeSystem: { type: Boolean }
   },
+  emits: ['update:modelValue'],
   data() {
     return {
       internalValue: []
@@ -44,7 +46,7 @@ export default {
     }
   },
   watch: {
-    value() {
+    modelValue() {
       this.updateInternal();
     }
   },
@@ -53,10 +55,10 @@ export default {
   },
   methods: {
     handleInput() {
-      this.$emit('input', this.internalValue);
+      this.$emit('update:modelValue', this.internalValue);
     },
     updateInternal() {
-      this.internalValue = structuredClone(this.value);
+      this.internalValue = structuredClone(this.modelValue);
     }
   }
 };

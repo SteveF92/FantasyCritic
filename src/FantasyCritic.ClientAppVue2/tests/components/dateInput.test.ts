@@ -8,25 +8,25 @@ function inputValue(wrapper) {
 
 describe('dateInput', () => {
   it('shows its value', () => {
-    const wrapper = mount(DateInput, { propsData: { value: '2026-06-10' } });
+    const wrapper = mount(DateInput, { props: { modelValue: '2026-06-10' } });
     expect(inputValue(wrapper)).toBe('2026-06-10');
   });
 
   it('follows a new value from the model', async () => {
-    const wrapper = mount(DateInput, { propsData: { value: '2026-06-10' } });
-    await wrapper.setProps({ value: '2026-07-01' });
+    const wrapper = mount(DateInput, { props: { modelValue: '2026-06-10' } });
+    await wrapper.setProps({ modelValue: '2026-07-01' });
     expect(inputValue(wrapper)).toBe('2026-07-01');
   });
 
   it('emits the entered date', async () => {
     const wrapper = mount(DateInput);
-    await wrapper.setValue('2026-06-10');
-    expect(wrapper.emitted('input')).toEqual([['2026-06-10']]);
+    await wrapper.find('input').setValue('2026-06-10');
+    expect(wrapper.emitted('update:modelValue')).toEqual([['2026-06-10']]);
   });
 
   it('emits null, not an empty string, when cleared', async () => {
-    const wrapper = mount(DateInput, { propsData: { value: '2026-06-10' } });
-    await wrapper.setValue('');
-    expect(wrapper.emitted('input')).toEqual([[null]]);
+    const wrapper = mount(DateInput, { props: { modelValue: '2026-06-10' } });
+    await wrapper.find('input').setValue('');
+    expect(wrapper.emitted('update:modelValue')).toEqual([[null]]);
   });
 });
