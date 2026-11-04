@@ -21,6 +21,7 @@ public abstract class UiTestBase
 {
     private readonly List<IBrowserContext> _contexts = [];
     private readonly List<ApiSession> _sessions = [];
+    private readonly List<LeagueFixture> _leagues = [];
     private readonly List<string> _problems = [];
 
     protected UiWebApplicationFactory Factory { get; private set; } = null!;
@@ -91,6 +92,12 @@ public abstract class UiTestBase
         }
 
         _sessions.Clear();
+        foreach (var league in _leagues)
+        {
+            await league.DisposeAsync();
+        }
+
+        _leagues.Clear();
         lock (_problems)
         {
             _problems.Clear();
@@ -117,6 +124,19 @@ public abstract class UiTestBase
     {
         var id = Guid.NewGuid().ToString("N")[..12];
         return ($"u-{id}@uitest.local", "UiTestPassword", $"UI-{id}");
+    }
+
+    /// <summary>
+    /// A league with its members and publishers, made through the API, and its manager's user ID for signing in.
+    /// Disposed after the test.
+    /// </summary>
+    protected async Task<(LeagueFixture League, Guid ManagerUserID)> NewLeagueAsync(LeagueScenario scenario, bool startDraft = false)
+    {
+        var league = startDraft
+            ? await LeagueFixtureBuilder.CreateAndStartDraftAsync(Factory, scenario, NewCredentials)
+            : await LeagueFixtureBuilder.CreateLeagueWithMembersAsync(Factory, scenario, NewCredentials);
+        _leagues.Add(league);
+        return (league, (await league.Manager.Account.CurrentUserAsync()).UserID);
     }
 
     protected async Task<TestUser> NewUserAsync()

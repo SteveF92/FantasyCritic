@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.Json.Nodes;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.Playwright;
 
@@ -23,6 +24,18 @@ public static class Ui
     public static ILocator Popover(IPage page) => page.GetByRole(AriaRole.Tooltip);
 
     public static ILocator BodyRows(ILocator table) => table.Locator("tbody tr");
+
+    public static ILocator Dialog(IPage page, string title) => page.GetByRole(AriaRole.Dialog, new() { Name = title });
+
+    /// <summary>
+    /// A league page sidebar action, which is a list item with a click handler rather than a link or button.
+    /// </summary>
+    public static ILocator SidebarAction(IPage page, string text) => page.GetByText(text, new() { Exact = true });
+
+    /// <summary>
+    /// For forms whose labels aren't tied to their inputs: the input straight after the label with this text.
+    /// </summary>
+    public static ILocator InputAfterLabel(ILocator scope, string label) => scope.Locator($"label:text-is(\"{label}\") ~ input").First;
 
     /// <summary>
     /// The trimmed text of one column's cells, in row order, found by the column's header text.
@@ -57,9 +70,21 @@ public static class Ui
             });
         });
 
-    public static async Task<JsonNode> FetchJsonAsync(IRoute route)
+    public static Task PlantJsonAsync(IPage page, Regex url, Func<IRoute, Task<JsonNode>> respond) =>
+        page.RouteAsync(url, async route =>
+        {
+            var json = await respond(route);
+            await route.FulfillAsync(new RouteFulfillOptions
+            {
+                Status = 200,
+                ContentType = "application/json",
+                Body = json.ToJsonString(),
+            });
+        });
+
+    public static async Task<JsonNode> FetchJsonAsync(IRoute route, string? url = null)
     {
-        var response = await route.FetchAsync();
+        var response = await route.FetchAsync(new RouteFetchOptions { Url = url });
         return JsonNode.Parse(await response.TextAsync()) ?? throw new InvalidOperationException($"{route.Request.Url} returned no JSON.");
     }
 

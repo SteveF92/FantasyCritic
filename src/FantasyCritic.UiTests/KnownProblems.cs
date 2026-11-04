@@ -15,6 +15,8 @@ public static class KnownProblems
             "in Development the Razor pages load jquery-validation from /lib, which isn't in the repository; production loads it from a CDN"),
         (new Regex("^Console error on /games: AxiosError: Request failed with status code 401.*fetchMyLeaguesForYear", RegexOptions.Singleline),
             "Master Games asks for the user's leagues when nobody is logged in"),
+        (new Regex(@"^Console error on /league/.*TypeError: Cannot read properties of undefined \(reading 'autoDraftMode'\)"),
+            "draftStatusHeader's userHasAutoDraft is true when the user has no publisher, so its template reads userPublisher.autoDraftMode"),
     ];
 
     public static string? Explain(string problem) => Problems.FirstOrDefault(known => known.Pattern.IsMatch(problem)).Reason;

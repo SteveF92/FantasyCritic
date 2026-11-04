@@ -195,6 +195,32 @@ Found on main while writing these, and left alone:
   ID puts the ID on the clipboard (with the clipboard permission granted); the unfollow confirm
   on the home league table.
 
+**Done.** 12 tests in `Tests/League/`: `CreateLeagueTests` (5), `LeagueSettingsTests` (2) and
+`LeagueHeaderTests` (5). The whole suite is 103 passing and 1 skipped, in about 3 minutes.
+
+As built:
+- `UiTestBase.NewLeagueAsync` makes a league per test through `LeagueFixtureBuilder` and disposes
+  it afterwards. Created leagues are Test Leagues, so they stay out of the site's stats.
+- `editLeague` checks the settings round trip: standard games, the "Will Release" unlimited
+  checkbox (whose number input then goes away) and "Will Not Release", all reloaded. The
+  unlimited checkboxes have no label, so the test finds them by their table row.
+- `manageDrafts` labels have no `for`, so `Ui.InputAfterLabel` finds the input after the label
+  text.
+- The year select test plants a previous year onto the league, since a league only gets a second
+  year once the next one opens.
+- The "Advanced Settings" toggle is an `h3`, but bootstrap-vue's `v-b-toggle` gives it the button
+  role, so the test finds it by its text.
+
+Found on main while writing these, and left alone:
+- **The league year name is lost when the same edit changes a setting.**
+  `FantasyCriticService.EditLeagueYear` writes the name through `ChangeLeagueYearName` only in
+  the branch where nothing else changed; the `EditLeagueYear` UPDATE doesn't include
+  `LeagueYearName`. The test saves the name in an edit of its own.
+- **`draftStatusHeader.vue` throws for a league member with no publisher**, as on a league
+  that was just created: `userHasAutoDraft` is true when `userPublisher` is undefined, and the
+  template then reads `userPublisher.autoDraftMode`. It's in `KnownProblems.cs`.
+- `createLeague.vue`'s year label says `for="intialYear"`, so it doesn't label the select.
+
 ### 5. Pre-draft and draft
 - Invite by email (an invalid address disables the button); the invitee, in a second context,
   accepts. An invite link joins through `?inviteCode=`.
