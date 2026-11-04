@@ -56,6 +56,24 @@ scripts/Format.ps1 -Check   # verify only (CI-style)
 
 Client app (`src/FantasyCritic.ClientAppVue2`): `npm install` first; `npm test` runs the Vitest unit tests in `tests/` (`npm run test:watch` to watch; they need the regenerated TypeScript client); `npm run lint` / `npm run format` for JS-only passes; `npm run client` runs the SPA standalone against the production API. Stop the Vite dev server before `npm ci`, which can't replace the `esbuild.exe` it holds open.
 
+## Signing in locally
+
+To act as a user locally, visit `/dev/sign-in-as?userId=<guid>&returnUrl=<local path>` on the web app. It signs in as that user with no password. Use it instead of typing a password into the login page. The route exists only when all four of these hold:
+
+- the environment is Development;
+- the database server is `localhost`, `127.0.0.1` or `::1`;
+- the request comes from this machine;
+- `AllowSignInAs` is `1` in `tbl_meta_systemwidesettings`. Only LocalDatabaseTool and the snapshot manager's local import and clean set it; production and beta leave it `0`.
+
+So it works under `dotnet run`, not in the `docker-compose-complete` stack. Otherwise the request gets a 404, and the web log says why.
+
+- **Seeded database:** the local admin is `00000000-0000-0000-0000-000000000000` and has every role.
+- **Snapshot (`fantasycritic-fromsnapshot`):** find a user ID with a query, for example a league's `LeagueManager`. The cleaner marks every non-beta user deleted, and deleted users can still be signed in as. A snapshot taken before production had the `AllowSignInAs` migration has no such column, so sign-in-as is off for it.
+- **Which database Web uses:** check Web's user secrets, which may point at the snapshot rather than the seeded database.
+- **Integration tests:** they keep using real login. `ApiSession.SignInAsAsync` is there for new tests that don't care how the user signed in.
+
+See `docs/dev-sign-in-as-plan.md`.
+
 ## Architecture
 
 ### Solution layering (where code belongs)

@@ -14,6 +14,14 @@ would let anyone sign in as any account, admins included, with a password anyone
 user's email and typing it into the login form. Sign-in-as needs no password, and it changes nothing about the
 database.
 
+## Status (2026-11-04)
+
+All four steps are done, each in its own commit on `sign-in-as`. Step 4's browser run used the seeded database:
+sign-in as LocalAdmin, as a league manager (the league and its 2026 year load, with `isManager` true), and as a deleted
+user. It covered the server-rendered Account pages and the API only, because the installed `node_modules` was from
+the Vue 3 branch and Vite wouldn't start. The snapshot half of the run waits until production has the `AllowSignInAs`
+migration: the current local snapshot has no column, so sign-in-as is off for it, as designed.
+
 ## Decisions
 
 - **The endpoint:** `GET /dev/sign-in-as?userId={guid}&returnUrl={path}`. A minimal API endpoint, not a controller,
