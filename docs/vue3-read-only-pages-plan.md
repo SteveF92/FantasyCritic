@@ -98,7 +98,60 @@ Nothing past these tonight.
   return 500, so Most Desired Reviews and the all-time Most Dreams Dashed table couldn't be
   compared.
 
-## Report
+## Report (2026-11-04)
 
-Added to this file when the pass ends: for each page, what was fixed (with commit), what was
-left and why, and questions for Steve.
+Every page was compared with main in headless Chrome at 1280 and 375, by screenshot and by the
+position, size and style of every element with text. "Matches" means no differences except
+antialiasing: some tables draw text with ClearType on one side and greyscale on the other. That
+is a compositing difference, not CSS, and shows up at 375.
+
+| Page | Result | Commit |
+|---|---|---|
+| Top Bids and Drops (all three tabs, month menu open) | Matches | 4beaf12ad |
+| Public Leagues | Matches | 828a3df0c |
+| Master Games (with game and tag popovers open) | Matches, apart from sort order (noted above) | d6e2b7f1d |
+| Advanced Game Stats (all three sections, year select, checkbox) | Matches | 5fdfc497c |
+| Game Changes (with the "New games" filter) | Matches | 5fdfc497c |
+| Most Desired Reviews | Filter buttons match; the table couldn't load (500) | 5fdfc497c |
+| Master Game detail (released and unreleased game, year menu, tag and help popovers) | Matches, apart from the Peak Hype popover text (noted above) | acfa0d482 |
+| Static pages, logged in (Site Updates, How to Play, FAQ, About, Contact, Community, Discord Bot, Plus) | Matches, no changes needed | — |
+| Home, rechecked after all of the above | Matches | — |
+
+The production build compiles, and the Vitest suite passes (38 tests).
+
+### Site-wide changes
+
+Most of the work was Bootstrap 4 parity, in `custom-bootstrap.scss` and `bootstrap-overrides.scss`.
+Other pages get these for free:
+
+- Children of a `.row` without a column class keep their natural size and no padding.
+  `.table-responsive` is full width.
+- `b-form-group` has its 1rem bottom margin, and horizontal form groups have `.form-row`'s 10px
+  gutters. Help text is a block and `#6c757d`.
+- Form controls: `#495057` text, `#ced4da` borders, the double-triangle select arrow, and
+  inline-block selects that are 31px in a small input group. The site's `.custom-select` rule
+  covers `.form-select`.
+- Checkboxes have no bottom margin; badges use Bootstrap 4's padding.
+- Dropdowns: wrappers get `.btn-group`, menus open 2px below the toggle (`BDropdown` offset
+  default on `<BApp>`), with Bootstrap 4's item padding and border.
+- Popover titles are bold with a 1.2 line height and Bootstrap 4's background and padding.
+- Sticky-header table headings are `#212529`. `$color-contrast-dark` is `#212529`.
+- No smooth scrolling.
+
+### Page-level template changes
+
+- `label-align-sm="right"` is `"end"` (Master Games).
+- `custom-class` is `class` on the tag badge popover.
+- `mr-2` and `ml-1` are `me-2` and `ms-1` (Game Changes, home).
+- The release-date help popovers have `.right`, Bootstrap-Vue 2's default placement.
+
+### Left for Steve
+
+The items under "Already noted for Steve" above. None of them were changed.
+
+### Not checked
+
+- The Master Game statistics chart (see above).
+- Most Desired Reviews' table, and the all-time Most Dreams Dashed table: their API calls fail on
+  both branches.
+- Interactions that write (none on these pages were exercised).
