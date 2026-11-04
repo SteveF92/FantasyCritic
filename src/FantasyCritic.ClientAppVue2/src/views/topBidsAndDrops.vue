@@ -46,7 +46,7 @@
     <div v-else>
       <b-tabs pills class="top-bids-and-drops-tabs">
         <b-tab title="Top Bids" title-item-class="tab-header">
-          <b-table :items="topBids" :fields="standardBidFields" v-model:sort-by="standardSortBy" v-model:sort-desc="sortDesc" bordered striped responsive class="top-bids-drops-table">
+          <b-table :items="topBids" :fields="standardBidFields" v-model:sort-by="standardSortBy" bordered striped responsive class="top-bids-drops-table">
             <template #cell(masterGameYear)="data">
               <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
             </template>
@@ -56,7 +56,7 @@
           </b-table>
         </b-tab>
         <b-tab title="Top Counter Picks" title-item-class="tab-header">
-          <b-table :items="topCounterPicks" :fields="counterPickFields" v-model:sort-by="counterPickSortBy" v-model:sort-desc="sortDesc" bordered striped responsive>
+          <b-table :items="topCounterPicks" :fields="counterPickFields" v-model:sort-by="counterPickSortBy" bordered striped responsive>
             <template #cell(masterGameYear)="data">
               <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
             </template>
@@ -66,7 +66,7 @@
           </b-table>
         </b-tab>
         <b-tab title="Top Drops" title-item-class="tab-header">
-          <b-table :items="topDrops" :fields="dropFields" v-model:sort-by="dropSortBy" v-model:sort-desc="sortDesc" bordered striped responsive>
+          <b-table :items="topDrops" :fields="dropFields" v-model:sort-by="dropSortBy" bordered striped responsive>
             <template #cell(masterGameYear)="data">
               <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
             </template>
@@ -100,10 +100,9 @@ export default {
       processDateOptions: [],
       allTopBidsAndDrops: null,
       selectedYearWithinProcessDate: null,
-      standardSortBy: 'totalStandardBidCount',
-      counterPickSortBy: 'totalCounterPickBidCount',
-      dropSortBy: 'totalDropCount',
-      sortDesc: true,
+      standardSortBy: [{ key: 'totalStandardBidCount', order: 'desc' }],
+      counterPickSortBy: [{ key: 'totalCounterPickBidCount', order: 'desc' }],
+      dropSortBy: [{ key: 'totalDropCount', order: 'desc' }],
       standardBidFields: [
         { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
         { key: 'totalStandardBidCount', label: 'Number of Bids', sortable: true, thClass: 'bg-primary' },

@@ -18,7 +18,7 @@
     </b-form-checkbox>
 
     <div v-if="showTable">
-      <b-table small bordered striped responsive :items="filteredGames" :fields="gameFields" v-model:sort-by="sortBy" v-model:sort-desc="sortDesc">
+      <b-table small bordered striped responsive :items="filteredGames" :fields="gameFields" v-model:sort-by="sortBy">
         <template #cell(masterGame.gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
@@ -63,8 +63,7 @@ export default {
       games: null,
       isBusy: true,
       includeUnannouncedGames: false,
-      sortBy: 'daysSinceAddition',
-      sortDesc: true
+      sortBy: [{ key: 'daysSinceAddition', order: 'desc' }]
     };
   },
   computed: {

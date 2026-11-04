@@ -2,7 +2,7 @@
   <div>
     <h2>Standings</h2>
 
-    <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
+    <b-table v-model:sort-by="sortBy" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
       <template #cell(userName)="data">
         <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
         <font-awesome-icon v-if="data.item.previousYearWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-year-winner" />
@@ -75,14 +75,12 @@ export default {
         { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' }
       ],
       budgetField: { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
-      sortBy: 'totalFantasyPoints',
-      sortDesc: true
+      sortBy: [{ key: 'totalFantasyPoints', order: 'desc' }]
     };
   },
   created() {
     if (!this.firstDraftFinished) {
-      this.sortBy = 'draftPosition';
-      this.sortDesc = false;
+      this.sortBy = [{ key: 'draftPosition', order: 'asc' }];
     }
   },
   computed: {

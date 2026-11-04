@@ -12,18 +12,7 @@
       <toggleSwitch v-if="isPlusUser" v-model="recentReleasesMode" class="toggle" :labels="{ checked: 'Recent', unchecked: 'Upcoming' }" :width="100" />
     </span>
     <div v-if="gameNewsItems && gameNewsItems.length > 0">
-      <b-table
-        v-model:sort-by="sortBy"
-        v-model:sort-desc="sortDesc"
-        :items="gameNewsItems"
-        :fields="gameNewsFields"
-        bordered
-        striped
-        responsive
-        small
-        :per-page="perPage"
-        :current-page="currentPage"
-        class="mb-0">
+      <b-table v-model:sort-by="sortBy" :items="gameNewsItems" :fields="gameNewsFields" bordered striped responsive small :per-page="perPage" :current-page="currentPage" class="mb-0">
         <template #cell(gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
@@ -78,8 +67,7 @@ export default {
   data() {
     return {
       recentReleasesMode: false,
-      sortBy: 'maximumReleaseDate',
-      sortDesc: false,
+      sortBy: [{ key: 'maximumReleaseDate', order: 'asc' }],
       currentPage: 1,
       perPage: 10,
       baseGameNewsFields: [
@@ -117,8 +105,7 @@ export default {
   },
   watch: {
     recentReleasesMode: function () {
-      this.sortBy = 'maximumReleaseDate';
-      this.sortDesc = this.recentReleasesMode;
+      this.sortBy = [{ key: 'maximumReleaseDate', order: this.recentReleasesMode ? 'desc' : 'asc' }];
     }
   },
   methods: {

@@ -1,14 +1,5 @@
 <template>
-  <b-table
-    :items="tableRows"
-    :fields="tableFields"
-    bordered
-    responsive
-    striped
-    v-model:sort-by="sortBy"
-    v-model:sort-desc="sortDesc"
-    primary-key="overallSlotNumber"
-    tbody-tr-class="btable-player-game-row">
+  <b-table :items="tableRows" :fields="tableFields" bordered responsive striped v-model:sort-by="sortBy" primary-key="overallSlotNumber" tbody-tr-class="btable-player-game-row">
     <template #head(projectedFantasyPoints)>
       Projected
       <br />
@@ -88,8 +79,7 @@ export default {
   },
   data() {
     return {
-      sortBy: 'overallSlotNumber',
-      sortDesc: false
+      sortBy: [{ key: 'overallSlotNumber', order: 'asc' }]
     };
   },
   computed: {
@@ -160,8 +150,7 @@ export default {
   watch: {
     sortOrderMode: function () {
       if (!this.sortOrderMode) {
-        this.sortBy = 'overallSlotNumber';
-        this.sortDesc = false;
+        this.sortBy = [{ key: 'overallSlotNumber', order: 'asc' }];
       }
     }
   },

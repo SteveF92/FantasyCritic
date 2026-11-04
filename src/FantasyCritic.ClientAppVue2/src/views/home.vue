@@ -92,7 +92,7 @@
             <h5><router-link :to="{ name: 'publicLeagues' }">View All</router-link></h5>
 
             <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
-              <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="publicLeagues" :fields="publicLeagueFields" bordered striped responsive small>
+              <b-table v-model:sort-by="sortBy" :items="publicLeagues" :fields="publicLeagueFields" bordered striped responsive small>
                 <template #cell(leagueName)="data">
                   <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
                   <font-awesome-icon
@@ -144,8 +144,7 @@ export default {
         { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'numberOfFollowers', label: 'Followers', sortable: true, thClass: 'bg-primary' }
       ],
-      sortBy: 'numberOfFollowers',
-      sortDesc: true,
+      sortBy: [{ key: 'numberOfFollowers', order: 'desc' }],
       gameNews: null,
       topBidsAndDropsProcessDate: null,
       topBidsAndDrops: null,

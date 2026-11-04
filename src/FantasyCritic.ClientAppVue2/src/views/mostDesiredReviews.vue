@@ -8,7 +8,7 @@
     </b-form-group>
 
     <div v-if="showTable">
-      <b-table small bordered striped responsive :items="filteredMostDesiredReviews" :fields="gameFields" v-model:sort-by="sortBy" v-model:sort-desc="sortDesc">
+      <b-table small bordered striped responsive :items="filteredMostDesiredReviews" :fields="gameFields" v-model:sort-by="sortBy">
         <template #cell(masterGame.gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
@@ -54,8 +54,7 @@ export default {
         { text: 'Past 3 months', value: '3months' },
         { text: 'All Year', value: 'year' }
       ],
-      sortBy: 'desireFactor',
-      sortDesc: true,
+      sortBy: [{ key: 'desireFactor', order: 'desc' }],
       gameFields: [
         { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },

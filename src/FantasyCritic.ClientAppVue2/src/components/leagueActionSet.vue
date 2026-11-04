@@ -84,9 +84,7 @@ export default {
         { key: 'projectedPointsAtTimeOfBid', label: 'Projected Points (for tiebreaks)', sortable: true, thClass: 'bg-primary' },
         { key: 'conditionalDropPublisherGame', label: 'Conditional Drop', sortable: true, thClass: 'bg-primary' },
         { key: 'outcome', label: 'Outcome', sortable: true, thClass: 'bg-primary' }
-      ],
-      sortBy: 'timestamp',
-      sortDesc: true
+      ]
     };
   },
   methods: {

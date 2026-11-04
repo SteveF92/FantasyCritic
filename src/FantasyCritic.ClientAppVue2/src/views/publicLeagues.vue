@@ -16,7 +16,6 @@
 
       <b-table
         v-model:sort-by="sortBy"
-        v-model:sort-desc="sortDesc"
         :items="publicLeagues"
         :fields="leagueFields"
         bordered
@@ -55,8 +54,7 @@ export default {
         { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'numberOfFollowers', label: 'Number of Followers', sortable: true, thClass: 'bg-primary' }
       ],
-      sortBy: 'numberOfFollowers',
-      sortDesc: true
+      sortBy: [{ key: 'numberOfFollowers', order: 'desc' }]
     };
   },
   computed: {

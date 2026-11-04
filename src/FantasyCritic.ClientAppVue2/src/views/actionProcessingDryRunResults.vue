@@ -27,7 +27,7 @@
       <b-collapse id="action-collapse" class="mt-2">
         <div class="row">
           <div class="history-table">
-            <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="dryRunResults.leagueActions" :fields="actionFields" bordered striped responsive>
+            <b-table v-model:sort-by="sortBy" :items="dryRunResults.leagueActions" :fields="actionFields" bordered striped responsive>
               <template #cell(timestamp)="data">
                 {{ formatDateTime(data.item.timestamp) }}
               </template>
@@ -75,8 +75,7 @@ export default {
         { key: 'description', label: 'Description', thClass: 'bg-primary' },
         { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' }
       ],
-      sortBy: 'timestamp',
-      sortDesc: true
+      sortBy: [{ key: 'timestamp', order: 'desc' }]
     };
   },
   created() {

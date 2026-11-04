@@ -17,7 +17,7 @@
       <hr />
       <div v-if="league.years.length > 2">
         <h2>Player Stats</h2>
-        <b-table v-model:sort-by="playerSortBy" v-model:sort-desc="playerSortDesc" :items="leagueAllTimeStats.playerAllTimeStats" :fields="playerStatFields" bordered small responsive striped>
+        <b-table v-model:sort-by="playerSortBy" :items="leagueAllTimeStats.playerAllTimeStats" :fields="playerStatFields" bordered small responsive striped>
           <template #cell(playerName)="data">
             <div>{{ data.item.playerName }}</div>
             <div class="won-years">
@@ -47,7 +47,7 @@
           </div>
         </div>
         <h2>Individual Year Stats</h2>
-        <b-table v-model:sort-by="individualSortBy" v-model:sort-desc="individualSortDesc" :items="leagueAllTimeStats.publishers" :fields="publisherFields" bordered small responsive striped>
+        <b-table v-model:sort-by="individualSortBy" :items="leagueAllTimeStats.publishers" :fields="publisherFields" bordered small responsive striped>
           <template #cell(publisherName)="data">
             <router-link :to="{ name: 'publisher', params: { publisherid: data.item.publisherID } }">
               {{ data.item.publisherName }}
@@ -102,8 +102,7 @@ export default {
         { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true },
         { key: 'timesCounterPicked', label: 'Times Counter Picked', thClass: 'bg-primary', sortable: true }
       ],
-      playerSortBy: 'totalFantasyPoints',
-      playerSortDesc: true,
+      playerSortBy: [{ key: 'totalFantasyPoints', order: 'desc' }],
       publisherFields: [
         { key: 'playerName', label: 'User', thClass: 'bg-primary', sortable: true },
         { key: 'year', label: 'Year', thClass: 'bg-primary', sortable: true },
@@ -113,8 +112,7 @@ export default {
         { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary', sortable: true },
         { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true }
       ],
-      individualSortBy: 'totalFantasyPoints',
-      individualSortDesc: true
+      individualSortBy: [{ key: 'totalFantasyPoints', order: 'desc' }]
     };
   },
   computed: {

@@ -2,7 +2,7 @@
   <div>
     <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="counter-pick-table"></b-pagination>
 
-    <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="gameRows" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
+    <b-table v-model:sort-by="sortBy" :items="gameRows" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
       <template #cell(gameName)="data">
         <span v-if="data.item.masterGame">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
@@ -60,8 +60,7 @@ export default {
         { key: 'publisherName', label: 'Owned By', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'select', label: '', thClass: 'bg-primary' }
       ],
-      sortBy: 'gameName',
-      sortDesc: false
+      sortBy: [{ key: 'gameName', order: 'asc' }]
     };
   },
   computed: {

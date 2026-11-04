@@ -2,7 +2,7 @@
   <div>
     <h2>Standings</h2>
 
-    <b-table v-model:sort-by="sortBy" v-model:sort-desc="sortDesc" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
+    <b-table v-model:sort-by="sortBy" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
       <template #cell(leagueName)="data">
         <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.year } }" class="league-link">
           {{ data.item.leagueName }}
@@ -46,8 +46,7 @@ export default {
         { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
         { key: 'leagueRanking', label: 'League Rank', thClass: 'bg-primary', sortable: true }
       ],
-      sortBy: 'totalFantasyPoints',
-      sortDesc: true
+      sortBy: [{ key: 'totalFantasyPoints', order: 'desc' }]
     };
   },
   computed: {

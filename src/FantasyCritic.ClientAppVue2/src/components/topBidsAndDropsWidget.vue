@@ -14,7 +14,7 @@
     <div v-if="this.topBidsAndDrops && this.topBidsAndDrops.length === 0">No Bids and Drops Found.</div>
     <b-tabs v-if="this.topBidsAndDrops && this.topBidsAndDrops.length > 0" pills class="top-bids-and-drops-tabs">
       <b-tab title="Top Bids" title-item-class="tab-header">
-        <b-table :items="topBids" :fields="standardBidFields" v-model:sort-by="standardSortBy" v-model:sort-desc="sortDesc" bordered striped responsive class="top-bids-drops-widget-table">
+        <b-table :items="topBids" :fields="standardBidFields" v-model:sort-by="standardSortBy" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
           </template>
@@ -24,7 +24,7 @@
         </b-table>
       </b-tab>
       <b-tab title="Top Counter Picks" title-item-class="tab-header">
-        <b-table :items="topCounterPicks" :fields="counterPickFields" v-model:sort-by="counterPickSortBy" v-model:sort-desc="sortDesc" bordered striped responsive class="top-bids-drops-widget-table">
+        <b-table :items="topCounterPicks" :fields="counterPickFields" v-model:sort-by="counterPickSortBy" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
           </template>
@@ -34,7 +34,7 @@
         </b-table>
       </b-tab>
       <b-tab title="Top Drops" title-item-class="tab-header">
-        <b-table :items="topDrops" :fields="dropFields" v-model:sort-by="dropSortBy" v-model:sort-desc="sortDesc" bordered striped responsive class="top-bids-drops-widget-table">
+        <b-table :items="topDrops" :fields="dropFields" v-model:sort-by="dropSortBy" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
             <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
           </template>
@@ -59,10 +59,9 @@ export default {
   },
   data() {
     return {
-      standardSortBy: 'totalStandardBidCount',
-      counterPickSortBy: 'totalCounterPickBidCount',
-      dropSortBy: 'totalDropCount',
-      sortDesc: true,
+      standardSortBy: [{ key: 'totalStandardBidCount', order: 'desc' }],
+      counterPickSortBy: [{ key: 'totalCounterPickBidCount', order: 'desc' }],
+      dropSortBy: [{ key: 'totalDropCount', order: 'desc' }],
       standardBidFields: [
         { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
         { key: 'totalStandardBidCount', label: 'Bids', sortable: true, thClass: 'bg-primary' },
