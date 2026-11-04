@@ -80,6 +80,9 @@ public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<P
             // That registers the ArchiveDatabase handler too, whose dumper and archive locations only the worker
             // registers. No test runs it, so it gets a dumper that throws and no locations, never mysqldump or a bucket.
             services.AddSingleton<IDatabaseDumper, UnusedDatabaseDumper>();
+
+            // TestServer gives requests no remote address, and /dev/sign-in-as answers only loopback ones.
+            services.AddSingleton<IStartupFilter, TestRemoteAddressStartupFilter>();
         });
     }
 

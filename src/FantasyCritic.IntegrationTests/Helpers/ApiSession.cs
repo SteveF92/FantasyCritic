@@ -131,6 +131,19 @@ public sealed class ApiSession : IDisposable
         return response.StatusCode is HttpStatusCode.Redirect or HttpStatusCode.Found;
     }
 
+    /// <summary>
+    /// Signs in through the Development-only /dev/sign-in-as endpoint, which takes no password. It is deliberately left
+    /// out of the API, so it has no generated client method. Existing tests keep using <see cref="LoginAsync"/>.
+    /// </summary>
+    public async Task SignInAsAsync(Guid userId)
+    {
+        var response = await _client.GetAsync($"/dev/sign-in-as?userId={userId}");
+        if (response.StatusCode is not (HttpStatusCode.Redirect or HttpStatusCode.Found))
+        {
+            throw new InvalidOperationException($"SignInAsAsync for {userId} failed with {(int)response.StatusCode}.");
+        }
+    }
+
     public Task<HttpResponseMessage> GetAsync(string path)
         => _client.GetAsync(path);
 
