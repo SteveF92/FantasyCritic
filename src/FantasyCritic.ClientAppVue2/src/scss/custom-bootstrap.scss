@@ -40,6 +40,10 @@ $font-family-sans-serif:
   'Noto Color Emoji';
 $link-decoration: none;
 $link-hover-decoration: underline;
+$link-hover-color: #a27022;
+$focus-ring-width: 0.2rem;
+$pagination-disabled-color: #6c757d;
+$pagination-focus-color: var(--bs-link-color);
 $border-radius: 0.25rem;
 $border-radius-sm: 0.2rem;
 $border-radius-lg: 0.3rem;

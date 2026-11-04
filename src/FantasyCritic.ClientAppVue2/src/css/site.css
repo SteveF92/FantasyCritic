@@ -183,7 +183,8 @@ img.critic-royale-nav {
   width: 100%;
 }
 
-.bg-primary {
+.bg-primary,
+.table > :not(caption) > * > .bg-primary {
   color: black;
 }
 
