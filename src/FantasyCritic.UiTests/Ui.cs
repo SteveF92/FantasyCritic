@@ -25,12 +25,35 @@ public static class Ui
 
     public static ILocator BodyRows(ILocator table) => table.Locator("tbody tr");
 
+    /// <summary>
+    /// Drags with real mouse moves, in steps, onto the top of the target, which is what a Sortable list (vue-draggable-plus) needs.
+    /// </summary>
+    public static async Task DragAsync(IPage page, ILocator source, ILocator target)
+    {
+        var from = await source.BoundingBoxAsync() ?? throw new InvalidOperationException("The drag source isn't visible.");
+        var to = await target.BoundingBoxAsync() ?? throw new InvalidOperationException("The drop target isn't visible.");
+
+        await page.Mouse.MoveAsync(from.X + (from.Width / 2), from.Y + (from.Height / 2));
+        await page.Mouse.DownAsync();
+        await page.Mouse.MoveAsync(from.X + (from.Width / 2), from.Y + (from.Height / 2) - 5, new() { Steps = 5 });
+        await page.Mouse.MoveAsync(to.X + (to.Width / 2), to.Y + 2, new() { Steps = 20 });
+        await page.Mouse.UpAsync();
+    }
+
     public static ILocator Dialog(IPage page, string title) => page.GetByRole(AriaRole.Dialog, new() { Name = title });
 
     /// <summary>
-    /// A league page sidebar action, which is a list item with a click handler rather than a link or button.
+    /// A league page sidebar action: a list item that opens a modal. bootstrap-vue gives it the button role and
+    /// bootstrap-vue-next may not, and some share their text with real buttons, so it is found as the list item.
     /// </summary>
-    public static ILocator SidebarAction(IPage page, string text) => page.GetByText(text, new() { Exact = true });
+    public static ILocator SidebarAction(IPage page, string text) =>
+        page.Locator("li").Filter(new() { HasTextRegex = new Regex($"^\\s*{Regex.Escape(text)}\\s*$"), Visible = true });
+
+    /// <summary>
+    /// A real button, as opposed to a sidebar action with the same text.
+    /// </summary>
+    public static ILocator ButtonElement(ILocator scope, string text) =>
+        scope.Locator("button").Filter(new() { HasTextRegex = new Regex($"^\\s*{Regex.Escape(text)}\\s*$") });
 
     /// <summary>
     /// For forms whose labels aren't tied to their inputs: the input straight after the label with this text.

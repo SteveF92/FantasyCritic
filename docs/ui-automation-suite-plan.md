@@ -236,6 +236,31 @@ Found on main while writing these, and left alone:
   draft with override.
 - The last pick, made through the API by the other player, opens the draft complete modal.
 
+**Done.** 11 tests in `Tests/Draft/`: `InviteAndPublisherTests` (3), `DraftOrderTests` (2),
+`DraftingTests` (3) and `DraftControlTests` (3). The whole suite is 114 passing and 1 skipped, in
+about 5 minutes.
+
+As built:
+- `DraftTestBase` finds whose turn it is and a game the server will accept: the first available
+  game from the API's Top Available list, which is what `MockedLivePlayer` drafts. Not every top
+  game in the local database is draftable, so the UI picks that one by name.
+- The live test runs three browsers at once: the manager starts the draft, then the first
+  player's pick shows on the second player's page with no reload, and the other way round. The
+  first pick searches; the second picks straight from Top Available. One opens the modal from
+  the header button and the other from the sidebar. Pages open after the draft starts, because
+  the league page connects to SignalR only when it loads with a draft running.
+- The draft complete dialog test leaves the manager's page open while
+  `DraftToCompletionAsync` makes the last picks through the API.
+- `ManagerDraftControls` drafts for the next player, then pauses, undoes, skips (OK is disabled
+  until "SKIP TURN" is typed), resumes and resets (the same for "RESET DRAFT"). Each step is
+  checked by its toast and the page state.
+- Drag and drop uses `Ui.DragAsync`, which moves the real mouse in steps.
+- `Ui.SidebarAction` finds the visible `li`: bootstrap-vue gives every `v-b-modal` item the
+  button role, and the header's "Draft Game" and "Draft Counter Pick" buttons share their text.
+  `Ui.ButtonElement` finds the real button.
+- Not covered: drafting from the watchlist (step 6 covers the watchlist), the manager's
+  override checkbox (it only shows when a pick fails), and the manager counter pick form.
+
 ### 6. Post-draft player actions
 Fixture: `DraftToCompletionAsync` on a bidding scenario.
 - Bids: make a bid (an invalid amount disables it); Current Bids lists it; drag to reorder
