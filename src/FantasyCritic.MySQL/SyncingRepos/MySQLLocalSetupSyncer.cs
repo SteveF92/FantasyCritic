@@ -77,6 +77,30 @@ public class MySQLLocalSetupSyncer
         _logger.Information("Created local admin user '{Email}' with {Count} roles.", email, roles.Count);
     }
 
+    /// <summary>
+    /// Turns on /dev/sign-in-as for this database. Only for local Docker databases, never production or beta.
+    /// Fails if the database predates the AllowSignInAs migration, as a snapshot can.
+    /// </summary>
+    public async Task<Result> AllowSignInAs()
+    {
+        await using var connection = new MySqlConnection(_connectionString);
+        await connection.OpenAsync();
+
+        var columnExists = await connection.ExecuteScalarAsync<bool>(
+            """
+            SELECT COUNT(*) > 0 FROM information_schema.COLUMNS
+            WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'tbl_meta_systemwidesettings' AND COLUMN_NAME = 'AllowSignInAs'
+            """);
+        if (!columnExists)
+        {
+            return Result.Failure($"Database '{connection.Database}' has no AllowSignInAs column, so sign-in-as stays off.");
+        }
+
+        await connection.ExecuteAsync("UPDATE tbl_meta_systemwidesettings SET AllowSignInAs = 1;");
+        _logger.Information("Allowed dev sign-in-as on database '{Database}'.", connection.Database);
+        return Result.Success();
+    }
+
     public async Task UpsertSupportedYears(IEnumerable<SupportedYearEntity> years)
     {
         const string sql = """

@@ -60,6 +60,7 @@ public static class Program
         RepositoryConfiguration localRepoConfig = new RepositoryConfiguration(localSnapshotConnectionString, clock);
         MySQLFantasyCriticUserStore localUserStore = new MySQLFantasyCriticUserStore(localRepoConfig);
         MySQLBetaCleaner localCleaner = new MySQLBetaCleaner(localSnapshotConnectionString);
+        MySQLLocalSetupSyncer localSetupSyncer = new MySQLLocalSetupSyncer(localSnapshotConnectionString);
 
         SnapshotCreateService snapshotCreateService = new SnapshotCreateService(clock);
         RestoreSnapshotService restoreSnapshotService = new RestoreSnapshotService(restoreService, options, clock);
@@ -70,12 +71,14 @@ public static class Program
             emptyChecker,
             mysqldumpRunner,
             localCleaner,
-            localUserStore);
+            localUserStore,
+            localSetupSyncer);
         LocalDatabaseCleanService localDatabaseCleanService = new LocalDatabaseCleanService(
             options,
             dockerHealthChecker,
             localCleaner,
-            localUserStore);
+            localUserStore,
+            localSetupSyncer);
         ManualUploadService manualUploadService = new ManualUploadService(destinations);
         SnapshotArchiveService? snapshotArchiveService = options.Destinations.S3.Enabled
             ? new SnapshotArchiveService(

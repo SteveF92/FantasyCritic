@@ -1,3 +1,4 @@
 namespace FantasyCritic.Lib.Domain;
 
-public record SystemWideSettings(bool ActionProcessingMode, bool RefreshOpenCritic, bool WorkerShouldPullNewJobs, bool EnableAutomatedActionProcessing);
+public record SystemWideSettings(bool ActionProcessingMode, bool RefreshOpenCritic, bool WorkerShouldPullNewJobs, bool EnableAutomatedActionProcessing,
+    bool AllowSignInAs);
