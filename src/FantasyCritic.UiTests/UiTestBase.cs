@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using FantasyCritic.ApiClient;
 using FantasyCritic.IntegrationTests.Helpers;
 using Microsoft.Playwright;
 using NUnit.Framework;
@@ -152,6 +153,19 @@ public abstract class UiTestBase
 
         var user = await session.Account.CurrentUserAsync();
         return new TestUser(user.UserID, email, password, displayName, session);
+    }
+
+    /// <summary>
+    /// A user with the PlusUser role, granted by the local admin. Sign them in after this, so the cookie carries the role.
+    /// </summary>
+    protected async Task<TestUser> NewPlusUserAsync()
+    {
+        var user = await NewUserAsync();
+        using var admin = new ApiSession(Factory);
+        await LocalAdmin.LoginAsync(admin);
+        await admin.Admin.GrantRoleAsync(new UserRoleRequest { UserID = user.UserID, RoleName = "PlusUser" });
+        await user.Session.LoginAsync(user.Email, user.Password);
+        return user;
     }
 
     protected async Task<IPage> NewPageAsync(ViewportSize? viewport = null)

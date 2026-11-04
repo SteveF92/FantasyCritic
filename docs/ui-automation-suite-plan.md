@@ -345,6 +345,38 @@ dismiss; conference year select; settings, promote a conference manager, reassig
 manager, renew a league for a new year. Conference setup goes through a small
 `ConferenceFixtureBuilder` in the support library, on the typed client.
 
+**Done.** 6 tests in `Tests/Conference/ConferenceTests.cs`: 5 pass and 1 is ignored for a bug on
+main. The whole suite is 136 passing and 2 skipped, in about 8 minutes.
+
+As built:
+- **Support library:** `ConferenceFixtureBuilder` creates a conference, joins players through
+  an invite link and adds a league, all on the typed client. Creating a conference needs the
+  PlusUser role, so `UiTestBase.NewPlusUserAsync` has the local admin grant it. The admin login
+  moved from `IntegrationTestBase` to a shared `LocalAdmin` class, which `IntegrationTestBase`
+  now calls.
+- **The tests:**
+  - create a conference through the form, presets included;
+  - make two invite links, delete one, and join with the other;
+  - add a league, drag an unassigned player into it (checked through the API), then lock and
+    unlock it;
+  - post a manager's message and dismiss it, then rename the conference;
+  - reassign a league's manager, then promote a new conference manager, who must be a Plus
+    member.
+- **Found on main: conference manager actions don't refresh the page or toast.**
+  `9c3baa454` gave `conferenceStore` a `notifyAction` action. The merge `43dc6994f` ("Merge
+  branch 'main' into vue3-upgrade-final-prep") dropped it, and the 8 conference modals still
+  map it. After a successful request each one throws, and its catch then reads
+  `error.response.data` from a non-axios error and logs a second `TypeError`. The change is saved
+  but invisible until a reload. `vue3-migration` has the same store.
+  - So the tests wait for each modal's request to succeed, then reload to check the result.
+  - The console error is in `KnownProblems.cs`.
+  - `ActionsRefreshThePageAndToast` is `[Ignore]`d with that reason; restoring
+    `notifyAction` should let it pass.
+- **Not covered:**
+  - the conference year select, Add New Conference Year and Renew a League, because the next
+    year isn't open locally;
+  - removing a player, and Manage Active Players.
+
 ### 9. Critics Royale and master game requests
 - Royale (server and `page.Clock` set inside an open quarter): create publisher; purchase a
   game; set budget; sell; change name; year and quarter dropdowns; leaderboard paging; groups

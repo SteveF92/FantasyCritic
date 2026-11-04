@@ -46,21 +46,12 @@ public abstract class IntegrationTestBase
     /// Credentials for the pre-seeded local admin user created by FantasyCritic.LocalDatabaseTool.
     /// UserID = Guid.Empty; has every role.
     /// </summary>
-    protected const string LocalAdminEmail = "localadmin@example.com";
-    protected const string LocalAdminPassword = "localadminpassword";
+    protected const string LocalAdminEmail = LocalAdmin.Email;
+    protected const string LocalAdminPassword = LocalAdmin.Password;
 
     /// <summary>
     /// Logs an <see cref="ApiSession"/> in as the pre-seeded local admin user.
     /// Throws if the login fails (most likely cause: DB not seeded — run docker compose first).
     /// </summary>
-    internal static async Task LoginAsLocalAdminAsync(ApiSession session)
-    {
-        var success = await session.LoginAsync(LocalAdminEmail, LocalAdminPassword);
-        if (!success)
-        {
-            throw new InvalidOperationException(
-                "Local admin login failed. Is the Docker DB running and seeded? " +
-                "Run: docker compose -f infrastructure/docker-compose-mysql.yaml up -d");
-        }
-    }
+    internal static Task LoginAsLocalAdminAsync(ApiSession session) => LocalAdmin.LoginAsync(session);
 }

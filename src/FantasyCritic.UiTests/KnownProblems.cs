@@ -17,6 +17,8 @@ public static class KnownProblems
             "Master Games asks for the user's leagues when nobody is logged in"),
         (new Regex(@"^Console error on /league/.*TypeError: Cannot read properties of undefined \(reading 'autoDraftMode'\)"),
             "draftStatusHeader's userHasAutoDraft is true when the user has no publisher, so its template reads userPublisher.autoDraftMode"),
+        (new Regex(@"^Console error on /conference/.*TypeError: Cannot read properties of undefined \(reading 'data'\)"),
+            "conferenceStore lost its notifyAction in merge 43dc6994f, so each conference manager modal throws after its request and its catch reads error.response.data"),
     ];
 
     public static string? Explain(string problem) => Problems.FirstOrDefault(known => known.Pattern.IsMatch(problem)).Reason;
