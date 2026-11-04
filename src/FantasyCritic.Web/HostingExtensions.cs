@@ -5,6 +5,7 @@ using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.MySQL;
 using FantasyCritic.Web.Authorization;
+using FantasyCritic.Web.Development;
 using FantasyCritic.Web.Hubs;
 using FantasyCritic.Web.OpenApi;
 using FantasyCritic.Web.Utilities;
@@ -350,6 +351,7 @@ public static class HostingExtensions
         app.MapControllers();
         app.MapRazorPages();
         app.MapHub<UpdateHub>("/updatehub");
+        app.MapDevSignIn();
 
         app.MapFallbackToFile("index.html", new StaticFileOptions()
         {
