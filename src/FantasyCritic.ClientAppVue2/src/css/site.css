@@ -54,7 +54,7 @@ hr {
 
 a.btn,
 input.btn,
-button.btn {
+button.btn:not(.nav-link) {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -175,7 +175,7 @@ img.critic-royale-nav {
   margin-right: 4px;
 }
 
-.btn {
+.btn:not(.nav-link) {
   margin-right: 5px;
 }
 

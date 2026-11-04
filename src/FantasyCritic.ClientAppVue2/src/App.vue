@@ -1,5 +1,5 @@
 <template>
-  <BApp>
+  <BApp :defaults="bootstrapDefaults">
     <div id="vue-app">
       <div id="top-nav-bar">
         <top-navbar></top-navbar>
@@ -29,6 +29,14 @@ export default {
     TopNavbar,
     FooterModule,
     ToastHost
+  },
+  data() {
+    return {
+      // Bootstrap-Vue 2 tables toggled between ascending and descending. bootstrap-vue-next clears the sort on a third click unless mustSort is set.
+      bootstrapDefaults: {
+        BTable: { mustSort: true }
+      }
+    };
   }
 };
 </script>

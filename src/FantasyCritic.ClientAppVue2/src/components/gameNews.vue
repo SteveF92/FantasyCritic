@@ -44,7 +44,7 @@
           </span>
         </template>
       </b-table>
-      <b-pagination v-model="currentPage" :total-rows="gameNewsItems.length" :per-page="perPage" aria-controls="my-table" align="right" size="sm" class="my-0 pagination-dark"></b-pagination>
+      <b-pagination v-model="currentPage" :total-rows="gameNewsItems.length" :per-page="perPage" aria-controls="my-table" align="end" size="sm" class="my-0 pagination-dark"></b-pagination>
     </div>
     <div v-else><h4>No Games Found</h4></div>
   </div>

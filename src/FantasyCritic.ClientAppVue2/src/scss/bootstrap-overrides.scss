@@ -43,6 +43,34 @@ ul {
   box-shadow: none;
 }
 
+// Bootstrap 4 drew a 2px line under table headers. Bootstrap 5 draws 1px.
+.table > thead > tr > th {
+  border-bottom-width: 2px;
+}
+
+// bootstrap-vue-next draws a single arrow per sortable column, faint when unsorted. Bootstrap-Vue 2 drew a pair of
+// triangles, with the sorted direction solid.
+:root {
+  --bvn-sort-icon-none: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='101' height='101' view-box='0 0 101 101' preserveAspectRatio='none'%3e%3cpath fill='black' opacity='.3' d='M51 1l25 23 24 22H1l25-22zM51 101l25-23 24-22H1l25 22z'/%3e%3c/svg%3e");
+  --bvn-sort-icon-asc: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='101' height='101' view-box='0 0 101 101' preserveAspectRatio='none'%3e%3cpath fill='black' d='M51 1l25 23 24 22H1l25-22z'/%3e%3cpath fill='black' opacity='.3' d='M51 101l25-23 24-22H1l25 22z'/%3e%3c/svg%3e");
+  --bvn-sort-icon-desc: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' width='101' height='101' view-box='0 0 101 101' preserveAspectRatio='none'%3e%3cpath fill='black' opacity='.3' d='M51 1l25 23 24 22H1l25-22z'/%3e%3cpath fill='black' d='M51 101l25-23 24-22H1l25 22z'/%3e%3c/svg%3e");
+}
+
+// bootstrap-vue-next.css loads after this file, so these name the th to outrank its selectors.
+.table.b-table:not(.b-table-no-sort-icon) > thead > tr > th[aria-sort] {
+  background-size: 0.65em 1em;
+}
+
+.table.b-table:not(.b-table-no-sort-icon) > thead > tr > th[aria-sort]:not(.b-table-sort-icon-left) {
+  background-position: right 0.375rem center;
+  padding-right: calc(0.65em + 0.75rem);
+}
+
+.table.b-table:not(.b-table-no-sort-icon).table-sm > thead > tr > th[aria-sort]:not(.b-table-sort-icon-left) {
+  background-position: right 0.15rem center;
+  padding-right: calc(0.65em + 0.3rem);
+}
+
 // Bootstrap 5 alerts use a pale tint of the theme color. Bootstrap 4 with $alert-bg-level: 0 used the color itself.
 @each $color, $value in $theme-colors {
   .alert-#{$color} {

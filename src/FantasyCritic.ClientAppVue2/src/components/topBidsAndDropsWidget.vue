@@ -99,7 +99,7 @@ export default {
 </script>
 
 <style scoped>
-.header {
+:deep(.header) {
   margin-bottom: 0;
   padding-bottom: 0;
 }
@@ -123,7 +123,7 @@ div :deep(.tab-header) {
   margin-bottom: 5px;
 }
 
-div :deep(.tab-header a) {
+div :deep(.tab-header .nav-link) {
   border-radius: 0px;
   font-weight: bolder;
   color: white;

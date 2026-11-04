@@ -148,7 +148,7 @@ export default {
   margin-right: 5px;
 }
 
-.main-nav :deep(.nav-link) {
+.main-nav :deep(.nav-link:not(.dropdown-toggle)) {
   padding-left: 6px !important;
   padding-right: 6px !important;
 }

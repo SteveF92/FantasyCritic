@@ -92,16 +92,18 @@
             <h5><router-link :to="{ name: 'publicLeagues' }">View All</router-link></h5>
 
             <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
-              <b-table v-model:sort-by="sortBy" :items="publicLeagues" :fields="publicLeagueFields" bordered striped responsive small>
-                <template #cell(leagueName)="data">
-                  <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
-                  <font-awesome-icon
-                    v-if="!data.item.anyDraftStarted"
-                    v-b-popover.hover.top="'This league has not started a draft yet for this year.'"
-                    icon="hourglass-half"
-                    class="not-started-icon" />
-                </template>
-              </b-table>
+              <div class="col-12 px-0">
+                <b-table v-model:sort-by="sortBy" :items="publicLeagues" :fields="publicLeagueFields" bordered striped responsive small>
+                  <template #cell(leagueName)="data">
+                    <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
+                    <font-awesome-icon
+                      v-if="!data.item.anyDraftStarted"
+                      v-b-popover.hover.top="'This league has not started a draft yet for this year.'"
+                      icon="hourglass-half"
+                      class="not-started-icon" />
+                  </template>
+                </b-table>
+              </div>
             </div>
           </b-card>
         </div>
@@ -289,7 +291,7 @@ div :deep(.tab-header) {
   margin-bottom: 5px;
 }
 
-div :deep(.tab-header a) {
+div :deep(.tab-header .nav-link) {
   border-radius: 0px;
   font-weight: bolder;
   color: white;

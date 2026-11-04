@@ -7,7 +7,7 @@
         <b-link href="/api/general/siteannouncementsrss" class="site-announcements-rss-link" target="_blank" rel="noopener">(RSS)</b-link>
       </h2>
     </div>
-    <b-alert v-for="item in announcements" :key="item.id" show variant="secondary" class="site-announcement-alert mb-2">
+    <b-alert v-for="item in announcements" :key="item.id" :model-value="true" variant="secondary" class="site-announcement-alert mb-2">
       <div class="site-announcement-title">{{ item.title }}</div>
       <div v-if="item.postedAt" class="site-announcement-date">{{ formatPostedAt(item.postedAt) }}</div>
       <p class="site-announcement-body mb-1">{{ item.body }}</p>

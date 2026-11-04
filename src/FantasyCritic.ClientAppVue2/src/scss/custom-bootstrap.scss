@@ -47,9 +47,15 @@ $card-border-color: rgba(0, 0, 0, 0.125);
 $card-spacer-x: 1.25rem;
 $card-spacer-y: 1.25rem;
 $card-cap-padding-y: 0.75rem;
+$card-title-spacer-y: 0.75rem;
 $alert-padding-x: 1.25rem;
 $alert-padding-y: 0.75rem;
 $hr-opacity: 1;
+$table-cell-padding-y: 0.75rem;
+$table-cell-padding-x: 0.75rem;
+$table-cell-padding-y-sm: 0.3rem;
+$table-cell-padding-x-sm: 0.3rem;
+$navbar-dark-color: rgba(#fff, 0.5);
 
 .table-striped > tbody > tr:nth-child(2n) > td.b-table-sticky-column,
 .table-striped > tbody > tr:nth-child(2n) > th {
