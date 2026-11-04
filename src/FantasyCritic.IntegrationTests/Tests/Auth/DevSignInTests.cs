@@ -33,7 +33,7 @@ public class DevSignInTests : IntegrationTestBase
     }
 
     [Test]
-    public async Task SignInAs_DeletedUser_Returns404()
+    public async Task SignInAs_DeletedUser_SignsInAsThatUser()
     {
         var (email, password, displayName) = NewUser();
         using var session = new ApiSession(Factory);
@@ -50,9 +50,10 @@ public class DevSignInTests : IntegrationTestBase
         Assert.That(deleteResponse.StatusCode, Is.EqualTo(HttpStatusCode.Redirect), "Deleting the account should redirect home.");
 
         using var freshSession = new ApiSession(Factory);
-        var response = await freshSession.GetAsync($"/dev/sign-in-as?userId={userId}");
+        await freshSession.SignInAsAsync(userId);
 
-        Assert.That(response.StatusCode, Is.EqualTo(HttpStatusCode.NotFound));
+        var currentUser = await freshSession.Account.CurrentUserAsync();
+        Assert.That(currentUser.UserID, Is.EqualTo(userId));
     }
 
     [Test]

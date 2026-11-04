@@ -64,7 +64,7 @@ public static class DevSignInEndpoint
         }
 
         var user = await userManager.FindByIdAsync(userId.ToString());
-        if (user is null || user.IsDeleted)
+        if (user is null)
         {
             return Results.NotFound();
         }
