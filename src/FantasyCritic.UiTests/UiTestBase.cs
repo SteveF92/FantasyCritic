@@ -110,13 +110,18 @@ public abstract class UiTestBase
         }
     }
 
-    protected async Task<TestUser> NewUserAsync()
+    /// <summary>
+    /// Unique registration details, in the shape <see cref="LeagueFixtureBuilder"/> takes.
+    /// </summary>
+    protected static (string Email, string Password, string DisplayName) NewCredentials()
     {
         var id = Guid.NewGuid().ToString("N")[..12];
-        var email = $"u-{id}@uitest.local";
-        const string password = "UiTestPassword";
-        var displayName = $"UI-{id}";
+        return ($"u-{id}@uitest.local", "UiTestPassword", $"UI-{id}");
+    }
 
+    protected async Task<TestUser> NewUserAsync()
+    {
+        var (email, password, displayName) = NewCredentials();
         var session = new ApiSession(Factory);
         _sessions.Add(session);
         await session.RegisterAsync(email, password, displayName);
@@ -145,10 +150,13 @@ public abstract class UiTestBase
     /// <summary>
     /// A page signed in as the user through /dev/sign-in-as, opened at the path.
     /// </summary>
-    protected async Task<IPage> NewSignedInPageAsync(TestUser user, string path = "/home", ViewportSize? viewport = null)
+    protected Task<IPage> NewSignedInPageAsync(TestUser user, string path = "/home", ViewportSize? viewport = null) =>
+        NewSignedInPageAsync(user.UserID, path, viewport);
+
+    protected async Task<IPage> NewSignedInPageAsync(Guid userID, string path = "/home", ViewportSize? viewport = null)
     {
         var page = await NewPageAsync(viewport);
-        await page.GotoAsync($"/dev/sign-in-as?userId={user.UserID}&returnUrl={Uri.EscapeDataString(path)}");
+        await page.GotoAsync($"/dev/sign-in-as?userId={userID}&returnUrl={Uri.EscapeDataString(path)}");
         return page;
     }
 
@@ -156,7 +164,7 @@ public abstract class UiTestBase
     {
         var test = $"{GetType().Name}.{TestContext.CurrentContext.Test.Name}";
 
-        context.WebError += (_, webError) => AddProblem($"Page exception on {PathOf(webError.Page)}: {webError.Error}");
+        context.WebError += (_, webError) => AddProblem($"Page exception on {PathOf(webError.Page)}: {webError.Error}", test, PathOf(webError.Page));
         context.Console += (_, message) =>
         {
             // Chrome logs every failed response this way, and the API answers 401 and 400 by design. Responses are judged below instead.
@@ -168,7 +176,7 @@ public abstract class UiTestBase
             switch (message.Type)
             {
                 case "error":
-                    AddProblem($"Console error on {PathOf(message.Page)}: {message.Text}");
+                    AddProblem($"Console error on {PathOf(message.Page)}: {message.Text}", test, PathOf(message.Page));
                     break;
                 case "warning":
                     UiRun.ConsoleWarnings.Add(message.Text, test, PathOf(message.Page));
@@ -186,13 +194,20 @@ public abstract class UiTestBase
             var isApi = url.AbsolutePath.StartsWith("/api/", StringComparison.OrdinalIgnoreCase);
             if (response.Status >= 500 || (!isApi && response.Status >= 400))
             {
-                AddProblem($"{response.Status} from {response.Request.Method} {url.PathAndQuery}");
+                AddProblem($"{response.Status} from {response.Request.Method} {url.PathAndQuery}", test, PathOf(response.Frame.Page));
             }
         };
     }
 
-    private void AddProblem(string problem)
+    private void AddProblem(string problem, string test, string page)
     {
+        var knownProblem = KnownProblems.Explain(problem);
+        if (knownProblem is not null)
+        {
+            UiRun.ConsoleWarnings.Add($"Known problem ({knownProblem}): {problem.Split('\n')[0]}", test, page);
+            return;
+        }
+
         lock (_problems)
         {
             _problems.Add(problem);

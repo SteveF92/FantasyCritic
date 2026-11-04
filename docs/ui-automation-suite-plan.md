@@ -149,6 +149,39 @@ full-page screenshot and a trace.
   the stats chart canvas having drawn pixels.
 - **Login:** the real `/Account/Login` form, then the SPA shows the user in the nav.
 
+**Done.** 92 tests in `Tests/ReadOnly/` (91 pass, 1 skipped for a bug on main), about 2 minutes
+for the whole suite.
+
+As built:
+- **Planted data.** The local database is too flat for some checks: every hype factor is 0,
+  only the current year has master games, and there are no year stats, desired reviews or
+  public leagues of known shape. Those tests answer the page's API call with JSON the test
+  builds (`Ui.PlantJsonAsync`), usually starting from a real response so the rows keep their
+  real shape. This checks how the client renders and handles data, which is what the
+  migration changes. Planted tests are: hype factor sort (91.0912 and 91.56 together, so a
+  string comparison would order them wrongly), the sort selects, the filter, the game popover,
+  Public Leagues (12 leagues this year, 3 in 2025), the unannounced-games checkbox, Most
+  Desired Reviews' release windows, and the Master Game year stats.
+- **Locators** are roles, labels and text throughout. The exceptions, all in tests: `tbody tr`
+  for rows, the info icon's `svg` and the chart's `canvas`. `Ui.cs` has the shared ones,
+  including `Popover` (the tooltip role, which both libraries use) and `ColumnTextsAsync`.
+- **What it doesn't check:** the `/games` "Show only unreleased games" checkbox and the Plus
+  league selector. Top Bids and Drops has no local data beyond its heading. Hover states.
+- **Known problems** (`KnownProblems.cs`) don't fail tests but are listed in
+  `console-warnings.md`. Both are on main, outside the client migration:
+  - in Development the Razor pages load `/lib/jquery-validation*`, which isn't in the
+    repository (production uses a CDN), so every login page 404s twice;
+  - logged out, `/games` logs an `AxiosError` 401, because it asks for the user's leagues.
+
+Found on main while writing these, and left alone:
+- Loading `/longestTenuredGames` directly ends at `/404` instead of following its redirect.
+  `OldLongestTenuredPathRedirectsToItsSection` is `[Ignore]`d with that reason.
+- Logged out, `/404` and `/longestTenuredGames` go to the login page, because neither route is
+  public, so the router tests sign in first.
+- Public Leagues' pager counts every league for the year, whatever the search shows
+  (`:total-rows="rows"`, the unfiltered length). The tests don't assert page counts under a
+  search.
+
 ### 4. League creation and settings
 - `/createLeague` for each game mode (Standard, Multi Draft, One Shot). The preset fills the
   settings. In Multi Draft, "Add Another Draft" and "Remove Draft" work and the date inputs keep

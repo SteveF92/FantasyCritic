@@ -38,10 +38,7 @@ public sealed class HarnessTests : UiTestBase
         await page.GotoAsync("/");
 
         await page.EvaluateAsync("() => { console.error('deliberate console error'); setTimeout(() => { throw new Error('deliberate page exception'); }); }");
-        for (var waited = 0; Problems.Count < 2 && waited < 5000; waited += 50)
-        {
-            await Task.Delay(50);
-        }
+        await Ui.WaitUntilAsync(() => Task.FromResult(Problems.Count >= 2), "both problems to be reported");
 
         Assert.That(Problems, Has.Some.Contains("deliberate console error"));
         Assert.That(Problems, Has.Some.Contains("deliberate page exception"));
