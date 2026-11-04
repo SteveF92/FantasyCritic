@@ -2,7 +2,7 @@
   <div>
     <b-row class="text-well table-controls">
       <b-col sm="12" md="6" class="my-1">
-        <b-form-group label="Filter" label-for="filter-input" label-cols-sm="3" label-align-sm="right" label-size="sm" class="mb-0">
+        <b-form-group label="Filter" label-for="filter-input" label-cols-sm="3" label-align-sm="end" label-size="sm" class="mb-0">
           <b-input-group size="sm">
             <b-form-input id="filter-input" v-model="filter" type="search" placeholder="Type to Search"></b-form-input>
           </b-input-group>
@@ -10,7 +10,7 @@
       </b-col>
 
       <b-col sm="12" md="6" class="my-1">
-        <b-form-group v-slot="{ ariaDescribedby }" label="Filter On" description="Leave all unchecked to filter on all data" label-cols-sm="3" label-align-sm="right" label-size="sm" class="mb-0">
+        <b-form-group v-slot="{ ariaDescribedby }" label="Filter On" description="Leave all unchecked to filter on all data" label-cols-sm="3" label-align-sm="end" label-size="sm" class="mb-0">
           <b-form-checkbox-group v-model="filterOn" :aria-describedby="ariaDescribedby" class="mt-1">
             <b-form-checkbox value="gameName">Name</b-form-checkbox>
             <b-form-checkbox value="estimatedReleaseDate">Release Date</b-form-checkbox>
@@ -20,7 +20,7 @@
       </b-col>
 
       <b-col sm="12" md="6" class="my-1">
-        <b-form-group v-slot="{ ariaDescribedby }" label="Sort" label-for="sort-by-select" label-cols-sm="3" label-align-sm="right" label-size="sm" class="mb-0">
+        <b-form-group v-slot="{ ariaDescribedby }" label="Sort" label-for="sort-by-select" label-cols-sm="3" label-align-sm="end" label-size="sm" class="mb-0">
           <b-input-group size="sm">
             <b-form-select id="sort-by-select" v-model="sortKey" :options="sortOptions" :aria-describedby="ariaDescribedby" class="w-75">
               <template #first>
@@ -37,7 +37,7 @@
       </b-col>
 
       <b-col sm="12" md="6" class="my-1">
-        <b-form-group label="Per page" label-for="per-page-select" label-cols-sm="6" label-cols-md="4" label-cols-lg="3" label-align-sm="right" label-size="sm" class="mb-0">
+        <b-form-group label="Per page" label-for="per-page-select" label-cols-sm="6" label-cols-md="4" label-cols-lg="3" label-align-sm="end" label-size="sm" class="mb-0">
           <b-form-select id="per-page-select" v-model="perPage" :options="pageOptions" size="sm"></b-form-select>
         </b-form-group>
       </b-col>

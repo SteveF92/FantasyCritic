@@ -46,6 +46,31 @@ $bs4-column-selectors: ();
   margin-bottom: 1rem;
 }
 
+// Bootstrap-Vue 2 laid out horizontal form groups (label-cols) as a .form-row, with 10px gutters.
+.b-form-group > .row {
+  --#{$prefix}gutter-x: 10px;
+}
+
+// Bootstrap 4's help text sat on its own line.
+.form-text {
+  display: block;
+}
+
+// Bootstrap 4's .custom-select was inline-block, so a select could sit beside its label.
+.form-select {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+// Bootstrap 4 sized selects to match the inputs in a small or large input group.
+.input-group-sm > .form-select {
+  height: calc(1.5em + 0.5rem + 2px);
+}
+
+.input-group-lg > .form-select {
+  height: calc(1.5em + 1rem + 2px);
+}
+
 // Bootstrap 5's reboot indents lists 2rem. Bootstrap 4 left the browser's 40px.
 ol,
 ul {
@@ -68,9 +93,22 @@ ul {
   @extend .btn-group;
 }
 
+// Bootstrap-Vue 2 rendered popover titles as an h3, so they had heading weight and line height, and
+// Bootstrap 4 drew the line under them a shade darker than the title background.
+.popover-header {
+  font-weight: 700;
+  line-height: 1.2;
+  border-bottom-color: #ebebeb;
+}
+
 // Bootstrap 4's .table-responsive was full width on its own, so it filled a .row it sat in.
 .table-responsive {
   width: 100%;
+}
+
+// Bootstrap-Vue 2 gave sticky-header table headings its default cell colour, so they weren't black.
+.b-table-sticky-header > .table > thead > tr > th {
+  color: #212529;
 }
 
 // Bootstrap 4 drew a 2px line under table headers. Bootstrap 5 draws 1px.
