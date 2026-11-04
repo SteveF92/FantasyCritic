@@ -3,8 +3,8 @@
     <h1>Recent Master Game Changes</h1>
 
     <div class="mb-3">
-      <b-button class="mr-2" :variant="mode === 'All' ? 'primary' : 'secondary'" :disabled="isBusy" @click="mode = 'All'">All</b-button>
-      <b-button class="mr-2" :variant="mode === 'NewGames' ? 'primary' : 'secondary'" :disabled="isBusy" @click="mode = 'NewGames'">New games</b-button>
+      <b-button class="me-2" :variant="mode === 'All' ? 'primary' : 'secondary'" :disabled="isBusy" @click="mode = 'All'">All</b-button>
+      <b-button class="me-2" :variant="mode === 'NewGames' ? 'primary' : 'secondary'" :disabled="isBusy" @click="mode = 'NewGames'">New games</b-button>
       <b-button :variant="mode === 'Changes' ? 'primary' : 'secondary'" :disabled="isBusy" @click="mode = 'Changes'">Changes</b-button>
     </div>
 

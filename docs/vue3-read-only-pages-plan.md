@@ -73,6 +73,21 @@ Nothing past these tonight.
   `show` only animates the alert in on mount; visibility comes from `modelValue`.
 - Master Games and Public Leagues: sorting goes back to page 1, because bootstrap-vue-next emits
   `filtered` on sort changes too. Steve is keeping this.
+- Master Games: rows sort out of order by Hype Factor (Forza Horizon 6, 91.09, above Marvel's
+  Wolverine, 91.56). bootstrap-vue-next's default sort compares values as strings with
+  `localeCompare(..., { numeric: true })`, which reads the digits after a decimal point as a whole
+  number. Bootstrap-Vue 2 compared numbers numerically. Affects any `b-table` column of decimals
+  sorted without a `sortCompare`.
+- Master Games: `masterGameTagBadge` still passes `triggers="hover"`, which bootstrap-vue-next
+  ignores. Hover still opens the popover because, with no trigger props, bootstrap-vue-next
+  defaults to hover and focus.
+- Advanced Game Stats: every section logs `[Vue Router warn]: Couldn't find element using
+  selector "#mostDreamsDashed" returned by scrollBehavior`. Vue Router 4 warns when
+  `scrollBehavior` returns a hash selector that matches no element; Vue Router 3 ignored it.
+- Not client problems, seen on both branches against `fantasycritic-fromsnapshot`:
+  `GET /api/game/GetMostDesiredReviews` and `GET /api/game/GetMostDreamsDashedGames` (All Time)
+  return 500, so Most Desired Reviews and the all-time Most Dreams Dashed table couldn't be
+  compared.
 
 ## Report
 

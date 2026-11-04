@@ -21,7 +21,7 @@
               <b-button size="sm" variant="outline-primary" :to="{ name: 'criticsRoyale' }" class="welcome-action-btn">Play Critics Royale</b-button>
               <b-button v-show="isFactChecker || isAdmin" size="sm" variant="outline-warning" :to="{ name: 'adminConsole' }" class="welcome-action-btn">
                 Admin Console
-                <b-badge v-if="adminTaskTotalCount" variant="danger" class="ml-1">{{ adminTaskTotalCount }}</b-badge>
+                <b-badge v-if="adminTaskTotalCount" variant="danger" class="ms-1">{{ adminTaskTotalCount }}</b-badge>
               </b-button>
             </div>
           </div>
