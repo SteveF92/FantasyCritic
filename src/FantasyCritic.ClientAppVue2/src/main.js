@@ -1,7 +1,5 @@
 import { createApp } from 'vue';
 
-import BootstrapVue from 'bootstrap-vue';
-
 import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, Filler } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
 
@@ -13,14 +11,14 @@ import { pinia } from '@/store/pinia';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 import { ValidationField, ValidationForm } from './validation';
 
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+// Add the necessary CSS
+import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
 
 const app = createApp(App);
 
 app.use(pinia);
 app.use(router);
-
-app.use(BootstrapVue);
 
 //Vee-validate registration
 app.component('ValidationField', ValidationField);

@@ -1,5 +1,5 @@
 <template>
-  <div id="vue-app">
+  <BApp>
     <div id="top-nav-bar">
       <top-navbar></top-navbar>
     </div>
@@ -14,21 +14,14 @@
       <footerModule></footerModule>
     </div>
     <toastHost></toastHost>
-  </div>
+  </BApp>
 </template>
 
-<script>
+<script setup lang="ts">
+import { BApp } from 'bootstrap-vue-next';
 import TopNavbar from '@/components/topNavBar.vue';
 import FooterModule from '@/components/footerModule.vue';
 import ToastHost from '@/components/toastHost.vue';
-
-export default {
-  components: {
-    TopNavbar,
-    FooterModule,
-    ToastHost
-  }
-};
 </script>
 
 <style lang="scss">
