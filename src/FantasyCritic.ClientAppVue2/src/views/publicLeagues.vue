@@ -3,7 +3,7 @@
     <div class="row league-header">
       <h1 class="header">Public Leagues</h1>
       <div class="year-selector">
-        <b-form-select v-model="selectedYear" :options="supportedYears" value-field="year" text-field="year" @change="fetchPublicLeaguesForYear" />
+        <b-form-select v-model="selectedYear" :options="supportedYears" value-field="year" text-field="year" @update:model-value="fetchPublicLeaguesForYear" />
       </div>
     </div>
     <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
@@ -24,14 +24,14 @@
         :per-page="perPage"
         :current-page="currentPage"
         :filter="filter"
-        :filter-included-fields="filterOn"
+        :filterable="filterable"
         @filtered="onFiltered">
         <template #cell(leagueName)="data">
           <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: selectedYear } }">{{ data.item.leagueName }}</router-link>
           <font-awesome-icon v-if="!data.item.anyDraftStarted" v-b-popover.hover.top="'This league has not started a draft yet for this year.'" icon="hourglass-half" class="not-started-icon" />
         </template>
       </b-table>
-      <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+      <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="totalRows" :per-page="perPage" aria-controls="my-table"></b-pagination>
     </div>
   </div>
 </template>
@@ -46,8 +46,9 @@ export default {
     return {
       perPage: 10,
       currentPage: 1,
+      totalRows: 1,
       filter: null,
-      filterOn: ['leagueName'],
+      filterable: ['leagueName'],
       selectedYear: null,
       publicLeagues: [],
       leagueFields: [
@@ -58,10 +59,7 @@ export default {
     };
   },
   computed: {
-    ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'supportedYears']),
-    rows() {
-      return this.publicLeagues.length;
-    }
+    ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'supportedYears'])
   },
   async created() {
     this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
@@ -76,6 +74,7 @@ export default {
     async fetchPublicLeaguesForYear(year) {
       const response = await axios.get('/api/league/PublicLeagues/' + year);
       this.publicLeagues = response.data;
+      this.totalRows = this.publicLeagues.length;
     }
   }
 };
