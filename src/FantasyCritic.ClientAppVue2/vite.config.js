@@ -3,6 +3,8 @@ import vue from '@vitejs/plugin-vue';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 import { fileURLToPath, URL } from 'node:url';
+import Components from 'unplugin-vue-components/vite'
+import {BootstrapVueNextResolver} from 'bootstrap-vue-next/resolvers'
 
 const baseFolder = process.env.APPDATA !== undefined && process.env.APPDATA !== '' ? `${process.env.APPDATA}/ASP.NET/https` : `${process.env.HOME}/.aspnet/https`;
 
@@ -27,7 +29,10 @@ export default defineConfig({
           }
         }
       }
-    })
+    }),
+    Components({
+      resolvers: [BootstrapVueNextResolver()],
+    }),
   ],
   server: {
     https: {
