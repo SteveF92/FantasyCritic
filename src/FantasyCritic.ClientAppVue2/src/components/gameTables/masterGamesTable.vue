@@ -210,6 +210,10 @@ export default {
       this.currentPage = 1;
     },
     filterGames(item) {
+      if (!this.filter) {
+        return true;
+      }
+
       if (this.filterOn.length === 0 || this.filterOn.includes('gameName')) {
         let normalizedFilter = this.filter
           .normalize('NFD')
