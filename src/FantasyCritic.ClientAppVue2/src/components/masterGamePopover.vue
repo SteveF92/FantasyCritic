@@ -3,7 +3,7 @@
     <a :id="popoverID" href="javascript:;" :class="{ 'text-white': showAsWarning }">
       {{ masterGame.gameName }}
     </a>
-    <b-popover :target="popoverID" triggers="click blur" custom-class="master-game-popover">
+    <b-popover :target="popoverID" click placement="right" teleport-to="body" lazy class="master-game-popover">
       <div class="mg-popover">
         <masterGameSummary :master-game="masterGame"></masterGameSummary>
       </div>
@@ -31,13 +31,13 @@ export default {
 </script>
 <style scoped>
 @media only screen and (max-width: 600px) {
-  .master-game-popover {
+  :global(.master-game-popover) {
     max-width: 300px;
   }
 }
 
 @media only screen and (min-width: 601px) {
-  .master-game-popover {
+  :global(.master-game-popover) {
     max-width: 500px;
   }
 }
