@@ -11,8 +11,6 @@ import { pinia } from '@/store/pinia';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
 import { ValidationField, ValidationForm } from './validation';
 
-// Add the necessary CSS
-import 'bootstrap/dist/css/bootstrap.css';
 import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';
 
 const app = createApp(App);

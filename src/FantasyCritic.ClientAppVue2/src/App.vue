@@ -17,11 +17,18 @@
   </BApp>
 </template>
 
-<script setup lang="ts">
-import { BApp } from 'bootstrap-vue-next';
+<script>
 import TopNavbar from '@/components/topNavBar.vue';
 import FooterModule from '@/components/footerModule.vue';
 import ToastHost from '@/components/toastHost.vue';
+
+export default {
+  components: {
+    TopNavbar,
+    FooterModule,
+    ToastHost
+  }
+};
 </script>
 
 <style lang="scss">

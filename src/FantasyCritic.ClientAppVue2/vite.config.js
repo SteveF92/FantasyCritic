@@ -31,6 +31,7 @@ export default defineConfig({
       }
     }),
     Components({
+      dirs: [],
       resolvers: [BootstrapVueNextResolver()],
     }),
   ],
