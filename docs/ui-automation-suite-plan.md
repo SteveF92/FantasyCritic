@@ -310,6 +310,34 @@ manually score, will-not-release, edit publishers, eligibility overrides, tag ov
 between the tag lists), reassign publisher (typed confirmation), disconnect player, transfer
 manager, start new year.
 
+**Done.** 7 tests in `Tests/PostDraft/`: `ManagerRosterTests` (3) and `ManagerPlayerTests` (4). The
+whole suite is 131 passing and 1 skipped, in about 7¾ minutes.
+
+As built:
+- **Rosters:**
+  - add a game to a player, then remove it;
+  - add an unlisted game, link it to a master game, then score it by hand (after linking, the
+    publisher game takes the master game's name);
+  - mark a drafted game as won't release;
+  - ban a game, then reset its eligibility;
+  - override a game's tags through `masterGameTagSelector`, then reset them.
+  Each step is checked by its toast, the modal's own table, or the API.
+- **The tag override uses vue-multiselect, not drag and drop.** The plan was wrong here:
+  dragging between tag lists is `leagueTagSelector`, in the league settings. The test types the
+  tag name into the multiselect and presses Enter.
+- **Players and publishers:**
+  - edit a publisher's name and budget;
+  - disconnect a player, then reassign their publisher to a player who joined after the draft
+    (inactive, so assignable), with the typed "Reassign Publisher" confirmation;
+  - hand the league to another player, after which the Manage League section disappears;
+  - create a special auction with the `datetime-local` input, then cancel it.
+- `Ui.SelectOptionContainingAsync` and `PostDraftTestBase.SearchAndPickAsync` are now shared
+  helpers.
+- **Not covered:** Start New Year, because the next year isn't open in the local database, and
+  removing a publisher with no player.
+- The manager's game search is fuzzy: a search for a name that doesn't exist still lists games,
+  so "No games were found." doesn't appear. "Select unlisted game." is offered either way.
+
 ### 8. Conference
 Create a conference; invite links (create, delete, join through `?inviteCode=`); add a league;
 assign players by dragging between leagues, and lock/unlock; conference manager message and

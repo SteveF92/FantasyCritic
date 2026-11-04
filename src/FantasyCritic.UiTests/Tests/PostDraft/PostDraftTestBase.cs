@@ -53,6 +53,17 @@ public abstract class PostDraftTestBase : DraftTestBase
         (await league.GetLeagueYearAsync()).Publishers.Single(p => p.PublisherID == publisher.PublisherID);
 
     /// <summary>
+    /// Searches a modal's game search for the name and selects that game's row.
+    /// </summary>
+    protected static async Task SearchAndPickAsync(ILocator dialog, string gameName)
+    {
+        await dialog.Locator("#searchGameName").FillAsync(gameName);
+        await dialog.GetByRole(AriaRole.Button, new() { Name = "Search Game" }).ClickAsync();
+        await dialog.GetByRole(AriaRole.Row).Filter(new() { Has = dialog.Page.GetByRole(AriaRole.Cell, new() { Name = gameName, Exact = true }) })
+            .First.GetByRole(AriaRole.Button, new() { Name = "Select" }).ClickAsync();
+    }
+
+    /// <summary>
     /// The nameless confirm dialog nested in a modal, found by its question. If the library renders it inside the outer
     /// dialog rather than at the end of the body, both match, and the inner one comes last.
     /// </summary>

@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.IntegrationTests.Helpers;
@@ -25,14 +24,6 @@ public sealed class TradeTests : PostDraftTestBase
         return new Trade(proposer, counterParty, offered, requested);
     }
 
-    private static async Task SelectOptionContainingAsync(ILocator select, string text)
-    {
-        var labels = await select.Locator("option").AllTextContentsAsync();
-        var index = labels.ToList().FindIndex(label => label.Contains(text, StringComparison.Ordinal));
-        Assert.That(index, Is.GreaterThanOrEqualTo(0), $"No option contains '{text}': {string.Join(" | ", labels)}");
-        await select.SelectOptionAsync(new SelectOptionValue { Index = index });
-    }
-
     private async Task<IPage> ProposeAsync(LeagueFixture league, Trade trade)
     {
         var page = await NewSignedInPageAsync(await UserIDOfAsync(trade.Proposer), LeaguePath(league));
@@ -44,8 +35,8 @@ public sealed class TradeTests : PostDraftTestBase
         await dialog.GetByRole(AriaRole.Button, new() { Name = "Add Game" }).Nth(0).ClickAsync();
         await dialog.GetByRole(AriaRole.Button, new() { Name = "Add Game" }).Nth(1).ClickAsync();
         await Expect(selects).ToHaveCountAsync(3);
-        await SelectOptionContainingAsync(selects.Nth(1), trade.Offered);
-        await SelectOptionContainingAsync(selects.Nth(2), trade.Requested);
+        await Ui.SelectOptionContainingAsync(selects.Nth(1), trade.Offered);
+        await Ui.SelectOptionContainingAsync(selects.Nth(2), trade.Requested);
         await dialog.Locator("textarea").FillAsync("A fair swap.");
 
         await dialog.GetByRole(AriaRole.Button, new() { Name = "Propose Trade" }).ClickAsync();

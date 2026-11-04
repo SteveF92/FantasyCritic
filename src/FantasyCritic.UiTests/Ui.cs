@@ -42,6 +42,21 @@ public static class Ui
         await page.Mouse.UpAsync();
     }
 
+    /// <summary>
+    /// Selects the first option whose text contains the given text, for selects whose option labels decorate a name.
+    /// </summary>
+    public static async Task SelectOptionContainingAsync(ILocator select, string text)
+    {
+        var labels = await select.Locator("option").AllTextContentsAsync();
+        var index = labels.ToList().FindIndex(label => label.Contains(text, StringComparison.Ordinal));
+        if (index < 0)
+        {
+            throw new InvalidOperationException($"No option contains '{text}': {string.Join(" | ", labels)}");
+        }
+
+        await select.SelectOptionAsync(new SelectOptionValue { Index = index });
+    }
+
     public static ILocator Dialog(IPage page, string title) => page.GetByRole(AriaRole.Dialog, new() { Name = title });
 
     /// <summary>
