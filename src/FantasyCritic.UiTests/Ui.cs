@@ -30,6 +30,8 @@ public static class Ui
     /// </summary>
     public static async Task DragAsync(IPage page, ILocator source, ILocator target)
     {
+        // Mouse coordinates are the viewport's, so a list further down a scrolling modal has to be scrolled to first.
+        await source.ScrollIntoViewIfNeededAsync();
         var from = await source.BoundingBoxAsync() ?? throw new InvalidOperationException("The drag source isn't visible.");
         var to = await target.BoundingBoxAsync() ?? throw new InvalidOperationException("The drop target isn't visible.");
 

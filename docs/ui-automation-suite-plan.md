@@ -271,6 +271,39 @@ Fixture: `DraftToCompletionAsync` on a bidding scenario.
 - Publisher page: move mode reorders slots; the snapshot button produces a download.
 - League options, eligibility and tag overrides modals open read-only.
 
+**Done.** 10 tests in `Tests/PostDraft/`: `BidTests` (3), `DropAndWatchlistTests` (2),
+`TradeTests` (2) and `LeagueViewTests` (3), plus `PostDraftTestBase`. The whole suite is 124
+passing and 1 skipped, in about 6½ minutes.
+
+As built:
+- **The leagues.** `PostDraftTestBase.PostDraftScenario` has 4 standard games with 2 drafted, 2
+  counter picks with 1 drafted, and bids, drops and trades on, so a drafted league has open slots
+  of both kinds. It drafts two players, or three for trades, so the manager can vote on a trade
+  between the other two. Move mode uses `SlotTestHelpers.Scenario` with one special slot.
+- **Bids:** placing a bid from Top Available; then, on two bids set up through the API,
+  reordering by dragging with "Change Priorities" (kept after a reload), editing the amount, and
+  cancelling one through the nested confirm modal; and a counter pick bid.
+- **On main, the bid form and Current Bids stay open** after a bid or an edit. The tests close
+  the bid form themselves and keep working in Current Bids.
+- **Drops:** request a drop, then cancel it through the confirm modal in My Pending Drops.
+- **Watchlist:** add two games from Top Available, drag the second to the top and save it
+  (kept after a reload), write a note in the nested notes modal (`$bvModal.show`), and remove a
+  game.
+- **Trades:** the proposer picks the counterparty and a game on each side. The counterparty
+  accepts from the "View Trades" alert. The manager votes with a comment, sees it under Votes,
+  and executes, after which the API shows the games swapped. A second test rejects the trade.
+- **The projections toggle** (the custom `toggleSwitch` v-model) switches every publisher's
+  total to projected points and back.
+- **Move mode** moves a game into an empty regular slot ahead of the special slot. The API
+  confirms the new slot number.
+- **Not covered:** the planned snapshot test. The Share button is Plus-only and calls
+  `navigator.share`, so nothing is downloaded. Bid amount validation isn't covered either:
+  nothing disables Place Bid for an invalid amount; the provider shows a message instead.
+- `Ui.DragAsync` scrolls the source into view first. The watchlist sits below a long table in
+  its modal, and mouse coordinates are the viewport's.
+- `ConfirmDialog` finds the nameless nested confirm modal by its question, and takes the last
+  match in case bootstrap-vue-next renders it inside the outer dialog.
+
 ### 7. Post-draft manager actions
 Special auction (datetime-local input), claim game, remove publisher game, associate game,
 manually score, will-not-release, edit publishers, eligibility overrides, tag overrides (drag
