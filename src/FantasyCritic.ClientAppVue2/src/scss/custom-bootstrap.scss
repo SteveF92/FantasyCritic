@@ -40,11 +40,16 @@ $font-family-sans-serif:
   'Noto Color Emoji';
 $link-decoration: none;
 $link-hover-decoration: underline;
+$border-radius: 0.25rem;
+$border-radius-sm: 0.2rem;
+$border-radius-lg: 0.3rem;
+$card-border-color: rgba(0, 0, 0, 0.125);
 $card-spacer-x: 1.25rem;
 $card-spacer-y: 1.25rem;
 $card-cap-padding-y: 0.75rem;
 $alert-padding-x: 1.25rem;
 $alert-padding-y: 0.75rem;
+$hr-opacity: 1;
 
 .table-striped > tbody > tr:nth-child(2n) > td.b-table-sticky-column,
 .table-striped > tbody > tr:nth-child(2n) > th {

@@ -1,5 +1,38 @@
 // Rules that need Bootstrap's own CSS to come first. Imported after bootstrap.scss.
 
+// Bootstrap 5 only pads columns that are children of a .row. Bootstrap 4 padded every column class, and many
+// templates put columns outside a row. :where() keeps this at zero specificity, so .row > *, g-0 and px-* still win.
+$bs4-column-selectors: ();
+@each $breakpoint in map-keys($grid-breakpoints) {
+  $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
+  $bs4-column-selectors: append($bs4-column-selectors, '.col#{$infix}', comma);
+  $bs4-column-selectors: append($bs4-column-selectors, '.col#{$infix}-auto', comma);
+  @for $i from 1 through $grid-columns {
+    $bs4-column-selectors: append($bs4-column-selectors, '.col#{$infix}-#{$i}', comma);
+  }
+}
+
+:where(#{$bs4-column-selectors}) {
+  position: relative;
+  padding-right: $grid-gutter-width * 0.5;
+  padding-left: $grid-gutter-width * 0.5;
+}
+
+// Bootstrap 4's reboot gave every label a bottom margin, except check labels. Bootstrap 5 only gives one to .form-label.
+:where(label) {
+  margin-bottom: 0.5rem;
+}
+
+.form-check-label {
+  margin-bottom: 0;
+}
+
+// Bootstrap 5's reboot indents lists 2rem. Bootstrap 4 left the browser's 40px.
+ol,
+ul {
+  padding-left: 40px;
+}
+
 // Bootstrap 5 cards take the body color (dark grey). Bootstrap 4 cards inherited the page's white text.
 .card {
   color: inherit;

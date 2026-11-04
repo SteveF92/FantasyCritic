@@ -115,6 +115,11 @@ export default {
   padding-bottom: 0;
 }
 
+.main-nav :deep(.container-fluid) {
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
 .navbar-brand {
   margin-right: 3px;
 }
