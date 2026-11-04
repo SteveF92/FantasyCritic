@@ -352,7 +352,6 @@ const COUNTER_PICK_HANDLING_OPTIONS = [
 const DEFAULT_COUNTER_PICK_HANDLING = 'SemiPublicBiddingSecretCounterPicks';
 
 export default {
-  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     DateInput,
     LeagueTagSelector,

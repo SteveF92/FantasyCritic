@@ -39,7 +39,6 @@ import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { formatScore } from '@/utilities/formatters';
 
 export default {
-  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     MasterGamePopover
   },

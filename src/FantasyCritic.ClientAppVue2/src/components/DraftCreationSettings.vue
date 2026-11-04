@@ -60,7 +60,6 @@
 import { getDefaultDraft, getDefaultDraftName } from '@/utilities/leagueCreationPresets';
 
 export default {
-  compatConfig: { COMPONENT_V_MODEL: false },
   name: 'DraftCreationSettings',
   props: {
     modelValue: { type: Array, required: true },

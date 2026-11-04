@@ -24,7 +24,6 @@
     "@microsoft/signalr": "^8.0.17",
     "@vee-validate/i18n": "^4.15.1",
     "@vee-validate/rules": "^4.15.1",
-    "@vue/compat": "3.5.44",
     "axios": "^1.13.2",
     "bootstrap": "^5.3.8",
     "bootstrap-vue-next": "^1.2.2",
@@ -59,10 +58,5 @@
     "unplugin-vue-components": "^32.1.0",
     "vite": "^6.4.1",
     "vitest": "^5.0.5"
-  },
-  "overrides": {
-    "portal-vue": {
-      "vue": "$vue"
-    }
   }
 }

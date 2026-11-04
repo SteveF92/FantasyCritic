@@ -14,7 +14,6 @@
 const buttonMargin = 3;
 
 export default {
-  compatConfig: { COMPONENT_V_MODEL: false },
   props: {
     modelValue: { type: Boolean, required: true },
     labels: { type: Object, required: true },

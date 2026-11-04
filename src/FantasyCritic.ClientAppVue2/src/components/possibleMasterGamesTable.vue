@@ -45,7 +45,6 @@ import { useLeagueStore } from '@/store/leagueStore';
 import { formatScore } from '@/utilities/formatters';
 
 export default {
-  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     StatusBadge,
     MasterGamePopover

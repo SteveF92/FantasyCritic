@@ -21,15 +21,7 @@ const target = process.env.ASPNETCORE_HTTPS_PORT
 
 export default defineConfig({
   plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          compatConfig: {
-            MODE: 3
-          }
-        }
-      }
-    }),
+    vue(),
     Components({
       dirs: [],
       resolvers: [BootstrapVueNextResolver()],
@@ -94,7 +86,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      vue: '@vue/compat'
     }
   },
   css: {

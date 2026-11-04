@@ -27,7 +27,6 @@ import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
-  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     MasterGameTagSelector
   },

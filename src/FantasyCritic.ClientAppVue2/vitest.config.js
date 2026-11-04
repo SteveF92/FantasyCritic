@@ -6,15 +6,7 @@ import {BootstrapVueNextResolver} from 'bootstrap-vue-next/resolvers'
 
 export default defineConfig({
   plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          compatConfig: {
-            MODE: 3
-          }
-        }
-      }
-    }),
+    vue(),
     Components({
       dirs: [],
       resolvers: [BootstrapVueNextResolver()],
@@ -23,7 +15,6 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': fileURLToPath(new URL('./src', import.meta.url)),
-      vue: '@vue/compat'
     }
   },
   test: {

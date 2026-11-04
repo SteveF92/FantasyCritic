@@ -23,7 +23,6 @@ import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
-  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     Multiselect,
     MasterGameTagBadge

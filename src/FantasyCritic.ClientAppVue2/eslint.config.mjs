@@ -50,13 +50,6 @@ export default [
       "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     },
   },
-  // The compat typings redeclare the 'vue' module itself, so they can't import from it.
-  {
-    files: ["src/vue-compat.d.ts"],
-    rules: {
-      "vue/prefer-import-from-vue": "off",
-    },
-  },
   // Vue 3 deprecations already cleared from the codebase, kept out ahead of the upgrade. Some of
   // them (the events API, $set/$delete, Vue.config.keyCodes) are about script, not templates.
   {

@@ -55,7 +55,6 @@ import { intersection } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
-  compatConfig: { COMPONENT_V_MODEL: false },
   components: {
     VueDraggable,
     MasterGameTagBadge
