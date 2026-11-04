@@ -54,6 +54,11 @@ dotnet run --project src/FantasyCritic.RdsSnapshotManager/FantasyCritic.RdsSnaps
 **Scrubbing policy:** Exports are full-fidelity. Scrubbing runs on **load** into beta RDS or local Docker only. Option 5 is local Docker only and cannot target production or beta RDS. Scrubbing removes non-beta user credentials, external logins, most Discord config, and unprocessed pickup bids and drop requests in non-test leagues. It also disables the `RefreshPatreonInfo` job and deletes `tbl_system_patreonkeys`: those are production's Patreon tokens, and their refresh token is single use, so a copy that refreshed it would break production's Patreon job. It turns off the `FullAutomatedActionsProcess` and
 `ArchiveDatabase` jobs too: a copy must not process bids on its own, or add its dumps to production's archive.
 
+**Dev sign-in-as:** Options 4, 5 and 8, and only those, also set `AllowSignInAs` in `tbl_meta_systemwidesettings`. That
+lets the web app's Development-only `/dev/sign-in-as` endpoint work against the local copy (see
+`docs/dev-sign-in-as-plan.md`). Beta sync (option 2) leaves it off. A snapshot taken before production had the column
+gets a warning, and sign-in-as stays off for it.
+
 ## Local Docker MySQL (two databases)
 
 One MySQL instance (`docker compose -f infrastructure/docker-compose-mysql.yaml up -d`) hosts two databases:

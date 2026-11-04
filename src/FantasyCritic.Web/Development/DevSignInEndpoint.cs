@@ -2,6 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using System.Net;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Identity;
+using FantasyCritic.Lib.Interfaces;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
@@ -46,12 +47,19 @@ public static class DevSignInEndpoint
         return servers.Length > 0 && servers.All(server => LocalServers.Contains(server, StringComparer.OrdinalIgnoreCase));
     }
 
-    private static async Task<IResult> SignInAs(Guid userId, string? returnUrl, HttpContext context,
+    private static async Task<IResult> SignInAs(Guid userId, string? returnUrl, HttpContext context, IFantasyCriticRepo fantasyCriticRepo,
         FantasyCriticUserManager userManager, FantasyCriticSignInManager signInManager)
     {
         var remoteAddress = context.Connection.RemoteIpAddress;
         if (remoteAddress is null || !IPAddress.IsLoopback(remoteAddress))
         {
+            return Results.NotFound();
+        }
+
+        var systemWideSettings = await fantasyCriticRepo.GetSystemWideSettings();
+        if (!systemWideSettings.AllowSignInAs)
+        {
+            _logger.Warning("Dev sign-in-as refused: AllowSignInAs is off in this database.");
             return Results.NotFound();
         }
 

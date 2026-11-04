@@ -3,6 +3,7 @@ using FantasyCritic.MySQL;
 using FantasyCritic.MySQL.SyncingRepos;
 using FantasyCritic.RdsSnapshotManager.Configuration;
 using FantasyCritic.RdsSnapshotManager.Infrastructure;
+using Serilog;
 
 namespace FantasyCritic.RdsSnapshotManager.Services;
 
@@ -14,6 +15,7 @@ public sealed class LocalImportService
     private readonly MysqldumpRunner _mysqldumpRunner;
     private readonly MySQLBetaCleaner _cleaner;
     private readonly MySQLFantasyCriticUserStore _localUserStore;
+    private readonly MySQLLocalSetupSyncer _localSetupSyncer;
 
     public LocalImportService(
         RdsSnapshotManagerOptions options,
@@ -21,7 +23,8 @@ public sealed class LocalImportService
         DatabaseEmptyChecker emptyChecker,
         MysqldumpRunner mysqldumpRunner,
         MySQLBetaCleaner cleaner,
-        MySQLFantasyCriticUserStore localUserStore)
+        MySQLFantasyCriticUserStore localUserStore,
+        MySQLLocalSetupSyncer localSetupSyncer)
     {
         _options = options;
         _dockerHealthChecker = dockerHealthChecker;
@@ -29,6 +32,7 @@ public sealed class LocalImportService
         _mysqldumpRunner = mysqldumpRunner;
         _cleaner = cleaner;
         _localUserStore = localUserStore;
+        _localSetupSyncer = localSetupSyncer;
     }
 
     public async Task<Result> Import(string gzipFilePath, bool dropExistingDatabase, CancellationToken cancellationToken)
@@ -86,6 +90,14 @@ public sealed class LocalImportService
         var allUsers = await _localUserStore.GetAllUsers();
         var betaUsers = await _localUserStore.GetUsersInRoleAsync("BetaTester", cancellationToken);
         await _cleaner.CleanEmailsAndPasswords(allUsers, betaUsers);
+
+        //A snapshot taken before production had the AllowSignInAs migration has no column to set. That leaves sign-in-as off, which is safe.
+        var allowSignInAs = await _localSetupSyncer.AllowSignInAs();
+        if (allowSignInAs.IsFailure)
+        {
+            Log.Warning(allowSignInAs.Error);
+        }
+
         return Result.Success();
     }
 }

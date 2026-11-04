@@ -52,6 +52,7 @@ public static class Program
         DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
 
         await EnsureLocalAdminUser();
+        await AllowSignInAs();
         await UpdateSupportedYears();
         await UpdateRoyaleQuarters();
         await UpdateMasterGames();
@@ -63,6 +64,17 @@ public static class Program
         Log.Information("Ensuring local admin user exists");
         var syncer = new MySQLLocalSetupSyncer(_localConnectionString);
         await syncer.EnsureLocalAdminUser(_clock);
+    }
+
+    private static async Task AllowSignInAs()
+    {
+        Log.Information("Allowing dev sign-in-as");
+        var syncer = new MySQLLocalSetupSyncer(_localConnectionString);
+        var result = await syncer.AllowSignInAs();
+        if (result.IsFailure)
+        {
+            throw new InvalidOperationException($"{result.Error} The database updater runs before this tool, so the column should exist.");
+        }
     }
 
     private static async Task UpdateMasterGames()
