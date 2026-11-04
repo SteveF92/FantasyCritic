@@ -43,6 +43,12 @@ ul {
   box-shadow: none;
 }
 
+// Bootstrap-Vue 2 put every b-dropdown in a .btn-group, so dropdowns sat inline. bootstrap-vue-next's
+// wrapper is a plain block .dropdown. Navbar dropdowns are left alone.
+.dropdown:has(> .btn.dropdown-toggle:not(.nav-link)) {
+  @extend .btn-group;
+}
+
 // Bootstrap 4 drew a 2px line under table headers. Bootstrap 5 draws 1px.
 .table > thead > tr > th {
   border-bottom-width: 2px;

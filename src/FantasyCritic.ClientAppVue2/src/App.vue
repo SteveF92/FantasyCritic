@@ -33,8 +33,10 @@ export default {
   data() {
     return {
       // Bootstrap-Vue 2 tables toggled between ascending and descending. bootstrap-vue-next clears the sort on a third click unless mustSort is set.
+      // Bootstrap 4 dropped dropdown menus 0.125rem below their toggle; bootstrap-vue-next positions them with no gap.
       bootstrapDefaults: {
-        BTable: { mustSort: true }
+        BTable: { mustSort: true },
+        BDropdown: { offset: 2 }
       }
     };
   }
