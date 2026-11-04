@@ -86,20 +86,47 @@ Principles:
 
 One commit per step, then stop for review.
 
-### 0. Commit this plan as `docs/ui-automation-suite-plan.md`
+### 0. Commit this plan as `docs/ui-automation-suite-plan.md` — done (15028d0de)
 
-### 1. Extract `FantasyCritic.IntegrationTestSupport`
+### 1. Extract `FantasyCritic.IntegrationTestSupport` — done (f547ddfe9)
 Move the files listed above, make them public, add the project to `FantasyCritic.slnx`
 (`/Tests/`), and reference it from IntegrationTests. No behaviour change. Verify:
 `dotnet build src/FantasyCritic.slnx` with zero warnings, and the integration tests pass in
 Release. Any failures get checked against `_schemaversion` for drift from other branches.
 
-### 2. UiTests skeleton
+Verified: zero warnings; 365 integration tests pass; `_schemaversion` matches the branch.
+
+### 2. UiTests skeleton — done
 Project (`Microsoft.Playwright`, NUnit, TreatWarningsAsErrors), Kestrel option on the factory,
 `dist/` serving, `UiTestBase`, `Ui.cs`, the console report, `Run-UiTests.ps1`, and two tests:
 the logged-out welcome page renders, and a signed-in user lands on `/home`. Also a deliberate
 check that a thrown page error fails a test. Update CLAUDE.md's Commands and project table.
 Verify: green three times; a trace appears when a test is forced to fail.
+
+As built:
+- `UiWebApplicationFactory` subclasses the shared factory, which is no longer sealed. It
+  listens on `127.0.0.1:0` and reports `http://localhost:<port>`, a host Web's redirect-to-www
+  rule leaves alone.
+- **Sessions need their own client on Kestrel.** The factory's `CreateClient` ends in a socket
+  handler that follows redirects itself whatever `AllowAutoRedirect` says, so `RegisterAsync`
+  saw the SPA's `index.html` instead of its 302. The shared factory gained a virtual
+  `CreateSessionClient()`, which `ApiSession` now uses. The UI factory overrides it with a
+  `SocketsHttpHandler` that doesn't follow redirects and has its own cookie container.
+- **Failures:** Chrome's `Failed to load resource` console errors are ignored, since the API
+  returns 401 and 400 by design (every logged-out page's `currentUser` is a 401). What fails a
+  test is a 5xx from anything, or a 4xx from a same-origin non-API path, such as a missing
+  asset or a sign-in-as 404. Page exceptions and other console errors fail as planned.
+- `Ui.cs` waits for step 3, since nothing uses a helper yet.
+- **Vue's production build strips its warnings.** On main the warnings report reads "None".
+  That's expected, and it will be true of `@vue/compat`'s deprecation warnings too. So for
+  step 10's compat checklist, build the client with `NODE_ENV=development` (a dev-mode bundle)
+  or read the dev server's console.
+- The tests are `Tests/HarnessTests.cs`. The third checks that both a `console.error` and an
+  uncaught exception are caught, then clears them so the test passes.
+
+Verified: three green runs (about 4 s for the three tests, plus about 10 s of client build); a
+stale `dist/` stops the run in setup, naming the newer file; a broken assertion leaves a
+full-page screenshot and a trace.
 
 ### 3. Public and read-only pages
 - **Route smoke:** each public and logged-in read-only route (static pages, `/games`,
