@@ -50,7 +50,8 @@ database.
 - **Not in the API surface.** `.ExcludeFromDescription()`, so NSwag never puts it in the OpenAPI document or the
   generated clients. `Regenerate-ApiClient.ps1` runs the app in Development, so without this it might show up there.
 - **Logged as a warning** each time it is used, with the user ID, so the dev log shows that a session started this way.
-- **A user that doesn't exist, or one with `IsDeleted` set,** gets 404, not a sign-in.
+- **A user that doesn't exist** gets 404, not a sign-in. **A deleted user can be signed in as.** The cleaner marks every
+  non-beta user deleted, so refusing them would leave a snapshot with only its beta testers to sign in as.
 
 ## Where the code goes
 
@@ -112,10 +113,10 @@ Added after Steps 1 and 2, as a fourth guard alongside the other three.
 
 ## Open questions
 
-- **Deleted users on a snapshot.** The endpoint refuses users with `IsDeleted` set. But the cleaner marks every
-  non-beta user deleted (49,454 of 49,463 on the current local snapshot). So on a snapshot, sign-in-as only reaches beta
-  testers, which defeats "sign in as this league's manager". Dropping the `IsDeleted` check would fix that. It isn't
-  one of the four guards: it only controls which users can be reached once the guards have passed.
+- **Deleted users on a snapshot (decided: allowed).** Step 1 refused users with `IsDeleted` set. But the cleaner marks
+  every non-beta user deleted (49,454 of 49,463 on the current local snapshot), so sign-in-as could only reach beta
+  testers. The check was dropped after Step 3. It was never one of the four guards: it only decided which users could be
+  reached once the guards had passed.
 
 - Should a fourth guard be an explicit opt-in config key (for example `Development:AllowSignInAs`, off by default)? The
   plan leaves it out, because the local-database guard already covers a misconfigured environment. It would also mean a
