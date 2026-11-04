@@ -14,9 +14,9 @@ $dark: #15171a;
 $card-bg: #414141;
 $modal-content-bg: #d4d4d4;
 
+$table-color: #ffffff;
 $table-bg: #222222;
-$table-accent-bg: #333333;
-$alert-bg-level: 0;
+$table-striped-bg: #333333;
 
 $grid-breakpoints: (
   'xs': 0,
@@ -26,6 +26,26 @@ $grid-breakpoints: (
   'xl': 1550px
 );
 
+// Keep Bootstrap 4's sizes and look, which the site was designed against.
+$container-max-widths: (
+  'sm': 540px,
+  'md': 720px,
+  'lg': 960px,
+  'xl': 1140px
+);
+$grid-gutter-width: 30px;
+$enable-rfs: false;
+$font-family-sans-serif:
+  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
+  'Noto Color Emoji';
+$link-decoration: none;
+$link-hover-decoration: underline;
+$card-spacer-x: 1.25rem;
+$card-spacer-y: 1.25rem;
+$card-cap-padding-y: 0.75rem;
+$alert-padding-x: 1.25rem;
+$alert-padding-y: 0.75rem;
+
 .table-striped > tbody > tr:nth-child(2n) > td.b-table-sticky-column,
 .table-striped > tbody > tr:nth-child(2n) > th {
   background-color: $table-bg;
@@ -33,7 +53,7 @@ $grid-breakpoints: (
 
 .table-striped > tbody > tr:nth-child(2n + 1) > td.b-table-sticky-column,
 .table-striped > tbody > tr:nth-child(2n + 1) > th {
-  background-color: $table-accent-bg;
+  background-color: $table-striped-bg;
 }
 
 .table tbody tr > td.success {

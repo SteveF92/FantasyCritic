@@ -1,0 +1,21 @@
+// Rules that need Bootstrap's own CSS to come first. Imported after bootstrap.scss.
+
+// Bootstrap 5 cards take the body color (dark grey). Bootstrap 4 cards inherited the page's white text.
+.card {
+  color: inherit;
+}
+
+// Bootstrap 5 rings the navbar toggler after a mouse click too. Keep the ring for keyboard focus only.
+.navbar-toggler:focus:not(:focus-visible) {
+  box-shadow: none;
+}
+
+// Bootstrap 5 alerts use a pale tint of the theme color. Bootstrap 4 with $alert-bg-level: 0 used the color itself.
+@each $color, $value in $theme-colors {
+  .alert-#{$color} {
+    --#{$prefix}alert-bg: #{$value};
+    --#{$prefix}alert-border-color: #{$value};
+    --#{$prefix}alert-color: #{$white};
+    --#{$prefix}alert-link-color: #{$white};
+  }
+}

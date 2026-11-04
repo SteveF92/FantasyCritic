@@ -1,26 +1,28 @@
 <template>
   <div>
-    <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1">
-      <div class="row hero-area">
-        <div class="col-md-5 offset-md-1 col-sm-12 hero-message-area">
-          <div class="hero-message">
-            <h1 class="hero-message-header shadowed">
-              Fantasy Football...
-              <br />
-              for video games!
-            </h1>
-            <p class="shadowed hero-message-details">
-              Fantasy Critic is a game where you get to play as your own "fantasy" video game publisher. It's your job to choose the best reviewing games to publish!
-            </p>
+    <div class="row mx-0">
+      <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1">
+        <div class="row hero-area">
+          <div class="col-md-5 offset-md-1 col-sm-12 hero-message-area">
+            <div class="hero-message">
+              <h1 class="hero-message-header shadowed">
+                Fantasy Football...
+                <br />
+                for video games!
+              </h1>
+              <p class="shadowed hero-message-details">
+                Fantasy Critic is a game where you get to play as your own "fantasy" video game publisher. It's your job to choose the best reviewing games to publish!
+              </p>
+            </div>
           </div>
-        </div>
-        <div class="col-md-6 col-sm-12 registration-area">
-          <div class="registration-box shadowed">
-            <h2>Registration is free!</h2>
-            <b-button variant="primary" href="/Account/Register" class="nav-link">
-              <span>Sign up</span>
-              <font-awesome-icon class="full-nav" icon="user-plus" />
-            </b-button>
+          <div class="col-md-6 col-sm-12 registration-area">
+            <div class="registration-box shadowed">
+              <h2>Registration is free!</h2>
+              <b-button variant="primary" href="/Account/Register" class="px-3 py-2">
+                <span>Sign up</span>
+                <font-awesome-icon class="full-nav" icon="user-plus" />
+              </b-button>
+            </div>
           </div>
         </div>
       </div>
@@ -107,45 +109,47 @@
       </div>
     </div>
 
-    <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1 features-area bg-secondary">
-      <h2 class="features-heading">Features and Highlights</h2>
-      <div class="feature-highlights-area">
-        <div class="row">
-          <div class="col-sm-12 col-md-6">
-            <div class="feature-highlight shadowed">
-              <font-awesome-layers class="fa-4x">
-                <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="user-friends" transform="shrink-9 left-2" :style="{ color: 'd6993a' }" />
-              </font-awesome-layers>
-              <span class="feature-description">Compete with your friends</span>
+    <div class="row mx-0">
+      <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1 features-area bg-secondary">
+        <h2 class="features-heading">Features and Highlights</h2>
+        <div class="feature-highlights-area">
+          <div class="row">
+            <div class="col-sm-12 col-md-6">
+              <div class="feature-highlight shadowed">
+                <font-awesome-layers class="fa-4x">
+                  <font-awesome-icon :icon="['far', 'circle']" />
+                  <font-awesome-icon icon="user-friends" transform="shrink-9 left-2" :style="{ color: 'd6993a' }" />
+                </font-awesome-layers>
+                <span class="feature-description">Compete with your friends</span>
+              </div>
             </div>
-          </div>
-          <div class="col-sm-12 col-md-6">
-            <div class="feature-highlight shadowed">
-              <font-awesome-layers class="fa-4x">
-                <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="list-ol" transform="shrink-8" :style="{ color: 'd6993a' }" />
-              </font-awesome-layers>
-              <span class="feature-description">Assemble your dream team</span>
+            <div class="col-sm-12 col-md-6">
+              <div class="feature-highlight shadowed">
+                <font-awesome-layers class="fa-4x">
+                  <font-awesome-icon :icon="['far', 'circle']" />
+                  <font-awesome-icon icon="list-ol" transform="shrink-8" :style="{ color: 'd6993a' }" />
+                </font-awesome-layers>
+                <span class="feature-description">Assemble your dream team</span>
+              </div>
             </div>
-          </div>
-          <div class="col-sm-12 col-md-6">
-            <div class="feature-highlight shadowed">
-              <font-awesome-layers class="fa-4x">
-                <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="crown" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
-              </font-awesome-layers>
-              <span class="feature-description">Claim the crown</span>
+            <div class="col-sm-12 col-md-6">
+              <div class="feature-highlight shadowed">
+                <font-awesome-layers class="fa-4x">
+                  <font-awesome-icon :icon="['far', 'circle']" />
+                  <font-awesome-icon icon="crown" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
+                </font-awesome-layers>
+                <span class="feature-description">Claim the crown</span>
+              </div>
             </div>
-          </div>
-          <div class="col-sm-12 col-md-6">
-            <div class="feature-highlight shadowed">
-              <font-awesome-layers class="fa-4x">
-                <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="money-bill-alt" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
-                <font-awesome-icon icon="slash" transform="shrink-6 left-2" />
-              </font-awesome-layers>
-              <span class="feature-description">Totally free</span>
+            <div class="col-sm-12 col-md-6">
+              <div class="feature-highlight shadowed">
+                <font-awesome-layers class="fa-4x">
+                  <font-awesome-icon :icon="['far', 'circle']" />
+                  <font-awesome-icon icon="money-bill-alt" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
+                  <font-awesome-icon icon="slash" transform="shrink-6 left-2" />
+                </font-awesome-layers>
+                <span class="feature-description">Totally free</span>
+              </div>
             </div>
           </div>
         </div>
@@ -159,21 +163,23 @@
           <homeFaq></homeFaq>
           <div class="alert alert-secondary">
             <div class="d-flex">
-              <div class="mr-auto p-2">More Questions?</div>
-              <b-button class="nav-link" variant="primary" :to="{ name: 'faq' }">View our FAQ Page</b-button>
+              <div class="me-auto p-2">More Questions?</div>
+              <b-button class="px-3 py-2" variant="primary" :to="{ name: 'faq' }">View our FAQ Page</b-button>
             </div>
           </div>
         </div>
         <div class="minimal-welcome">
           <div class="alert alert-secondary">
-            <b-button class="nav-link" variant="primary" :to="{ name: 'faq' }">View our FAQ Page</b-button>
+            <b-button class="px-3 py-2" variant="primary" :to="{ name: 'faq' }">View our FAQ Page</b-button>
           </div>
         </div>
       </div>
     </div>
 
-    <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1">
-      <h2>So far we have...</h2>
+    <div class="row mx-0">
+      <div class="col-md-12 col-lg-10 offset-md-0 offset-lg-1">
+        <h2>So far we have...</h2>
+      </div>
     </div>
     <siteCounts></siteCounts>
   </div>

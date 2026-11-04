@@ -1,5 +1,5 @@
 <template>
-  <b-navbar toggleable="md" type="dark" variant="dark" class="main-nav">
+  <b-navbar toggleable="md" variant="dark" class="main-nav navbar-dark">
     <b-navbar-brand :to="{ name: 'welcome' }">
       <template v-if="!isPlusUser">
         <img class="full-logo" src="/images/horizontal-logo.svg" />
@@ -67,7 +67,7 @@
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
-      <b-navbar-nav v-if="!authIsBusy" class="ml-auto user-dropdown">
+      <b-navbar-nav v-if="!authIsBusy" class="ms-auto user-dropdown">
         <b-nav-item href="https://patreon.com/fantasycritic" target="_blank">
           <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" fixed-width />
           <span class="brand-text">Patreon</span>
@@ -77,7 +77,7 @@
           <span class="brand-text">Discord</span>
         </b-nav-item>
 
-        <b-nav-item-dropdown v-if="isAuth && userInfo" right>
+        <b-nav-item-dropdown v-if="isAuth && userInfo" placement="bottom-end">
           <!-- Using 'button-content' slot -->
           <template #button-content>
             <span class="user-text">{{ userInfo.displayName }}</span>
@@ -143,7 +143,7 @@ export default {
   margin-right: 5px;
 }
 
-.nav-link {
+.main-nav :deep(.nav-link) {
   padding-left: 6px !important;
   padding-right: 6px !important;
 }

@@ -2,10 +2,10 @@
   <footer class="footer bg-dark">
     <div class="container">
       <div class="row justify-content-between">
-        <div class="footer-logo" col-lg-4>
+        <div class="col-auto px-0 footer-logo">
           <img src="@/assets/logo-white.png" />
         </div>
-        <div col-lg-4 col-md-6>
+        <div class="col-auto px-0">
           <div>
             <router-link :to="{ name: 'howtoplay' }" title="How To Play">
               <font-awesome-icon icon="book-open" size="lg" fixed-width />
@@ -49,7 +49,7 @@
             </router-link>
           </div>
         </div>
-        <div col-lg-4 col-md-6>
+        <div class="col-auto px-0">
           <div>
             <a href="https://patreon.com/fantasycritic" target="_blank">
               <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" fixed-width />
