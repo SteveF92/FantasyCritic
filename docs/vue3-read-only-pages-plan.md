@@ -45,6 +45,14 @@ Nothing past these tonight.
 ## Rules
 
 - **Read only.** Don't submit forms or take any action that writes to the database.
+- **What Claude changes:** SCSS, CSS and template markup to make a page look like main,
+  including bootstrap-vue-next prop renames that only affect appearance (`custom-class` to
+  `class`, `align`, `placement`, `teleport-to`).
+- **What Claude notes for Steve instead:** anything that changes how the JavaScript works:
+  event handlers, filter or sort logic, data flow, `@change` to `@update:model-value`. When in
+  doubt, it counts as JS. Notes read like a migration doc entry: what changed in the library, the
+  symptom, and where. No tailored fix until Steve asks.
+- If a page is blocked, note it and move on to another part of the page or the next page.
 - Fix page-level problems in the page or its components. A Bootstrap 5 default that differs from
   Bootstrap 4 is fixed once in `custom-bootstrap.scss` or `bootstrap-overrides.scss`, as on the
   home page.
@@ -55,6 +63,16 @@ Nothing past these tonight.
   any chart with a production build.
 - Vite's watcher on `I:` sometimes misses an edit. If a change doesn't show, touch the file.
 - No pushes, merges or dependency changes.
+
+## Already noted for Steve
+
+- Public Leagues: the page count stays at the unfiltered total after the year changes while a
+  search is active. bootstrap-vue-next emits `filtered` only when the filter or sort changes, not
+  when `items` change.
+- Top Bids and Drops: the end-of-year season alert is a `<b-alert show>`. In bootstrap-vue-next,
+  `show` only animates the alert in on mount; visibility comes from `modelValue`.
+- Master Games and Public Leagues: sorting goes back to page 1, because bootstrap-vue-next emits
+  `filtered` on sort changes too. Steve is keeping this.
 
 ## Report
 
