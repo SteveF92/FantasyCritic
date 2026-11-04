@@ -10,7 +10,7 @@
         <span class="detail-label">Minimum Release Date:</span>
         <span v-if="masterGame.minimumReleaseDate">{{ formatDate(masterGame.minimumReleaseDate) }}</span>
         <font-awesome-icon
-          v-b-popover.hover.focus="'Minimum Release Date is our attempt at defining the \'earlist possible release date\' based on the above estimate from the makers of the game.'"
+          v-b-popover.hover.focus.right="'Minimum Release Date is our attempt at defining the \'earlist possible release date\' based on the above estimate from the makers of the game.'"
           color="white"
           icon="info-circle"
           class="date-info" />
@@ -19,7 +19,7 @@
         <span class="detail-label">Maximum Release Date:</span>
         <span v-if="masterGame.maximumReleaseDate">{{ formatDate(masterGame.maximumReleaseDate) }}</span>
         <font-awesome-icon
-          v-b-popover.hover.focus="'Maximum Release Date is our attempt at defining the \'latest possible release date\' based on the above estimate from the makers of the game.'"
+          v-b-popover.hover.focus.right="'Maximum Release Date is our attempt at defining the \'latest possible release date\' based on the above estimate from the makers of the game.'"
           color="white"
           icon="info-circle"
           class="date-info" />

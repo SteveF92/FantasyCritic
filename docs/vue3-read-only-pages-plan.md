@@ -84,6 +84,15 @@ Nothing past these tonight.
 - Advanced Game Stats: every section logs `[Vue Router warn]: Couldn't find element using
   selector "#mostDreamsDashed" returned by scrollBehavior`. Vue Router 4 warns when
   `scrollBehavior` returns a hash selector that matches no element; Vue Router 3 ignored it.
+- Master Game detail: the Peak Hype Factor info popover (`masterGameYearStats.vue`) shows
+  JavaScript source as its text, for example `() => { return 'Peak Hype Factor'; }`. The
+  `v-b-popover` value is an object with `title` and `content` functions and `html: true`.
+  Bootstrap-Vue 2 called the functions; bootstrap-vue-next renders the values as given, and logs
+  ``[BootstrapVueNext:v-b-popover/v-b-tooltip] `content` is deprecated, use `body` instead``.
+  Seen on games whose peak hype is above their current hype, such as The Eternal Life of Goldman
+  (`/mastergame/00072c0b-bb0b-4bcd-8dae-a92da1a9117b`).
+- Master Game detail: the statistics chart wasn't checked. The dev server blanks it on both
+  branches, and a production-build comparison wasn't set up tonight.
 - Not client problems, seen on both branches against `fantasycritic-fromsnapshot`:
   `GET /api/game/GetMostDesiredReviews` and `GET /api/game/GetMostDreamsDashedGames` (All Time)
   return 500, so Most Desired Reviews and the all-time Most Dreams Dashed table couldn't be
