@@ -81,7 +81,8 @@ div.alert {
   color: black !important;
 }
 
-.custom-select {
+.custom-select,
+.form-select {
   border-radius: 0;
   border: none;
   height: 40px;

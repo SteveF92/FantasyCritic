@@ -18,6 +18,18 @@ $bs4-column-selectors: ();
   padding-left: $grid-gutter-width * 0.5;
 }
 
+// Bootstrap 5 sizes and pads every child of a .row as a column. Bootstrap 4 left children without a
+// column class alone, and many templates use .row as a plain flex wrapper. :where() keeps this at
+// the same specificity as Bootstrap's .row > *, so page styles still win.
+.row > :where(:not([class^='col'], [class*=' col'])) {
+  flex-shrink: 1;
+  width: auto;
+  max-width: none;
+  padding-right: 0;
+  padding-left: 0;
+  margin-top: 0;
+}
+
 // Bootstrap 4's reboot gave every label a bottom margin, except check labels. Bootstrap 5 only gives one to .form-label.
 :where(label) {
   margin-bottom: 0.5rem;
@@ -25,6 +37,13 @@ $bs4-column-selectors: ();
 
 .form-check-label {
   margin-bottom: 0;
+}
+
+// Bootstrap 4's .form-group spaced each field 1rem from the next. Bootstrap 5 dropped the class, and
+// bootstrap-vue-next's b-form-group has no margin. mb-* utilities are !important, so they still win.
+.b-form-group,
+.form-group {
+  margin-bottom: 1rem;
 }
 
 // Bootstrap 5's reboot indents lists 2rem. Bootstrap 4 left the browser's 40px.
@@ -47,6 +66,11 @@ ul {
 // wrapper is a plain block .dropdown. Navbar dropdowns are left alone.
 .dropdown:has(> .btn.dropdown-toggle:not(.nav-link)) {
   @extend .btn-group;
+}
+
+// Bootstrap 4's .table-responsive was full width on its own, so it filled a .row it sat in.
+.table-responsive {
+  width: 100%;
 }
 
 // Bootstrap 4 drew a 2px line under table headers. Bootstrap 5 draws 1px.
