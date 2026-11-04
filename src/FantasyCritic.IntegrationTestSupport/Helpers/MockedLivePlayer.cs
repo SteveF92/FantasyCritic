@@ -13,7 +13,7 @@ namespace FantasyCritic.IntegrationTests.Helpers;
 /// Override <see cref="DraftStandardGameAsync"/> or <see cref="DraftCounterPickAsync"/>
 /// to inject custom pick logic in scenario-specific tests.
 /// </summary>
-internal class MockedLivePlayer
+public class MockedLivePlayer
 {
     private readonly ApiSession _session;
 
@@ -101,7 +101,7 @@ internal class MockedLivePlayer
 /// delegates to the correct <see cref="MockedLivePlayer"/>, and returns when the
 /// draft is finished.
 /// </summary>
-internal sealed class DraftSimulator
+public sealed class DraftSimulator
 {
     private readonly ApiSession _observerSession;
     private readonly IReadOnlyDictionary<Guid, MockedLivePlayer> _players;

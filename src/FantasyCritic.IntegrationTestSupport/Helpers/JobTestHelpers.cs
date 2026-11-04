@@ -13,7 +13,7 @@ namespace FantasyCritic.IntegrationTests.Helpers;
 /// This is the worker's claim → run → settle sequence without its polling, cancellation or error swallowing:
 /// a job that fails throws, so the test fails at the job rather than at a later assertion.
 /// </summary>
-internal static class JobTestHelpers
+public static class JobTestHelpers
 {
     public static async Task RunQueuedJobAsync(FantasyCriticWebApplicationFactory factory, Guid jobID)
     {

@@ -13,6 +13,7 @@
     <Project Path="FantasyCritic.FakeRepo/FantasyCritic.FakeRepo.csproj" />
     <Project Path="FantasyCritic.HostingTests/FantasyCritic.HostingTests.csproj" />
     <Project Path="FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.csproj" />
+    <Project Path="FantasyCritic.IntegrationTestSupport/FantasyCritic.IntegrationTestSupport.csproj" />
     <Project Path="FantasyCritic.RdsSnapshotManagerTests/FantasyCritic.RdsSnapshotManagerTests.csproj" />
     <Project Path="FantasyCritic.Test/FantasyCritic.Test.csproj" />
     <Project Path="FantasyCritic.WebTests/FantasyCritic.WebTests.csproj" />
