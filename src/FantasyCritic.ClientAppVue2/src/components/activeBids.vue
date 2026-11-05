@@ -6,12 +6,18 @@
           <span class="game-name-column">
             <span v-if="data.item.counterPick" v-b-popover.hover.focus="counterPickText" class="badge tag-badge counter-pick-badge">CPK</span>
             <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
-            <font-awesome-icon
-              v-if="data.item.eligibilityErrors && data.item.eligibilityErrors.length > 0"
-              v-b-popover.hover.focus="bidWillFailText(data.item)"
-              class="bid-will-fail"
-              color="white"
-              icon="exclamation-triangle" />
+            <b-popover v-if="data.item.eligibilityErrors && data.item.eligibilityErrors.length > 0" title="This bid will fail!">
+              <template #target>
+                <font-awesome-icon class="bid-will-fail" color="white" icon="exclamation-triangle" />
+              </template>
+              This bid will fail for the below reasons:
+              <br />
+              <br />
+              <h5>Errors</h5>
+              <ul>
+                <li v-for="error in data.item.eligibilityErrors" :key="error">{{ error }}</li>
+              </ul>
+            </b-popover>
           </span>
         </template>
         <template #cell(masterGame.maximumReleaseDate)="data">
@@ -54,13 +60,8 @@ export default {
     ...mapState(useLeagueStore, ['leagueYear']),
     counterPickText() {
       return {
-        html: true,
-        title: () => {
-          return 'Counter Pick Bid';
-        },
-        content: () => {
-          return 'This game is being bid on as a counter pick.';
-        }
+        title: 'Counter Pick Bid',
+        body: 'This game is being bid on as a counter pick.'
       };
     },
     games() {
@@ -80,25 +81,6 @@ export default {
         return DateTime.fromISO(game.releaseDate).toFormat('yyyy-MM-dd');
       }
       return game.estimatedReleaseDate + ' (Estimated)';
-    },
-    bidWillFailText(publicBid) {
-      return {
-        html: true,
-        title: () => {
-          return 'This bid will fail!';
-        },
-        content: () => {
-          let eligibilityErrorsList = '';
-          publicBid.eligibilityErrors.forEach((error) => {
-            eligibilityErrorsList += `<li>${error}</li>`;
-          });
-
-          let eligibilityErrorsListElement = `<h5>Errors</h5><ul>${eligibilityErrorsList}</ul>`;
-          let mainText = 'This bid will fail for the below reasons:';
-          let fullText = `${mainText}<br/><br/>${eligibilityErrorsListElement}`;
-          return fullText;
-        }
-      };
     }
   }
 };

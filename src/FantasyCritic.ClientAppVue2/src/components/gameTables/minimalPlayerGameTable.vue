@@ -170,16 +170,10 @@ export default {
     },
     roundingWarning() {
       return {
-        html: true,
-        title: () => {
-          return "Why aren't these points adding up correctly?";
-        },
-        content: () => {
-          return (
-            'Points displayed in this table are rounded, and may not add up the way they appear. You can choose to turn on decimal points in the "Manage Account" page. ' +
-            'Note: points are calculated to 4 decimal points no matter your display option.'
-          );
-        }
+        title: "Why aren't these points adding up correctly?",
+        body:
+          'Points displayed in this table are rounded, and may not add up the way they appear. You can choose to turn on decimal points in the "Manage Account" page. ' +
+          'Note: points are calculated to 4 decimal points no matter your display option.'
       };
     }
   },

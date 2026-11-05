@@ -61,7 +61,18 @@
 
             <span v-if="data.item.currentlyIneligible" class="game-ineligible">
               Ineligible
-              <font-awesome-icon v-b-popover.hover.focus="inEligibleText" color="white" size="lg" icon="info-circle" />
+              <b-popover title="What does this mean?">
+                <template #target>
+                  <font-awesome-icon color="white" size="lg" icon="info-circle" />
+                </template>
+                This game's status has changed since it was purchased, and it is currently ineligible based on the royale rules. Any points the game receives will NOT count.
+                <br />
+                <br />
+                Alternatively, this can happen if the game was purchased the same day as it released, but before the site was updated with the correct release date.
+                <br />
+                <br />
+                The game can be dropped for a full refund.
+              </b-popover>
             </span>
 
             <span v-if="data.item.gameHidden" class="game-ineligible">
@@ -231,21 +242,6 @@ export default {
       }
       return allFields;
     },
-    inEligibleText() {
-      return {
-        html: true,
-        title: () => {
-          return 'What does this mean?';
-        },
-        content: () => {
-          return (
-            "This game's status has changed since it was purchased, and it is currently ineligible based on the royale rules. Any points the game receives will NOT count. <br/> <br/>" +
-            'Alternatively, this can happen if the game was purchased the same day as it released, but before the site was updated with the correct release date. <br/> <br/>' +
-            'The game can be dropped for a full refund.'
-          );
-        }
-      };
-    },
     iconIsValid() {
       return publisherIconIsValid(this.publisher.publisherIcon);
     },
@@ -376,13 +372,8 @@ export default {
     },
     getHiddenText(gameOrAction) {
       return {
-        html: true,
-        title: () => {
-          return 'What does this mean?';
-        },
-        content: () => {
-          return `This ${gameOrAction} is hidden from other players. See the Royale home page for more details.`;
-        }
+        title: 'What does this mean?',
+        body: `This ${gameOrAction} is hidden from other players. See the Royale home page for more details.`
       };
     }
   }

@@ -153,16 +153,10 @@ export default {
     },
     allowIneligibleText() {
       return {
-        html: true,
-        title: () => {
-          return 'What does this mean?';
-        },
-        content: () => {
-          return (
-            'If you do not check this box, if you win the bidding for this game but do not have a slot open that this game is eligible in, then the bid will fail. ' +
-            'If you check this box, then the bid would succeed, but the game will land in an ineligible slot.'
-          );
-        }
+        title: 'What does this mean?',
+        body:
+          'If you do not check this box, if you win the bidding for this game but do not have a slot open that this game is eligible in, then the bid will fail. ' +
+          'If you check this box, then the bid would succeed, but the game will land in an ineligible slot.'
       };
     }
   },

@@ -161,19 +161,6 @@ export default {
         backgroundImage: backGroundString,
         color: 'white'
       };
-    },
-    getFlexText(requiredTags) {
-      let tagElements = requiredTags.map((x) => `<li>${this.getTag(x).readableName}</li>`);
-      let joinedTagElements = tagElements.join('');
-      return {
-        html: true,
-        title: () => {
-          return 'Flex Slot';
-        },
-        content: () => {
-          return `<p>A game in this slot must have at least one of these tags:</p><ul>${joinedTagElements}</ul>`;
-        }
-      };
     }
   }
 };

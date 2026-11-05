@@ -4,7 +4,19 @@
       Projected
       <br />
       points
-      <font-awesome-icon v-b-popover.hover.focus.top="projectedPointsText" color="black" size="lg" icon="info-circle" />
+      <b-popover placement="top" title="Projected Points">
+        <template #target>
+          <font-awesome-icon color="black" size="lg" icon="info-circle" />
+        </template>
+        This is the amount of fantasy points that our algorithm believes this game will result in. If the game already has a critic score, then this was our final projection before the score came in.
+        <br />
+        The number at the bottom is this player's projected final score, which is not the sum of all the numbers above it. Instead, it is the sum of three things:
+        <ul>
+          <li>Any real points acquired from games that have already released.</li>
+          <li>Expected points from games releasing soon (games that have a critic score but have not yet released).</li>
+          <li>Projected points for any remaining games.</li>
+        </ul>
+      </b-popover>
     </template>
 
     <template #head(publisherGame.timestamp)>
@@ -124,27 +136,6 @@ export default {
         { key: 'projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column', 'projected-text'] },
         { key: 'publisherGame.fantasyPoints', label: 'Fantasy Points', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] }
       ];
-    },
-    projectedPointsText() {
-      return {
-        html: true,
-        title: () => {
-          return 'Projected Points';
-        },
-        content: () => {
-          return (
-            'This is the amount of fantasy points that our algorithm believes this game will result in.' +
-            ' If the game already has a critic score, then this was our final projection before the score came in.' +
-            "<br/> The number at the bottom is this player's projected final score, which is not the sum of all the numbers above it." +
-            ' Instead, it is the sum of three things: ' +
-            '<ul>' +
-            '<li>Any real points acquired from games that have already released.</li>' +
-            '<li>Expected points from games releasing soon (games that have a critic score but have not yet released).</li>' +
-            '<li>Projected points for any remaining games.</li>' +
-            '</ul>'
-          );
-        }
-      };
     }
   },
   watch: {

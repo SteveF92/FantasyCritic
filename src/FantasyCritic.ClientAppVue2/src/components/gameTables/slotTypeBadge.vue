@@ -5,13 +5,15 @@
         <masterGameTagBadge :tag-name="gameSlot.specialSlot.requiredTags[0]" short class="slot-badge"></masterGameTagBadge>
       </template>
       <template v-else>
-        <span
-          v-b-popover.hover.focus.top="getFlexText(gameSlot.specialSlot.requiredTags)"
-          class="badge tag-badge slot-badge mg-badge-text"
-          :style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)"
-          :class="{ 'no-background': hideBackground }">
-          FLX
-        </span>
+        <b-popover placement="top" title="Flex Slot">
+          <template #target>
+            <span class="badge tag-badge slot-badge mg-badge-text" :style="getMultiBadgeColor(gameSlot.specialSlot.requiredTags)" :class="{ 'no-background': hideBackground }">FLX</span>
+          </template>
+          <p>A game in this slot must have at least one of these tags:</p>
+          <ul>
+            <li v-for="tagName in gameSlot.specialSlot.requiredTags" :key="tagName">{{ getTag(tagName).readableName }}</li>
+          </ul>
+        </b-popover>
       </template>
     </span>
     <span v-if="!gameSlot.dropped && !gameSlot.specialSlot && !gameSlot.counterPick">
@@ -40,35 +42,20 @@ export default {
   computed: {
     regularText() {
       return {
-        html: true,
-        title: () => {
-          return 'Regular Slot';
-        },
-        content: () => {
-          return 'This slot has no special requirements, so it follows the normal eligibility rules for the league.';
-        }
+        title: 'Regular Slot',
+        body: 'This slot has no special requirements, so it follows the normal eligibility rules for the league.'
       };
     },
     counterPickText() {
       return {
-        html: true,
-        title: () => {
-          return 'Counter Pick';
-        },
-        content: () => {
-          return 'This slot is for counter picks, which are bets against a game. See the FAQ for more details.';
-        }
+        title: 'Counter Pick',
+        body: 'This slot is for counter picks, which are bets against a game. See the FAQ for more details.'
       };
     },
     droppedText() {
       return {
-        html: true,
-        title: () => {
-          return 'Dropped';
-        },
-        content: () => {
-          return "This game is no longer on this publisher's lineup.";
-        }
+        title: 'Dropped',
+        body: "This game is no longer on this publisher's lineup."
       };
     }
   },
@@ -94,19 +81,6 @@ export default {
         backgroundImage: backGroundString,
         color: 'white',
         'text-shadow': '0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black'
-      };
-    },
-    getFlexText(requiredTags) {
-      let tagElements = requiredTags.map((x) => `<li>${this.getTag(x).readableName}</li>`);
-      let joinedTagElements = tagElements.join('');
-      return {
-        html: true,
-        title: () => {
-          return 'Flex Slot';
-        },
-        content: () => {
-          return `<p>A game in this slot must have at least one of these tags:</p><ul>${joinedTagElements}</ul>`;
-        }
       };
     }
   }
