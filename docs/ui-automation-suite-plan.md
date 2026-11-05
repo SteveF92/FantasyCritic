@@ -385,6 +385,47 @@ As built:
 - `/masterGameRequest` and `/masterGameChangeRequest`: validation disables submit; the date
   input's value is kept; submitting shows the request in the user's list.
 
+**Done.** 8 tests: `Tests/Royale/RoyaleTests.cs` (5, 1 ignored) and
+`Tests/Requests/MasterGameRequestTests.cs` (3, 1 ignored). The whole suite is 142 passing and 4
+skipped (each for a bug on main), in about 8¾ minutes.
+
+`ManagerDraftControls` (step 5) failed once in this step's runs. Its check for the "Draft has been
+paused." toast also matched the paused banner whenever SignalR delivered that first. The check is
+exact now, and three more runs were green.
+
+As built:
+- **No clock changes were needed.** The local database copies production's royale quarters, so
+  the real clock is inside an open quarter, as the integration tests already rely on.
+- **Royale:**
+  - create a publisher from the leaderboard page;
+  - on a publisher made through the API: buy a game from search, set its advertising budget,
+    rename the publisher, and sell the game;
+  - the year and quarter menus (the year menu only filters the quarter menu; picking a quarter
+    navigates);
+  - both charts drawing. They need points history the local database doesn't have, so it's
+    planted on `RoyaleData` and `GetRoyalePublisher`;
+  - groups: create one, make an invite link, one player joins and leaves through the
+    `msgBoxConfirm`, another joins and the manager removes them through the `msgBoxConfirm`.
+- **Requests:**
+  - new game request: the required name, the 30-character note, the rumored-game warning that
+    must be acknowledged, the date input after the "confirmed release date" checkbox, submitting,
+    then cancelling from My Current Requests;
+  - correction request: the same submit and cancel, for a real master game.
+- **Found on main and left alone:**
+  - **`royalePublisher.vue` still calls `this.$options.filters.money`** in `gamePurchased` and
+    `sellGame`, two uses the filters removal (2026-11-01) missed. Buying refreshes the page and then throws
+    before its toast. Selling goes through, then throws, and its catch reads
+    `error.response.data`. `BuyingAndSellingToast` is ignored with that reason.
+  - **`masterGameRequest.vue`'s `clearData` calls `this.$validator.reset()`**, which is
+    vee-validate 2's API. The line dates from 2019 and the site has used vee-validate 3 since at
+    least 2022, so this is probably live in production. After a successful request it throws, and the catch reads
+    `error.response.data`. The request is saved, but the form isn't cleared and the list doesn't
+    refresh until a reload. `RequestListUpdatesWithoutAReload` is ignored with that reason.
+  - Both console errors are in `KnownProblems.cs`, and the tests reload or check the refreshed
+    page.
+- **Not covered:** leaderboard paging (one page of publishers locally), and the royale
+  publisher icon and slogan (Plus only).
+
 ### 10. Run on `vue3-migration`
 Steve merges `main` into `vue3-migration`, or OKs Claude doing it locally (no push). It touches
 only the new projects and the moved test files. Build the vue3 client and run the suite. Report

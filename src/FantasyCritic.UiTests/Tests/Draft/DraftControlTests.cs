@@ -96,7 +96,7 @@ public sealed class DraftControlTests : DraftTestBase
         await page.GetByText("Pause Draft", new() { Exact = true }).ClickAsync();
         await Expect(warning).ToContainTextAsync("Do you wish to pause the draft?");
         await warning.GetByRole(AriaRole.Button, new() { Name = "OK" }).ClickAsync();
-        await Expect(page.GetByText("Draft has been paused.")).ToBeVisibleAsync();
+        await Expect(page.GetByText("Draft has been paused.", new() { Exact = true })).ToBeVisibleAsync();
         await Expect(page.GetByText("The draft has been paused. You can undo games that have been drafted.")).ToBeVisibleAsync();
 
         await Ui.SidebarAction(page, "Undo Last Drafted Game").ClickAsync();
