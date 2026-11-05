@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Net.Http;
 using FantasyCritic.Lib.Configuration;
 using FantasyCritic.Lib.DependencyInjection;
 using FantasyCritic.Lib.Interfaces;
@@ -17,7 +18,7 @@ using NodaTime;
 
 namespace FantasyCritic.IntegrationTests;
 
-public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<Program>
+public class FantasyCriticWebApplicationFactory : WebApplicationFactory<Program>
 {
     /// <summary>
     /// Singleton capturing sender that stores confirmation-email bodies so tests can
@@ -29,6 +30,15 @@ public sealed class FantasyCriticWebApplicationFactory : WebApplicationFactory<P
     {
         DapperNodaTimeSetup.SetupDapperNodaTimeMappings();
     }
+
+    /// <summary>
+    /// A client for one <see cref="ApiSession"/>: its own cookies, and redirects returned rather than followed.
+    /// </summary>
+    public virtual HttpClient CreateSessionClient() => CreateClient(new WebApplicationFactoryClientOptions
+    {
+        AllowAutoRedirect = false,
+        HandleCookies = true,
+    });
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {

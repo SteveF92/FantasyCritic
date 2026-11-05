@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace FantasyCritic.IntegrationTests.Helpers;
 
-internal static class AntiForgeryHelper
+public static class AntiForgeryHelper
 {
     // Matches both attribute orderings:
     //   <input name="__RequestVerificationToken" ... value="TOKEN" ...>

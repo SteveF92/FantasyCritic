@@ -169,6 +169,9 @@ export default {
       this.isBusy = false;
     },
     async fetchMyLeaguesForYear() {
+      if (!this.isAuth) {
+        return;
+      }
       const response = await axios.get('/api/League/MyLeagues?year=' + this.selectedYear);
       this.myLeaguesForYear = response.data.filter((x) => !x.testLeague && !x.userIsFollowingLeague && x.userIsActiveInMostRecentYearForLeague && x.leagueIsActiveInActiveYear);
     },

@@ -10,7 +10,7 @@ namespace FantasyCritic.IntegrationTests.Helpers;
 /// Reusable async helpers for setting up leagues in integration tests.
 /// All methods build state through the HTTP API — no direct DB access.
 /// </summary>
-internal static class LeagueTestHelpers
+public static class LeagueTestHelpers
 {
     /// <summary>
     /// Returns the first year currently open for league creation.

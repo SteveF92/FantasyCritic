@@ -9,7 +9,7 @@ namespace FantasyCritic.IntegrationTests.Helpers;
 /// <summary>
 /// Shared helpers for placing pickup bids and drop requests in league action tests.
 /// </summary>
-internal static class LeaguePickupActions
+public static class LeaguePickupActions
 {
     public static async Task PlaceBidAsync(
         TestPublisher publisher,

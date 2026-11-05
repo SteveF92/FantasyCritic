@@ -10,7 +10,7 @@ namespace FantasyCritic.IntegrationTests;
 /// Satisfies the ArchiveDatabase job handler that <c>AddFantasyCriticJobHandlers</c> registers. No test runs that job,
 /// so this throws rather than dump anything.
 /// </summary>
-internal sealed class UnusedDatabaseDumper : IDatabaseDumper
+public sealed class UnusedDatabaseDumper : IDatabaseDumper
 {
     public string InstanceName => throw new NotSupportedException("Integration tests don't run the ArchiveDatabase job.");
 

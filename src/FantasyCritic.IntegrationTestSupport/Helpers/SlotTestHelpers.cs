@@ -11,7 +11,7 @@ namespace FantasyCritic.IntegrationTests.Helpers;
 /// Helpers for tests that care which slot a game is in. Games get their tags from a league tag override, so a test
 /// decides which games fit a special slot instead of depending on the seed data's tags.
 /// </summary>
-internal static class SlotTestHelpers
+public static class SlotTestHelpers
 {
     public const string NewGame = "NewGame";
     public const string Remake = "Remake";

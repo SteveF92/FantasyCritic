@@ -13,7 +13,7 @@
         </strong>
       </p>
 
-      <ValidationForm v-slot="{ meta }" as="">
+      <ValidationForm ref="form" v-slot="{ meta }" as="">
         <hr />
         <form @submit.prevent="sendMasterGameRequestRequest">
           <div class="form-group">
@@ -250,7 +250,7 @@ export default {
       this.ggLink = '';
       this.releaseDate = '';
       this.estimatedReleaseDate = '';
-      this.$validator.reset();
+      this.$refs.form.resetForm();
     },
     async cancelRequest(request) {
       let model = {

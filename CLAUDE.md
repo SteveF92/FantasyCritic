@@ -38,6 +38,11 @@ dotnet test src/FantasyCritic.Test/FantasyCritic.Test.csproj --filter "FullyQual
 # running, since the dev server holds Debug DLL locks)
 dotnet test src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.csproj -c Release
 
+# UI tests (Playwright on the installed Chrome; Docker MySQL must be up). Regenerates the API clients
+# and builds the client app for production first; failures leave traces in src/FantasyCritic.UiTests/TestResults/ui
+scripts/Run-UiTests.ps1
+scripts/Run-UiTests.ps1 -Filter "FullyQualifiedName~HarnessTests" -Headed -SkipClientBuild
+
 # Regenerate NSwag API clients — required after ANY API surface change, before integration tests
 dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
 scripts/Regenerate-ApiClient.ps1
@@ -89,6 +94,8 @@ See `docs/dev-sign-in-as-plan.md`.
 | **FantasyCritic.Worker** | The job system, its own process and container: the `Scheduler` that queues cron jobs and the `Worker` that runs and cancels them. Job types, handlers and the registry live in `Lib/Jobs`. It is a web application only to answer `GET /health`, as the Discord bot is. Setting `WorkerShouldPullNewJobs` off (in `tbl_meta_systemwidesettings`) stops it pulling without stopping the container. |
 | **FantasyCritic.CommandLine** | One-off commands for scripts that need the database, shipped as its own image and run by `deploy.sh` via `docker compose run --rm -T command-line <command>`. A command's answer is the only thing on stdout (logs go to stderr) and it exits 0 or 1. A new ops command belongs here, not as an arguments mode on another host. |
 | **FantasyCritic.FakeRepo** | In-memory repository doubles for unit tests. |
+| **FantasyCritic.IntegrationTestSupport** | The web application factory and test helpers (`ApiSession`, `LeagueFixtureBuilder`, `LeagueScenario`, `MockedLivePlayer`) shared by IntegrationTests and UiTests. |
+| **FantasyCritic.UiTests** | Playwright browser tests. Each fixture runs Web on a real Kestrel port serving the client app's production build (`dist/`); a page exception, console error or API 5xx fails the test. Locate elements by role, label, text or existing static ids, never Bootstrap classes, so the same tests run across the Vue 3 migration. Plan: `docs/ui-automation-suite-plan.md`. |
 | **FantasyCritic.DatabaseUpdater** | DbUp migrations. Schema changes happen **only** here: new scripts in `Scripts/Sequential/` with the next dated filename. Never hand-edit the DB. Every code migration needs a `Sequential/` prerequisites script sorted just before it that creates the procs/views it uses — see `.cursor/rules/fantasy-critic-architecture.mdc`. |
 | **FantasyCritic.ApiClient** | NSwag-generated C# client (gitignored output) used by integration tests. |
 

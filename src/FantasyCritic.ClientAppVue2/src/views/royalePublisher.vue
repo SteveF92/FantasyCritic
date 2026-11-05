@@ -174,7 +174,7 @@ import RoyaleChangePublisherSloganForm from '@/components/modals/royaleChangePub
 import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal.vue';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
-import { publisherIconIsValid } from '@/globalFunctions';
+import { formatMoney, publisherIconIsValid } from '@/globalFunctions';
 import { formatCurrency, formatDateIso, formatDateTime, formatScore } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
 import { mapState } from 'pinia';
@@ -276,7 +276,7 @@ export default {
     },
     async gamePurchased(purchaseInfo) {
       await this.fetchPublisher();
-      let message = purchaseInfo.gameName + ' was purchased for ' + this.$options.filters.money(purchaseInfo.purchaseCost);
+      let message = purchaseInfo.gameName + ' was purchased for ' + formatMoney(purchaseInfo.purchaseCost);
       makeToast(message);
     },
     async publisherNameChanged() {
@@ -308,7 +308,7 @@ export default {
       try {
         await axios.post('/api/royale/SellGame', request);
         await this.fetchPublisher();
-        let message = this.gameToModify.masterGame.gameName + ' was sold for ' + this.$options.filters.money(this.gameToModify.refundAmount);
+        let message = this.gameToModify.masterGame.gameName + ' was sold for ' + formatMoney(this.gameToModify.refundAmount);
         makeToast(message);
       } catch (error) {
         this.errorInfo = "You can't sell that game. " + error.response.data;

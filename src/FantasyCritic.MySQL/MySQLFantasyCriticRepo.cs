@@ -1237,6 +1237,7 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
         const string editLeagueYearSQL =
             """
             UPDATE tbl_league_year SET
+            LeagueYearName = @LeagueYearName,
             UnrestrictedReleaseStatusDroppableGames = @UnrestrictedReleaseStatusDroppableGames, WillNotReleaseDroppableGames = @WillNotReleaseDroppableGames, WillReleaseDroppableGames = @WillReleaseDroppableGames,
             DropOnlyDraftGames = @DropOnlyDraftGames, GrantSuperDrops = @GrantSuperDrops, CounterPicksBlockDrops = @CounterPicksBlockDrops,
             AllowMoveIntoIneligible = @AllowMoveIntoIneligible, MinimumBidAmount = @MinimumBidAmount, EnableBids = @EnableBids, BidsOnlyBeforeNextScheduledDraft = @BidsOnlyBeforeNextScheduledDraft,
