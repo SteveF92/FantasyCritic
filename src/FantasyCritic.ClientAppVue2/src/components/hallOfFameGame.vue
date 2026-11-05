@@ -21,7 +21,7 @@
       </div>
     </div>
 
-    <b-popover :target="popoverID" triggers="click blur" custom-class="master-game-popover">
+    <b-popover :target="popoverID" click placement="right" teleport-to="body" lazy class="master-game-popover">
       <div class="mg-popover">
         <masterGameSummary :master-game="masterGame" hide-image></masterGameSummary>
       </div>
