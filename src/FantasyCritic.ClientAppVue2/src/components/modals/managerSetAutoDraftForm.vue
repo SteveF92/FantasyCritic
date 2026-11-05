@@ -15,7 +15,7 @@
     <b-form-group class="form-checkbox-group">
       <div v-for="settings in localPublisherSettings" :key="settings.publisherID" class="publisher-autodraft">
         <label class="publisher-name">{{ settings.publisherName }}</label>
-        <b-form-select v-model="settings.autoDraftMode" :options="autoDraftOptions" class="mode-select" @change="onModeChange(settings)"></b-form-select>
+        <b-form-select v-model="settings.autoDraftMode" :options="autoDraftOptions" class="mode-select" @update:model-value="onModeChange(settings)"></b-form-select>
         <b-form-checkbox v-model="settings.onlyDraftFromWatchlist" :disabled="settings.autoDraftMode === 'Off'" class="watchlist-checkbox">Only from Watchlist</b-form-checkbox>
       </div>
     </b-form-group>

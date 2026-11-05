@@ -35,7 +35,7 @@
                 <b-button v-if="!league.userIsFollowingLeague" variant="primary" @click="followLeague">Follow</b-button>
                 <b-button v-if="league.userIsFollowingLeague" variant="secondary" @click="unfollowLeague">Unfollow</b-button>
               </div>
-              <b-form-select v-model="selectedYear" :options="league.years" class="year-selector" @change="changeLeagueYear" />
+              <b-form-select v-model="selectedYear" :options="league.years" class="year-selector" @update:model-value="changeLeagueYear" />
             </div>
           </div>
         </div>

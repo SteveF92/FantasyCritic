@@ -4,7 +4,7 @@
     <div class="form-horizontal">
       <div class="form-group">
         <label for="editPublisher" class="control-label">Publisher to Edit</label>
-        <b-form-select v-model="editPublisher" @change="selectPublisher(editPublisher)">
+        <b-form-select v-model="editPublisher" @update:model-value="selectPublisher(editPublisher)">
           <option v-for="publisher in publishers" :key="publisher.publisherID" :value="publisher">
             {{ publisher.publisherName }}
           </option>

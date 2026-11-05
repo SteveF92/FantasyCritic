@@ -37,7 +37,12 @@
 
       <b-tab title="Search" title-item-class="tab-header">
         <b-input-group class="mb-2">
-          <b-form-input :value="groupSearchQuery" placeholder="Search groups by name..." aria-label="Search groups by name" @input="onSearchInput" @keyup.enter="emitSearchRequest"></b-form-input>
+          <b-form-input
+            :model-value="groupSearchQuery"
+            placeholder="Search groups by name..."
+            aria-label="Search groups by name"
+            @update:model-value="onSearchInput"
+            @keyup.enter="emitSearchRequest"></b-form-input>
           <b-button variant="primary" @click="emitSearchRequest">Search</b-button>
         </b-input-group>
 

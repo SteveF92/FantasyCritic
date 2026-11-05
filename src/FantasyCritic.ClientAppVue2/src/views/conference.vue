@@ -30,7 +30,7 @@
             </div>
 
             <div class="selector-area">
-              <b-form-select v-model="selectedYear" :options="conference.years" class="year-selector" @change="changeConferenceYear" />
+              <b-form-select v-model="selectedYear" :options="conference.years" class="year-selector" @update:model-value="changeConferenceYear" />
             </div>
           </div>
         </div>

@@ -149,7 +149,7 @@
                 </ValidationField>
               </td>
               <td>
-                <b-form-checkbox v-model="internalValue.unlimitedWillReleaseDroppableGames" class="unlimited-checkbox" @change="$forceUpdate()"></b-form-checkbox>
+                <b-form-checkbox v-model="internalValue.unlimitedWillReleaseDroppableGames" class="unlimited-checkbox" @update:model-value="$forceUpdate()"></b-form-checkbox>
               </td>
             </tr>
             <tr>
@@ -171,7 +171,7 @@
                 </ValidationField>
               </td>
               <td>
-                <b-form-checkbox v-model="internalValue.unlimitedWillNotReleaseDroppableGames" class="unlimited-checkbox" @change="$forceUpdate()"></b-form-checkbox>
+                <b-form-checkbox v-model="internalValue.unlimitedWillNotReleaseDroppableGames" class="unlimited-checkbox" @update:model-value="$forceUpdate()"></b-form-checkbox>
               </td>
             </tr>
             <tr>
@@ -193,7 +193,7 @@
                 </ValidationField>
               </td>
               <td>
-                <b-form-checkbox v-model="internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames" class="unlimited-checkbox" @change="$forceUpdate()"></b-form-checkbox>
+                <b-form-checkbox v-model="internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames" class="unlimited-checkbox" @update:model-value="$forceUpdate()"></b-form-checkbox>
               </td>
             </tr>
           </tbody>

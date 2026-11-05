@@ -21,13 +21,13 @@
         <strong>One Shot</strong>
         — one draft, which is final. No drops, bids, or trades. Great for a low-commitment league.
       </p>
-      <b-form-select id="gameMode" v-model="gameMode" :options="gameModeOptions" @change="emitIfReady"></b-form-select>
+      <b-form-select id="gameMode" v-model="gameMode" :options="gameModeOptions" @update:model-value="emitIfReady"></b-form-select>
     </div>
 
     <div class="form-group">
       <label for="experienceLevel" class="control-label">Experience Level</label>
       <p>Controls the recommended number of games per player and a few other settings.</p>
-      <b-form-select id="experienceLevel" v-model="experienceLevel" :options="experienceLevelOptions" @change="emitIfReady"></b-form-select>
+      <b-form-select id="experienceLevel" v-model="experienceLevel" :options="experienceLevelOptions" @update:model-value="emitIfReady"></b-form-select>
     </div>
   </div>
 </template>

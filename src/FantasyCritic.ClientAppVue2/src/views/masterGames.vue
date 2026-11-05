@@ -9,7 +9,7 @@
             </div>
 
             <div class="selector-area">
-              <b-form-select v-model="selectedYear" :options="selectableYears" class="year-selector" @change="changeYear" />
+              <b-form-select v-model="selectedYear" :options="selectableYears" class="year-selector" @update:model-value="changeYear" />
             </div>
           </div>
         </div>
@@ -25,7 +25,7 @@
       <div class="special-selectors text-well">
         <div v-if="isPlusUser">
           <label class="league-label">View Games for League</label>
-          <b-form-select v-model="selectedLeague" class="league-selector" @change="fetchGamesForYear">
+          <b-form-select v-model="selectedLeague" class="league-selector" @update:model-value="fetchGamesForYear">
             <template #first>
               <option value="">-- none --</option>
             </template>
