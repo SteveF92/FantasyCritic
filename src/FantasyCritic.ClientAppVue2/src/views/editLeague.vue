@@ -35,7 +35,7 @@
         </leagueYearSettings>
       </div>
 
-      <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" show>{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
+      <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" :model-value="true">{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
       <div v-else-if="!leagueYearIsValid" class="alert alert-warning disclaimer">Some of your settings are invalid.</div>
 
       <div class="form-group">

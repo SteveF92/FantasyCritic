@@ -70,7 +70,7 @@
         </b-table>
       </div>
       <div v-else>
-        <b-alert variant="warning" show>This page is not available until you have completed at least two years of playing!</b-alert>
+        <b-alert variant="warning" :model-value="true">This page is not available until you have completed at least two years of playing!</b-alert>
       </div>
     </div>
   </div>

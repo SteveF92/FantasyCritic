@@ -100,7 +100,9 @@
         </b-form-select>
       </div>
 
-      <b-alert :show="!bidMasterGame.willRelease && bidMasterGame.tags.filter((x) => x.includes('EarlyAccess').length > 0) && leagueYear.settings.releaseSystem === 'OnlyNeedsScore'" variant="warning">
+      <b-alert
+        :model-value="!bidMasterGame.willRelease && bidMasterGame.tags.filter((x) => x.includes('EarlyAccess').length > 0) && leagueYear.settings.releaseSystem === 'OnlyNeedsScore'"
+        variant="warning">
         Warning! This game is not planned for full release this year, but your league does allow games that are in early access and get an OpenCritic score to count for points. The system will let you
         bid for it (provided there are no other reasons it could be banned), but do so at your own risk, as early access games don't often get reviewed.
       </b-alert>

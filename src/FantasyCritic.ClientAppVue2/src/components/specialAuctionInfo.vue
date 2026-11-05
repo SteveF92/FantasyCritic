@@ -1,5 +1,5 @@
 <template>
-  <b-alert variant="secondary" show>
+  <b-alert variant="secondary" :model-value="true">
     <div v-if="!isLocked" class="active-layout">
       <div>
         Special Auction in progress for:

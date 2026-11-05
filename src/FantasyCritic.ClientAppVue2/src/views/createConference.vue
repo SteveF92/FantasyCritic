@@ -66,13 +66,15 @@
             <template v-if="gameMode !== 'One Shot'" #draft-settings>
               <hr />
               <h3>Draft Settings</h3>
-              <b-alert v-if="gameMode === 'Multi Draft'" variant="info" show>This league will have multiple drafts. You need to add a least two now, but you can add more later.</b-alert>
+              <b-alert v-if="gameMode === 'Multi Draft'" variant="info" :model-value="true">
+                This league will have multiple drafts. You need to add a least two now, but you can add more later.
+              </b-alert>
               <DraftCreationSettings
                 v-model="drafts"
                 :standard-games="leagueYearSettings.standardGames"
                 :game-mode="gameMode"
                 :bids-only-before-next-scheduled-draft="leagueYearSettings.bidsOnlyBeforeNextScheduledDraft"></DraftCreationSettings>
-              <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" show>{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
+              <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" :model-value="true">{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
             </template>
           </leagueYearSettings>
         </div>
@@ -96,7 +98,7 @@
 
           <div class="alert alert-info disclaimer">Reminder: All of these settings can always be changed later.</div>
 
-          <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" show>{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
+          <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" :model-value="true">{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
           <div v-else-if="!leagueYearIsValid" class="alert alert-warning disclaimer">Can't create league. Some of your settings are invalid.</div>
 
           <div class="form-group">

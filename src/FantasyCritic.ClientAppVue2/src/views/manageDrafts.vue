@@ -1,7 +1,7 @@
 <template>
   <div class="col-md-10 offset-md-1 col-sm-12">
     <div v-if="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
-    <b-alert v-if="successMessage" variant="success" show dismissible @dismissed="successMessage = null">{{ successMessage }}</b-alert>
+    <b-alert v-if="successMessage" variant="success" :model-value="true" dismissible @dismissed="successMessage = null">{{ successMessage }}</b-alert>
 
     <div v-if="leagueYear">
       <h1>Manage Drafts — {{ leagueYear.settings.leagueYearName || leagueYear.league.leagueName }} {{ year }}</h1>
@@ -133,7 +133,7 @@
             </div>
             <div class="form-group">
               <label>Additional Standard Games</label>
-              <b-alert show variant="info">
+              <b-alert :model-value="true" variant="info">
                 If you want, you can expand the total roster size to make room for this draft's picks. If you already have all the slots you want set up, you can leave this at 0.
               </b-alert>
               <input v-model.number="newDraft.additionalStandardGames" type="number" min="0" class="form-control" />
@@ -145,7 +145,7 @@
             <div class="form-group">
               <label>New Special Slots (optional)</label>
               <specialGameSlotSelector v-model="newDraft.newSpecialGameSlots"></specialGameSlotSelector>
-              <b-alert show variant="warning" v-if="specialSlotsExceedStandardGames" class="mt-2">
+              <b-alert :model-value="true" variant="warning" v-if="specialSlotsExceedStandardGames" class="mt-2">
                 You are adding {{ newSpecialSlotCount }} special slot{{ newSpecialSlotCount !== 1 ? 's' : '' }} but only {{ newDraft.additionalStandardGames }} additional standard game{{
                   newDraft.additionalStandardGames !== 1 ? 's' : ''
                 }}. You must add at least as many 'Additional Standard Games' as new special slots, otherwise the new special slots would convert existing standard slots into special slots.

@@ -17,7 +17,7 @@
         </b-form-checkbox>
       </div>
 
-      <b-alert variant="danger" :show="!!errorInfo">{{ errorInfo }}</b-alert>
+      <b-alert variant="danger" :model-value="!!errorInfo">{{ errorInfo }}</b-alert>
     </div>
     <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Change Settings" :disabled="!newConferenceName" @click="changeConferenceSettings" />

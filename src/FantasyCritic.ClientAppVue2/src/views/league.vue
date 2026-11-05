@@ -56,7 +56,7 @@
         {{ league.numberOfFollowers }}
       </div>
 
-      <b-alert v-if="mostRecentManagerMessage" show dismissible @dismissed="dismissRecentManagerMessage">
+      <b-alert v-if="mostRecentManagerMessage" :model-value="true" dismissible @dismissed="dismissRecentManagerMessage">
         <h5>Manager's Message ({{ formatDateTime(mostRecentManagerMessage.timestamp) }})</h5>
         <div class="preserve-whitespace">{{ mostRecentManagerMessage.messageText }}</div>
       </b-alert>
@@ -91,11 +91,11 @@
         </div>
       </div>
 
-      <b-alert v-if="leagueYear.userIsActive && hasProposedTrade" show>
+      <b-alert v-if="leagueYear.userIsActive && hasProposedTrade" :model-value="true">
         Someone has proposed a trade with you.
         <b-button v-b-modal="'activeTradesModal'" variant="success">View Trades</b-button>
       </b-alert>
-      <b-alert v-if="(leagueYear.userIsActive || league.isManager) && hasActiveTrade" show>
+      <b-alert v-if="(leagueYear.userIsActive || league.isManager) && hasActiveTrade" :model-value="true">
         There are active trades under consideration.
         <b-button v-b-modal="'activeTradesModal'" variant="success">View Trades</b-button>
       </b-alert>

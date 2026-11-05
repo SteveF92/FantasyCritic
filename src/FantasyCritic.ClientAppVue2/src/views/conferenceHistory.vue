@@ -12,7 +12,7 @@
       </div>
       <hr />
     </div>
-    <b-alert :show="conferenceYear.managerMessages && conferenceYear.managerMessages.length === 0">Conference Manager Messages would show up here, but there are none to show.</b-alert>
+    <b-alert :model-value="conferenceYear.managerMessages && conferenceYear.managerMessages.length === 0">Conference Manager Messages would show up here, but there are none to show.</b-alert>
   </div>
 </template>
 <script>

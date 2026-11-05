@@ -7,7 +7,7 @@
       By default, the league will keep the same players as were in it last year. You can adjust this before you start the draft.
     </div>
 
-    <b-alert variant="danger" :show="!!errorInfo">{{ errorInfo }}</b-alert>
+    <b-alert variant="danger" :model-value="!!errorInfo">{{ errorInfo }}</b-alert>
 
     <div class="form-group" v-if="renewableLeagues">
       <label for="league" class="control-label">League</label>

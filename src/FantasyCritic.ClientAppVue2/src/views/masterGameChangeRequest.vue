@@ -47,7 +47,7 @@
             </div>
           </div>
 
-          <b-alert v-if="masterGame.notes" show variant="info" class="mt-3">
+          <b-alert v-if="masterGame.notes" :model-value="true" variant="info" class="mt-3">
             <strong>
               <font-awesome-icon icon="info-circle" />
               Special Notes:
@@ -77,7 +77,7 @@
                 <input id="ggLink" v-model="ggLink" name="ggLink" class="form-control input" />
               </div>
 
-              <b-alert variant="warning" :show="invalidOpenCriticRequest">
+              <b-alert variant="warning" :model-value="invalidOpenCriticRequest">
                 If you are requesting an OpenCritic link, please include the link here. It is possible that OpenCritic may not have created a page yet if this game was recently released or is a lesser
                 known title.
               </b-alert>

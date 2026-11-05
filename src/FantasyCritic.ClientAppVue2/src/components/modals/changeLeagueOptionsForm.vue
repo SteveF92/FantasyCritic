@@ -37,11 +37,11 @@
         allowed to change your "Test League" into a "Custom Rules League", since neither affect the site's stats.
       </b-alert>
     </div>
-    <b-alert :show="showDiscordWarning" variant="warning">
+    <b-alert :model-value="showDiscordWarning" variant="warning">
       Changing a public league to a private league will remove it from any Discord servers it may be linked to via the official Discord bot.
     </b-alert>
 
-    <b-alert variant="danger" :show="!!errorInfo">{{ errorInfo }}</b-alert>
+    <b-alert variant="danger" :model-value="!!errorInfo">{{ errorInfo }}</b-alert>
 
     <template #modal-footer>
       <input type="submit" class="btn btn-primary" value="Change Settings" :disabled="!newleagueName" @click="changeleagueName" />
