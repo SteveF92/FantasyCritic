@@ -66,31 +66,45 @@ Nothing past these tonight.
 
 ## Already noted for Steve
 
-- Public Leagues: the page count stays at the unfiltered total after the year changes while a
-  search is active. bootstrap-vue-next emits `filtered` only when the filter or sort changes, not
-  when `items` change.
-- Top Bids and Drops: the end-of-year season alert is a `<b-alert show>`. In bootstrap-vue-next,
-  `show` only animates the alert in on mount; visibility comes from `modelValue`.
-- Master Games and Public Leagues: sorting goes back to page 1, because bootstrap-vue-next emits
-  `filtered` on sort changes too. Steve is keeping this.
-- Master Games: rows sort out of order by Hype Factor (Forza Horizon 6, 91.09, above Marvel's
+Fixed by Steve on 2026-11-05:
+
+- Top Bids and Drops: the end-of-year season alert was a `<b-alert show>`. In bootstrap-vue-next,
+  `show` only animates the alert in on mount; visibility comes from `modelValue`. Now
+  `:model-value="true"` (5840abbd2), which shows it from the start with no fade, as Bootstrap-Vue 2
+  did.
+- Public Leagues: the page count stayed at the unfiltered total after the year changed while a
+  search was active. bootstrap-vue-next emits `filtered` only when the filter or sort changes, not
+  when `items` change. Changing the year now clears the search (eb565d9bf).
+- Master Game detail: the Peak Hype Factor info popover (`masterGameYearStats.vue`) showed
+  JavaScript source as its text. The `v-b-popover` value was an object with `title` and `content`
+  functions and `html: true`; Bootstrap-Vue 2 called the functions, bootstrap-vue-next renders the
+  values as plain text, has no `html` option, and warns that `content` is deprecated. Now plain
+  `title` and `body` strings (f22652e21).
+- Master Games: `masterGameTagBadge` passed `triggers="hover"`, which bootstrap-vue-next ignores.
+  Removed (cf9440f0b); hover and focus are the default.
+- Master Games: rows sorted out of order by Hype Factor (Forza Horizon 6, 91.09, above Marvel's
   Wolverine, 91.56). bootstrap-vue-next's default sort compares values as strings with
   `localeCompare(..., { numeric: true })`, which reads the digits after a decimal point as a whole
-  number. Bootstrap-Vue 2 compared numbers numerically. Affects any `b-table` column of decimals
-  sorted without a `sortCompare`.
-- Master Games: `masterGameTagBadge` still passes `triggers="hover"`, which bootstrap-vue-next
-  ignores. Hover still opens the popover because, with no trigger props, bootstrap-vue-next
-  defaults to hover and focus.
+  number. The decimal columns now have `sortCompare: numericComparer` (bc4a7180c). Any other
+  `b-table` column of decimals sorted without a `sortCompare` has the same problem.
+
+Kept as is:
+
+- Master Games and Public Leagues: sorting goes back to page 1, because bootstrap-vue-next emits
+  `filtered` on sort changes too. Steve is keeping this.
+
+Still open:
+
 - Advanced Game Stats: every section logs `[Vue Router warn]: Couldn't find element using
   selector "#mostDreamsDashed" returned by scrollBehavior`. Vue Router 4 warns when
   `scrollBehavior` returns a hash selector that matches no element; Vue Router 3 ignored it.
-- Master Game detail: the Peak Hype Factor info popover (`masterGameYearStats.vue`) shows
-  JavaScript source as its text, for example `() => { return 'Peak Hype Factor'; }`. The
-  `v-b-popover` value is an object with `title` and `content` functions and `html: true`.
-  Bootstrap-Vue 2 called the functions; bootstrap-vue-next renders the values as given, and logs
-  ``[BootstrapVueNext:v-b-popover/v-b-tooltip] `content` is deprecated, use `body` instead``.
-  Seen on games whose peak hype is above their current hype, such as The Eternal Life of Goldman
-  (`/mastergame/00072c0b-bb0b-4bcd-8dae-a92da1a9117b`).
+- Outside this pass: about 28 other `v-b-popover` objects in 10 files still use `title`/`content`
+  functions with `html: true`, so they show JavaScript source as the Peak Hype popover did. Some
+  build HTML (`inEligibleText` in `gameNameColumn.vue` builds a `<ul>`), which would show as
+  literal tags even as strings. Files: `gameNameColumn.vue` (14), `slotTypeBadge.vue` (4),
+  `activeBids.vue` (2), `royalePublisher.vue` (2), and one each in `searchSlotTypeBadge.vue`,
+  `playerGameTable.vue`, `minimalPlayerGameTable.vue`, `publisherCoverViewSlot.vue`,
+  `bidGameForm.vue`, `currentBidsForm.vue`. For the league and publisher pages.
 - Master Game detail: the statistics chart wasn't checked. The dev server blanks it on both
   branches, and a production-build comparison wasn't set up tonight.
 - Not client problems, seen on both branches against `fantasycritic-fromsnapshot`:
@@ -109,11 +123,11 @@ is a compositing difference, not CSS, and shows up at 375.
 |---|---|---|
 | Top Bids and Drops (all three tabs, month menu open) | Matches | 4beaf12ad |
 | Public Leagues | Matches | 828a3df0c |
-| Master Games (with game and tag popovers open) | Matches, apart from sort order (noted above) | d6e2b7f1d |
+| Master Games (with game and tag popovers open) | Matches; sort order fixed by Steve | d6e2b7f1d, bc4a7180c |
 | Advanced Game Stats (all three sections, year select, checkbox) | Matches | 5fdfc497c |
 | Game Changes (with the "New games" filter) | Matches | 5fdfc497c |
 | Most Desired Reviews | Filter buttons match; the table couldn't load (500) | 5fdfc497c |
-| Master Game detail (released and unreleased game, year menu, tag and help popovers) | Matches, apart from the Peak Hype popover text (noted above) | acfa0d482 |
+| Master Game detail (released and unreleased game, year menu, tag and help popovers) | Matches; Peak Hype popover fixed by Steve | acfa0d482, f22652e21 |
 | Static pages, logged in (Site Updates, How to Play, FAQ, About, Contact, Community, Discord Bot, Plus) | Matches, no changes needed | — |
 | Home, rechecked after all of the above | Matches | — |
 
@@ -147,7 +161,8 @@ Other pages get these for free:
 
 ### Left for Steve
 
-The items under "Already noted for Steve" above. None of them were changed.
+The items under "Already noted for Steve" above. Claude changed none of them. Steve fixed all but
+Advanced Game Stats on 2026-11-05.
 
 ### Not checked
 
