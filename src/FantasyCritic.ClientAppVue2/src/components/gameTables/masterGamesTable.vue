@@ -109,7 +109,7 @@
   </div>
 </template>
 <script>
-import { formatMasterGameReleaseDate } from '@/globalFunctions';
+import { formatMasterGameReleaseDate, numericComparer } from '@/globalFunctions';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { formatPercent, formatScore } from '@/utilities/formatters';
@@ -129,10 +129,10 @@ export default {
         { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary', 'md-screen-minimum', 'position-relative'], tdClass: 'md-screen-minimum' },
-        { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary' },
-        { key: 'projectedOrRealFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary' },
-        { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum' },
-        { key: 'adjustedPercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
+        { key: 'projectedOrRealFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
+        { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum', sortCompare: numericComparer },
+        { key: 'adjustedPercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum', sortCompare: numericComparer },
         { key: 'tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum', 'position-relative'], tdClass: 'lg-screen-minimum' }
       ],
       totalRows: 1,

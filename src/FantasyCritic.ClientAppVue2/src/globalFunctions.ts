@@ -150,3 +150,18 @@ export function orderByDescending<T, K>(arr: T[], keySelector: (item: T) => K): 
     return 0;
   });
 }
+
+export function numericComparer(a: unknown, b: unknown, key: string) {
+  const numberA = Number(a[key]);
+  const numberB = Number(b[key]);
+
+  if (numberA > numberB) {
+    return 1;
+  }
+
+  if (numberA < numberB) {
+    return -1;
+  }
+
+  return 0;
+}
