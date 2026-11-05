@@ -55,7 +55,8 @@ export default {
   computed: {
     ...mapState(useLeagueStore, ['userPublisher', 'league', 'activeDraft', 'nextPublisherUp', 'userIsNextInDraft', 'pendingDraftCalloutVisible']),
     userHasAutoDraft() {
-      if (this.userPublisher?.autoDraftMode === 'Off') return false;
+      if (!this.userPublisher) return false;
+      if (this.userPublisher.autoDraftMode === 'Off') return false;
       if (this.activeDraft) return true;
       return this.pendingDraftCalloutVisible;
     },
