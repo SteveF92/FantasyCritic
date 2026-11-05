@@ -151,9 +151,24 @@ export function orderByDescending<T, K>(arr: T[], keySelector: (item: T) => K): 
   });
 }
 
+function getValueAtPath(item: unknown, key: string): unknown {
+  return key.split('.').reduce<unknown>((value, part) => (value === null || value === undefined ? undefined : (value as Record<string, unknown>)[part]), item);
+}
+
+// A b-table sortCompare for numeric columns. bootstrap-vue-next's default sort compares values as strings, which
+// reads the digits after a decimal point as a whole number. The key can be a path, such as 'masterGame.criticScore'.
+// Missing values sort before numbers, as they did in Bootstrap-Vue 2.
 export function numericComparer(a: unknown, b: unknown, key: string) {
-  const numberA = Number(a[key]);
-  const numberB = Number(b[key]);
+  const valueA = getValueAtPath(a, key);
+  const valueB = getValueAtPath(b, key);
+  const hasA = valueA !== null && valueA !== undefined;
+  const hasB = valueB !== null && valueB !== undefined;
+  if (!hasA || !hasB) {
+    return Number(hasA) - Number(hasB);
+  }
+
+  const numberA = Number(valueA);
+  const numberB = Number(valueB);
 
   if (numberA > numberB) {
     return 1;

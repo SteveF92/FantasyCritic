@@ -57,6 +57,7 @@
 <script>
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { formatDateTime, formatScore, formatYesNo } from '@/utilities/formatters';
+import { numericComparer } from '@/globalFunctions';
 
 export default {
   components: {
@@ -81,7 +82,7 @@ export default {
         { key: 'bidAmount', label: 'Bid Amount', sortable: true, thClass: 'bg-primary' },
         { key: 'priority', label: 'Priority', sortable: true, thClass: 'bg-primary' },
         { key: 'timestamp', label: 'Time Placed', sortable: true, thClass: 'bg-primary' },
-        { key: 'projectedPointsAtTimeOfBid', label: 'Projected Points (for tiebreaks)', sortable: true, thClass: 'bg-primary' },
+        { key: 'projectedPointsAtTimeOfBid', label: 'Projected Points (for tiebreaks)', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
         { key: 'conditionalDropPublisherGame', label: 'Conditional Drop', sortable: true, thClass: 'bg-primary' },
         { key: 'outcome', label: 'Outcome', sortable: true, thClass: 'bg-primary' }
       ]

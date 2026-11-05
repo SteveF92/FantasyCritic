@@ -31,6 +31,7 @@
 import StatusBadge from '@/components/statusBadge.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { formatCurrency, formatScore } from '@/utilities/formatters';
+import { numericComparer } from '@/globalFunctions';
 
 export default {
   components: {
@@ -51,8 +52,8 @@ export default {
       gameFields: [
         { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary' },
+        { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum', sortCompare: numericComparer },
+        { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
         { key: 'status', label: 'Status', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'select', label: '', thClass: 'bg-primary' }
       ]

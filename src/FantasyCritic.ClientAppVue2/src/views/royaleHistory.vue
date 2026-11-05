@@ -44,6 +44,7 @@
 <script>
 import axios from 'axios';
 import { formatScore } from '@/utilities/formatters';
+import { numericComparer } from '@/globalFunctions';
 
 export default {
   props: {
@@ -55,7 +56,7 @@ export default {
       historyFields: [
         { key: 'yearQuarter', label: 'Quarter', thClass: ['bg-primary', 'quarter-column'], tdClass: 'quarter-column' },
         { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
-        { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary', sortable: true },
+        { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
         { key: 'ranking', label: 'Ranking', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' }
       ]
     };

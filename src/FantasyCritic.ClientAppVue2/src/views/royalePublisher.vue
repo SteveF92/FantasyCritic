@@ -185,7 +185,7 @@ import RoyaleChangePublisherSloganForm from '@/components/modals/royaleChangePub
 import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal.vue';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
-import { formatMoney, publisherIconIsValid } from '@/globalFunctions';
+import { formatMoney, publisherIconIsValid, numericComparer } from '@/globalFunctions';
 import { formatCurrency, formatDateIso, formatDateTime, formatScore } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
 import { mapState } from 'pinia';
@@ -212,10 +212,10 @@ export default {
       gameFields: [
         { key: 'masterGame.gameName', label: 'Game', thClass: 'bg-primary', sortable: true },
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary', sortable: true },
-        { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary', sortable: true },
-        { key: 'masterGame.criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true },
-        { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true },
+        { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+        { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+        { key: 'masterGame.criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+        { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
         { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
       ],
       actionFields: [

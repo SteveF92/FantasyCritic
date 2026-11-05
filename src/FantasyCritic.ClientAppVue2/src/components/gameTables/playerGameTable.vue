@@ -79,7 +79,7 @@
 </template>
 
 <script>
-import { formatPublisherGameReleaseDate, formatPublisherGameAcquiredDate, formatPublisherGameRemovedDate } from '@/globalFunctions';
+import { formatPublisherGameReleaseDate, formatPublisherGameAcquiredDate, formatPublisherGameRemovedDate, numericComparer } from '@/globalFunctions';
 import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 import { mapState } from 'pinia';
 import { usePublisherStore } from '@/store/publisherStore';
@@ -132,9 +132,29 @@ export default {
         { key: 'publisherGame.gameName', label: 'Game Name', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['full-table-game-name-column'] },
         { key: 'publisherGame.masterGame.maximumReleaseDate', label: 'Release Date', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header', 'release-date-column'] },
         { key: 'publisherGame.timestamp', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header', 'acquired-column'] },
-        { key: 'publisherGame.masterGame.criticScore', label: 'Critic Score', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] },
-        { key: 'projectedFantasyPoints', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column', 'projected-text'] },
-        { key: 'publisherGame.fantasyPoints', label: 'Fantasy Points', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['numeric-column'] }
+        {
+          key: 'publisherGame.masterGame.criticScore',
+          label: 'Critic Score',
+          sortable: this.sortOrderMode,
+          thClass: ['bg-primary', 'btable-player-table-header'],
+          class: ['numeric-column'],
+          sortCompare: numericComparer
+        },
+        {
+          key: 'projectedFantasyPoints',
+          sortable: this.sortOrderMode,
+          thClass: ['bg-primary', 'btable-player-table-header'],
+          class: ['numeric-column', 'projected-text'],
+          sortCompare: numericComparer
+        },
+        {
+          key: 'publisherGame.fantasyPoints',
+          label: 'Fantasy Points',
+          sortable: this.sortOrderMode,
+          thClass: ['bg-primary', 'btable-player-table-header'],
+          class: ['numeric-column'],
+          sortCompare: numericComparer
+        }
       ];
     }
   },

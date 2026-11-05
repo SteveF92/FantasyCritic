@@ -79,6 +79,7 @@ import { useAuthStore } from '@/store/authStore';
 
 import RoyaleGroupInviteLinksModal from '@/components/modals/royaleGroupInviteLinksModal.vue';
 import { mapState } from 'pinia';
+import { numericComparer } from '@/globalFunctions';
 
 export default {
   components: { RoyaleGroupInviteLinksModal },
@@ -107,16 +108,18 @@ export default {
         label: 'Avg. Rank (Within Group)',
         thClass: 'bg-primary',
         tdClass: 'text-right',
-        sortable: true
+        sortable: true,
+        sortCompare: numericComparer
       },
       averageRankOverallField: {
         key: 'averageRankOverall',
         label: 'Avg. Rank (Overall)',
         thClass: 'bg-primary',
         tdClass: 'text-right',
-        sortable: true
+        sortable: true,
+        sortCompare: numericComparer
       },
-      totalPointsField: { key: 'totalPoints', label: 'Total Points', thClass: 'bg-primary', tdClass: 'text-right', sortable: true },
+      totalPointsField: { key: 'totalPoints', label: 'Total Points', thClass: 'bg-primary', tdClass: 'text-right', sortable: true, sortCompare: numericComparer },
       actionField: { key: 'actions', label: 'Actions', thClass: 'bg-primary', thStyle: 'width: 1%' }
     };
   },

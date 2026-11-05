@@ -37,6 +37,7 @@
 <script>
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { formatScore } from '@/utilities/formatters';
+import { numericComparer } from '@/globalFunctions';
 
 export default {
   components: {
@@ -55,7 +56,7 @@ export default {
       gameFieldsInternal: [
         { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+        { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum', sortCompare: numericComparer },
         { key: 'publisherName', label: 'Owned By', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
         { key: 'select', label: '', thClass: 'bg-primary' }
       ],

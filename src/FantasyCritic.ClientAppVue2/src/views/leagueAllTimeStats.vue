@@ -77,7 +77,7 @@
 </template>
 <script>
 import axios from 'axios';
-import { ordinal_suffix_of } from '@/globalFunctions';
+import { ordinal_suffix_of, numericComparer } from '@/globalFunctions';
 import HallOfFameSection from '@/components/hallOfFameSection.vue';
 import { formatScore } from '@/utilities/formatters';
 
@@ -95,11 +95,11 @@ export default {
         { key: 'playerName', label: 'User', thClass: 'bg-primary', sortable: true },
         { key: 'yearsPlayedIn', label: 'Years Played In', thClass: 'bg-primary', sortable: true },
         { key: 'yearsWon.length', label: 'Years Won', thClass: 'bg-primary', sortable: true },
-        { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true },
+        { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
         { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary', sortable: true },
-        { key: 'averageFinishRanking', label: 'Average Rank', thClass: 'bg-primary', sortable: true },
-        { key: 'averageFantasyPoints', label: 'Average Fantasy Points', thClass: 'bg-primary', sortable: true },
-        { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true },
+        { key: 'averageFinishRanking', label: 'Average Rank', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+        { key: 'averageFantasyPoints', label: 'Average Fantasy Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+        { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
         { key: 'timesCounterPicked', label: 'Times Counter Picked', thClass: 'bg-primary', sortable: true }
       ],
       playerSortBy: [{ key: 'totalFantasyPoints', order: 'desc' }],
@@ -108,9 +108,9 @@ export default {
         { key: 'year', label: 'Year', thClass: 'bg-primary', sortable: true },
         { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
         { key: 'ranking', label: 'Rank', thClass: 'bg-primary', sortable: true },
-        { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true },
+        { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
         { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary', sortable: true },
-        { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true }
+        { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer }
       ],
       individualSortBy: [{ key: 'totalFantasyPoints', order: 'desc' }]
     };
