@@ -98,13 +98,6 @@ Still open:
 - Advanced Game Stats: every section logs `[Vue Router warn]: Couldn't find element using
   selector "#mostDreamsDashed" returned by scrollBehavior`. Vue Router 4 warns when
   `scrollBehavior` returns a hash selector that matches no element; Vue Router 3 ignored it.
-- Outside this pass: about 28 other `v-b-popover` objects in 10 files still use `title`/`content`
-  functions with `html: true`, so they show JavaScript source as the Peak Hype popover did. Some
-  build HTML (`inEligibleText` in `gameNameColumn.vue` builds a `<ul>`), which would show as
-  literal tags even as strings. Files: `gameNameColumn.vue` (14), `slotTypeBadge.vue` (4),
-  `activeBids.vue` (2), `royalePublisher.vue` (2), and one each in `searchSlotTypeBadge.vue`,
-  `playerGameTable.vue`, `minimalPlayerGameTable.vue`, `publisherCoverViewSlot.vue`,
-  `bidGameForm.vue`, `currentBidsForm.vue`. For the league and publisher pages.
 - Master Game detail: the statistics chart wasn't checked. The dev server blanks it on both
   branches, and a production-build comparison wasn't set up tonight.
 - Not client problems, seen on both branches against `fantasycritic-fromsnapshot`:
@@ -170,3 +163,33 @@ Advanced Game Stats on 2026-11-05.
 - Most Desired Reviews' table, and the all-time Most Dreams Dashed table: their API calls fail on
   both branches.
 - Interactions that write (none on these pages were exercised).
+
+## Steve's fixes applied elsewhere (2026-11-05)
+
+Steve's fixes above, applied by Claude everywhere else they came up. Not yet checked in a browser:
+the league, publisher, royale and form pages they touch need a look.
+
+| Fix | Where it came from | Commit |
+|---|---|---|
+| `<b-alert show>` is `:model-value="true"`, and a bound `:show` is `:model-value` (a bound `show` never hid or showed anything) | 5840abbd2 | ee025e7 |
+| `@change` on `b-form-select` and `b-form-checkbox`, and `@input` on a `b-form-checkbox`, are `@update:model-value`. The royale group search box's `:value` and `@input` are `:model-value` and `@update:model-value`. The league and conference year selects were pushing a route with a DOM `Event` as the year. | 85051da | b8b3f0c |
+| The Hall of Fame and publisher cover view game popovers drop `custom-class` and `triggers` for masterGamePopover's props (`click`, `placement="right"`, `teleport-to="body"`, `lazy`, `class`) | 1cf4faf0, cf9440f0b | 5ba531e |
+| Every `v-b-popover` object with `title`/`content` functions is plain `title` and `body` strings. The ones that built HTML are `b-popover` components with the trigger in the `#target` slot and the markup in the template. Two unused `getFlexText` methods are gone. | f22652e21 | b82b7b4 |
+| 22 more decimal `b-table` columns have `sortCompare: numericComparer`. `numericComparer` follows dotted keys and sorts missing values first, as Bootstrap-Vue 2 did. Unit tests in `tests/numericComparer.test.ts`. | bc4a7180c | 25919f5 |
+| Master Games clears its search and resets its page count when the game list changes (league, eligibility, taken or unreleased filters) | eb565d9bf | 0aef622 |
+
+Found while doing this, not changed:
+
+- `league.vue`, `conference.vue` and `manageDrafts.vue` listen for `@dismissed` on dismissible
+  alerts. bootstrap-vue-next has no `dismissed` event; the close button emits `close`, then `hide`
+  and `hidden`. The alert still closes, but the league and conference manager message is never
+  dismissed on the server, so it comes back on the next load. `@close` is the likely replacement.
+- Eleven forms listen for `@input` on `possibleMasterGamesTable`, `possibleCounterPicksTable` and
+  `possibleRoyaleMasterGamesTable` (`newGameSelected`, `addGameToQueue`). Those tables emit only
+  `update:modelValue`, so the handlers never run. That's a Vue 3 `v-model` change, not
+  bootstrap-vue-next. `@update:model-value` is the likely replacement.
+- Master Games: checking or unchecking a "Filter On" box while a search is active doesn't update the
+  page count, because the filter function changes but `filter` doesn't.
+- `activeBids.vue` sorts by `maximumReleaseDate`, but the column key is
+  `masterGame.maximumReleaseDate`, so the table loads unsorted. This was already wrong before the
+  migration.
