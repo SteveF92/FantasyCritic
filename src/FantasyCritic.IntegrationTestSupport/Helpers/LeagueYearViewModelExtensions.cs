@@ -8,7 +8,7 @@ namespace FantasyCritic.IntegrationTests.Helpers;
 /// <summary>
 /// Per-draft accessors mirroring the frontend <c>leagueMixin</c> helpers.
 /// </summary>
-internal static class LeagueYearViewModelExtensions
+public static class LeagueYearViewModelExtensions
 {
     public static LeagueDraftViewModel? FirstDraft(this LeagueYearViewModel leagueYear) =>
         leagueYear.Drafts.FirstOrDefault();

@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Newtonsoft.Json;
 
 namespace FantasyCritic.IntegrationTests.Helpers;
@@ -24,11 +23,7 @@ public sealed class ApiSession : IDisposable
     public ApiSession(FantasyCriticWebApplicationFactory factory)
     {
         _factory = factory;
-        _client = factory.CreateClient(new WebApplicationFactoryClientOptions
-        {
-            AllowAutoRedirect = false,
-            HandleCookies = true,
-        });
+        _client = factory.CreateSessionClient();
 
         var baseUrl = _client.BaseAddress!.ToString().TrimEnd('/');
         Royale = new RoyaleClient(baseUrl, _client);

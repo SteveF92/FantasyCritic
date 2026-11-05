@@ -173,7 +173,6 @@ export const routes = [
       isPublic: true
     }
   },
-  { path: '/longestTenuredGames', redirect: '/advancedGameStats#longestTenuredUnreleased' },
   {
     path: '/advancedGameStats',
     component: AdvancedGameStats,
