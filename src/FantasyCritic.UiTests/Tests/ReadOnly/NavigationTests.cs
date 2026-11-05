@@ -11,7 +11,7 @@ namespace FantasyCritic.UiTests.Tests.ReadOnly;
 /// </summary>
 public sealed class NavigationTests : UiTestBase
 {
-    // Signed in, because neither /404 nor the old /longestTenuredGames path is public: logged out, both go to the login page.
+    // Signed in, because /404 isn't public: logged out, it goes to the login page.
     [Test]
     public async Task UnknownPathShowsNotFound()
     {
@@ -22,17 +22,6 @@ public sealed class NavigationTests : UiTestBase
         await Expect(Ui.Heading(page, "Woops!")).ToBeVisibleAsync();
         await page.GetByRole(AriaRole.Link, new() { Name = "Go back home" }).ClickAsync();
         await Expect(Ui.Heading(page, $"Welcome {user.DisplayName}!")).ToBeVisibleAsync();
-    }
-
-    [Test]
-    [Ignore("Main's bug: loading /longestTenuredGames directly ends at /404 instead of following the route's redirect.")]
-    public async Task OldLongestTenuredPathRedirectsToItsSection()
-    {
-        var user = await NewUserAsync();
-        var page = await NewSignedInPageAsync(user, "/longestTenuredGames");
-
-        await Expect(page).ToHaveURLAsync(new Regex("/advancedGameStats#longestTenuredUnreleased$"));
-        await Expect(page.GetByText("This is a list of unreleased games")).ToBeVisibleAsync();
     }
 
     [Test]

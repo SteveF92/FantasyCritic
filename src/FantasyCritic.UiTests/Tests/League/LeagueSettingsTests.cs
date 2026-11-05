@@ -34,14 +34,10 @@ public sealed class LeagueSettingsTests : UiTestBase
         await DropRowCheckbox(page, "Will Release").CheckAsync(new() { Force = true });
         await Expect(page.Locator("#willReleaseDroppableGames")).ToHaveCountAsync(0);
         await page.Locator("#willNotReleaseDroppableGames").FillAsync("2");
+        await page.Locator("#leagueYearName").FillAsync("UI Year Name");
 
         await page.GetByRole(AriaRole.Button, new() { Name = "Confirm Settings" }).ClickAsync();
         await Expect(page).ToHaveURLAsync(new Regex($"/league/{league.LeagueID}/{league.Year}$"));
-
-        // The year name is saved in an edit of its own: on main, an edit that also changes a setting drops the name.
-        await page.GotoAsync(editPath);
-        await page.Locator("#leagueYearName").FillAsync("UI Year Name");
-        await page.GetByRole(AriaRole.Button, new() { Name = "Confirm Settings" }).ClickAsync();
         await Expect(Ui.Heading(page, "UI Year Name", 1)).ToBeVisibleAsync();
 
         var settings = (await league.GetLeagueYearAsync()).Settings;

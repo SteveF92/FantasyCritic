@@ -55,14 +55,14 @@ public sealed class ConferenceTests : UiTestBase
     }
 
     /// <summary>
-    /// Submits a manager modal and waits for its request to succeed. On main the page then neither refreshes nor
-    /// toasts (see <see cref="ActionsRefreshThePageAndToast"/>), so tests reload to see the result.
+    /// Submits a manager modal, waits for its request to succeed, and for the toast that comes once the page has
+    /// refreshed the conference.
     /// </summary>
-    private static async Task SubmitAndReloadAsync(IPage page, ILocator submit, string endpoint)
+    private static async Task SubmitAsync(IPage page, ILocator submit, string endpoint, string toast)
     {
         var response = await page.RunAndWaitForResponseAsync(() => submit.ClickAsync(), new Regex($"/api/conference/{endpoint}$", RegexOptions.IgnoreCase));
         Assert.That(response.Ok, Is.True, $"{endpoint} returned {response.Status}.");
-        await page.ReloadAsync();
+        await Expect(page.GetByText(toast, new() { Exact = true })).ToBeVisibleAsync();
     }
 
     private static ILocator LeagueTable(IPage page) => page.GetByRole(AriaRole.Table).Filter(new() { Has = page.GetByRole(AriaRole.Columnheader, new() { Name = "League Manager" }) });
@@ -127,7 +127,7 @@ public sealed class ConferenceTests : UiTestBase
         var add = await ManagerActionAsync(page, "Add League to Conference", "Add League to Conference");
         await add.Locator("#newLeagueName").FillAsync(leagueName);
         await add.GetByRole(AriaRole.Combobox).SelectOptionAsync(new SelectOptionValue { Label = leagueManager.DisplayName });
-        await SubmitAndReloadAsync(page, add.GetByRole(AriaRole.Button, new() { Name = "Add New League" }), "AddLeagueToConference");
+        await SubmitAsync(page, add.GetByRole(AriaRole.Button, new() { Name = "Add New League" }), "AddLeagueToConference", "A new league has been added.");
         await Expect(LeagueTable(page)).ToContainTextAsync(leagueName);
 
         // Drag the unassigned player into the new league.
@@ -139,7 +139,7 @@ public sealed class ConferenceTests : UiTestBase
         await Ui.DragAsync(page, unassigned.GetByText(assignee.DisplayName, new() { Exact = true }), leagueList);
         await Expect(leagueList).ToContainTextAsync(assignee.DisplayName);
         await Expect(unassigned).Not.ToContainTextAsync(assignee.DisplayName);
-        await SubmitAndReloadAsync(page, assign.GetByRole(AriaRole.Button, new() { Name = "Assign Players to Leagues" }), "AssignLeaguePlayers");
+        await SubmitAsync(page, assign.GetByRole(AriaRole.Button, new() { Name = "Assign Players to Leagues" }), "AssignLeaguePlayers", "Player Assignments have been updated.");
 
         var leagueID = Guid.Parse((await LeagueTable(page).GetByRole(AriaRole.Link, new() { Name = leagueName }).GetAttributeAsync("href"))!.Split('/')[2]);
         var leagueYear = await assignee.Session.League.GetLeagueYearAsync(leagueID, conference.Year, null);
@@ -164,7 +164,7 @@ public sealed class ConferenceTests : UiTestBase
 
         var post = await ManagerActionAsync(page, "Post New Manager Message", "Post New Message to Conference");
         await post.GetByRole(AriaRole.Textbox).FillAsync(message);
-        await SubmitAndReloadAsync(page, post.GetByRole(AriaRole.Button, new() { Name = "Post Message" }), "PostNewConferenceManagerMessage");
+        await SubmitAsync(page, post.GetByRole(AriaRole.Button, new() { Name = "Post Message" }), "PostNewConferenceManagerMessage", "New manager's message posted.");
         var alert = page.GetByRole(AriaRole.Alert).Filter(new() { HasText = message });
         await Expect(alert).ToBeVisibleAsync();
         await page.RunAndWaitForRequestAsync(
@@ -177,7 +177,7 @@ public sealed class ConferenceTests : UiTestBase
         var settings = await ManagerActionAsync(page, "Edit Conference Settings", "Change Conference Options");
         await Expect(settings.Locator("#newConferenceName")).ToHaveValueAsync(conference.ConferenceName);
         await settings.Locator("#newConferenceName").FillAsync("UI Renamed Conference");
-        await SubmitAndReloadAsync(page, settings.GetByRole(AriaRole.Button, new() { Name = "Change Settings" }), "EditConference");
+        await SubmitAsync(page, settings.GetByRole(AriaRole.Button, new() { Name = "Change Settings" }), "EditConference", "Conference settings have been updated.");
         await Expect(Ui.Heading(page, "UI Renamed Conference", 1)).ToBeVisibleAsync();
     }
 
@@ -192,29 +192,13 @@ public sealed class ConferenceTests : UiTestBase
         var reassign = await ManagerActionAsync(page, "Reassign League Managers", "Reassign League Manager");
         await reassign.GetByRole(AriaRole.Combobox).First.SelectOptionAsync(new SelectOptionValue { Label = conference.PrimaryLeagueName });
         await reassign.GetByRole(AriaRole.Combobox).Nth(1).SelectOptionAsync(new SelectOptionValue { Label = player.DisplayName });
-        await SubmitAndReloadAsync(page, reassign.GetByRole(AriaRole.Button, new() { Name = "Transfer League Manager" }), "ReassignLeagueManager");
+        await SubmitAsync(page, reassign.GetByRole(AriaRole.Button, new() { Name = "Transfer League Manager" }), "ReassignLeagueManager", "League manager has been changed.");
         await Expect(LeagueTable(page).GetByRole(AriaRole.Row).Filter(new() { HasText = conference.PrimaryLeagueName })).ToContainTextAsync(player.DisplayName);
 
         var promote = await ManagerActionAsync(page, "Promote New Conference Manager", "Promote New Conference Manager");
         await promote.GetByRole(AriaRole.Combobox).SelectOptionAsync(new SelectOptionValue { Label = player.DisplayName });
-        await SubmitAndReloadAsync(page, promote.GetByRole(AriaRole.Button, new() { Name = "Transfer Conference Manager" }), "PromoteNewConferenceManager");
+        await SubmitAsync(page, promote.GetByRole(AriaRole.Button, new() { Name = "Transfer Conference Manager" }), "PromoteNewConferenceManager", "You have transferred conference manager status.");
         await Expect(page.GetByRole(AriaRole.Button, new() { Name = "Manager Actions" })).ToHaveCountAsync(0);
         await Expect(page.GetByText("Conference Manager:").Locator("..")).ToContainTextAsync(player.DisplayName);
-    }
-
-    [Test]
-    [Ignore("Main's bug: conferenceStore lost its notifyAction in merge 43dc6994f, so conference manager actions neither refresh the page nor toast.")]
-    public async Task ActionsRefreshThePageAndToast()
-    {
-        var conference = await NewConferenceAsync(players: 0);
-        var page = await NewSignedInPageAsync(conference.Manager, conference.Path);
-
-        var settings = await ManagerActionAsync(page, "Edit Conference Settings", "Change Conference Options");
-        await settings.Locator("#newConferenceName").FillAsync("UI Refreshed Conference");
-        await settings.GetByRole(AriaRole.Button, new() { Name = "Change Settings" }).ClickAsync();
-
-        await Expect(settings).ToBeHiddenAsync();
-        await Expect(page.GetByText("Conference settings have been updated.")).ToBeVisibleAsync();
-        await Expect(Ui.Heading(page, "UI Refreshed Conference", 1)).ToBeVisibleAsync();
     }
 }

@@ -66,6 +66,7 @@ public sealed class RoyaleTests : UiTestBase
         await Expect(purchase.GetByText($"Selected Game: {gameName}")).ToBeVisibleAsync();
         await purchase.GetByRole(AriaRole.Button, new() { NameRegex = new Regex("^Purchase Game for ") }).ClickAsync();
         await Expect(purchase).ToBeHiddenAsync();
+        await Expect(page.GetByText($"{gameName} was purchased for $")).ToBeVisibleAsync();
         // The Action History table names the game too, so the games row is the one with a Sell button.
         var row = page.GetByRole(AriaRole.Row).Filter(new() { HasText = gameName }).Filter(new() { Has = page.GetByRole(AriaRole.Button, new() { Name = "Sell" }) });
         await Expect(row).ToBeVisibleAsync();
@@ -85,21 +86,8 @@ public sealed class RoyaleTests : UiTestBase
 
         await row.GetByRole(AriaRole.Button, new() { Name = "Sell" }).ClickAsync();
         await Ui.Dialog(page, "Sell Game").GetByRole(AriaRole.Button, new() { Name = "OK" }).ClickAsync();
+        await Expect(page.GetByText($"{gameName} was sold for $")).ToBeVisibleAsync();
         await Expect(row).ToHaveCountAsync(0);
-    }
-
-    [Test]
-    [Ignore("Main's bug: royalePublisher.vue still calls this.$options.filters.money, which the filters removal left undefined, so buying and selling throw before their toasts.")]
-    public async Task BuyingAndSellingToast()
-    {
-        var user = await NewUserAsync();
-        var (publisherID, _, game) = await NewRoyalePublisherAsync(user);
-        await user.Session.Royale.PurchaseGameAsync(new PurchaseRoyaleGameRequest { PublisherID = publisherID, MasterGameID = game.MasterGame.MasterGameID });
-        var page = await NewSignedInPageAsync(user, $"/royalePublisher/{publisherID}");
-
-        await page.GetByRole(AriaRole.Row).Filter(new() { HasText = game.MasterGame.GameName }).GetByRole(AriaRole.Button, new() { Name = "Sell" }).ClickAsync();
-        await Ui.Dialog(page, "Sell Game").GetByRole(AriaRole.Button, new() { Name = "OK" }).ClickAsync();
-        await Expect(page.GetByText($"{game.MasterGame.GameName} was sold for")).ToBeVisibleAsync();
     }
 
     /// <summary>

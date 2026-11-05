@@ -11,18 +11,6 @@ public static class KnownProblems
 {
     private static readonly (Regex Pattern, string Reason)[] Problems =
     [
-        (new Regex("^404 from GET /lib/jquery-validation"),
-            "in Development the Razor pages load jquery-validation from /lib, which isn't in the repository; production loads it from a CDN"),
-        (new Regex("^Console error on /games: AxiosError: Request failed with status code 401.*fetchMyLeaguesForYear", RegexOptions.Singleline),
-            "Master Games asks for the user's leagues when nobody is logged in"),
-        (new Regex(@"^Console error on /league/.*TypeError: Cannot read properties of undefined \(reading 'autoDraftMode'\)"),
-            "draftStatusHeader's userHasAutoDraft is true when the user has no publisher, so its template reads userPublisher.autoDraftMode"),
-        (new Regex(@"^Console error on /conference/.*TypeError: Cannot read properties of undefined \(reading 'data'\)"),
-            "conferenceStore lost its notifyAction in merge 43dc6994f, so each conference manager modal throws after its request and its catch reads error.response.data"),
-        (new Regex(@"^Console error on /royalePublisher/.*TypeError: (this\.\$options\.filters\.money is not a function|Cannot read properties of undefined \(reading 'data'\))"),
-            "royalePublisher.vue still calls this.$options.filters.money after a purchase or sale; the sale's catch then reads error.response.data"),
-        (new Regex(@"^Console error on /masterGameRequest: TypeError: Cannot read properties of undefined \(reading 'data'\)"),
-            "masterGameRequest.vue's clearData calls this.$validator.reset(), vee-validate 2's API, after a successful request; the catch then reads error.response.data"),
     ];
 
     public static string? Explain(string problem) => Problems.FirstOrDefault(known => known.Pattern.IsMatch(problem)).Reason;

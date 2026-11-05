@@ -44,9 +44,11 @@ public sealed class MasterGameRequestTests : UiTestBase
         await submit.ClickAsync();
 
         await Expect(page.GetByText("Master Game request made.")).ToBeVisibleAsync();
+        await Expect(page.Locator("#gameName")).ToHaveValueAsync("");
+        await Expect(page.Locator("#requestNote")).ToHaveValueAsync("");
+        await Expect(page.Locator("#gameName + span")).ToBeEmptyAsync();
+        await Expect(page.Locator("#requestNote + span")).ToBeEmptyAsync();
 
-        // On main the list only shows the new request after a reload; see RequestListUpdatesWithoutAReload.
-        await page.ReloadAsync();
         var row = page.GetByRole(AriaRole.Row).Filter(new() { HasText = gameName });
         await Expect(row).ToBeVisibleAsync();
         await row.GetByRole(AriaRole.Button, new() { Name = "Cancel Request" }).ClickAsync();
@@ -77,22 +79,5 @@ public sealed class MasterGameRequestTests : UiTestBase
         await row.GetByRole(AriaRole.Button, new() { Name = "Cancel Request" }).ClickAsync();
         await Expect(page.GetByText("Master Game request was deleted.")).ToBeVisibleAsync();
         await Expect(row).ToHaveCountAsync(0);
-    }
-
-    [Test]
-    [Ignore("Main's bug: masterGameRequest.vue's clearData calls this.$validator.reset(), which vee-validate 3 doesn't have, so after a request the form isn't cleared and the list isn't refreshed.")]
-    public async Task RequestListUpdatesWithoutAReload()
-    {
-        var user = await NewUserAsync();
-        var page = await NewSignedInPageAsync(user, "/masterGameRequest");
-        var gameName = $"UI Requested Game {Guid.NewGuid():N}"[..26];
-
-        await page.Locator("#gameName").FillAsync(gameName);
-        await page.Locator("#estimatedReleaseDate").FillAsync("Spring 2027");
-        await page.Locator("#requestNote").FillAsync("Announced at a showcase this week, with a trailer.");
-        await page.GetByRole(AriaRole.Button, new() { Name = "Submit" }).ClickAsync();
-
-        await Expect(page.GetByRole(AriaRole.Row).Filter(new() { HasText = gameName })).ToBeVisibleAsync();
-        await Expect(page.Locator("#gameName")).ToHaveValueAsync("");
     }
 }
