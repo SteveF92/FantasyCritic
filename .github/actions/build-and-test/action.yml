@@ -1,8 +1,9 @@
 name: Build and unit test
 description: >-
   Builds the Web project, regenerates both NSwag clients from its OpenAPI surface, builds
-  the rest of the solution against them, and runs the unit tests. Integration tests are
-  deliberately not run here — they need a MySQL container and take about six minutes.
+  the rest of the solution against them, and runs the unit tests. Integration and UI tests are
+  deliberately built but not run here: both need a MySQL container, and they take about six
+  and ten minutes.
 
 inputs:
   configuration:
@@ -79,7 +80,9 @@ runs:
         status=0
         for project in src/FantasyCritic.Test/FantasyCritic.Test.csproj src/FantasyCritic.*Tests/*.csproj; do
           name=$(basename "$project" .csproj)
-          [ "$name" = FantasyCritic.IntegrationTests ] && continue
+          case "$name" in
+            FantasyCritic.IntegrationTests | FantasyCritic.UiTests) continue ;;
+          esac
           dotnet test "$project" \
             -c ${{ inputs.configuration }} \
             --no-build \
