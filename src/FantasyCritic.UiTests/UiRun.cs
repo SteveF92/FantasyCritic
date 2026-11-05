@@ -19,6 +19,11 @@ public sealed class UiRun
     public static string Dist { get => field ?? throw new InvalidOperationException("The client build has not been found."); private set; }
     public static ConsoleWarningsReport ConsoleWarnings { get; } = new();
 
+    /// <summary>
+    /// Each test stops before it closes its pages, in the Playwright Inspector, until Resume is pressed.
+    /// </summary>
+    public static bool PauseAtEnd { get; } = Environment.GetEnvironmentVariable("UI_TESTS_PAUSE") == "1";
+
     public static string ResultsDirectory { get; } = Path.Combine(RepositoryRoot.Find(), "src", "FantasyCritic.UiTests", "TestResults", "ui");
 
     [OneTimeSetUp]
@@ -36,7 +41,7 @@ public sealed class UiRun
         _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
         {
             Channel = "chrome",
-            Headless = Environment.GetEnvironmentVariable("UI_TESTS_HEADED") != "1",
+            Headless = Environment.GetEnvironmentVariable("UI_TESTS_HEADED") != "1" && !PauseAtEnd,
         });
     }
 

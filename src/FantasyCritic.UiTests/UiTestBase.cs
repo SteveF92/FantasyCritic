@@ -57,6 +57,11 @@ public abstract class UiTestBase
     [TearDown]
     public async Task FinishTest()
     {
+        if (UiRun.PauseAtEnd && _contexts.LastOrDefault()?.Pages.LastOrDefault() is { } lastPage)
+        {
+            await lastPage.PauseAsync();
+        }
+
         var problems = Problems;
         var failed = TestContext.CurrentContext.Result.Outcome.Status == TestStatus.Failed || problems.Count > 0;
         var resultsDirectory = Path.Combine(UiRun.ResultsDirectory, SafeFileName($"{GetType().Name}.{TestContext.CurrentContext.Test.Name}"));

@@ -21,11 +21,16 @@
 .EXAMPLE
     # One fixture, with the browser visible, reusing the last client build:
     scripts/Run-UiTests.ps1 -Filter "FullyQualifiedName~HarnessTests" -Headed -SkipClientBuild
+
+.EXAMPLE
+    # One test, leaving Chrome open at the end until Resume is pressed in the Playwright Inspector:
+    scripts/Run-UiTests.ps1 -Filter "FullyQualifiedName~CreateLeagueTests.StandardLeagueFromPreset" -Pause -SkipClientBuild
 #>
 
 param(
     [string]$Filter,
     [switch]$Headed,
+    [switch]$Pause,
     [switch]$SkipClientBuild
 )
 
@@ -92,6 +97,10 @@ if ($Headed) {
     $env:UI_TESTS_HEADED = "1"
 }
 
+if ($Pause) {
+    $env:UI_TESTS_PAUSE = "1"
+}
+
 try {
     Invoke-Step "Run UI tests" {
         dotnet test @testArguments
@@ -100,5 +109,9 @@ try {
 finally {
     if ($Headed) {
         Remove-Item Env:UI_TESTS_HEADED
+    }
+
+    if ($Pause) {
+        Remove-Item Env:UI_TESTS_PAUSE
     }
 }
