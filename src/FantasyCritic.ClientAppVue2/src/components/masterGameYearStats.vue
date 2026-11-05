@@ -119,16 +119,10 @@ export default {
     },
     peakHypeFactorText() {
       return {
-        html: true,
-        title: () => {
-          return 'Peak Hype Factor';
-        },
-        content: () => {
-          return (
-            "Sometimes a game's hype factor will go down over the course of the year, particularly if it gets delayed and many players drop it. " +
-            "This number is the highest this game's hype factor ever was in the year."
-          );
-        }
+        title: 'Peak Hype Factor',
+        body:
+          "Sometimes a game's hype factor will go down over the course of the year, particularly if it gets delayed and many players drop it. " +
+          "This number is the highest this game's hype factor ever was in the year."
       };
     },
     statisticsRowsSorted() {
