@@ -7,7 +7,7 @@
       {{ tag.shortName }}
     </span>
     <template v-if="!noPopover">
-      <b-popover :target="popoverID" triggers="hover" placement="right" class="master-game-tag-popover">
+      <b-popover :target="popoverID" placement="right" class="master-game-tag-popover">
         <template #title>
           {{ tag.readableName }}
         </template>
