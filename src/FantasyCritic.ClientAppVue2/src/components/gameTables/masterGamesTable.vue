@@ -192,6 +192,14 @@ export default {
       return gameRows;
     }
   },
+  watch: {
+    masterGames() {
+      // bootstrap-vue-next emits filtered only when the filter or sort changes, not the items.
+      this.filter = null;
+      this.totalRows = this.masterGames.length;
+      this.currentPage = 1;
+    }
+  },
   created() {
     this.totalRows = this.masterGames.length;
   },
