@@ -72,6 +72,7 @@ export default {
       this.currentPage = 1;
     },
     async fetchPublicLeaguesForYear(year) {
+      this.filter = null;
       const response = await axios.get('/api/league/PublicLeagues/' + year);
       this.publicLeagues = response.data;
       this.totalRows = this.publicLeagues.length;
