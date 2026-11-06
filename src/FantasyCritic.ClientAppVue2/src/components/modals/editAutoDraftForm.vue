@@ -15,7 +15,7 @@
     <b-form-select v-model="autoDraftMode" :options="autoDraftOptions" class="mb-3" @update:model-value="onModeChange"></b-form-select>
     <b-form-checkbox v-model="onlyDraftFromWatchlist" :disabled="autoDraftMode === 'Off'">Only Auto Draft from Watchlist</b-form-checkbox>
 
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-primary" value="Set Auto Draft" @click="setAutoDraft" />
     </template>
   </b-modal>

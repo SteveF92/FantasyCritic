@@ -68,7 +68,7 @@
         </div>
       </div>
     </div>
-    <template #modal-footer>
+    <template #footer>
       <b-button variant="warning" class="reset-button" @click="resetChanges">Reset Changes</b-button>
       <input type="submit" class="btn btn-primary" value="Assign Players to Leagues" @click="submitAssignments" />
     </template>

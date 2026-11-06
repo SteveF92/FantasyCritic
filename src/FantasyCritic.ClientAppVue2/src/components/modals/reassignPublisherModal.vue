@@ -40,7 +40,7 @@
       <input v-model="reassignConfirmation" type="text" class="form-control input" />
     </div>
 
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-primary" value="Reassign Publisher" @click="reassignPublisher" :disabled="!readyToReassign" />
     </template>
   </b-modal>

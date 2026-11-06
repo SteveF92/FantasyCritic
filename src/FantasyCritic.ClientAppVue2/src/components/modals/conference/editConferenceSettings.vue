@@ -19,7 +19,7 @@
 
       <b-alert variant="danger" :model-value="!!errorInfo">{{ errorInfo }}</b-alert>
     </div>
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-primary" value="Change Settings" :disabled="!newConferenceName" @click="changeConferenceSettings" />
     </template>
   </b-modal>

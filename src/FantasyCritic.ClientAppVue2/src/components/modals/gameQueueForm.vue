@@ -122,7 +122,7 @@
       <b-form-textarea v-model="notesInEdit" rows="8" :maxlength="maximumNotesLength"></b-form-textarea>
       <div class="notes-length">{{ notesInEdit.length }} / {{ maximumNotesLength }}</div>
     </b-modal>
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-primary" value="Set Rankings" @click="setQueueRankings" />
     </template>
   </b-modal>

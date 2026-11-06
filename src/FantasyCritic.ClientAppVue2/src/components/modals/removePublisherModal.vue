@@ -23,7 +23,7 @@
       <input v-model="removeConfirmation" type="text" class="form-control input" />
     </div>
 
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-danger" value="Remove Publisher" :disabled="!readyToRemove" @click="removePublisher" />
     </template>
   </b-modal>

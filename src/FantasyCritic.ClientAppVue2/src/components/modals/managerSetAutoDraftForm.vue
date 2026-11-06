@@ -20,7 +20,7 @@
       </div>
     </b-form-group>
 
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-primary" value="Set Auto Draft" @click="setAutoDraft" />
     </template>
   </b-modal>

@@ -18,7 +18,7 @@
       </b-form-select>
     </div>
 
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-primary" value="Renew League" @click="renewLeague" />
     </template>
   </b-modal>

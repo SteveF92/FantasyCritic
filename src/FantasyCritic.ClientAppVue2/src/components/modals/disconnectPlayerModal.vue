@@ -23,7 +23,7 @@
       </b-form-select>
     </div>
 
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-danger" value="Disconnect Player" :disabled="!publisherToDisconnect" @click="disconnectPlayer" />
     </template>
   </b-modal>

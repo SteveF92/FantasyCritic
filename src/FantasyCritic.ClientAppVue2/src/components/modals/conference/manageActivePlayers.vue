@@ -21,7 +21,7 @@
     <div v-show="errorInfo" class="alert alert-danger">
       {{ errorInfo }}
     </div>
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-primary" value="Set Active Players" @click="confirmActivePlayers" />
     </template>
   </b-modal>

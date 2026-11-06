@@ -22,7 +22,7 @@
       {{ error }}
     </div>
 
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn" :class="leagueYear.underReview ? 'btn-secondary' : 'btn-warning'" :value="submitText" :disabled="isSubmitting" @click="toggleUnderReview" />
     </template>
   </b-modal>

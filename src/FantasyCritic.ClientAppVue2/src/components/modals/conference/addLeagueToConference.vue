@@ -30,7 +30,7 @@
 
     <b-alert variant="danger" :model-value="!!errorInfo">{{ errorInfo }}</b-alert>
 
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-primary" value="Add New League" :disabled="!newLeagueName || !newLeagueManager" @click="addNewLeague" />
     </template>
   </b-modal>

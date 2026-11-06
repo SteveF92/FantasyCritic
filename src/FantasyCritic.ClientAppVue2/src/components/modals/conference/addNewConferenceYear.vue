@@ -17,7 +17,7 @@
         </b-form-select>
       </div>
     </div>
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-primary" value="Add New Conference Year" @click="addNewYear" />
     </template>
   </b-modal>

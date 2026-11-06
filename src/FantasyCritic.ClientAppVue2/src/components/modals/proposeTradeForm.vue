@@ -75,7 +75,7 @@
       <div v-show="clientError" class="alert alert-warning">{{ clientError }}</div>
       <div v-show="serverError" class="alert alert-danger">{{ serverError }}</div>
 
-      <template #modal-footer>
+      <template #footer>
         <input v-show="counterParty" type="submit" class="btn btn-primary" value="Propose Trade" :disabled="isBusy" @click="proposeTrade" />
       </template>
     </b-modal>

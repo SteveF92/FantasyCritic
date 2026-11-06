@@ -21,7 +21,7 @@
       </b-form-select>
     </div>
 
-    <template #modal-footer>
+    <template #footer>
       <input type="submit" class="btn btn-danger" value="Remove Player" :disabled="!playerToRemove" @click="removePlayer" />
     </template>
   </b-modal>
