@@ -75,12 +75,12 @@
   </b-modal>
 </template>
 <script>
-import { toRaw } from 'vue';
 import axios from 'axios';
 import { VueDraggable } from 'vue-draggable-plus';
 
 import { mapState, mapActions } from 'pinia';
 import { useConferenceStore } from '@/store/conferenceStore';
+import { deepClone } from '@/utilities/deepClone';
 
 export default {
   components: {
@@ -146,8 +146,8 @@ export default {
       this.leaguesLocked = leaguesLocked;
       this.leaguesDraftStarted = leaguesDraftStarted;
 
-      this.editableUnassignedPlayers = structuredClone(toRaw(this.initialUnassignedPlayers));
-      this.editableLeagueAssignments = structuredClone(toRaw(this.initialLeagueAssignments));
+      this.editableUnassignedPlayers = deepClone(this.initialUnassignedPlayers);
+      this.editableLeagueAssignments = deepClone(this.initialLeagueAssignments);
     },
     collapseLeague(leagueID) {
       this.leaguesCollapsed[leagueID] = true;
@@ -170,8 +170,8 @@ export default {
       }
     },
     resetChanges() {
-      this.editableUnassignedPlayers = structuredClone(toRaw(this.initialUnassignedPlayers));
-      this.editableLeagueAssignments = structuredClone(toRaw(this.initialLeagueAssignments));
+      this.editableUnassignedPlayers = deepClone(this.initialUnassignedPlayers);
+      this.editableLeagueAssignments = deepClone(this.initialLeagueAssignments);
     },
     clearData() {
       this.errorInfo = null;

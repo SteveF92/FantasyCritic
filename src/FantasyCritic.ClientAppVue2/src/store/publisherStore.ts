@@ -1,8 +1,7 @@
-import { toRaw } from 'vue';
-
 import { defineStore } from 'pinia';
 import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
+import { deepClone } from '@/utilities/deepClone';
 
 export const usePublisherStore = defineStore('publisher', {
   state: () => ({
@@ -80,7 +79,7 @@ export const usePublisherStore = defineStore('publisher', {
       this.moveMode = false;
       this.desiredPositions = null;
       this.heldSlot = null;
-      this.editableGameSlots = structuredClone(toRaw(this.cleanGameSlots));
+      this.editableGameSlots = deepClone(this.cleanGameSlots);
     },
     holdGame(holdSlot) {
       this.heldSlot = holdSlot;
@@ -100,8 +99,8 @@ export const usePublisherStore = defineStore('publisher', {
 function initializeInternal(store, initializeParams) {
   store.publisher = initializeParams.publisher;
   store.leagueYear = initializeParams.leagueYear;
-  store.cleanGameSlots = structuredClone(toRaw(store.publisher.gameSlots));
-  store.editableGameSlots = structuredClone(toRaw(store.publisher.gameSlots));
+  store.cleanGameSlots = deepClone(store.publisher.gameSlots);
+  store.editableGameSlots = deepClone(store.publisher.gameSlots);
 }
 
 function completeMoveMode(store) {
@@ -111,9 +110,9 @@ function completeMoveMode(store) {
 }
 
 function moveGameInternal(store, moveIntoSlot) {
-  const tempSlot = structuredClone(toRaw(moveIntoSlot));
-  moveIntoSlot.publisherGame = structuredClone(toRaw(store.heldSlot.publisherGame));
-  store.heldSlot.publisherGame = structuredClone(tempSlot.publisherGame);
+  const tempSlot = deepClone(moveIntoSlot);
+  moveIntoSlot.publisherGame = deepClone(store.heldSlot.publisherGame);
+  store.heldSlot.publisherGame = deepClone(tempSlot.publisherGame);
   store.heldSlot = null;
 }
 

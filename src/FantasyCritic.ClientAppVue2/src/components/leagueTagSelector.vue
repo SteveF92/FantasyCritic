@@ -47,12 +47,11 @@
 </template>
 
 <script>
-import { toRaw } from 'vue';
-
 import { VueDraggable } from 'vue-draggable-plus';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { intersection } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { deepClone } from '@/utilities/deepClone';
 
 export default {
   components: {
@@ -119,7 +118,7 @@ export default {
       this.$emit('update:modelValue', this.internalValue);
     },
     resetValues() {
-      this.internalValue = structuredClone(toRaw(this.initialValue));
+      this.internalValue = deepClone(this.initialValue);
     },
     initializeValues() {
       this.initialValue = {
@@ -147,7 +146,7 @@ export default {
         this.initialValue.allowed.push(tag.name);
       });
 
-      this.internalValue = structuredClone(toRaw(this.initialValue));
+      this.internalValue = deepClone(this.initialValue);
     }
   }
 };

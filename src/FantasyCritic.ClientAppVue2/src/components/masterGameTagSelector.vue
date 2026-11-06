@@ -16,11 +16,10 @@
 </template>
 
 <script>
-import { toRaw } from 'vue';
-
 import Multiselect from 'vue-multiselect';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { deepClone } from '@/utilities/deepClone';
 
 export default {
   components: {
@@ -59,7 +58,7 @@ export default {
       this.$emit('update:modelValue', this.internalValue);
     },
     updateInternal() {
-      this.internalValue = structuredClone(toRaw(this.modelValue));
+      this.internalValue = deepClone(this.modelValue);
     }
   }
 };
