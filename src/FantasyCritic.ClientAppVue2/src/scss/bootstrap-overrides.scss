@@ -51,11 +51,40 @@ $bs4-column-selectors: ();
   margin-bottom: 1rem;
 }
 
-// Bootstrap 5 paints every table cell with --bs-table-bg, which hides a background set on the row. Bootstrap 4
-// showed it, so a header row marked bg-primary has to feed the color through the variable.
+// Bootstrap 5 paints every table cell with --bs-table-bg, which hides a background set on the row, and draws
+// stripes as an inset shadow, which hides a background set on the cell. Bootstrap 4 showed both.
+.table > :not(caption) > tr[class*='bg-'] {
+  --#{$prefix}table-bg: transparent;
+}
+
+.table > :not(caption) > * > [class*='bg-'] {
+  box-shadow: none;
+}
+
+// A header row marked bg-primary also has black text.
 .table > thead > tr.bg-primary {
   --#{$prefix}table-bg: var(--#{$prefix}primary);
   --#{$prefix}table-color: black;
+}
+
+// The site draws table row variants in the theme color itself, with white text. Bootstrap 5's are pale tints with
+// dark text, and their stripes are the shadow above. The border is Bootstrap 4's $table-border-level.
+@each $color in (success, danger, warning) {
+  $value: map-get($theme-colors, $color);
+
+  .table-#{$color} {
+    --#{$prefix}table-color: #{$white};
+    --#{$prefix}table-bg: #{$value};
+    --#{$prefix}table-striped-color: #{$white};
+    --#{$prefix}table-striped-bg: #{$value};
+    --#{$prefix}table-border-color: #{mix($white, $value, 48%)};
+  }
+}
+
+// Bootstrap 4's .badge-pill had wider side padding than a plain badge. Bootstrap 5's .rounded-pill only rounds.
+.badge.rounded-pill {
+  padding-right: 0.6em;
+  padding-left: 0.6em;
 }
 
 // Bootstrap 5 dropped .form-row. Bootstrap 4's was a flex row with 5px of padding either side of each column.
@@ -88,10 +117,15 @@ $bs4-column-selectors: ();
   vertical-align: middle;
 }
 
-// Bootstrap 4 drew the browser's own arrow on a select with .form-control. Bootstrap 5 turns appearance off for every
-// .form-control, which leaves a select looking like a text box.
+// Bootstrap 4 left the browser's own look on a .form-control: the arrow on a select, the spinner on a number. Bootstrap 5
+// turns appearance off, which leaves a select looking like a text box. Its selects also lost their fixed height.
+input.form-control,
 select.form-control {
   appearance: auto;
+}
+
+select.form-control {
+  height: calc(1.5em + 0.75rem + 2px);
 }
 
 // Bootstrap 4 sized selects to match the inputs in a small or large input group.
@@ -174,6 +208,10 @@ ul {
 // Bootstrap 4 chose button text with YIQ, which gives white on warning and info. Bootstrap 5 picks whichever of
 // white and $color-contrast-dark has the higher contrast ratio, which is dark on both.
 @each $color in (warning, info) {
+  .text-bg-#{$color} {
+    color: $white !important;
+  }
+
   .btn-#{$color} {
     --#{$prefix}btn-color: #{$white};
     --#{$prefix}btn-hover-color: #{$white};

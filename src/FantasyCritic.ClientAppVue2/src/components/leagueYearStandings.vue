@@ -12,10 +12,8 @@
       <template #cell(publisher)="data">
         <span v-if="data.item.publisher">
           <router-link :to="{ hash: `#${data.item.publisher.publisherID}` }">{{ data.item.publisher.publisherName }}</router-link>
-          <span v-show="hasPendingOrActiveDraft && data.item.publisher.autoDraftMode === 'All'" class="publisher-badge badge badge-pill badge-primary badge-info">Auto Draft</span>
-          <span v-show="hasPendingOrActiveDraft && data.item.publisher.autoDraftMode === 'StandardGamesOnly'" class="publisher-badge badge badge-pill badge-primary badge-info">
-            Auto Draft (No CPKs)
-          </span>
+          <span v-show="hasPendingOrActiveDraft && data.item.publisher.autoDraftMode === 'All'" class="publisher-badge badge rounded-pill bg-info">Auto Draft</span>
+          <span v-show="hasPendingOrActiveDraft && data.item.publisher.autoDraftMode === 'StandardGamesOnly'" class="publisher-badge badge rounded-pill bg-info">Auto Draft (No CPKs)</span>
         </span>
         <span v-if="data.item.user && !data.item.publisher">&lt;Not Created&gt;</span>
         <span v-if="data.item.inviteID">

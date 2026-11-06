@@ -15,13 +15,14 @@
           <b-card>
             <div class="draft-card-header">
               <span class="h5">Draft {{ draft.draftNumber }}: {{ draft.name }}</span>
-              <b-badge :variant="statusVariant(draft)" class="ml-2">{{ statusLabel(draft) }}</b-badge>
+              <b-badge :variant="statusVariant(draft)" class="ms-2">{{ statusLabel(draft) }}</b-badge>
             </div>
 
             <!-- Read view -->
             <div v-if="editingDraftId !== draft.draftID" class="mt-2">
               <div>
                 <strong>{{ draftDateLabel(draft) }}:</strong>
+                {{ ' ' }}
                 <template v-if="draft.playStarted">
                   {{ draftStartedDisplay(draft) }}
                 </template>
@@ -47,7 +48,7 @@
                   v-if="editingDraftId === null && deletingDraftId === null && draft.draftNumber > 1 && draft.playStatus === 'NotStartedDraft'"
                   size="sm"
                   variant="danger"
-                  class="ml-2"
+                  class="ms-2"
                   @click="confirmDelete(draft)">
                   Delete
                 </b-button>
@@ -60,7 +61,7 @@
                     ? This cannot be undone.
                   </p>
                   <b-button size="sm" variant="danger" @click="submitDelete(draft)">Confirm Delete</b-button>
-                  <b-button size="sm" variant="secondary" class="ml-2" @click="cancelDelete()">Cancel</b-button>
+                  <b-button size="sm" variant="secondary" class="ms-2" @click="cancelDelete()">Cancel</b-button>
                 </div>
               </div>
             </div>
@@ -95,7 +96,7 @@
                 </b-form-checkbox>
               </div>
               <b-button size="sm" variant="primary" @click="submitEdit(draft)">Save</b-button>
-              <b-button size="sm" variant="secondary" class="ml-2" @click="cancelEdit()">Cancel</b-button>
+              <b-button size="sm" variant="secondary" class="ms-2" @click="cancelEdit()">Cancel</b-button>
             </div>
           </b-card>
         </div>

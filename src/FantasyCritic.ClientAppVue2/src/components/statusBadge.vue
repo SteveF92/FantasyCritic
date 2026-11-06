@@ -1,9 +1,9 @@
 <template>
   <span>
-    <span v-if="isAvailable" class="badge badge-primary badge-success">Available</span>
-    <span v-if="alreadyOwned" class="badge badge-primary badge-info">Already Owned</span>
-    <span v-if="locked" class="badge badge-primary badge-warning text-wrap text-left royale-status-badge">Locked</span>
-    <span v-if="!isAvailable && !alreadyOwned && !locked" class="badge badge-primary badge-warning text-wrap text-left royale-status-badge">{{ status }}</span>
+    <span v-if="isAvailable" class="badge bg-success">Available</span>
+    <span v-if="alreadyOwned" class="badge bg-info">Already Owned</span>
+    <span v-if="locked" class="badge bg-warning text-wrap text-start royale-status-badge">Locked</span>
+    <span v-if="!isAvailable && !alreadyOwned && !locked" class="badge bg-warning text-wrap text-start royale-status-badge">{{ status }}</span>
   </span>
 </template>
 <script>
