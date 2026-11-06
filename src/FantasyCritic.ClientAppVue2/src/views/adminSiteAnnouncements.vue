@@ -54,7 +54,7 @@
         <b-link v-if="row.item.linkAddress" :href="row.item.linkAddress" target="_blank" rel="noopener">{{ row.item.linkLabel || row.item.linkAddress }}</b-link>
       </template>
       <template #cell(actions)="row">
-        <b-button variant="primary" size="sm" :disabled="isBusy" @click="startEdit(row.item)">Edit</b-button>
+        <b-button variant="primary" size="sm" class="me-1" :disabled="isBusy" @click="startEdit(row.item)">Edit</b-button>
         <b-button variant="danger" size="sm" :disabled="isBusy" @click="confirmDelete(row.item)">Delete</b-button>
       </template>
     </b-table>

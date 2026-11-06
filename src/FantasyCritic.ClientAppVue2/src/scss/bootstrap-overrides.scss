@@ -30,6 +30,11 @@ $bs4-column-selectors: ();
   margin-top: 0;
 }
 
+// The reset above would also drop a table's own width: 100%, which Bootstrap 4 kept inside a .row.
+.row > .table {
+  width: 100%;
+}
+
 // Bootstrap 4's reboot gave every label a bottom margin, except check labels. Bootstrap 5 only gives one to .form-label.
 :where(label) {
   margin-bottom: 0.5rem;
@@ -46,6 +51,27 @@ $bs4-column-selectors: ();
   margin-bottom: 1rem;
 }
 
+// Bootstrap 5 paints every table cell with --bs-table-bg, which hides a background set on the row. Bootstrap 4
+// showed it, so a header row marked bg-primary has to feed the color through the variable.
+.table > thead > tr.bg-primary {
+  --#{$prefix}table-bg: var(--#{$prefix}primary);
+  --#{$prefix}table-color: black;
+}
+
+// Bootstrap 5 dropped .form-row. Bootstrap 4's was a flex row with 5px of padding either side of each column.
+.form-row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -5px;
+  margin-left: -5px;
+
+  > .col,
+  > [class*='col-'] {
+    padding-right: 5px;
+    padding-left: 5px;
+  }
+}
+
 // Bootstrap-Vue 2 laid out horizontal form groups (label-cols) as a .form-row, with 10px gutters.
 .b-form-group > .row {
   --#{$prefix}gutter-x: 10px;
@@ -60,6 +86,12 @@ $bs4-column-selectors: ();
 .form-select {
   display: inline-block;
   vertical-align: middle;
+}
+
+// Bootstrap 4 drew the browser's own arrow on a select with .form-control. Bootstrap 5 turns appearance off for every
+// .form-control, which leaves a select looking like a text box.
+select.form-control {
+  appearance: auto;
 }
 
 // Bootstrap 4 sized selects to match the inputs in a small or large input group.
