@@ -52,7 +52,7 @@
 
       <h2>Full Actions History</h2>
       <div class="history-table">
-        <b-table v-model:sort-by="sortBy" :items="leagueActions" :fields="actionFields" bordered striped responsive>
+        <b-table v-model:sort-by="sortBy" :items="leagueActions ?? []" :fields="actionFields" bordered striped responsive>
           <template #cell(timestamp)="data">
             {{ formatDateTime(data.item.timestamp) }}
           </template>
