@@ -23,6 +23,7 @@
 import TopNavbar from '@/components/topNavBar.vue';
 import FooterModule from '@/components/footerModule.vue';
 import ToastHost from '@/components/toastHost.vue';
+import { defaultTableComparer } from '@/globalFunctions';
 
 export default {
   components: {
@@ -35,7 +36,7 @@ export default {
       // Bootstrap-Vue 2 tables toggled between ascending and descending. bootstrap-vue-next clears the sort on a third click unless mustSort is set.
       // Bootstrap 4 dropped dropdown menus 0.125rem below their toggle; bootstrap-vue-next positions them with no gap.
       bootstrapDefaults: {
-        BTable: { mustSort: true },
+        BTable: { mustSort: true, sortCompare: defaultTableComparer },
         BDropdown: { offset: 2 }
       }
     };

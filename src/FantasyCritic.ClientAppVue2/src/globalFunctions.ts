@@ -155,6 +155,13 @@ function getValueAtPath(item: unknown, key: string): unknown {
   return key.split('.').reduce<unknown>((value, part) => (value === null || value === undefined ? undefined : (value as Record<string, unknown>)[part]), item);
 }
 
+// The sortCompare every b-table gets by default (App.vue). bootstrap-vue-next's own reads item[key], so a column keyed
+// by a path, such as 'masterGame.gameName', has nothing to sort by.
+export function defaultTableComparer(a: unknown, b: unknown, key: string) {
+  const toSortString = (value: unknown) => (typeof value === 'object' && value !== null ? JSON.stringify(value) : String(value ?? ''));
+  return toSortString(getValueAtPath(a, key)).localeCompare(toSortString(getValueAtPath(b, key)), undefined, { numeric: true });
+}
+
 // A b-table sortCompare for numeric columns. bootstrap-vue-next's default sort compares values as strings, which
 // reads the digits after a decimal point as a whole number. The key can be a path, such as 'masterGame.criticScore'.
 // Missing values sort before numbers, as they did in Bootstrap-Vue 2.

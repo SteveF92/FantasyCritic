@@ -21,7 +21,7 @@
           <template #cell(playerName)="data">
             <div>{{ data.item.playerName }}</div>
             <div class="won-years">
-              <span v-for="year in data.item.yearsWon" :key="year" class="badge badge-success">
+              <span v-for="year in data.item.yearsWon" :key="year" class="badge bg-success">
                 <font-awesome-icon icon="crown" class="year-winner-crown" />
                 {{ year }}
               </span>
@@ -94,7 +94,7 @@ export default {
       playerStatFieldsInternal: [
         { key: 'playerName', label: 'User', thClass: 'bg-primary', sortable: true },
         { key: 'yearsPlayedIn', label: 'Years Played In', thClass: 'bg-primary', sortable: true },
-        { key: 'yearsWon.length', label: 'Years Won', thClass: 'bg-primary', sortable: true },
+        { key: 'yearsWon.length', accessor: (player) => player.yearsWon.length, label: 'Years Won', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
         { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
         { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary', sortable: true },
         { key: 'averageFinishRanking', label: 'Average Rank', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
