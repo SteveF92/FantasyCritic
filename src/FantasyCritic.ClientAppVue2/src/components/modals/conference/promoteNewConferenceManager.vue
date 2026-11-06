@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="promoteNewConferenceManager" ref="promoteNewConferenceManagerRef" title="Promote New Conference Manager" hide-footer @hidden="clearData">
+  <b-modal id="promoteNewConferenceManager" ref="promoteNewConferenceManagerRef" title="Promote New Conference Manager" no-footer @hidden="clearData">
     <div class="alert alert-warning">Warning! If you promote a new player to be Conference Manager, you will no longer be Conference Manager! There can only be one!</div>
     <b-alert variant="danger" :model-value="!!errorInfo">{{ errorInfo }}</b-alert>
     <div class="form-group">

@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="tagOverridesModal" ref="tagOverridesModalRef" title="Tag Overrides" hide-footer>
+  <b-modal id="tagOverridesModal" ref="tagOverridesModalRef" title="Tag Overrides" no-footer>
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">

@@ -1,13 +1,13 @@
 <template>
-  <b-modal id="playerDraftCounterPickForm" ref="playerDraftCounterPickFormRef" size="lg" title="Select Counter Pick" hide-footer @hidden="clearData" @show="getPossibleCounterPicks">
-    <form class="form-horizontal" hide-footer @submit.prevent="selectCounterPick">
+  <b-modal id="playerDraftCounterPickForm" ref="playerDraftCounterPickFormRef" size="lg" title="Select Counter Pick" no-footer @hidden="clearData" @show="getPossibleCounterPicks">
+    <form class="form-horizontal" no-footer @submit.prevent="selectCounterPick">
       <div v-if="!selectedCounterPick && isBusy" class="game-list-spinner">
         <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: 'black' }" />
       </div>
 
       <div v-if="possibleCounterPicks.length > 0">
         <h3 class="text-black">Available Counter Picks</h3>
-        <possibleCounterPicksTable v-model="selectedCounterPick" :possible-games="possibleCounterPicks" @input="newGameSelected"></possibleCounterPicksTable>
+        <possibleCounterPicksTable v-model="selectedCounterPick" :possible-games="possibleCounterPicks" @update:model-value="newGameSelected"></possibleCounterPicksTable>
       </div>
 
       <div v-if="possibleCounterPicks.length === 0 && !isBusy" class="alert alert-info">No games are available for counter picks.</div>

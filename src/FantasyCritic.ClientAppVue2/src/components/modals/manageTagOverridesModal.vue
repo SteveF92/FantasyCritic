@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="manageTagOverridesModal" ref="tagOverridesModalRef" size="lg" title="Manage Tag Overrides" hide-footer @hidden="clearData">
+  <b-modal id="manageTagOverridesModal" ref="tagOverridesModalRef" size="lg" title="Manage Tag Overrides" no-footer @hidden="clearData">
     <div class="alert alert-info">This option will allow you to override the tags of a game to whatever you want, if you disagree with how the site has classified something.</div>
     <div v-if="leagueYear.tagOverrides.length > 0">
       <table class="table table-bordered table-striped">
@@ -39,7 +39,7 @@
           v-if="!overrideMasterGame && possibleMasterGames.length > 0"
           v-model="overrideMasterGame"
           :possible-games="possibleMasterGames"
-          @input="newGameSelected"></possibleMasterGamesTable>
+          @update:model-value="newGameSelected"></possibleMasterGamesTable>
       </div>
     </form>
     <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{ overrideMasterGame.gameName }}</label>

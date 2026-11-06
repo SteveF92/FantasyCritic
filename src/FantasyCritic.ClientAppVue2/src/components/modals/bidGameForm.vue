@@ -1,5 +1,5 @@
 <template>
-  <b-modal :id="modalID" :ref="modalRef" size="lg" title="Make a Bid" hide-footer @hidden="clearData" @show="getTopGames">
+  <b-modal :id="modalID" :ref="modalRef" size="lg" title="Make a Bid" no-footer @hidden="clearData" @show="getTopGames">
     <div v-if="errorInfo" class="alert alert-danger" role="alert">
       {{ errorInfo }}
     </div>
@@ -62,7 +62,12 @@
           <h3 v-show="showingQueuedGames" class="text-black">Watchlist</h3>
           <h3 v-show="showingPublicBids" class="text-black">This Week's Public Bids</h3>
           <h3 v-show="!showingTopAvailable && !showingQueuedGames && !showingPublicBids && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
-          <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="bidMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected" bid-mode></possibleMasterGamesTable>
+          <possibleMasterGamesTable
+            v-if="possibleMasterGames.length > 0"
+            v-model="bidMasterGame"
+            :possible-games="possibleMasterGames"
+            @update:model-value="newGameSelected"
+            bid-mode></possibleMasterGamesTable>
         </div>
       </div>
 
@@ -107,9 +112,9 @@
         bid for it (provided there are no other reasons it could be banned), but do so at your own risk, as early access games don't often get reviewed.
       </b-alert>
 
-      <div v-if="leagueYear.settings.hasSpecialSlots" class="form-check">
-        <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
-        <label class="form-check-label">
+      <div v-if="leagueYear.settings.hasSpecialSlots" class="plain-check">
+        <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
+        <label class="plain-check-label">
           Allow bid to succeed even if there are no slots this game is eligible in.
           <font-awesome-icon v-b-popover.hover.focus="allowIneligibleText" icon="info-circle" />
         </label>

@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="currentBidsForm" ref="currentBidsFormRef" size="lg" title="My Current Bids" hide-footer @hidden="clearData">
+  <b-modal id="currentBidsForm" ref="currentBidsFormRef" size="lg" title="My Current Bids" no-footer @hidden="clearData">
     <div v-show="errorInfo" class="alert alert-danger" role="alert">
       {{ errorInfo }}
     </div>
@@ -79,9 +79,9 @@
           You have no open roster spots. Add a conditional drop to this bid or place a pending drop request before saving.
         </div>
       </div>
-      <div v-if="leagueYear.settings.hasSpecialSlots" class="form-check">
-        <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
-        <label class="form-check-label">
+      <div v-if="leagueYear.settings.hasSpecialSlots" class="plain-check">
+        <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
+        <label class="plain-check-label">
           Allow bid to succeed even if there are no slots this game is eligible in.
           <font-awesome-icon v-b-popover.hover.focus="allowIneligibleText" icon="info-circle" />
         </label>

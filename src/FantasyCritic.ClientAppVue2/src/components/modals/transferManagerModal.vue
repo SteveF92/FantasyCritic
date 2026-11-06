@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="transferManagerForm" ref="transferManagerFormRef" size="lg" title="Transfer Manager" hide-footer @hidden="clearData">
+  <b-modal id="transferManagerForm" ref="transferManagerFormRef" size="lg" title="Transfer Manager" no-footer @hidden="clearData">
     <div class="alert alert-warning">Warning! If you promote a new player to be League Manager, you will no longer be League Manager! There can only be one!</div>
     <div class="form-group">
       <label for="newManager" class="control-label">New Manager</label>

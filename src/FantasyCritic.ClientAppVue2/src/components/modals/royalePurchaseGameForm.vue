@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="royalePurchaseGameForm" ref="royalePurchaseGameFormRef" size="lg" title="Purchase Game" hide-footer @hidden="clearData">
+  <b-modal id="royalePurchaseGameForm" ref="royalePurchaseGameFormRef" size="lg" title="Purchase Game" no-footer @hidden="clearData">
     <p class="text-black">
       You can purchase up to 15 games, provided you have the money.
       <br />
@@ -29,7 +29,7 @@
           v-if="possibleMasterGames.length > 0"
           v-model="purchaseRoyaleGame"
           :possible-games="possibleMasterGames"
-          @input="newGameSelected"></possibleRoyaleMasterGamesTable>
+          @update:model-value="newGameSelected"></possibleRoyaleMasterGamesTable>
 
         <div
           v-show="searched && !purchaseRoyaleGame && possibleMasterGames.length === 0"

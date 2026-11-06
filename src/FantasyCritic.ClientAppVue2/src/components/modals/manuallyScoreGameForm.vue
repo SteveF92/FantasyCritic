@@ -1,6 +1,6 @@
 <template>
-  <form class="form-horizontal" hide-footer>
-    <b-modal id="manuallyScorePublisherGame" ref="manuallyScorePublisherGameRef" title="Manually Score Publisher Game" hide-footer @hidden="clearData">
+  <form class="form-horizontal" no-footer>
+    <b-modal id="manuallyScorePublisherGame" ref="manuallyScorePublisherGameRef" title="Manually Score Publisher Game" no-footer @hidden="clearData">
       <div class="alert alert-warning">
         Warning! This feature is intended to deal with exceptional circumstances. See the
         <a href="/faq#scoring" class="text-secondary" target="_blank">FAQ</a>
@@ -22,10 +22,10 @@
           </b-form-select>
         </div>
         <div v-if="manuallyScoreGame">
-          <div v-if="manuallyScoreGame.manualCriticScore" class="form-check">
+          <div v-if="manuallyScoreGame.manualCriticScore" class="plain-check">
             <span>
-              <label class="form-check-label">Remove Manual Score?</label>
-              <input v-model="removeManualScore" class="form-check-input remove-manual-score-checkbox" type="checkbox" />
+              <label class="plain-check-label">Remove Manual Score?</label>
+              <input v-model="removeManualScore" class="plain-check-input remove-manual-score-checkbox" type="checkbox" />
             </span>
           </div>
           <div v-if="!removeManualScore">

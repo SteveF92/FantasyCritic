@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="editDraftOrderForm" ref="editDraftOrderFormRef" title="Set Draft Order" hide-footer @hidden="clearData">
+  <b-modal id="editDraftOrderForm" ref="editDraftOrderFormRef" title="Set Draft Order" no-footer @hidden="clearData">
     <div v-show="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
     <label>How do you want to set the draft order?</label>
     <div v-if="isFirstDraft && hasPreviousYear" class="order-options-list">

@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="royaleGroupInviteLinksModal" ref="royaleGroupInviteLinksRef" title="Invite Links" @show="fetchInviteLinks" hide-footer>
+  <b-modal id="royaleGroupInviteLinksModal" ref="royaleGroupInviteLinksRef" title="Invite Links" @show="fetchInviteLinks" no-footer>
     <div v-if="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
     <label>Send one of these links to anyone you want to invite to the group.</label>
     <div v-for="link in activeLinks" :key="link.inviteID" class="invite-link">

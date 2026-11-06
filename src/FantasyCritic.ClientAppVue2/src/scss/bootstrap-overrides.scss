@@ -106,6 +106,33 @@ $bs4-column-selectors: ();
   --#{$prefix}gutter-x: 10px;
 }
 
+// Bootstrap 4 left a checkbox without b-form-checkbox's custom control looking like the browser's own.
+.plain-check {
+  position: relative;
+  display: block;
+  padding-left: 1.25rem;
+}
+
+.plain-check-input {
+  position: absolute;
+  margin-top: 0.3rem;
+  margin-left: -1.25rem;
+}
+
+.plain-check-label {
+  margin-bottom: 0;
+}
+
+// Bootstrap 4's inputs had a fixed height, so a taller button beside one in an input group didn't stretch it.
+.input-group:not(.input-group-sm, .input-group-lg) > input.form-control {
+  height: calc(1.5em + 0.75rem + 2px);
+}
+
+// Bootstrap 5 overlaps the borders of input group children, which .input-group-btn's wrapper doesn't need.
+.input-group > .input-group-btn {
+  margin-left: 0 !important;
+}
+
 // Bootstrap 4's help text sat on its own line.
 .form-text {
   display: block;
@@ -120,11 +147,11 @@ $bs4-column-selectors: ();
 // Bootstrap 4 left the browser's own look on a .form-control: the arrow on a select, the spinner on a number. Bootstrap 5
 // turns appearance off, which leaves a select looking like a text box. Its selects also lost their fixed height.
 input.form-control,
-select.form-control {
+select.form-control:not(.form-select) {
   appearance: auto;
 }
 
-select.form-control {
+select.form-control:not(.form-select) {
   height: calc(1.5em + 0.75rem + 2px);
 }
 

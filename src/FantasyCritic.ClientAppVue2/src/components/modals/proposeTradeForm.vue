@@ -1,5 +1,5 @@
 <template>
-  <form class="form-horizontal" hide-footer>
+  <form class="form-horizontal" no-footer>
     <b-modal id="proposeTradeForm" ref="proposeTradeFormRef" size="lg" title="Propose Trade" @hidden="clearData">
       <div class="form-group">
         <label for="counterParty" class="control-label">Publisher to trade with</label>

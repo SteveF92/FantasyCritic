@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="playerDraftGameForm" ref="playerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData" @show="getTopGames">
+  <b-modal id="playerDraftGameForm" ref="playerDraftGameFormRef" size="lg" title="Select Draft Game" no-footer @hidden="clearData" @show="getTopGames">
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <label for="searchGameName" class="control-label">Game Name</label>
       <div class="input-group game-search-input">
@@ -42,7 +42,11 @@
         <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
         <h3 v-show="showingQueuedGames" class="text-black">Watchlist</h3>
         <h3 v-show="!showingTopAvailable && !showingQueuedGames && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
+        <possibleMasterGamesTable
+          v-if="possibleMasterGames.length > 0"
+          v-model="draftMasterGame"
+          :possible-games="possibleMasterGames"
+          @update:model-value="newGameSelected"></possibleMasterGamesTable>
       </div>
 
       <div v-show="(searched && !draftMasterGame) || showingUnlistedField" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
@@ -75,10 +79,10 @@
             <li v-for="error in draftResult.errors" :key="error">{{ error }}</li>
           </ul>
 
-          <div v-if="draftResult.overridable" class="form-check">
+          <div v-if="draftResult.overridable" class="plain-check">
             <span>
-              <label v-show="!isManager" class="form-check-label">Your league manager can override these warnings.</label>
-              <label v-show="isManager" class="form-check-label">
+              <label v-show="!isManager" class="plain-check-label">Your league manager can override these warnings.</label>
+              <label v-show="isManager" class="plain-check-label">
                 <span class="text-white">You as league manager can override these warnings.</span>
                 <br />
                 <span class="text-white">Use the "Select Next Game" button under "Manager Actions".</span>
@@ -86,11 +90,11 @@
             </span>
           </div>
 
-          <div v-if="draftResult.noEligibleSpaceError" class="form-check">
+          <div v-if="draftResult.noEligibleSpaceError" class="plain-check">
             <div class="text-white">This game is going to end up in an ineligible slot.</div>
             <span>
               <label class="text-white">Do you want draft this game anyway anyway?</label>
-              <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
+              <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
             </span>
           </div>
         </div>

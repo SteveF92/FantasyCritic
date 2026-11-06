@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="claimGameForm" ref="claimGameFormRef" size="lg" title="Add Publisher Game" hide-footer @hidden="clearData">
+  <b-modal id="claimGameForm" ref="claimGameFormRef" size="lg" title="Add Publisher Game" no-footer @hidden="clearData">
     <div class="alert alert-warning">Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be adding games to player's rosters.</div>
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="form-group">
@@ -10,7 +10,11 @@
             <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="claimMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
+        <possibleMasterGamesTable
+          v-if="possibleMasterGames.length > 0"
+          v-model="claimMasterGame"
+          :possible-games="possibleMasterGames"
+          @update:model-value="newGameSelected"></possibleMasterGamesTable>
 
         <div v-show="searched && !claimMasterGame" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
           <div class="row">
@@ -44,10 +48,10 @@
           </option>
         </b-form-select>
       </div>
-      <div class="form-check">
+      <div class="plain-check">
         <span>
-          <label class="form-check-label">Counter Pick</label>
-          <input v-model="claimCounterPick" class="form-check-input override-checkbox" type="checkbox" />
+          <label class="plain-check-label">Counter Pick</label>
+          <input v-model="claimCounterPick" class="plain-check-input override-checkbox" type="checkbox" />
         </span>
       </div>
       <div>
@@ -60,18 +64,18 @@
           <li v-for="error in claimResult.errors" :key="error">{{ error }}</li>
         </ul>
 
-        <div v-if="claimResult.overridable" class="form-check">
+        <div v-if="claimResult.overridable" class="plain-check">
           <span>
             <label class="text-white">Do you want to override these warnings?</label>
-            <input v-model="claimOverride" class="form-check-input override-checkbox" type="checkbox" />
+            <input v-model="claimOverride" class="plain-check-input override-checkbox" type="checkbox" />
           </span>
         </div>
 
-        <div v-if="claimResult.noEligibleSpaceError" class="form-check">
+        <div v-if="claimResult.noEligibleSpaceError" class="plain-check">
           <div class="text-white">This game is going to end up in an ineligible slot.</div>
           <span>
             <label class="text-white">Do you want add this game anyway anyway?</label>
-            <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
+            <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
           </span>
         </div>
       </div>

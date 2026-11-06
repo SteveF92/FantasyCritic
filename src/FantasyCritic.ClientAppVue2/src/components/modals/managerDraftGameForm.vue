@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="managerDraftGameForm" ref="managerDraftGameFormRef" size="lg" title="Select Draft Game" hide-footer @hidden="clearData" @show="getTopGames">
+  <b-modal id="managerDraftGameForm" ref="managerDraftGameFormRef" size="lg" title="Select Draft Game" no-footer @hidden="clearData" @show="getTopGames">
     <div class="alert alert-info">
       This form will allow you to draft a game for another player. You can use this if you are running a draft off of one computer, for example. If you are just looking to draft your own games, you
       should use "Draft Game" under "Player Actions"
@@ -50,7 +50,11 @@
 
           <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
           <h3 v-show="!showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
-          <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="draftMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
+          <possibleMasterGamesTable
+            v-if="possibleMasterGames.length > 0"
+            v-model="draftMasterGame"
+            :possible-games="possibleMasterGames"
+            @update:model-value="newGameSelected"></possibleMasterGamesTable>
         </div>
 
         <div v-show="(searched && !draftMasterGame) || showingUnlistedField" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
@@ -83,18 +87,18 @@
             <li v-for="error in draftResult.errors" :key="error">{{ error }}</li>
           </ul>
 
-          <div v-if="draftResult.overridable" class="form-check">
+          <div v-if="draftResult.overridable" class="plain-check">
             <span>
               <label class="text-white">Do you want to override these warnings?</label>
-              <input v-model="draftOverride" class="form-check-input override-checkbox" type="checkbox" />
+              <input v-model="draftOverride" class="plain-check-input override-checkbox" type="checkbox" />
             </span>
           </div>
 
-          <div v-if="draftResult.noEligibleSpaceError" class="form-check">
+          <div v-if="draftResult.noEligibleSpaceError" class="plain-check">
             <div class="text-white">This game is going to end up in an ineligible slot.</div>
             <span>
               <label class="text-white">Do you want draft this game anyway anyway?</label>
-              <input v-model="allowIneligibleSlot" class="form-check-input override-checkbox" type="checkbox" />
+              <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
             </span>
           </div>
         </div>

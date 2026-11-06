@@ -1,5 +1,5 @@
 <template>
-  <b-modal :id="`leagueOptionsModal_${leagueYearOptions.leagueID}-${leagueYearOptions.year}`" title="League Options" hide-footer>
+  <b-modal :id="`leagueOptionsModal_${leagueYearOptions.leagueID}-${leagueYearOptions.year}`" title="League Options" no-footer>
     <table class="table table-responsive-sm table-bordered table-striped">
       <tbody>
         <tr>

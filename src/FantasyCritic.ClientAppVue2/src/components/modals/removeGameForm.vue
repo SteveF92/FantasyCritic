@@ -1,7 +1,7 @@
 <template>
   <div>
-    <form class="form-horizontal" hide-footer>
-      <b-modal id="removePublisherGame" ref="removePublisherGameRef" size="lg" title="Remove Publisher Game" hide-footer @hidden="clearData">
+    <form class="form-horizontal" no-footer>
+      <b-modal id="removePublisherGame" ref="removePublisherGameRef" size="lg" title="Remove Publisher Game" no-footer @hidden="clearData">
         <div class="alert alert-warning">
           Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be removing games from player's rosters.
         </div>

@@ -57,7 +57,7 @@
     <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
     <h3 v-if="showingOtherLeagueWatchlist" class="text-black">Watchlist for {{ selectedOtherPublisher.publisherName }} in {{ selectedOtherPublisher.leagueName }}</h3>
 
-    <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possible-games="possibleMasterGames" @input="addGameToQueue"></possibleMasterGamesTable>
+    <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possible-games="possibleMasterGames" @update:model-value="addGameToQueue"></possibleMasterGamesTable>
     <div v-if="possibleMasterGames.length === 0" class="alert alert-info">No games available to display.</div>
 
     <div v-if="queueResult && !queueResult.success" class="alert alert-danger bid-error">

@@ -1,6 +1,6 @@
 <template>
-  <form class="form-horizontal" hide-footer>
-    <b-modal id="manuallySetWillNotRelease" ref="manuallyScorePublisherGameRef" title="Manually Set Will Not Release" hide-footer @hidden="clearData">
+  <form class="form-horizontal" no-footer>
+    <b-modal id="manuallySetWillNotRelease" ref="manuallyScorePublisherGameRef" title="Manually Set Will Not Release" no-footer @hidden="clearData">
       <div class="alert alert-info">This form can be used when your league is extremely confident that a player's game will not release this year, even though it is not confirmed.</div>
       <div class="form-group">
         <label for="claimPublisher" class="control-label">Publisher</label>

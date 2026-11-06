@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="reassignLeagueManager" ref="reassignLeagueManagerRef" title="Reassign League Manager" hide-footer>
+  <b-modal id="reassignLeagueManager" ref="reassignLeagueManagerRef" title="Reassign League Manager" no-footer>
     <div class="alert alert-warning">
       This option can be used to designate a new league manager for one of the leagues in this conference. This means that the player that is currently league manager will no longer be league manager
       of said league. Leagues can only ever have one manager.

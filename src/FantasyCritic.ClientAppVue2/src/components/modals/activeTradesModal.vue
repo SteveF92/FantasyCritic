@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="activeTradesModal" ref="activeTradesModalRef" size="xl" title="Active Trades" hide-footer>
+  <b-modal id="activeTradesModal" ref="activeTradesModalRef" size="xl" title="Active Trades" no-footer>
     <div v-show="errorInfo" class="alert alert-danger" role="alert">
       {{ errorInfo }}
     </div>

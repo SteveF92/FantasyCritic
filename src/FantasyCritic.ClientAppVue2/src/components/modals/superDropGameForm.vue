@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="superDropGameForm" ref="superDropGameFormRef" size="lg" title="Super Drop a Game" hide-footer @hidden="clearData">
+  <b-modal id="superDropGameForm" ref="superDropGameFormRef" size="lg" title="Super Drop a Game" no-footer @hidden="clearData">
     <div v-if="errorInfo" class="alert alert-danger" role="alert">
       {{ errorInfo }}
     </div>
@@ -11,7 +11,7 @@
       <template v-if="userPublisher.superDropsAvailable === 1">You currently have 1 super drop.</template>
       <template v-if="!userPublisher.superDropsAvailable">You do not currently have any super drops.</template>
     </div>
-    <form class="form-horizontal" hide-footer @submit.prevent="dropGame">
+    <form class="form-horizontal" no-footer @submit.prevent="dropGame">
       <div class="form-group">
         <label for="gameToDrop" class="control-label">Game</label>
         <b-form-select v-model="gameToDrop">

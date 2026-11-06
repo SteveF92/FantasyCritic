@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="invitePlayers" ref="invitePlayersRef" title="Invite/Remove Players" hide-footer @hidden="clearData" @show="fetchInviteLinks" size="lg">
+  <b-modal id="invitePlayers" ref="invitePlayersRef" title="Invite/Remove Players" no-footer @hidden="clearData" @show="fetchInviteLinks" size="lg">
     <div v-show="errorInfo" class="alert alert-danger">
       {{ errorInfo }}
     </div>

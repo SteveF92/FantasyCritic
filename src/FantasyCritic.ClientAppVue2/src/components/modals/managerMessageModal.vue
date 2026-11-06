@@ -4,9 +4,9 @@
       <div class="form-group">
         <label for="messageText" class="control-label">Message</label>
         <textarea v-model="messageText" class="form-control" rows="3"></textarea>
-        <div class="form-check">
-          <input v-model="isPublic" type="checkbox" class="form-check-input" />
-          <label class="form-check-label" for="isPublic">Show message to users not in league? (only applies in public leagues)</label>
+        <div class="plain-check">
+          <input v-model="isPublic" type="checkbox" class="plain-check-input" />
+          <label class="plain-check-label" for="isPublic">Show message to users not in league? (only applies in public leagues)</label>
         </div>
       </div>
     </div>

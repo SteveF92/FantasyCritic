@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="managerDraftCounterPickForm" ref="managerDraftCounterPickFormRef" title="Select Counter Pick" hide-footer @hidden="clearData" @show="getPossibleCounterPicks">
+  <b-modal id="managerDraftCounterPickForm" ref="managerDraftCounterPickFormRef" title="Select Counter Pick" no-footer @hidden="clearData" @show="getPossibleCounterPicks">
     <div v-if="nextPublisherUp">
       <div class="form-group">
         <label for="nextPublisherUp" class="control-label">Select the next counter pick for publisher:</label>
@@ -7,7 +7,7 @@
           <strong>{{ nextPublisherUp.publisherName }} (Display Name: {{ nextPublisherUp.playerName }})</strong>
         </label>
       </div>
-      <form class="form-horizontal" hide-footer @submit.prevent="selectCounterPick">
+      <form class="form-horizontal" no-footer @submit.prevent="selectCounterPick">
         <div class="form-group">
           <label for="selectedCounterPick" class="control-label">Game</label>
           <b-form-select v-model="selectedCounterPick">
@@ -28,10 +28,10 @@
           <input type="submit" class="btn btn-primary full-width-button" value="Select Game as Counter-Pick" />
         </div>
 
-        <div v-if="draftResult && draftResult.overridable" class="form-check">
+        <div v-if="draftResult && draftResult.overridable" class="plain-check">
           <span>
             <label>Do you want to override these warnings?</label>
-            <input v-model="draftOverride" class="form-check-input override-checkbox" type="checkbox" />
+            <input v-model="draftOverride" class="plain-check-input override-checkbox" type="checkbox" />
           </span>
         </div>
       </form>

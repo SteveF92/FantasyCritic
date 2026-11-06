@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="specialAuctionsModal" ref="specialAuctionsModalRef" size="lg" title="Manage Special Auctions" hide-footer @hidden="clearData">
+  <b-modal id="specialAuctionsModal" ref="specialAuctionsModalRef" size="lg" title="Manage Special Auctions" no-footer @hidden="clearData">
     <div class="alert alert-info">
       Special auctions allow your league to process the bids for a given game before the normal bid processing time. The main reason to do this is in case of 'shadow drops', which is when a game is
       announced and then released very shortly after.
@@ -30,7 +30,11 @@
             <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="specialAuctionMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
+        <possibleMasterGamesTable
+          v-if="possibleMasterGames.length > 0"
+          v-model="specialAuctionMasterGame"
+          :possible-games="possibleMasterGames"
+          @update:model-value="newGameSelected"></possibleMasterGamesTable>
       </div>
     </form>
     <div v-if="specialAuctionMasterGame">

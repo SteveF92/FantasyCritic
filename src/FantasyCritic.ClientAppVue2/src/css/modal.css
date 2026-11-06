@@ -16,6 +16,11 @@
   opacity: 1;
 }
 
+/* Bootstrap 5's close button is a dark icon, not text, so color doesn't reach it. */
+.modal-header .btn-close {
+  filter: invert(1) grayscale(100%) brightness(200%);
+}
+
 .modal-body {
   color: black;
 }

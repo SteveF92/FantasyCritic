@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="associateGameForm" ref="associateGameFormRef" size="lg" title="Associate Publisher Game" hide-footer @hidden="clearData">
+  <b-modal id="associateGameForm" ref="associateGameFormRef" size="lg" title="Associate Publisher Game" no-footer @hidden="clearData">
     <div class="alert alert-info">This form allows you to link a game that currently says "Not Linked to Master Game" with the correct master game.</div>
     <div class="form-group">
       <label for="associatePublisher" class="control-label">Publisher</label>
@@ -27,7 +27,11 @@
             <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
           </span>
         </div>
-        <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="associateMasterGame" :possible-games="possibleMasterGames" @input="newGameSelected"></possibleMasterGamesTable>
+        <possibleMasterGamesTable
+          v-if="possibleMasterGames.length > 0"
+          v-model="associateMasterGame"
+          :possible-games="possibleMasterGames"
+          @update:model-value="newGameSelected"></possibleMasterGamesTable>
 
         <label v-if="associateMasterGame" for="associateMasterGame" class="control-label">Selected Game: {{ associateMasterGame.gameName }}</label>
       </div>
@@ -45,10 +49,10 @@
           <li v-for="error in associateResult.errors" :key="error">{{ error }}</li>
         </ul>
 
-        <div v-if="associateResult.overridable" class="form-check">
+        <div v-if="associateResult.overridable" class="plain-check">
           <span>
             <label class="text-white">Do you want to override these warnings?</label>
-            <input v-model="associateOverride" class="form-check-input override-checkbox" type="checkbox" />
+            <input v-model="associateOverride" class="plain-check-input override-checkbox" type="checkbox" />
           </span>
         </div>
       </div>

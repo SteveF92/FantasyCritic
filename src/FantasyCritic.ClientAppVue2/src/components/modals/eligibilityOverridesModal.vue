@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="eligibilityOverridesModal" ref="eligibilityOverridesModalRef" title="Eligibility Overrides" hide-footer>
+  <b-modal id="eligibilityOverridesModal" ref="eligibilityOverridesModalRef" title="Eligibility Overrides" no-footer>
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">
