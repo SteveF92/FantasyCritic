@@ -35,10 +35,10 @@
 
         <div class="col-md-12 col-lg-4">
           <div v-if="userIsPublisher && !quarterIsFinished" class="user-actions">
-            <b-button v-b-modal="'royalePurchaseGameForm'" block variant="primary" class="action-button">Purchase a Game</b-button>
-            <b-button v-b-modal="'royaleChangePublisherNameForm'" block variant="secondary" class="action-button">Change Publisher Name</b-button>
-            <b-button v-if="isPlusUser" v-b-modal="'royaleChangePublisherIconForm'" block variant="secondary" class="action-button">Change Publisher Icon</b-button>
-            <b-button v-if="isPlusUser" v-b-modal="'royaleChangePublisherSloganForm'" block variant="secondary" class="action-button">Change Publisher Slogan</b-button>
+            <b-button v-b-modal="'royalePurchaseGameForm'" variant="primary" class="action-button">Purchase a Game</b-button>
+            <b-button v-b-modal="'royaleChangePublisherNameForm'" variant="secondary" class="action-button">Change Publisher Name</b-button>
+            <b-button v-if="isPlusUser" v-b-modal="'royaleChangePublisherIconForm'" variant="secondary" class="action-button">Change Publisher Icon</b-button>
+            <b-button v-if="isPlusUser" v-b-modal="'royaleChangePublisherSloganForm'" variant="secondary" class="action-button">Change Publisher Slogan</b-button>
 
             <royalePurchaseGameForm :year-quarter="publisher.yearQuarter" :user-royale-publisher="publisher" @gamePurchased="gamePurchased"></royalePurchaseGameForm>
             <royaleChangePublisherNameForm :user-royale-publisher="publisher" @publisherNameChanged="publisherNameChanged"></royaleChangePublisherNameForm>
@@ -109,7 +109,7 @@
           {{ getLockCountdown(data.item.lockDateTime) }}
         </template>
         <template #cell(sellGame)="data">
-          <b-button v-if="!data.item.locked && !quarterIsFinished" v-b-modal="'sellRoyaleGameModal'" block variant="danger" @click="setGameToSell(data.item)">Sell</b-button>
+          <b-button v-if="!data.item.locked && !quarterIsFinished" v-b-modal="'sellRoyaleGameModal'" variant="danger" class="w-100" @click="setGameToSell(data.item)">Sell</b-button>
         </template>
       </b-table>
       <div v-else class="alert alert-info">
@@ -414,6 +414,14 @@ export default {
 .main-button {
   margin-top: 5px;
   min-width: 200px;
+}
+
+.action-button {
+  width: 100%;
+}
+
+.action-button + .action-button {
+  margin-top: 8px;
 }
 
 .won-quarters {
