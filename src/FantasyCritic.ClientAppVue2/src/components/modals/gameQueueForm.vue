@@ -118,7 +118,7 @@
         </VueDraggable>
       </table>
     </div>
-    <b-modal id="editWatchlistNotesModal" :title="notesModalTitle" ok-title="Save Notes" @ok="saveNotes" @hidden="clearNotesData">
+    <b-modal id="editWatchlistNotesModal" ref="editWatchlistNotesModalRef" :title="notesModalTitle" ok-title="Save Notes" @ok="saveNotes" @hidden="clearNotesData">
       <b-form-textarea v-model="notesInEdit" rows="8" :maxlength="maximumNotesLength"></b-form-textarea>
       <div class="notes-length">{{ notesInEdit.length }} / {{ maximumNotesLength }}</div>
     </b-modal>
@@ -289,7 +289,7 @@ export default {
     startEditingNotes(queuedGame) {
       this.gameToEditNotes = queuedGame;
       this.notesInEdit = queuedGame.notes ?? '';
-      this.$bvModal.show('editWatchlistNotesModal');
+      this.$refs.editWatchlistNotesModalRef.show();
     },
     clearNotesData() {
       this.gameToEditNotes = null;

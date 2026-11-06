@@ -19,7 +19,7 @@
         </tr>
       </tbody>
     </table>
-    <b-modal id="confirm-cancel-drop-modal" @ok="cancelDrop">
+    <b-modal id="confirm-cancel-drop-modal" ref="confirmCancelDropModalRef" @ok="cancelDrop">
       <!-- prettier-ignore -->
       <p>
         Are you sure you want to cancel your drop for
@@ -52,7 +52,7 @@ export default {
     confirmCancelDrop(drop) {
       this.errorInfo = null;
       this.dropToCancel = drop;
-      this.$bvModal.show('confirm-cancel-drop-modal');
+      this.$refs.confirmCancelDropModalRef.show();
     },
     cancelDrop() {
       const model = {

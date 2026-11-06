@@ -94,7 +94,7 @@
         </ul>
       </div>
     </div>
-    <b-modal id="confirm-cancel-bid-modal" @ok="cancelBid">
+    <b-modal id="confirm-cancel-bid-modal" ref="confirmCancelBidModalRef" @ok="cancelBid">
       <!-- prettier-ignore -->
       <p>
         Are you sure you want to cancel your bid for
@@ -218,7 +218,7 @@ export default {
     },
     confirmCancelBid(bid) {
       this.bidToCancel = bid;
-      this.$bvModal.show('confirm-cancel-bid-modal');
+      this.$refs.confirmCancelBidModalRef.show();
     },
     cancelBid() {
       const model = {
