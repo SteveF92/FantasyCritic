@@ -45,9 +45,7 @@ export default {
 </script>
 
 <style lang="scss">
-@import './scss/custom-bootstrap.scss';
-@import '../node_modules/bootstrap/scss/bootstrap.scss';
-@import './scss/bootstrap-overrides.scss';
+@use './scss/bootstrap-overrides';
 </style>
 
 <style>

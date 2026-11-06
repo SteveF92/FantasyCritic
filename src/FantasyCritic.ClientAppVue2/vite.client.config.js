@@ -59,6 +59,11 @@ export default defineConfig({
     }
   },
   css: {
-    devSourcemap: true
+    devSourcemap: true,
+    preprocessorOptions: {
+      scss: {
+        quietDeps: true
+      }
+    }
   }
 })

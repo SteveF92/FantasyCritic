@@ -1,21 +1,59 @@
-// Rules that need Bootstrap's own CSS to come first. Imported after bootstrap.scss.
+// Rules that need Bootstrap's own CSS to come first.
+@use 'sass:color';
+@use 'sass:list';
+@use 'sass:map';
+@use 'custom-bootstrap' as bs;
+
+.table-striped > tbody > tr:nth-child(2n) > td.b-table-sticky-column,
+.table-striped > tbody > tr:nth-child(2n) > th {
+  background-color: bs.$table-bg;
+}
+
+.table-striped > tbody > tr:nth-child(2n + 1) > td.b-table-sticky-column,
+.table-striped > tbody > tr:nth-child(2n + 1) > th {
+  background-color: bs.$table-striped-bg;
+}
+
+.table tbody tr > td.success {
+  background-color: bs.$success;
+}
+
+tr.table-success td {
+  background-color: bs.$success !important;
+}
+
+.table tbody tr > td.danger {
+  background-color: bs.$danger;
+}
+
+tr.table-danger td {
+  background-color: bs.$danger !important;
+}
+
+.table tbody tr > td.warning {
+  background-color: bs.$warning;
+}
+
+tr.table-warning td {
+  background-color: bs.$warning !important;
+}
 
 // Bootstrap 5 only pads columns that are children of a .row. Bootstrap 4 padded every column class, and many
 // templates put columns outside a row. :where() keeps this at zero specificity, so .row > *, g-0 and px-* still win.
 $bs4-column-selectors: ();
-@each $breakpoint in map-keys($grid-breakpoints) {
-  $infix: breakpoint-infix($breakpoint, $grid-breakpoints);
-  $bs4-column-selectors: append($bs4-column-selectors, '.col#{$infix}', comma);
-  $bs4-column-selectors: append($bs4-column-selectors, '.col#{$infix}-auto', comma);
-  @for $i from 1 through $grid-columns {
-    $bs4-column-selectors: append($bs4-column-selectors, '.col#{$infix}-#{$i}', comma);
+@each $breakpoint in map.keys(bs.$grid-breakpoints) {
+  $infix: bs.breakpoint-infix($breakpoint, bs.$grid-breakpoints);
+  $bs4-column-selectors: list.append($bs4-column-selectors, '.col#{$infix}', comma);
+  $bs4-column-selectors: list.append($bs4-column-selectors, '.col#{$infix}-auto', comma);
+  @for $i from 1 through bs.$grid-columns {
+    $bs4-column-selectors: list.append($bs4-column-selectors, '.col#{$infix}-#{$i}', comma);
   }
 }
 
 :where(#{$bs4-column-selectors}) {
   position: relative;
-  padding-right: $grid-gutter-width * 0.5;
-  padding-left: $grid-gutter-width * 0.5;
+  padding-right: bs.$grid-gutter-width * 0.5;
+  padding-left: bs.$grid-gutter-width * 0.5;
 }
 
 // Bootstrap 5 sizes and pads every child of a .row as a column. Bootstrap 4 left children without a
@@ -54,7 +92,7 @@ $bs4-column-selectors: ();
 // Bootstrap 5 paints every table cell with --bs-table-bg, which hides a background set on the row, and draws
 // stripes as an inset shadow, which hides a background set on the cell. Bootstrap 4 showed both.
 .table > :not(caption) > tr[class*='bg-'] {
-  --#{$prefix}table-bg: transparent;
+  --#{bs.$prefix}table-bg: transparent;
 }
 
 .table > :not(caption) > * > [class*='bg-'] {
@@ -63,21 +101,21 @@ $bs4-column-selectors: ();
 
 // A header row marked bg-primary also has black text.
 .table > thead > tr.bg-primary {
-  --#{$prefix}table-bg: var(--#{$prefix}primary);
-  --#{$prefix}table-color: black;
+  --#{bs.$prefix}table-bg: var(--#{bs.$prefix}primary);
+  --#{bs.$prefix}table-color: black;
 }
 
 // The site draws table row variants in the theme color itself, with white text. Bootstrap 5's are pale tints with
 // dark text, and their stripes are the shadow above. The border is Bootstrap 4's $table-border-level.
 @each $color in (success, danger, warning) {
-  $value: map-get($theme-colors, $color);
+  $value: map.get(bs.$theme-colors, $color);
 
   .table-#{$color} {
-    --#{$prefix}table-color: #{$white};
-    --#{$prefix}table-bg: #{$value};
-    --#{$prefix}table-striped-color: #{$white};
-    --#{$prefix}table-striped-bg: #{$value};
-    --#{$prefix}table-border-color: #{mix($white, $value, 48%)};
+    --#{bs.$prefix}table-color: #{bs.$white};
+    --#{bs.$prefix}table-bg: #{$value};
+    --#{bs.$prefix}table-striped-color: #{bs.$white};
+    --#{bs.$prefix}table-striped-bg: #{$value};
+    --#{bs.$prefix}table-border-color: #{color.mix(bs.$white, $value, 48%)};
   }
 }
 
@@ -103,7 +141,7 @@ $bs4-column-selectors: ();
 
 // Bootstrap-Vue 2 laid out horizontal form groups (label-cols) as a .form-row, with 10px gutters.
 .b-form-group > .row {
-  --#{$prefix}gutter-x: 10px;
+  --#{bs.$prefix}gutter-x: 10px;
 }
 
 // Bootstrap 4 left a checkbox without b-form-checkbox's custom control looking like the browser's own.
@@ -254,28 +292,28 @@ ul {
 // white and $color-contrast-dark has the higher contrast ratio, which is dark on both.
 @each $color in (warning, info) {
   .text-bg-#{$color} {
-    color: $white !important;
+    color: bs.$white !important;
   }
 
   .btn-#{$color} {
-    --#{$prefix}btn-color: #{$white};
-    --#{$prefix}btn-hover-color: #{$white};
-    --#{$prefix}btn-active-color: #{$white};
-    --#{$prefix}btn-disabled-color: #{$white};
+    --#{bs.$prefix}btn-color: #{bs.$white};
+    --#{bs.$prefix}btn-hover-color: #{bs.$white};
+    --#{bs.$prefix}btn-active-color: #{bs.$white};
+    --#{bs.$prefix}btn-disabled-color: #{bs.$white};
   }
 
   .btn-outline-#{$color} {
-    --#{$prefix}btn-hover-color: #{$white};
-    --#{$prefix}btn-active-color: #{$white};
+    --#{bs.$prefix}btn-hover-color: #{bs.$white};
+    --#{bs.$prefix}btn-active-color: #{bs.$white};
   }
 }
 
 // Bootstrap 5 alerts use a pale tint of the theme color. Bootstrap 4 with $alert-bg-level: 0 used the color itself.
-@each $color, $value in $theme-colors {
+@each $color, $value in bs.$theme-colors {
   .alert-#{$color} {
-    --#{$prefix}alert-bg: #{$value};
-    --#{$prefix}alert-border-color: #{$value};
-    --#{$prefix}alert-color: #{$white};
-    --#{$prefix}alert-link-color: #{$white};
+    --#{bs.$prefix}alert-bg: #{$value};
+    --#{bs.$prefix}alert-border-color: #{$value};
+    --#{bs.$prefix}alert-color: #{bs.$white};
+    --#{bs.$prefix}alert-link-color: #{bs.$white};
   }
 }

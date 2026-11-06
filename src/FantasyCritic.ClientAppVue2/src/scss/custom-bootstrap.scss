@@ -1,116 +1,85 @@
+// Bootstrap, configured with the site's theme. Everything that needs its variables, functions or CSS uses this module.
+@forward 'bootstrap/scss/bootstrap' with (
+  // Set brand colors
+  $primary: #d6993a,
+  $secondary: #414141,
+  $success: #45621d,
+  $info: #3aacd6,
+  $warning: #d96b36,
+  $danger: #aa1e1e,
+
+  $dark: #15171a,
+
+  $card-bg: #414141,
+  $modal-content-bg: #d4d4d4,
+
+  $table-color: #ffffff,
+  $table-bg: #222222,
+  $table-striped-bg: #333333,
+
+  $grid-breakpoints: ('xs': 0, 'sm': 576px, 'md': 768px, 'lg': 992px, 'xl': 1550px),
+  // Keep Bootstrap 4's sizes and look, which the site was designed against.
+  $container-max-widths: ('sm': 540px, 'md': 720px, 'lg': 960px, 'xl': 1140px),
+  $grid-gutter-width: 30px,
+  $enable-rfs: false,
+  $enable-smooth-scroll: false,
+  $font-family-sans-serif: (
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    Roboto,
+    'Helvetica Neue',
+    Arial,
+    'Noto Sans',
+    'Liberation Sans',
+    sans-serif,
+    'Apple Color Emoji',
+    'Segoe UI Emoji',
+    'Segoe UI Symbol',
+    'Noto Color Emoji'
+  ),
+  $link-decoration: none,
+  $link-hover-decoration: underline,
+  $link-hover-color: #a27022,
+  $focus-ring-width: 0.2rem,
+  $pagination-disabled-color: #6c757d,
+  $pagination-focus-color: var(--bs-link-color),
+  $border-radius: 0.25rem,
+  $border-radius-sm: 0.2rem,
+  $border-radius-lg: 0.3rem,
+  $card-border-color: rgba(0, 0, 0, 0.125),
+  $card-spacer-x: 1.25rem,
+  $card-spacer-y: 1.25rem,
+  $card-cap-padding-y: 0.75rem,
+  $card-title-spacer-y: 0.75rem,
+  $alert-padding-x: 1.25rem,
+  $alert-padding-y: 0.75rem,
+  $hr-opacity: 1,
+  $color-contrast-dark: #212529,
+  $body-secondary-color: #6c757d,
+  $input-color: #495057,
+  $input-border-color: #ced4da,
+  $form-select-indicator: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'><path fill='#343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>"),
+  $form-select-bg-size: 8px 10px,
+  $form-select-indicator-padding: 1.75rem,
+  $form-select-disabled-color: #6c757d,
+  $form-check-margin-bottom: 0,
+  $form-check-input-border: 1px solid #adb5bd,
+  $badge-padding-y: 0.25em,
+  $badge-padding-x: 0.4em,
+  $dropdown-item-padding-x: 1.5rem,
+  $dropdown-border-color: rgba(#000, 0.15),
+  $popover-body-padding-y: 0.5rem,
+  $popover-body-padding-x: 0.75rem,
+  $popover-border-color: rgba(#000, 0.2),
+  $popover-header-bg: #f7f7f7,
+  $popover-header-padding-x: 0.75rem,
+  $table-cell-padding-y: 0.75rem,
+  $table-cell-padding-x: 0.75rem,
+  $table-cell-padding-y-sm: 0.3rem,
+  $table-cell-padding-x-sm: 0.3rem,
+  $navbar-dark-color: rgba(#fff, 0.5)
+);
+
 // Import custom font from Google
 @import url('https://fonts.googleapis.com/css?family=Raleway');
-
-// Set brand colors
-$primary: #d6993a;
-$secondary: #414141;
-$success: #45621d;
-$info: #3aacd6;
-$warning: #d96b36;
-$danger: #aa1e1e;
-
-$dark: #15171a;
-
-$card-bg: #414141;
-$modal-content-bg: #d4d4d4;
-
-$table-color: #ffffff;
-$table-bg: #222222;
-$table-striped-bg: #333333;
-
-$grid-breakpoints: (
-  'xs': 0,
-  'sm': 576px,
-  'md': 768px,
-  'lg': 992px,
-  'xl': 1550px
-);
-
-// Keep Bootstrap 4's sizes and look, which the site was designed against.
-$container-max-widths: (
-  'sm': 540px,
-  'md': 720px,
-  'lg': 960px,
-  'xl': 1140px
-);
-$grid-gutter-width: 30px;
-$enable-rfs: false;
-$enable-smooth-scroll: false;
-$font-family-sans-serif:
-  -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol',
-  'Noto Color Emoji';
-$link-decoration: none;
-$link-hover-decoration: underline;
-$link-hover-color: #a27022;
-$focus-ring-width: 0.2rem;
-$pagination-disabled-color: #6c757d;
-$pagination-focus-color: var(--bs-link-color);
-$border-radius: 0.25rem;
-$border-radius-sm: 0.2rem;
-$border-radius-lg: 0.3rem;
-$card-border-color: rgba(0, 0, 0, 0.125);
-$card-spacer-x: 1.25rem;
-$card-spacer-y: 1.25rem;
-$card-cap-padding-y: 0.75rem;
-$card-title-spacer-y: 0.75rem;
-$alert-padding-x: 1.25rem;
-$alert-padding-y: 0.75rem;
-$hr-opacity: 1;
-$color-contrast-dark: #212529;
-$body-secondary-color: #6c757d;
-$input-color: #495057;
-$input-border-color: #ced4da;
-$form-select-indicator: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' width='4' height='5' viewBox='0 0 4 5'><path fill='#343a40' d='M2 0L0 2h4zm0 5L0 3h4z'/></svg>");
-$form-select-bg-size: 8px 10px;
-$form-select-indicator-padding: 1.75rem;
-$form-select-disabled-color: #6c757d;
-$form-check-margin-bottom: 0;
-$form-check-input-border: 1px solid #adb5bd;
-$badge-padding-y: 0.25em;
-$badge-padding-x: 0.4em;
-$dropdown-item-padding-x: 1.5rem;
-$dropdown-border-color: rgba(#000, 0.15);
-$popover-body-padding-y: 0.5rem;
-$popover-body-padding-x: 0.75rem;
-$popover-border-color: rgba(#000, 0.2);
-$popover-header-bg: #f7f7f7;
-$popover-header-padding-x: 0.75rem;
-$table-cell-padding-y: 0.75rem;
-$table-cell-padding-x: 0.75rem;
-$table-cell-padding-y-sm: 0.3rem;
-$table-cell-padding-x-sm: 0.3rem;
-$navbar-dark-color: rgba(#fff, 0.5);
-
-.table-striped > tbody > tr:nth-child(2n) > td.b-table-sticky-column,
-.table-striped > tbody > tr:nth-child(2n) > th {
-  background-color: $table-bg;
-}
-
-.table-striped > tbody > tr:nth-child(2n + 1) > td.b-table-sticky-column,
-.table-striped > tbody > tr:nth-child(2n + 1) > th {
-  background-color: $table-striped-bg;
-}
-
-.table tbody tr > td.success {
-  background-color: $success;
-}
-
-tr.table-success td {
-  background-color: $success !important;
-}
-
-.table tbody tr > td.danger {
-  background-color: $danger;
-}
-
-tr.table-danger td {
-  background-color: $danger !important;
-}
-
-.table tbody tr > td.warning {
-  background-color: $warning;
-}
-
-tr.table-warning td {
-  background-color: $warning !important;
-}
