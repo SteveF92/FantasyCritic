@@ -1,7 +1,7 @@
 <template>
   <div class="col-md-10 offset-md-1 col-sm-12">
     <div v-if="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
-    <b-alert v-if="successMessage" variant="success" :model-value="true" dismissible @dismissed="successMessage = null">{{ successMessage }}</b-alert>
+    <b-alert v-if="successMessage" variant="success" :model-value="true" dismissible @close="successMessage = null">{{ successMessage }}</b-alert>
 
     <div v-if="leagueYear">
       <h1>Manage Drafts — {{ leagueYear.settings.leagueYearName || leagueYear.league.leagueName }} {{ year }}</h1>

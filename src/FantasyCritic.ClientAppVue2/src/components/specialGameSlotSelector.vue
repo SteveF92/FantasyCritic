@@ -14,7 +14,7 @@
         <h4>Special Slot {{ specialGameSlot.specialSlotPosition + 1 }}</h4>
         <b-button variant="danger" size="sm" @click="removeSlot(specialGameSlot)">Remove</b-button>
       </div>
-      <masterGameTagSelector v-model="specialGameSlot.requiredTags" @input="handleInput"></masterGameTagSelector>
+      <masterGameTagSelector v-model="specialGameSlot.requiredTags" @update:model-value="handleInput"></masterGameTagSelector>
     </div>
     <div class="add-slot-button-row">
       <b-button variant="primary" class="add-slot-button" @click="addSlot">Add Special Slot</b-button>

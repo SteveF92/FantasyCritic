@@ -56,7 +56,7 @@
         {{ league.numberOfFollowers }}
       </div>
 
-      <b-alert v-if="mostRecentManagerMessage" :model-value="true" dismissible @dismissed="dismissRecentManagerMessage">
+      <b-alert v-if="mostRecentManagerMessage" :model-value="true" dismissible @close="dismissRecentManagerMessage">
         <h5>Manager's Message ({{ formatDateTime(mostRecentManagerMessage.timestamp) }})</h5>
         <div class="preserve-whitespace">{{ mostRecentManagerMessage.messageText }}</div>
       </b-alert>

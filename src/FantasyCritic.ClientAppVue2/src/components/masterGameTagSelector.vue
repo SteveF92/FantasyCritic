@@ -8,7 +8,7 @@
     track-by="name"
     :options="tagOptions"
     :multiple="true"
-    @input="handleInput">
+    @update:model-value="handleInput">
     <template #tag="{ option }">
       <masterGameTagBadge :tag-name="option.name"></masterGameTagBadge>
     </template>
