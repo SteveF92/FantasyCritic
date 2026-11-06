@@ -171,11 +171,7 @@ export default {
     };
   },
   async created() {
-    let masterGameID = this.$route.query.mastergameid;
-    if (masterGameID) {
-      await this.fetchMasterGame(masterGameID);
-    }
-
+    await this.fetchRequestedGame();
     await this.fetchMyRequests();
   },
   computed: {
@@ -205,8 +201,19 @@ export default {
       return searchStrings.some((x) => this.requestNote.toLocaleUpperCase().includes(x.toLocaleUpperCase()));
     }
   },
+  watch: {
+    '$route.query.mastergameid': async function () {
+      await this.fetchRequestedGame();
+    }
+  },
   methods: {
     formatDateTime,
+    async fetchRequestedGame() {
+      const masterGameID = this.$route.query.mastergameid;
+      if (masterGameID) {
+        await this.fetchMasterGame(masterGameID);
+      }
+    },
     async fetchMyRequests() {
       const response = await axios.get('/api/game/MyMasterGameChangeRequests');
       this.myRequests = response.data;
