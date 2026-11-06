@@ -20,7 +20,7 @@
       </div>
       <hr />
       <div v-if="masterGame && masterGame.numberOutstandingCorrections" class="alert alert-warning">
-        There are {{ masterGame.numberOutstandingCorrections }} correction(s) currently submitted that I have not reviewed. You may not need to submit anything.
+        There are {{ masterGame.numberOutstandingCorrections }} correction(s) currently submitted that we have not reviewed. You may not need to submit anything.
       </div>
       <p v-if="!masterGame">
         <strong>You can suggest a correction by clicking a link on a master game's page.</strong>
