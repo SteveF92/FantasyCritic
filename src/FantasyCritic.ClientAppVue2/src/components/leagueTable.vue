@@ -46,14 +46,10 @@
           </div>
         </div>
         <div v-show="showArchive" class="archive-button-section">
-          <font-awesome-icon v-b-popover.hover.focus.rightbottom="'Archive this league (only affects you)'" class="archive-button fake-link" icon="archive" @click="setArchive(data.item, true)" />
+          <font-awesome-icon v-b-popover.hover.focus.right="'Archive this league (only affects you)'" class="archive-button fake-link" icon="archive" @click="setArchive(data.item, true)" />
         </div>
         <div v-show="showUnArchive" class="archive-button-section">
-          <font-awesome-icon
-            v-b-popover.hover.focus.rightbottom="'Un-Archive this league (only affects you)'"
-            class="archive-button fake-link"
-            icon="thumbtack"
-            @click="setArchive(data.item, false)" />
+          <font-awesome-icon v-b-popover.hover.focus.right="'Un-Archive this league (only affects you)'" class="archive-button fake-link" icon="thumbtack" @click="setArchive(data.item, false)" />
         </div>
         <div v-show="showUnfollow" class="unfollow-button-section">
           <b-button size="sm" variant="secondary" @click="confirmUnfollow(data.item)">Unfollow</b-button>

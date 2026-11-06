@@ -16,9 +16,22 @@
   opacity: 1;
 }
 
-/* Bootstrap 5's close button is a dark icon, not text, so color doesn't reach it. */
+/* Bootstrap-Vue 2's close button was a text ×. Bootstrap 5's is a dark icon, which color doesn't reach. */
 .modal-header .btn-close {
-  filter: invert(1) grayscale(100%) brightness(200%);
+  width: auto;
+  height: auto;
+  padding: 1rem;
+  margin: -1rem -1rem -1rem auto;
+  align-self: flex-start;
+  background: none;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1;
+  text-shadow: 0 1px 0 #fff;
+}
+
+.modal-header .btn-close::before {
+  content: '\00d7';
 }
 
 .modal-body {

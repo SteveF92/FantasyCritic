@@ -41,12 +41,7 @@
               class="lock-icon"
               @click="setLockStatus(leagueID, false)"
               v-b-popover.hover.focus.top="'Unlock league (Enables Player Re-Assignment)'" />
-            <font-awesome-icon
-              v-if="leaguesDraftStarted[leagueID]"
-              icon="lock"
-              size="lg"
-              class="lock-icon draft-lock-icon"
-              v-b-popover.hover.focus.rightbottom="'League has already started drafting'" />
+            <font-awesome-icon v-if="leaguesDraftStarted[leagueID]" icon="lock" size="lg" class="lock-icon draft-lock-icon" v-b-popover.hover.focus.right="'League has already started drafting'" />
             <span class="league-name-header">{{ leagueNames[leagueID] }}</span>
             <font-awesome-icon v-if="!leaguesCollapsed[leagueID]" icon="minus-circle" size="lg" class="collapse-icon" @click="collapseLeague(leagueID)" />
             <font-awesome-icon v-if="leaguesCollapsed[leagueID]" icon="plus-circle" size="lg" class="collapse-icon" @click="uncollapseLeague(leagueID)" />

@@ -14,7 +14,7 @@
             <div class="league-name">
               <h1>
                 {{ leagueYear.settings.leagueYearName || league.leagueName }}
-                <font-awesome-layers v-if="oneShotMode" v-b-popover.hover.focus.rightbottom="oneShotText">
+                <font-awesome-layers v-if="oneShotMode" v-b-popover.hover.focus.right="oneShotText">
                   <font-awesome-icon icon="square" :style="{ color: '#d6993a' }" />
                   <font-awesome-icon icon="1" size="xs" :style="{ color: 'white' }" />
                 </font-awesome-layers>

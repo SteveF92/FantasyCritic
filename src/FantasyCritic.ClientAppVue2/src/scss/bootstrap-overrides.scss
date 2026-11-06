@@ -155,6 +155,18 @@ select.form-control:not(.form-select) {
   height: calc(1.5em + 0.75rem + 2px);
 }
 
+// Bootstrap 5's reboot takes away the fade browsers give a disabled select.
+select:disabled {
+  opacity: 0.7;
+}
+
+// Bootstrap 5's reboot takes away the spacing browsers give the fields of a date input.
+::-webkit-datetime-edit-year-field,
+::-webkit-datetime-edit-month-field,
+::-webkit-datetime-edit-day-field {
+  padding: 1px;
+}
+
 // Bootstrap 4 sized selects to match the inputs in a small or large input group.
 .input-group-sm > .form-select {
   height: calc(1.5em + 0.5rem + 2px);
@@ -197,6 +209,12 @@ ul {
 // Bootstrap 4's .table-responsive was full width on its own, so it filled a .row it sat in.
 .table-responsive {
   width: 100%;
+}
+
+// bootstrap-vue-next puts hidden sort text in every sortable heading. It's absolutely positioned, so a scrolling
+// table doesn't clip it, and a heading past the right edge makes the whole page wider on a phone.
+.table-responsive .visually-hidden {
+  left: 0;
 }
 
 // Bootstrap-Vue 2 gave sticky-header table headings its default cell colour, so they weren't black.
