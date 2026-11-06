@@ -139,6 +139,22 @@ ul {
   padding-right: calc(0.65em + 0.3rem);
 }
 
+// Bootstrap 4 chose button text with YIQ, which gives white on warning and info. Bootstrap 5 picks whichever of
+// white and $color-contrast-dark has the higher contrast ratio, which is dark on both.
+@each $color in (warning, info) {
+  .btn-#{$color} {
+    --#{$prefix}btn-color: #{$white};
+    --#{$prefix}btn-hover-color: #{$white};
+    --#{$prefix}btn-active-color: #{$white};
+    --#{$prefix}btn-disabled-color: #{$white};
+  }
+
+  .btn-outline-#{$color} {
+    --#{$prefix}btn-hover-color: #{$white};
+    --#{$prefix}btn-active-color: #{$white};
+  }
+}
+
 // Bootstrap 5 alerts use a pale tint of the theme color. Bootstrap 4 with $alert-bg-level: 0 used the color itself.
 @each $color, $value in $theme-colors {
   .alert-#{$color} {
