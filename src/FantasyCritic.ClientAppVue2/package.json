@@ -23,7 +23,7 @@
     "@fortawesome/free-regular-svg-icons": "^7.3.1",
     "@fortawesome/free-solid-svg-icons": "^7.3.1",
     "@fortawesome/vue-fontawesome": "^3.3.3",
-    "@microsoft/signalr": "^8.0.17",
+    "@microsoft/signalr": "^10.0.11",
     "@vee-validate/i18n": "^4.15.1",
     "@vee-validate/rules": "^4.15.1",
     "axios": "^1.21.0",
