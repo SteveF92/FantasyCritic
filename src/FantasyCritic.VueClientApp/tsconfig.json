@@ -4,7 +4,7 @@
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler", // Resolves imports the way Vite does
-    "strict": false, // Start with relaxed settings for gradual migration
+    "strict": true, // Start with relaxed settings for gradual migration
     "esModuleInterop": true, // Enables better compatibility with CommonJS modules
     "skipLibCheck": true, // Speeds up compilation by skipping type checks of declaration files
     "allowSyntheticDefaultImports": true, // Enables default import syntax

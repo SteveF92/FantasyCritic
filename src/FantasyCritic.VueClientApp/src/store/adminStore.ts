@@ -1,9 +1,17 @@
 import { defineStore } from 'pinia';
 import { useAuthStore } from './authStore';
-import { combinedDataClient } from '@/api/clients';
+import { AdminTaskCountsViewModel, combinedDataClient } from '@/api/clients';
+
+export interface AdminStoreState {
+  adminTaskCounts: AdminTaskCountsViewModel;
+}
 
 export const useAdminStore = defineStore('admin', {
-  state: () => ({ adminTaskCounts: null }),
+  state: (): AdminStoreState => ({
+    adminTaskCounts: {
+      totalCount: 0
+    }
+  }),
   actions: {
     async fetchAdminTaskCounts() {
       //The endpoint is only available to fact checkers and admins, so don't bother calling it for anyone else.
@@ -13,8 +21,7 @@ export const useAdminStore = defineStore('admin', {
       }
 
       try {
-        const adminTaskCounts = await combinedDataClient.adminTaskCounts();
-        this.adminTaskCounts = adminTaskCounts;
+        this.adminTaskCounts = await combinedDataClient.adminTaskCounts();
       } catch (error) {
         console.log(error);
       }
