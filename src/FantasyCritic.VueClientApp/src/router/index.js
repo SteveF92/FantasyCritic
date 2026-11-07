@@ -45,9 +45,7 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
     leagueStore.clearLeagueStoreData();
   }
 
-  if (!interLeagueStore.interLeagueDataLoaded && !interLeagueStore.interLeagueIsBusy) {
-    await interLeagueStore.fetchBasicData();
-  }
+  await interLeagueStore.ensureLoaded();
 
   //If we are current, we're good to go
   if (authStore.isAuth) {

@@ -441,7 +441,7 @@ export default {
 
       //The server is the truth. If the request failed, this also puts the switch back where it was.
       const interLeagueStore = useInterLeagueStore();
-      await interLeagueStore.fetchBasicData();
+      await interLeagueStore.refreshBasicData();
       this.syncActionProcessingModeSwitch();
     },
     async changeAutomatedActionProcessing(enabled) {
