@@ -14,7 +14,8 @@
     "format": "prettier --write src/ tests/",
     "format:check": "prettier --check src/ tests/",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "type-check": "vue-tsc"
   },
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.7.2",
@@ -55,6 +56,7 @@
     "typescript-eslint": "^8.72.1",
     "unplugin-vue-components": "^32.1.0",
     "vite": "^8.3.6",
-    "vitest": "^5.1.0"
+    "vitest": "^5.1.0",
+    "vue-tsc": "^3.3.14"
   }
 }

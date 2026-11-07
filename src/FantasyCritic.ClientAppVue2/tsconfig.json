@@ -3,19 +3,21 @@
     // Aligns with modern JavaScript while retaining compatibility
     "target": "esnext",
     "module": "esnext",
-    "moduleResolution": "node",
+    "moduleResolution": "bundler", // Resolves imports the way Vite does
     "strict": false, // Start with relaxed settings for gradual migration
     "esModuleInterop": true, // Enables better compatibility with CommonJS modules
     "skipLibCheck": true, // Speeds up compilation by skipping type checks of declaration files
     "allowSyntheticDefaultImports": true, // Enables default import syntax
     "allowImportingTsExtensions": true, // Enables importing .ts files as modules
     "sourceMap": true, // Useful for debugging in Vite
-    "baseUrl": ".", // Simplifies import paths
+    "noEmit": true, // Vite compiles; TypeScript only type-checks (npm run type-check)
     "paths": {
-      "@/*": ["src/*"] // Matches Vite's default alias for `src`
+      "@/*": ["./src/*"] // Matches Vite's default alias for `src`
     },
     "lib": ["dom", "esnext"], // Adds DOM and modern JS features
-    "types": ["vite/client"] // Ensures Vite-specific typings are available
+    // Vite's typings, plus the annotation plugin's additions to Chart.js's options (it is
+    // registered in main.js, which is outside this program)
+    "types": ["vite/client", "chartjs-plugin-annotation"]
   },
   "include": [
     "src/**/*.ts",

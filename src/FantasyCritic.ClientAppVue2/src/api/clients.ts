@@ -26,7 +26,7 @@ const http = {
   }
 };
 
-function createClient<T>(Client: new (baseUrl?: string, http?: typeof http) => T): T {
+function createClient<T>(Client: new (baseUrl?: string, fetcher?: typeof http) => T): T {
   return new Client('', http);
 }
 

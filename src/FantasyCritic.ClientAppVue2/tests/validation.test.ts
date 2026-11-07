@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import { defineComponent } from 'vue';
 import { flushPromises, mount } from '@vue/test-utils';
 import { ValidationField, ValidationForm } from '@/validation';
 
@@ -34,15 +35,15 @@ async function typeInto(wrapper, selector: string, value: string) {
 }
 
 async function messageFor(rules: string, value: unknown) {
-  const Single = {
+  const Single = defineComponent({
     components: { ValidationField },
     template: `
       <ValidationField v-slot="{ errors }" :model-value="value" name="Total Number of Games" :rules="rules">
         <span id="error">{{ errors[0] }}</span>
       </ValidationField>
     `,
-    data: () => ({ value: 'placeholder', rules })
-  };
+    data: () => ({ value: 'placeholder' as unknown, rules })
+  });
   const wrapper = mount(Single);
   await flushPromises();
   wrapper.vm.value = value;

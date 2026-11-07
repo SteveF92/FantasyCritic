@@ -3,21 +3,13 @@
 </template>
 <script lang="ts">
 import { markRaw } from 'vue';
+import type { Chart, ChartOptions } from 'chart.js';
 import { Line as LineChartGenerator } from 'vue-chartjs';
 import { RoyalePublisher } from '@/models/royale/RoyalePublisher.ts';
 
 const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
 
-/** Chart instance exposed by vue-chartjs on the line component. */
-type ChartjsLegendHost = {
-  data: { datasets: unknown[] };
-  isDatasetVisible: (index: number) => boolean;
-  hide: (index: number) => void;
-  show: (index: number) => void;
-  update: () => void;
-};
-
-type LineChartVueRef = { chart?: ChartjsLegendHost };
+type LineChartVueRef = { chart?: Chart<'line'> };
 
 export default {
   components: { LineChartGenerator },
@@ -131,7 +123,7 @@ export default {
     },
     chartOptions() {
       // markRaw keeps Vue 2 from recursing into Chart.js's option objects.
-      return markRaw({
+      const options: ChartOptions<'line'> = {
         maintainAspectRatio: false,
         layout: {
           padding: {
@@ -145,7 +137,7 @@ export default {
               color: 'rgba(255, 255, 255, 0.9)',
               usePointStyle: true
             },
-            onClick: (e: MouseEvent, legendItem: { datasetIndex?: number }, legend: { chart: ChartjsLegendHost }) => {
+            onClick: (e, legendItem, legend) => {
               const index = legendItem.datasetIndex;
               if (typeof index !== 'number') {
                 return;
@@ -183,7 +175,8 @@ export default {
             grid: { color: 'rgba(255, 255, 255, 0.08)' }
           }
         }
-      });
+      };
+      return markRaw(options);
     },
     chartData() {
       if (!this.showChart) {
@@ -224,7 +217,7 @@ export default {
       }
       this.syncLegendVisibilityFromChart(chart);
     },
-    syncLegendVisibilityFromChart(chart: ChartjsLegendHost) {
+    syncLegendVisibilityFromChart(chart: Chart) {
       const n = chart.data.datasets.length;
       const next: boolean[] = [];
       for (let i = 0; i < n; i++) {

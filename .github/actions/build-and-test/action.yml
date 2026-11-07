@@ -101,6 +101,14 @@ runs:
       working-directory: src/FantasyCritic.ClientAppVue2
       run: npm test -- --reporter=default --reporter=junit --outputFile.junit=${{ github.workspace }}/test-results/client.xml
 
+    - name: Client type check
+      # vue-tsc over the TypeScript files and `<script lang="ts">` components. Needs the
+      # generated TypeScript client, as the unit tests do.
+      if: ${{ !cancelled() && steps.generate.outcome == 'success' }}
+      shell: bash
+      working-directory: src/FantasyCritic.ClientAppVue2
+      run: npm run type-check
+
     - name: Upload test results
       if: always()
       uses: actions/upload-artifact@v4
