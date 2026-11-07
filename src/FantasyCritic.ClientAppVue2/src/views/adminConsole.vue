@@ -148,7 +148,7 @@
 
                 <b-dropdown-header>League maintenance</b-dropdown-header>
                 <b-dropdown-item-button @click="confirmOtherJob('Make Slots Consistent', () => adminClient.makePublisherSlotsConsistent())">Make Slots Consistent</b-dropdown-item-button>
-                <b-dropdown-item-button @click="$bvModal.show('grantSuperDropsModal')">Grant Super Drops</b-dropdown-item-button>
+                <b-dropdown-item-button @click="$refs.grantSuperDropsModalRef.show()">Grant Super Drops</b-dropdown-item-button>
                 <b-dropdown-item-button @click="confirmOtherJob('Expire Trades', () => adminClient.expireTrades())">Expire Trades</b-dropdown-item-button>
 
                 <b-dropdown-header>Year end</b-dropdown-header>
@@ -242,6 +242,7 @@
 
     <b-modal
       id="grantSuperDropsModal"
+      ref="grantSuperDropsModalRef"
       title="Grant Super Drops"
       :ok-disabled="!superDropsConfirmed"
       ok-variant="danger"
@@ -269,8 +270,12 @@ import ServiceMonitor from '@/components/serviceMonitor.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
 import { formatDateTime } from '@/utilities/formatters';
 import { useAuthStore } from '@/store/authStore';
+import { useConfirm } from '@/utilities/confirm';
 
 export default {
+  setup() {
+    return { confirm: useConfirm() };
+  },
   components: {
     RecentJobsTable,
     ServiceMonitor,
@@ -388,7 +393,7 @@ export default {
     },
     //For the Other Jobs menu, where a stray click should not queue anything.
     async confirmOtherJob(label, call) {
-      const confirmed = await this.$bvModal.msgBoxConfirm(`Queue the '${label}' job?`, {
+      const confirmed = await this.confirm(`Queue the '${label}' job?`, {
         title: 'Queue Job',
         okTitle: 'Queue job',
         okVariant: 'danger',
@@ -449,7 +454,7 @@ export default {
     },
     //Turning the worker off only stops it pulling new jobs. The service monitor shows it Draining, then Off.
     async turnOffWorker() {
-      const confirmed = await this.$bvModal.msgBoxConfirm(
+      const confirmed = await this.confirm(
         'The worker will finish the job it is running, then pick up nothing new until it is turned back on. Scheduled jobs keep queuing in the meantime and run when it is.',
         {
           title: 'Turn Off Worker',

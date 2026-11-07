@@ -65,8 +65,12 @@
 import axios from 'axios';
 import { DateTime } from 'luxon';
 import { formatDateTime } from '@/utilities/formatters';
+import { useConfirm } from '@/utilities/confirm';
 
 export default {
+  setup() {
+    return { confirm: useConfirm() };
+  },
   data() {
     return {
       isBusy: false,
@@ -208,7 +212,7 @@ export default {
       }
     },
     async confirmDelete(announcement) {
-      const confirmed = await this.$bvModal.msgBoxConfirm(`Are you sure you want to delete '${announcement.title}'? It will no longer show on the site or in the RSS feed.`, {
+      const confirmed = await this.confirm(`Are you sure you want to delete '${announcement.title}'? It will no longer show on the site or in the RSS feed.`, {
         title: 'Delete Announcement',
         okTitle: 'Delete',
         okVariant: 'danger',

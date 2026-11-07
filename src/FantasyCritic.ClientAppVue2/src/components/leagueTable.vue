@@ -63,8 +63,12 @@ import axios from 'axios';
 import { mapState } from 'pinia';
 import { useAuthStore } from '@/store/authStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { useConfirm } from '@/utilities/confirm';
 
 export default {
+  setup() {
+    return { confirm: useConfirm() };
+  },
   props: {
     leagues: { type: Array, required: true },
     leagueIcon: { type: String, required: true },
@@ -96,7 +100,7 @@ export default {
     },
     async confirmUnfollow(league) {
       const leagueName = league.activeYearLeagueYearName || league.leagueName;
-      const confirmed = await this.$bvModal.msgBoxConfirm(`Are you sure you want to unfollow ${leagueName}?`, {
+      const confirmed = await this.confirm(`Are you sure you want to unfollow ${leagueName}?`, {
         title: 'Unfollow League',
         okTitle: 'Unfollow',
         okVariant: 'danger',

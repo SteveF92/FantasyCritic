@@ -137,6 +137,7 @@ import Multiselect from 'vue-multiselect';
 
 import { ApiException, jobManagerClient } from '@/api/clients';
 import { makeToast } from '@/utilities/toast';
+import { useConfirm } from '@/utilities/confirm';
 
 //The values of FantasyCriticJobType. The API does not expose the list, so it lives here for the filter.
 //A type missing from this list can still be hidden or shown by the server; it just cannot be picked here.
@@ -190,6 +191,9 @@ function spaceOutWords(value) {
 }
 
 export default {
+  setup() {
+    return { confirm: useConfirm() };
+  },
   components: {
     Multiselect
   },
@@ -342,7 +346,7 @@ export default {
       await this.refresh();
     },
     async cancelJob(job) {
-      const confirmed = await this.$bvModal.msgBoxConfirm(`Cancel the ${this.jobTypeDisplayName(job.type)} job queued ${this.formatTimestamp(job.createdAt)}?`, {
+      const confirmed = await this.confirm(`Cancel the ${this.jobTypeDisplayName(job.type)} job queued ${this.formatTimestamp(job.createdAt)}?`, {
         title: 'Cancel Job',
         okTitle: 'Cancel job',
         okVariant: 'danger',

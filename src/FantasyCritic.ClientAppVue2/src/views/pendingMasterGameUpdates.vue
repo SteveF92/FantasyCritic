@@ -84,8 +84,12 @@
 import { ApiException, factCheckerClient } from '@/api/clients';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { formatScore } from '@/utilities/formatters';
+import { useConfirm } from '@/utilities/confirm';
 
 export default {
+  setup() {
+    return { confirm: useConfirm() };
+  },
   components: {
     MasterGamePopover
   },
@@ -109,7 +113,7 @@ export default {
       }
     },
     async deleteUpdate(update) {
-      const confirmed = await this.$bvModal.msgBoxConfirm(`Delete the pending update for ${update.masterGame.gameName}? It will not go to Discord.`, {
+      const confirmed = await this.confirm(`Delete the pending update for ${update.masterGame.gameName}? It will not go to Discord.`, {
         title: 'Delete Pending Update',
         okTitle: 'Delete',
         okVariant: 'danger',

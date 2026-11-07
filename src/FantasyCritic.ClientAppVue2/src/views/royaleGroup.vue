@@ -80,8 +80,12 @@ import { useAuthStore } from '@/store/authStore';
 import RoyaleGroupInviteLinksModal from '@/components/modals/royaleGroupInviteLinksModal.vue';
 import { mapState } from 'pinia';
 import { numericComparer } from '@/globalFunctions';
+import { useConfirm } from '@/utilities/confirm';
 
 export default {
+  setup() {
+    return { confirm: useConfirm() };
+  },
   components: { RoyaleGroupInviteLinksModal },
   props: {
     groupid: { type: String, required: true }
@@ -182,13 +186,13 @@ export default {
       }
     },
     async removeMember(userID) {
-      const confirmed = await this.$bvModal.msgBoxConfirm('Are you sure you want to remove this member?');
+      const confirmed = await this.confirm('Are you sure you want to remove this member?');
       if (!confirmed) return;
       await axios.post('/api/RoyaleGroup/RemoveMember', { groupID: this.groupid, userID });
       await this.fetchData();
     },
     async leaveGroup() {
-      const confirmed = await this.$bvModal.msgBoxConfirm('Are you sure you want to leave this group?');
+      const confirmed = await this.confirm('Are you sure you want to leave this group?');
       if (!confirmed) return;
       await axios.post(`/api/RoyaleGroup/LeaveGroup/${this.groupid}`);
       this.$router.push({ name: 'criticsRoyale' });
