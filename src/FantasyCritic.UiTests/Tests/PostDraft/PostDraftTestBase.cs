@@ -4,8 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.ApiClient;
 using FantasyCritic.IntegrationTests.Helpers;
+using FantasyCritic.Lib.Extensions;
+using FantasyCritic.Lib.Utilities;
 using FantasyCritic.UiTests.Tests.Draft;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Playwright;
+using NodaTime;
+using NUnit.Framework;
 using static Microsoft.Playwright.Assertions;
 
 namespace FantasyCritic.UiTests.Tests.PostDraft;
@@ -15,6 +20,22 @@ namespace FantasyCritic.UiTests.Tests.PostDraft;
 /// </summary>
 public abstract class PostDraftTestBase : DraftTestBase
 {
+    /// <summary>
+    /// The app's time when the fixture started: noon Eastern on this week's Monday. From Thursday evening until bids
+    /// process on Saturday, the public bidding window allows bids only on games already bid on, so the real time would
+    /// fail bidding tests two days a week. The app's clock runs on from here.
+    /// </summary>
+    protected Instant PinnedStart { get; private set; }
+
+    [OneTimeSetUp]
+    public void PinTheClockBeforeThePublicBiddingWindow()
+    {
+        var today = SystemClock.Instance.GetCurrentInstant().ToEasternDate();
+        var monday = today.With(DateAdjusters.PreviousOrSame(IsoDayOfWeek.Monday));
+        PinnedStart = (monday + new LocalTime(12, 0)).InZoneStrictly(TimeExtensions.EasternTimeZone).ToInstant();
+        ((AdjustableClock)Factory.Services.GetRequiredService<NodaTime.IClock>()).SetInitialTime(PinnedStart);
+    }
+
     protected static LeagueScenario PostDraftScenario(int players) => new()
     {
         Name = $"UiPostDraft{players}",

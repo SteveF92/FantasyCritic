@@ -1,8 +1,8 @@
-using System;
 using System.Linq;
 using System.Threading.Tasks;
 using FantasyCritic.IntegrationTests.Helpers;
 using Microsoft.Playwright;
+using NodaTime;
 using NUnit.Framework;
 using static Microsoft.Playwright.Assertions;
 
@@ -103,7 +103,8 @@ public sealed class ManagerPlayerTests : PostDraftTestBase
         var dialog = Ui.Dialog(page, "Manage Special Auctions");
         await SearchAndPickAsync(dialog, game.GameName);
         await Expect(dialog.GetByRole(AriaRole.Heading, new() { Name = "Selected Game:" })).ToBeVisibleAsync();
-        await dialog.Locator("input[type=datetime-local]").FillAsync(DateTime.Now.AddDays(2).ToString("yyyy-MM-dd'T'HH:mm"));
+        var endTime = PinnedStart.Plus(Duration.FromDays(2)).ToDateTimeOffset().ToLocalTime();
+        await dialog.Locator("input[type=datetime-local]").FillAsync(endTime.ToString("yyyy-MM-dd'T'HH:mm"));
         await dialog.GetByRole(AriaRole.Button, new() { Name = "Create Special Auction" }).ClickAsync();
         await Expect(page.GetByText($"Special auction created for: {game.GameName}")).ToBeVisibleAsync();
 
