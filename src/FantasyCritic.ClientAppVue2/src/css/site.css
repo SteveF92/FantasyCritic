@@ -276,3 +276,8 @@ img.critic-royale-nav {
 .action {
   color: #d6993a !important;
 }
+
+/* Font Awesome 7 made every icon 1.25em wide; keep the Font Awesome 6 auto width unless fixed width is asked for. */
+.svg-inline--fa:not(.fa-fw):not(.fa-width-fixed) {
+  --fa-width: auto;
+}
