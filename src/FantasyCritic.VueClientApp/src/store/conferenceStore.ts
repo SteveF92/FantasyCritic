@@ -18,7 +18,7 @@ export const useConferenceStore = defineStore('conference', {
   state: (): ConferenceStoreState => ({ hasError: false, conferenceYear: null, conferenceInviteCode: undefined }),
   getters: {
     conference: (state) => state.conferenceYear?.conference,
-    isConferenceManager: (state) => state.conferenceYear?.conference?.isManager ?? false,
+    isConferenceManager: (state) => state.conferenceYear?.conference.isManager ?? false,
     playStarted: (state) => state.conferenceYear?.leagueYears.some((x) => x.draftFinished) ?? false
   },
   actions: {
@@ -26,32 +26,31 @@ export const useConferenceStore = defineStore('conference', {
       this.hasError = false;
       this.conferenceYear = null;
       this.conferenceInviteCode = conferencePageParams.inviteCode;
-      await fetchConferenceYear(this, conferencePageParams);
+      await this.fetchConferenceYear(conferencePageParams);
     },
     async refreshConferenceYear() {
       if (!this.conferenceYear) {
         return;
       }
-      const conferencePageParams = {
+      await this.fetchConferenceYear({
         conferenceID: this.conferenceYear.conference.conferenceID,
         year: this.conferenceYear.year
-      };
-      await fetchConferenceYear(this, conferencePageParams);
+      });
     },
     async notifyAction(message: string) {
       await this.refreshConferenceYear();
       if (message) {
         makeToast(message);
       }
+    },
+    async fetchConferenceYear(conferencePageParams: ConferencePageParams) {
+      try {
+        const conferenceYear = await conferenceClient.getConferenceYear(conferencePageParams.conferenceID, conferencePageParams.year);
+        this.conferenceYear = conferenceYear;
+        document.title = conferenceYear.conference.conferenceName + ' - Fantasy Critic';
+      } catch {
+        this.hasError = true;
+      }
     }
   }
 });
-
-async function fetchConferenceYear(store: any, conferencePageParams: ConferencePageParams) {
-  try {
-    store.conferenceYear = await conferenceClient.getConferenceYear(conferencePageParams.conferenceID, conferencePageParams.year);
-    document.title = store.conferenceYear.conference.conferenceName + ' - Fantasy Critic';
-  } catch {
-    store.hasError = true;
-  }
-}
