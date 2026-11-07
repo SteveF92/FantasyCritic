@@ -11,7 +11,7 @@ The goal is a 1:1 swap to vee-validate 4: same rules, same messages, same disabl
 buttons. Whether to keep vee-validate at all, or move to another library or our own code, is a
 separate decision for later.
 
-The client package lives at `src/FantasyCritic.ClientAppVue2`; paths below are relative to it.
+The client package lives at `src/FantasyCritic.VueClientApp`; paths below are relative to it.
 
 ## What exists today
 

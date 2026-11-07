@@ -83,7 +83,7 @@ public sealed class UiWebApplicationFactory : FantasyCriticWebApplicationFactory
     /// </summary>
     public static string FindCurrentDist()
     {
-        var clientApp = Path.Combine(RepositoryRoot.Find(), "src", "FantasyCritic.ClientAppVue2");
+        var clientApp = Path.Combine(RepositoryRoot.Find(), "src", "FantasyCritic.VueClientApp");
         var dist = Path.Combine(clientApp, "dist");
         var index = new FileInfo(Path.Combine(dist, "index.html"));
         if (!index.Exists)

@@ -148,7 +148,7 @@ Commit → review.
 
 Commit → review.
 
-## Step 6 — Admin console (`src/FantasyCritic.ClientAppVue2/src`)
+## Step 6 — Admin console (`src/FantasyCritic.VueClientApp/src`)
 
 - New `components/serviceMonitor.vue`, top of the right column in `views/adminConsole.vue:158`,
   `v-if="isAdmin"`. Plain `b-table` (`thClass: 'bg-primary'`), two rows (Worker, Discord Bot):

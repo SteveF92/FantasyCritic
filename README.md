@@ -11,7 +11,7 @@ You can see the site at <a href="https://www.fantasycritic.games/">fantasycritic
 
 ### Option 1: Running the client side only.
 
-`src/FantasyCritic.ClientAppVue2` is the root directory for the front-end UI. In it contains a Vue.js client application. See the official [Vue.js documentation](https://vuejs.org/) for more
+`src/FantasyCritic.VueClientApp` is the root directory for the front-end UI. In it contains a Vue.js client application. See the official [Vue.js documentation](https://vuejs.org/) for more
 information. The project is configured to start its own instance of the client app in the background when the ASP.NET Core app starts in development mode. The client
 app can also be run via webpack dev server, instead of the ASP.NET core app. Note, when using the webpack dev server, the client app will point to the
 [official website](https://www.fantasycritic.games/), instead of the local ASP.NET core app.
@@ -66,9 +66,9 @@ Integration tests and the Vue client both use typed HTTP clients generated from 
 Generated output (gitignored — not committed):
 
 - **C#** — `src/FantasyCritic.ApiClient/Generated/FantasyCriticClients.cs` (integration tests)
-- **TypeScript** — `src/FantasyCritic.ClientAppVue2/src/api/generated/FantasyCriticClients.ts` (frontend)
+- **TypeScript** — `src/FantasyCritic.VueClientApp/src/api/generated/FantasyCriticClients.ts` (frontend)
 
-The hand-written wrapper at `src/FantasyCritic.ClientAppVue2/src/api/clients.ts` exports ready-to-use client singletons for Vue code.
+The hand-written wrapper at `src/FantasyCritic.VueClientApp/src/api/clients.ts` exports ready-to-use client singletons for Vue code.
 
 **First time (or after a `dotnet tool restore` is needed):**
 
@@ -100,7 +100,7 @@ dotnet test src/FantasyCritic.IntegrationTests/FantasyCritic.IntegrationTests.cs
 
 The integration tests spin up the full ASP.NET Core stack in-process and talk to the Docker MySQL database, so the database must be running (step 1) before running the tests.
 
-The client app's unit tests (Vitest, under `src/FantasyCritic.ClientAppVue2/tests`) need only the regenerated TypeScript client. From `src/FantasyCritic.ClientAppVue2`:
+The client app's unit tests (Vitest, under `src/FantasyCritic.VueClientApp/tests`) need only the regenerated TypeScript client. From `src/FantasyCritic.VueClientApp`:
 
 ```sh
 npm test
@@ -139,7 +139,7 @@ On Linux/macOS:
 scripts/format.sh --check
 ```
 
-Client app dependencies must be installed first (`npm install` in `src/FantasyCritic.ClientAppVue2`). When iterating on a new `.editorconfig` style rule during incremental adoption, `scripts/Format.ps1 -Style` runs the C# style pass on its own.
+Client app dependencies must be installed first (`npm install` in `src/FantasyCritic.VueClientApp`). When iterating on a new `.editorconfig` style rule during incremental adoption, `scripts/Format.ps1 -Style` runs the C# style pass on its own.
 
 #### Extra notes
 

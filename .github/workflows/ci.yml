@@ -145,7 +145,7 @@ jobs:
           fi
 
       - name: npm vulnerabilities
-        working-directory: src/FantasyCritic.ClientAppVue2
+        working-directory: src/FantasyCritic.VueClientApp
         run: |
           {
             echo "## npm"

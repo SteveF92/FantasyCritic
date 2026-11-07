@@ -27,7 +27,7 @@
 **/dist
 **/node_modules
 **/npm-debug.log
-src/FantasyCritic.ClientAppVue2/src/api/generated
+src/FantasyCritic.VueClientApp/src/api/generated
 src/FantasyCritic.ApiClient/Generated
 
 # Test fixtures: ~135 MB of LFS-backed CSVs that no image runs.

@@ -98,7 +98,7 @@ runs:
       # which the stores import.
       if: ${{ !cancelled() && steps.generate.outcome == 'success' }}
       shell: bash
-      working-directory: src/FantasyCritic.ClientAppVue2
+      working-directory: src/FantasyCritic.VueClientApp
       run: npm test -- --reporter=default --reporter=junit --outputFile.junit=${{ github.workspace }}/test-results/client.xml
 
     - name: Client type check
@@ -106,7 +106,7 @@ runs:
       # generated TypeScript client, as the unit tests do.
       if: ${{ !cancelled() && steps.generate.outcome == 'success' }}
       shell: bash
-      working-directory: src/FantasyCritic.ClientAppVue2
+      working-directory: src/FantasyCritic.VueClientApp
       run: npm run type-check
 
     - name: Upload test results

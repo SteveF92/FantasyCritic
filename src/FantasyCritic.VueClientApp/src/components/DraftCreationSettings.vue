@@ -1,4 +1,4 @@
-<!-- src/FantasyCritic.ClientAppVue2/src/components/DraftCreationSettings.vue -->
+<!-- src/FantasyCritic.VueClientApp/src/components/DraftCreationSettings.vue -->
 <template>
   <div>
     <div v-if="totalGamesToDraft > standardGames" class="alert alert-warning">

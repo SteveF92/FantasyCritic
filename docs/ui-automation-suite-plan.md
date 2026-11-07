@@ -26,7 +26,7 @@ Decisions taken with Steve:
   are out.
 
 Principles:
-- **The suite never touches `src/FantasyCritic.ClientAppVue2`.** The same tests run unchanged
+- **The suite never touches `src/FantasyCritic.VueClientApp`.** The same tests run unchanged
   on both branches, and merging `main` into `vue3-migration` stays conflict-free (the branch has
   no changes outside the client app).
 - **Locators use ARIA roles, labels, visible text and the existing static `id`s** (modal ids,

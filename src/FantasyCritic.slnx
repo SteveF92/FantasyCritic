@@ -26,7 +26,7 @@
     <Project Path="FantasyCritic.TestDataScrubber/FantasyCritic.TestDataScrubber.csproj" />
   </Folder>
   <Project Path="FantasyCritic.ApiClient/FantasyCritic.ApiClient.csproj" />
-  <Project Path="FantasyCritic.ClientAppVue2/FantasyCritic.ClientAppVue2.esproj">
+  <Project Path="FantasyCritic.VueClientApp/FantasyCritic.VueClientApp.esproj">
     <Build />
   </Project>
   <Project Path="FantasyCritic.CommandLine/FantasyCritic.CommandLine.csproj" />

@@ -22,7 +22,7 @@ runs:
       with:
         node-version: '26'
         cache: npm
-        cache-dependency-path: src/FantasyCritic.ClientAppVue2/package-lock.json
+        cache-dependency-path: src/FantasyCritic.VueClientApp/package-lock.json
 
     - name: Restore dotnet tools
       shell: bash
@@ -31,5 +31,5 @@ runs:
     - name: Restore client app packages
       if: inputs.install-client-packages == 'true'
       shell: bash
-      working-directory: src/FantasyCritic.ClientAppVue2
+      working-directory: src/FantasyCritic.VueClientApp
       run: npm ci

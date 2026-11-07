@@ -33,7 +33,7 @@ $ErrorActionPreference = "Stop"
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $srcDir = Join-Path $repoRoot "src"
 $solution = Join-Path $srcDir "FantasyCritic.slnx"
-$clientAppDir = Join-Path $srcDir "FantasyCritic.ClientAppVue2"
+$clientAppDir = Join-Path $srcDir "FantasyCritic.VueClientApp"
 $formatTarget = if ($Check) { "FormatCheck" } else { "Format" }
 
 function Invoke-Step {
@@ -112,7 +112,7 @@ Invoke-Step "C# test-project analyzers (NUnit2045, dotnet msbuild -t:FormatAnaly
 }
 
 if (-not (Test-Path (Join-Path $clientAppDir "node_modules"))) {
-    throw "Client app dependencies not installed. Run:`n  cd src/FantasyCritic.ClientAppVue2`n  npm install"
+    throw "Client app dependencies not installed. Run:`n  cd src/FantasyCritic.VueClientApp`n  npm install"
 }
 
 if ($Check) {

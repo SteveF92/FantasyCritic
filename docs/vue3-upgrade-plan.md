@@ -1,6 +1,6 @@
 # Vue 3 Upgrade Plan
 
-> Upgrading `FantasyCritic.ClientAppVue2` from Vue 2.7 to Vue 3 in place, with no parallel
+> Upgrading `FantasyCritic.VueClientApp` from Vue 2.7 to Vue 3 in place, with no parallel
 > site. This replaces Phase 8 of the [deployment roadmap](deployment-modernization-roadmap.md),
 > which planned a second Vue 3 site on `new.fantasycritic.games`.
 

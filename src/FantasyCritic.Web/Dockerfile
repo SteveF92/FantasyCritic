@@ -40,8 +40,8 @@ COPY ["src/FantasyCritic.Postmark/FantasyCritic.Postmark.csproj", "src/FantasyCr
 # restore layer silently resolves nothing for that reference -- restore still exits 0
 # and the implicit restore during "dotnet build" picks it up after "COPY . ." below, which
 # defeats the point of restoring against project files alone.
-COPY ["src/FantasyCritic.ClientAppVue2/FantasyCritic.ClientAppVue2.esproj", "src/FantasyCritic.ClientAppVue2/"]
-COPY ["src/FantasyCritic.ClientAppVue2/package.json", "src/FantasyCritic.ClientAppVue2/package-lock.json", "src/FantasyCritic.ClientAppVue2/"]
+COPY ["src/FantasyCritic.VueClientApp/FantasyCritic.VueClientApp.esproj", "src/FantasyCritic.VueClientApp/"]
+COPY ["src/FantasyCritic.VueClientApp/package.json", "src/FantasyCritic.VueClientApp/package-lock.json", "src/FantasyCritic.VueClientApp/"]
 # NSwag is a local tool, so its manifest has to be restored too.
 COPY [".config/dotnet-tools.json", ".config/"]
 RUN dotnet tool restore
@@ -49,7 +49,7 @@ RUN dotnet restore "src/FantasyCritic.Web/FantasyCritic.Web.csproj"
 
 # Node modules get their own layer, keyed on the lock file, so a C# change does not reinstall
 # them. The .esproj's EnsureNodeModules target then finds node_modules present and no-ops.
-WORKDIR /src/src/FantasyCritic.ClientAppVue2
+WORKDIR /src/src/FantasyCritic.VueClientApp
 RUN npm ci
 WORKDIR /src
 

@@ -19,7 +19,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SRC_DIR="$REPO_ROOT/src"
 SOLUTION="$SRC_DIR/FantasyCritic.slnx"
-CLIENT_APP_DIR="$SRC_DIR/FantasyCritic.ClientAppVue2"
+CLIENT_APP_DIR="$SRC_DIR/FantasyCritic.VueClientApp"
 
 run_step() {
     local label="$1"
@@ -65,7 +65,7 @@ fi
 
 if [[ ! -d "$CLIENT_APP_DIR/node_modules" ]]; then
     echo "ERROR: Client app dependencies not installed. Run:" >&2
-    echo "  cd src/FantasyCritic.ClientAppVue2" >&2
+    echo "  cd src/FantasyCritic.VueClientApp" >&2
     echo "  npm install" >&2
     exit 1
 fi

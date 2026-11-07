@@ -1,4 +1,4 @@
-// src/FantasyCritic.ClientAppVue2/src/utilities/leagueCreationPresets.ts
+// src/FantasyCritic.VueClientApp/src/utilities/leagueCreationPresets.ts
 
 export type GameMode = 'Standard' | 'Multi Draft' | 'One Shot';
 export type ExperienceLevel = 'Beginner' | 'Standard' | 'Advanced';

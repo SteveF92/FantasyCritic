@@ -11,7 +11,7 @@
     <!-- The SPA lives outside this project's directory. Normalize so consumers that write
          SpaRoot out verbatim (the SpaProxy's spa.proxy.json) get a clean absolute path
          rather than one with an unresolved '..' segment in the middle. -->
-    <SpaRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '..', 'FantasyCritic.ClientAppVue2'))</SpaRoot>
+    <SpaRoot>$([MSBuild]::NormalizeDirectory('$(MSBuildProjectDirectory)', '..', 'FantasyCritic.VueClientApp'))</SpaRoot>
     <SpaProxyServerUrl>https://localhost:44477</SpaProxyServerUrl>
     <SpaProxyLaunchCommand>npm start</SpaProxyLaunchCommand>
   </PropertyGroup>
@@ -62,7 +62,7 @@
     <ProjectReference Include="..\FantasyCritic.Postmark\FantasyCritic.Postmark.csproj" />
     <!-- The Vue client. ReferenceOutputAssembly=false because an .esproj produces no
          assembly; the reference exists for build ordering and solution grouping. -->
-    <ProjectReference Include="..\FantasyCritic.ClientAppVue2\FantasyCritic.ClientAppVue2.esproj">
+    <ProjectReference Include="..\FantasyCritic.VueClientApp\FantasyCritic.VueClientApp.esproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
   </ItemGroup>

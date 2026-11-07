@@ -17,7 +17,7 @@ Decisions taken:
   so no ambient types are needed.
 - Tests run through the existing `@/` alias, so they read the same as app code.
 
-The client package lives at `src/FantasyCritic.ClientAppVue2`; paths below are relative to it
+The client package lives at `src/FantasyCritic.VueClientApp`; paths below are relative to it
 unless they start at the repo root.
 
 ## Steps
@@ -87,7 +87,7 @@ committed to `docs/client-tests-plan.md` first.
 ### 4. CI and docs — done, CI run unverified
 
 - `.github/actions/build-and-test/action.yml`: a "Client unit tests" step after "Unit tests",
-  in `src/FantasyCritic.ClientAppVue2`, running
+  in `src/FantasyCritic.VueClientApp`, running
   `npm test -- --reporter=default --reporter=junit --outputFile.junit=${{ github.workspace }}/test-results/client.xml`
   so the existing upload step picks it up. It runs whenever "Generate API clients" succeeded
   (that step now has `id: generate`), so a failing .NET test project doesn't hide client
@@ -104,9 +104,9 @@ committed to `docs/client-tests-plan.md` first.
 
 ## Files
 
-- `src/FantasyCritic.ClientAppVue2/package.json`, `vitest.config.js` (new), `tsconfig.json`,
+- `src/FantasyCritic.VueClientApp/package.json`, `vitest.config.js` (new), `tsconfig.json`,
   `eslint.config.mjs`
-- `src/FantasyCritic.ClientAppVue2/tests/store/leagueStore.test.ts` (new),
+- `src/FantasyCritic.VueClientApp/tests/store/leagueStore.test.ts` (new),
   `tests/components/dateInput.test.ts` (new), `tests/shims-vue.d.ts` (new)
 - `.github/actions/setup-build/action.yml`, `.github/actions/build-and-test/action.yml`
 - `src/FantasyCritic.Web/Dockerfile`

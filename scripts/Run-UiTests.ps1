@@ -38,7 +38,7 @@ $ErrorActionPreference = "Stop"
 
 $repoRoot = Resolve-Path (Join-Path $PSScriptRoot "..")
 $srcDir = Join-Path $repoRoot "src"
-$clientAppDir = Join-Path $srcDir "FantasyCritic.ClientAppVue2"
+$clientAppDir = Join-Path $srcDir "FantasyCritic.VueClientApp"
 $uiTestsProject = Join-Path $srcDir "FantasyCritic.UiTests/FantasyCritic.UiTests.csproj"
 
 function Invoke-Step {

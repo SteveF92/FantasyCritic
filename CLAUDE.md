@@ -59,7 +59,7 @@ scripts/Format.ps1          # apply
 scripts/Format.ps1 -Check   # verify only (CI-style)
 ```
 
-Client app (`src/FantasyCritic.ClientAppVue2`): `npm install` first; `npm test` runs the Vitest unit tests in `tests/` (`npm run test:watch` to watch; they need the regenerated TypeScript client); `npm run type-check` runs vue-tsc over the `.ts` files and `<script lang="ts">` components (CI runs it too); `npm run lint` / `npm run format` for JS-only passes; `npm run client` runs the SPA standalone against the production API. Stop the Vite dev server before `npm ci`, which can't replace the `esbuild.exe` it holds open.
+Client app (`src/FantasyCritic.VueClientApp`): `npm install` first; `npm test` runs the Vitest unit tests in `tests/` (`npm run test:watch` to watch; they need the regenerated TypeScript client); `npm run type-check` runs vue-tsc over the `.ts` files and `<script lang="ts">` components (CI runs it too); `npm run lint` / `npm run format` for JS-only passes; `npm run client` runs the SPA standalone against the production API. Stop the Vite dev server before `npm ci`, which can't replace the `esbuild.exe` it holds open.
 
 ## Signing in locally
 
@@ -113,7 +113,7 @@ Integration tests and the Vue client both consume clients generated from the Ope
 
 ### Frontend
 
-Vue 2.7 (Options API — match the file you're editing) + Vite + Bootstrap 4/bootstrap-vue + Pinia 2 + Luxon + axios. Generated TS client at `src/FantasyCritic.ClientAppVue2/src/api/generated/` with hand-written singletons in `src/FantasyCritic.ClientAppVue2/src/api/clients.ts`.
+Vue 2.7 (Options API — match the file you're editing) + Vite + Bootstrap 4/bootstrap-vue + Pinia 2 + Luxon + axios. Generated TS client at `src/FantasyCritic.VueClientApp/src/api/generated/` with hand-written singletons in `src/FantasyCritic.VueClientApp/src/api/clients.ts`.
 
 ## C# conventions
 

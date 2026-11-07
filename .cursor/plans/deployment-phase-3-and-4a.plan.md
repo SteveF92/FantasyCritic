@@ -17,7 +17,7 @@ nothing else. The web process no longer runs the Discord command gateway.
 ## Two findings that shape the work
 
 **1. The Web Dockerfile cannot build from a clean checkout today.**
-`src/FantasyCritic.ClientAppVue2/src/api/generated/FantasyCriticClients.ts` is gitignored and
+`src/FantasyCritic.VueClientApp/src/api/generated/FantasyCriticClients.ts` is gitignored and
 produced by NSwag from the *compiled* Web assembly. The Dockerfile never runs that step, so
 the vite build inside the image has nothing to import. It appeared to work when
 `aea774c20` was verified locally only because the developer's working tree already contained
