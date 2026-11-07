@@ -18,7 +18,7 @@ public sealed class HarnessTests : UiTestBase
         await page.GotoAsync("/");
 
         await Expect(page.GetByRole(AriaRole.Heading, new() { Name = "Registration is free!" })).ToBeVisibleAsync();
-        await Expect(page.GetByRole(AriaRole.Link, new() { Name = "Sign up", Exact = true })).ToBeVisibleAsync();
+        await Expect(Ui.LinkButton(page, "Sign up")).ToHaveAttributeAsync("href", "/Account/Register");
     }
 
     [Test]

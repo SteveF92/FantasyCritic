@@ -20,7 +20,7 @@ public sealed class NavigationTests : UiTestBase
 
         await Expect(page).ToHaveURLAsync(new Regex("/404$"));
         await Expect(Ui.Heading(page, "Woops!")).ToBeVisibleAsync();
-        await page.GetByRole(AriaRole.Link, new() { Name = "Go back home" }).ClickAsync();
+        await Ui.LinkButton(page, "Go back home").ClickAsync();
         await Expect(Ui.Heading(page, $"Welcome {user.DisplayName}!")).ToBeVisibleAsync();
     }
 
@@ -60,8 +60,8 @@ public sealed class NavigationTests : UiTestBase
         await page.GotoAsync("/about");
         var nav = page.GetByRole(AriaRole.Navigation);
 
-        await Expect(nav.GetByRole(AriaRole.Link, new() { Name = "Log In" })).ToHaveAttributeAsync("href", "/Account/Login");
-        await Expect(nav.GetByRole(AriaRole.Link, new() { Name = "Sign Up" })).ToHaveAttributeAsync("href", "/Account/Register");
+        await Expect(Ui.LinkButton(nav, "Log In")).ToHaveAttributeAsync("href", "/Account/Login");
+        await Expect(Ui.LinkButton(nav, "Sign Up")).ToHaveAttributeAsync("href", "/Account/Register");
 
         await nav.GetByRole(AriaRole.Link, new() { Name = "Games" }).ClickAsync();
         await Expect(page).ToHaveURLAsync(new Regex("/games$"));
@@ -75,7 +75,7 @@ public sealed class NavigationTests : UiTestBase
         var page = await NewSignedInPageAsync(user, "/about");
         var nav = page.GetByRole(AriaRole.Navigation);
 
-        await Expect(nav.GetByRole(AriaRole.Link, new() { Name = "Log In" })).ToHaveCountAsync(0);
+        await Expect(Ui.LinkButton(nav, "Log In")).ToHaveCountAsync(0);
         var manageAccount = page.GetByRole(AriaRole.Menuitem, new() { Name = "Manage Account" });
         await Expect(manageAccount).ToBeHiddenAsync();
 

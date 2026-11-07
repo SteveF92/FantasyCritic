@@ -72,12 +72,16 @@ public sealed class MasterGameDetailTests : UiTestBase
         await Expect(chart).ToHaveCountAsync(1);
         await Ui.WaitUntilAsync(async () => await Ui.DrawnPixelsAsync(chart) > 1000, "the statistics chart to draw");
 
-        await page.GetByRole(AriaRole.Button, new() { Name = openYear.ToString() }).ClickAsync();
+        // Found by its text, because bootstrap-vue-next names the toggle with the dropdown's aria-label. The closed menu's
+        // items are buttons with the same text, so only the visible one is the toggle.
+        ILocator YearToggle(int year) => Ui.ButtonElement(page.Locator("body"), year.ToString()).Filter(new() { Visible = true });
+        await YearToggle(openYear).ClickAsync();
         await page.RunAndWaitForRequestAsync(
             () => page.GetByRole(AriaRole.Menuitem, new() { Name = previousYear.ToString() }).ClickAsync(),
             new Regex($"/api/game/MasterGameYearWithStatistics/{masterGameID}/{previousYear}$"));
         await Expect(stats.Filter(new() { HasText = "Hype Factor: 20" }).First).ToBeVisibleAsync();
         await Expect(stats.Filter(new() { HasText = "Peak Hype Factor" })).ToHaveCountAsync(0);
-        await Expect(page.GetByRole(AriaRole.Button, new() { Name = previousYear.ToString() })).ToBeVisibleAsync();
+        await Expect(page.GetByRole(AriaRole.Menuitem, new() { Name = previousYear.ToString() })).ToBeHiddenAsync();
+        await Expect(YearToggle(previousYear)).ToBeVisibleAsync();
     }
 }

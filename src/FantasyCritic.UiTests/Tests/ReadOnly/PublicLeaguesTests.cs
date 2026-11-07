@@ -50,7 +50,7 @@ public sealed class PublicLeaguesTests : UiTestBase
         Assert.That(await Ui.ColumnTextsAsync(table, "Name"), Is.EqualTo(Enumerable.Range(3, 10).Reverse().Select(number => $"League {number:00}")));
         await Expect(table.GetByRole(AriaRole.Link, new() { Name = "League 12" })).ToHaveAttributeAsync("href", $"/league/{LeagueID}/{currentYear}");
 
-        await page.GetByRole(AriaRole.Menuitemradio, new() { Name = "Go to page 2" }).ClickAsync();
+        await Ui.PageButton(page, 2).ClickAsync();
         await Expect(Ui.BodyRows(table)).ToHaveCountAsync(2);
         Assert.That(await Ui.ColumnTextsAsync(table, "Name"), Is.EqualTo(new[] { "League 02", "League 01" }));
     }

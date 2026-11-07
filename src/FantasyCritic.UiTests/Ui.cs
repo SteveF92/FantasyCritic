@@ -73,6 +73,26 @@ public static class Ui
         scope.Locator("button").Filter(new() { HasTextRegex = new Regex($"^\\s*{Regex.Escape(text)}\\s*$") });
 
     /// <summary>
+    /// A link drawn as a button: a b-button with an href or a route. bootstrap-vue gives it the link role and
+    /// bootstrap-vue-next the button role, but either way it is an anchor, so it is found as one by its exact text.
+    /// </summary>
+    public static ILocator LinkButton(ILocator scope, string text) =>
+        scope.Locator("a").Filter(new() { HasTextRegex = new Regex($"^\\s*{Regex.Escape(text)}\\s*$") });
+
+    public static ILocator LinkButton(IPage page, string text) => LinkButton(page.Locator("body"), text);
+
+    /// <summary>
+    /// A b-pagination page button. bootstrap-vue draws these as menuitemradio, checked on the current page;
+    /// bootstrap-vue-next draws them as menuitem and marks the current page only with a class.
+    /// </summary>
+    public static ILocator PageButton(IPage page, int pageNumber)
+    {
+        var name = $"Go to page {pageNumber}";
+        return page.GetByRole(AriaRole.Menuitemradio, new() { Name = name, Exact = true })
+            .Or(page.GetByRole(AriaRole.Menuitem, new() { Name = name, Exact = true }));
+    }
+
+    /// <summary>
     /// For forms whose labels aren't tied to their inputs: the input straight after the label with this text.
     /// </summary>
     public static ILocator InputAfterLabel(ILocator scope, string label) => scope.Locator($"label:text-is(\"{label}\") ~ input").First;

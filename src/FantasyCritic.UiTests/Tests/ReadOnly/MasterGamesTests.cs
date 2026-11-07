@@ -106,8 +106,7 @@ public sealed class MasterGamesTests : UiTestBase
         await Expect(rows).ToHaveCountAsync(10);
         var firstOnPageOne = await rows.First.TextContentAsync();
 
-        await page.GetByRole(AriaRole.Menuitemradio, new() { Name = "Go to page 2" }).First.ClickAsync();
-        await Expect(page.GetByRole(AriaRole.Menuitemradio, new() { Name = "Go to page 2" }).First).ToBeCheckedAsync();
+        await Ui.PageButton(page, 2).First.ClickAsync();
         await Expect(rows.First).Not.ToHaveTextAsync(firstOnPageOne!);
         await Expect(rows).ToHaveCountAsync(10);
     }
