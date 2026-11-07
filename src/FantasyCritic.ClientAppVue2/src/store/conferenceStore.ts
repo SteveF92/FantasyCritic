@@ -1,5 +1,5 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
+import { conferenceClient } from '@/api/clients';
 import { makeToast } from '@/utilities/toast';
 
 export const useConferenceStore = defineStore('conference', {
@@ -33,11 +33,8 @@ export const useConferenceStore = defineStore('conference', {
 });
 
 async function fetchConferenceYear(store, conferencePageParams) {
-  const queryURL = '/api/Conference/GetConferenceYear?conferenceid=' + conferencePageParams.conferenceID + '&year=' + conferencePageParams.year;
-
   try {
-    const response = await axios.get(queryURL);
-    store.conferenceYear = response.data;
+    store.conferenceYear = await conferenceClient.getConferenceYear(conferencePageParams.conferenceID, conferencePageParams.year);
     document.title = store.conferenceYear.conference.conferenceName + ' - Fantasy Critic';
   } catch {
     store.hasError = true;
