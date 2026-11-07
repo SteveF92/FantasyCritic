@@ -67,7 +67,7 @@
       </b-navbar-nav>
 
       <!-- Right aligned nav items -->
-      <b-navbar-nav v-if="!authIsBusy" class="ms-auto user-dropdown">
+      <b-navbar-nav v-if="userInfoLoaded" class="ms-auto user-dropdown">
         <b-nav-item href="https://patreon.com/fantasycritic" target="_blank">
           <font-awesome-icon :icon="['fab', 'patreon']" size="lg" class="patreon-icon" fixed-width />
           <span class="brand-text">Patreon</span>
@@ -105,7 +105,7 @@ import { useAuthStore } from '@/store/authStore';
 
 export default {
   computed: {
-    ...mapState(useAuthStore, ['isPlusUser', 'authIsBusy', 'isAuth', 'userInfo'])
+    ...mapState(useAuthStore, ['isPlusUser', 'userInfoLoaded', 'isAuth', 'userInfo'])
   }
 };
 </script>

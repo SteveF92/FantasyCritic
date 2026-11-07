@@ -45,9 +45,8 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
     leagueStore.clearLeagueStoreData();
   }
 
-  await interLeagueStore.ensureLoaded();
+  await Promise.all([interLeagueStore.ensureLoaded(), authStore.ensureUserLoaded()]);
 
-  //If we are current, we're good to go
   if (authStore.isAuth) {
     if (toRoute.meta.publicOnly) {
       next({ path: '/home' });
@@ -57,26 +56,12 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
     return;
   }
 
-  try {
-    await authStore.getUserInfo();
-    if (authStore.isAuth) {
-      if (toRoute.meta.publicOnly) {
-        next({ path: '/home' });
-        return;
-      }
-      return next();
-    }
-
-    if (toRoute.meta.isPublic) {
-      return next();
-    } else {
-      window.location.href = '/Account/Login';
-      return;
-    }
-  } catch {
-    console.log('Router error');
-    window.location.href = '/Account/Login';
+  if (toRoute.meta.isPublic) {
+    next();
+    return;
   }
+
+  window.location.href = '/Account/Login';
 });
 
 router.afterEach((toRoute) => {

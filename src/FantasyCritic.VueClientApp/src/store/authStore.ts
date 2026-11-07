@@ -1,39 +1,50 @@
 import { defineStore } from 'pinia';
-import { accountClient, FantasyCriticUserViewModel } from '@/api/clients';
+import { accountClient, ApiException, FantasyCriticUserViewModel } from '@/api/clients';
 
 export interface AuthStoreState {
   userInfo: FantasyCriticUserViewModel | null;
-  isBusy: boolean;
+  userInfoLoaded: boolean;
+  loadPromise: Promise<void> | null;
+}
+
+async function fetchCurrentUser(): Promise<FantasyCriticUserViewModel | null> {
+  try {
+    return await accountClient.currentUser();
+  } catch (error) {
+    if (ApiException.isApiException(error) && error.status === 401) {
+      return null;
+    }
+    throw error;
+  }
 }
 
 export const useAuthStore = defineStore('auth', {
-  state: (): AuthStoreState => ({ userInfo: null, isBusy: false }),
+  state: (): AuthStoreState => ({ userInfo: null, userInfoLoaded: false, loadPromise: null }),
   getters: {
-    isAuth: (state) => !!state.userInfo,
-    authIsBusy: (state) => state.isBusy,
-    isAdmin: (state) => state.userInfo && state.userInfo.roles.includes('Admin'),
-    isActionRunner: (state) => state.userInfo && state.userInfo.roles.includes('ActionRunner'),
-    isFactChecker: (state) => state.userInfo && state.userInfo.roles.includes('FactChecker'),
-    isJobManager: (state) => state.userInfo && state.userInfo.roles.includes('JobManager'),
-    isBetaTester: (state) => state.userInfo && state.userInfo.roles.includes('BetaTester'),
-    isPlusUser: (state) => state.userInfo && state.userInfo.roles.includes('PlusUser'),
+    isAuth: (state) => state.userInfo !== null,
+    isAdmin: (state) => state.userInfo?.roles.includes('Admin') ?? false,
+    isActionRunner: (state) => state.userInfo?.roles.includes('ActionRunner') ?? false,
+    isFactChecker: (state) => state.userInfo?.roles.includes('FactChecker') ?? false,
+    isJobManager: (state) => state.userInfo?.roles.includes('JobManager') ?? false,
+    isBetaTester: (state) => state.userInfo?.roles.includes('BetaTester') ?? false,
+    isPlusUser: (state) => state.userInfo?.roles.includes('PlusUser') ?? false,
     decimalsToShow: (state) => (state.userInfo?.showDecimalPoints ? 1 : 0)
   },
   actions: {
-    async getUserInfo() {
-      this.isBusy = true;
-      try {
-        const userInfo = await accountClient.currentUser();
-        if (!userInfo.userID) {
-          this.userInfo = null;
-        } else {
-          this.userInfo = userInfo;
-        }
-      } catch {
-        this.userInfo = null;
-      } finally {
-        this.isBusy = false;
+    ensureUserLoaded(): Promise<void> {
+      if (!this.loadPromise) {
+        this.loadPromise = fetchCurrentUser().then(
+          (userInfo) => {
+            this.userInfo = userInfo;
+            this.userInfoLoaded = true;
+          },
+          (error) => {
+            this.loadPromise = null;
+            throw error;
+          }
+        );
       }
+      return this.loadPromise;
     }
   }
 });
