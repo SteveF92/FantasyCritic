@@ -48,7 +48,7 @@ export function formatMasterGameReleaseDate(masterGame, shorten: boolean): strin
 }
 
 export function formatPublisherGameAcquiredDate(publisherGame: PublisherGameViewModel, drafts: LeagueDraftViewModel[]): string {
-  let type = '';
+  let type: string;
   if (publisherGame.overallPickNumber) {
     if (drafts.length >= 2 && publisherGame.draftID) {
       const draft = drafts.find((d) => d.draftID === publisherGame.draftID);

@@ -121,7 +121,7 @@ export default {
       axios
         .post('/api/leagueManager/SetGameEligibilityOverride', model)
         .then(() => {
-          let message = '';
+          let message;
           if (eligible) {
             message = masterGame.gameName + ' was marked as eligible.';
           } else {

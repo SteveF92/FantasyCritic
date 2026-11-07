@@ -3,7 +3,7 @@ import pluginJs from "@eslint/js";
 import tseslint from "typescript-eslint";
 import pluginVue from "eslint-plugin-vue";
 
-/** @type {import('eslint').Linter.FlatConfig[]} */
+/** @type {import('eslint').Linter.Config[]} */
 export default [
   // Build output and NSwag-generated code are not hand-written; keep them out of lint
   // (mirrors the root .gitignore entries for these paths — `--ignore-path` was removed
