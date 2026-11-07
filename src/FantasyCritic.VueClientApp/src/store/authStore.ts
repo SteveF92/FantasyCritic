@@ -1,8 +1,13 @@
 import { defineStore } from 'pinia';
-import { accountClient } from '@/api/clients';
+import { accountClient, FantasyCriticUserViewModel } from '@/api/clients';
+
+export interface AuthStoreState {
+  userInfo: FantasyCriticUserViewModel | null;
+  isBusy: boolean;
+}
 
 export const useAuthStore = defineStore('auth', {
-  state: () => ({ userInfo: null, isBusy: false }),
+  state: (): AuthStoreState => ({ userInfo: null, isBusy: false }),
   getters: {
     isAuth: (state) => !!state.userInfo,
     authIsBusy: (state) => state.isBusy,
