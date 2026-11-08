@@ -1,8 +1,9 @@
 <template>
   <LineChartGenerator ref="lineChartRef" :chart-id="chartId" dataset-id-key="label" :height="chartHeight" :styles="canvasStyles" :options="chartOptions" :data="chartData" />
 </template>
+
 <script lang="ts">
-import { markRaw } from 'vue';
+import { defineComponent, markRaw, type PropType } from 'vue';
 import type { Chart, ChartOptions } from 'chart.js';
 import { Line as LineChartGenerator } from 'vue-chartjs';
 import { RoyalePublisher } from '@/models/royale/RoyalePublisher.ts';
@@ -11,11 +12,12 @@ const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#
 
 type LineChartVueRef = { chart?: Chart<'line'> };
 
-export default {
+export default defineComponent({
   components: { LineChartGenerator },
+
   props: {
     chartId: { type: String, required: true },
-    royalePublishers: { type: Array, required: true },
+    royalePublishers: { type: Array as PropType<RoyalePublisher[]>, required: true },
     chartHeight: { type: Number, required: true }
   },
   data() {
@@ -278,5 +280,5 @@ export default {
       });
     }
   }
-};
+});
 </script>
