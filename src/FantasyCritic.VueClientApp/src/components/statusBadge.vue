@@ -6,14 +6,19 @@
     <span v-if="!isAvailable && !alreadyOwned && !locked" class="badge bg-warning text-wrap text-start royale-status-badge">{{ status }}</span>
   </span>
 </template>
-<script>
-export default {
+
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+
+import { PossibleMasterGameYearViewModel } from '@/api/clients';
+
+export default defineComponent({
   props: {
-    possibleMasterGame: { type: Object, required: true },
-    stripThat: { type: Boolean, required: false }
+    possibleMasterGame: { type: Object as PropType<PossibleMasterGameYearViewModel>, required: true },
+    stripThat: { type: Boolean, default: false }
   },
   computed: {
-    status() {
+    status(): string {
       const status = this.possibleMasterGame.status;
 
       if (this.stripThat) {
@@ -23,15 +28,15 @@ export default {
 
       return status;
     },
-    isAvailable() {
+    isAvailable(): boolean {
       return this.possibleMasterGame.isAvailable;
     },
-    alreadyOwned() {
+    alreadyOwned(): boolean {
       return this.possibleMasterGame.alreadyOwned;
     },
-    locked() {
+    locked(): boolean {
       return /^Game will release within \d+ days\.$/.test(this.possibleMasterGame.status);
     }
   }
-};
+});
 </script>

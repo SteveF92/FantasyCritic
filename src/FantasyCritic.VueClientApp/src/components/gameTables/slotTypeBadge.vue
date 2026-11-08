@@ -27,32 +27,47 @@
     </span>
   </span>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
+
+import { MasterGameTagViewModel, PublisherSlotViewModel } from '@/api/clients';
+import { PopoverContent } from '@/models/vueModels';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+interface BadgeColorStyle {
+  backgroundImage: string;
+  color: string;
+  'text-shadow': string;
+}
+
+export interface SlotTypeBadgeProp extends PublisherSlotViewModel {
+  dropped: boolean;
+}
+
+export default defineComponent({
   components: {
     MasterGameTagBadge
   },
   props: {
-    gameSlot: { type: Object, required: true },
+    gameSlot: { type: Object as PropType<SlotTypeBadgeProp>, required: true },
     hideBackground: { type: Boolean }
   },
   computed: {
-    regularText() {
+    regularText(): PopoverContent {
       return {
         title: 'Regular Slot',
         body: 'This slot has no special requirements, so it follows the normal eligibility rules for the league.'
       };
     },
-    counterPickText() {
+    counterPickText(): PopoverContent {
       return {
         title: 'Counter Pick',
         body: 'This slot is for counter picks, which are bets against a game. See the FAQ for more details.'
       };
     },
-    droppedText() {
+    droppedText(): PopoverContent {
       return {
         title: 'Dropped',
         body: "This game is no longer on this publisher's lineup."
@@ -60,11 +75,15 @@ export default {
     }
   },
   methods: {
-    getTag(tagName) {
+    getTag(tagName: string): MasterGameTagViewModel {
       const interLeagueStore = useInterLeagueStore();
-      return interLeagueStore.allTags.find((x) => x.name === tagName);
+      const tag = interLeagueStore.allTags.find((x) => x.name === tagName);
+      if (!tag) {
+        throw new Error(`Unknown master game tag: ${tagName}`);
+      }
+      return tag;
     },
-    getMultiBadgeColor(tagNames) {
+    getMultiBadgeColor(tagNames: string[]): BadgeColorStyle {
       let colorString = '';
       let stripeWidth = 100.0 / tagNames.length;
       for (let i = 0; i < tagNames.length; i++) {
@@ -84,8 +103,9 @@ export default {
       };
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .popover-header {
   color: black;

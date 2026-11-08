@@ -23,12 +23,18 @@
   </div>
 </template>
 
-<script>
-import { generalClient } from '@/api/clients';
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import { generalClient, SiteCountsViewModel } from '@/api/clients';
 import { formatThousands } from '@/utilities/formatters';
 
-export default {
-  data() {
+interface SiteCountsState {
+  siteCounts: SiteCountsViewModel | null;
+}
+
+export default defineComponent({
+  data(): SiteCountsState {
     return {
       siteCounts: null
     };
@@ -42,7 +48,7 @@ export default {
       this.siteCounts = await generalClient.siteCounts();
     }
   }
-};
+});
 </script>
 
 <style scoped>
