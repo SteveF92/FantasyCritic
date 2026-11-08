@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { useAuthStore } from '@/store/authStore';
 import { deepClone } from '@/utilities/deepClone';
-import { leagueClient, LeagueYearViewModel, PublisherSlotViewModel, PublisherViewModel, ReorderPublisherGamesRequest } from '@/api/clients';
+import { ApiException, leagueClient, LeagueYearViewModel, PublisherSlotViewModel, PublisherViewModel, ReorderPublisherGamesRequest } from '@/api/clients';
 
 interface PublisherStoreState {
   publisher: PublisherViewModel | null;
@@ -43,7 +43,10 @@ export const usePublisherStore = defineStore('publisher', {
     async initializePublisherPage(publisherID: string) {
       this.clearPublisherStoreData();
       const leagueYear = await leagueClient.getLeagueYearForPublisher(publisherID);
-      const publisher = leagueYear?.publishers.filter((x) => x.publisherID === publisherID)[0];
+      const publisher = leagueYear?.publishers.find((x) => x.publisherID === publisherID);
+      if (!publisher) {
+        throw new Error(`Publisher ${publisherID} not found`);
+      }
 
       this.initializeInternal(publisher, leagueYear);
       this.setDesiredPositions();
@@ -67,12 +70,15 @@ export const usePublisherStore = defineStore('publisher', {
         this.completeMoveMode();
 
         const leagueYear = await leagueClient.getLeagueYearForPublisher(request.publisherID);
-        const publisher = leagueYear?.publishers.filter((x) => x.publisherID === request.publisherID)[0];
+        const publisher = leagueYear?.publishers.find((x) => x.publisherID === request.publisherID);
+        if (!publisher) {
+          throw new Error(`Publisher ${request.publisherID} not found`);
+        }
 
         this.initializeInternal(publisher, leagueYear);
         this.setDesiredPositions();
       } catch (error) {
-        this.moveGameError = error.response.data;
+        this.moveGameError = ApiException.isApiException(error) ? error.response : String(error);
         this.cancelMoveMode();
       }
     },
@@ -128,7 +134,7 @@ export const usePublisherStore = defineStore('publisher', {
     },
     setDesiredPositions() {
       if (!this.editableGameSlots) {
-        throw new Error('No games to sed positions for.');
+        throw new Error('No games to set positions for.');
       }
 
       const standardSlotsOnly = this.editableGameSlots.filter((x) => !x.counterPick);
