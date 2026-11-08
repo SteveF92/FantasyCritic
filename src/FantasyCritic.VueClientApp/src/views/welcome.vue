@@ -84,7 +84,7 @@
           <div class="starting-step">
             <font-awesome-layers class="fa-4x">
               <font-awesome-icon :icon="['far', 'circle']" />
-              <font-awesome-icon icon="user-friends" transform="shrink-9 left-1" :style="{ color: 'd6993a' }" />
+              <font-awesome-icon icon="user-friends" transform="shrink-9" :style="{ color: 'd6993a' }" />
             </font-awesome-layers>
             <div class="starting-step-text">
               <span class="step-number-text">Step 2:</span>
@@ -115,7 +115,7 @@
             <div class="feature-highlight shadowed">
               <font-awesome-layers class="fa-4x">
                 <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="user-friends" transform="shrink-9 left-1" :style="{ color: 'd6993a' }" />
+                <font-awesome-icon icon="user-friends" transform="shrink-9" :style="{ color: 'd6993a' }" />
               </font-awesome-layers>
               <span class="feature-description">Compete with your friends</span>
             </div>
@@ -133,7 +133,7 @@
             <div class="feature-highlight shadowed">
               <font-awesome-layers class="fa-4x">
                 <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="crown" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
+                <font-awesome-icon icon="crown" transform="shrink-8" :style="{ color: 'd6993a' }" />
               </font-awesome-layers>
               <span class="feature-description">Claim the crown</span>
             </div>
@@ -143,7 +143,7 @@
               <font-awesome-layers class="fa-4x">
                 <font-awesome-icon :icon="['far', 'circle']" />
                 <font-awesome-icon icon="money-bill-alt" transform="shrink-8" :style="{ color: 'd6993a' }" />
-                <font-awesome-icon icon="slash" transform="shrink-6 left-2" />
+                <font-awesome-icon icon="slash" transform="shrink-6" />
               </font-awesome-layers>
               <span class="feature-description">Totally free</span>
             </div>

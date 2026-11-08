@@ -281,16 +281,6 @@ img.critic-royale-nav {
   color: #d6993a !important;
 }
 
-/* Font Awesome 7 made every icon 1.25em wide; keep the Font Awesome 6 auto width unless fixed width is asked for. */
-.svg-inline--fa:not(.fa-fw):not(.fa-width-fixed) {
-  --fa-width: auto;
-}
-
-/* Font Awesome 7 also widened the layers container to 1.25em; Font Awesome 6 made it 1em square. */
-.fa-layers:not(.fa-fw):not(.fa-width-fixed) {
-  --fa-width: 1em;
-}
-
 .font-awesome-button {
   padding: 0;
   border: none;
