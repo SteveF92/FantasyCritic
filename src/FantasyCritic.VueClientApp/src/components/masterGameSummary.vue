@@ -1,8 +1,8 @@
 <template>
   <div v-if="masterGame" class="summary">
     <div v-if="!hideImage" class="game-image-area">
-      <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" class="gg-image-area">
-        <img v-if="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
+      <div v-if="ggLink && ggCoverArtLink" class="gg-image-area">
+        <img v-if="ggCoverArtLink" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
         <a :href="ggLink" target="_blank">
           <strong>
             Image Provided by GG|
@@ -62,7 +62,7 @@
           </strong>
         </a>
       </div>
-      <div v-if="masterGame.ggToken && (!masterGame.ggCoverArtFileName || hideImage)">
+      <div v-if="ggLink && (!masterGame.ggCoverArtFileName || hideImage)">
         <a :href="ggLink" target="_blank">
           <strong>
             GG| Link
