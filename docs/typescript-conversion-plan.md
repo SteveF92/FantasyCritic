@@ -154,18 +154,39 @@ League steps.
   (`royalePublisherGraph`, then delete `src/models/`).
 - Also removed an unused `RouteLocationNormalized` import in `router/routes.ts` that failed lint.
 
-### 2. API error helper
+### 2. API error helper (done)
 
-- Add `utilities/apiError.ts` with `getApiErrorMessage(error: unknown): string`, plus Vitest tests.
-- `ApiException.response` is the raw response text. Check what the server actually sends for each
-  failure shape before writing the helper:
-  - `BadRequest("message")` under the client's `Accept: application/json` (probably a JSON-quoted
-    string)
-  - model validation failures (`ValidationProblemDetails`)
-  - 401/403
-  - 500
-- Decide whether the helper handles network failures (a `TypeError` from `fetch`) or leaves them to
-  the caller.
+`utilities/apiError.ts`: `getApiErrorMessage(error: unknown, fallback = 'Something went wrong.'): string`,
+tested in `tests/apiError.test.ts`.
+
+What the server sent (2026-11-07, Development, from the browser through `fetch`):
+
+| Case | Status | Content type | Body |
+|---|---|---|---|
+| `BadRequest("message")`, no `Accept` header | 400 | `text/plain` | `You cannot have a blank name.` |
+| `BadRequest("message")`, `Accept: application/json` | 400 | `application/json` | `"You cannot have a blank name."` |
+| Missing required field, malformed JSON | 400 | `application/problem+json` | `ValidationProblemDetails` with `errors` |
+| Bare `BadRequest()` | 400 | `application/problem+json` | `ProblemDetails`, title "Bad Request", no message |
+| Signed out | 401 | none | empty |
+| Not an admin | 403 | none | empty |
+| Unknown route | 404 | none | empty |
+
+The generated client sends `Accept: application/json` only for operations with a response type, so
+both `BadRequest` forms happen. Every `BadRequest(x)` in the controllers passes a string (a literal or
+a `Result`'s `Error`). A 500 is the developer exception page here and the `/Error` page in production.
+
+The helper:
+
+- **4xx:** returns the server's message: plain text as is, a JSON string unquoted, and a validation
+  failure's messages joined with spaces. Anything else (an empty body, `ProblemDetails` with no
+  messages, HTML, JSON that doesn't parse) returns `fallback`.
+- **5xx:** always returns `fallback`.
+- **Anything that isn't an `ApiException`** is rethrown: network failures (`TypeError: Failed to
+  fetch`) and bugs in the calling code reach the console instead of turning into a message. The axios
+  code also threw there, since `error.response` was `undefined`. The UI suite fails on console errors,
+  so they show up.
+
+Callers that had their own fallback text pass it as `fallback`.
 
 ### 3. Shared leaves: master game display
 
