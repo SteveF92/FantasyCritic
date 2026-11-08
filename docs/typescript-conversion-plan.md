@@ -67,7 +67,8 @@ export default defineComponent({
 ```
 
 - **Types come from `@/api/clients`** (the generated view models and requests). The hand-written
-  copies in `src/models/` are gone (cf7ea5938).
+  copies in `src/models/` are gone (cf7ea5938). Types that are only about the UI and not the API, such
+  as `PopoverContent`, go in `src/types/vueTypes.ts`.
 - **Props:** `as PropType<T>` for objects and arrays. Make a prop `required: true` when every parent
   passes it, rather than optional plus `!` at each use. A route with `props: true` passes strings;
   routes that parse their params pass numbers. Match what the route gives.
@@ -196,7 +197,7 @@ on 401, league on 401/403) or set a flag, and stay as they are.
 `masterGameTagBadge` → `masterGameSummary` → `masterGamePopover`. Used on 25, 16 and 15 pages.
 Test on Master Games, League and Home.
 
-### 4. Shared leaves: small widgets
+### 4. Shared leaves: small widgets (done)
 
 `collapseCard`, `toggleSwitch`, `dateInput`, `statusBadge`, `siteCounts`, `gameTables/slotTypeBadge`,
 `masterGameDetails`, `masterGameTagSelector`, `modals/leagueOptionsModal`.
@@ -311,3 +312,5 @@ has the bug too.
 | 1 | `components/royalePublisherGraph.vue` | Passes `chart-id` to vue-chartjs 5's `Line`, which has no `chartId` prop, so it falls through as a `chart-id` attribute instead of setting the canvas id (found with `checkUnknownProps` on). TypeScript reports only the first excess property, so check `height` and `styles` too | Yes | Step 9 |
 | 2 | `store/publisherStore.ts` `confirmPositions` | Now uses `getApiErrorMessage`. Changes: a 403 or 404 shows "Something went wrong." where it showed nothing (empty body); a 500 shows that instead of the error page's text; a network failure is rethrown after leaving move mode, where it showed "TypeError: Failed to fetch" | — | Done |
 | 2 | `store/publisherStore.ts` | `moveGameError` is never cleared, not by a later successful move and not by `clearPublisherStoreData`, so after one failed move the error stays up, even on another publisher's page | Yes | Done: cleared when a move is confirmed and in `clearPublisherStoreData`; `tests/store/publisherStore.test.ts` |
+| 4 | `components/leagueActions.vue` | Passes `:possible-league-options` to `leagueOptionsModal`, which has no such prop and reads the options from the store, so the value falls through as an attribute. `checkUnknownProps` is off, so type-check won't flag it. It's the only use of the `possibleLeagueOptions` `mapState` entry, so remove both | Yes | Step 13d |
+| 4 | `views/masterGameCreator.vue` | Passes `supportedYears.find(...)` to `leagueOptionsModal`'s required `supportedYear`. `find` can return `undefined`, and the modal reads `supportedYear.year`. Type-check should flag it once the page is converted; decide then what happens if no year matches | Yes | Step 15 |
