@@ -66,9 +66,8 @@ export default defineComponent({
 });
 ```
 
-- **Types come from `@/api/clients`** (the generated view models and requests). `src/models/` is
-  hand-written copies of generated types. Its three users move to the generated types in steps 5 and
-  9, and step 9 deletes it.
+- **Types come from `@/api/clients`** (the generated view models and requests). The hand-written
+  copies in `src/models/` are gone (cf7ea5938).
 - **Props:** `as PropType<T>` for objects and arrays. Make a prop `required: true` when every parent
   passes it, rather than optional plus `!` at each use. A route with `props: true` passes strings;
   routes that parse their params pass numbers. Match what the route gives.
@@ -192,7 +191,7 @@ The stores were already TypeScript. One store shows a message, and it uses the h
 `publisherStore.confirmPositions` sets `moveGameError`. The other stores' catches branch on status (auth
 on 401, league on 401/403) or set a flag, and stay as they are.
 
-### 3. Shared leaves: master game display
+### 3. Shared leaves: master game display (done)
 
 `masterGameTagBadge` → `masterGameSummary` → `masterGamePopover`. Used on 25, 16 and 15 pages.
 Test on Master Games, League and Home.
@@ -205,9 +204,9 @@ Test on Master Games, League and Home.
 ### 5. App shell and static pages
 
 `App.vue`, `topNavBar`, `footerModule`, `toastHost`; `welcome` (+ `homeFAQ`), `discordBot`, `faq`,
-`howToPlay`, `contact`, `community`, `fantasyCriticPlus`, `notFound`. Move `siteAnnouncementsWidget`
-and `siteUpdates` (already TS) from `@/models/SiteAnnouncement` to `SiteAnnouncementViewModel`. Test both
-signed in and signed out.
+`howToPlay`, `contact`, `community`, `fantasyCriticPlus`, `notFound`. `siteAnnouncementsWidget` and
+`siteUpdates` are already on `SiteAnnouncementViewModel` (cf7ea5938). Test both signed in and signed
+out.
 
 ### 6. Master game pages
 
@@ -226,8 +225,8 @@ signed in and signed out.
 
 ### 9. Critics Royale
 
-- `royalePublisherGraph` (already TS): move from `@/models/royale` to the generated royale view models,
-  then delete `src/models/`
+- `royalePublisherGraph` (already TS, on `RoyalePublisherViewModel` since cf7ea5938): fix `chart-id`
+  (see "Found along the way")
 - `criticsRoyale` (+ `royaleGroupsWidget`, `royalePodium`, `criticsRoyaleInfo`,
   `modals/createRoyalePublisherForm`)
 - `royalePublisher` (+ `possibleRoyaleMasterGamesTable`, `modals/royalePurchaseGameForm`,

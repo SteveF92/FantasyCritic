@@ -41,7 +41,11 @@ export default defineComponent({
   computed: {
     tag(): MasterGameTagViewModel {
       const interLeagueStore = useInterLeagueStore();
-      return interLeagueStore.allTags.find((x) => x.name === this.tagName)!;
+      const tag = interLeagueStore.allTags.find((x) => x.name === this.tagName);
+      if (!tag) {
+        throw new Error(`Unknown master game tag: ${this.tagName}`);
+      }
+      return tag;
     },
     badgeColor(): { backgroundColor: string } {
       return {

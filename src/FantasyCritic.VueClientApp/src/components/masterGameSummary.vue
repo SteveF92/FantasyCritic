@@ -102,11 +102,6 @@ export default defineComponent({
     masterGame: { type: Object as PropType<MasterGameYearViewModel>, required: true },
     hideImage: { type: Boolean }
   },
-  data() {
-    return {
-      error: ''
-    };
-  },
   computed: {
     ...mapState(useAuthStore, ['isFactChecker']),
     ggCoverArtLink(): string | null {
