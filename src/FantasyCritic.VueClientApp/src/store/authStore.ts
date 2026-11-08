@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { accountClient, ApiException, FantasyCriticUserViewModel } from '@/api/clients';
 
-export interface AuthStoreState {
+interface AuthStoreState {
   userInfo: FantasyCriticUserViewModel | null;
   userInfoLoaded: boolean;
   loadPromise: Promise<void> | null;

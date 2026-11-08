@@ -2,7 +2,7 @@ import { defineStore } from 'pinia';
 import { useAuthStore } from './authStore';
 import { AdminTaskCountsViewModel, combinedDataClient } from '@/api/clients';
 
-export interface AdminStoreState {
+interface AdminStoreState {
   adminTaskCounts: AdminTaskCountsViewModel;
 }
 

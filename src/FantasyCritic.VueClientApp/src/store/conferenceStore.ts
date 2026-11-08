@@ -2,16 +2,16 @@ import { defineStore } from 'pinia';
 import { conferenceClient, ConferenceYearViewModel } from '@/api/clients';
 import { makeToast } from '@/utilities/toast';
 
-export interface ConferenceStoreState {
-  hasError: boolean;
-  conferenceYear: ConferenceYearViewModel | null;
-  conferenceInviteCode?: string;
-}
-
 export interface ConferencePageParams {
   conferenceID: string;
   year: number;
   inviteCode?: string;
+}
+
+interface ConferenceStoreState {
+  hasError: boolean;
+  conferenceYear: ConferenceYearViewModel | null;
+  conferenceInviteCode?: string;
 }
 
 export const useConferenceStore = defineStore('conference', {

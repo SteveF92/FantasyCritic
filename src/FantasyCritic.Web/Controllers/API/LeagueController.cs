@@ -256,6 +256,7 @@ public class LeagueController : BaseLeagueController
 
     [HttpGet("{publisherID}")]
     [AllowAnonymous]
+    [ProducesResponseType<LeagueYearViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

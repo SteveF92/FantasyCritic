@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { BasicDataViewModel, combinedDataClient } from '@/api/clients';
 
-export interface InterLeagueStoreState {
+interface InterLeagueStoreState {
   basicData: BasicDataViewModel | null;
   loadPromise: Promise<void> | null;
 }
