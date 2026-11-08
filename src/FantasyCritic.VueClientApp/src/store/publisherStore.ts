@@ -8,7 +8,7 @@ interface PublisherStoreState {
   leagueYear: LeagueYearViewModel | null;
   cleanGameSlots: PublisherSlotViewModel[] | null;
   editableGameSlots: PublisherSlotViewModel[] | null;
-  desiredPositions: { [key: string]: string };
+  desiredPositions: Record<number, string | null>;
   moveMode: boolean;
   heldSlot: PublisherSlotViewModel | null;
   moveGameError: string;
@@ -62,25 +62,29 @@ export const usePublisherStore = defineStore('publisher', {
 
       const request: ReorderPublisherGamesRequest = {
         publisherID: this.publisher.publisherID,
-        slotStates: this.desiredPositions
+        // TODO: NJsonSchema's TypeScript generator drops nullability on dictionary values, so slotStates is typed
+        // { [key: string]: string } though the server takes Dictionary<int, Guid?>. Remove this cast by changing
+        // SlotStates to a list of { SlotNumber, PublisherGameID? } records, a breaking API change.
+        slotStates: this.desiredPositions as ReorderPublisherGamesRequest['slotStates']
       };
 
       try {
         await leagueClient.reorderPublisherGames(request);
-        this.completeMoveMode();
-
-        const leagueYear = await leagueClient.getLeagueYearForPublisher(request.publisherID);
-        const publisher = leagueYear?.publishers.find((x) => x.publisherID === request.publisherID);
-        if (!publisher) {
-          throw new Error(`Publisher ${request.publisherID} not found`);
-        }
-
-        this.initializeInternal(publisher, leagueYear);
-        this.setDesiredPositions();
       } catch (error) {
         this.moveGameError = ApiException.isApiException(error) ? error.response : String(error);
         this.cancelMoveMode();
       }
+
+      this.completeMoveMode();
+
+      const leagueYear = await leagueClient.getLeagueYearForPublisher(request.publisherID);
+      const publisher = leagueYear?.publishers.find((x) => x.publisherID === request.publisherID);
+      if (!publisher) {
+        throw new Error(`Publisher ${request.publisherID} not found`);
+      }
+
+      this.initializeInternal(publisher, leagueYear);
+      this.setDesiredPositions();
     },
     clearPublisherStoreData() {
       this.publisher = null;
