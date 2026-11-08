@@ -19,29 +19,31 @@
   </BApp>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+import type { BAppProps } from 'bootstrap-vue-next';
+
 import { defaultTableComparer } from '@/globalFunctions';
 import FooterModule from '@/components/footerModule.vue';
 import ToastHost from '@/components/toastHost.vue';
 import TopNavbar from '@/components/topNavBar.vue';
 
-export default {
+export default defineComponent({
+  setup() {
+    const bootstrapDefaults: BAppProps['defaults'] = {
+      // Bootstrap-Vue 2 tables toggled between ascending and descending. bootstrap-vue-next clears the sort on a third click unless mustSort is set.
+      // Bootstrap 4 dropped dropdown menus 0.125rem below their toggle; bootstrap-vue-next positions them with no gap.
+      BTable: { mustSort: true, sortCompare: defaultTableComparer },
+      BDropdown: { offset: 2 }
+    };
+    return { bootstrapDefaults };
+  },
   components: {
     TopNavbar,
     FooterModule,
     ToastHost
-  },
-  data() {
-    return {
-      // Bootstrap-Vue 2 tables toggled between ascending and descending. bootstrap-vue-next clears the sort on a third click unless mustSort is set.
-      // Bootstrap 4 dropped dropdown menus 0.125rem below their toggle; bootstrap-vue-next positions them with no gap.
-      bootstrapDefaults: {
-        BTable: { mustSort: true, sortCompare: defaultTableComparer },
-        BDropdown: { offset: 2 }
-      }
-    };
   }
-};
+});
 </script>
 
 <style lang="scss">
