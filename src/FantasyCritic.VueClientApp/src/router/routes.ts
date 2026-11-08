@@ -42,8 +42,18 @@ import MasterGameEditor from '@/views/masterGameEditor.vue';
 import FantasyCriticPlus from '@/views/fantasyCriticPlus.vue';
 import TopBidsAndDrops from '@/views/topBidsAndDrops.vue';
 import SiteUpdates from '@/views/siteUpdates.vue';
+import { RouteLocationNormalized, RouteRecordRaw } from 'vue-router';
 
-export const routes = [
+function parseNumberParam(numberParam: string | string[]): number {
+  const parsedParam = Number.parseInt(String(numberParam), 10);
+  if (Number.isNaN(parsedParam)) {
+    return 0;
+  }
+
+  return parsedParam;
+}
+
+export const routes: RouteRecordRaw[] = [
   { path: '/404', component: NotFound },
   { path: '/:pathMatch(.*)*', redirect: '/404' },
   {
@@ -233,10 +243,7 @@ export const routes = [
       delayScroll: true
     },
     props: (route) => {
-      let parsedYear = Number.parseInt(route.params.year, 10);
-      if (Number.isNaN(parsedYear)) {
-        parsedYear = 0;
-      }
+      const parsedYear = parseNumberParam(route.params.year);
 
       return {
         leagueid: route.params.leagueid,
@@ -254,10 +261,7 @@ export const routes = [
       delayScroll: true
     },
     props: (route) => {
-      let parsedYear = Number.parseInt(route.params.year, 10);
-      if (Number.isNaN(parsedYear)) {
-        parsedYear = 0;
-      }
+      const parsedYear = parseNumberParam(route.params.year);
 
       return {
         conferenceid: route.params.conferenceid,
@@ -273,10 +277,7 @@ export const routes = [
       title: 'Edit League'
     },
     props: (route) => {
-      let parsedYear = Number.parseInt(route.params.year, 10);
-      if (Number.isNaN(parsedYear)) {
-        parsedYear = 0;
-      }
+      const parsedYear = parseNumberParam(route.params.year);
 
       return {
         leagueid: route.params.leagueid,
@@ -292,10 +293,7 @@ export const routes = [
       title: 'Manage Drafts'
     },
     props: (route) => {
-      let parsedYear = Number.parseInt(route.params.year, 10);
-      if (Number.isNaN(parsedYear)) {
-        parsedYear = 0;
-      }
+      const parsedYear = parseNumberParam(route.params.year);
       return {
         leagueid: route.params.leagueid,
         year: parsedYear
@@ -311,10 +309,7 @@ export const routes = [
       isPublic: true
     },
     props: (route) => {
-      let parsedYear = Number.parseInt(route.params.year, 10);
-      if (Number.isNaN(parsedYear)) {
-        parsedYear = 0;
-      }
+      const parsedYear = parseNumberParam(route.params.year);
 
       return {
         leagueid: route.params.leagueid,
@@ -341,10 +336,7 @@ export const routes = [
       isPublic: true
     },
     props: (route) => {
-      let parsedYear = Number.parseInt(route.params.year, 10);
-      if (Number.isNaN(parsedYear)) {
-        parsedYear = 0;
-      }
+      const parsedYear = parseNumberParam(route.params.year);
 
       return {
         conferenceid: route.params.conferenceid,
@@ -466,12 +458,12 @@ export const routes = [
         return;
       }
 
-      const parsedYear = Number.parseInt(route.params.year, 10);
+      const parsedYear = Number.parseInt(String(route.params.year), 10);
       if (Number.isNaN(parsedYear)) {
         return;
       }
 
-      const parsedQuarter = Number.parseInt(route.params.quarter, 10);
+      const parsedQuarter = Number.parseInt(String(route.params.quarter), 10);
       if (Number.isNaN(parsedQuarter)) {
         return;
       }
@@ -511,8 +503,8 @@ export const routes = [
       isPublic: true
     },
     props: (route) => {
-      const year = Number.parseInt(route.params.year);
-      const quarter = Number.parseInt(route.params.quarter);
+      const year = Number.parseInt(String(route.params.year));
+      const quarter = Number.parseInt(String(route.params.quarter));
       if (Number.isInteger(year) && Number.isInteger(quarter)) {
         return { groupid: route.params.groupid, year, quarter };
       }

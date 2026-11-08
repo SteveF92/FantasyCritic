@@ -26,6 +26,14 @@ export const useAuthStore = defineStore('auth', {
     isActionRunner: (state) => state.userInfo?.roles.includes('ActionRunner') ?? false,
     isFactChecker: (state) => state.userInfo?.roles.includes('FactChecker') ?? false,
     isJobManager: (state) => state.userInfo?.roles.includes('JobManager') ?? false,
+    canAccessAdminPages: (state) => {
+      if (!state.userInfo) {
+        return false;
+      }
+      const allowedRoles = ['Admin', 'ActionRunner', 'FactChecker', 'JobManager'];
+      const intersection = [...new Set(state.userInfo.roles).intersection(new Set(allowedRoles))];
+      return intersection.length > 0;
+    },
     isBetaTester: (state) => state.userInfo?.roles.includes('BetaTester') ?? false,
     isPlusUser: (state) => state.userInfo?.roles.includes('PlusUser') ?? false,
     decimalsToShow: (state) => (state.userInfo?.showDecimalPoints ? 1 : 0)

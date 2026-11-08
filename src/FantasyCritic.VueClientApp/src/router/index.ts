@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHistory, RouterScrollBehavior } from 'vue-router';
 
 import { pinia } from '@/store/pinia';
 import { useAuthStore } from '@/store/authStore';
@@ -8,25 +8,24 @@ import { usePublisherStore } from '@/store/publisherStore';
 
 import { routes } from './routes.js';
 
-function scrollBehavior(to, from) {
-  if (to.hash) {
-    const smoothParams = {
-      el: to.hash,
-      behavior: 'smooth'
-    };
-
-    if (!to.meta.delayScroll || to.path === from.path) {
-      return smoothParams;
-    }
-
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve(smoothParams);
-      }, 500);
-    });
+const scrollBehavior: RouterScrollBehavior = (to, from, savedPosition) => {
+  if (savedPosition) {
+    return savedPosition;
   }
-  return { left: 0, top: 0 }; // Go to the top of the page if no hash
-}
+
+  if (!to.hash) {
+    return { left: 0, top: 0 };
+  }
+
+  const anchor: ScrollToOptions & { el: string } = { el: to.hash, behavior: 'smooth' };
+  if (!to.meta.delayScroll || to.path === from.path) {
+    return anchor;
+  }
+
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(anchor), 500);
+  });
+};
 
 const router = createRouter({
   scrollBehavior,
@@ -52,6 +51,12 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
       next({ path: '/home' });
       return;
     }
+
+    if (toRoute.meta.adminOnly && !authStore.canAccessAdminPages) {
+      next({ path: '/home' });
+      return;
+    }
+
     next();
     return;
   }
