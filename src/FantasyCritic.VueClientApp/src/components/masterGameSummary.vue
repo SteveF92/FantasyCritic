@@ -83,21 +83,23 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
 import { DateTime } from 'luxon';
 
+import { MasterGameYearViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { formatPercent, formatScore } from '@/utilities/formatters';
 import { getGGCoverArtLinkForGame, getGGLinkForGame } from '@/utilities/ggLinks';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+export default defineComponent({
   components: {
     MasterGameTagBadge
   },
   props: {
-    masterGame: { type: Object, required: true },
+    masterGame: { type: Object as PropType<MasterGameYearViewModel>, required: true },
     hideImage: { type: Boolean }
   },
   data() {
@@ -107,16 +109,19 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['isFactChecker']),
-    ggCoverArtLink() {
+    ggCoverArtLink(): string | null {
       return getGGCoverArtLinkForGame(this.masterGame, 165);
     },
-    ggLink() {
+    ggLink(): string | null {
       return getGGLinkForGame(this.masterGame);
     },
-    releaseDate() {
+    releaseDate(): string | null {
+      if (!this.masterGame.releaseDate) {
+        return null;
+      }
       return DateTime.fromISO(this.masterGame.releaseDate).toFormat('MMMM dd, yyyy');
     },
-    openCriticLink() {
+    openCriticLink(): string {
       return `https://opencritic.com/game/${this.masterGame.openCriticID}/${this.masterGame.openCriticSlug ?? 'b'}`;
     }
   },
@@ -124,7 +129,7 @@ export default {
     formatPercent,
     formatScore
   }
-};
+});
 </script>
 <style scoped>
 .detail-label {

@@ -11,12 +11,13 @@
   </span>
 </template>
 
-<script>
-import { useId } from 'vue';
+<script lang="ts">
+import { defineComponent, useId, type PropType } from 'vue';
 
+import { MasterGameYearViewModel } from '@/api/clients';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 
-export default {
+export default defineComponent({
   setup() {
     return { popoverID: `mg-popover-${useId()}` };
   },
@@ -24,10 +25,10 @@ export default {
     MasterGameSummary
   },
   props: {
-    masterGame: { type: Object, required: true },
+    masterGame: { type: Object as PropType<MasterGameYearViewModel>, required: true },
     showAsWarning: { type: Boolean }
   }
-};
+});
 </script>
 <style scoped>
 @media only screen and (max-width: 600px) {

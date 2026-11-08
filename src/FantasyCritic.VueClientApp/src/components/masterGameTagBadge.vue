@@ -22,12 +22,14 @@
     </template>
   </span>
 </template>
-<script>
-import { useId } from 'vue';
 
+<script lang="ts">
+import { defineComponent, useId } from 'vue';
+
+import { MasterGameTagViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
-export default {
+export default defineComponent({
   setup() {
     return { popoverID: `mg-popover-${useId()}` };
   },
@@ -37,17 +39,17 @@ export default {
     noPopover: { type: Boolean }
   },
   computed: {
-    tag() {
+    tag(): MasterGameTagViewModel {
       const interLeagueStore = useInterLeagueStore();
-      return interLeagueStore.allTags.find((x) => x.name === this.tagName);
+      return interLeagueStore.allTags.find((x) => x.name === this.tagName)!;
     },
-    badgeColor() {
+    badgeColor(): { backgroundColor: string } {
       return {
         backgroundColor: '#' + this.tag.badgeColor
       };
     }
   }
-};
+});
 </script>
 <style>
 .popover-header {
