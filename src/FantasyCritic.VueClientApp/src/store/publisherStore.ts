@@ -69,6 +69,7 @@ export const usePublisherStore = defineStore('publisher', {
         slotStates: this.desiredPositions as ReorderPublisherGamesRequest['slotStates']
       };
 
+      this.moveGameError = '';
       try {
         await leagueClient.reorderPublisherGames(request);
       } catch (error) {
@@ -94,6 +95,7 @@ export const usePublisherStore = defineStore('publisher', {
       this.desiredPositions = {};
       this.heldSlot = null;
       this.editableGameSlots = [];
+      this.moveGameError = '';
     },
     enterMoveMode() {
       this.moveMode = true;
