@@ -15,30 +15,38 @@
   </multiselect>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import Multiselect from 'vue-multiselect';
 
+import { MasterGameTagViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { deepClone } from '@/utilities/deepClone';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+interface MasterGameTagSelectorData {
+  internalValue: MasterGameTagViewModel[];
+}
+
+export default defineComponent({
   components: {
     Multiselect,
     MasterGameTagBadge
   },
   props: {
-    modelValue: { type: Array, default: null },
+    modelValue: { type: Array as PropType<MasterGameTagViewModel[]>, default: null },
     includeSystem: { type: Boolean }
   },
-  emits: ['update:modelValue'],
-  data() {
+  emits: {
+    'update:modelValue': (_value: MasterGameTagViewModel[]) => true
+  },
+  data(): MasterGameTagSelectorData {
     return {
       internalValue: []
     };
   },
   computed: {
-    tagOptions() {
+    tagOptions(): MasterGameTagViewModel[] {
       const interLeagueStore = useInterLeagueStore();
       if (this.includeSystem) {
         return interLeagueStore.allTags;
@@ -62,7 +70,7 @@ export default {
       this.internalValue = deepClone(this.modelValue);
     }
   }
-};
+});
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

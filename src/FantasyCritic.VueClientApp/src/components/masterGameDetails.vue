@@ -71,20 +71,22 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
 import { DateTime } from 'luxon';
 
+import { MasterGameViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { formatScore } from '@/utilities/formatters';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+export default defineComponent({
   components: {
     MasterGameTagBadge
   },
   props: {
-    masterGame: { type: Object, required: true },
+    masterGame: { type: Object as PropType<MasterGameViewModel>, required: true },
     hideNotes: { type: Boolean, default: false }
   },
   computed: {
@@ -92,17 +94,17 @@ export default {
   },
   methods: {
     formatScore,
-    formatDate(releaseDate) {
+    formatDate(releaseDate: string) {
       if (releaseDate === '9999-12-31') {
         return 'No Maximum Release Date';
       }
       return DateTime.fromISO(releaseDate).toFormat('MMMM dd, yyyy');
     },
-    openCriticLink(game) {
+    openCriticLink(game: MasterGameViewModel) {
       return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
     }
   }
-};
+});
 </script>
 <style scoped>
 .detail-label {

@@ -125,31 +125,33 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
 
+import { LeagueDraftViewModel, LeagueViewModel, LeagueYearSettingsViewModel, SupportedYearViewModel } from '@/api/clients';
 import { formatLongDate } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { formatScore, formatYesNo, selectTextFromPossibleOptions } from '@/utilities/formatters';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+export default defineComponent({
   components: {
     MasterGameTagBadge
   },
   props: {
-    leagueYearOptions: { type: Object, required: true },
-    league: { type: Object, required: false },
-    drafts: { type: Array, required: false, default: () => [] },
-    supportedYear: { type: Object, required: true },
+    leagueYearOptions: { type: Object as PropType<LeagueYearSettingsViewModel>, required: true },
+    league: { type: Object as PropType<LeagueViewModel>, required: false },
+    drafts: { type: Array as PropType<LeagueDraftViewModel[]>, required: false, default: () => [] },
+    supportedYear: { type: Object as PropType<SupportedYearViewModel>, required: true },
     superDropPointCutoff: { type: Number, required: false }
   },
   computed: {
     ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
-    isSingleDraft() {
+    isSingleDraft(): boolean {
       return this.drafts.length > 0 && this.drafts.length < 2;
     },
-    firstDraft() {
+    firstDraft(): LeagueDraftViewModel {
       return this.drafts[0];
     }
   },
@@ -159,8 +161,9 @@ export default {
     formatYesNo,
     selectTextFromPossibleOptions
   }
-};
+});
 </script>
+
 <style scoped>
 .point-cutoff {
   margin-left: 5px;
