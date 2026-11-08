@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { mount } from '@vue/test-utils';
+import { mount, type VueWrapper } from '@vue/test-utils';
 import DateInput from '@/components/dateInput.vue';
 
-function inputValue(wrapper) {
+function inputValue(wrapper: VueWrapper) {
   return (wrapper.element as HTMLInputElement).value;
 }
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { defineComponent } from 'vue';
-import { flushPromises, mount } from '@vue/test-utils';
+import { flushPromises, mount, type VueWrapper } from '@vue/test-utils';
 import { ValidationField, ValidationForm } from '@/validation';
 
 const RequestForm = {
@@ -29,7 +29,7 @@ async function mountRequestForm() {
   return wrapper;
 }
 
-async function typeInto(wrapper, selector: string, value: string) {
+async function typeInto(wrapper: VueWrapper, selector: string, value: string) {
   await wrapper.find(selector).setValue(value);
   await flushPromises();
 }

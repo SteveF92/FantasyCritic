@@ -1,5 +1,5 @@
 import { DateTime } from 'luxon';
-import type { LeagueDraftViewModel, PublisherGameViewModel } from '@/api/clients';
+import type { LeagueDraftViewModel, MasterGameViewModel, MasterGameYearViewModel, PublisherGameViewModel } from '@/api/clients';
 
 export function publisherIconIsValid(publisherIcon: string): boolean {
   if (!publisherIcon) {
@@ -24,7 +24,7 @@ export function ordinal_suffix_of(i: number): string {
   return i + 'th';
 }
 
-export function formatPublisherGameReleaseDate(publisherGame, shorten: boolean): string {
+export function formatPublisherGameReleaseDate(publisherGame: PublisherGameViewModel, shorten: boolean): string {
   if (!publisherGame.masterGame) {
     return 'Unknown';
   }
@@ -32,7 +32,7 @@ export function formatPublisherGameReleaseDate(publisherGame, shorten: boolean):
   return formatMasterGameReleaseDate(publisherGame.masterGame, shorten);
 }
 
-export function formatMasterGameReleaseDate(masterGame, shorten: boolean): string {
+export function formatMasterGameReleaseDate(masterGame: MasterGameViewModel | MasterGameYearViewModel, shorten: boolean): string {
   if (masterGame.releaseDate) {
     if (shorten) {
       return DateTime.fromISO(masterGame.releaseDate).toFormat('MMM dd, yyyy');
@@ -69,7 +69,7 @@ export function formatPublisherGameAcquiredDate(publisherGame: PublisherGameView
   return type + ' on ' + date;
 }
 
-export function formatPublisherGameRemovedDate(publisherGame): string {
+export function formatPublisherGameRemovedDate(publisherGame: PublisherGameViewModel): string {
   if (!publisherGame.removedTimestamp) {
     return '';
   }

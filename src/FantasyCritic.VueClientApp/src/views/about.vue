@@ -218,7 +218,7 @@ export default {
   },
   data() {
     return {
-      donors: [],
+      donors: [] as string[],
       error: null
     };
   },
