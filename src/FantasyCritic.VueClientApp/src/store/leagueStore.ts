@@ -5,12 +5,32 @@ import { usePublisherStore } from './publisherStore';
 import { makeToast } from '@/utilities/toast';
 
 import axios from 'axios';
+import { LeagueYearViewModel, PublisherViewModel } from '@/api/clients';
+
+export interface LeaguePageParams {
+  leagueID: string;
+  year: number;
+  inviteCode?: string;
+}
+
+interface LeagueStoreState {
+  hasError: boolean;
+  forbidden: boolean;
+  inviteCode?: string;
+  leagueYear: LeagueYearViewModel | null;
+  userPublisher: PublisherViewModel | null;
+  leagueActions: null;
+  leagueActionSets: null;
+  historicalTrades: null;
+  showProjections: boolean;
+  draftOrderView: boolean;
+}
 
 export const useLeagueStore = defineStore('league', {
-  state: () => ({
+  state: (): LeagueStoreState => ({
     hasError: false,
     forbidden: false,
-    inviteCode: false,
+    inviteCode: undefined,
     leagueYear: null,
     userPublisher: null,
     leagueActions: null,
@@ -92,10 +112,10 @@ export const useLeagueStore = defineStore('league', {
       return this.activeDraft !== null;
     },
     biddingAllowed(): boolean {
-      return this.firstDraftFinished && !this.activeDraft && this.leagueYear.enableBids;
+      return (this.firstDraftFinished && !this.activeDraft && this.leagueYear?.enableBids) ?? false;
     },
     counterPickBiddingAllowed(): boolean {
-      if (!this.biddingAllowed) {
+      if (!this.biddingAllowed || !this.leagueYear) {
         return false;
       }
 
@@ -110,20 +130,20 @@ export const useLeagueStore = defineStore('league', {
       return publicBiddingGames.anyHiddenCounterPickBids;
     },
     tradesAllowed(): boolean {
-      return this.firstDraftFinished && !this.activeDraft && this.leagueYear.settings.tradingSystem !== 'NoTrades';
+      return this.firstDraftFinished && !this.activeDraft && this.leagueYear?.settings.tradingSystem !== 'NoTrades';
     },
     dropsAllowed(): boolean {
       return this.firstDraftFinished && !this.activeDraft && !this.oneShotMode;
     },
     postDraftPlayable(): boolean {
-      return this.firstDraftFinished && !this.leagueYear.supportedYear.finished;
+      return this.firstDraftFinished && !this.leagueYear?.supportedYear.finished;
     },
     postDraftEditable(): boolean {
-      return this.firstDraftFinished && (!this.leagueYear.supportedYear.finished || this.leagueYear.underReview);
+      return this.firstDraftFinished && (!this.leagueYear?.supportedYear.finished || this.leagueYear.underReview);
     }
   },
   actions: {
-    async initializeLeaguePage(leaguePageParams) {
+    async initializeLeaguePage(leaguePageParams: LeaguePageParams) {
       const draftOrderView = localStorage.getItem('draftOrderView');
       const showProjections = localStorage.getItem('showProjections');
       this.setDraftOrderView(draftOrderView === 'true');
@@ -134,7 +154,7 @@ export const useLeagueStore = defineStore('league', {
       this.inviteCode = leaguePageParams.inviteCode;
       await this.fetchLeagueYear(leaguePageParams);
     },
-    async initializeHistoryPage(leaguePageParams) {
+    async initializeHistoryPage(leaguePageParams: LeaguePageParams) {
       const publisherStore = usePublisherStore();
       publisherStore.clearPublisherStoreData();
       this.clearLeagueStoreData();
@@ -142,6 +162,9 @@ export const useLeagueStore = defineStore('league', {
       await fetchHistoryData(this);
     },
     async refreshLeagueYear() {
+      if (!this.leagueYear) {
+        throw new Error('League store is not initialized');
+      }
       const leaguePageParams = {
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
@@ -149,13 +172,13 @@ export const useLeagueStore = defineStore('league', {
       };
       await this.fetchLeagueYear(leaguePageParams);
     },
-    async notifyAction(message) {
+    async notifyAction(message: string) {
       await this.refreshLeagueYear();
       if (message) {
         makeToast(message);
       }
     },
-    async fetchLeagueYear(leaguePageParams) {
+    async fetchLeagueYear(leaguePageParams: LeaguePageParams) {
       let queryURL = '/api/League/GetLeagueYear?leagueID=' + leaguePageParams.leagueID + '&year=' + leaguePageParams.year;
       if (leaguePageParams.inviteCode) {
         queryURL += '&inviteCode=' + leaguePageParams.inviteCode;
@@ -165,7 +188,7 @@ export const useLeagueStore = defineStore('league', {
         const response = await axios.get(queryURL);
         const leagueYearPayload = {
           leagueYear: response.data,
-          userID: undefined
+          userID: undefined as unknown as string
         };
 
         const authStore = useAuthStore();
@@ -180,8 +203,8 @@ export const useLeagueStore = defineStore('league', {
     },
     clearLeagueStoreData() {
       this.hasError = false;
-      this.forbidden = null;
-      this.inviteCode = null;
+      this.forbidden = false;
+      this.inviteCode = undefined;
       this.leagueYear = null;
       this.userPublisher = null;
 
@@ -189,11 +212,11 @@ export const useLeagueStore = defineStore('league', {
       this.leagueActionSets = null;
       this.historicalTrades = null;
     },
-    setShowProjections(showProjections) {
+    setShowProjections(showProjections: boolean) {
       this.showProjections = showProjections;
       localStorage.setItem('showProjections', showProjections.toString());
     },
-    setDraftOrderView(draftOrderView) {
+    setDraftOrderView(draftOrderView: boolean) {
       this.draftOrderView = draftOrderView;
       localStorage.setItem('draftOrderView', draftOrderView.toString());
     }
