@@ -1,7 +1,8 @@
 import { defineStore } from 'pinia';
 import { useAuthStore } from '@/store/authStore';
 import { deepClone } from '@/utilities/deepClone';
-import { ApiException, leagueClient, LeagueYearViewModel, PublisherSlotViewModel, PublisherViewModel, ReorderPublisherGamesRequest } from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
+import { leagueClient, LeagueYearViewModel, PublisherSlotViewModel, PublisherViewModel, ReorderPublisherGamesRequest } from '@/api/clients';
 
 interface PublisherStoreState {
   publisher: PublisherViewModel | null;
@@ -71,8 +72,8 @@ export const usePublisherStore = defineStore('publisher', {
       try {
         await leagueClient.reorderPublisherGames(request);
       } catch (error) {
-        this.moveGameError = ApiException.isApiException(error) ? error.response : String(error);
         this.cancelMoveMode();
+        this.moveGameError = getApiErrorMessage(error);
       }
 
       this._completeMoveMode();

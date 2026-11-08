@@ -188,6 +188,10 @@ The helper:
 
 Callers that had their own fallback text pass it as `fallback`.
 
+The stores were already TypeScript. One store shows a message, and it uses the helper:
+`publisherStore.confirmPositions` sets `moveGameError`. The other stores' catches branch on status (auth
+on 401, league on 401/403) or set a flag, and stay as they are.
+
 ### 3. Shared leaves: master game display
 
 `masterGameTagBadge` → `masterGameSummary` → `masterGamePopover`. Used on 25, 16 and 15 pages.
@@ -306,3 +310,5 @@ has the bug too.
 |---|---|---|---|---|
 | — | `views/masterGameRequest.vue` `sendMasterGameRequestRequest` | Reads `error.response.data` on an `ApiException`, whose `response` is a string, so `errorInfo` is `undefined` and a failed request shows no error | Yes | Step 7 |
 | 1 | `components/royalePublisherGraph.vue` | Passes `chart-id` to vue-chartjs 5's `Line`, which has no `chartId` prop, so it falls through as a `chart-id` attribute instead of setting the canvas id (found with `checkUnknownProps` on). TypeScript reports only the first excess property, so check `height` and `styles` too | Yes | Step 9 |
+| 2 | `store/publisherStore.ts` `confirmPositions` | Now uses `getApiErrorMessage`. Changes: a 403 or 404 shows "Something went wrong." where it showed nothing (empty body); a 500 shows that instead of the error page's text; a network failure is rethrown after leaving move mode, where it showed "TypeError: Failed to fetch" | — | Done |
+| 2 | `store/publisherStore.ts` | `moveGameError` is never cleared, not by a later successful move and not by `clearPublisherStoreData`, so after one failed move the error stays up, even on another publisher's page | Yes | Step 11 |
