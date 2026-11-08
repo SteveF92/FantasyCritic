@@ -5,8 +5,9 @@
 <script lang="ts">
 import { defineComponent, markRaw, type PropType } from 'vue';
 import type { Chart, ChartOptions } from 'chart.js';
+import type { AnnotationOptions } from 'chartjs-plugin-annotation';
 import { Line as LineChartGenerator } from 'vue-chartjs';
-import { RoyalePublisher } from '@/models/royale/RoyalePublisher.ts';
+import type { RoyalePublisher } from '@/models/royale/RoyalePublisher.ts';
 
 const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
 
@@ -40,11 +41,11 @@ export default defineComponent({
       }
       return [...set].sort();
     },
-    showChart() {
+    showChart(): boolean {
       return this.royalePublishers.length > 0 && this.chartLabels.length > 0;
     },
     shownPublishers(): RoyalePublisher[] {
-      const pubs: RoyalePublisher[] = this.royalePublishers;
+      const pubs = this.royalePublishers;
       if (!pubs.length) {
         return [];
       }
@@ -54,7 +55,7 @@ export default defineComponent({
       }
       return pubs.filter((_, i) => mask[i]);
     },
-    releaseAnnotations() {
+    releaseAnnotations(): Record<string, AnnotationOptions<'line'>> {
       if (!this.showChart) {
         return {};
       }
@@ -64,10 +65,9 @@ export default defineComponent({
       type GamesByDate = Record<string, Record<string, string[]>>;
 
       const byDate: GamesByDate = {};
-      const shownPublishers: RoyalePublisher[] = this.shownPublishers;
-      const royalePublishers: RoyalePublisher[] = this.royalePublishers;
+      const shownPublishers = this.shownPublishers;
 
-      for (const member of royalePublishers) {
+      for (const member of this.royalePublishers) {
         if (!shownPublishers.some((x) => x.publisherID === member.publisherID)) {
           continue;
         }
@@ -91,11 +91,12 @@ export default defineComponent({
       }
 
       const labelBorder = 'rgba(214, 153, 58, 0.5)';
-      const annotations = {};
+      const annotations: Record<string, AnnotationOptions<'line'>> = {};
       const borderColor = this.releaseLineBorderColor;
       for (const [date, games] of Object.entries(byDate)) {
-        const content = this.formatReleaseAnnotationLabel(date, games);
+        const content = formatReleaseAnnotationLabel(date, games, this.isMultiPublisher);
         annotations[date] = {
+          type: 'line',
           scaleID: 'x',
           value: date,
           borderColor,
@@ -193,7 +194,7 @@ export default defineComponent({
           borderWidth: 2,
           stepped: true,
           pointRadius: 0,
-          data: this.alignPublisherStatsToLabels(member, labels)
+          data: alignPublisherStatsToLabels(member, labels)
         };
       });
       return markRaw({ labels, datasets });
@@ -226,59 +227,61 @@ export default defineComponent({
         next.push(chart.isDatasetVisible(i));
       }
       this.legendDatasetVisible = next;
-    },
-    formatReleaseAnnotationLabel(date: string, games: Record<string, string[]>): string[] {
-      const lines: string[] = [];
-
-      for (const [gameName, publisherNames] of Object.entries(games)) {
-        if (!this.isMultiPublisher) {
-          lines.push(gameName);
-          continue;
-        }
-
-        const unique = [...new Set(publisherNames)].sort((a, b) => a.localeCompare(b));
-        const n = unique.length;
-
-        if (n === 0) {
-          lines.push(gameName);
-          continue;
-        }
-
-        if (n === 1) {
-          lines.push(`${gameName} — ${unique[0]}`);
-          continue;
-        }
-
-        const listStr = unique.join(', ');
-        const full = `${gameName} — ${listStr}`;
-        const maxLen = 72;
-
-        if (full.length <= maxLen && n <= 5) {
-          lines.push(full);
-        } else {
-          lines.push(`${gameName} (${n} publishers)`);
-        }
-      }
-
-      return [date, ...lines];
-    },
-    alignPublisherStatsToLabels(member: RoyalePublisher, labels: string[]): number[] {
-      const sorted = [...(member.statistics || [])]
-        .map((s) => ({
-          date: s.date,
-          fantasyPoints: Number(s.fantasyPoints)
-        }))
-        .sort((a, b) => a.date.localeCompare(b.date));
-      let j = 0;
-      let last: number = null;
-      return labels.map((label) => {
-        while (j < sorted.length && sorted[j].date <= label) {
-          last = sorted[j].fantasyPoints;
-          j++;
-        }
-        return last;
-      });
     }
   }
 });
+
+function formatReleaseAnnotationLabel(date: string, games: Record<string, string[]>, isMultiPublisher: boolean): string[] {
+  const lines: string[] = [];
+
+  for (const [gameName, publisherNames] of Object.entries(games)) {
+    if (!isMultiPublisher) {
+      lines.push(gameName);
+      continue;
+    }
+
+    const unique = [...new Set(publisherNames)].sort((a, b) => a.localeCompare(b));
+    const n = unique.length;
+
+    if (n === 0) {
+      lines.push(gameName);
+      continue;
+    }
+
+    if (n === 1) {
+      lines.push(`${gameName} — ${unique[0]}`);
+      continue;
+    }
+
+    const listStr = unique.join(', ');
+    const full = `${gameName} — ${listStr}`;
+    const maxLen = 72;
+
+    if (full.length <= maxLen && n <= 5) {
+      lines.push(full);
+    } else {
+      lines.push(`${gameName} (${n} publishers)`);
+    }
+  }
+
+  return [date, ...lines];
+}
+
+function alignPublisherStatsToLabels(member: RoyalePublisher, labels: string[]): (number | null)[] {
+  const sorted = [...(member.statistics || [])]
+    .map((s) => ({
+      date: s.date,
+      fantasyPoints: Number(s.fantasyPoints)
+    }))
+    .sort((a, b) => a.date.localeCompare(b.date));
+  let j = 0;
+  let last: number | null = null;
+  return labels.map((label) => {
+    while (j < sorted.length && sorted[j].date <= label) {
+      last = sorted[j].fantasyPoints;
+      j++;
+    }
+    return last;
+  });
+}
 </script>
