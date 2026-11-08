@@ -1,11 +1,9 @@
 import { defineStore } from 'pinia';
 import { DateTime } from 'luxon';
-import { useAuthStore } from './authStore';
-import { usePublisherStore } from './publisherStore';
+import { useAuthStore } from '@/store/authStore';
+import { usePublisherStore } from '@/store/publisherStore';
 import { makeToast } from '@/utilities/toast';
-
-import axios from 'axios';
-import { LeagueYearViewModel, PublisherViewModel } from '@/api/clients';
+import { ApiException, LeagueActionProcessingSetViewModel, LeagueActionViewModel, leagueClient, LeagueYearViewModel, TradeViewModel } from '@/api/clients';
 
 export interface LeaguePageParams {
   leagueID: string;
@@ -18,10 +16,9 @@ interface LeagueStoreState {
   forbidden: boolean;
   inviteCode?: string;
   leagueYear: LeagueYearViewModel | null;
-  userPublisher: PublisherViewModel | null;
-  leagueActions: null;
-  leagueActionSets: null;
-  historicalTrades: null;
+  leagueActions: LeagueActionViewModel[] | null;
+  leagueActionSets: LeagueActionProcessingSetViewModel[] | null;
+  historicalTrades: TradeViewModel[] | null;
   showProjections: boolean;
   draftOrderView: boolean;
 }
@@ -32,7 +29,6 @@ export const useLeagueStore = defineStore('league', {
     forbidden: false,
     inviteCode: undefined,
     leagueYear: null,
-    userPublisher: null,
     leagueActions: null,
     leagueActionSets: null,
     historicalTrades: null,
@@ -59,6 +55,15 @@ export const useLeagueStore = defineStore('league', {
     currentDrops: (state) => state.leagueYear?.privatePublisherData?.myActiveDrops ?? [],
     queuedGames: (state) => state.leagueYear?.privatePublisherData?.queuedGames ?? [],
     gameNews: (state) => state.leagueYear?.gameNews ?? [],
+    userPublisher(state) {
+      const authStore = useAuthStore();
+      if (!authStore.userInfo) {
+        return null;
+      }
+
+      const userID = authStore.userInfo.userID;
+      return state.leagueYear?.publishers.find((x) => x.userID === userID) ?? null;
+    },
     userIsNextInDraft(): boolean {
       if (this.nextPublisherUp && this.userPublisher) {
         return this.nextPublisherUp.publisherID === this.userPublisher.publisherID;
@@ -159,18 +164,18 @@ export const useLeagueStore = defineStore('league', {
       publisherStore.clearPublisherStoreData();
       this.clearLeagueStoreData();
       await this.fetchLeagueYear(leaguePageParams);
-      await fetchHistoryData(this);
+      await Promise.all([this.fetchLeagueActions(leaguePageParams), this.fetchLeagueActionSets(leaguePageParams), this.fetchHistoricalTrades(leaguePageParams)]);
     },
     async refreshLeagueYear() {
       if (!this.leagueYear) {
         throw new Error('League store is not initialized');
       }
-      const leaguePageParams = {
+
+      await this.fetchLeagueYear({
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         inviteCode: this.inviteCode
-      };
-      await this.fetchLeagueYear(leaguePageParams);
+      });
     },
     async notifyAction(message: string) {
       await this.refreshLeagueYear();
@@ -179,26 +184,40 @@ export const useLeagueStore = defineStore('league', {
       }
     },
     async fetchLeagueYear(leaguePageParams: LeaguePageParams) {
-      let queryURL = '/api/League/GetLeagueYear?leagueID=' + leaguePageParams.leagueID + '&year=' + leaguePageParams.year;
-      if (leaguePageParams.inviteCode) {
-        queryURL += '&inviteCode=' + leaguePageParams.inviteCode;
-      }
-
       try {
-        const response = await axios.get(queryURL);
-        const leagueYearPayload = {
-          leagueYear: response.data,
-          userID: undefined as unknown as string
-        };
-
-        const authStore = useAuthStore();
-        if (authStore.userInfo) {
-          leagueYearPayload.userID = authStore.userInfo.userID;
-        }
-
-        setLeagueYear(this, leagueYearPayload);
-      } catch (err) {
-        setError(this, err.response);
+        const leagueYear = await leagueClient.getLeagueYear(leaguePageParams.leagueID, leaguePageParams.year, leaguePageParams.inviteCode);
+        this.leagueYear = leagueYear;
+        document.title = leagueYear.league.leagueName + ' - Fantasy Critic';
+      } catch (error) {
+        this.setError(error);
+      }
+    },
+    async fetchLeagueActions(leaguePageParams: LeaguePageParams) {
+      try {
+        this.leagueActions = await leagueClient.getLeagueActions(leaguePageParams.leagueID, leaguePageParams.year);
+      } catch (error) {
+        this.setError(error);
+      }
+    },
+    async fetchLeagueActionSets(leaguePageParams: LeaguePageParams) {
+      try {
+        this.leagueActionSets = await leagueClient.getLeagueActionSets(leaguePageParams.leagueID, leaguePageParams.year);
+      } catch (error) {
+        this.setError(error);
+      }
+    },
+    async fetchHistoricalTrades(leaguePageParams: LeaguePageParams) {
+      try {
+        this.historicalTrades = await leagueClient.tradeHistory(leaguePageParams.leagueID, leaguePageParams.year);
+      } catch (error) {
+        this.setError(error);
+      }
+    },
+    setError(error: unknown) {
+      if (ApiException.isApiException(error) && (error.status === 401 || error.status === 403)) {
+        this.forbidden = true;
+      } else {
+        this.hasError = true;
       }
     },
     clearLeagueStoreData() {
@@ -206,8 +225,6 @@ export const useLeagueStore = defineStore('league', {
       this.forbidden = false;
       this.inviteCode = undefined;
       this.leagueYear = null;
-      this.userPublisher = null;
-
       this.leagueActions = null;
       this.leagueActionSets = null;
       this.historicalTrades = null;
@@ -222,54 +239,3 @@ export const useLeagueStore = defineStore('league', {
     }
   }
 });
-
-function fetchHistoryData(store) {
-  return Promise.all([fetchLeagueActions(store), fetchLeagueActionSets(store), fetchHistoricalTrades(store)]);
-}
-
-function fetchLeagueActions(store) {
-  const queryURL = '/api/League/GetLeagueActions?leagueID=' + store.leagueYear.leagueID + '&year=' + store.leagueYear.year;
-  return axios
-    .get(queryURL)
-    .then((response) => {
-      store.leagueActions = response.data;
-    })
-    .catch((err) => setError(store, err.response));
-}
-
-function fetchLeagueActionSets(store) {
-  const queryURL = '/api/League/GetLeagueActionSets?leagueID=' + store.leagueYear.leagueID + '&year=' + store.leagueYear.year;
-  return axios
-    .get(queryURL)
-    .then((response) => {
-      store.leagueActionSets = response.data;
-    })
-    .catch((err) => setError(store, err.response));
-}
-
-function fetchHistoricalTrades(store) {
-  const queryURL = '/api/League/TradeHistory?leagueID=' + store.leagueYear.leagueID + '&year=' + store.leagueYear.year;
-  return axios
-    .get(queryURL)
-    .then((response) => {
-      store.historicalTrades = response.data;
-    })
-    .catch((err) => setError(store, err.response));
-}
-
-function setError(store, response) {
-  if (response.status === 401 || response.status === 403) {
-    store.forbidden = true;
-  } else {
-    store.hasError = true;
-  }
-}
-
-function setLeagueYear(store, leagueYearPayload) {
-  store.leagueYear = leagueYearPayload.leagueYear;
-  document.title = leagueYearPayload.leagueYear.league.leagueName + ' - Fantasy Critic';
-
-  if (leagueYearPayload.userID) {
-    store.userPublisher = leagueYearPayload.leagueYear.publishers.find((x) => x.userID === leagueYearPayload.userID);
-  }
-}

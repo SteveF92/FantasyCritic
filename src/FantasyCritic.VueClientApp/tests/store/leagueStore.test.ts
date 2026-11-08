@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { createPinia, setActivePinia } from 'pinia';
+import type { LeagueYearViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
 
 function finishedDraft(draftNumber: number) {
@@ -39,7 +40,7 @@ function leagueYear(overrides = {}) {
 
 function storeWith(overrides = {}) {
   const store = useLeagueStore();
-  store.leagueYear = leagueYear(overrides);
+  store.leagueYear = leagueYear(overrides) as unknown as LeagueYearViewModel;
   return store;
 }
 
