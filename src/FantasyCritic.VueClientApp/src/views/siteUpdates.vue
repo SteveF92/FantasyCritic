@@ -11,9 +11,8 @@
 
 <script lang="ts">
 import { defineComponent } from 'vue';
-import axios from 'axios';
 
-import type { SiteAnnouncement } from '@/models/SiteAnnouncement';
+import { generalClient, SiteAnnouncementViewModel } from '@/api/clients';
 import SiteAnnouncementsWidget from '@/components/siteAnnouncementsWidget.vue';
 
 export default defineComponent({
@@ -22,13 +21,12 @@ export default defineComponent({
   },
   data() {
     return {
-      siteAnnouncements: [] as SiteAnnouncement[]
+      siteAnnouncements: [] as SiteAnnouncementViewModel[]
     };
   },
   async created() {
     try {
-      const { data } = await axios.get<SiteAnnouncement[]>('/api/general/siteannouncements');
-      this.siteAnnouncements = data;
+      this.siteAnnouncements = await generalClient.siteAnnouncements();
     } catch {
       this.siteAnnouncements = [];
     }

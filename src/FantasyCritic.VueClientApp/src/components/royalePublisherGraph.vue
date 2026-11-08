@@ -8,7 +8,7 @@ import type { Chart, ChartOptions } from 'chart.js';
 import type { AnnotationOptions } from 'chartjs-plugin-annotation';
 import { Line as LineChartGenerator } from 'vue-chartjs';
 
-import type { RoyalePublisher } from '@/models/royale/RoyalePublisher.ts';
+import { RoyalePublisherViewModel } from '@/api/clients';
 
 const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
 
@@ -19,7 +19,7 @@ export default defineComponent({
 
   props: {
     chartId: { type: String, required: true },
-    royalePublishers: { type: Array as PropType<RoyalePublisher[]>, required: true },
+    royalePublishers: { type: Array as PropType<RoyalePublisherViewModel[]>, required: true },
     chartHeight: { type: Number, required: true }
   },
   data() {
@@ -45,7 +45,7 @@ export default defineComponent({
     showChart(): boolean {
       return this.royalePublishers.length > 0 && this.chartLabels.length > 0;
     },
-    shownPublishers(): RoyalePublisher[] {
+    shownPublishers(): RoyalePublisherViewModel[] {
       const pubs = this.royalePublishers;
       if (!pubs.length) {
         return [];
@@ -268,7 +268,7 @@ function formatReleaseAnnotationLabel(date: string, games: Record<string, string
   return [date, ...lines];
 }
 
-function alignPublisherStatsToLabels(member: RoyalePublisher, labels: string[]): (number | null)[] {
+function alignPublisherStatsToLabels(member: RoyalePublisherViewModel, labels: string[]): (number | null)[] {
   const sorted = [...(member.statistics || [])]
     .map((s) => ({
       date: s.date,

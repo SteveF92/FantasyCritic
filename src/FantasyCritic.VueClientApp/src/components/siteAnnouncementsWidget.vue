@@ -20,7 +20,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { DateTime } from 'luxon';
 
-import type { SiteAnnouncement } from '@/models/SiteAnnouncement';
+import { SiteAnnouncementViewModel } from '@/api/clients';
 
 const DISPLAY_ZONE = 'America/New_York';
 
@@ -28,7 +28,7 @@ export default defineComponent({
   name: 'SiteAnnouncementsWidget',
   props: {
     announcements: {
-      type: Array as PropType<SiteAnnouncement[]>,
+      type: Array as PropType<SiteAnnouncementViewModel[]>,
       required: true
     },
     showHeading: {
