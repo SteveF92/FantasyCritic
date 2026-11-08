@@ -99,17 +99,20 @@
     </b-collapse>
   </b-navbar>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 
 import { useAuthStore } from '@/store/authStore';
 
-export default {
+export default defineComponent({
   computed: {
     ...mapState(useAuthStore, ['isPlusUser', 'userInfoLoaded', 'isAuth', 'userInfo'])
   }
-};
+});
 </script>
+
 <style scoped>
 .main-nav {
   padding-top: 0;

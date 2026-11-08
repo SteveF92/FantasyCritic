@@ -262,6 +262,10 @@ img.critic-royale-nav {
   margin-bottom: 10px;
 }
 
+.toast-body {
+  flex-grow: 1;
+}
+
 .toast-flex {
   display: flex;
   justify-content: space-between;
@@ -280,4 +284,11 @@ img.critic-royale-nav {
 /* Font Awesome 7 made every icon 1.25em wide; keep the Font Awesome 6 auto width unless fixed width is asked for. */
 .svg-inline--fa:not(.fa-fw):not(.fa-width-fixed) {
   --fa-width: auto;
+}
+
+.font-awesome-button {
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
 }

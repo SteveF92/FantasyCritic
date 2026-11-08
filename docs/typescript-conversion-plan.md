@@ -84,6 +84,13 @@ export default defineComponent({
   Prefix the validator's parameters with `_`. ESLint ignores `_` arguments in `.vue` files for this.
 - **Fallthrough attributes** (`alt` on `BImg`, `title` on a component that doesn't declare it) are
   fine. vue-tsc's `checkUnknownProps` is off because it would flag them.
+- **Clickable icons:** `font-awesome-icon` doesn't declare `onClick`, so `@click` on one is a type error.
+  Put the icon in `<button type="button" class="font-awesome-button" aria-label="...">` and move `@click`,
+  `:disabled`, `title` and `v-b-popover` to the button, as in `components/toastHost.vue`. The aria-label is
+  needed because the button has no text. Still to do: `leagueTable.vue`, `recentJobsTable.vue` and
+  `modals/conference/assignPlayers.vue`.
+- **Handlers with optional parameters:** call them, as in `@click="hide()"`. `@click="hide"` passes the
+  `MouseEvent` as the first argument, and type-check rejects it on a native element.
 - **`$refs`:** cast with `this.$refs.x as InstanceType<typeof Child> | undefined`.
 - **Requests:** build the generated request type (a typed object literal), not an untyped object.
 - **Errors:** `getApiErrorMessage(error)` from step 2, never `error.response.data`.
@@ -319,3 +326,6 @@ has the bug too.
 | 2 | `store/publisherStore.ts` | `moveGameError` is never cleared, not by a later successful move and not by `clearPublisherStoreData`, so after one failed move the error stays up, even on another publisher's page | Yes | Done: cleared when a move is confirmed and in `clearPublisherStoreData`; `tests/store/publisherStore.test.ts` |
 | 4 | `components/leagueActions.vue` | Passes `:possible-league-options` to `leagueOptionsModal`, which has no such prop and reads the options from the store, so the value falls through as an attribute. `checkUnknownProps` is off, so type-check won't flag it. It's the only use of the `possibleLeagueOptions` `mapState` entry, so remove both | Yes | Step 13d |
 | 4 | `views/masterGameCreator.vue` | Passes `supportedYears.find(...)` to `leagueOptionsModal`'s required `supportedYear`. `find` can return `undefined`, and the modal reads `supportedYear.year`. Type-check should flag it once the page is converted; decide then what happens if no year matches | Yes | Step 15 |
+| 5 | `components/toastHost.vue` | The close icon is now a native button named "Close", so a keyboard can reach it. `hide` is now called with no arguments, where it was passed the `MouseEvent` as its trigger | — | Done |
+| 5 | `components/toastHost.vue` | Toasts had no fixed position on this branch, so they rendered in page flow just above the footer, off-screen on any long page. bootstrap-vue-next doesn't position a declarative `b-toast` the way BootstrapVue's default toaster did. Also, `.toast-body` didn't fill the toast, so the close button sat against the message | No | Done: pinned top right with `toast-container`; `.toast-body` grows |
+| 5 | `components/toastHost.vue` | Toasts never auto-hide on this branch. `visible` shows a `b-toast` without starting its countdown, which only runs when `modelValue` is a number, so a toast stayed until it was closed, even though `vue3-upgrade-plan.md` records auto-hide as checked | No | Done: `:model-value="5000" no-progress` in place of `visible`. Hovering pauses the countdown |

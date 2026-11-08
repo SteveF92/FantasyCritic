@@ -1,9 +1,10 @@
 import { defineStore } from 'pinia';
+import type { ColorVariant } from 'bootstrap-vue-next';
 
 interface Toast {
   id: number;
   message: string;
-  variant: string;
+  variant: ColorVariant;
 }
 
 interface ToastStoreState {
@@ -14,7 +15,7 @@ interface ToastStoreState {
 export const useToastStore = defineStore('toast', {
   state: (): ToastStoreState => ({ toasts: [] as Toast[], nextToastID: 0 }),
   actions: {
-    showToast(message: string, variant: string) {
+    showToast(message: string, variant: ColorVariant) {
       this.toasts.push({ id: this.nextToastID++, message, variant });
     },
     removeToast(id: number) {
