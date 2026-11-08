@@ -74,6 +74,11 @@ export default defineComponent({
   routes that parse their params pass numbers. Match what the route gives.
 - **Computed:** annotate every return type. The Options API needs it to type `this`.
 - **Data:** initial `null`s and empty arrays need a cast: `null as T | null`, `[] as T[]`.
+- **Constants:** a value goes in `setup()` if it never changes and doesn't depend on props or state,
+  such as a table's field list. Annotate it, because otherwise its type is only checked where it's used,
+  and that check misses typos. Return the value itself, not a function that returns it. A value returned
+  from `setup()` isn't reactive, so anything reassigned or mutated stays in `data()`, and anything derived
+  from props or the store stays in `computed`.
 - **Emits:** declare every event in the object form, with a typed validator that returns `true`. It's
   the only Options API form that types the payload, both for `$emit` and for the parent's handler.
   Prefix the validator's parameters with `_`. ESLint ignores `_` arguments in `.vue` files for this.
