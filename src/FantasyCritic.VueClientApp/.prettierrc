@@ -7,5 +7,7 @@
   "vueIndentScriptAndStyle": false,
   "endOfLine": "lf",
   "htmlWhitespaceSensitivity": "ignore",
-  "bracketSameLine": true
+  "bracketSameLine": true,
+  "plugins": ["@ianvs/prettier-plugin-sort-imports"],
+  "importOrder": ["^vue$", "^(vue-router|pinia)$", "<THIRD_PARTY_MODULES>", "", "^@/api/", "^@/(store|utilities|globalFunctions|models)", "^@/", "", "^[./]"]
 }
