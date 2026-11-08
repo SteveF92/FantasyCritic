@@ -113,17 +113,18 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import axios from 'axios';
+
+import { orderBy } from '@/globalFunctions';
+import { useAuthStore } from '@/store/authStore';
+import { formatCurrency } from '@/utilities/formatters';
+import { makeToast } from '@/utilities/toast';
+import CriticsRoyaleInfo from '@/components/criticsRoyaleInfo.vue';
 import CreateRoyalePublisherForm from '@/components/modals/createRoyalePublisherForm.vue';
 import RoyaleGroupsWidget from '@/components/royaleGroupsWidget.vue';
 import RoyalePodium from '@/components/royalePodium.vue';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
-import CriticsRoyaleInfo from '@/components/criticsRoyaleInfo.vue';
-import { orderBy } from '@/globalFunctions';
-import { formatCurrency } from '@/utilities/formatters';
-import { makeToast } from '@/utilities/toast';
-import { mapState } from 'pinia';
-import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {

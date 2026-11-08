@@ -79,11 +79,12 @@
 </template>
 
 <script>
-import { formatPublisherGameReleaseDate, formatPublisherGameAcquiredDate, formatPublisherGameRemovedDate, numericComparer } from '@/globalFunctions';
-import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 import { mapState } from 'pinia';
+
+import { formatPublisherGameAcquiredDate, formatPublisherGameReleaseDate, formatPublisherGameRemovedDate, numericComparer } from '@/globalFunctions';
 import { usePublisherStore } from '@/store/publisherStore';
 import { formatScore } from '@/utilities/formatters';
+import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 
 export default {
   components: {

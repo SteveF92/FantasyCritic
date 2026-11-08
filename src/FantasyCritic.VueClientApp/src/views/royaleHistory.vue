@@ -43,8 +43,9 @@
 
 <script>
 import axios from 'axios';
-import { formatScore } from '@/utilities/formatters';
+
 import { numericComparer } from '@/globalFunctions';
+import { formatScore } from '@/utilities/formatters';
 
 export default {
   props: {

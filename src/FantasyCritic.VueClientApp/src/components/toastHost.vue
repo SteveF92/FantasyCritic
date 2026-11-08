@@ -12,7 +12,8 @@
 </template>
 
 <script>
-import { mapState, mapActions } from 'pinia';
+import { mapActions, mapState } from 'pinia';
+
 import { useToastStore } from '@/store/toastStore';
 
 export default {

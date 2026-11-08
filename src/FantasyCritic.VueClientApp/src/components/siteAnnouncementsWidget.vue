@@ -17,8 +17,9 @@
 </template>
 
 <script lang="ts">
-import { DateTime } from 'luxon';
 import { defineComponent, type PropType } from 'vue';
+import { DateTime } from 'luxon';
+
 import type { SiteAnnouncement } from '@/models/SiteAnnouncement';
 
 const DISPLAY_ZONE = 'America/New_York';

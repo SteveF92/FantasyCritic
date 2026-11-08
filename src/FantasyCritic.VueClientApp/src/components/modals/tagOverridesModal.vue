@@ -22,9 +22,10 @@
 </template>
 
 <script>
-import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { mapState } from 'pinia';
+
 import { useLeagueStore } from '@/store/leagueStore';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

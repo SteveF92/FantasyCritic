@@ -58,11 +58,12 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
-import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
-import { mapState, mapActions } from 'pinia';
+
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatYesNo } from '@/utilities/formatters';
+import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 
 export default {
   components: {

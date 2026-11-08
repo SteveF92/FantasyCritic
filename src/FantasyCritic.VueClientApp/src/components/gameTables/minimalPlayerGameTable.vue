@@ -93,14 +93,14 @@
   </div>
 </template>
 <script>
+import { mapState } from 'pinia';
 import html2canvas from 'html2canvas';
 
-import { mapState } from 'pinia';
-import { useLeagueStore } from '@/store/leagueStore';
-import { useAuthStore } from '@/store/authStore';
-import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow.vue';
 import { orderBy, publisherIconIsValid } from '@/globalFunctions';
+import { useAuthStore } from '@/store/authStore';
+import { useLeagueStore } from '@/store/leagueStore';
 import { formatCurrency, formatScore } from '@/utilities/formatters';
+import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow.vue';
 
 export default {
   components: {

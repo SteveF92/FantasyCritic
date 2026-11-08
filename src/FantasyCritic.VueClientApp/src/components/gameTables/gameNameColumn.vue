@@ -100,12 +100,11 @@
   </span>
 </template>
 <script>
-import { usePublisherStore } from '@/store/publisherStore';
-
-import MasterGamePopover from '@/components/masterGamePopover.vue';
-import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
-import { useLeagueStore } from '@/store/leagueStore';
 import { formatLongDate } from '@/globalFunctions';
+import { useLeagueStore } from '@/store/leagueStore';
+import { usePublisherStore } from '@/store/publisherStore';
+import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

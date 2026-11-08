@@ -51,9 +51,10 @@
 </template>
 <script>
 import { DateTime } from 'luxon';
+
+import { useAuthStore } from '@/store/authStore';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
-import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {

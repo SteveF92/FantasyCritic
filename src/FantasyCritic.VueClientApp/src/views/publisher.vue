@@ -125,17 +125,16 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import html2canvas from 'html2canvas';
 
-import { mapState } from 'pinia';
+import { publisherIconIsValid } from '@/globalFunctions';
+import { useAuthStore } from '@/store/authStore';
 import { usePublisherStore } from '@/store/publisherStore';
-
+import { formatCurrency } from '@/utilities/formatters';
 import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
 import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
-import { publisherIconIsValid } from '@/globalFunctions';
-import { formatCurrency } from '@/utilities/formatters';
-import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {

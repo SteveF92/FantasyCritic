@@ -88,9 +88,9 @@
 <script>
 import axios from 'axios';
 
-import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 import { orderBy } from '@/globalFunctions';
 import { formatCurrency } from '@/utilities/formatters';
+import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
 export default {
   components: { RoyalePublisherGraph },

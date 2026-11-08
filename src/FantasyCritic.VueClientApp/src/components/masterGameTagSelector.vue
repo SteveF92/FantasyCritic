@@ -17,9 +17,10 @@
 
 <script>
 import Multiselect from 'vue-multiselect';
-import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { deepClone } from '@/utilities/deepClone';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

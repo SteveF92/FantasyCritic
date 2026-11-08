@@ -1,9 +1,9 @@
 import { createRouter, createWebHistory, RouterScrollBehavior } from 'vue-router';
 
-import { pinia } from '@/store/pinia';
 import { useAuthStore } from '@/store/authStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { useLeagueStore } from '@/store/leagueStore';
+import { pinia } from '@/store/pinia';
 import { usePublisherStore } from '@/store/publisherStore';
 
 import { routes } from './routes.js';

@@ -64,8 +64,9 @@
 <script>
 import axios from 'axios';
 import { DateTime } from 'luxon';
-import { formatDateTime } from '@/utilities/formatters';
+
 import { useConfirm } from '@/utilities/confirm';
+import { formatDateTime } from '@/utilities/formatters';
 
 export default {
   setup() {

@@ -84,12 +84,13 @@
 </template>
 
 <script>
-import { DateTime } from 'luxon';
-import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import { getGGLinkForGame, getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
-import { formatPercent, formatScore } from '@/utilities/formatters';
 import { mapState } from 'pinia';
+import { DateTime } from 'luxon';
+
 import { useAuthStore } from '@/store/authStore';
+import { formatPercent, formatScore } from '@/utilities/formatters';
+import { getGGCoverArtLinkForGame, getGGLinkForGame } from '@/utilities/ggLinks';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

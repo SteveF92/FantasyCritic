@@ -33,12 +33,13 @@
 </template>
 
 <script>
-import axios from 'axios';
-import PossibleCounterPicksTable from '@/components/possibleCounterPicksTable.vue';
-import MasterGameSummary from '@/components/masterGameSummary.vue';
 import { mapState } from 'pinia';
+import axios from 'axios';
+
 import { useLeagueStore } from '@/store/leagueStore';
 import { makeToast } from '@/utilities/toast';
+import MasterGameSummary from '@/components/masterGameSummary.vue';
+import PossibleCounterPicksTable from '@/components/possibleCounterPicksTable.vue';
 
 export default {
   components: {

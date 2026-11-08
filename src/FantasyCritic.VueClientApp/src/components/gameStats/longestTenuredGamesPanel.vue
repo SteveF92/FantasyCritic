@@ -45,10 +45,11 @@
 <script>
 import axios from 'axios';
 import { DateTime } from 'luxon';
+
 import { formatMasterGameReleaseDate } from '@/globalFunctions';
+import { formatDateIso } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import { formatDateIso } from '@/utilities/formatters';
 
 export default {
   components: {

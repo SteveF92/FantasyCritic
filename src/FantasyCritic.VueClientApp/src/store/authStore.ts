@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+
 import { accountClient, ApiException, FantasyCriticUserViewModel } from '@/api/clients';
 
 interface AuthStoreState {

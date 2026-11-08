@@ -36,8 +36,9 @@
   </b-modal>
 </template>
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
-import { mapState, mapActions } from 'pinia';
+
 import { useConferenceStore } from '@/store/conferenceStore';
 
 export default {

@@ -31,8 +31,9 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { useConferenceStore } from '@/store/conferenceStore';
+
 import { maxBy, ordinal_suffix_of } from '@/globalFunctions';
+import { useConferenceStore } from '@/store/conferenceStore';
 import { formatScore } from '@/utilities/formatters';
 
 export default {

@@ -152,15 +152,15 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
 
-import { mapState, mapActions } from 'pinia';
-import { useLeagueStore } from '@/store/leagueStore';
-import MasterGamePopover from '@/components/masterGamePopover.vue';
-import CollapseCard from '@/components/collapseCard.vue';
-import { except, startCase, formatLongDateTime } from '@/globalFunctions';
-import { formatApprovedRejected, formatDateTimeAt } from '@/utilities/formatters';
+import { except, formatLongDateTime, startCase } from '@/globalFunctions';
 import { useAuthStore } from '@/store/authStore';
+import { useLeagueStore } from '@/store/leagueStore';
+import { formatApprovedRejected, formatDateTimeAt } from '@/utilities/formatters';
+import CollapseCard from '@/components/collapseCard.vue';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

@@ -31,7 +31,7 @@
 <script>
 import { DateTime } from 'luxon';
 
-import { ApiException, adminClient } from '@/api/clients';
+import { adminClient, ApiException } from '@/api/clients';
 
 //The worker's states come from WorkerState on the server; the web app and the bot only have their health status.
 const stateVariants = {

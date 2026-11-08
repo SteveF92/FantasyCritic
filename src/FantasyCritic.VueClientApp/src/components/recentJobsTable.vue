@@ -136,8 +136,8 @@ import { DateTime } from 'luxon';
 import Multiselect from 'vue-multiselect';
 
 import { ApiException, jobManagerClient } from '@/api/clients';
-import { makeToast } from '@/utilities/toast';
 import { useConfirm } from '@/utilities/confirm';
+import { makeToast } from '@/utilities/toast';
 
 //The values of FantasyCriticJobType. The API does not expose the list, so it lives here for the filter.
 //A type missing from this list can still be hidden or shown by the server; it just cannot be picked here.

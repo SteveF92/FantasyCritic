@@ -61,8 +61,9 @@
 
 <script>
 import axios from 'axios';
-import PossibleRoyaleMasterGamesTable from '@/components/possibleRoyaleMasterGamesTable.vue';
+
 import { formatCurrency } from '@/utilities/formatters';
+import PossibleRoyaleMasterGamesTable from '@/components/possibleRoyaleMasterGamesTable.vue';
 
 export default {
   components: { PossibleRoyaleMasterGamesTable },

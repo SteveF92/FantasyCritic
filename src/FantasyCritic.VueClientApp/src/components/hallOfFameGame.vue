@@ -32,9 +32,9 @@
 <script>
 import { useId } from 'vue';
 
-import MasterGameSummary from '@/components/masterGameSummary.vue';
+import { formatMoney, roundNumber } from '@/globalFunctions';
 import { getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
-import { roundNumber, formatMoney } from '@/globalFunctions';
+import MasterGameSummary from '@/components/masterGameSummary.vue';
 
 export default {
   setup() {

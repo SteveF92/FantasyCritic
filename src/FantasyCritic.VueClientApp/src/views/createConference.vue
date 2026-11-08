@@ -110,13 +110,14 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
-import LeagueYearSettings from '@/components/leagueYearSettings.vue';
-import LeagueCreationPresets from '@/components/leagueCreationPresets.vue';
-import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
-import { buildOneShotDraft } from '@/utilities/leagueCreationPresets';
 import { mapState } from 'pinia';
+import axios from 'axios';
+
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { buildOneShotDraft } from '@/utilities/leagueCreationPresets';
+import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
+import LeagueCreationPresets from '@/components/leagueCreationPresets.vue';
+import LeagueYearSettings from '@/components/leagueYearSettings.vue';
 
 export default {
   components: {

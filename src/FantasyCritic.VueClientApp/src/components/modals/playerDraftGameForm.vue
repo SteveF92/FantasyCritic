@@ -104,13 +104,14 @@
 </template>
 
 <script>
-import axios from 'axios';
-import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
-import MasterGameSummary from '@/components/masterGameSummary.vue';
-import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
 import { mapState } from 'pinia';
+import axios from 'axios';
+
 import { useLeagueStore } from '@/store/leagueStore';
 import { makeToast } from '@/utilities/toast';
+import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
+import MasterGameSummary from '@/components/masterGameSummary.vue';
+import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 
 export default {
   components: {

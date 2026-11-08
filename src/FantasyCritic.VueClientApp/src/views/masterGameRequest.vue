@@ -143,10 +143,9 @@
 </template>
 <script>
 import { gameClient } from '@/api/clients';
-
+import { formatDateTime } from '@/utilities/formatters';
 import DateInput from '@/components/dateInput.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
-import { formatDateTime } from '@/utilities/formatters';
 
 export default {
   components: {

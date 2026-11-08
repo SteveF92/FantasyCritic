@@ -46,9 +46,10 @@
 </template>
 <script>
 import axios from 'axios';
-import LeagueYearSettings from '@/components/leagueYearSettings.vue';
-import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
+
 import { buildOneShotDraft } from '@/utilities/leagueCreationPresets';
+import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
+import LeagueYearSettings from '@/components/leagueYearSettings.vue';
 
 export default {
   components: {

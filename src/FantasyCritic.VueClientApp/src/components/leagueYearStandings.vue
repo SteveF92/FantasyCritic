@@ -44,10 +44,11 @@
   </div>
 </template>
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
-import { mapState, mapActions } from 'pinia';
-import { useLeagueStore } from '@/store/leagueStore';
+
 import { maxBy, ordinal_suffix_of } from '@/globalFunctions';
+import { useLeagueStore } from '@/store/leagueStore';
 import { formatCurrency, formatScore } from '@/utilities/formatters';
 
 export default {

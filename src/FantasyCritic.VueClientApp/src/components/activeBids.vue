@@ -38,10 +38,11 @@
   </div>
 </template>
 <script>
-import { DateTime } from 'luxon';
-import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { mapState } from 'pinia';
+import { DateTime } from 'luxon';
+
 import { useLeagueStore } from '@/store/leagueStore';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

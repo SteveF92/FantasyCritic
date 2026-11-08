@@ -82,9 +82,9 @@
 </template>
 <script>
 import { ApiException, factCheckerClient } from '@/api/clients';
-import MasterGamePopover from '@/components/masterGamePopover.vue';
-import { formatScore } from '@/utilities/formatters';
 import { useConfirm } from '@/utilities/confirm';
+import { formatScore } from '@/utilities/formatters';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   setup() {

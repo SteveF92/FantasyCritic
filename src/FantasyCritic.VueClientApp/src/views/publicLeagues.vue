@@ -37,8 +37,9 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { mapState } from 'pinia';
+import axios from 'axios';
+
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {

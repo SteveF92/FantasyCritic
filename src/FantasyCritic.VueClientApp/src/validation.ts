@@ -1,7 +1,7 @@
-import { Field, Form, configure, defineRule } from 'vee-validate';
-import { email, integer, max_value, min, min_value, required } from '@vee-validate/rules';
 import { localize } from '@vee-validate/i18n';
 import en from '@vee-validate/i18n/dist/locale/en.json';
+import { email, integer, max_value, min, min_value, required } from '@vee-validate/rules';
+import { configure, defineRule, Field, Form } from 'vee-validate';
 
 defineRule('required', required);
 defineRule('email', email);

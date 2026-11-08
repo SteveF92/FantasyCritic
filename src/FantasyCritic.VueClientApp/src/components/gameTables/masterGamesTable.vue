@@ -110,9 +110,9 @@
 </template>
 <script>
 import { formatMasterGameReleaseDate, numericComparer } from '@/globalFunctions';
+import { formatPercent, formatScore } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import { formatPercent, formatScore } from '@/utilities/formatters';
 
 export default {
   components: {

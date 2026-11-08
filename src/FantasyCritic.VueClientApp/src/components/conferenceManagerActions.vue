@@ -31,16 +31,15 @@
 </template>
 <script>
 import AddLeagueToConference from '@/components/modals/conference/addLeagueToConference.vue';
+import AddNewConferenceYear from '@/components/modals/conference/addNewConferenceYear.vue';
 import AssignPlayers from '@/components/modals/conference/assignPlayers.vue';
 import ConferenceManagerMessageModal from '@/components/modals/conference/conferenceManagerMessageModal.vue';
 import EditConferenceSettings from '@/components/modals/conference/editConferenceSettings.vue';
 import InvitePlayers from '@/components/modals/conference/invitePlayers.vue';
+import ManageActivePlayers from '@/components/modals/conference/manageActivePlayers.vue';
 import PromoteNewConferenceManager from '@/components/modals/conference/promoteNewConferenceManager.vue';
 import ReassignLeagueManager from '@/components/modals/conference/reassignLeagueManager.vue';
-
-import AddNewConferenceYear from '@/components/modals/conference/addNewConferenceYear.vue';
 import RenewLeagueForNewYear from '@/components/modals/conference/renewLeagueForNewYear.vue';
-import ManageActivePlayers from '@/components/modals/conference/manageActivePlayers.vue';
 
 export default {
   components: {

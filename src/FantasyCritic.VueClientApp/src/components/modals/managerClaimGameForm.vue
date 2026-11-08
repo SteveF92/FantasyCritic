@@ -84,11 +84,12 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
-import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
-import MasterGameSummary from '@/components/masterGameSummary.vue';
-import { mapState, mapActions } from 'pinia';
+
 import { useLeagueStore } from '@/store/leagueStore';
+import MasterGameSummary from '@/components/masterGameSummary.vue';
+import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 
 export default {
   components: {

@@ -21,8 +21,8 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { useLeagueStore } from '@/store/leagueStore';
 
+import { useLeagueStore } from '@/store/leagueStore';
 import MinimalPlayerGameTable from '@/components/gameTables/minimalPlayerGameTable.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
 

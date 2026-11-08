@@ -17,10 +17,11 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { useLeagueStore } from '@/store/leagueStore';
+
 import { useAuthStore } from '@/store/authStore';
-import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
+import { useLeagueStore } from '@/store/leagueStore';
 import { formatScore } from '@/utilities/formatters';
+import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 
 export default {
   components: {

@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+
 import { BasicDataViewModel, combinedDataClient } from '@/api/clients';
 
 interface InterLeagueStoreState {

@@ -209,8 +209,8 @@
   </div>
 </template>
 <script lang="ts">
-import SiteCounts from '@/components/siteCounts.vue';
 import { generalClient } from '@/api/clients';
+import SiteCounts from '@/components/siteCounts.vue';
 
 export default {
   components: {

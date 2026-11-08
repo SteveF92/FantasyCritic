@@ -45,9 +45,9 @@
 </template>
 
 <script>
-import MasterGamePopover from '@/components/masterGamePopover.vue';
 import { orderByDescending } from '@/globalFunctions';
 import { formatCurrency } from '@/utilities/formatters';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

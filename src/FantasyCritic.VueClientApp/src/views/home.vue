@@ -113,17 +113,17 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { mapState } from 'pinia';
-import { useAdminStore } from '@/store/adminStore';
+import axios from 'axios';
 
-import TopBidsAndDrops from '@/components/topBidsAndDropsWidget.vue';
-import LeagueTable from '@/components/leagueTable.vue';
-import ConferenceTable from '@/components/conferenceTable.vue';
-import GameNews from '@/components/gameNews.vue';
-import SiteAnnouncementsWidget from '@/components/siteAnnouncementsWidget.vue';
+import { useAdminStore } from '@/store/adminStore';
 import { useAuthStore } from '@/store/authStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import ConferenceTable from '@/components/conferenceTable.vue';
+import GameNews from '@/components/gameNews.vue';
+import LeagueTable from '@/components/leagueTable.vue';
+import SiteAnnouncementsWidget from '@/components/siteAnnouncementsWidget.vue';
+import TopBidsAndDrops from '@/components/topBidsAndDropsWidget.vue';
 
 export default {
   components: {

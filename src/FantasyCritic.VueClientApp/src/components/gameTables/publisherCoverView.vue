@@ -8,6 +8,7 @@
 
 <script>
 import { mapState } from 'pinia';
+
 import { usePublisherStore } from '@/store/publisherStore';
 import PublisherCoverViewSlot from '@/components/gameTables/publisherCoverViewSlot.vue';
 

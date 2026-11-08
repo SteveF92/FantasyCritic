@@ -87,13 +87,14 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import axios from 'axios';
+
+import { useAuthStore } from '@/store/authStore';
+import { formatDateLong } from '@/utilities/formatters';
+import { getGGCoverArtLinkForGame, getGGLinkForGame } from '@/utilities/ggLinks';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
 import MasterGameYearStats from '@/components/masterGameYearStats.vue';
-import { getGGLinkForGame, getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
-import { formatDateLong } from '@/utilities/formatters';
-import { mapState } from 'pinia';
-import { useAuthStore } from '@/store/authStore';
 
 export default {
   components: {

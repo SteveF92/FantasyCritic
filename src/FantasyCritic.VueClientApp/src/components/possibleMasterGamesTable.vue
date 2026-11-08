@@ -38,12 +38,12 @@
   </div>
 </template>
 <script>
-import StatusBadge from '@/components/statusBadge.vue';
-import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { numericComparer } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatScore } from '@/utilities/formatters';
-import { numericComparer } from '@/globalFunctions';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
+import StatusBadge from '@/components/statusBadge.vue';
 
 export default {
   components: {

@@ -127,16 +127,16 @@
   </div>
 </template>
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
 
-import { mapState, mapActions } from 'pinia';
-import ConferenceManagerActions from '@/components/conferenceManagerActions.vue';
-import ConferenceYearStandings from '@/components/conferenceYearStandings.vue';
+import { useAuthStore } from '@/store/authStore';
 import { useConferenceStore } from '@/store/conferenceStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { formatDateTime } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
-import { useAuthStore } from '@/store/authStore';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
+import ConferenceManagerActions from '@/components/conferenceManagerActions.vue';
+import ConferenceYearStandings from '@/components/conferenceYearStandings.vue';
 
 export default {
   components: {

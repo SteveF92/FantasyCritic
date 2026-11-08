@@ -141,10 +141,11 @@
 </template>
 <script>
 import axios from 'axios';
-import MasterGamePopover from '@/components/masterGamePopover.vue';
-import MasterGameDetails from '@/components/masterGameDetails.vue';
-import { getGGLinkForGame, getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
+
 import { formatDateTime } from '@/utilities/formatters';
+import { getGGCoverArtLinkForGame, getGGLinkForGame } from '@/utilities/ggLinks';
+import MasterGameDetails from '@/components/masterGameDetails.vue';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

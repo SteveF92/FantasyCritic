@@ -48,10 +48,11 @@
 
 <script>
 import { VueDraggable } from 'vue-draggable-plus';
-import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+
 import { intersection } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { deepClone } from '@/utilities/deepClone';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

@@ -10,8 +10,9 @@
   </b-modal>
 </template>
 <script>
-import axios from 'axios';
 import { mapState } from 'pinia';
+import axios from 'axios';
+
 import { useLeagueStore } from '@/store/leagueStore';
 import { makeToast } from '@/utilities/toast';
 

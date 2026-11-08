@@ -327,13 +327,14 @@
   </div>
 </template>
 <script>
+import { mapState } from 'pinia';
+
+import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { deepClone } from '@/utilities/deepClone';
+import { computeSpecialSlots } from '@/utilities/leagueCreationPresets';
 import DateInput from '@/components/dateInput.vue';
 import LeagueTagSelector from '@/components/leagueTagSelector.vue';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
-import { computeSpecialSlots } from '@/utilities/leagueCreationPresets';
-import { mapState } from 'pinia';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
-import { deepClone } from '@/utilities/deepClone';
 
 const SECRET_BIDDING = 'SecretBidding';
 

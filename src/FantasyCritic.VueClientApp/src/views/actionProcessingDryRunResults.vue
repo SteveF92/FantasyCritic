@@ -55,9 +55,10 @@
 </template>
 <script>
 import axios from 'axios';
+
+import { formatDateTime, formatYesNo } from '@/utilities/formatters';
 import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
 import LeagueActionSet from '@/components/leagueActionSet.vue';
-import { formatDateTime, formatYesNo } from '@/utilities/formatters';
 
 export default {
   components: {

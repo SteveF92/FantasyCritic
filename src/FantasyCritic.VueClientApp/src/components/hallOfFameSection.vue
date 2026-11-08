@@ -9,6 +9,7 @@
 
 <script>
 import HallOfFameGame from '@/components/hallOfFameGame.vue';
+
 export default {
   components: {
     HallOfFameGame

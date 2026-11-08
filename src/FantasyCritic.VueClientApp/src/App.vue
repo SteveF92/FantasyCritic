@@ -20,10 +20,10 @@
 </template>
 
 <script>
-import TopNavbar from '@/components/topNavBar.vue';
+import { defaultTableComparer } from '@/globalFunctions';
 import FooterModule from '@/components/footerModule.vue';
 import ToastHost from '@/components/toastHost.vue';
-import { defaultTableComparer } from '@/globalFunctions';
+import TopNavbar from '@/components/topNavBar.vue';
 
 export default {
   components: {

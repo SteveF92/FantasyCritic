@@ -62,12 +62,12 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import axios from 'axios';
 
-import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
-import { mapState } from 'pinia';
 import { useAuthStore } from '@/store/authStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
 
 export default {
   components: {

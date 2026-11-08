@@ -18,8 +18,8 @@
 </template>
 
 <script>
-import Countdown from '@/components/countdown.vue';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import Countdown from '@/components/countdown.vue';
 
 export default {
   components: {

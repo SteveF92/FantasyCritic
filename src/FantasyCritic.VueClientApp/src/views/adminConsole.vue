@@ -261,16 +261,16 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import { useAdminStore } from '@/store/adminStore';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
 
-import { ApiException, actionRunnerClient, adminClient, factCheckerClient } from '@/api/clients';
+import { actionRunnerClient, adminClient, ApiException, factCheckerClient } from '@/api/clients';
+import { useAdminStore } from '@/store/adminStore';
+import { useAuthStore } from '@/store/authStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { useConfirm } from '@/utilities/confirm';
+import { formatDateTime } from '@/utilities/formatters';
 import RecentJobsTable from '@/components/recentJobsTable.vue';
 import ServiceMonitor from '@/components/serviceMonitor.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
-import { formatDateTime } from '@/utilities/formatters';
-import { useAuthStore } from '@/store/authStore';
-import { useConfirm } from '@/utilities/confirm';
 
 export default {
   setup() {

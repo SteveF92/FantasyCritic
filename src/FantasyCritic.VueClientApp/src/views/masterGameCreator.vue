@@ -132,13 +132,13 @@
   </div>
 </template>
 <script>
+import { mapState } from 'pinia';
 import axios from 'axios';
 
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 import DateInput from '@/components/dateInput.vue';
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 import LeagueOptionsModal from '@/components/modals/leagueOptionsModal.vue';
-import { mapState } from 'pinia';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {

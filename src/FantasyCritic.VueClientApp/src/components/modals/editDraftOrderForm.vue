@@ -42,9 +42,10 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
 import { VueDraggable } from 'vue-draggable-plus';
-import { mapState, mapActions } from 'pinia';
+
 import { useLeagueStore } from '@/store/leagueStore';
 
 export default {

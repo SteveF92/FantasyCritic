@@ -33,12 +33,13 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import axios from 'axios';
+
 import { formatMasterGameReleaseDate } from '@/globalFunctions';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import { mapState } from 'pinia';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {

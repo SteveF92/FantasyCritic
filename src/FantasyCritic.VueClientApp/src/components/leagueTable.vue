@@ -59,8 +59,9 @@
   </b-table>
 </template>
 <script>
-import axios from 'axios';
 import { mapState } from 'pinia';
+import axios from 'axios';
+
 import { useAuthStore } from '@/store/authStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { useConfirm } from '@/utilities/confirm';

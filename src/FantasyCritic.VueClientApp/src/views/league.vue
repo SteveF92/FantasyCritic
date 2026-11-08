@@ -159,27 +159,27 @@
 </template>
 
 <script>
-import axios from 'axios';
-import * as signalR from '@microsoft/signalr';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
-
-import LeagueGameSummary from '@/components/leagueGameSummary.vue';
-import LeagueYearStandings from '@/components/leagueYearStandings.vue';
-import LeagueActions from '@/components/leagueActions.vue';
-import CreatePublisherForm from '@/components/modals/createPublisherForm.vue';
-import StartDraftModal from '@/components/modals/startDraftModal.vue';
-import DraftCompleteModal from '@/components/modals/draftCompleteModal.vue';
-import GameNews from '@/components/gameNews.vue';
-import ActiveBids from '@/components/activeBids.vue';
-import BidCountdowns from '@/components/bidCountdowns.vue';
 import { mapState } from 'pinia';
-import SpecialAuctionInfo from '@/components/specialAuctionInfo.vue';
-import DraftReadinessBanner from '@/components/draftReadinessBanner.vue';
-import DraftStatusHeader from '@/components/draftStatusHeader.vue';
+import * as signalR from '@microsoft/signalr';
+import axios from 'axios';
+
+import { useAuthStore } from '@/store/authStore';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatDateTime } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
-import { useAuthStore } from '@/store/authStore';
+import ActiveBids from '@/components/activeBids.vue';
+import BidCountdowns from '@/components/bidCountdowns.vue';
+import DraftReadinessBanner from '@/components/draftReadinessBanner.vue';
+import DraftStatusHeader from '@/components/draftStatusHeader.vue';
+import GameNews from '@/components/gameNews.vue';
+import LeagueActions from '@/components/leagueActions.vue';
+import LeagueGameSummary from '@/components/leagueGameSummary.vue';
+import LeagueYearStandings from '@/components/leagueYearStandings.vue';
+import CreatePublisherForm from '@/components/modals/createPublisherForm.vue';
+import DraftCompleteModal from '@/components/modals/draftCompleteModal.vue';
+import StartDraftModal from '@/components/modals/startDraftModal.vue';
+import SpecialAuctionInfo from '@/components/specialAuctionInfo.vue';
 
 export default {
   components: {

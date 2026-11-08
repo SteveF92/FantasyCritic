@@ -23,8 +23,8 @@
 </template>
 
 <script>
-import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 
 export default {
   components: {

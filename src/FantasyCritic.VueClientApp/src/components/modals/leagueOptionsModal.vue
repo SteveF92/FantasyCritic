@@ -126,11 +126,12 @@
 </template>
 
 <script>
-import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import { formatScore, formatYesNo, selectTextFromPossibleOptions } from '@/utilities/formatters';
 import { mapState } from 'pinia';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
+
 import { formatLongDate } from '@/globalFunctions';
+import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { formatScore, formatYesNo, selectTextFromPossibleOptions } from '@/utilities/formatters';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

@@ -173,22 +173,21 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import axios from 'axios';
-import { useAuthStore } from '@/store/authStore';
 import { DateTime } from 'luxon';
 
-import MasterGamePopover from '@/components/masterGamePopover.vue';
-import RoyalePurchaseGameForm from '@/components/modals/royalePurchaseGameForm.vue';
-import RoyaleChangePublisherNameForm from '@/components/modals/royaleChangePublisherNameForm.vue';
-import RoyaleChangePublisherIconForm from '@/components/modals/royaleChangePublisherIconForm.vue';
-import RoyaleChangePublisherSloganForm from '@/components/modals/royaleChangePublisherSloganForm.vue';
-import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal.vue';
-import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
-
-import { formatMoney, publisherIconIsValid, numericComparer } from '@/globalFunctions';
+import { formatMoney, numericComparer, publisherIconIsValid } from '@/globalFunctions';
+import { useAuthStore } from '@/store/authStore';
 import { formatCurrency, formatDateIso, formatDateTime, formatScore } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
-import { mapState } from 'pinia';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
+import RoyaleChangePublisherIconForm from '@/components/modals/royaleChangePublisherIconForm.vue';
+import RoyaleChangePublisherNameForm from '@/components/modals/royaleChangePublisherNameForm.vue';
+import RoyaleChangePublisherSloganForm from '@/components/modals/royaleChangePublisherSloganForm.vue';
+import RoyalePurchaseGameForm from '@/components/modals/royalePurchaseGameForm.vue';
+import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal.vue';
+import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
 export default {
   components: {

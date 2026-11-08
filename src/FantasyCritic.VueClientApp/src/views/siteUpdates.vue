@@ -10,10 +10,11 @@
 </template>
 
 <script lang="ts">
-import axios from 'axios';
 import { defineComponent } from 'vue';
-import SiteAnnouncementsWidget from '@/components/siteAnnouncementsWidget.vue';
+import axios from 'axios';
+
 import type { SiteAnnouncement } from '@/models/SiteAnnouncement';
+import SiteAnnouncementsWidget from '@/components/siteAnnouncementsWidget.vue';
 
 export default defineComponent({
   components: {

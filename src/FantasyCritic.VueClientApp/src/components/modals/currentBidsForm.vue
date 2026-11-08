@@ -105,13 +105,13 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
 import { VueDraggable } from 'vue-draggable-plus';
 
-import MasterGameSummary from '@/components/masterGameSummary.vue';
-import { mapState, mapActions } from 'pinia';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatCurrency, formatYesNo } from '@/utilities/formatters';
+import MasterGameSummary from '@/components/masterGameSummary.vue';
 
 export default {
   components: {

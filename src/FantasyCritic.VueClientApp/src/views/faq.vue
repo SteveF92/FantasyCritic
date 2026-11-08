@@ -1157,9 +1157,9 @@
   </div>
 </template>
 <script>
+import { useInterLeagueStore } from '@/store/interLeagueStore';
 import CollapseCard from '@/components/collapseCard.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {
   components: {

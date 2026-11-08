@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+
 import { conferenceClient, ConferenceYearViewModel } from '@/api/clients';
 import { makeToast } from '@/utilities/toast';
 

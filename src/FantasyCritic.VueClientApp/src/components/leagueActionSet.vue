@@ -55,9 +55,9 @@
   </div>
 </template>
 <script>
-import MasterGamePopover from '@/components/masterGamePopover.vue';
-import { formatDateTime, formatScore, formatYesNo } from '@/utilities/formatters';
 import { numericComparer } from '@/globalFunctions';
+import { formatDateTime, formatScore, formatYesNo } from '@/utilities/formatters';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

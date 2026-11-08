@@ -69,6 +69,7 @@
 
 <script>
 import { mapState } from 'pinia';
+
 import { useAuthStore } from '@/store/authStore';
 
 export default {

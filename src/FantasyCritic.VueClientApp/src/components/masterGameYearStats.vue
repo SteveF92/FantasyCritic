@@ -55,9 +55,10 @@
 </template>
 
 <script>
-import axios from 'axios';
 import { markRaw } from 'vue';
+import axios from 'axios';
 import { Line as LineChartGenerator } from 'vue-chartjs';
+
 import { formatPercent, formatScore } from '@/utilities/formatters';
 
 const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];

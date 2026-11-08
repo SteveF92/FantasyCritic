@@ -180,8 +180,8 @@
 </template>
 
 <script>
-import SiteCounts from '@/components/siteCounts.vue';
 import HomeFaq from '@/components/homeFAQ.vue';
+import SiteCounts from '@/components/siteCounts.vue';
 
 export default {
   components: {

@@ -72,11 +72,12 @@
 </template>
 
 <script>
-import { DateTime } from 'luxon';
-import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-import { formatScore } from '@/utilities/formatters';
 import { mapState } from 'pinia';
+import { DateTime } from 'luxon';
+
 import { useAuthStore } from '@/store/authStore';
+import { formatScore } from '@/utilities/formatters';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

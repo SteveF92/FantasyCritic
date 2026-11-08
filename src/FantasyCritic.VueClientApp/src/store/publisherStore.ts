@@ -1,8 +1,9 @@
 import { defineStore } from 'pinia';
-import { useAuthStore } from '@/store/authStore';
-import { deepClone } from '@/utilities/deepClone';
-import { getApiErrorMessage } from '@/utilities/apiError';
+
 import { leagueClient, LeagueYearViewModel, PublisherSlotViewModel, PublisherViewModel, ReorderPublisherGamesRequest } from '@/api/clients';
+import { useAuthStore } from '@/store/authStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
+import { deepClone } from '@/utilities/deepClone';
 
 interface PublisherStoreState {
   publisher: PublisherViewModel | null;

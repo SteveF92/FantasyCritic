@@ -138,14 +138,14 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
 
-import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
-import MasterGameSummary from '@/components/masterGameSummary.vue';
-import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
-import { mapState, mapActions } from 'pinia';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatCurrency } from '@/utilities/formatters';
+import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
+import MasterGameSummary from '@/components/masterGameSummary.vue';
+import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 
 export default {
   components: {

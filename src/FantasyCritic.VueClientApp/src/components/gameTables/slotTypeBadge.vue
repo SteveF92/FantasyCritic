@@ -28,8 +28,8 @@
   </span>
 </template>
 <script>
-import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default {
   components: {

@@ -23,6 +23,7 @@
 </template>
 <script>
 import axios from 'axios';
+
 import { publisherIconIsValid } from '@/globalFunctions';
 
 export default {

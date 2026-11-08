@@ -70,13 +70,14 @@
   </div>
 </template>
 <script>
-import axios from 'axios';
-import LeagueActionSet from '@/components/leagueActionSet.vue';
-import CollapseCard from '@/components/collapseCard.vue';
-import TradeSummary from '@/components/tradeSummary.vue';
 import { mapState } from 'pinia';
+import axios from 'axios';
+
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatDateLong, formatDateTime, formatYesNo } from '@/utilities/formatters';
+import CollapseCard from '@/components/collapseCard.vue';
+import LeagueActionSet from '@/components/leagueActionSet.vue';
+import TradeSummary from '@/components/tradeSummary.vue';
 
 export default {
   components: {

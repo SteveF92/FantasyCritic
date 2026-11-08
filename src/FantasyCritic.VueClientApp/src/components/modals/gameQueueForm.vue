@@ -129,17 +129,16 @@
 </template>
 
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
 import { VueDraggable } from 'vue-draggable-plus';
 
-import { mapState, mapActions } from 'pinia';
 import { useLeagueStore } from '@/store/leagueStore';
-
-import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
-import StatusBadge from '@/components/statusBadge.vue';
+import { formatScore } from '@/utilities/formatters';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
-import { formatScore } from '@/utilities/formatters';
+import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
+import StatusBadge from '@/components/statusBadge.vue';
 
 export default {
   components: {

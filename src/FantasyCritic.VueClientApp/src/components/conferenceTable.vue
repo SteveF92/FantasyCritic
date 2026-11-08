@@ -20,6 +20,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
 export default {

@@ -1,14 +1,12 @@
 import { createApp } from 'vue';
-
-import { Chart as ChartJS, Title, Tooltip, Legend, LineElement, LinearScale, CategoryScale, PointElement, Filler } from 'chart.js';
+import { CategoryScale, Chart as ChartJS, Filler, Legend, LinearScale, LineElement, PointElement, Title, Tooltip } from 'chart.js';
 import annotationPlugin from 'chartjs-plugin-annotation';
-
-import App from './App.vue';
-import router from './router/index';
 
 import { pinia } from '@/store/pinia';
 
+import App from './App.vue';
 import { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText } from './icons';
+import router from './router/index';
 import { ValidationField, ValidationForm } from './validation';
 
 import 'bootstrap-vue-next/dist/bootstrap-vue-next.css';

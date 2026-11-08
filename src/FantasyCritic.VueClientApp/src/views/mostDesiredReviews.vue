@@ -36,8 +36,9 @@
 <script>
 import axios from 'axios';
 import { DateTime } from 'luxon';
-import MasterGamePopover from '@/components/masterGamePopover.vue';
+
 import { formatDateLong } from '@/utilities/formatters';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
 
 export default {
   components: {

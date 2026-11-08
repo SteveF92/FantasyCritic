@@ -74,13 +74,13 @@
 </template>
 
 <script>
-import axios from 'axios';
-import { useAuthStore } from '@/store/authStore';
-
-import RoyaleGroupInviteLinksModal from '@/components/modals/royaleGroupInviteLinksModal.vue';
 import { mapState } from 'pinia';
+import axios from 'axios';
+
 import { numericComparer } from '@/globalFunctions';
+import { useAuthStore } from '@/store/authStore';
 import { useConfirm } from '@/utilities/confirm';
+import RoyaleGroupInviteLinksModal from '@/components/modals/royaleGroupInviteLinksModal.vue';
 
 export default {
   setup() {

@@ -82,9 +82,9 @@
   </form>
 </template>
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
 
-import { mapState, mapActions } from 'pinia';
 import { useLeagueStore } from '@/store/leagueStore';
 
 export default {

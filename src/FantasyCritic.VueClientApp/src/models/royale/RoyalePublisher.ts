@@ -1,7 +1,7 @@
-import { RoyaleYearQuarter } from './RoyaleYearQuarter.ts';
-import { RoyalePublisherGame } from './RoyalePublisherGame.ts';
 import { RoyaleAction } from './RoyaleAction.ts';
+import { RoyalePublisherGame } from './RoyalePublisherGame.ts';
 import { RoyalePublisherStatistics } from './RoyalePublisherStatistics.ts';
+import { RoyaleYearQuarter } from './RoyaleYearQuarter.ts';
 
 export interface RoyalePublisher {
   publisherID: string;

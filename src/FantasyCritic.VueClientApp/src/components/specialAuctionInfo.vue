@@ -23,13 +23,14 @@
 </template>
 
 <script>
+import { mapState } from 'pinia';
 import { DateTime } from 'luxon';
+
+import { useLeagueStore } from '@/store/leagueStore';
+import { formatDateTime, formatDateTimeAt } from '@/utilities/formatters';
 import Countdown from '@/components/countdown.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import BidGameForm from '@/components/modals/bidGameForm.vue';
-import { mapState } from 'pinia';
-import { useLeagueStore } from '@/store/leagueStore';
-import { formatDateTime, formatDateTimeAt } from '@/utilities/formatters';
 
 export default {
   components: {

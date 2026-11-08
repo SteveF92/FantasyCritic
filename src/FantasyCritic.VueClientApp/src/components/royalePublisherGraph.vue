@@ -7,6 +7,7 @@ import { defineComponent, markRaw, type PropType } from 'vue';
 import type { Chart, ChartOptions } from 'chart.js';
 import type { AnnotationOptions } from 'chartjs-plugin-annotation';
 import { Line as LineChartGenerator } from 'vue-chartjs';
+
 import type { RoyalePublisher } from '@/models/royale/RoyalePublisher.ts';
 
 const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];

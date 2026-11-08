@@ -53,8 +53,9 @@
   </ValidationForm>
 </template>
 <script>
+import { mapActions, mapState } from 'pinia';
 import axios from 'axios';
-import { mapState, mapActions } from 'pinia';
+
 import { useLeagueStore } from '@/store/leagueStore';
 import { makeToast } from '@/utilities/toast';
 

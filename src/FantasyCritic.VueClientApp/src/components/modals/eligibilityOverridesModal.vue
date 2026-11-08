@@ -18,6 +18,7 @@
 </template>
 <script>
 import { mapState } from 'pinia';
+
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatYesNo } from '@/utilities/formatters';
 

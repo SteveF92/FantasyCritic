@@ -77,9 +77,10 @@
 </template>
 <script>
 import axios from 'axios';
-import { ordinal_suffix_of, numericComparer } from '@/globalFunctions';
-import HallOfFameSection from '@/components/hallOfFameSection.vue';
+
+import { numericComparer, ordinal_suffix_of } from '@/globalFunctions';
 import { formatScore } from '@/utilities/formatters';
+import HallOfFameSection from '@/components/hallOfFameSection.vue';
 
 export default {
   components: { HallOfFameSection },
