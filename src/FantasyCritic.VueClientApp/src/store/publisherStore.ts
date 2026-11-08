@@ -1,15 +1,29 @@
 import { defineStore } from 'pinia';
-import axios from 'axios';
 import { useAuthStore } from '@/store/authStore';
 import { deepClone } from '@/utilities/deepClone';
+import { leagueClient, LeagueYearViewModel, PublisherSlotViewModel, PublisherViewModel, ReorderPublisherGamesRequest } from '@/api/clients';
+
+interface PublisherStoreState {
+  publisher: PublisherViewModel | null;
+  leagueYear: LeagueYearViewModel | null;
+  cleanGameSlots: PublisherSlotViewModel[] | null;
+  editableGameSlots: PublisherSlotViewModel[] | null;
+  desiredPositions: { [key: string]: string };
+  moveMode: boolean;
+  heldSlot: PublisherSlotViewModel | null;
+  moveGameError: string;
+  sortOrderMode: boolean;
+  coverArtMode: boolean;
+  includeRemovedInSorted: boolean;
+}
 
 export const usePublisherStore = defineStore('publisher', {
-  state: () => ({
+  state: (): PublisherStoreState => ({
     publisher: null,
     leagueYear: null,
     cleanGameSlots: null,
     editableGameSlots: null,
-    desiredPositions: null,
+    desiredPositions: {},
     moveMode: false,
     heldSlot: null,
     moveGameError: '',
@@ -26,39 +40,37 @@ export const usePublisherStore = defineStore('publisher', {
     hasFormerGames: (state) => (state.publisher?.formerGames.length ?? 0) > 0
   },
   actions: {
-    async initializePublisherPage(publisherID) {
+    async initializePublisherPage(publisherID: string) {
       this.clearPublisherStoreData();
-      const leagueYearResponse = await axios.get('/api/League/GetLeagueYearForPublisher/' + publisherID);
-      const leagueYear = leagueYearResponse.data;
-      const publisher = leagueYear.publishers.filter((x) => x.publisherID === publisherID)[0];
+      const leagueYear = await leagueClient.getLeagueYearForPublisher(publisherID);
+      const publisher = leagueYear?.publishers.filter((x) => x.publisherID === publisherID)[0];
 
-      const initializeParams = { publisher, leagueYear };
-      initializeInternal(this, initializeParams);
-      setDesiredPositions(this);
+      this.initializeInternal(publisher, leagueYear);
+      this.setDesiredPositions();
     },
-    moveGame(moveIntoSlot) {
-      moveGameInternal(this, moveIntoSlot);
-      setDesiredPositions(this);
+    moveGame(moveIntoSlot: PublisherSlotViewModel) {
+      this.moveGameInternal(moveIntoSlot);
+      this.setDesiredPositions();
     },
     async confirmPositions() {
-      const existingPublisherObject = this.publisher;
-      const request = {
-        publisherID: existingPublisherObject.publisherID,
+      if (!this.publisher) {
+        throw Error('Publisher is not defined.');
+      }
+
+      const request: ReorderPublisherGamesRequest = {
+        publisherID: this.publisher.publisherID,
         slotStates: this.desiredPositions
       };
 
       try {
-        await axios.post('/api/League/ReorderPublisherGames', request);
-        completeMoveMode(this);
+        await leagueClient.reorderPublisherGames(request);
+        this.completeMoveMode();
 
-        const publisherResponse = await axios.get('/api/League/GetPublisher/' + existingPublisherObject.publisherID);
-        const publisher = publisherResponse.data;
-        const leagueYearResponse = await axios.get('/api/League/GetLeagueYear?leagueID=' + existingPublisherObject.leagueID + '&year=' + existingPublisherObject.year);
-        const leagueYear = leagueYearResponse.data;
+        const leagueYear = await leagueClient.getLeagueYearForPublisher(request.publisherID);
+        const publisher = leagueYear?.publishers.filter((x) => x.publisherID === request.publisherID)[0];
 
-        const initializeParams = { publisher, leagueYear };
-        initializeInternal(this, initializeParams);
-        setDesiredPositions(this);
+        this.initializeInternal(publisher, leagueYear);
+        this.setDesiredPositions();
       } catch (error) {
         this.moveGameError = error.response.data;
         this.cancelMoveMode();
@@ -68,7 +80,7 @@ export const usePublisherStore = defineStore('publisher', {
       this.publisher = null;
       this.leagueYear = null;
       this.moveMode = false;
-      this.desiredPositions = null;
+      this.desiredPositions = {};
       this.heldSlot = null;
       this.editableGameSlots = [];
     },
@@ -77,53 +89,57 @@ export const usePublisherStore = defineStore('publisher', {
     },
     cancelMoveMode() {
       this.moveMode = false;
-      this.desiredPositions = null;
+      this.desiredPositions = {};
       this.heldSlot = null;
       this.editableGameSlots = deepClone(this.cleanGameSlots);
     },
-    holdGame(holdSlot) {
+    holdGame(holdSlot: PublisherSlotViewModel) {
       this.heldSlot = holdSlot;
     },
-    setSortOrderMode(sortOrderMode) {
+    setSortOrderMode(sortOrderMode: boolean) {
       this.sortOrderMode = sortOrderMode;
     },
-    setCoverArtMode(coverArtMode) {
+    setCoverArtMode(coverArtMode: boolean) {
       this.coverArtMode = coverArtMode;
     },
-    setIncludeRemovedInSorted(includeRemovedInSorted) {
+    setIncludeRemovedInSorted(includeRemovedInSorted: boolean) {
       this.includeRemovedInSorted = includeRemovedInSorted;
+    },
+    initializeInternal(publisher: PublisherViewModel, leagueYear: LeagueYearViewModel) {
+      this.publisher = publisher;
+      this.leagueYear = leagueYear;
+      this.cleanGameSlots = deepClone(publisher.gameSlots);
+      this.editableGameSlots = deepClone(publisher.gameSlots);
+    },
+    completeMoveMode() {
+      this.moveMode = false;
+      this.desiredPositions = {};
+      this.heldSlot = null;
+    },
+    moveGameInternal(moveIntoSlot: PublisherSlotViewModel) {
+      if (!this.heldSlot) {
+        throw new Error('No held game');
+      }
+
+      const tempSlot = deepClone(moveIntoSlot);
+      moveIntoSlot.publisherGame = deepClone(this.heldSlot.publisherGame);
+      this.heldSlot.publisherGame = deepClone(tempSlot.publisherGame);
+      this.heldSlot = null;
+    },
+    setDesiredPositions() {
+      if (!this.editableGameSlots) {
+        throw new Error('No games to sed positions for.');
+      }
+
+      const standardSlotsOnly = this.editableGameSlots.filter((x) => !x.counterPick);
+      this.desiredPositions = {};
+      standardSlotsOnly.forEach((slot) => {
+        if (slot.publisherGame) {
+          this.desiredPositions[slot.slotNumber] = slot.publisherGame.publisherGameID;
+        } else {
+          this.desiredPositions[slot.slotNumber] = null;
+        }
+      });
     }
   }
 });
-
-function initializeInternal(store, initializeParams) {
-  store.publisher = initializeParams.publisher;
-  store.leagueYear = initializeParams.leagueYear;
-  store.cleanGameSlots = deepClone(store.publisher.gameSlots);
-  store.editableGameSlots = deepClone(store.publisher.gameSlots);
-}
-
-function completeMoveMode(store) {
-  store.moveMode = false;
-  store.desiredPositions = null;
-  store.heldSlot = null;
-}
-
-function moveGameInternal(store, moveIntoSlot) {
-  const tempSlot = deepClone(moveIntoSlot);
-  moveIntoSlot.publisherGame = deepClone(store.heldSlot.publisherGame);
-  store.heldSlot.publisherGame = deepClone(tempSlot.publisherGame);
-  store.heldSlot = null;
-}
-
-function setDesiredPositions(store) {
-  const standardSlotsOnly = store.editableGameSlots.filter((x) => !x.counterPick);
-  store.desiredPositions = {};
-  standardSlotsOnly.forEach((slot) => {
-    if (slot.publisherGame) {
-      store.desiredPositions[slot.slotNumber] = slot.publisherGame.publisherGameID;
-    } else {
-      store.desiredPositions[slot.slotNumber] = null;
-    }
-  });
-}
