@@ -88,11 +88,11 @@
         <template v-else>
           <b-button variant="info" href="/Account/Login">
             <span>Log In</span>
-            <font-awesome-icon class="topnav-button-icon" icon="sign-in-alt" />
+            <font-awesome-icon class="topnav-button-icon ms-1" icon="sign-in-alt" />
           </b-button>
           <b-button variant="primary" href="/Account/Register">
             <span>Sign Up</span>
-            <font-awesome-icon class="topnav-button-icon" icon="user-plus" />
+            <font-awesome-icon class="topnav-button-icon ms-1" icon="user-plus" />
           </b-button>
         </template>
       </b-navbar-nav>

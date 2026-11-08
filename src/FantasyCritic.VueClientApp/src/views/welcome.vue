@@ -19,7 +19,7 @@
             <h2>Registration is free!</h2>
             <b-button variant="primary" href="/Account/Register" class="px-3 py-2">
               <span>Sign up</span>
-              <font-awesome-icon class="full-nav" icon="user-plus" />
+              <font-awesome-icon class="full-nav ms-1" icon="user-plus" />
             </b-button>
           </div>
         </div>
@@ -73,7 +73,7 @@
           <div class="starting-step">
             <font-awesome-layers class="fa-4x">
               <font-awesome-icon :icon="['far', 'circle']" />
-              <font-awesome-icon icon="trophy" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
+              <font-awesome-icon icon="trophy" transform="shrink-8" :style="{ color: 'd6993a' }" />
             </font-awesome-layers>
             <div class="starting-step-text">
               <span class="step-number-text">Step 1:</span>
@@ -84,7 +84,7 @@
           <div class="starting-step">
             <font-awesome-layers class="fa-4x">
               <font-awesome-icon :icon="['far', 'circle']" />
-              <font-awesome-icon icon="user-friends" transform="shrink-9 left-2" :style="{ color: 'd6993a' }" />
+              <font-awesome-icon icon="user-friends" transform="shrink-9 left-1" :style="{ color: 'd6993a' }" />
             </font-awesome-layers>
             <div class="starting-step-text">
               <span class="step-number-text">Step 2:</span>
@@ -115,7 +115,7 @@
             <div class="feature-highlight shadowed">
               <font-awesome-layers class="fa-4x">
                 <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="user-friends" transform="shrink-9 left-2" :style="{ color: 'd6993a' }" />
+                <font-awesome-icon icon="user-friends" transform="shrink-9 left-1" :style="{ color: 'd6993a' }" />
               </font-awesome-layers>
               <span class="feature-description">Compete with your friends</span>
             </div>
@@ -142,7 +142,7 @@
             <div class="feature-highlight shadowed">
               <font-awesome-layers class="fa-4x">
                 <font-awesome-icon :icon="['far', 'circle']" />
-                <font-awesome-icon icon="money-bill-alt" transform="shrink-8 left-1" :style="{ color: 'd6993a' }" />
+                <font-awesome-icon icon="money-bill-alt" transform="shrink-8" :style="{ color: 'd6993a' }" />
                 <font-awesome-icon icon="slash" transform="shrink-6 left-2" />
               </font-awesome-layers>
               <span class="feature-description">Totally free</span>
