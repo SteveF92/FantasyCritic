@@ -10,18 +10,28 @@
   </label>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
+
 const buttonMargin = 3;
 
-export default {
+interface ToggleLabels {
+  checked: string;
+  unchecked: string;
+}
+
+export default defineComponent({
   props: {
     modelValue: { type: Boolean, required: true },
-    labels: { type: Object, required: true },
+    labels: { type: Object as PropType<ToggleLabels>, required: true },
     width: { type: Number, default: 60 },
     height: { type: Number, default: 28 },
     disabled: { type: Boolean, default: false }
   },
-  emits: ['update:modelValue', 'change'],
+  emits: {
+    'update:modelValue': (_value: boolean) => true,
+    change: (_value: boolean) => true
+  },
   computed: {
     coreStyle() {
       return {
@@ -52,7 +62,7 @@ export default {
       this.$emit('change', toggled);
     }
   }
-};
+});
 </script>
 
 <style scoped>

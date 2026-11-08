@@ -17,10 +17,10 @@
   </b-card>
 </template>
 
-<script>
-import { useId } from 'vue';
+<script lang="ts">
+import { defineComponent, useId } from 'vue';
 
-export default {
+export default defineComponent({
   setup() {
     return { accordionID: `accordion-${useId()}` };
   },
@@ -37,7 +37,7 @@ export default {
       this.visible = true;
     }
   }
-};
+});
 </script>
 
 <style scoped>
