@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "web",
+      "runtimeExecutable": "dotnet",
+      "runtimeArgs": ["run", "--project", "src/FantasyCritic.Web/FantasyCritic.Web.csproj", "--launch-profile", "Console - Backend Only"],
+      "port": 4554,
+      "url": "https://localhost:4554"
+    }
+  ]
+}
