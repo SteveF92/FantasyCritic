@@ -29,29 +29,21 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, PropType } from 'vue';
+import { defineComponent, type CSSProperties, type PropType } from 'vue';
 
 import { MasterGameTagViewModel, PublisherSlotViewModel } from '@/api/clients';
-import { PopoverContent } from '@/models/vueModels';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+import { PopoverContent } from '@/types/vueTypes';
 
-interface BadgeColorStyle {
-  backgroundImage: string;
-  color: string;
-  'text-shadow': string;
-}
-
-export interface SlotTypeBadgeProp extends PublisherSlotViewModel {
-  dropped: boolean;
-}
+export type SlotTypeBadgeSlot = Pick<PublisherSlotViewModel, 'counterPick' | 'specialSlot'> & { dropped?: boolean };
 
 export default defineComponent({
   components: {
     MasterGameTagBadge
   },
   props: {
-    gameSlot: { type: Object as PropType<SlotTypeBadgeProp>, required: true },
+    gameSlot: { type: Object as PropType<SlotTypeBadgeSlot>, required: true },
     hideBackground: { type: Boolean }
   },
   computed: {
@@ -83,7 +75,7 @@ export default defineComponent({
       }
       return tag;
     },
-    getMultiBadgeColor(tagNames: string[]): BadgeColorStyle {
+    getMultiBadgeColor(tagNames: string[]): CSSProperties {
       let colorString = '';
       let stripeWidth = 100.0 / tagNames.length;
       for (let i = 0; i < tagNames.length; i++) {
