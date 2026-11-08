@@ -39,32 +39,28 @@ import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 export type SlotTypeBadgeSlot = Pick<PublisherSlotViewModel, 'counterPick' | 'specialSlot'> & { dropped?: boolean };
 
 export default defineComponent({
+  setup() {
+    const regularText: PopoverContent = {
+      title: 'Regular Slot',
+      body: 'This slot has no special requirements, so it follows the normal eligibility rules for the league.'
+    };
+    const counterPickText: PopoverContent = {
+      title: 'Counter Pick',
+      body: 'This slot is for counter picks, which are bets against a game. See the FAQ for more details.'
+    };
+    const droppedText: PopoverContent = {
+      title: 'Dropped',
+      body: "This game is no longer on this publisher's lineup."
+    };
+
+    return { regularText, counterPickText, droppedText };
+  },
   components: {
     MasterGameTagBadge
   },
   props: {
     gameSlot: { type: Object as PropType<SlotTypeBadgeSlot>, required: true },
     hideBackground: { type: Boolean }
-  },
-  computed: {
-    regularText(): PopoverContent {
-      return {
-        title: 'Regular Slot',
-        body: 'This slot has no special requirements, so it follows the normal eligibility rules for the league.'
-      };
-    },
-    counterPickText(): PopoverContent {
-      return {
-        title: 'Counter Pick',
-        body: 'This slot is for counter picks, which are bets against a game. See the FAQ for more details.'
-      };
-    },
-    droppedText(): PopoverContent {
-      return {
-        title: 'Dropped',
-        body: "This game is no longer on this publisher's lineup."
-      };
-    }
   },
   methods: {
     getTag(tagName: string): MasterGameTagViewModel {
