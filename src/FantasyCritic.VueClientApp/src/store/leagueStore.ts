@@ -157,21 +157,21 @@ export const useLeagueStore = defineStore('league', {
       publisherStore.clearPublisherStoreData();
       this.clearLeagueStoreData();
       this.inviteCode = leaguePageParams.inviteCode;
-      await this.fetchLeagueYear(leaguePageParams);
+      await this._fetchLeagueYear(leaguePageParams);
     },
     async initializeHistoryPage(leaguePageParams: LeaguePageParams) {
       const publisherStore = usePublisherStore();
       publisherStore.clearPublisherStoreData();
       this.clearLeagueStoreData();
-      await this.fetchLeagueYear(leaguePageParams);
-      await Promise.all([this.fetchLeagueActions(leaguePageParams), this.fetchLeagueActionSets(leaguePageParams), this.fetchHistoricalTrades(leaguePageParams)]);
+      await this._fetchLeagueYear(leaguePageParams);
+      await Promise.all([this._fetchLeagueActions(leaguePageParams), this._fetchLeagueActionSets(leaguePageParams), this._fetchHistoricalTrades(leaguePageParams)]);
     },
     async refreshLeagueYear() {
       if (!this.leagueYear) {
         throw new Error('League store is not initialized');
       }
 
-      await this.fetchLeagueYear({
+      await this._fetchLeagueYear({
         leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         inviteCode: this.inviteCode
@@ -181,43 +181,6 @@ export const useLeagueStore = defineStore('league', {
       await this.refreshLeagueYear();
       if (message) {
         makeToast(message);
-      }
-    },
-    async fetchLeagueYear(leaguePageParams: LeaguePageParams) {
-      try {
-        const leagueYear = await leagueClient.getLeagueYear(leaguePageParams.leagueID, leaguePageParams.year, leaguePageParams.inviteCode);
-        this.leagueYear = leagueYear;
-        document.title = leagueYear.league.leagueName + ' - Fantasy Critic';
-      } catch (error) {
-        this.setError(error);
-      }
-    },
-    async fetchLeagueActions(leaguePageParams: LeaguePageParams) {
-      try {
-        this.leagueActions = await leagueClient.getLeagueActions(leaguePageParams.leagueID, leaguePageParams.year);
-      } catch (error) {
-        this.setError(error);
-      }
-    },
-    async fetchLeagueActionSets(leaguePageParams: LeaguePageParams) {
-      try {
-        this.leagueActionSets = await leagueClient.getLeagueActionSets(leaguePageParams.leagueID, leaguePageParams.year);
-      } catch (error) {
-        this.setError(error);
-      }
-    },
-    async fetchHistoricalTrades(leaguePageParams: LeaguePageParams) {
-      try {
-        this.historicalTrades = await leagueClient.tradeHistory(leaguePageParams.leagueID, leaguePageParams.year);
-      } catch (error) {
-        this.setError(error);
-      }
-    },
-    setError(error: unknown) {
-      if (ApiException.isApiException(error) && (error.status === 401 || error.status === 403)) {
-        this.forbidden = true;
-      } else {
-        this.hasError = true;
       }
     },
     clearLeagueStoreData() {
@@ -236,6 +199,43 @@ export const useLeagueStore = defineStore('league', {
     setDraftOrderView(draftOrderView: boolean) {
       this.draftOrderView = draftOrderView;
       localStorage.setItem('draftOrderView', draftOrderView.toString());
+    },
+    async _fetchLeagueYear(leaguePageParams: LeaguePageParams) {
+      try {
+        const leagueYear = await leagueClient.getLeagueYear(leaguePageParams.leagueID, leaguePageParams.year, leaguePageParams.inviteCode);
+        this.leagueYear = leagueYear;
+        document.title = leagueYear.league.leagueName + ' - Fantasy Critic';
+      } catch (error) {
+        this._setError(error);
+      }
+    },
+    async _fetchLeagueActions(leaguePageParams: LeaguePageParams) {
+      try {
+        this.leagueActions = await leagueClient.getLeagueActions(leaguePageParams.leagueID, leaguePageParams.year);
+      } catch (error) {
+        this._setError(error);
+      }
+    },
+    async _fetchLeagueActionSets(leaguePageParams: LeaguePageParams) {
+      try {
+        this.leagueActionSets = await leagueClient.getLeagueActionSets(leaguePageParams.leagueID, leaguePageParams.year);
+      } catch (error) {
+        this._setError(error);
+      }
+    },
+    async _fetchHistoricalTrades(leaguePageParams: LeaguePageParams) {
+      try {
+        this.historicalTrades = await leagueClient.tradeHistory(leaguePageParams.leagueID, leaguePageParams.year);
+      } catch (error) {
+        this._setError(error);
+      }
+    },
+    _setError(error: unknown) {
+      if (ApiException.isApiException(error) && (error.status === 401 || error.status === 403)) {
+        this.forbidden = true;
+      } else {
+        this.hasError = true;
+      }
     }
   }
 });

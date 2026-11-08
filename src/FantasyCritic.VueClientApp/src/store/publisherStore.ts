@@ -48,12 +48,12 @@ export const usePublisherStore = defineStore('publisher', {
         throw new Error(`Publisher ${publisherID} not found`);
       }
 
-      this.initializeInternal(publisher, leagueYear);
-      this.setDesiredPositions();
+      this._initializeInternal(publisher, leagueYear);
+      this._setDesiredPositions();
     },
     moveGame(moveIntoSlot: PublisherSlotViewModel) {
-      this.moveGameInternal(moveIntoSlot);
-      this.setDesiredPositions();
+      this._moveGameInternal(moveIntoSlot);
+      this._setDesiredPositions();
     },
     async confirmPositions() {
       if (!this.publisher) {
@@ -75,7 +75,7 @@ export const usePublisherStore = defineStore('publisher', {
         this.cancelMoveMode();
       }
 
-      this.completeMoveMode();
+      this._completeMoveMode();
 
       const leagueYear = await leagueClient.getLeagueYearForPublisher(request.publisherID);
       const publisher = leagueYear?.publishers.find((x) => x.publisherID === request.publisherID);
@@ -83,8 +83,8 @@ export const usePublisherStore = defineStore('publisher', {
         throw new Error(`Publisher ${request.publisherID} not found`);
       }
 
-      this.initializeInternal(publisher, leagueYear);
-      this.setDesiredPositions();
+      this._initializeInternal(publisher, leagueYear);
+      this._setDesiredPositions();
     },
     clearPublisherStoreData() {
       this.publisher = null;
@@ -115,18 +115,18 @@ export const usePublisherStore = defineStore('publisher', {
     setIncludeRemovedInSorted(includeRemovedInSorted: boolean) {
       this.includeRemovedInSorted = includeRemovedInSorted;
     },
-    initializeInternal(publisher: PublisherViewModel, leagueYear: LeagueYearViewModel) {
+    _initializeInternal(publisher: PublisherViewModel, leagueYear: LeagueYearViewModel) {
       this.publisher = publisher;
       this.leagueYear = leagueYear;
       this.cleanGameSlots = deepClone(publisher.gameSlots);
       this.editableGameSlots = deepClone(publisher.gameSlots);
     },
-    completeMoveMode() {
+    _completeMoveMode() {
       this.moveMode = false;
       this.desiredPositions = {};
       this.heldSlot = null;
     },
-    moveGameInternal(moveIntoSlot: PublisherSlotViewModel) {
+    _moveGameInternal(moveIntoSlot: PublisherSlotViewModel) {
       if (!this.heldSlot) {
         throw new Error('No held game');
       }
@@ -136,7 +136,7 @@ export const usePublisherStore = defineStore('publisher', {
       this.heldSlot.publisherGame = deepClone(tempSlot.publisherGame);
       this.heldSlot = null;
     },
-    setDesiredPositions() {
+    _setDesiredPositions() {
       if (!this.editableGameSlots) {
         throw new Error('No games to set positions for.');
       }

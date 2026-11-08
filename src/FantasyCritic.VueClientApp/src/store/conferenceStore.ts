@@ -26,13 +26,13 @@ export const useConferenceStore = defineStore('conference', {
       this.hasError = false;
       this.conferenceYear = null;
       this.conferenceInviteCode = conferencePageParams.inviteCode;
-      await this.fetchConferenceYear(conferencePageParams);
+      await this._fetchConferenceYear(conferencePageParams);
     },
     async refreshConferenceYear() {
       if (!this.conferenceYear) {
         return;
       }
-      await this.fetchConferenceYear({
+      await this._fetchConferenceYear({
         conferenceID: this.conferenceYear.conference.conferenceID,
         year: this.conferenceYear.year
       });
@@ -43,7 +43,7 @@ export const useConferenceStore = defineStore('conference', {
         makeToast(message);
       }
     },
-    async fetchConferenceYear(conferencePageParams: ConferencePageParams) {
+    async _fetchConferenceYear(conferencePageParams: ConferencePageParams) {
       try {
         const conferenceYear = await conferenceClient.getConferenceYear(conferencePageParams.conferenceID, conferencePageParams.year);
         this.conferenceYear = conferenceYear;
