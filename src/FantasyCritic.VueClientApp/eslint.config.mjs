@@ -46,6 +46,9 @@ export default [
     rules: {
       "vue/multi-word-component-names": "off", // Retaining rules from original config
       "vue/valid-v-slot": ["error", { allowModifiers: true }],
+      // Typed emits are declared as validators whose parameters exist only for their types:
+      // emits: { gameSelected: (_game: MasterGameYearViewModel) => true }
+      "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
       "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
       "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
     },

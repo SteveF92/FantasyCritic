@@ -19,7 +19,14 @@
     // registered in main.js, which is outside this program)
     "types": ["vite/client", "chartjs-plugin-annotation"]
   },
+  "vueCompilerOptions": {
+    // Unknown components, events and directives in templates are errors, not silent `any`s
+    "checkUnknownComponents": true,
+    "checkUnknownEvents": true,
+    "checkUnknownDirectives": true
+  },
   "include": [
+    "components.d.ts",
     "src/**/*.ts",
     "src/**/*.d.ts",
     "src/**/*.vue",

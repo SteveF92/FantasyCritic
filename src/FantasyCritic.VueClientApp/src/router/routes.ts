@@ -42,7 +42,7 @@ import MasterGameEditor from '@/views/masterGameEditor.vue';
 import FantasyCriticPlus from '@/views/fantasyCriticPlus.vue';
 import TopBidsAndDrops from '@/views/topBidsAndDrops.vue';
 import SiteUpdates from '@/views/siteUpdates.vue';
-import { RouteLocationNormalized, RouteRecordRaw } from 'vue-router';
+import { RouteRecordRaw } from 'vue-router';
 
 function parseNumberParam(numberParam: string | string[]): number {
   const parsedParam = Number.parseInt(String(numberParam), 10);

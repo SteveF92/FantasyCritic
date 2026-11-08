@@ -41,7 +41,7 @@ export default defineComponent({
     leagueYear: { type: Object as PropType<LeagueYearViewModel>, required: true }
   },
   emits: {
-    gameSelected: (game: MasterGameYearViewModel) => true
+    gameSelected: (_game: MasterGameYearViewModel) => true
   },
   data() {
     return {
@@ -67,14 +67,18 @@ export default defineComponent({
 ```
 
 - **Types come from `@/api/clients`** (the generated view models and requests). `src/models/` is
-  hand-written copies of generated types and goes away in step 1.
+  hand-written copies of generated types. Its three users move to the generated types in steps 5 and
+  9, and step 9 deletes it.
 - **Props:** `as PropType<T>` for objects and arrays. Make a prop `required: true` when every parent
   passes it, rather than optional plus `!` at each use. A route with `props: true` passes strings;
   routes that parse their params pass numbers. Match what the route gives.
 - **Computed:** annotate every return type. The Options API needs it to type `this`.
 - **Data:** initial `null`s and empty arrays need a cast: `null as T | null`, `[] as T[]`.
-- **Emits:** declare every event. The object form with a typed validator gives the parent's handler its
-  payload type. Step 1 settles the exact form that passes lint.
+- **Emits:** declare every event in the object form, with a typed validator that returns `true`. It's
+  the only Options API form that types the payload, both for `$emit` and for the parent's handler.
+  Prefix the validator's parameters with `_`. ESLint ignores `_` arguments in `.vue` files for this.
+- **Fallthrough attributes** (`alt` on `BImg`, `title` on a component that doesn't declare it) are
+  fine. vue-tsc's `checkUnknownProps` is off because it would flag them.
 - **`$refs`:** cast with `this.$refs.x as InstanceType<typeof Child> | undefined`.
 - **Requests:** build the generated request type (a typed object literal), not an untyped object.
 - **Errors:** `getApiErrorMessage(error)` from step 2, never `error.response.data`.
@@ -130,20 +134,25 @@ League steps.
 
 ## Steps
 
-### 1. Type-checking setup
+### 1. Type-checking setup (done)
 
-- Add `components.d.ts` to `tsconfig.json`'s `include`. It sits at the project root, outside `src/**`,
-  so vue-tsc doesn't see it today and bootstrap-vue-next components (`BModal`, `BButton`, ...) and
-  `RouterLink` aren't checked in templates.
-- Declare the globally registered `FontAwesomeIcon`, `FontAwesomeLayers`, `FontAwesomeLayersText`,
-  `ValidationField` and `ValidationForm` in a `GlobalComponents` augmentation.
-- Turn on vue-tsc's strict template options (`vueCompilerOptions.strictTemplates`, or the individual
-  `checkUnknownComponents`/`checkUnknownProps`/`checkUnknownEvents` flags), so an unknown component or
-  prop in a TS template is an error instead of a silent `any`.
-- Fix what this surfaces in the four components that are already TS: `royalePublisherGraph`,
-  `siteAnnouncementsWidget`, `about`, `siteUpdates`.
-- Point those components at the generated types and delete `src/models/`.
-- Settle the emits form against the lint config.
+- `components.d.ts` is in `tsconfig.json`'s `include`. It sits at the project root, outside `src/**`,
+  so vue-tsc didn't see it, and bootstrap-vue-next components (`BModal`, `BButton`, ...) and
+  `RouterLink` weren't checked in templates.
+- `src/globalComponents.d.ts` declares the components `main.ts` registers: `FontAwesomeIcon`,
+  `FontAwesomeLayers`, `FontAwesomeLayersText`, `ValidationField`, `ValidationForm`.
+- `vueCompilerOptions` turns on `checkUnknownComponents`, `checkUnknownEvents` and
+  `checkUnknownDirectives`. Not `strictTemplates`: it also turns on `checkUnknownProps`, which flags
+  valid fallthrough attributes (it failed on `alt` on `BImg` in `community`/`fantasyCriticPlus` and
+  `name` on an `<a>` in `about`).
+- Checked with a throwaway component: an unknown component, an unknown directive, and wrong prop types
+  on `BButton`, `font-awesome-icon`, `ValidationField` and `router-link` are all errors now. An unknown
+  event on `BButton` still isn't, because bootstrap-vue-next accepts any listener.
+- ESLint ignores `_`-prefixed arguments in `.vue` files, for the emits validators.
+- Nothing new surfaced in the four components that are already TS. Moving them off `src/models/` is
+  component work, so it's in steps 5 (`siteAnnouncementsWidget`, `siteUpdates`) and 9
+  (`royalePublisherGraph`, then delete `src/models/`).
+- Also removed an unused `RouteLocationNormalized` import in `router/routes.ts` that failed lint.
 
 ### 2. API error helper
 
@@ -171,8 +180,9 @@ Test on Master Games, League and Home.
 ### 5. App shell and static pages
 
 `App.vue`, `topNavBar`, `footerModule`, `toastHost`; `welcome` (+ `homeFAQ`), `discordBot`, `faq`,
-`howToPlay`, `contact`, `community`, `fantasyCriticPlus`, `notFound`. Test both signed in and signed
-out.
+`howToPlay`, `contact`, `community`, `fantasyCriticPlus`, `notFound`. Move `siteAnnouncementsWidget`
+and `siteUpdates` (already TS) from `@/models/SiteAnnouncement` to `SiteAnnouncementViewModel`. Test both
+signed in and signed out.
 
 ### 6. Master game pages
 
@@ -191,6 +201,8 @@ out.
 
 ### 9. Critics Royale
 
+- `royalePublisherGraph` (already TS): move from `@/models/royale` to the generated royale view models,
+  then delete `src/models/`
 - `criticsRoyale` (+ `royaleGroupsWidget`, `royalePodium`, `criticsRoyaleInfo`,
   `modals/createRoyalePublisherForm`)
 - `royalePublisher` (+ `possibleRoyaleMasterGamesTable`, `modals/royalePurchaseGameForm`,
@@ -272,3 +284,4 @@ has the bug too.
 | Step | Where | What | On main | Fix |
 |---|---|---|---|---|
 | — | `views/masterGameRequest.vue` `sendMasterGameRequestRequest` | Reads `error.response.data` on an `ApiException`, whose `response` is a string, so `errorInfo` is `undefined` and a failed request shows no error | Yes | Step 7 |
+| 1 | `components/royalePublisherGraph.vue` | Passes `chart-id` to vue-chartjs 5's `Line`, which has no `chartId` prop, so it falls through as a `chart-id` attribute instead of setting the canvas id (found with `checkUnknownProps` on). TypeScript reports only the first excess property, so check `height` and `styles` too | Yes | Step 9 |
