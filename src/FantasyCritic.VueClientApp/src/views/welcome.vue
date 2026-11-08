@@ -179,16 +179,18 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
 import HomeFaq from '@/components/homeFAQ.vue';
 import SiteCounts from '@/components/siteCounts.vue';
 
-export default {
+export default defineComponent({
   components: {
     HomeFaq,
     SiteCounts
   }
-};
+});
 </script>
 <style scoped>
 @media only screen and (max-width: 679px) {

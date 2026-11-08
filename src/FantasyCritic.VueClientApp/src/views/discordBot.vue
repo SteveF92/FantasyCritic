@@ -721,15 +721,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
 import CollapseCard from '@/components/collapseCard.vue';
 
-export default {
+export default defineComponent({
   components: {
     CollapseCard
-  },
-  data() {
-    return {};
   },
   mounted() {
     if (this.$route.hash) {
@@ -737,14 +736,14 @@ export default {
     }
   },
   methods: {
-    showCollapse(hash) {
-      this.$refs.discordBotInfoCollapseRef.show();
+    showCollapse(hash: string) {
+      (this.$refs.discordBotInfoCollapseRef as InstanceType<typeof CollapseCard>).show();
       setTimeout(() => {
         this.$router.push({ hash: hash });
       }, 250);
     }
   }
-};
+});
 </script>
 <style scoped>
 .command-label {

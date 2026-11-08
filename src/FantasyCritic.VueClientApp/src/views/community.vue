@@ -90,6 +90,7 @@
     </div>
   </div>
 </template>
+
 <style scoped>
 .fixed-image {
   max-width: 300px;

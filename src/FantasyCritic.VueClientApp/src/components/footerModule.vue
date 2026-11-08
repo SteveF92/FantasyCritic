@@ -79,6 +79,7 @@
     </div>
   </footer>
 </template>
+
 <style scoped>
 .fc-plus-nav {
   height: 24px;

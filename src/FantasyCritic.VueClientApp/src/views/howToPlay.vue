@@ -148,8 +148,7 @@
 .how-step-header {
   display: flex;
 }
-.how-step h1 {
-}
+
 .how-step .step-icon {
   margin-left: 80px;
 }

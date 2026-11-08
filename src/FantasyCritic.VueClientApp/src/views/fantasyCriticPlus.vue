@@ -89,6 +89,7 @@
     </div>
   </div>
 </template>
+
 <style scoped>
 .plus-logo {
   margin-top: 10px;

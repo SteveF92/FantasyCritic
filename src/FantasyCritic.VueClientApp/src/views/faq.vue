@@ -1156,35 +1156,24 @@
     </collapseCard>
   </div>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'pinia';
+
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import CollapseCard from '@/components/collapseCard.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+export default defineComponent({
   components: {
     CollapseCard,
     MasterGameTagBadge
   },
-  data() {
-    return {
-      lastID: 1
-    };
-  },
   computed: {
-    allTags() {
-      const interLeagueStore = useInterLeagueStore();
-      return interLeagueStore.allTags;
-    }
-  },
-  methods: {
-    getCollapseID() {
-      let thisID = this.lastID;
-      this.lastID = this.lastID + 1;
-      return thisID;
-    }
+    ...mapState(useInterLeagueStore, ['allTags'])
   }
-};
+});
 </script>
 <style scoped>
 .fc-plus-logo {

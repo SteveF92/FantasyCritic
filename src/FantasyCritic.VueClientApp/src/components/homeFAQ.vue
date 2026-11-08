@@ -25,12 +25,14 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
 import CollapseCard from '@/components/collapseCard.vue';
 
-export default {
+export default defineComponent({
   components: {
     CollapseCard
   }
-};
+});
 </script>
