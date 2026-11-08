@@ -49,7 +49,7 @@
 
     <b-table
       v-model:sort-by="sortBy"
-      :items="gameRows"
+      :items="masterGames"
       :fields="gameFields"
       :filter="filter"
       :filter-function="filterGames"
@@ -108,94 +108,106 @@
     <b-pagination v-model="currentPage" :total-rows="totalRows" :per-page="perPage" align="fill" size="sm" class="my-0 pagination-dark"></b-pagination>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import type { BTableSortBy, BTableSortByOrder, TableField } from 'bootstrap-vue-next';
+
+import { MasterGameYearViewModel } from '@/api/clients';
 import { formatMasterGameReleaseDate, numericComparer } from '@/globalFunctions';
 import { formatPercent, formatScore } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+interface MasterGamesTableData {
+  totalRows: number;
+  currentPage: number;
+  perPage: number;
+  sortBy: BTableSortBy[];
+  filter: string;
+  filterOn: string[];
+}
+
+interface SortOption {
+  text: string;
+  value: string;
+}
+
+export default defineComponent({
+  setup() {
+    const gameFields: TableField<MasterGameYearViewModel>[] = [
+      { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+      { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary', 'md-screen-minimum', 'position-relative'], tdClass: 'md-screen-minimum' },
+      { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
+      { key: 'projectedOrRealFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
+      { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum', sortCompare: numericComparer },
+      { key: 'adjustedPercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum', sortCompare: numericComparer },
+      { key: 'tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum', 'position-relative'], tdClass: 'lg-screen-minimum' }
+    ];
+    const pageOptions: number[] = [10, 50, 100, 1000];
+
+    const sortOptions: SortOption[] = gameFields
+      .filter((f) => f.sortable)
+      .map((f) => {
+        return { text: f.label ?? f.key, value: f.key };
+      });
+
+    return {
+      gameFields,
+      pageOptions,
+      sortOptions
+    };
+  },
   components: {
     MasterGamePopover,
     MasterGameTagBadge
   },
   props: {
-    masterGames: { type: Array, required: true },
+    masterGames: { type: Array as PropType<MasterGameYearViewModel[]>, required: true },
     showYearStats: { type: Boolean, required: true }
   },
-  data() {
+  data(): MasterGamesTableData {
     return {
-      gameFields: [
-        { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'criticScore', label: 'Critic Score Link', thClass: ['bg-primary', 'md-screen-minimum', 'position-relative'], tdClass: 'md-screen-minimum' },
-        { key: 'dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
-        { key: 'projectedOrRealFantasyPoints', label: 'Points', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
-        { key: 'eligiblePercentStandardGame', label: '% Picked', sortable: true, thClass: ['bg-primary', 'md-screen-minimum'], tdClass: 'md-screen-minimum', sortCompare: numericComparer },
-        { key: 'adjustedPercentCounterPick', label: '% Counter Picked', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum', sortCompare: numericComparer },
-        { key: 'tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum', 'position-relative'], tdClass: 'lg-screen-minimum' }
-      ],
       totalRows: 1,
       currentPage: 1,
       perPage: 50,
-      pageOptions: [10, 50, 100, 1000],
       sortBy: [{ key: 'dateAdjustedHypeFactor', order: 'desc' }],
-      filter: null,
+      filter: '',
       filterOn: []
     };
   },
   computed: {
-    activeSort() {
+    activeSort(): BTableSortBy | undefined {
       return this.sortBy.find((sort) => sort.order);
     },
     sortKey: {
-      get() {
+      get(): string {
         return this.activeSort ? this.activeSort.key : '';
       },
-      set(key) {
+      set(key: string) {
         this.sortBy = key ? [{ key, order: this.sortOrder }] : [];
       }
     },
     sortOrder: {
-      get() {
+      get(): BTableSortByOrder {
         return this.activeSort ? this.activeSort.order : 'asc';
       },
-      set(order) {
+      set(order: BTableSortByOrder) {
         this.sortBy = [{ key: this.sortKey, order }];
       }
     },
-    sortOptions() {
-      // Create an options list from our fields
-      return this.gameFields
-        .filter((f) => f.sortable)
-        .map((f) => {
-          return { text: f.label, value: f.key };
-        });
-    },
-    tableIsSmall() {
+    tableIsSmall(): boolean {
       if (window.innerWidth < 500) {
         return true;
       }
 
       return false;
-    },
-    gameRows() {
-      let gameRows = this.masterGames;
-      if (!gameRows) {
-        return [];
-      }
-      for (let i = 0; i < gameRows.length; ++i) {
-        if (gameRows[i].error) {
-          gameRows[i]._rowVariant = 'danger';
-        }
-      }
-      return gameRows;
     }
   },
   watch: {
     masterGames() {
       // bootstrap-vue-next emits filtered only when the filter or sort changes, not the items.
-      this.filter = null;
+      this.filter = '';
       this.totalRows = this.masterGames.length;
       this.currentPage = 1;
     }
@@ -206,18 +218,18 @@ export default {
   methods: {
     formatPercent,
     formatScore,
-    getReleaseDate(game) {
-      return formatMasterGameReleaseDate(game);
+    getReleaseDate(game: MasterGameYearViewModel): string {
+      return formatMasterGameReleaseDate(game, false);
     },
-    openCriticLink(game) {
+    openCriticLink(game: MasterGameYearViewModel): string {
       return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
     },
-    onFiltered(filteredItems) {
+    onFiltered(filteredItems: readonly MasterGameYearViewModel[]) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },
-    filterGames(item) {
+    filterGames(item: Readonly<MasterGameYearViewModel>) {
       if (!this.filter) {
         return true;
       }
@@ -252,7 +264,7 @@ export default {
       return false;
     }
   }
-};
+});
 </script>
 <style scoped>
 .table-controls {

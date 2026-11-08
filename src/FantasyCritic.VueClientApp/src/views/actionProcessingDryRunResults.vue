@@ -60,6 +60,8 @@ import { formatDateTime, formatYesNo } from '@/utilities/formatters';
 import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
 import LeagueActionSet from '@/components/leagueActionSet.vue';
 
+const markFailedGames = (games) => games.map((game) => (game.error ? { ...game, _rowVariant: 'danger' } : game));
+
 export default {
   components: {
     MasterGamesTable,
@@ -89,7 +91,11 @@ export default {
       axios
         .get('/api/ActionRunner/ActionProcessingDryRun')
         .then((response) => {
-          this.dryRunResults = response.data;
+          this.dryRunResults = {
+            ...response.data,
+            dropActions: markFailedGames(response.data.dropActions),
+            pickupActions: markFailedGames(response.data.pickupActions)
+          };
         })
         .catch(() => {});
     }
