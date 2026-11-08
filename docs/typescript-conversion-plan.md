@@ -15,6 +15,11 @@ This is cooperative: Steve works through the steps, and calls Claude in for revi
 3. **Leave the code checkable.** At the end, `npm run type-check` covers every component and template,
    and the API contract breaks the build when it changes.
 
+Comparing against main doesn't mean matching it 1:1. If embracing a new default behaviour makes for
+cleaner code, markup or CSS, and the appearance is not worse, embrace it. Dropping the Font Awesome 6
+width override is the example. Be aware of each deviation, and log it in
+[Found along the way](#found-along-the-way).
+
 Options API stays. Each component becomes `defineComponent({...})`, matching
 [royalePublisherGraph.vue](../src/FantasyCritic.VueClientApp/src/components/royalePublisherGraph.vue).
 
@@ -117,7 +122,8 @@ export default defineComponent({
    `dotnet build src/FantasyCritic.slnx`.
 3. Manually test every page the step touches against main. Use both the read views and every action,
    including writes.
-4. Log every bug found and every deliberate behaviour change in [Found along the way](#found-along-the-way).
+4. Log every bug found and every deliberate change in behaviour or appearance in
+   [Found along the way](#found-along-the-way).
 5. Commit. Call Claude to review before starting the next step.
 
 ### What Claude checks in review
@@ -214,7 +220,7 @@ Test on Master Games, League and Home.
 `collapseCard`, `toggleSwitch`, `dateInput`, `statusBadge`, `siteCounts`, `gameTables/slotTypeBadge`,
 `masterGameDetails`, `masterGameTagSelector`, `modals/leagueOptionsModal`.
 
-### 5. App shell and static pages
+### 5. App shell and static pages (done)
 
 `App.vue`, `topNavBar`, `footerModule`, `toastHost`; `welcome` (+ `homeFAQ`), `discordBot`, `faq`,
 `howToPlay`, `contact`, `community`, `fantasyCriticPlus`, `notFound`. `siteAnnouncementsWidget` and
@@ -329,3 +335,4 @@ has the bug too.
 | 5 | `components/toastHost.vue` | The close icon is now a native button named "Close", so a keyboard can reach it. `hide` is now called with no arguments, where it was passed the `MouseEvent` as its trigger | — | Done |
 | 5 | `components/toastHost.vue` | Toasts had no fixed position on this branch, so they rendered in page flow just above the footer, off-screen on any long page. bootstrap-vue-next doesn't position a declarative `b-toast` the way BootstrapVue's default toaster did. Also, `.toast-body` didn't fill the toast, so the close button sat against the message | No | Done: pinned top right with `toast-container`; `.toast-body` grows |
 | 5 | `components/toastHost.vue` | Toasts never auto-hide on this branch. `visible` shows a `b-toast` without starting its countdown, which only runs when `modelValue` is a number, so a toast stayed until it was closed, even though `vue3-upgrade-plan.md` records auto-hide as checked | No | Done: `:model-value="5000" no-progress` in place of `visible`. Hovering pauses the countdown |
+| 5 | `css/site.css`, `views/welcome.vue` | Dropped the overrides that kept Font Awesome 6's icon and layer widths, along with the `left-*` transforms that compensated for them, so icons now use Font Awesome 7's 1.25em default. It looks better on the welcome page. Other pages get checked and adjusted as their steps come up | — | Done |
