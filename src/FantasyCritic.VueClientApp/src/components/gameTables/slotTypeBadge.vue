@@ -33,8 +33,8 @@ import { defineComponent, type CSSProperties, type PropType } from 'vue';
 
 import { MasterGameTagViewModel, PublisherSlotViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
-import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import { PopoverContent } from '@/types/vueTypes';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export type SlotTypeBadgeSlot = Pick<PublisherSlotViewModel, 'counterPick' | 'specialSlot'> & { dropped?: boolean };
 
