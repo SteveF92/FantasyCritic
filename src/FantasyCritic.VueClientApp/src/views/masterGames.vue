@@ -1,62 +1,60 @@
 <template>
-  <div v-if="interLeagueDataLoaded">
-    <div class="col-lg-10 offset-lg-1 col-md-12">
-      <div class="row">
-        <div class="header-row">
-          <div class="header-flex">
-            <div class="page-name">
-              <h1 class="header">Master Games List</h1>
-            </div>
+  <div class="col-lg-10 offset-lg-1 col-md-12">
+    <div class="row">
+      <div class="header-row">
+        <div class="header-flex">
+          <div class="page-name">
+            <h1 class="header">Master Games List</h1>
+          </div>
 
-            <div class="selector-area">
-              <b-form-select v-model="selectedYear" :options="selectableYears" class="year-selector" @update:model-value="changeYear" />
-            </div>
+          <div class="selector-area">
+            <b-form-select v-model="selectedYear" :options="selectableYears" class="year-selector" @update:model-value="changeYear" />
           </div>
         </div>
       </div>
-      <hr />
-      <div class="master-games-nav">
-        <template v-for="(item, index) in navItems" :key="item.name">
-          <router-link :to="{ name: item.name }" class="master-games-nav-link text-primary">{{ item.label }}</router-link>
-          <span v-if="index < navItems.length - 1" :key="item.name + '-sep'" class="master-games-nav-sep">|</span>
-        </template>
-      </div>
+    </div>
+    <hr />
+    <div class="master-games-nav">
+      <template v-for="(item, index) in navItems" :key="item.name">
+        <router-link :to="{ name: item.name }" class="master-games-nav-link text-primary">{{ item.label }}</router-link>
+        <span v-if="index < navItems.length - 1" :key="item.name + '-sep'" class="master-games-nav-sep">|</span>
+      </template>
+    </div>
 
-      <div class="special-selectors text-well">
-        <div v-if="isPlusUser">
-          <label class="league-label">View Games for League</label>
-          <b-form-select v-model="selectedLeague" class="league-selector" @update:model-value="fetchGamesForYear">
-            <template #first>
-              <option value="">-- none --</option>
-            </template>
-            <option v-for="league in myLeaguesForYear" :key="league.leagueID" :value="league">
-              {{ league.leagueName }}
-            </option>
-          </b-form-select>
-          <br />
-          <b-button v-show="selectedLeague && (eligibilityFilter || takenStatusFilter)" variant="info" class="clear-league-filter-button" @click="clearLeagueFilter">Clear League Filter</b-button>
-          <b-form-group v-show="selectedLeague">
-            <b-form-radio v-model="eligibilityFilter" value="eligibleOnly">Show only eligible games</b-form-radio>
-            <b-form-radio v-model="eligibilityFilter" value="eligibleInOpenSlotOnly">Show only games eligible in open slot</b-form-radio>
-            <b-form-radio v-model="eligibilityFilter" value="ineligibleOnly">Show only ineligible games</b-form-radio>
-          </b-form-group>
-          <b-form-group v-show="selectedLeague">
-            <b-form-radio v-model="takenStatusFilter" value="taken">Show only games currently taken</b-form-radio>
-            <b-form-radio v-model="takenStatusFilter" value="notTaken">Show only games not currently taken</b-form-radio>
-          </b-form-group>
-        </div>
-        <b-form-checkbox v-model="unreleasedOnlyFilter">
-          <span class="checkbox-label">Show only unreleased games</span>
-        </b-form-checkbox>
+    <div class="special-selectors text-well">
+      <div v-if="isPlusUser">
+        <label class="league-label">View Games for League</label>
+        <b-form-select v-model="selectedLeague" class="league-selector" @update:model-value="fetchGamesForYear">
+          <template #first>
+            <option :value="null">-- none --</option>
+          </template>
+          <option v-for="league in myLeaguesForYear" :key="league.leagueID" :value="league">
+            {{ league.leagueName }}
+          </option>
+        </b-form-select>
+        <br />
+        <b-button v-show="selectedLeague && (eligibilityFilter || takenStatusFilter)" variant="info" class="clear-league-filter-button" @click="clearLeagueFilter">Clear League Filter</b-button>
+        <b-form-group v-show="selectedLeague">
+          <b-form-radio v-model="eligibilityFilter" value="eligibleOnly">Show only eligible games</b-form-radio>
+          <b-form-radio v-model="eligibilityFilter" value="eligibleInOpenSlotOnly">Show only games eligible in open slot</b-form-radio>
+          <b-form-radio v-model="eligibilityFilter" value="ineligibleOnly">Show only ineligible games</b-form-radio>
+        </b-form-group>
+        <b-form-group v-show="selectedLeague">
+          <b-form-radio v-model="takenStatusFilter" value="taken">Show only games currently taken</b-form-radio>
+          <b-form-radio v-model="takenStatusFilter" value="notTaken">Show only games not currently taken</b-form-radio>
+        </b-form-group>
       </div>
+      <b-form-checkbox v-model="unreleasedOnlyFilter">
+        <span class="checkbox-label">Show only unreleased games</span>
+      </b-form-checkbox>
+    </div>
 
-      <div v-if="showGames">
-        <masterGamesTable :master-games="gamesToShow" :show-year-stats="selectedYearIsOpenForPlayOrFinished"></masterGamesTable>
-      </div>
+    <div v-if="!isBusy">
+      <masterGamesTable :master-games="gamesToShow" :show-year-stats="selectedYearIsOpenForPlayOrFinished"></masterGamesTable>
+    </div>
 
-      <div v-else class="spinner">
-        <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
-      </div>
+    <div v-else class="spinner">
+      <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
     </div>
   </div>
 </template>
@@ -65,7 +63,7 @@
 import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 
-import { gameClient, leagueClient, LeagueWithStatusViewModel, LeagueYearViewModel, MasterGameYearViewModel, PossibleMasterGameYearViewModel } from '@/api/clients';
+import { gameClient, leagueClient, LeagueWithStatusViewModel, MasterGameYearViewModel, PossibleMasterGameYearViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
@@ -84,7 +82,7 @@ interface MasterGamesData {
   flatMasterGameYears: MasterGameYearViewModel[] | null;
   possibleMasterGameYears: PossibleMasterGameYearViewModel[] | null;
   myLeaguesForYear: LeagueWithStatusViewModel[];
-  selectedLeague: LeagueYearViewModel | null;
+  selectedLeague: LeagueWithStatusViewModel | null;
 }
 
 const loggedInNavItems: NavButton[] = [
@@ -100,18 +98,13 @@ const unconditionalNavItems: NavButton[] = [
 ];
 
 export default defineComponent({
-  setup() {
-    const interLeagueStore = useInterLeagueStore();
-    const mostRecentYear = interLeagueStore.mostRecentYear.year;
-    return { mostRecentYear };
-  },
   components: {
     MasterGamesTable
   },
   data(): MasterGamesData {
     return {
       isBusy: true,
-      selectedYear: this.mostRecentYear,
+      selectedYear: useInterLeagueStore().supportedYears.filter((x) => x.openForPlay)[0].year,
       eligibilityFilter: null,
       takenStatusFilter: null,
       unreleasedOnlyFilter: false,
@@ -123,7 +116,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useAuthStore, ['isPlusUser', 'isAuth']),
-    ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'supportedYears']),
+    ...mapState(useInterLeagueStore, ['supportedYears']),
     selectableYears(): number[] {
       return this.supportedYears.map((x) => x.year);
     },
@@ -170,16 +163,12 @@ export default defineComponent({
 
       return [];
     },
-    showGames(): boolean {
-      return this.gamesToShow && !this.isBusy;
-    },
     selectedYearIsOpenForPlayOrFinished(): boolean {
       const selectedYear = this.supportedYears.filter((x) => x.year === this.selectedYear)[0];
       return selectedYear.openForPlay || selectedYear.finished;
     }
   },
   async created() {
-    this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
     await Promise.all([this.fetchGamesForYear(), this.fetchMyLeaguesForYear()]);
   },
   methods: {
