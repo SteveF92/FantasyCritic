@@ -31,29 +31,37 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { TableField } from 'bootstrap-vue-next';
 
+import { CompleteMasterGameChangeViewModel, gameClient, RecentMasterGameChangeMode } from '@/api/clients';
 import { formatDateLong } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
-export default {
+interface RecentMasterGameChangesData {
+  mode: RecentMasterGameChangeMode;
+  recentChanges: CompleteMasterGameChangeViewModel[] | null;
+  isBusy: boolean;
+}
+
+export default defineComponent({
   components: {
     MasterGamePopover
   },
-  data() {
+  data(): RecentMasterGameChangesData {
     return {
-      mode: 'All',
+      mode: RecentMasterGameChangeMode.All,
       recentChanges: null,
       isBusy: true
     };
   },
   computed: {
-    showTable() {
-      return this.recentChanges && !this.isBusy;
+    showTable(): boolean {
+      return !!this.recentChanges && !this.isBusy;
     },
-    gameFields() {
-      const fields = [
+    gameFields(): TableField<CompleteMasterGameChangeViewModel>[] {
+      const fields: TableField<CompleteMasterGameChangeViewModel>[] = [
         { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         {
           key: 'timestamp',
@@ -80,14 +88,11 @@ export default {
     formatDateLong,
     async fetchRecentChanges() {
       this.isBusy = true;
-      const response = await axios.get('/api/game/GetRecentMasterGameChanges', {
-        params: { mode: this.mode }
-      });
-      this.recentChanges = response.data;
+      this.recentChanges = await gameClient.getRecentMasterGameChanges(this.mode);
       this.isBusy = false;
     }
   }
-};
+});
 </script>
 
 <style scoped>
