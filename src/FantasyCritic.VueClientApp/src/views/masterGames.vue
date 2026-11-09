@@ -61,51 +61,81 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
 
+import { gameClient, leagueClient, LeagueWithStatusViewModel, LeagueYearViewModel, MasterGameYearViewModel, PossibleMasterGameYearViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
 
-export default {
+interface NavButton {
+  name: string;
+  label: string;
+}
+
+interface MasterGamesData {
+  isBusy: boolean;
+  selectedYear: number;
+  eligibilityFilter: string | null;
+  takenStatusFilter: string | null;
+  unreleasedOnlyFilter: boolean;
+  flatMasterGameYears: MasterGameYearViewModel[] | null;
+  possibleMasterGameYears: PossibleMasterGameYearViewModel[] | null;
+  myLeaguesForYear: LeagueWithStatusViewModel[];
+  selectedLeague: LeagueYearViewModel | null;
+}
+
+const loggedInNavItems: NavButton[] = [
+  { name: 'masterGameRequest', label: 'Request Game' },
+  { name: 'masterGameChangeRequest', label: 'Suggest Correction' }
+];
+
+const unconditionalNavItems: NavButton[] = [
+  { name: 'gameChanges', label: 'Recent Changes' },
+  { name: 'mostDesiredReviews', label: 'Most Desired Reviews' },
+  { name: 'advancedGameStats', label: 'Advanced Stats' },
+  { name: 'topBidsAndDrops', label: 'Top Bids/Drops' }
+];
+
+export default defineComponent({
+  setup() {
+    const interLeagueStore = useInterLeagueStore();
+    const mostRecentYear = interLeagueStore.mostRecentYear.year;
+    return { mostRecentYear };
+  },
   components: {
     MasterGamesTable
   },
-  data() {
+  data(): MasterGamesData {
     return {
       isBusy: true,
-      selectedYear: null,
+      selectedYear: this.mostRecentYear,
       eligibilityFilter: null,
       takenStatusFilter: null,
       unreleasedOnlyFilter: false,
       flatMasterGameYears: null,
       possibleMasterGameYears: null,
       myLeaguesForYear: [],
-      selectedLeague: ''
+      selectedLeague: null
     };
   },
   computed: {
     ...mapState(useAuthStore, ['isPlusUser', 'isAuth']),
     ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'supportedYears']),
-    selectableYears() {
+    selectableYears(): number[] {
       return this.supportedYears.map((x) => x.year);
     },
-    navItems() {
-      const items = [];
+    navItems(): NavButton[] {
+      const items: NavButton[] = [];
       if (this.isAuth) {
-        items.push({ name: 'masterGameRequest', label: 'Request Game' }, { name: 'masterGameChangeRequest', label: 'Suggest Correction' });
+        items.push(...loggedInNavItems);
       }
-      items.push(
-        { name: 'gameChanges', label: 'Recent Changes' },
-        { name: 'mostDesiredReviews', label: 'Most Desired Reviews' },
-        { name: 'advancedGameStats', label: 'Advanced Stats' },
-        { name: 'topBidsAndDrops', label: 'Top Bids/Drops' }
-      );
+      items.push(...unconditionalNavItems);
       return items;
     },
-    gamesToShow() {
+    gamesToShow(): MasterGameYearViewModel[] {
       if (this.flatMasterGameYears) {
         if (!this.unreleasedOnlyFilter) {
           return this.flatMasterGameYears;
@@ -134,16 +164,16 @@ export default {
           filteredGames = filteredGames.filter((x) => !x.isReleased);
         }
 
-        let flattenedGames = filteredGames.map((v) => v.masterGame);
+        const flattenedGames = filteredGames.map((v) => v.masterGame);
         return flattenedGames;
       }
 
       return [];
     },
-    showGames() {
+    showGames(): boolean {
       return this.gamesToShow && !this.isBusy;
     },
-    selectedYearIsOpenForPlayOrFinished() {
+    selectedYearIsOpenForPlayOrFinished(): boolean {
       const selectedYear = this.supportedYears.filter((x) => x.year === this.selectedYear)[0];
       return selectedYear.openForPlay || selectedYear.finished;
     }
@@ -159,11 +189,9 @@ export default {
       this.possibleMasterGameYears = null;
 
       if (!this.selectedLeague) {
-        const response = await axios.get('/api/game/MasterGameYear/' + this.selectedYear);
-        this.flatMasterGameYears = response.data;
+        this.flatMasterGameYears = await gameClient.masterGameYearAll(this.selectedYear);
       } else {
-        const response = await axios.get(`/api/game/MasterGameYearInLeagueContext/${this.selectedYear}?leagueID=${this.selectedLeague.leagueID}`);
-        this.possibleMasterGameYears = response.data;
+        this.possibleMasterGameYears = await gameClient.masterGameYearInLeagueContext(this.selectedYear, this.selectedLeague.leagueID);
       }
 
       this.isBusy = false;
@@ -172,8 +200,8 @@ export default {
       if (!this.isAuth) {
         return;
       }
-      const response = await axios.get('/api/League/MyLeagues?year=' + this.selectedYear);
-      this.myLeaguesForYear = response.data.filter((x) => !x.testLeague && !x.userIsFollowingLeague && x.userIsActiveInMostRecentYearForLeague && x.leagueIsActiveInActiveYear);
+      const response = await leagueClient.myLeagues(this.selectedYear);
+      this.myLeaguesForYear = response.filter((x) => !x.testLeague && !x.userIsFollowingLeague && x.userIsActiveInMostRecentYearForLeague && x.leagueIsActiveInActiveYear);
     },
     async changeYear() {
       await Promise.all([this.fetchGamesForYear(), this.fetchMyLeaguesForYear()]);
@@ -184,8 +212,9 @@ export default {
       this.unreleasedOnlyFilter = false;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .header-row {
   width: 100%;

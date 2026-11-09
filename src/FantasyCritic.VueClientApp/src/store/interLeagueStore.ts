@@ -22,6 +22,7 @@ export const useInterLeagueStore = defineStore('interLeague', {
     possibleLeagueOptions: (state) => requireBasicData(state).leagueOptions,
     bidTimes: (state) => requireBasicData(state).bidTimes,
     supportedYears: (state) => requireBasicData(state).supportedYears,
+    mostRecentYear: (state) => requireBasicData(state).supportedYears[requireBasicData(state).supportedYears.length - 1],
     activeRoyaleQuarter: (state) => requireBasicData(state).activeRoyaleQuarter
   },
   actions: {
