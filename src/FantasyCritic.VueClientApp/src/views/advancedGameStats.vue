@@ -19,34 +19,41 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
 import LongestTenuredGamesPanel from '@/components/gameStats/longestTenuredGamesPanel.vue';
 import MostDreamsDashedPanel from '@/components/gameStats/mostDreamsDashedPanel.vue';
 
-const VALID_SECTIONS = ['longestTenuredUnreleased', 'longestTenuredReleased', 'mostDreamsDashed'];
+interface AdvancedStatsSection {
+  hash: string;
+  label: string;
+}
+
+const VALID_SECTIONS: string[] = ['longestTenuredUnreleased', 'longestTenuredReleased', 'mostDreamsDashed'];
 const DEFAULT_SECTION = 'longestTenuredUnreleased';
 
-export default {
+export default defineComponent({
+  setup() {
+    const sections: AdvancedStatsSection[] = [
+      { hash: 'longestTenuredUnreleased', label: 'Longest Tenured (Unreleased)' },
+      { hash: 'longestTenuredReleased', label: 'Longest Tenured (Released)' },
+      { hash: 'mostDreamsDashed', label: 'Most Dreams Dashed' }
+    ];
+
+    return { sections };
+  },
   components: {
     LongestTenuredGamesPanel,
     MostDreamsDashedPanel
   },
-  data() {
-    return {
-      sections: [
-        { hash: 'longestTenuredUnreleased', label: 'Longest Tenured (Unreleased)' },
-        { hash: 'longestTenuredReleased', label: 'Longest Tenured (Released)' },
-        { hash: 'mostDreamsDashed', label: 'Most Dreams Dashed' }
-      ]
-    };
-  },
   computed: {
-    activeSection() {
+    activeSection(): string {
       const hash = this.$route.hash ? this.$route.hash.replace('#', '') : '';
       return VALID_SECTIONS.includes(hash) ? hash : DEFAULT_SECTION;
     }
   }
-};
+});
 </script>
 
 <style scoped>

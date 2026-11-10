@@ -10,7 +10,11 @@
       <span class="checkbox-label">Include unannounced games</span>
     </b-form-checkbox>
 
-    <div v-if="showTable">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+    <div v-else-if="isBusy" class="spinner">
+      <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
+    </div>
+    <div v-else>
       <b-table small bordered striped responsive :items="filteredGames" :fields="gameFields" v-model:sort-by="sortBy">
         <template #cell(masterGame.gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
@@ -25,54 +29,66 @@
         </template>
       </b-table>
     </div>
-
-    <div v-else class="spinner">
-      <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
-    </div>
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
+import { type BTableSortBy, type TableField } from 'bootstrap-vue-next';
 
+import { gameClient, type LongestTenuredGameViewModel, type MasterGameYearViewModel } from '@/api/clients';
 import { formatMasterGameReleaseDate } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+interface DreamsDashedYearOption {
+  value: number | null;
+  text: string;
+}
+
+interface MostDreamsDashedPanelData {
+  errorInfo: string;
+  games: LongestTenuredGameViewModel[];
+  isBusy: boolean;
+  dreamsDashedYear: number | null;
+  includeUnannouncedGames: boolean;
+  sortBy: BTableSortBy[];
+}
+
+export default defineComponent({
+  setup() {
+    const gameFields: TableField<LongestTenuredGameViewModel>[] = [
+      { key: 'masterGame.gameName', label: 'Game', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame.tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+      { key: 'dreamsDashed', label: 'Dreams Dashed', sortable: true, thClass: 'bg-primary' }
+    ];
+
+    return { gameFields };
+  },
   components: {
     MasterGamePopover,
     MasterGameTagBadge
   },
-  data() {
+  data(): MostDreamsDashedPanelData {
     return {
-      games: null,
+      errorInfo: '',
+      games: [],
       isBusy: true,
       dreamsDashedYear: null,
       includeUnannouncedGames: false,
-      sortBy: [{ key: 'dreamsDashed', order: 'desc' }],
-      gameFields: [
-        { key: 'masterGame.gameName', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        { key: 'dreamsDashed', label: 'Dreams Dashed', sortable: true, thClass: 'bg-primary' }
-      ]
+      sortBy: [{ key: 'dreamsDashed', order: 'desc' }]
     };
   },
   computed: {
     ...mapState(useInterLeagueStore, ['supportedYears']),
-    dreamsDashedYearOptions() {
+    dreamsDashedYearOptions(): DreamsDashedYearOption[] {
       return [{ value: null, text: 'All Time' }, ...this.supportedYears.filter((y) => y.finished).map((y) => ({ value: y.year, text: String(y.year) }))];
     },
-    showTable() {
-      return this.games && !this.isBusy;
-    },
-    filteredGames() {
-      if (!this.games) {
-        return null;
-      }
+    filteredGames(): LongestTenuredGameViewModel[] {
       if (this.includeUnannouncedGames) {
         return this.games;
       }
@@ -88,18 +104,20 @@ export default {
     this.fetchGames();
   },
   methods: {
-    getReleaseDate(game) {
+    getReleaseDate(game: MasterGameYearViewModel): string {
       return formatMasterGameReleaseDate(game);
     },
     async fetchGames() {
       this.isBusy = true;
-      const params = this.dreamsDashedYear != null ? { year: this.dreamsDashedYear } : {};
-      const response = await axios.get('/api/game/GetMostDreamsDashedGames', { params });
-      this.games = response.data;
+      try {
+        this.games = await gameClient.getMostDreamsDashedGames(this.dreamsDashedYear);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load most dreams dashed games.');
+      }
       this.isBusy = false;
     }
   }
-};
+});
 </script>
 
 <style scoped>

@@ -17,7 +17,11 @@
       <span class="checkbox-label">Include unannounced games</span>
     </b-form-checkbox>
 
-    <div v-if="showTable">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+    <div v-else-if="isBusy" class="spinner">
+      <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
+    </div>
+    <div v-else>
       <b-table small bordered striped responsive :items="filteredGames" :fields="gameFields" v-model:sort-by="sortBy">
         <template #cell(masterGame.gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
@@ -35,23 +39,30 @@
         </template>
       </b-table>
     </div>
-
-    <div v-else class="spinner">
-      <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
-    </div>
   </div>
 </template>
 
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { type BTableSortBy, type TableField } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
+import { gameClient, type LongestTenuredGameViewModel, type MasterGameYearViewModel } from '@/api/clients';
 import { formatMasterGameReleaseDate } from '@/globalFunctions';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatDateIso } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+interface LongestTenuredGamesPanelData {
+  errorInfo: string;
+  games: LongestTenuredGameViewModel[];
+  isBusy: boolean;
+  includeUnannouncedGames: boolean;
+  sortBy: BTableSortBy[];
+}
+
+export default defineComponent({
   components: {
     MasterGamePopover,
     MasterGameTagBadge
@@ -59,29 +70,24 @@ export default {
   props: {
     released: { type: Boolean, required: true }
   },
-  data() {
+  data(): LongestTenuredGamesPanelData {
     return {
-      games: null,
+      errorInfo: '',
+      games: [],
       isBusy: true,
       includeUnannouncedGames: false,
       sortBy: [{ key: 'daysSinceAddition', order: 'desc' }]
     };
   },
   computed: {
-    showTable() {
-      return this.games && !this.isBusy;
-    },
-    filteredGames() {
-      if (!this.games) {
-        return null;
-      }
+    filteredGames(): LongestTenuredGameViewModel[] {
       if (this.released || this.includeUnannouncedGames) {
         return this.games;
       }
       return this.games.filter((game) => !game.masterGame.tags.includes('UnannouncedGame'));
     },
-    gameFields() {
-      const base = [
+    gameFields(): TableField<LongestTenuredGameViewModel>[] {
+      const base: TableField<LongestTenuredGameViewModel>[] = [
         { key: 'masterGame.gameName', label: 'Game', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
         { key: 'masterGame.tags', label: 'Tags', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
@@ -115,10 +121,10 @@ export default {
   },
   methods: {
     formatDateIso,
-    getReleaseDate(game) {
+    getReleaseDate(game: MasterGameYearViewModel): string {
       return formatMasterGameReleaseDate(game);
     },
-    getDaysSinceAddition(masterGame) {
+    getDaysSinceAddition(masterGame: MasterGameYearViewModel): number {
       const added = DateTime.fromISO(masterGame.addedTimestamp).startOf('day');
       if (this.released) {
         const releaseDate = DateTime.fromISO(masterGame.releaseDate).startOf('day');
@@ -129,17 +135,19 @@ export default {
     },
     async fetchGames() {
       this.isBusy = true;
-      const response = await axios.get('/api/game/GetLongestTenuredGames', {
-        params: { includeReleasedGames: this.released }
-      });
-      this.games = response.data.map((game) => ({
-        ...game,
-        daysSinceAddition: this.getDaysSinceAddition(game.masterGame)
-      }));
+      try {
+        const games = await gameClient.getLongestTenuredGames(this.released);
+        this.games = games.map((game) => ({
+          ...game,
+          daysSinceAddition: this.getDaysSinceAddition(game.masterGame)
+        }));
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load longest tenured games.');
+      }
       this.isBusy = false;
     }
   }
-};
+});
 </script>
 
 <style scoped>
