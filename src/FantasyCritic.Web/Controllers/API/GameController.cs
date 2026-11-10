@@ -438,8 +438,7 @@ public class GameController : FantasyCriticController
         }
 
         var leagueYearsWithMasterGame = await _interLeagueService.GetLeagueYearsWithMasterGame(currentUserResult.Value.Id, masterGameID);
-        var viewModels = leagueYearsWithMasterGame.Select(l =>
-            new LeagueYearWithMasterGameViewModel(l.LeagueID, l.LeagueName, l.Year, l.IsCounterPick)).ToList();
+        var viewModels = leagueYearsWithMasterGame.Select(l => new LeagueYearWithMasterGameViewModel(l)).ToList();
         return viewModels;
     }
 }

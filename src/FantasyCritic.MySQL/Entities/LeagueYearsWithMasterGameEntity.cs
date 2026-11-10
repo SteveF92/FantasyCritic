@@ -14,18 +14,12 @@ internal class LeagueYearsWithMasterGameEntity
         CounterPick = isCounterPick;
     }
     public Guid LeagueID { get; set; }
-    public string? LeagueName { get; set; }
+    public string LeagueName { get; set; } = null!;
     public int Year { get; set; }
     public bool CounterPick { get; set; }
 
     public LeagueYearWithMasterGame ToDomain()
     {
-        return new LeagueYearWithMasterGame
-        {
-            LeagueID = LeagueID,
-            LeagueName = LeagueName,
-            Year = Year,
-            IsCounterPick = CounterPick
-        };
+        return new LeagueYearWithMasterGame(LeagueID, LeagueName, Year, CounterPick);
     }
 }
