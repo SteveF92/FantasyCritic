@@ -77,90 +77,119 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { type BTableSortBy, type TableField } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
+import { gameClient, type TopBidsAndDropsGameViewModel } from '@/api/clients';
 import { orderBy, orderByDescending } from '@/globalFunctions';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatCurrency, formatDateLong } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
-export default {
+interface TopBidsAndDropsData {
+  errorInfo: string;
+  selectedYear: number | null;
+  selectedMonth: number | null;
+  processDateInternal?: string;
+  processDateOptions: string[];
+  allTopBidsAndDrops: Record<string, TopBidsAndDropsGameViewModel[]> | null;
+  selectedYearWithinProcessDate: number | null;
+  standardSortBy: BTableSortBy[];
+  counterPickSortBy: BTableSortBy[];
+  dropSortBy: BTableSortBy[];
+}
+
+export default defineComponent({
+  setup() {
+    const standardBidFields: TableField<TopBidsAndDropsGameViewModel>[] = [
+      { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
+      { key: 'totalStandardBidCount', label: 'Number of Bids', sortable: true, thClass: 'bg-primary' },
+      { key: 'successfulStandardBids', label: 'Number Successful', sortable: true, thClass: 'bg-primary' },
+      { key: 'failedStandardBids', label: 'Number Failed', sortable: true, thClass: 'bg-primary' },
+      { key: 'totalStandardBidAmount', label: 'Total Bid $', sortable: true, thClass: 'bg-primary' }
+    ];
+    const counterPickFields: TableField<TopBidsAndDropsGameViewModel>[] = [
+      { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
+      { key: 'totalCounterPickBidCount', label: 'Number of Bids', sortable: true, thClass: 'bg-primary' },
+      { key: 'successfulCounterPickBids', label: 'Number Successful', sortable: true, thClass: 'bg-primary' },
+      { key: 'failedCounterPickBids', label: 'Number Failed', sortable: true, thClass: 'bg-primary' },
+      { key: 'totalCounterPickBidAmount', label: 'Total Bid $', sortable: true, thClass: 'bg-primary' }
+    ];
+    const dropFields: TableField<TopBidsAndDropsGameViewModel>[] = [
+      { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
+      { key: 'totalDropCount', label: 'Total Attempted Drops', sortable: true, thClass: 'bg-primary' },
+      { key: 'successfulDrops', label: 'Successful Drops', sortable: true, thClass: 'bg-primary' },
+      { key: 'failedDrops', label: 'Failed Drops', sortable: true, thClass: 'bg-primary' }
+    ];
+
+    return { standardBidFields, counterPickFields, dropFields };
+  },
   components: {
     MasterGamePopover
   },
   props: {
     processDate: { type: String, required: false }
   },
-  data() {
+  data(): TopBidsAndDropsData {
     return {
       errorInfo: '',
       selectedYear: null,
       selectedMonth: null,
-      processDateInternal: null,
+      processDateInternal: undefined,
       processDateOptions: [],
       allTopBidsAndDrops: null,
       selectedYearWithinProcessDate: null,
       standardSortBy: [{ key: 'totalStandardBidCount', order: 'desc' }],
       counterPickSortBy: [{ key: 'totalCounterPickBidCount', order: 'desc' }],
-      dropSortBy: [{ key: 'totalDropCount', order: 'desc' }],
-      standardBidFields: [
-        { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalStandardBidCount', label: 'Number of Bids', sortable: true, thClass: 'bg-primary' },
-        { key: 'successfulStandardBids', label: 'Number Successful', sortable: true, thClass: 'bg-primary' },
-        { key: 'failedStandardBids', label: 'Number Failed', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalStandardBidAmount', label: 'Total Bid $', sortable: true, thClass: 'bg-primary' }
-      ],
-      counterPickFields: [
-        { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalCounterPickBidCount', label: 'Number of Bids', sortable: true, thClass: 'bg-primary' },
-        { key: 'successfulCounterPickBids', label: 'Number Successful', sortable: true, thClass: 'bg-primary' },
-        { key: 'failedCounterPickBids', label: 'Number Failed', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalCounterPickBidAmount', label: 'Total Bid $', sortable: true, thClass: 'bg-primary' }
-      ],
-      dropFields: [
-        { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalDropCount', label: 'Total Attempted Drops', sortable: true, thClass: 'bg-primary' },
-        { key: 'successfulDrops', label: 'Successful Drops', sortable: true, thClass: 'bg-primary' },
-        { key: 'failedDrops', label: 'Failed Drops', sortable: true, thClass: 'bg-primary' }
-      ]
+      dropSortBy: [{ key: 'totalDropCount', order: 'desc' }]
     };
   },
   computed: {
-    years() {
+    years(): number[] {
       const yearsList = this.processDateOptions.map((date) => DateTime.fromISO(date).year);
       const uniqueYearsList = [...new Set(yearsList)];
       const sortedYears = orderBy(uniqueYearsList, (x) => x);
       return sortedYears;
     },
-    months() {
+    months(): number[] {
       return Array.from({ length: 12 }, (_, i) => i + 1);
     },
-    selectedMonthString() {
+    selectedMonthString(): string | null {
       return this.convertMonth(this.selectedMonth);
     },
-    topBidsAndDrops() {
+    topBidsAndDrops(): TopBidsAndDropsGameViewModel[] | null {
       if (!this.allTopBidsAndDrops) {
         return null;
       }
       return this.allTopBidsAndDrops[this.selectedYearWithinProcessDate];
     },
-    yearOptionsWithinProcessDate() {
+    yearOptionsWithinProcessDate(): number[] | null {
       if (!this.allTopBidsAndDrops) {
         return null;
       }
-      return Object.keys(this.allTopBidsAndDrops);
+      return Object.keys(this.allTopBidsAndDrops).map((x) => Number(x));
     },
-    topBids() {
-      let relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
+    topBids(): TopBidsAndDropsGameViewModel[] | null {
+      if (!this.topBidsAndDrops) {
+        return null;
+      }
+      const relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
       return orderByDescending(relevant, (x) => x.successfulStandardBids).slice(0, 25);
     },
-    topCounterPicks() {
-      let relevant = this.topBidsAndDrops.filter((x) => x.totalCounterPickBidCount > 0);
+    topCounterPicks(): TopBidsAndDropsGameViewModel[] | null {
+      if (!this.topBidsAndDrops) {
+        return null;
+      }
+      const relevant = this.topBidsAndDrops.filter((x) => x.totalCounterPickBidCount > 0);
       return orderByDescending(relevant, (x) => x.successfulCounterPickBids).slice(0, 25);
     },
-    topDrops() {
-      let relevant = this.topBidsAndDrops.filter((x) => x.totalDropCount > 0);
+    topDrops(): TopBidsAndDropsGameViewModel[] | null {
+      if (!this.topBidsAndDrops) {
+        return null;
+      }
+      const relevant = this.topBidsAndDrops.filter((x) => x.totalDropCount > 0);
       return orderByDescending(relevant, (x) => x.successfulDrops).slice(0, 25);
     }
   },
@@ -181,40 +210,35 @@ export default {
         this.selectedYearWithinProcessDate = null;
         this.processDateInternal = this.processDate;
 
-        const weeksResponse = await axios.get('/api/game/GetProcessingDatesForTopBidsAndDrops');
-        this.processDateOptions = weeksResponse.data;
+        this.processDateOptions = await gameClient.getProcessingDatesForTopBidsAndDrops();
 
-        let requestPath = '/api/game/GetTopBidsAndDrops';
-        if (this.processDateInternal) {
-          requestPath = `/api/game/GetTopBidsAndDrops?processDate=${this.processDateInternal}`;
-        }
-        const response = await axios.get(requestPath);
-
-        this.processDateInternal = response.data.processDate;
+        const response = await gameClient.getTopBidsAndDrops(this.processDateInternal);
+        this.allTopBidsAndDrops = response.data;
+        this.processDateInternal = response.processDate;
         this.selectedYear = DateTime.fromISO(this.processDateInternal).year;
         this.selectedMonth = DateTime.fromISO(this.processDateInternal).month;
-        this.allTopBidsAndDrops = response.data.data;
-        this.selectedYearWithinProcessDate = response.data.yearWithMostData;
+        this.selectedYearWithinProcessDate = response.yearWithMostData;
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load year statistics.');
       }
     },
-    convertMonth(month) {
+    convertMonth(month: number): string | null {
       if (!month) {
         return null;
       }
 
       return DateTime.now().set({ month }).toFormat('MMMM');
     },
-    getProcessingDatesForYearMonth(year, month) {
+    getProcessingDatesForYearMonth(year: number, month: number): string[] {
       return this.processDateOptions.filter((date) => {
         const luxonDate = DateTime.fromISO(date);
         return luxonDate.year === year && luxonDate.month === month; // Luxon uses 1-indexed months
       });
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .header-area {
   display: flex;
