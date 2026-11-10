@@ -7,7 +7,7 @@
       <b-form-radio-group id="release-date-filter" v-model="releaseDateFilter" :options="releaseDateFilterOptions" buttons button-variant="outline-primary" size="sm" />
     </b-form-group>
 
-    <div v-if="showTable">
+    <div v-if="mostDesiredReviews.length > 0 && !isBusy">
       <b-table small bordered striped responsive :items="filteredMostDesiredReviews" :fields="gameFields" v-model:sort-by="sortBy">
         <template #cell(masterGame.gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
@@ -33,46 +33,54 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { type BTableSortBy, type TableField } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
+import { gameClient, MasterGameYearViewModel, MostDesiredReviewViewModel } from '@/api/clients';
+import { FilterOption } from '@/types/vueTypes';
 import { formatDateLong } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
-export default {
+interface MostDesiredReviewsData {
+  mostDesiredReviews: MostDesiredReviewViewModel[];
+  isBusy: boolean;
+  releaseDateFilter: string;
+  sortBy: BTableSortBy[];
+}
+
+export default defineComponent({
+  setup() {
+    const releaseDateFilterOptions: FilterOption[] = [
+      { text: 'Past week', value: 'week' },
+      { text: 'Past month', value: 'month' },
+      { text: 'Past 3 months', value: '3months' },
+      { text: 'All Year', value: 'year' }
+    ];
+
+    const gameFields: TableField<MostDesiredReviewViewModel>[] = [
+      { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+      { key: 'openCriticLink', label: 'Open Critic Link', thClass: ['bg-primary', 'md-screen-minimum', 'position-relative'], tdClass: 'md-screen-minimum' },
+      { key: 'desireFactor', label: 'Desire Factor', sortable: true, thClass: 'bg-primary' }
+    ];
+
+    return { releaseDateFilterOptions, gameFields };
+  },
   components: {
     MasterGamePopover
   },
-  data() {
+  data(): MostDesiredReviewsData {
     return {
-      mostDesiredReviews: null,
+      mostDesiredReviews: [],
       isBusy: true,
       releaseDateFilter: 'year',
-      releaseDateFilterOptions: [
-        { text: 'Past week', value: 'week' },
-        { text: 'Past month', value: 'month' },
-        { text: 'Past 3 months', value: '3months' },
-        { text: 'All Year', value: 'year' }
-      ],
-      sortBy: [{ key: 'desireFactor', order: 'desc' }],
-      gameFields: [
-        { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'openCriticLink', label: 'Open Critic Link', thClass: ['bg-primary', 'md-screen-minimum', 'position-relative'], tdClass: 'md-screen-minimum' },
-        { key: 'desireFactor', label: 'Desire Factor', sortable: true, thClass: 'bg-primary' }
-      ]
+      sortBy: [{ key: 'desireFactor', order: 'desc' }]
     };
   },
   computed: {
-    showTable() {
-      return this.mostDesiredReviews && !this.isBusy;
-    },
-    filteredMostDesiredReviews() {
-      if (!this.mostDesiredReviews) {
-        return null;
-      }
-
+    filteredMostDesiredReviews(): MostDesiredReviewViewModel[] {
       if (this.releaseDateFilter === 'year') {
         return this.mostDesiredReviews;
       }
@@ -106,17 +114,16 @@ export default {
   },
   methods: {
     formatDateLong,
-    openCriticLink(game) {
+    openCriticLink(game: MasterGameYearViewModel) {
       return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
     }
   },
   async created() {
     this.isBusy = true;
-    const response = await axios.get('/api/game/GetMostDesiredReviews');
-    this.mostDesiredReviews = response.data;
+    this.mostDesiredReviews = await gameClient.getMostDesiredReviews();
     this.isBusy = false;
   }
-};
+});
 </script>
 
 <style scoped>
