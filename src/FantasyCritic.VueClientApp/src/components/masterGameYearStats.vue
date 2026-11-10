@@ -1,5 +1,5 @@
 <template>
-  <div v-if="masterGameYears && masterGameYears.length" class="master-game-year-stats">
+  <div v-if="masterGameYears.length" class="master-game-year-stats">
     <div v-if="selectedMasterGameYear" class="text-well">
       <h2 class="stats-title-row">
         <span class="stats-for-label">Stats for</span>
@@ -40,14 +40,7 @@
       <div v-if="chartHasData" class="master-game-year-stats-chart">
         <h3 class="chart-heading">Statistics over time</h3>
         <div class="master-game-year-stats-chart-container">
-          <LineChartGenerator
-            :key="statisticsChartKey"
-            chart-id="master-game-year-statistics-chart"
-            dataset-id-key="label"
-            :height="chartHeight"
-            :styles="chartCanvasStyles"
-            :options="chartOptions"
-            :data="chartData" />
+          <LineChartGenerator :key="statisticsChartKey" dataset-id-key="label" :options="chartOptions" :data="chartData" />
         </div>
       </div>
     </div>
@@ -55,18 +48,25 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, markRaw, PropType } from 'vue';
+import { defineComponent, markRaw, type PropType } from 'vue';
+import type { ChartData, ChartOptions } from 'chart.js';
 import { Line as LineChartGenerator } from 'vue-chartjs';
 
-import { gameClient, MasterGameYearViewModel, MasterGameYearWithStatisticsViewModel } from '@/api/clients';
-import { PopoverContent } from '@/types/vueTypes';
+import { gameClient, type MasterGameYearStatisticsViewModel, type MasterGameYearViewModel, type MasterGameYearWithStatisticsViewModel } from '@/api/clients';
+import type { PopoverContent } from '@/types/vueTypes';
 import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatPercent, formatScore } from '@/utilities/formatters';
+
+interface StatisticsChartSeries {
+  key: Exclude<keyof MasterGameYearStatisticsViewModel, 'date'>;
+  label: string;
+  scaleZeroToOneAsPercent?: boolean;
+}
 
 const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
 
 /** Every numeric series returned on each statistics row; trim or split axes later as needed. */
-const STATISTICS_CHART_SERIES = [
+const STATISTICS_CHART_SERIES: StatisticsChartSeries[] = [
   { key: 'eligiblePercentStandardGame', label: '% Published', scaleZeroToOneAsPercent: true },
   { key: 'percentCounterPick', label: '% Counter Picked', scaleZeroToOneAsPercent: true },
   { key: 'dateAdjustedHypeFactor', label: 'Hype Factor' },
@@ -74,20 +74,9 @@ const STATISTICS_CHART_SERIES = [
   { key: 'royaleCost', label: 'Royale cost' }
 ];
 
-function coerceChartNumber(value) {
-  if (value === null || value === undefined) {
-    return null;
-  }
-  const n = Number(value);
-  return Number.isFinite(n) ? n : null;
-}
-
-function valueForChart(series, raw) {
-  const v = coerceChartNumber(raw);
-  if (v === null) {
-    return null;
-  }
-  return series.scaleZeroToOneAsPercent ? v * 100 : v;
+function valueForChart(series: StatisticsChartSeries, row: MasterGameYearStatisticsViewModel): number {
+  const value = row[series.key];
+  return series.scaleZeroToOneAsPercent ? value * 100 : value;
 }
 
 interface MasterGameYearStatsData {
@@ -104,7 +93,7 @@ export default defineComponent({
         "Sometimes a game's hype factor will go down over the course of the year, particularly if it gets delayed and many players drop it. " +
         "This number is the highest this game's hype factor ever was in the year."
     };
-    return { chartHeight: 520, chartCanvasStyles: {}, peakHypeFactorText };
+    return { peakHypeFactorText };
   },
   components: { LineChartGenerator },
   props: {
@@ -120,25 +109,14 @@ export default defineComponent({
   },
   computed: {
     selectableYears(): number[] {
-      if (!this.masterGameYears.length) {
-        return [];
-      }
-
-      return [...this.masterGameYears].map((y) => y.year).sort((a, b) => b - a);
+      return this.masterGameYears.map((y) => y.year).sort((a, b) => b - a);
     },
     selectedMasterGameYear(): MasterGameYearViewModel | null {
-      if (this.selectedYear == null) {
-        return null;
-      }
-
-      return this.masterGameYears.find((y) => y.year === this.selectedYear) || null;
+      return this.masterGameYears.find((y) => y.year === this.selectedYear) ?? null;
     },
-    statisticsRowsSorted() {
-      const stats = this.masterGameYearWithStatistics?.statistics;
-      if (!stats?.length) {
-        return [];
-      }
-      return [...stats].sort((a, b) => String(a.date).localeCompare(String(b.date)));
+    statisticsRowsSorted(): MasterGameYearStatisticsViewModel[] {
+      const stats = this.masterGameYearWithStatistics?.statistics ?? [];
+      return [...stats].sort((a, b) => a.date.localeCompare(b.date));
     },
     chartHasData(): boolean {
       return this.statisticsRowsSorted.length > 0;
@@ -146,14 +124,7 @@ export default defineComponent({
     statisticsChartKey(): string {
       return `${this.masterGameId}-${this.selectedYear}`;
     },
-    chartLabels(): string[] {
-      return this.statisticsRowsSorted.map((row) => row.date);
-    },
-    chartData() {
-      if (!this.chartHasData) {
-        return markRaw({ labels: [], datasets: [] });
-      }
-      const labels = this.chartLabels;
+    chartData(): ChartData<'line', number[], string> {
       const rows = this.statisticsRowsSorted;
       const datasets = STATISTICS_CHART_SERIES.map((series, i) => {
         const color = SERIES_COLORS[i % SERIES_COLORS.length];
@@ -164,15 +135,14 @@ export default defineComponent({
           borderWidth: 2,
           pointRadius: 0,
           tension: 0,
-          percentageScale: Boolean(series.scaleZeroToOneAsPercent),
-          data: rows.map((row) => valueForChart(series, row[series.key]))
+          data: rows.map((row) => valueForChart(series, row))
         };
       });
-      // markRaw keeps Vue 2 from recursing into Chart.js's objects.
-      return markRaw({ labels, datasets });
+      // markRaw keeps Vue from recursing into Chart.js's objects.
+      return markRaw({ labels: rows.map((row) => row.date), datasets });
     },
-    chartOptions() {
-      return markRaw({
+    chartOptions(): ChartOptions<'line'> {
+      const options: ChartOptions<'line'> = {
         maintainAspectRatio: false,
         layout: {
           padding: {
@@ -193,15 +163,14 @@ export default defineComponent({
             bodyColor: '#fff',
             borderColor: 'rgba(214, 153, 58, 0.5)',
             borderWidth: 1,
-            filter: (item) => item.parsed.y !== null && !Number.isNaN(item.parsed.y),
             callbacks: {
               label(context) {
-                const label = context.dataset.label || '';
+                const label = context.dataset.label ?? '';
                 const y = context.parsed.y;
-                if (y === null || Number.isNaN(y)) {
+                if (y === null) {
                   return label;
                 }
-                if (context.dataset.percentageScale) {
+                if (STATISTICS_CHART_SERIES[context.datasetIndex].scaleZeroToOneAsPercent) {
                   return `${label}: ${y.toFixed(1)}%`;
                 }
                 return `${label}: ${y}`;
@@ -223,12 +192,13 @@ export default defineComponent({
             grid: { color: 'rgba(255, 255, 255, 0.08)' }
           }
         }
-      });
+      };
+      return markRaw(options);
     }
   },
   watch: {
-    selectedYear(year) {
-      if (year == null) {
+    selectedYear(year: number | null) {
+      if (year === null) {
         this.masterGameYearWithStatistics = null;
         return;
       }
@@ -250,7 +220,8 @@ export default defineComponent({
       try {
         this.masterGameYearWithStatistics = await gameClient.masterGameYearWithStatistics(this.masterGameId, year);
       } catch (error) {
-        this.statisticsLoadError = getApiErrorMessage(error);
+        this.statisticsLoadError = getApiErrorMessage(error, 'Failed to load year statistics.');
+        this.masterGameYearWithStatistics = null;
       }
     }
   }
