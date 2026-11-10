@@ -1,12 +1,13 @@
 <template>
-  <div class="col-md-10 offset-md-1 col-sm-12" v-if="interLeagueDataLoaded">
+  <div class="col-md-10 offset-md-1 col-sm-12">
     <div class="row league-header">
       <h1 class="header">Public Leagues</h1>
       <div class="year-selector">
         <b-form-select v-model="selectedYear" :options="supportedYears" value-field="year" text-field="year" @update:model-value="fetchPublicLeaguesForYear" />
       </div>
     </div>
-    <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+    <div v-if="publicLeagues.length > 0" class="row">
       <b-form-group>
         <label>Search by League Name</label>
         <b-input-group size="sm">
@@ -15,6 +16,7 @@
       </b-form-group>
 
       <b-table
+        id="public-leagues-table"
         v-model:sort-by="sortBy"
         :items="publicLeagues"
         :fields="leagueFields"
@@ -31,7 +33,7 @@
           <font-awesome-icon v-if="!data.item.anyDraftStarted" v-b-popover.hover.top="'This league has not started a draft yet for this year.'" icon="hourglass-half" class="not-started-icon" />
         </template>
       </b-table>
-      <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="totalRows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+      <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="totalRows" :per-page="perPage" aria-controls="public-leagues-table"></b-pagination>
     </div>
   </div>
 </template>
@@ -43,8 +45,10 @@ import { type BTableSortBy, type TableField } from 'bootstrap-vue-next';
 
 import { leagueClient, type PublicLeagueYearViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
 interface PublicLeaguesData {
+  errorInfo: string;
   perPage: number;
   currentPage: number;
   totalRows: number;
@@ -61,12 +65,13 @@ export default defineComponent({
       { key: 'numberOfFollowers', label: 'Number of Followers', sortable: true, thClass: 'bg-primary' }
     ];
 
-    const filterable = ['leagueName'];
+    const filterable: (keyof PublicLeagueYearViewModel)[] = ['leagueName'];
 
     return { leagueFields, filterable };
   },
   data(): PublicLeaguesData {
     return {
+      errorInfo: '',
       perPage: 10,
       currentPage: 1,
       totalRows: 1,
@@ -77,7 +82,7 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'supportedYears'])
+    ...mapState(useInterLeagueStore, ['supportedYears'])
   },
   async created() {
     await this.fetchPublicLeaguesForYear();
@@ -90,7 +95,13 @@ export default defineComponent({
     },
     async fetchPublicLeaguesForYear() {
       this.filter = '';
-      this.publicLeagues = await leagueClient.publicLeagues(this.selectedYear, null);
+      this.errorInfo = '';
+      try {
+        this.publicLeagues = await leagueClient.publicLeagues(this.selectedYear, null);
+      } catch (error) {
+        this.publicLeagues = [];
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load public leagues.');
+      }
       this.totalRows = this.publicLeagues.length;
     }
   }
