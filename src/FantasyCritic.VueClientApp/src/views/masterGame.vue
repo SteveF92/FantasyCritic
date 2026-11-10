@@ -3,8 +3,8 @@
     <div class="row master-game-section">
       <div class="col-xl-6 col-lg-12">
         <div class="game-image-area">
-          <div v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" class="gg-image-area">
-            <img v-if="masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
+          <div v-if="ggLink && ggCoverArtLink" class="gg-image-area">
+            <img v-if="ggCoverArtLink" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
             <a :href="ggLink" target="_blank">
               <strong>
                 Image Provided by GG|
@@ -86,17 +86,36 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
+import { TableField } from 'bootstrap-vue-next';
 
+import { ApiException, gameClient, LeagueYearWithMasterGameViewModel, MasterGameChangeLogEntryViewModel, MasterGameViewModel, MasterGameYearViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { formatDateLong } from '@/utilities/formatters';
 import { getGGCoverArtLinkForGame, getGGLinkForGame } from '@/utilities/ggLinks';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
 import MasterGameYearStats from '@/components/masterGameYearStats.vue';
 
-export default {
+interface MasterGameData {
+  masterGame: MasterGameViewModel | null;
+  masterGameYears: MasterGameYearViewModel[];
+  leaguesWithGameByYear: Record<number, LeagueYearWithMasterGameViewModel[]>;
+  changeLog: MasterGameChangeLogEntryViewModel[];
+  error: string;
+}
+
+export default defineComponent({
+  setup() {
+    const baseChangeLogFields: TableField<MasterGameChangeLogEntryViewModel>[] = [
+      { key: 'timestamp', label: 'Date of Change', thClass: 'bg-primary' },
+      { key: 'description', label: 'Description', thClass: 'bg-primary' }
+    ];
+    const factCheckerChangeLogFields: TableField<MasterGameChangeLogEntryViewModel>[] = [{ key: 'changedByUser', label: 'Changed by', thClass: 'bg-primary' }];
+
+    return { baseChangeLogFields, factCheckerChangeLogFields };
+  },
   components: {
     MasterGameDetails,
     MasterGameYearStats
@@ -104,37 +123,40 @@ export default {
   props: {
     mastergameid: { type: String, required: true }
   },
-  data() {
+  data(): MasterGameData {
     return {
       masterGame: null,
       masterGameYears: [],
-      leaguesWithGameByYear: [],
+      leaguesWithGameByYear: {},
       changeLog: [],
-      error: '',
-      baseChangeLogFields: [
-        { key: 'timestamp', label: 'Date of Change', thClass: 'bg-primary' },
-        { key: 'description', label: 'Description', thClass: 'bg-primary' }
-      ],
-      factCheckerChangeLogFields: [{ key: 'changedByUser', label: 'Changed by', thClass: 'bg-primary' }]
+      error: ''
     };
   },
   computed: {
     ...mapState(useAuthStore, ['isFactChecker']),
-    ggCoverArtLink() {
+    ggCoverArtLink(): string | null {
+      if (!this.masterGame) {
+        return null;
+      }
       return getGGCoverArtLinkForGame(this.masterGame, 307);
     },
-    ggLink() {
+    ggLink(): string | null {
+      if (!this.masterGame) {
+        return null;
+      }
       return getGGLinkForGame(this.masterGame);
     },
-    changeLogFields() {
+    changeLogFields(): TableField<MasterGameChangeLogEntryViewModel>[] {
       if (this.isFactChecker) {
         return this.baseChangeLogFields.concat(this.factCheckerChangeLogFields);
       }
 
       return this.baseChangeLogFields;
     },
-    sortedYears() {
-      return Object.keys(this.leaguesWithGameByYear).sort((a, b) => b - a);
+    sortedYears(): number[] {
+      return Object.keys(this.leaguesWithGameByYear)
+        .sort((a, b) => Number(b) - Number(a))
+        .map((x) => Number(x));
     }
   },
   watch: {
@@ -154,56 +176,63 @@ export default {
     },
     async fetchMasterGame() {
       try {
-        const response = await axios.get('/api/game/MasterGame/' + this.mastergameid);
-        this.masterGame = response.data;
+        this.masterGame = await gameClient.masterGame(this.mastergameid);
       } catch (error) {
-        this.error = error.data;
+        this.error = this.describeError(error);
       }
     },
     async fetchMasterGameChangeLog() {
       try {
-        const response = await axios.get('/api/game/MasterGameChangeLog/' + this.mastergameid);
-        this.changeLog = response.data;
+        this.changeLog = await gameClient.masterGameChangeLog(this.mastergameid);
       } catch (error) {
-        this.error = error.response.data;
+        this.error = this.describeError(error);
       }
     },
     async fetchMasterGameYears() {
       try {
-        const response = await axios.get('/api/game/MasterGameYears/' + this.mastergameid);
-        this.masterGameYears = response.data;
+        this.masterGameYears = await gameClient.masterGameYears(this.mastergameid);
       } catch (error) {
-        this.error = error.response.data;
+        this.error = this.describeError(error);
       }
     },
     async fetchLeaguesWithMasterGame() {
+      let response: LeagueYearWithMasterGameViewModel[];
       try {
-        const response = await axios.get('/api/game/LeagueYearsWithMasterGame/' + this.mastergameid);
-
-        this.leaguesWithGameByYear = response.data.reduce((acc, league) => {
-          const key = league.year;
-          if (!acc[key]) {
-            acc[key] = [];
-          }
-          acc[key].push(league);
-          return acc;
-        }, {});
-
-        for (const year in this.leaguesWithGameByYear) {
-          this.leaguesWithGameByYear[year].sort((l1, l2) => {
-            return l1.leagueName.toLowerCase().localeCompare(l2.leagueName.toLowerCase());
-          });
-        }
+        response = await gameClient.leagueYearsWithMasterGame(this.mastergameid);
       } catch (error) {
-        this.error = error.response.data;
+        this.error = this.describeError(error);
+        return;
+      }
+
+      this.leaguesWithGameByYear = response.reduce((acc, league) => {
+        const key = league.year;
+        if (!acc[key]) {
+          acc[key] = [];
+        }
+        acc[key].push(league);
+        return acc;
+      }, {});
+
+      for (const year in this.leaguesWithGameByYear) {
+        this.leaguesWithGameByYear[year].sort((l1, l2) => {
+          return l1.leagueName.toLowerCase().localeCompare(l2.leagueName.toLowerCase());
+        });
       }
     },
-    leagueLink(leagueId, year) {
+    leagueLink(leagueId: string, year: number) {
       return `/league/${leagueId}/${year}`;
+    },
+    describeError(error: unknown) {
+      if (ApiException.isApiException(error) && error.response) {
+        return error.response;
+      }
+
+      return error.message || String(error);
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .detail-label {
   font-weight: bold;
