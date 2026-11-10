@@ -94,11 +94,12 @@ import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 import { type TableField } from 'bootstrap-vue-next';
 
-import { gameClient, LeagueYearWithMasterGameViewModel, MasterGameChangeLogEntryViewModel, MasterGameViewModel, MasterGameYearViewModel, MasterSubGameViewModel } from '@/api/clients';
+import { gameClient, LeagueYearWithMasterGameViewModel, MasterGameChangeLogEntryViewModel, MasterGameViewModel, MasterGameYearViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatDateLong } from '@/utilities/formatters';
 import { getGGCoverArtLinkForGame, getGGLinkForGame } from '@/utilities/ggLinks';
+import { openCriticLink } from '@/utilities/openCriticLinks';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
 import MasterGameYearStats from '@/components/masterGameYearStats.vue';
 
@@ -173,6 +174,7 @@ export default defineComponent({
   },
   methods: {
     formatDateLong,
+    openCriticLink,
     async loadAll() {
       await this.fetchMasterGame();
       const tasks = [this.fetchMasterGameChangeLog(), this.fetchMasterGameYears(), this.fetchLeaguesWithMasterGame()];
@@ -215,9 +217,6 @@ export default defineComponent({
     },
     leagueLink(leagueId: string, year: number): string {
       return `/league/${leagueId}/${year}`;
-    },
-    openCriticLink(subGame: MasterSubGameViewModel): string {
-      return `https://opencritic.com/game/${subGame.openCriticID}/b`;
     }
   }
 });

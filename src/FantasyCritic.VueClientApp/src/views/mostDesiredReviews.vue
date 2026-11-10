@@ -7,7 +7,7 @@
       <b-form-radio-group id="release-date-filter" v-model="releaseDateFilter" :options="releaseDateFilterOptions" buttons button-variant="outline-primary" size="sm" />
     </b-form-group>
 
-    <div v-if="mostDesiredReviews.length > 0 && !isBusy">
+    <div v-if="!isBusy">
       <b-table small bordered striped responsive :items="filteredMostDesiredReviews" :fields="gameFields" v-model:sort-by="sortBy">
         <template #cell(masterGame.gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
@@ -38,21 +38,28 @@ import { defineComponent } from 'vue';
 import { type BTableSortBy, type TableField } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
-import { gameClient, MasterGameYearViewModel, MostDesiredReviewViewModel } from '@/api/clients';
-import { FilterOption } from '@/types/vueTypes';
+import { gameClient, type MostDesiredReviewViewModel } from '@/api/clients';
 import { formatDateLong } from '@/utilities/formatters';
+import { openCriticLink } from '@/utilities/openCriticLinks';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+
+type ReleaseDateFilter = 'week' | 'month' | '3months' | 'year';
+
+interface ReleaseDateFilterOption {
+  text: string;
+  value: ReleaseDateFilter;
+}
 
 interface MostDesiredReviewsData {
   mostDesiredReviews: MostDesiredReviewViewModel[];
   isBusy: boolean;
-  releaseDateFilter: string;
+  releaseDateFilter: ReleaseDateFilter;
   sortBy: BTableSortBy[];
 }
 
 export default defineComponent({
   setup() {
-    const releaseDateFilterOptions: FilterOption[] = [
+    const releaseDateFilterOptions: ReleaseDateFilterOption[] = [
       { text: 'Past week', value: 'week' },
       { text: 'Past month', value: 'month' },
       { text: 'Past 3 months', value: '3months' },
@@ -86,7 +93,7 @@ export default defineComponent({
       }
 
       const now = DateTime.local().startOf('day');
-      let cutoff;
+      let cutoff: DateTime;
       switch (this.releaseDateFilter) {
         case 'week':
           cutoff = now.minus({ weeks: 1 });
@@ -97,16 +104,10 @@ export default defineComponent({
         case '3months':
           cutoff = now.minus({ months: 3 });
           break;
-        default:
-          return this.mostDesiredReviews;
       }
 
       return this.mostDesiredReviews.filter((item) => {
-        const releaseDateStr = item.masterGame.releaseDate || item.masterGame.maximumReleaseDate;
-        if (!releaseDateStr) {
-          return false;
-        }
-
+        const releaseDateStr = item.masterGame.releaseDate ?? item.masterGame.maximumReleaseDate;
         const releaseDate = DateTime.fromISO(releaseDateStr);
         return releaseDate >= cutoff;
       });
@@ -114,12 +115,9 @@ export default defineComponent({
   },
   methods: {
     formatDateLong,
-    openCriticLink(game: MasterGameYearViewModel) {
-      return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
-    }
+    openCriticLink
   },
   async created() {
-    this.isBusy = true;
     this.mostDesiredReviews = await gameClient.getMostDesiredReviews();
     this.isBusy = false;
   }

@@ -79,6 +79,7 @@ import { DateTime } from 'luxon';
 import { MasterGameViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { formatScore } from '@/utilities/formatters';
+import { openCriticLink } from '@/utilities/openCriticLinks';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default defineComponent({
@@ -94,14 +95,12 @@ export default defineComponent({
   },
   methods: {
     formatScore,
+    openCriticLink,
     formatDate(releaseDate: string) {
       if (releaseDate === '9999-12-31') {
         return 'No Maximum Release Date';
       }
       return DateTime.fromISO(releaseDate).toFormat('MMMM dd, yyyy');
-    },
-    openCriticLink(game: MasterGameViewModel) {
-      return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
     }
   }
 });

@@ -57,7 +57,7 @@
         </div>
       </template>
       <div v-if="masterGame.openCriticID">
-        <a :href="openCriticLink" target="_blank">
+        <a :href="openCriticLink(masterGame)" target="_blank">
           <strong>
             OpenCritic Link
             <font-awesome-icon icon="external-link-alt" />
@@ -94,6 +94,7 @@ import { MasterGameViewModel, MasterGameYearViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { formatPercent, formatScore } from '@/utilities/formatters';
 import { getGGCoverArtLinkForGame, getGGLinkForGame } from '@/utilities/ggLinks';
+import { openCriticLink } from '@/utilities/openCriticLinks';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 export default defineComponent({
@@ -120,14 +121,12 @@ export default defineComponent({
         return null;
       }
       return DateTime.fromISO(this.masterGame.releaseDate).toFormat('MMMM dd, yyyy');
-    },
-    openCriticLink(): string {
-      return `https://opencritic.com/game/${this.masterGame.openCriticID}/${this.masterGame.openCriticSlug ?? 'b'}`;
     }
   },
   methods: {
     formatPercent,
-    formatScore
+    formatScore,
+    openCriticLink
   }
 });
 </script>

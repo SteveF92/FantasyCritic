@@ -115,6 +115,7 @@ import type { BTableSortBy, BTableSortByOrder, TableField } from 'bootstrap-vue-
 import { MasterGameYearViewModel } from '@/api/clients';
 import { formatMasterGameReleaseDate, numericComparer } from '@/globalFunctions';
 import { formatPercent, formatScore } from '@/utilities/formatters';
+import { openCriticLink } from '@/utilities/openCriticLinks';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
@@ -221,9 +222,7 @@ export default defineComponent({
     getReleaseDate(game: MasterGameYearViewModel): string {
       return formatMasterGameReleaseDate(game, false);
     },
-    openCriticLink(game: MasterGameYearViewModel): string {
-      return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
-    },
+    openCriticLink,
     onFiltered(filteredItems: readonly MasterGameYearViewModel[]) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
