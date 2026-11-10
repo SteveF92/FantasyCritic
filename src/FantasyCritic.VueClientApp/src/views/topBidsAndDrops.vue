@@ -207,6 +207,7 @@ export default defineComponent({
         this.selectedYearWithinProcessDate = null;
         this.processDateInternal = this.processDate ?? null;
 
+        this.errorInfo = '';
         this.processDateOptions = await gameClient.getProcessingDatesForTopBidsAndDrops();
 
         const response = await gameClient.getTopBidsAndDrops(this.processDateInternal);

@@ -105,11 +105,12 @@ export default defineComponent({
   },
   methods: {
     getReleaseDate(game: MasterGameYearViewModel): string {
-      return formatMasterGameReleaseDate(game);
+      return formatMasterGameReleaseDate(game, false);
     },
     async fetchGames() {
       this.isBusy = true;
       try {
+        this.errorInfo = '';
         this.games = await gameClient.getMostDreamsDashedGames(this.dreamsDashedYear);
       } catch (error) {
         this.errorInfo = getApiErrorMessage(error, 'Failed to load most dreams dashed games.');

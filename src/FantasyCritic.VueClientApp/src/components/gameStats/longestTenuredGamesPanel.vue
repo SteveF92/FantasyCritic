@@ -122,12 +122,13 @@ export default defineComponent({
   methods: {
     formatDateIso,
     getReleaseDate(game: MasterGameYearViewModel): string {
-      return formatMasterGameReleaseDate(game);
+      return formatMasterGameReleaseDate(game, false);
     },
     getDaysSinceAddition(masterGame: MasterGameYearViewModel): number {
       const added = DateTime.fromISO(masterGame.addedTimestamp).startOf('day');
       if (this.released) {
-        const releaseDate = DateTime.fromISO(masterGame.releaseDate).startOf('day');
+        //Release games must have a release date, so we can assert.
+        const releaseDate = DateTime.fromISO(masterGame.releaseDate!).startOf('day');
         return Math.floor(releaseDate.diff(added, 'days').days);
       }
       const now = DateTime.local().startOf('day');
@@ -136,6 +137,7 @@ export default defineComponent({
     async fetchGames() {
       this.isBusy = true;
       try {
+        this.errorInfo = '';
         const games = await gameClient.getLongestTenuredGames(this.released);
         this.games = games.map((game) => ({
           ...game,
