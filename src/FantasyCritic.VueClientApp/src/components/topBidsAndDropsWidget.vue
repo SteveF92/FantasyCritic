@@ -8,11 +8,8 @@
         <router-link :to="{ name: 'topBidsAndDrops' }" title="Trending">Trending</router-link>
       </h2>
     </template>
-    <div v-if="!this.topBidsAndDrops" class="spinner">
-      <font-awesome-icon icon="circle-notch" size="3x" spin :style="{ color: '#D6993A' }" />
-    </div>
-    <div v-if="this.topBidsAndDrops && this.topBidsAndDrops.length === 0">No Bids and Drops Found.</div>
-    <b-tabs v-if="this.topBidsAndDrops && this.topBidsAndDrops.length > 0" pills class="top-bids-and-drops-tabs">
+    <div v-if="topBidsAndDrops.length === 0">No Bids and Drops Found.</div>
+    <b-tabs v-if="topBidsAndDrops.length > 0" pills class="top-bids-and-drops-tabs">
       <b-tab title="Top Bids" title-item-class="tab-header">
         <b-table :items="topBids" :fields="standardBidFields" v-model:sort-by="standardSortBy" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
@@ -44,58 +41,72 @@
   </b-card>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import { BTableSortBy, TableField } from 'bootstrap-vue-next';
+
+import { type TopBidsAndDropsGameViewModel } from '@/api/clients';
 import { orderByDescending } from '@/globalFunctions';
 import { formatCurrency } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
-export default {
+interface TopBidsAndDropsWidgetData {
+  standardSortBy: BTableSortBy[];
+  counterPickSortBy: BTableSortBy[];
+  dropSortBy: BTableSortBy[];
+}
+
+export default defineComponent({
+  setup() {
+    const standardBidFields: TableField<TopBidsAndDropsGameViewModel>[] = [
+      { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
+      { key: 'totalStandardBidCount', label: 'Bids', sortable: true, thClass: 'bg-primary' },
+      { key: 'totalStandardBidAmount', label: 'Total $', sortable: true, thClass: 'bg-primary' }
+    ];
+    const counterPickFields: TableField<TopBidsAndDropsGameViewModel>[] = [
+      { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
+      { key: 'totalCounterPickBidCount', label: 'Bids', sortable: true, thClass: 'bg-primary' },
+      { key: 'totalCounterPickBidAmount', label: 'Total $', sortable: true, thClass: 'bg-primary' }
+    ];
+    const dropFields: TableField<TopBidsAndDropsGameViewModel>[] = [
+      { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
+      { key: 'successfulDrops', label: 'Drops', sortable: true, thClass: 'bg-primary' }
+    ];
+
+    return { standardBidFields, counterPickFields, dropFields };
+  },
   components: {
     MasterGamePopover
   },
   props: {
-    topBidsAndDrops: { type: Array, required: false },
-    processDate: { type: String, required: false }
+    topBidsAndDrops: { type: Array as PropType<TopBidsAndDropsGameViewModel[]>, required: true },
+    processDate: { type: String, required: true }
   },
-  data() {
+  data(): TopBidsAndDropsWidgetData {
     return {
       standardSortBy: [{ key: 'totalStandardBidCount', order: 'desc' }],
       counterPickSortBy: [{ key: 'totalCounterPickBidCount', order: 'desc' }],
-      dropSortBy: [{ key: 'totalDropCount', order: 'desc' }],
-      standardBidFields: [
-        { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalStandardBidCount', label: 'Bids', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalStandardBidAmount', label: 'Total $', sortable: true, thClass: 'bg-primary' }
-      ],
-      counterPickFields: [
-        { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalCounterPickBidCount', label: 'Bids', sortable: true, thClass: 'bg-primary' },
-        { key: 'totalCounterPickBidAmount', label: 'Total $', sortable: true, thClass: 'bg-primary' }
-      ],
-      dropFields: [
-        { key: 'masterGameYear', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'successfulDrops', label: 'Drops', sortable: true, thClass: 'bg-primary' }
-      ]
+      dropSortBy: [{ key: 'totalDropCount', order: 'desc' }]
     };
   },
   computed: {
-    topBids() {
-      let relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
+    topBids(): TopBidsAndDropsGameViewModel[] {
+      const relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
       return orderByDescending(relevant, (x) => x.successfulStandardBids).slice(0, 25);
     },
-    topCounterPicks() {
-      let relevant = this.topBidsAndDrops.filter((x) => x.totalCounterPickBidCount > 0);
+    topCounterPicks(): TopBidsAndDropsGameViewModel[] {
+      const relevant = this.topBidsAndDrops.filter((x) => x.totalCounterPickBidCount > 0);
       return orderByDescending(relevant, (x) => x.successfulCounterPickBids).slice(0, 25);
     },
-    topDrops() {
-      let relevant = this.topBidsAndDrops.filter((x) => x.totalDropCount > 0);
+    topDrops(): TopBidsAndDropsGameViewModel[] {
+      const relevant = this.topBidsAndDrops.filter((x) => x.totalDropCount > 0);
       return orderByDescending(relevant, (x) => x.successfulDrops).slice(0, 25);
     }
   },
   methods: {
     formatCurrency
   }
-};
+});
 </script>
 
 <style scoped>
