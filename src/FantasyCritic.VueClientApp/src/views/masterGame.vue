@@ -36,9 +36,9 @@
           <masterGameDetails :master-game="masterGame"></masterGameDetails>
         </div>
 
-        <MasterGameYearStats v-if="masterGameYears && masterGameYears.length > 0" :master-game-id="mastergameid" :master-game-years="masterGameYears"></MasterGameYearStats>
+        <MasterGameYearStats v-if="masterGameYears.length > 0" :master-game-id="mastergameid" :master-game-years="masterGameYears"></MasterGameYearStats>
 
-        <div v-if="Object.keys(leaguesWithGameByYear).length > 0" class="text-well league-game-section">
+        <div v-if="sortedYears.length > 0" class="text-well league-game-section">
           <h2>Your Leagues with this Game</h2>
 
           <div v-for="year in sortedYears" :key="year">
@@ -72,7 +72,7 @@
         <h3>{{ subGame.gameName }}</h3>
         <p>
           <span class="detail-label">Release Date:</span>
-          <span v-if="subGame.releaseDate">{{ releaseDate(subGame) }}</span>
+          <span v-if="subGame.releaseDate">{{ formatDateLong(subGame.releaseDate) }}</span>
           <span v-else>{{ subGame.estimatedReleaseDate }} (Estimated)</span>
         </p>
         <p v-if="subGame.openCriticID">
@@ -89,10 +89,11 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import { TableField } from 'bootstrap-vue-next';
+import { type TableField } from 'bootstrap-vue-next';
 
-import { ApiException, gameClient, LeagueYearWithMasterGameViewModel, MasterGameChangeLogEntryViewModel, MasterGameViewModel, MasterGameYearViewModel } from '@/api/clients';
+import { gameClient, LeagueYearWithMasterGameViewModel, MasterGameChangeLogEntryViewModel, MasterGameViewModel, MasterGameYearViewModel, MasterSubGameViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatDateLong } from '@/utilities/formatters';
 import { getGGCoverArtLinkForGame, getGGLinkForGame } from '@/utilities/ggLinks';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
@@ -155,8 +156,8 @@ export default defineComponent({
     },
     sortedYears(): number[] {
       return Object.keys(this.leaguesWithGameByYear)
-        .sort((a, b) => Number(b) - Number(a))
-        .map((x) => Number(x));
+        .map((x) => Number(x))
+        .sort((a, b) => b - a);
     }
   },
   watch: {
@@ -178,56 +179,42 @@ export default defineComponent({
       try {
         this.masterGame = await gameClient.masterGame(this.mastergameid);
       } catch (error) {
-        this.error = this.describeError(error);
+        this.error = getApiErrorMessage(error);
       }
     },
     async fetchMasterGameChangeLog() {
       try {
         this.changeLog = await gameClient.masterGameChangeLog(this.mastergameid);
       } catch (error) {
-        this.error = this.describeError(error);
+        this.error = getApiErrorMessage(error);
       }
     },
     async fetchMasterGameYears() {
       try {
         this.masterGameYears = await gameClient.masterGameYears(this.mastergameid);
       } catch (error) {
-        this.error = this.describeError(error);
+        this.error = getApiErrorMessage(error);
       }
     },
     async fetchLeaguesWithMasterGame() {
-      let response: LeagueYearWithMasterGameViewModel[];
       try {
-        response = await gameClient.leagueYearsWithMasterGame(this.mastergameid);
-      } catch (error) {
-        this.error = this.describeError(error);
-        return;
-      }
+        const leagues = await gameClient.leagueYearsWithMasterGame(this.mastergameid);
+        const sortedLeagues = [...leagues].sort((a, b) => a.leagueName.toLowerCase().localeCompare(b.leagueName.toLowerCase()));
 
-      this.leaguesWithGameByYear = response.reduce((acc, league) => {
-        const key = league.year;
-        if (!acc[key]) {
-          acc[key] = [];
+        const leaguesByYear: Record<number, LeagueYearWithMasterGameViewModel[]> = {};
+        for (const league of sortedLeagues) {
+          (leaguesByYear[league.year] ??= []).push(league);
         }
-        acc[key].push(league);
-        return acc;
-      }, {});
-
-      for (const year in this.leaguesWithGameByYear) {
-        this.leaguesWithGameByYear[year].sort((l1, l2) => {
-          return l1.leagueName.toLowerCase().localeCompare(l2.leagueName.toLowerCase());
-        });
+        this.leaguesWithGameByYear = leaguesByYear;
+      } catch (error) {
+        this.error = getApiErrorMessage(error);
       }
     },
-    leagueLink(leagueId: string, year: number) {
+    leagueLink(leagueId: string, year: number): string {
       return `/league/${leagueId}/${year}`;
     },
-    describeError(error: unknown) {
-      if (ApiException.isApiException(error) && error.response) {
-        return error.response;
-      }
-
-      return error.message || String(error);
+    openCriticLink(subGame: MasterSubGameViewModel): string {
+      return `https://opencritic.com/game/${subGame.openCriticID}/b`;
     }
   }
 });
