@@ -227,7 +227,7 @@ Test on Master Games, League and Home.
 `siteUpdates` are already on `SiteAnnouncementViewModel` (cf7ea5938). Test both signed in and signed
 out.
 
-### 6. Master game pages
+### 6. Master game pages (done)
 
 - `masterGames` (+ `gameTables/masterGamesTable`)
 - `masterGame` (+ `masterGameYearStats`)
@@ -345,4 +345,6 @@ has the bug too.
 | 6 | `components/masterGameYearStats.vue` | Like `royalePublisherGraph`, it passed vue-chartjs 4's `chart-id`, `height` and `styles` to vue-chartjs 5's `Line`, which has none of them, so they fell through to the canvas as attributes (`styles="[object Object]"`). Removed; the 520px container already sets the height. The tooltip's percent check now looks up the series by dataset index instead of a custom `percentageScale` dataset property | Yes | Done |
 | 6 | `views/topBidsAndDrops.vue` | A failed load set `errorInfo`, which nothing displayed, and left the spinner up forever. Errors now show in a `b-alert` in place of the spinner. Both year dropdowns had `id="year-dropdown"`, which clashed when the end-of-year alert showed; the alert's is now `year-within-process-date-dropdown` | Yes | Done |
 | 6 | `views/publicLeagues.vue` | A failed load wasn't caught, so the page showed nothing. It now shows a `b-alert`. The pagination's `aria-controls="my-table"` pointed at no element; the table is now `public-leagues-table` | Yes | Done |
+| 6 | `components/gameStats/longestTenuredGamesPanel.vue`, `components/gameStats/mostDreamsDashedPanel.vue` | A failed load wasn't caught, so the spinner stayed up forever. Errors now show in a `b-alert`. These panels and `topBidsAndDrops` clear the error at the start of each load, so it goes away when a later load succeeds | Yes | Done |
+| 6 | `mostDreamsDashedPanel`, `masterGames`, `masterGameYearStats`, `publicLeagues`, `topBidsAndDrops` | Changing a dropdown while an earlier load is still running lets whichever response arrives last win. Seen on Most Dreams Dashed: a slow all-time request failed after the 2018 request succeeded, and its alert replaced the 2018 results. Fix by ignoring responses for anything other than the current selection | Yes | Not scheduled |
 | — | `components/gameNews.vue`, `views/criticsRoyale.vue`, `components/possibleRoyaleMasterGamesTable.vue`, `components/possibleMasterGamesTable.vue` | Each `b-pagination` has `aria-controls="my-table"`, but no element has that id. Give each table a real id and point `aria-controls` at it, or drop the attribute | Yes | Steps 8, 9, 13a |
