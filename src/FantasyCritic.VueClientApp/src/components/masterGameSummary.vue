@@ -31,29 +31,31 @@
         <span v-if="masterGame.releaseDate">{{ releaseDate }}</span>
         <span v-else>{{ masterGame.estimatedReleaseDate }} (Estimated)</span>
       </div>
-      <div>
-        <span class="detail-label">Percent Published:</span>
-        {{ formatPercent(masterGame.eligiblePercentStandardGame, 1) }}
-      </div>
-      <div>
-        <span class="detail-label">Percent Counterpicked:</span>
-        {{ formatPercent(masterGame.adjustedPercentCounterPick, 1) }}
-      </div>
-      <div>
-        <span class="detail-label">Average Draft Position:</span>
-        <span v-if="masterGame.averageDraftPosition">{{ formatScore(masterGame.averageDraftPosition, 1) }}</span>
-        <span v-else>Undrafted</span>
-      </div>
-      <div>
-        <span class="detail-label">Hype Factor:</span>
-        <span v-if="masterGame.dateAdjustedHypeFactor">{{ formatScore(masterGame.dateAdjustedHypeFactor, 1) }}</span>
-        <span v-else>Unhyped...</span>
-      </div>
-      <div v-if="masterGame.projectedFantasyPoints">
-        <span v-if="!masterGame.criticScore" class="detail-label">Projected Points:</span>
-        <span v-else class="detail-label">Pre-Release Projected Points:</span>
-        <span>~{{ formatScore(masterGame.projectedFantasyPoints, 1) }}</span>
-      </div>
+      <template v-if="masterGameYear">
+        <div>
+          <span class="detail-label">Percent Published:</span>
+          {{ formatPercent(masterGameYear.eligiblePercentStandardGame, 1) }}
+        </div>
+        <div>
+          <span class="detail-label">Percent Counterpicked:</span>
+          {{ formatPercent(masterGameYear.adjustedPercentCounterPick, 1) }}
+        </div>
+        <div>
+          <span class="detail-label">Average Draft Position:</span>
+          <span v-if="masterGameYear.averageDraftPosition">{{ formatScore(masterGameYear.averageDraftPosition, 1) }}</span>
+          <span v-else>Undrafted</span>
+        </div>
+        <div>
+          <span class="detail-label">Hype Factor:</span>
+          <span v-if="masterGameYear.dateAdjustedHypeFactor">{{ formatScore(masterGameYear.dateAdjustedHypeFactor, 1) }}</span>
+          <span v-else>Unhyped...</span>
+        </div>
+        <div v-if="masterGameYear.projectedFantasyPoints">
+          <span v-if="!masterGameYear.criticScore" class="detail-label">Projected Points:</span>
+          <span v-else class="detail-label">Pre-Release Projected Points:</span>
+          <span>~{{ formatScore(masterGameYear.projectedFantasyPoints, 1) }}</span>
+        </div>
+      </template>
       <div v-if="masterGame.openCriticID">
         <a :href="openCriticLink" target="_blank">
           <strong>
@@ -88,7 +90,7 @@ import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
 import { DateTime } from 'luxon';
 
-import { MasterGameYearViewModel } from '@/api/clients';
+import { MasterGameViewModel, MasterGameYearViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { formatPercent, formatScore } from '@/utilities/formatters';
 import { getGGCoverArtLinkForGame, getGGLinkForGame } from '@/utilities/ggLinks';
@@ -99,11 +101,14 @@ export default defineComponent({
     MasterGameTagBadge
   },
   props: {
-    masterGame: { type: Object as PropType<MasterGameYearViewModel>, required: true },
+    masterGame: { type: Object as PropType<MasterGameViewModel | MasterGameYearViewModel>, required: true },
     hideImage: { type: Boolean }
   },
   computed: {
     ...mapState(useAuthStore, ['isFactChecker']),
+    masterGameYear(): MasterGameYearViewModel | null {
+      return 'year' in this.masterGame ? this.masterGame : null;
+    },
     ggCoverArtLink(): string | null {
       return getGGCoverArtLinkForGame(this.masterGame, 165);
     },

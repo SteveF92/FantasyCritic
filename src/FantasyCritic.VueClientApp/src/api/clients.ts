@@ -14,7 +14,7 @@ import {
   RoyaleGroupClient
 } from './generated/FantasyCriticClients';
 
-export { ApiException } from './generated/FantasyCriticClients';
+export { ApiException, RecentMasterGameChangeMode, RoyalePossibleMasterGamesReleaseFilter, SupportUserSearchKind } from './generated/FantasyCriticClients';
 export type * from './generated/FantasyCriticClients';
 
 const http = {

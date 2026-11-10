@@ -14,7 +14,7 @@
 <script lang="ts">
 import { defineComponent, useId, type PropType } from 'vue';
 
-import { MasterGameYearViewModel } from '@/api/clients';
+import { MasterGameViewModel, MasterGameYearViewModel } from '@/api/clients';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 
 export default defineComponent({
@@ -25,7 +25,7 @@ export default defineComponent({
     MasterGameSummary
   },
   props: {
-    masterGame: { type: Object as PropType<MasterGameYearViewModel>, required: true },
+    masterGame: { type: Object as PropType<MasterGameViewModel | MasterGameYearViewModel>, required: true },
     showAsWarning: { type: Boolean }
   }
 });

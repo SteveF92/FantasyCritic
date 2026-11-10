@@ -3,12 +3,14 @@
     <h1>Recent Master Game Changes</h1>
 
     <div class="mb-3">
-      <b-button class="me-2" :variant="mode === 'All' ? 'primary' : 'secondary'" :disabled="isBusy" @click="mode = 'All'">All</b-button>
-      <b-button class="me-2" :variant="mode === 'NewGames' ? 'primary' : 'secondary'" :disabled="isBusy" @click="mode = 'NewGames'">New games</b-button>
-      <b-button :variant="mode === 'Changes' ? 'primary' : 'secondary'" :disabled="isBusy" @click="mode = 'Changes'">Changes</b-button>
+      <b-button class="me-2" :variant="mode === RecentMasterGameChangeMode.All ? 'primary' : 'secondary'" :disabled="isBusy" @click="mode = RecentMasterGameChangeMode.All">All</b-button>
+      <b-button class="me-2" :variant="mode === RecentMasterGameChangeMode.NewGames ? 'primary' : 'secondary'" :disabled="isBusy" @click="mode = RecentMasterGameChangeMode.NewGames">
+        New games
+      </b-button>
+      <b-button :variant="mode === RecentMasterGameChangeMode.Changes ? 'primary' : 'secondary'" :disabled="isBusy" @click="mode = RecentMasterGameChangeMode.Changes">Changes</b-button>
     </div>
 
-    <div v-if="showTable">
+    <div v-if="recentChanges && !isBusy">
       <b-table small bordered striped responsive :items="recentChanges" :fields="gameFields">
         <template #cell(masterGame.gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
@@ -46,6 +48,9 @@ interface RecentMasterGameChangesData {
 }
 
 export default defineComponent({
+  setup() {
+    return { RecentMasterGameChangeMode };
+  },
   components: {
     MasterGamePopover
   },
@@ -57,20 +62,17 @@ export default defineComponent({
     };
   },
   computed: {
-    showTable(): boolean {
-      return !!this.recentChanges && !this.isBusy;
-    },
     gameFields(): TableField<CompleteMasterGameChangeViewModel>[] {
       const fields: TableField<CompleteMasterGameChangeViewModel>[] = [
         { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
         {
           key: 'timestamp',
-          label: this.mode === 'NewGames' ? 'Date Added' : 'Date of Change',
+          label: this.mode === RecentMasterGameChangeMode.NewGames ? 'Date Added' : 'Date of Change',
           sortable: true,
           thClass: 'bg-primary'
         }
       ];
-      if (this.mode !== 'NewGames') {
+      if (this.mode !== RecentMasterGameChangeMode.NewGames) {
         fields.push({ key: 'description', label: 'Description', thClass: 'bg-primary' });
       }
       return fields;
