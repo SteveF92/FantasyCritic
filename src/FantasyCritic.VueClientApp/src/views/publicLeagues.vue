@@ -36,26 +36,43 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
+import { type BTableSortBy, type TableField } from 'bootstrap-vue-next';
 
+import { leagueClient, type PublicLeagueYearViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
-export default {
-  data() {
+interface PublicLeaguesData {
+  perPage: number;
+  currentPage: number;
+  totalRows: number;
+  filter: string;
+  selectedYear: number;
+  publicLeagues: PublicLeagueYearViewModel[];
+  sortBy: BTableSortBy[];
+}
+
+export default defineComponent({
+  setup() {
+    const leagueFields: TableField<PublicLeagueYearViewModel>[] = [
+      { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'numberOfFollowers', label: 'Number of Followers', sortable: true, thClass: 'bg-primary' }
+    ];
+
+    const filterable = ['leagueName'];
+
+    return { leagueFields, filterable };
+  },
+  data(): PublicLeaguesData {
     return {
       perPage: 10,
       currentPage: 1,
       totalRows: 1,
-      filter: null,
-      filterable: ['leagueName'],
-      selectedYear: null,
+      filter: '',
+      selectedYear: useInterLeagueStore().supportedYears.filter((x) => x.openForPlay)[0].year,
       publicLeagues: [],
-      leagueFields: [
-        { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'numberOfFollowers', label: 'Number of Followers', sortable: true, thClass: 'bg-primary' }
-      ],
       sortBy: [{ key: 'numberOfFollowers', order: 'desc' }]
     };
   },
@@ -63,24 +80,23 @@ export default {
     ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'supportedYears'])
   },
   async created() {
-    this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
-    await this.fetchPublicLeaguesForYear(this.selectedYear);
+    await this.fetchPublicLeaguesForYear();
   },
   methods: {
-    onFiltered(filteredItems) {
+    onFiltered(filteredItems: readonly PublicLeagueYearViewModel[]) {
       // Trigger pagination to update the number of buttons/pages due to filtering
       this.totalRows = filteredItems.length;
       this.currentPage = 1;
     },
-    async fetchPublicLeaguesForYear(year) {
-      this.filter = null;
-      const response = await axios.get('/api/league/PublicLeagues/' + year);
-      this.publicLeagues = response.data;
+    async fetchPublicLeaguesForYear() {
+      this.filter = '';
+      this.publicLeagues = await leagueClient.publicLeagues(this.selectedYear, null);
       this.totalRows = this.publicLeagues.length;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .header {
   max-width: 80%;
