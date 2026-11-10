@@ -54,11 +54,13 @@
   </div>
 </template>
 
-<script>
-import { markRaw } from 'vue';
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent, markRaw, PropType } from 'vue';
 import { Line as LineChartGenerator } from 'vue-chartjs';
 
+import { gameClient, MasterGameYearViewModel, MasterGameYearWithStatisticsViewModel } from '@/api/clients';
+import { PopoverContent } from '@/types/vueTypes';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatPercent, formatScore } from '@/utilities/formatters';
 
 const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
@@ -88,43 +90,48 @@ function valueForChart(series, raw) {
   return series.scaleZeroToOneAsPercent ? v * 100 : v;
 }
 
-export default {
+interface MasterGameYearStatsData {
+  selectedYear: number | null;
+  masterGameYearWithStatistics: MasterGameYearWithStatisticsViewModel | null;
+  statisticsLoadError: string | null;
+}
+
+export default defineComponent({
+  setup() {
+    const peakHypeFactorText: PopoverContent = {
+      title: 'Peak Hype Factor',
+      body:
+        "Sometimes a game's hype factor will go down over the course of the year, particularly if it gets delayed and many players drop it. " +
+        "This number is the highest this game's hype factor ever was in the year."
+    };
+    return { chartHeight: 520, chartCanvasStyles: {}, peakHypeFactorText };
+  },
   components: { LineChartGenerator },
   props: {
     masterGameId: { type: String, required: true },
-    masterGameYears: { type: Array, required: true }
+    masterGameYears: { type: Array as PropType<MasterGameYearViewModel[]>, required: true }
   },
-  data() {
+  data(): MasterGameYearStatsData {
     return {
       selectedYear: null,
       masterGameYearWithStatistics: null,
-      statisticsLoadError: null,
-      chartHeight: 520,
-      chartCanvasStyles: {}
+      statisticsLoadError: null
     };
   },
   computed: {
-    selectableYears() {
+    selectableYears(): number[] {
       if (!this.masterGameYears.length) {
         return [];
       }
 
       return [...this.masterGameYears].map((y) => y.year).sort((a, b) => b - a);
     },
-    selectedMasterGameYear() {
+    selectedMasterGameYear(): MasterGameYearViewModel | null {
       if (this.selectedYear == null) {
         return null;
       }
 
       return this.masterGameYears.find((y) => y.year === this.selectedYear) || null;
-    },
-    peakHypeFactorText() {
-      return {
-        title: 'Peak Hype Factor',
-        body:
-          "Sometimes a game's hype factor will go down over the course of the year, particularly if it gets delayed and many players drop it. " +
-          "This number is the highest this game's hype factor ever was in the year."
-      };
     },
     statisticsRowsSorted() {
       const stats = this.masterGameYearWithStatistics?.statistics;
@@ -133,13 +140,13 @@ export default {
       }
       return [...stats].sort((a, b) => String(a.date).localeCompare(String(b.date)));
     },
-    chartHasData() {
+    chartHasData(): boolean {
       return this.statisticsRowsSorted.length > 0;
     },
-    statisticsChartKey() {
+    statisticsChartKey(): string {
       return `${this.masterGameId}-${this.selectedYear}`;
     },
-    chartLabels() {
+    chartLabels(): string[] {
       return this.statisticsRowsSorted.map((row) => row.date);
     },
     chartData() {
@@ -235,28 +242,19 @@ export default {
   methods: {
     formatPercent,
     formatScore,
-    selectYear(year) {
+    selectYear(year: number) {
       this.selectedYear = year;
     },
-    async fetchMasterGameYearWithStatistics(year) {
+    async fetchMasterGameYearWithStatistics(year: number) {
       this.statisticsLoadError = null;
       try {
-        const response = await axios.get(`/api/game/MasterGameYearWithStatistics/${this.masterGameId}/${year}`);
-        this.masterGameYearWithStatistics = response.data;
+        this.masterGameYearWithStatistics = await gameClient.masterGameYearWithStatistics(this.masterGameId, year);
       } catch (error) {
-        const body = error.response?.data;
-        let message = error.message ?? 'Failed to load year statistics.';
-        if (typeof body === 'string') {
-          message = body;
-        } else if (body && typeof body === 'object') {
-          message = body.message || body.title || JSON.stringify(body);
-        }
-        this.statisticsLoadError = message;
-        this.masterGameYearWithStatistics = null;
+        this.statisticsLoadError = getApiErrorMessage(error);
       }
     }
   }
-};
+});
 </script>
 
 <style scoped>
