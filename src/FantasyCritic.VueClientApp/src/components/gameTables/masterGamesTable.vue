@@ -108,6 +108,7 @@
     <b-pagination v-model="currentPage" :total-rows="totalRows" :per-page="perPage" align="fill" size="sm" class="my-0 pagination-dark"></b-pagination>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { BTableSortBy, BTableSortByOrder, TableField } from 'bootstrap-vue-next';
