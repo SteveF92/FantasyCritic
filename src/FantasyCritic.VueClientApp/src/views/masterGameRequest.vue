@@ -4,7 +4,7 @@
     <hr />
     <div v-if="showSent" class="alert alert-success">Master Game request made.</div>
     <div v-if="showDeleted" class="alert alert-success">Master Game request was deleted.</div>
-    <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
+    <div v-if="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
     <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0 text-well">
       <p>
         <strong>
@@ -145,11 +145,12 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import { gameClient, MasterGameRequestRequest, type MasterGameRequestViewModel } from '@/api/clients';
+import { gameClient, type MasterGameRequestRequest, type MasterGameRequestViewModel } from '@/api/clients';
 import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatDateTime } from '@/utilities/formatters';
 import DateInput from '@/components/dateInput.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { ValidationForm } from '@/validation';
 
 interface MasterGameRequestData {
   myRequests: MasterGameRequestViewModel[];
@@ -161,7 +162,7 @@ interface MasterGameRequestData {
   steamLink: string;
   openCriticLink: string;
   ggLink: string;
-  releaseDate: Temporal.PlainDate | null;
+  releaseDate: string | null;
   estimatedReleaseDate: string;
   hasReleaseDate: boolean;
   wantToPickup: boolean;
@@ -196,7 +197,7 @@ export default defineComponent({
     };
   },
   computed: {
-    validRequest() {
+    validRequest(): boolean {
       if (!this.estimatedReleaseDate && !this.releaseDate) {
         return false;
       }
@@ -207,7 +208,7 @@ export default defineComponent({
 
       return true;
     },
-    showUnannouncedWarning() {
+    showUnannouncedWarning(): boolean {
       const fieldsToCheck = [this.gameName, this.estimatedReleaseDate, this.requestNote];
       const keywords = ['unannounced', 'rumor'];
 
@@ -230,7 +231,7 @@ export default defineComponent({
       this.myRequests = await gameClient.myMasterGameRequests();
     },
     async sendMasterGameRequestRequest() {
-      let request: MasterGameRequestRequest = {
+      const request: MasterGameRequestRequest = {
         gameName: this.gameName,
         requestNote: this.requestNote,
         steamLink: this.steamLink,
@@ -243,12 +244,13 @@ export default defineComponent({
         request.estimatedReleaseDate = this.estimatedReleaseDate;
       }
       if (this.hasReleaseDate && this.releaseDate) {
-        request.releaseDate = this.releaseDate.toString();
-        request.estimatedReleaseDate = this.releaseDate.toString();
+        request.releaseDate = this.releaseDate;
+        request.estimatedReleaseDate = this.releaseDate;
       }
 
       try {
         this.isBusy = true;
+        this.errorInfo = '';
         await gameClient.createMasterGameRequest(request);
         this.showSent = true;
         window.scroll({
@@ -272,7 +274,7 @@ export default defineComponent({
       this.ggLink = '';
       this.releaseDate = null;
       this.estimatedReleaseDate = '';
-      this.$refs.form.resetForm();
+      (this.$refs.form as InstanceType<typeof ValidationForm>).resetForm();
     },
     async cancelRequest(request: MasterGameRequestViewModel) {
       let model = {
