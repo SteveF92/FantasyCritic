@@ -23,7 +23,7 @@
           <div class="league-pill-list">
             <router-link
               v-for="leaguePublisherSet in getSortedLeaguePublisherSets(data.item)"
-              :key="leaguePublisherSet.LeagueID"
+              :key="leaguePublisherSet.leagueID"
               :to="{ name: 'league', params: { leagueid: leaguePublisherSet.leagueID, year: leaguePublisherSet.year } }"
               class="league-pill-link">
               <span class="league-pill-name">{{ leaguePublisherSet.leagueName }}</span>
@@ -49,42 +49,55 @@
     <div v-else><h4>No Games Found</h4></div>
   </div>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import { mapState } from 'pinia';
+import { BTableSortBy, TableField } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
+import type { GameNewsViewModel, SingleGameNewsPublisherViewModel, SingleGameNewsViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
 
-export default {
+interface GameNewsData {
+  recentReleasesMode: boolean;
+  sortBy: BTableSortBy[];
+  currentPage: number;
+  perPage: number;
+}
+
+export default defineComponent({
+  setup() {
+    const baseGameNewsFields: TableField<SingleGameNewsViewModel>[] = [
+      { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' }
+    ];
+    const userGameNewsFields: TableField<SingleGameNewsViewModel>[] = [{ key: 'league', label: 'League', sortable: true, thClass: ['bg-primary'] }];
+    const leagueGameNewsFields: TableField<SingleGameNewsViewModel>[] = [{ key: 'publisher', label: 'Publisher', sortable: true, thClass: ['bg-primary'] }];
+
+    return { baseGameNewsFields, userGameNewsFields, leagueGameNewsFields };
+  },
   components: {
     MasterGamePopover,
     ToggleSwitch
   },
   props: {
-    gameNews: { type: Object, required: true },
+    gameNews: { type: Object as PropType<GameNewsViewModel>, required: true },
     mode: { type: String, required: true }
   },
-  data() {
+  data(): GameNewsData {
     return {
       recentReleasesMode: false,
       sortBy: [{ key: 'maximumReleaseDate', order: 'asc' }],
       currentPage: 1,
-      perPage: 10,
-      baseGameNewsFields: [
-        { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' }
-      ],
-      userGameNewsFields: [{ key: 'league', label: 'League', sortable: true, thClass: ['bg-primary'] }],
-      leagueGameNewsFields: [{ key: 'publisher', label: 'Publisher', sortable: true, thClass: ['bg-primary'] }]
+      perPage: 10
     };
   },
   computed: {
-    isPlusUser() {
-      const authStore = useAuthStore();
-      return authStore.isPlusUser;
-    },
-    gameNewsFields() {
+    ...mapState(useAuthStore, ['isPlusUser']),
+    gameNewsFields(): TableField<SingleGameNewsViewModel>[] {
       if (this.mode === 'user') {
         return this.baseGameNewsFields.concat(this.userGameNewsFields);
       } else if (this.mode === 'league') {
@@ -93,7 +106,7 @@ export default {
 
       return this.baseGameNewsFields;
     },
-    gameNewsItems() {
+    gameNewsItems(): SingleGameNewsViewModel[] {
       if (!this.gameNews) {
         return [];
       }
@@ -110,7 +123,7 @@ export default {
     }
   },
   methods: {
-    getSortedLeaguePublisherSets(game) {
+    getSortedLeaguePublisherSets(game: SingleGameNewsViewModel): SingleGameNewsPublisherViewModel[] {
       if (!game || !game.leaguePublisherSets || game.leaguePublisherSets.length === 0) {
         return [];
       }
@@ -121,33 +134,34 @@ export default {
         return aName.localeCompare(bName);
       });
     },
-    isCounterPickPublisherSet(publisherSet) {
+    isCounterPickPublisherSet(publisherSet: SingleGameNewsPublisherViewModel): boolean {
       if (!publisherSet) {
         return false;
       }
 
-      return Boolean(publisherSet.counterPick || publisherSet.CounterPick || publisherSet.counterpick);
+      return publisherSet.counterPick;
     },
-    getPrimaryPublisherSet(game) {
+    getPrimaryPublisherSet(game: SingleGameNewsViewModel): SingleGameNewsPublisherViewModel {
       if (!game || !game.leaguePublisherSets || game.leaguePublisherSets.length === 0) {
         return {};
       }
 
       return game.leaguePublisherSets[0];
     },
-    getCounterPickPublisherID(game) {
+    getCounterPickPublisherID(game: SingleGameNewsViewModel) {
       const publisherSet = this.getPrimaryPublisherSet(game);
-      return publisherSet.counterPickPublisherID || publisherSet.counterPickPublisherId || null;
+      return publisherSet.counterPickPublisherID || publisherSet.counterPickPublisherID || null;
     },
-    getReleaseDate(game) {
+    getReleaseDate(game: SingleGameNewsViewModel): string {
       if (game.releaseDate) {
         return DateTime.fromISO(game.releaseDate).toFormat('yyyy-MM-dd');
       }
       return game.estimatedReleaseDate + ' (Estimated)';
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .upcoming-header {
   display: flex;
