@@ -11,8 +11,19 @@
       </template>
       <toggleSwitch v-if="isPlusUser" v-model="recentReleasesMode" class="toggle" :labels="{ checked: 'Recent', unchecked: 'Upcoming' }" :width="100" />
     </span>
-    <div v-if="gameNewsItems && gameNewsItems.length > 0">
-      <b-table v-model:sort-by="sortBy" :items="gameNewsItems" :fields="gameNewsFields" bordered striped responsive small :per-page="perPage" :current-page="currentPage" class="mb-0">
+    <div v-if="gameNewsItems.length > 0">
+      <b-table
+        id="game-news-table"
+        v-model:sort-by="sortBy"
+        :items="gameNewsItems"
+        :fields="gameNewsFields"
+        bordered
+        striped
+        responsive
+        small
+        :per-page="perPage"
+        :current-page="currentPage"
+        class="mb-0">
         <template #cell(gameName)="data">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
         </template>
@@ -27,7 +38,7 @@
               :to="{ name: 'league', params: { leagueid: leaguePublisherSet.leagueID, year: leaguePublisherSet.year } }"
               class="league-pill-link">
               <span class="league-pill-name">{{ leaguePublisherSet.leagueName }}</span>
-              <span v-if="mode === 'user' && isCounterPickPublisherSet(leaguePublisherSet)" class="league-pill-counter-pick">Counter Pick</span>
+              <span v-if="mode === 'user' && leaguePublisherSet.counterPick" class="league-pill-counter-pick">Counter Pick</span>
             </router-link>
           </div>
         </template>
@@ -44,7 +55,7 @@
           </span>
         </template>
       </b-table>
-      <b-pagination v-model="currentPage" :total-rows="gameNewsItems.length" :per-page="perPage" aria-controls="my-table" align="end" size="sm" class="my-0 pagination-dark"></b-pagination>
+      <b-pagination v-model="currentPage" :total-rows="gameNewsItems.length" :per-page="perPage" aria-controls="game-news-table" align="end" size="sm" class="my-0 pagination-dark"></b-pagination>
     </div>
     <div v-else><h4>No Games Found</h4></div>
   </div>
@@ -53,7 +64,7 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
-import { BTableSortBy, TableField } from 'bootstrap-vue-next';
+import type { BTableSortBy, TableField } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
 import type { GameNewsViewModel, SingleGameNewsPublisherViewModel, SingleGameNewsViewModel } from '@/api/clients';
@@ -85,7 +96,7 @@ export default defineComponent({
   },
   props: {
     gameNews: { type: Object as PropType<GameNewsViewModel>, required: true },
-    mode: { type: String, required: true }
+    mode: { type: String as PropType<'user' | 'league'>, required: true }
   },
   data(): GameNewsData {
     return {
@@ -107,9 +118,6 @@ export default defineComponent({
       return this.baseGameNewsFields;
     },
     gameNewsItems(): SingleGameNewsViewModel[] {
-      if (!this.gameNews) {
-        return [];
-      }
       if (this.recentReleasesMode) {
         return this.gameNews.recentGames;
       }
@@ -124,33 +132,13 @@ export default defineComponent({
   },
   methods: {
     getSortedLeaguePublisherSets(game: SingleGameNewsViewModel): SingleGameNewsPublisherViewModel[] {
-      if (!game || !game.leaguePublisherSets || game.leaguePublisherSets.length === 0) {
-        return [];
-      }
-
-      return [...game.leaguePublisherSets].sort((a, b) => {
-        const aName = (a.leagueName || '').toLowerCase();
-        const bName = (b.leagueName || '').toLowerCase();
-        return aName.localeCompare(bName);
-      });
-    },
-    isCounterPickPublisherSet(publisherSet: SingleGameNewsPublisherViewModel): boolean {
-      if (!publisherSet) {
-        return false;
-      }
-
-      return publisherSet.counterPick;
+      return [...game.leaguePublisherSets].sort((a, b) => a.leagueName.toLowerCase().localeCompare(b.leagueName.toLowerCase()));
     },
     getPrimaryPublisherSet(game: SingleGameNewsViewModel): SingleGameNewsPublisherViewModel {
-      if (!game || !game.leaguePublisherSets || game.leaguePublisherSets.length === 0) {
-        return {};
-      }
-
       return game.leaguePublisherSets[0];
     },
-    getCounterPickPublisherID(game: SingleGameNewsViewModel) {
-      const publisherSet = this.getPrimaryPublisherSet(game);
-      return publisherSet.counterPickPublisherID || publisherSet.counterPickPublisherID || null;
+    getCounterPickPublisherID(game: SingleGameNewsViewModel): string | undefined {
+      return this.getPrimaryPublisherSet(game).counterPickPublisherID;
     },
     getReleaseDate(game: SingleGameNewsViewModel): string {
       if (game.releaseDate) {

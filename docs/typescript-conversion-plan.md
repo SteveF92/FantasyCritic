@@ -234,7 +234,7 @@ out.
 - `recentMasterGameChanges`, `mostDesiredReviews`, `topBidsAndDrops`, `publicLeagues`
 - `advancedGameStats` (+ `gameStats/longestTenuredGamesPanel`, `gameStats/mostDreamsDashedPanel`)
 
-### 7. Request pages
+### 7. Request pages (done)
 
 `masterGameRequest`, `masterGameChangeRequest`: create, delete and dismiss requests.
 
@@ -347,4 +347,5 @@ has the bug too.
 | 6 | `views/publicLeagues.vue` | A failed load wasn't caught, so the page showed nothing. It now shows a `b-alert`. The pagination's `aria-controls="my-table"` pointed at no element; the table is now `public-leagues-table` | Yes | Done |
 | 6 | `components/gameStats/longestTenuredGamesPanel.vue`, `components/gameStats/mostDreamsDashedPanel.vue` | A failed load wasn't caught, so the spinner stayed up forever. Errors now show in a `b-alert`. These panels and `topBidsAndDrops` clear the error at the start of each load, so it goes away when a later load succeeds | Yes | Done |
 | 6 | `mostDreamsDashedPanel`, `masterGames`, `masterGameYearStats`, `publicLeagues`, `topBidsAndDrops` | Changing a dropdown while an earlier load is still running lets whichever response arrives last win. Seen on Most Dreams Dashed: a slow all-time request failed after the 2018 request succeeded, and its alert replaced the 2018 results. Fix by ignoring responses for anything other than the current selection | Yes | Not scheduled |
-| — | `components/gameNews.vue`, `views/criticsRoyale.vue`, `components/possibleRoyaleMasterGamesTable.vue`, `components/possibleMasterGamesTable.vue` | Each `b-pagination` has `aria-controls="my-table"`, but no element has that id. Give each table a real id and point `aria-controls` at it, or drop the attribute | Yes | Steps 8, 9, 13a |
+| — | `views/criticsRoyale.vue`, `components/possibleRoyaleMasterGamesTable.vue`, `components/possibleMasterGamesTable.vue` | Each `b-pagination` has `aria-controls="my-table"`, but no element has that id. Give each table a real id and point `aria-controls` at it, or drop the attribute. `gameNews` was done in step 8 (`game-news-table`) | Yes | Steps 9, 13a |
+| 8 | `components/gameNews.vue` | The league pills were keyed on `leaguePublisherSet.LeagueID`, but the API sends `leagueID`, so every pill's key was `undefined` and a game in two or more of the user's leagues had duplicate keys | Yes | Done |
