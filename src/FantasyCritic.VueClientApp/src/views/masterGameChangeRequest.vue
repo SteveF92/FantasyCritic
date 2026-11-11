@@ -139,20 +139,43 @@
     </div>
   </div>
 </template>
-<script>
-import axios from 'axios';
 
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import {
+  gameClient,
+  MasterGameChangeRequestRequest,
+  MasterGameRequestDeletionRequest,
+  MasterGameRequestDismissRequest,
+  type MasterGameChangeRequestViewModel,
+  type MasterGameViewModel
+} from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatDateTime } from '@/utilities/formatters';
 import { getGGCoverArtLinkForGame, getGGLinkForGame } from '@/utilities/ggLinks';
+import { openCriticLink } from '@/utilities/openCriticLinks';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
-export default {
+interface MasterGameChangeRequestData {
+  myRequests: MasterGameChangeRequestViewModel[];
+  showSent: boolean;
+  showDeleted: boolean;
+  errorInfo: string;
+  masterGame: MasterGameViewModel | null;
+  requestNote: string;
+  openCriticLink: string;
+  ggLink: string;
+  isBusy: boolean;
+}
+
+export default defineComponent({
   components: {
     MasterGamePopover,
     MasterGameDetails
   },
-  data() {
+  data(): MasterGameChangeRequestData {
     return {
       myRequests: [],
       showSent: false,
@@ -162,12 +185,6 @@ export default {
       requestNote: '',
       openCriticLink: '',
       ggLink: '',
-      piecewiseStyle: {
-        backgroundColor: '#ccc',
-        visibility: 'visible',
-        width: '12px',
-        height: '20px'
-      },
       isBusy: false
     };
   },
@@ -176,19 +193,19 @@ export default {
     await this.fetchMyRequests();
   },
   computed: {
-    coverArtLink() {
+    coverArtLink(): string | null {
       if (!this.masterGame) return null;
       return getGGCoverArtLinkForGame(this.masterGame, 150);
     },
-    gameGGLink() {
+    gameGGLink(): string | null {
       if (!this.masterGame) return null;
       return getGGLinkForGame(this.masterGame);
     },
-    gameOpenCriticLink() {
-      if (!this.masterGame || !this.masterGame.openCriticID) return null;
-      return `https://opencritic.com/game/${this.masterGame.openCriticID}/${this.masterGame.openCriticSlug ?? 'b'}`;
+    gameOpenCriticLink(): string | undefined {
+      if (!this.masterGame || !this.masterGame.openCriticID) return undefined;
+      return openCriticLink(this.masterGame);
     },
-    invalidOpenCriticRequest() {
+    invalidOpenCriticRequest(): boolean {
       if (!this.requestNote) {
         return false;
       }
@@ -210,20 +227,22 @@ export default {
   methods: {
     formatDateTime,
     async fetchRequestedGame() {
-      const masterGameID = this.$route.query.mastergameid;
+      const masterGameID = this.$route.query.mastergameid as string;
       if (masterGameID) {
         await this.fetchMasterGame(masterGameID);
       }
     },
     async fetchMyRequests() {
-      const response = await axios.get('/api/game/MyMasterGameChangeRequests');
-      this.myRequests = response.data;
+      this.myRequests = await gameClient.myMasterGameChangeRequests();
     },
     async sendMasterGameChangeRequestRequest() {
+      if (!this.masterGame) {
+        throw new Error('Master Game not loaded.');
+      }
       if (!this.requestNote && this.openCriticLink) {
         this.requestNote = 'Link to OpenCritic';
       }
-      let request = {
+      const request: MasterGameChangeRequestRequest = {
         masterGameID: this.masterGame.masterGameID,
         requestNote: this.requestNote,
         openCriticLink: this.openCriticLink,
@@ -232,7 +251,7 @@ export default {
 
       try {
         this.isBusy = true;
-        await axios.post('/api/game/CreateMasterGameChangeRequest', request);
+        await gameClient.createMasterGameChangeRequest(request);
         this.showSent = true;
         window.scroll({
           top: 0,
@@ -242,7 +261,7 @@ export default {
         this.clearData();
         await this.fetchMyRequests();
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong with your request.');
       } finally {
         this.isBusy = false;
       }
@@ -252,32 +271,32 @@ export default {
       this.openCriticLink = '';
       this.ggLink = '';
     },
-    async cancelRequest(request) {
-      let model = {
+    async cancelRequest(request: MasterGameChangeRequestViewModel) {
+      const model: MasterGameRequestDeletionRequest = {
         requestID: request.requestID
       };
-      await axios.post('/api/game/DeleteMasterGameChangeRequest', model);
+      await gameClient.deleteMasterGameChangeRequest(model);
       this.showDeleted = true;
       await this.fetchMyRequests();
     },
-    async dismissRequest(request) {
-      let model = {
+    async dismissRequest(request: MasterGameChangeRequestViewModel) {
+      const model: MasterGameRequestDismissRequest = {
         requestID: request.requestID
       };
-      await axios.post('/api/game/DismissMasterGameChangeRequest', model);
+      await gameClient.dismissMasterGameChangeRequest(model);
       await this.fetchMyRequests();
     },
-    async fetchMasterGame(masterGameID) {
+    async fetchMasterGame(masterGameID: string) {
       try {
-        const response = await axios.get('/api/game/MasterGame/' + masterGameID);
-        this.masterGame = response.data;
+        this.masterGame = await gameClient.masterGame(masterGameID);
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Failed to fetch game.');
       }
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .select-cell {
   text-align: center;
