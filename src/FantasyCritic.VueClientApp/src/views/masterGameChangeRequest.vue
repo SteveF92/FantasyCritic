@@ -4,7 +4,7 @@
     <hr />
     <div v-if="showSent" class="alert alert-success">Master Game request made.</div>
     <div v-if="showDeleted" class="alert alert-success">Master Game request was deleted.</div>
-    <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
+    <div v-if="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
     <div class="col-lg-10 col-md-12 offset-lg-1 offset-md-0">
       <div class="text-well">
         <p>If you see an issue with a game on the site, for example an incorrect release date, you can send me a note and I'll get it fixed.</p>
@@ -57,7 +57,7 @@
 
           <hr />
 
-          <ValidationForm v-slot="{ meta }" as="">
+          <ValidationForm ref="form" v-slot="{ meta }" as="">
             <form @submit.prevent="sendMasterGameChangeRequestRequest">
               <div class="form-group">
                 <label for="requestNote" class="control-label">What seems to be the issue?</label>
@@ -145,9 +145,9 @@ import { defineComponent } from 'vue';
 
 import {
   gameClient,
-  MasterGameChangeRequestRequest,
-  MasterGameRequestDeletionRequest,
-  MasterGameRequestDismissRequest,
+  type MasterGameChangeRequestDeletionRequest,
+  type MasterGameChangeRequestDismissRequest,
+  type MasterGameChangeRequestRequest,
   type MasterGameChangeRequestViewModel,
   type MasterGameViewModel
 } from '@/api/clients';
@@ -157,6 +157,7 @@ import { getGGCoverArtLinkForGame, getGGLinkForGame } from '@/utilities/ggLinks'
 import { openCriticLink } from '@/utilities/openCriticLinks';
 import MasterGameDetails from '@/components/masterGameDetails.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
+import { ValidationForm } from '@/validation';
 
 interface MasterGameChangeRequestData {
   myRequests: MasterGameChangeRequestViewModel[];
@@ -202,7 +203,7 @@ export default defineComponent({
       return getGGLinkForGame(this.masterGame);
     },
     gameOpenCriticLink(): string | undefined {
-      if (!this.masterGame || !this.masterGame.openCriticID) return undefined;
+      if (!this.masterGame) return undefined;
       return openCriticLink(this.masterGame);
     },
     invalidOpenCriticRequest(): boolean {
@@ -227,8 +228,8 @@ export default defineComponent({
   methods: {
     formatDateTime,
     async fetchRequestedGame() {
-      const masterGameID = this.$route.query.mastergameid as string;
-      if (masterGameID) {
+      const masterGameID = this.$route.query.mastergameid;
+      if (typeof masterGameID === 'string') {
         await this.fetchMasterGame(masterGameID);
       }
     },
@@ -250,6 +251,7 @@ export default defineComponent({
       };
 
       try {
+        this.errorInfo = '';
         this.isBusy = true;
         await gameClient.createMasterGameChangeRequest(request);
         this.showSent = true;
@@ -270,9 +272,10 @@ export default defineComponent({
       this.requestNote = '';
       this.openCriticLink = '';
       this.ggLink = '';
+      (this.$refs.form as InstanceType<typeof ValidationForm>).resetForm();
     },
     async cancelRequest(request: MasterGameChangeRequestViewModel) {
-      const model: MasterGameRequestDeletionRequest = {
+      const model: MasterGameChangeRequestDeletionRequest = {
         requestID: request.requestID
       };
       await gameClient.deleteMasterGameChangeRequest(model);
@@ -280,7 +283,7 @@ export default defineComponent({
       await this.fetchMyRequests();
     },
     async dismissRequest(request: MasterGameChangeRequestViewModel) {
-      const model: MasterGameRequestDismissRequest = {
+      const model: MasterGameChangeRequestDismissRequest = {
         requestID: request.requestID
       };
       await gameClient.dismissMasterGameChangeRequest(model);
