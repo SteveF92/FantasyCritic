@@ -7,7 +7,7 @@ import { defineComponent, type PropType } from 'vue';
 
 export default defineComponent({
   props: {
-    modelValue: { type: String as PropType<string | null>, default: null }
+    modelValue: { type: String as PropType<Temporal.PlainDate | string | null>, default: null }
   },
   emits: {
     'update:modelValue': (_value: string | null) => true
