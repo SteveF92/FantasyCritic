@@ -31,7 +31,7 @@
             Conference:
             <router-link :to="{ name: 'conference', params: { conferenceid: data.item.conferenceID, year: data.item.activeYear } }" class="conference-link">{{ data.item.conferenceName }}</router-link>
           </div>
-          <div v-if="data.item.leagueManager" class="league-detail">
+          <div class="league-detail">
             Manager:
             <span v-if="data.item.leagueManager.userID === userInfo!.userID" class="text-bold">
               {{ data.item.leagueManager.displayName }}
@@ -79,7 +79,7 @@ export default defineComponent({
   },
   props: {
     leagues: { type: Array as PropType<LeagueWithStatusViewModel[]>, required: true },
-    leagueIcon: { type: String, required: true },
+    leagueIcon: { type: String as PropType<'user' | 'users' | 'archive' | 'atom'>, required: true },
     showArchive: { type: Boolean },
     showUnArchive: { type: Boolean },
     showUnfollow: { type: Boolean }
