@@ -18,25 +18,29 @@
     </template>
   </b-table>
 </template>
-<script>
-import { mapState } from 'pinia';
 
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import { mapState } from 'pinia';
+import { type TableField } from 'bootstrap-vue-next';
+
+import { type MinimalConferenceViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 
-export default {
-  props: {
-    conferences: { type: Array, required: true }
+export default defineComponent({
+  setup() {
+    const conferenceFields: TableField<MinimalConferenceViewModel>[] = [{ key: 'conferenceName' }];
+    return { conferenceFields };
   },
-  data() {
-    return {
-      conferenceFields: [{ key: 'conferenceName' }]
-    };
+  props: {
+    conferences: { type: Array as PropType<MinimalConferenceViewModel[]>, required: true }
   },
   computed: {
     ...mapState(useInterLeagueStore, ['activeRoyaleQuarter'])
   }
-};
+});
 </script>
+
 <style scoped>
 table :deep(.hidden_header) {
   display: none;

@@ -6,14 +6,13 @@
           <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.activeYear } }" class="league-icon">
             <font-awesome-icon v-if="leagueIcon !== 'user'" :icon="leagueIcon" size="2x" />
             <template v-else>
-              <font-awesome-icon v-if="data.item.conferenceID" icon="globe" size="2x" transform="left-1" />
+              <font-awesome-icon v-if="data.item.conferenceID" icon="globe" size="2x" />
               <font-awesome-icon v-if="!data.item.conferenceID && data.item.customRulesLeague" icon="book" size="2x" />
               <font-awesome-icon
                 v-if="!data.item.conferenceID && !data.item.customRulesLeague && data.item.mostRecentYearType === 'OneShot'"
                 v-b-popover.hover.top="'One Shot League'"
                 icon="1"
-                size="2x"
-                transform="right-3" />
+                size="2x" />
               <font-awesome-icon
                 v-if="!data.item.conferenceID && !data.item.customRulesLeague && data.item.mostRecentYearType === 'MultiDraft'"
                 v-b-popover.hover.top="'Multi Draft League'"
@@ -34,7 +33,7 @@
           </div>
           <div v-if="data.item.leagueManager" class="league-detail">
             Manager:
-            <span v-if="data.item.leagueManager.userID === userInfo.userID" class="text-bold">
+            <span v-if="data.item.leagueManager.userID === userInfo!.userID" class="text-bold">
               {{ data.item.leagueManager.displayName }}
             </span>
             <span v-else>{{ data.item.leagueManager.displayName }}</span>
@@ -46,10 +45,14 @@
           </div>
         </div>
         <div v-show="showArchive" class="archive-button-section">
-          <font-awesome-icon v-b-popover.hover.focus.right="'Archive this league (only affects you)'" class="archive-button fake-link" icon="archive" @click="setArchive(data.item, true)" />
+          <button type="button" class="font-awesome-button" aria-label="Archive league" @click="setArchive(data.item, true)">
+            <font-awesome-icon v-b-popover.hover.focus.right="'Archive this league (only affects you)'" class="archive-button fake-link" icon="archive" />
+          </button>
         </div>
         <div v-show="showUnArchive" class="archive-button-section">
-          <font-awesome-icon v-b-popover.hover.focus.right="'Un-Archive this league (only affects you)'" class="archive-button fake-link" icon="thumbtack" @click="setArchive(data.item, false)" />
+          <button type="button" class="font-awesome-button" aria-label="Un-archive league" @click="setArchive(data.item, false)">
+            <font-awesome-icon v-b-popover.hover.focus.right="'Un-Archive this league (only affects you)'" class="archive-button fake-link" icon="thumbtack" />
+          </button>
         </div>
         <div v-show="showUnfollow" class="unfollow-button-section">
           <b-button size="sm" variant="secondary" @click="confirmUnfollow(data.item)">Unfollow</b-button>
@@ -58,48 +61,47 @@
     </template>
   </b-table>
 </template>
-<script>
-import { mapState } from 'pinia';
-import axios from 'axios';
 
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import { mapState } from 'pinia';
+import type { TableField } from 'bootstrap-vue-next';
+
+import { leagueClient, type FollowLeagueRequest, type LeagueWithStatusViewModel, type SetArchiveStatusRequest } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { useConfirm } from '@/utilities/confirm';
 
-export default {
+export default defineComponent({
   setup() {
-    return { confirm: useConfirm() };
+    const leagueFields: TableField<LeagueWithStatusViewModel>[] = [{ key: 'leagueName' }];
+    return { confirm: useConfirm(), leagueFields };
   },
   props: {
-    leagues: { type: Array, required: true },
+    leagues: { type: Array as PropType<LeagueWithStatusViewModel[]>, required: true },
     leagueIcon: { type: String, required: true },
     showArchive: { type: Boolean },
     showUnArchive: { type: Boolean },
     showUnfollow: { type: Boolean }
   },
-  emits: ['league-unfollowed'],
-  data() {
-    return {
-      leagueFields: [{ key: 'leagueName' }]
-    };
+  emits: {
+    'league-unfollowed': (_value: string) => true
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useInterLeagueStore, ['activeRoyaleQuarter'])
   },
   methods: {
-    setArchive(league, status) {
-      league.archived = status;
-      const model = {
+    async setArchive(league: LeagueWithStatusViewModel, shouldArchive: boolean) {
+      league.archived = shouldArchive;
+      const model: SetArchiveStatusRequest = {
         leagueID: league.leagueID,
-        archive: status
+        archive: shouldArchive
       };
-      axios
-        .post('/api/league/SetArchiveStatus', model)
-        .then(() => {})
-        .catch(() => {});
+
+      await leagueClient.setArchiveStatus(model);
     },
-    async confirmUnfollow(league) {
+    async confirmUnfollow(league: LeagueWithStatusViewModel) {
       const leagueName = league.activeYearLeagueYearName || league.leagueName;
       const confirmed = await this.confirm(`Are you sure you want to unfollow ${leagueName}?`, {
         title: 'Unfollow League',
@@ -111,19 +113,16 @@ export default {
         return;
       }
 
-      const model = {
+      const model: FollowLeagueRequest = {
         leagueID: league.leagueID
       };
-      axios
-        .post('/api/league/UnfollowLeague', model)
-        .then(() => {
-          this.$emit('league-unfollowed', league.leagueID);
-        })
-        .catch(() => {});
+      await leagueClient.unfollowLeague(model);
+      this.$emit('league-unfollowed', league.leagueID);
     }
   }
-};
+});
 </script>
+
 <style scoped>
 table :deep(.hidden_header) {
   display: none;
@@ -142,8 +141,8 @@ table :deep(.hidden_header) {
 .league-icon {
   width: 40px;
   font-size: 20px;
-  margin-right: 18px;
-  margin-left: 5px;
+  margin-right: 21px;
+  margin-left: 2px;
 }
 
 .league-link {
