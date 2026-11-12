@@ -112,20 +112,56 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
+import { type BTableSortBy, type TableField } from 'bootstrap-vue-next';
 
+import {
+  combinedDataClient,
+  generalClient,
+  type CompleteLeagueInviteViewModel,
+  type GameNewsViewModel,
+  type LeagueWithStatusViewModel,
+  type MinimalConferenceViewModel,
+  type PublicLeagueYearViewModel,
+  type SiteAnnouncementViewModel,
+  type TopBidsAndDropsGameViewModel
+} from '@/api/clients';
 import { useAdminStore } from '@/store/adminStore';
 import { useAuthStore } from '@/store/authStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import ConferenceTable from '@/components/conferenceTable.vue';
 import GameNews from '@/components/gameNews.vue';
 import LeagueTable from '@/components/leagueTable.vue';
 import SiteAnnouncementsWidget from '@/components/siteAnnouncementsWidget.vue';
 import TopBidsAndDrops from '@/components/topBidsAndDropsWidget.vue';
 
-export default {
+interface HomeData {
+  errorInfo: string;
+  myLeagues: LeagueWithStatusViewModel[];
+  invitedLeagues: CompleteLeagueInviteViewModel[];
+  myFollowedLeagues: LeagueWithStatusViewModel[];
+  myConferences: MinimalConferenceViewModel[];
+  selectedYear: number | null;
+  publicLeagues: PublicLeagueYearViewModel[];
+  sortBy: BTableSortBy[];
+  gameNews: GameNewsViewModel | null;
+  topBidsAndDropsProcessDate: string | null;
+  topBidsAndDrops: TopBidsAndDropsGameViewModel[] | null;
+  siteAnnouncements: SiteAnnouncementViewModel[];
+}
+
+export default defineComponent({
+  setup() {
+    const publicLeagueFields: TableField<PublicLeagueYearViewModel>[] = [
+      { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'numberOfFollowers', label: 'Followers', sortable: true, thClass: 'bg-primary' }
+    ];
+
+    return { publicLeagueFields };
+  },
   components: {
     LeagueTable,
     ConferenceTable,
@@ -133,7 +169,7 @@ export default {
     SiteAnnouncementsWidget,
     TopBidsAndDrops
   },
-  data() {
+  data(): HomeData {
     return {
       errorInfo: '',
       myLeagues: [],
@@ -142,10 +178,6 @@ export default {
       myConferences: [],
       selectedYear: null,
       publicLeagues: [],
-      publicLeagueFields: [
-        { key: 'leagueName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'numberOfFollowers', label: 'Followers', sortable: true, thClass: 'bg-primary' }
-      ],
       sortBy: [{ key: 'numberOfFollowers', order: 'desc' }],
       gameNews: null,
       topBidsAndDropsProcessDate: null,
@@ -181,52 +213,51 @@ export default {
   methods: {
     async fetchSiteAnnouncements() {
       try {
-        const { data } = await axios.get('/api/general/siteannouncements');
-        this.siteAnnouncements = data;
+        this.siteAnnouncements = await generalClient.siteAnnouncements();
       } catch {
         this.siteAnnouncements = [];
       }
     },
-    onLeagueUnfollowed(leagueID) {
+    onLeagueUnfollowed(leagueID: string) {
       this.myFollowedLeagues = this.myFollowedLeagues.filter((x) => x.leagueID !== leagueID);
     },
     async fetchHomePageData() {
       try {
-        const response = await axios.get('/api/CombinedData/HomePageData');
+        const response = await combinedDataClient.homePageData();
 
         //My Leagues
-        this.myLeagues = response.data.myLeagues.filter((x) => x.userIsInLeague);
-        this.myFollowedLeagues = response.data.myLeagues.filter((x) => x.userIsFollowingLeague);
-        this.fetchingLeagues = false;
+        this.myLeagues = response.myLeagues.filter((x) => x.userIsInLeague);
+        this.myFollowedLeagues = response.myLeagues.filter((x) => x.userIsFollowingLeague);
 
         //Invited Leagues
-        this.invitedLeagues = response.data.myInvites;
+        this.invitedLeagues = response.myInvites;
 
         //My Conferences
-        this.myConferences = response.data.myConferences;
+        this.myConferences = response.myConferences;
 
         //Game News
-        this.gameNews = response.data.myGameNews;
+        this.gameNews = response.myGameNews;
 
         //Top Bids and Drops
-        if (response.data.topBidsAndDrops) {
-          this.topBidsAndDropsProcessDate = response.data.topBidsAndDrops.processDate;
-          const allData = response.data.topBidsAndDrops.data;
-          const yearWithMostData = response.data.topBidsAndDrops.yearWithMostData;
+        if (response.topBidsAndDrops) {
+          this.topBidsAndDropsProcessDate = response.topBidsAndDrops.processDate;
+          const allData = response.topBidsAndDrops.data;
+          const yearWithMostData = response.topBidsAndDrops.yearWithMostData;
           this.topBidsAndDrops = allData[yearWithMostData];
         } else {
           this.topBidsAndDrops = [];
         }
 
         //Public Leagues
-        this.publicLeagues = response.data.publicLeagues;
+        this.publicLeagues = response.publicLeagues;
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error);
       }
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .welcome-header {
   text-align: center;
