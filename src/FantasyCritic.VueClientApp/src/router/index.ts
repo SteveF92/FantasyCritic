@@ -33,7 +33,7 @@ const router = createRouter({
   routes
 });
 
-router.beforeEach(async function (toRoute, fromRoute, next) {
+router.beforeEach(async function (toRoute, fromRoute): Promise<string | boolean> {
   const authStore = useAuthStore(pinia);
   const interLeagueStore = useInterLeagueStore(pinia);
   const leagueStore = useLeagueStore(pinia);
@@ -48,28 +48,29 @@ router.beforeEach(async function (toRoute, fromRoute, next) {
 
   if (authStore.isAuth) {
     if (toRoute.meta.publicOnly) {
-      next({ path: '/home' });
-      return;
+      return '/home';
     }
 
     if (toRoute.meta.adminOnly && !authStore.canAccessAdminPages) {
-      next({ path: '/home' });
-      return;
+      return '/home';
     }
 
-    next();
-    return;
+    return true;
   }
 
   if (toRoute.meta.isPublic) {
-    next();
-    return;
+    return true;
   }
 
   window.location.href = '/Account/Login';
+  return false;
 });
 
-router.afterEach((toRoute) => {
+router.afterEach((toRoute, _fromRoute, failure) => {
+  if (failure) {
+    return;
+  }
+
   if (toRoute.meta.title) {
     document.title = toRoute.meta.title + ' - Fantasy Critic';
   }
