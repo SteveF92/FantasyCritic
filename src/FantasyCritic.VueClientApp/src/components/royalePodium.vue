@@ -29,23 +29,31 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+
+import type { RoyalePodiumEntryViewModel, RoyalePodiumViewModel } from '@/api/clients';
 import { publisherIconIsValid } from '@/globalFunctions';
 import { formatScore } from '@/utilities/formatters';
 
-const standOrder = [2, 1, 3];
+interface PodiumPlace {
+  ranking: number;
+  entries: RoyalePodiumEntryViewModel[];
+}
 
-export default {
-  props: {
-    podium: { type: Object, required: true }
+const standOrder: number[] = [2, 1, 3];
+
+export default defineComponent({
+  setup() {
+    const medals: Record<number, string> = { 1: '🥇', 2: '🥈', 3: '🥉' };
+
+    return { medals };
   },
-  data() {
-    return {
-      medals: { 1: '🥇', 2: '🥈', 3: '🥉' }
-    };
+  props: {
+    podium: { type: Object as PropType<RoyalePodiumViewModel>, required: true }
   },
   computed: {
-    places() {
+    places(): PodiumPlace[] {
       return standOrder
         .map((ranking) => ({
           ranking,
@@ -56,11 +64,11 @@ export default {
   },
   methods: {
     formatScore,
-    iconIsValid(publisherIcon) {
+    iconIsValid(publisherIcon: string): boolean {
       return publisherIconIsValid(publisherIcon);
     }
   }
-};
+});
 </script>
 
 <style scoped>

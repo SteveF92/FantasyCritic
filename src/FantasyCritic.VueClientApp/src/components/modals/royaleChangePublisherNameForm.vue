@@ -11,15 +11,25 @@
     </template>
   </b-modal>
 </template>
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import type { BModal } from 'bootstrap-vue-next';
 
-export default {
+import { royaleClient, type ChangeRoyalePublisherNameRequest, type RoyalePublisherViewModel } from '@/api/clients';
+
+interface RoyaleChangePublisherNameFormData {
+  newPublisherName: string;
+  errorInfo: string;
+}
+
+export default defineComponent({
   props: {
-    userRoyalePublisher: { type: Object, required: true }
+    userRoyalePublisher: { type: Object as PropType<RoyalePublisherViewModel>, required: true }
   },
-  emits: ['publisherNameChanged'],
-  data() {
+  emits: {
+    publisherNameChanged: () => true
+  },
+  data(): RoyaleChangePublisherNameFormData {
     return {
       newPublisherName: '',
       errorInfo: ''
@@ -29,22 +39,22 @@ export default {
     this.clearData();
   },
   methods: {
-    changePublisherName() {
-      const model = {
+    changePublisherName(): void {
+      const request: ChangeRoyalePublisherNameRequest = {
         publisherID: this.userRoyalePublisher.publisherID,
         publisherName: this.newPublisherName
       };
-      axios
-        .post('/api/royale/changePublisherName', model)
+      royaleClient
+        .changePublisherName(request)
         .then(() => {
-          this.$refs.changeRoyalePublisherNameRef.hide();
+          (this.$refs.changeRoyalePublisherNameRef as InstanceType<typeof BModal> | undefined)?.hide();
           this.$emit('publisherNameChanged');
         })
         .catch(() => {});
     },
-    clearData() {
+    clearData(): void {
       this.newPublisherName = this.userRoyalePublisher.publisherName;
     }
   }
-};
+});
 </script>

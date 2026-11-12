@@ -24,7 +24,7 @@
       <h1>Critics Royale</h1>
     </div>
 
-    <div v-if="!userPublisherBusy && !userRoyalePublisherID && royaleYearQuarter.openForPlay && !royaleYearQuarter.finished">
+    <div v-if="!userPublisherBusy && !userRoyalePublisherID && royaleYearQuarter && royaleYearQuarter.openForPlay && !royaleYearQuarter.finished">
       <div v-if="isAuth" class="alert alert-info">
         Create your publisher to start playing!
         <b-button v-b-modal="'createRoyalePublisher'" class="login-button" variant="primary">Create Publisher</b-button>
@@ -112,12 +112,24 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal, BvTriggerableEvent, TableField } from 'bootstrap-vue-next';
 
+import {
+  royaleClient,
+  royaleGroupClient,
+  type CreateManualRoyaleGroupRequest,
+  type RoyaleGroupViewModel,
+  type RoyalePodiumViewModel,
+  type RoyalePublisherViewModel,
+  type RoyaleStandingsViewModel,
+  type RoyaleYearQuarterViewModel
+} from '@/api/clients';
 import { orderBy } from '@/globalFunctions';
 import { useAuthStore } from '@/store/authStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatCurrency } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
 import CriticsRoyaleInfo from '@/components/criticsRoyaleInfo.vue';
@@ -126,7 +138,45 @@ import RoyaleGroupsWidget from '@/components/royaleGroupsWidget.vue';
 import RoyalePodium from '@/components/royalePodium.vue';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
-export default {
+interface CriticsRoyaleData {
+  currentPage: number;
+  selectedYear: number | null;
+  userRoyalePublisherID: string | null;
+  royaleYearQuarter: RoyaleYearQuarterViewModel | null;
+  royaleYearQuarterOptions: RoyaleYearQuarterViewModel[] | null;
+  royaleStandings: RoyaleStandingsViewModel[] | null;
+  topPublishers: RoyalePublisherViewModel[];
+  podium: RoyalePodiumViewModel | null;
+  userPublisherBusy: boolean;
+  groupSearchQuery: string;
+  groupSearchResults: RoyaleGroupViewModel[] | null;
+  myGroups: RoyaleGroupViewModel[] | null;
+  rulesBasedGroups: RoyaleGroupViewModel[] | null;
+  newGroupName: string;
+}
+
+export default defineComponent({
+  setup() {
+    const perPage: number = 10;
+    const standingsFields: TableField<RoyaleStandingsViewModel>[] = [
+      { key: 'ranking', label: 'Rank', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' },
+      { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
+      { key: 'playerName', label: 'Player Name', thClass: 'bg-primary' },
+      { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' },
+      { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
+      { key: 'gamesPurchased', label: 'Games Purchased', thClass: 'bg-primary' },
+      { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary' }
+    ];
+    const topRankedChartCanvasWidth: number = 1200;
+    const topRankedChartCanvasHeight: number = 600;
+    const topRankedChartCanvasStyles: Record<string, string> = {
+      width: '100%',
+      height: '100%',
+      position: 'relative'
+    };
+
+    return { perPage, standingsFields, topRankedChartCanvasWidth, topRankedChartCanvasHeight, topRankedChartCanvasStyles };
+  },
   components: {
     CreateRoyalePublisherForm,
     RoyaleGroupsWidget,
@@ -135,12 +185,11 @@ export default {
     CriticsRoyaleInfo
   },
   props: {
-    year: { type: Number, default: null },
-    quarter: { type: Number, default: null }
+    year: { type: Number as PropType<number | null>, default: null },
+    quarter: { type: Number as PropType<number | null>, default: null }
   },
-  data() {
+  data(): CriticsRoyaleData {
     return {
-      perPage: 10,
       currentPage: 1,
       selectedYear: null,
       userRoyalePublisherID: null,
@@ -154,46 +203,39 @@ export default {
       groupSearchResults: null,
       myGroups: null,
       rulesBasedGroups: null,
-      newGroupName: '',
-      standingsFields: [
-        { key: 'ranking', label: 'Rank', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' },
-        { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
-        { key: 'playerName', label: 'Player Name', thClass: 'bg-primary' },
-        { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' },
-        { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
-        { key: 'gamesPurchased', label: 'Games Purchased', thClass: 'bg-primary' },
-        { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary' }
-      ],
-      topRankedChartCanvasWidth: 1200,
-      topRankedChartCanvasHeight: 600,
-      topRankedChartCanvasStyles: {
-        width: '100%',
-        height: '100%',
-        position: 'relative'
-      }
+      newGroupName: ''
     };
   },
   computed: {
     ...mapState(useAuthStore, ['isAuth']),
-    rows() {
+    rows(): number {
+      if (!this.royaleStandings) {
+        return 0;
+      }
       return this.royaleStandings.length;
     },
-    years() {
+    years(): number[] {
+      if (!this.royaleYearQuarterOptions) {
+        return [];
+      }
       const yearsList = this.royaleYearQuarterOptions.map((x) => x.year);
 
       const uniqueYearsList = [...new Set(yearsList)];
       const sortedYears = orderBy(uniqueYearsList, (x) => x);
       return sortedYears;
     },
-    quartersInSelectedYear() {
+    quartersInSelectedYear(): RoyaleYearQuarterViewModel[] {
+      if (!this.royaleYearQuarterOptions) {
+        return [];
+      }
       const matchingQuarters = this.royaleYearQuarterOptions
         .filter((entry) => entry.year === this.selectedYear) // Filter objects with the specified 'year'
         .sort((a, b) => a.quarter - b.quarter); // Sort the quarters numerically
 
       return matchingQuarters;
     },
-    showTopRankedChart() {
-      return this.topPublishers && this.topPublishers.length > 0;
+    showTopRankedChart(): boolean {
+      return this.topPublishers.length > 0;
     }
   },
   watch: {
@@ -206,10 +248,10 @@ export default {
   },
   methods: {
     formatCurrency,
-    async initializePage() {
+    async initializePage(): Promise<void> {
       if (!this.year || !this.quarter) {
-        await this.fetchRoyaleQuarters();
-        const mostRecentQuarter = this.royaleYearQuarterOptions[this.royaleYearQuarterOptions.length - 1];
+        const royaleYearQuarterOptions = await this.fetchRoyaleQuarters();
+        const mostRecentQuarter = royaleYearQuarterOptions[royaleYearQuarterOptions.length - 1];
         const parameters = {
           year: mostRecentQuarter.year.toString(),
           quarter: mostRecentQuarter.quarter.toString()
@@ -219,74 +261,73 @@ export default {
       }
 
       this.selectedYear = this.year;
-      await this.fetchRoyaleData();
+      await this.fetchRoyaleData(this.year, this.quarter);
     },
-    selectYear(year) {
+    selectYear(year: number): void {
       this.selectedYear = year;
     },
-    async fetchRoyaleQuarters() {
-      const response = await axios.get('/api/Royale/RoyaleQuarters');
-      this.royaleYearQuarterOptions = response.data;
+    async fetchRoyaleQuarters(): Promise<RoyaleYearQuarterViewModel[]> {
+      const royaleYearQuarterOptions = await royaleClient.royaleQuarters();
+      this.royaleYearQuarterOptions = royaleYearQuarterOptions;
+      return royaleYearQuarterOptions;
     },
-    async fetchRoyaleData() {
-      const response = await axios.get(`/api/Royale/RoyaleData/${this.year}/${this.quarter}`);
-      this.royaleYearQuarterOptions = response.data.royaleYearQuarters;
-      this.royaleYearQuarter = response.data.royaleYearQuarter;
-      this.royaleStandings = response.data.royaleStandings;
-      this.userRoyalePublisherID = response.data.userRoyalePublisherID;
-      this.topPublishers = response.data.topPublishers;
-      this.podium = response.data.podium;
+    async fetchRoyaleData(year: number, quarter: number): Promise<void> {
+      const response = await royaleClient.royaleData(year, quarter);
+      this.royaleYearQuarterOptions = response.royaleYearQuarters;
+      this.royaleYearQuarter = response.royaleYearQuarter;
+      this.royaleStandings = response.royaleStandings;
+      this.userRoyalePublisherID = response.userRoyalePublisherID ?? null;
+      this.topPublishers = response.topPublishers;
+      this.podium = response.podium ?? null;
       this.userPublisherBusy = false;
       await Promise.all([this.fetchMyGroups(), this.fetchRulesBasedGroups()]);
     },
-    async fetchMyGroups() {
+    async fetchMyGroups(): Promise<void> {
       if (!this.isAuth) return;
       try {
-        const response = await axios.get('/api/RoyaleGroup/GetGroupsForUser');
-        this.myGroups = response.data;
+        this.myGroups = await royaleGroupClient.getGroupsForUser();
       } catch {
         this.myGroups = [];
       }
     },
-    async fetchRulesBasedGroups() {
+    async fetchRulesBasedGroups(): Promise<void> {
       try {
-        const response = await axios.get('/api/RoyaleGroup/GetRulesBasedGroups');
-        this.rulesBasedGroups = response.data;
+        this.rulesBasedGroups = await royaleGroupClient.getRulesBasedGroups();
       } catch {
         this.rulesBasedGroups = [];
       }
     },
-    async searchGroups() {
+    async searchGroups(): Promise<void> {
       const query = (this.groupSearchQuery || '').trim();
       if (query.length < 2) {
         this.groupSearchResults = null;
         return;
       }
       try {
-        const response = await axios.get('/api/RoyaleGroup/SearchRoyaleGroups', { params: { query } });
-        this.groupSearchResults = response.data;
+        this.groupSearchResults = await royaleGroupClient.searchRoyaleGroups(query);
       } catch {
         this.groupSearchResults = [];
       }
     },
-    async createGroup(bvModalEvent) {
+    async createGroup(bvModalEvent: BvTriggerableEvent): Promise<void> {
       bvModalEvent.preventDefault();
       if (!this.newGroupName || !this.newGroupName.trim()) return;
+      const request: CreateManualRoyaleGroupRequest = { groupName: this.newGroupName.trim() };
       try {
-        const response = await axios.post('/api/RoyaleGroup/CreateManualRoyaleGroup', { groupName: this.newGroupName.trim() });
-        this.$refs.createRoyaleGroupModalRef.hide();
+        const createdGroup = await royaleGroupClient.createManualRoyaleGroup(request);
+        (this.$refs.createRoyaleGroupModalRef as InstanceType<typeof BModal> | undefined)?.hide();
         this.newGroupName = '';
-        this.$router.push({ name: 'royaleGroup', params: { groupid: response.data.groupID } });
+        this.$router.push({ name: 'royaleGroup', params: { groupid: createdGroup.groupID } });
       } catch (error) {
-        const message = error.response?.data || 'Failed to create group.';
+        const message = getApiErrorMessage(error, 'Failed to create group.');
         makeToast(message, 'danger');
       }
     },
-    onGroupSearchQueryChange(value) {
+    onGroupSearchQueryChange(value: string): void {
       this.groupSearchQuery = value;
     }
   }
-};
+});
 </script>
 <style scoped>
 .leaderboard-header {

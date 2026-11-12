@@ -21,47 +21,56 @@
     </template>
   </b-modal>
 </template>
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { royaleClient, type ChangeRoyalePublisherIconRequest, type RoyalePublisherViewModel } from '@/api/clients';
 import { publisherIconIsValid } from '@/globalFunctions';
 
-export default {
+interface RoyaleChangePublisherIconFormData {
+  newPublisherIcon: string | undefined;
+  errorInfo: string;
+}
+
+export default defineComponent({
   props: {
-    userRoyalePublisher: { type: Object, required: true }
+    userRoyalePublisher: { type: Object as PropType<RoyalePublisherViewModel>, required: true }
   },
-  emits: ['publisherIconChanged'],
-  data() {
+  emits: {
+    publisherIconChanged: () => true
+  },
+  data(): RoyaleChangePublisherIconFormData {
     return {
       newPublisherIcon: '',
       errorInfo: ''
     };
   },
   computed: {
-    iconIsValid() {
-      return publisherIconIsValid(this.newPublisherIcon);
+    iconIsValid(): boolean {
+      return publisherIconIsValid(this.newPublisherIcon ?? '');
     }
   },
   created() {
     this.clearData();
   },
   methods: {
-    changePublisherIcon() {
-      const model = {
+    changePublisherIcon(): void {
+      const request: ChangeRoyalePublisherIconRequest = {
         publisherID: this.userRoyalePublisher.publisherID,
         publisherIcon: this.newPublisherIcon
       };
-      axios
-        .post('/api/royale/changePublisherIcon', model)
+      royaleClient
+        .changePublisherIcon(request)
         .then(() => {
-          this.$refs.changeRoyalePublisherIconRef.hide();
+          (this.$refs.changeRoyalePublisherIconRef as InstanceType<typeof BModal> | undefined)?.hide();
           this.$emit('publisherIconChanged');
         })
         .catch(() => {});
     },
-    clearData() {
+    clearData(): void {
       this.newPublisherIcon = this.userRoyalePublisher.publisherIcon;
     }
   }
-};
+});
 </script>

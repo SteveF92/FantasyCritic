@@ -67,41 +67,48 @@
   </b-card>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
+import type { RouteLocationRaw } from 'vue-router';
+import type { TableField } from 'bootstrap-vue-next';
 
+import type { RoyaleGroupViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 
-export default {
+export default defineComponent({
+  setup() {
+    const groupFields: TableField<RoyaleGroupViewModel>[] = [{ key: 'groupName', label: '' }];
+
+    return { groupFields };
+  },
   props: {
-    myGroups: { type: Array, default: null },
-    rulesBasedGroups: { type: Array, default: null },
+    myGroups: { type: Array as PropType<RoyaleGroupViewModel[] | null>, default: null },
+    rulesBasedGroups: { type: Array as PropType<RoyaleGroupViewModel[] | null>, default: null },
     year: { type: Number, required: true },
     quarter: { type: Number, required: true },
     groupSearchQuery: { type: String, default: '' },
-    groupSearchResults: { type: Array, default: null }
+    groupSearchResults: { type: Array as PropType<RoyaleGroupViewModel[] | null>, default: null }
   },
-  emits: ['search-query-change', 'search-request'],
-  data() {
-    return {
-      groupFields: [{ key: 'groupName', label: '' }]
-    };
+  emits: {
+    'search-query-change': (_value: string) => true,
+    'search-request': () => true
   },
   computed: {
     ...mapState(useAuthStore, ['isAuth'])
   },
   methods: {
-    groupQuarterLink(groupID) {
+    groupQuarterLink(groupID: string): RouteLocationRaw {
       return { name: 'royaleGroupQuarter', params: { groupid: groupID, year: this.year, quarter: this.quarter } };
     },
-    onSearchInput(value) {
+    onSearchInput(value: string): void {
       this.$emit('search-query-change', value);
     },
-    emitSearchRequest() {
+    emitSearchRequest(): void {
       this.$emit('search-request');
     }
   }
-};
+});
 </script>
 
 <style scoped>

@@ -12,61 +12,67 @@
     </div>
   </b-modal>
 </template>
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
 
+import { royaleGroupClient, type RoyaleGroupInviteLinkViewModel } from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { makeToast } from '@/utilities/toast';
 
-export default {
+interface RoyaleGroupInviteLinksModalData {
+  inviteLinks: RoyaleGroupInviteLinkViewModel[];
+  errorInfo: string;
+}
+
+export default defineComponent({
   props: {
     groupid: { type: String, required: true }
   },
-  data() {
+  data(): RoyaleGroupInviteLinksModalData {
     return {
       inviteLinks: [],
       errorInfo: ''
     };
   },
   computed: {
-    activeLinks() {
+    activeLinks(): RoyaleGroupInviteLinkViewModel[] {
       return this.inviteLinks.filter((l) => l.active);
     }
   },
   methods: {
-    async fetchInviteLinks() {
+    async fetchInviteLinks(): Promise<void> {
       this.errorInfo = '';
       try {
-        const response = await axios.get(`/api/RoyaleGroup/GetGroupInviteLinks/${this.groupid}`);
-        this.inviteLinks = response.data;
+        this.inviteLinks = await royaleGroupClient.getGroupInviteLinks(this.groupid);
       } catch {
         this.inviteLinks = [];
       }
     },
-    inviteLinkUrl(inviteCode) {
+    inviteLinkUrl(inviteCode: string): string {
       return `${window.location.origin}/royaleGroup/${this.groupid}?inviteCode=${inviteCode}`;
     },
-    async copyInviteLink(link) {
+    async copyInviteLink(link: RoyaleGroupInviteLinkViewModel): Promise<void> {
       await navigator.clipboard.writeText(this.inviteLinkUrl(link.inviteCode));
       makeToast('Invite link copied to clipboard!', 'success');
     },
-    async createInviteLink() {
+    async createInviteLink(): Promise<void> {
       try {
-        await axios.post(`/api/RoyaleGroup/CreateGroupInviteLink/${this.groupid}`);
+        await royaleGroupClient.createGroupInviteLink(this.groupid);
         await this.fetchInviteLinks();
       } catch (error) {
-        this.errorInfo = error.response?.data || 'Failed to create invite link.';
+        this.errorInfo = getApiErrorMessage(error, 'Failed to create invite link.');
       }
     },
-    async deactivateLink(inviteID) {
+    async deactivateLink(inviteID: string): Promise<void> {
       try {
-        await axios.post(`/api/RoyaleGroup/DeactivateGroupInviteLink/${inviteID}`);
+        await royaleGroupClient.deactivateGroupInviteLink(inviteID);
         await this.fetchInviteLinks();
       } catch (error) {
-        this.errorInfo = error.response?.data || 'Failed to deactivate invite link.';
+        this.errorInfo = getApiErrorMessage(error, 'Failed to deactivate invite link.');
       }
     }
   }
-};
+});
 </script>
 <style scoped>
 .invite-link {

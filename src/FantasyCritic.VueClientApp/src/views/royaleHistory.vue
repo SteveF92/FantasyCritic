@@ -41,25 +41,35 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import type { TableField } from 'bootstrap-vue-next';
 
+import { royaleClient, type RoyalePublisherHistoryViewModel, type UserRoyaleHistoryViewModel } from '@/api/clients';
 import { numericComparer } from '@/globalFunctions';
 import { formatScore } from '@/utilities/formatters';
 
-export default {
+interface RoyaleHistoryData {
+  historyData: UserRoyaleHistoryViewModel | null;
+}
+
+export default defineComponent({
+  setup() {
+    const historyFields: TableField<RoyalePublisherHistoryViewModel>[] = [
+      { key: 'yearQuarter', label: 'Quarter', thClass: ['bg-primary', 'quarter-column'], tdClass: 'quarter-column' },
+      { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
+      { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+      { key: 'ranking', label: 'Ranking', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' }
+    ];
+
+    return { historyFields };
+  },
   props: {
     userid: { type: String, required: true }
   },
-  data() {
+  data(): RoyaleHistoryData {
     return {
-      historyData: null,
-      historyFields: [
-        { key: 'yearQuarter', label: 'Quarter', thClass: ['bg-primary', 'quarter-column'], tdClass: 'quarter-column' },
-        { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
-        { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
-        { key: 'ranking', label: 'Ranking', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' }
-      ]
+      historyData: null
     };
   },
   watch: {
@@ -72,16 +82,15 @@ export default {
   },
   methods: {
     formatScore,
-    async fetchHistory() {
+    async fetchHistory(): Promise<void> {
       try {
-        const response = await axios.get('/api/Royale/UserRoyaleHistory/' + this.userid);
-        this.historyData = response.data;
+        this.historyData = await royaleClient.userRoyaleHistory(this.userid);
       } catch {
         this.historyData = null;
       }
     }
   }
-};
+});
 </script>
 
 <style scoped>

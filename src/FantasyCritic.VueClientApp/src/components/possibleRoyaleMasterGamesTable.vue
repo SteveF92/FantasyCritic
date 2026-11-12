@@ -27,52 +27,68 @@
     </b-table>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import type { TableField } from 'bootstrap-vue-next';
+
+import type { PossibleRoyaleMasterGameViewModel } from '@/api/clients';
 import { numericComparer } from '@/globalFunctions';
 import { formatCurrency, formatScore } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import StatusBadge from '@/components/statusBadge.vue';
 
-export default {
+interface PossibleRoyaleMasterGamesTableData {
+  currentPage: number;
+  selectedPossibleRoyaleGame: PossibleRoyaleMasterGameViewModel | null;
+  lastPopoverShown: unknown;
+}
+
+export default defineComponent({
+  setup() {
+    const perPage: number = 10;
+    const gameFields: TableField<PossibleRoyaleMasterGameViewModel>[] = [
+      { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum', sortCompare: numericComparer },
+      { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
+      { key: 'status', label: 'Status', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+      { key: 'select', label: '', thClass: 'bg-primary' }
+    ];
+
+    return { perPage, gameFields };
+  },
   components: {
     StatusBadge,
     MasterGamePopover
   },
   props: {
-    modelValue: { type: Object },
-    possibleGames: { type: Array, required: true }
+    modelValue: { type: Object as PropType<PossibleRoyaleMasterGameViewModel | null>, default: null },
+    possibleGames: { type: Array as PropType<PossibleRoyaleMasterGameViewModel[]>, required: true }
   },
-  emits: ['update:modelValue'],
-  data() {
+  emits: {
+    'update:modelValue': (_possibleRoyaleGame: PossibleRoyaleMasterGameViewModel | null) => true
+  },
+  data(): PossibleRoyaleMasterGamesTableData {
     return {
-      perPage: 10,
       currentPage: 1,
       selectedPossibleRoyaleGame: null,
-      lastPopoverShown: null,
-      gameFields: [
-        { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum', sortCompare: numericComparer },
-        { key: 'cost', label: 'Cost', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
-        { key: 'status', label: 'Status', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        { key: 'select', label: '', thClass: 'bg-primary' }
-      ]
+      lastPopoverShown: null
     };
   },
   computed: {
-    rows() {
+    rows(): number {
       return this.possibleGames.length;
     }
   },
   methods: {
     formatCurrency,
     formatScore,
-    selectGame(possibleRoyaleGame) {
+    selectGame(possibleRoyaleGame: PossibleRoyaleMasterGameViewModel): void {
       this.selectedPossibleRoyaleGame = possibleRoyaleGame;
       this.$emit('update:modelValue', this.selectedPossibleRoyaleGame);
     }
   }
-};
+});
 </script>
 <style scoped>
 .fake-link {

@@ -139,11 +139,11 @@
       </div>
     </b-modal>
 
-    <div v-if="publisher?.statistics.length > 0" class="royale-chart-container">
+    <div v-if="publisher && publisher.statistics.length > 0" class="royale-chart-container">
       <RoyalePublisherGraph chart-id="publisher-stats" :chart-height="425" :royale-publishers="[publisher]"></RoyalePublisherGraph>
     </div>
 
-    <div v-if="publisher?.publisherActions.length > 0">
+    <div v-if="publisher && publisher.publisherActions.length > 0">
       <h2>Action History</h2>
       <b-table striped bordered small responsive :items="publisher.publisherActions" :fields="actionFields" :tbody-tr-class="publisherGameRowClass">
         <template #cell(timestamp)="data">
@@ -172,13 +172,25 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal, TableField, TableRowType } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
+import {
+  royaleClient,
+  type MasterGameYearViewModel,
+  type RoyaleActionViewModel,
+  type RoyalePublisherGameViewModel,
+  type RoyalePublisherViewModel,
+  type SellRoyaleGameRequest,
+  type SetAdvertisingMoneyRequest
+} from '@/api/clients';
 import { formatMoney, numericComparer, publisherIconIsValid } from '@/globalFunctions';
 import { useAuthStore } from '@/store/authStore';
+import type { PopoverContent, RoyaleGamePurchase } from '@/types/vueTypes';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatCurrency, formatDateIso, formatDateTime, formatScore } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
@@ -189,7 +201,35 @@ import RoyalePurchaseGameForm from '@/components/modals/royalePurchaseGameForm.v
 import SellRoyaleGameModal from '@/components/modals/sellRoyaleGameModal.vue';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
-export default {
+interface RoyalePublisherData {
+  errorInfo: string;
+  publisher: RoyalePublisherViewModel | null;
+  gameToModify: RoyalePublisherGameViewModel | null;
+  advertisingBudgetToSet: number;
+}
+
+export default defineComponent({
+  setup() {
+    const gameFields: TableField<RoyalePublisherGameViewModel>[] = [
+      { key: 'masterGame.gameName', label: 'Game', thClass: 'bg-primary', sortable: true },
+      { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+      { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+      { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+      { key: 'masterGame.criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+      { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+      { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
+    ];
+    const actionFields: TableField<RoyaleActionViewModel>[] = [
+      { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
+      { key: 'actionType', label: 'Action Type', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame.gameName', label: 'Game', thClass: 'bg-primary', sortable: true },
+      { key: 'description', label: 'Description', thClass: 'bg-primary' }
+    ];
+    const lockDateTimeField: TableField<RoyalePublisherGameViewModel> = { key: 'lockDateTime', label: 'Locks In', thClass: 'bg-primary', sortable: true };
+    const sellGameField: TableField<RoyalePublisherGameViewModel> = { key: 'sellGame', thClass: 'bg-primary', label: 'Sell' };
+
+    return { gameFields, actionFields, lockDateTimeField, sellGameField };
+  },
   components: {
     RoyaleChangePublisherNameForm,
     RoyaleChangePublisherIconForm,
@@ -202,49 +242,38 @@ export default {
   props: {
     publisherid: { type: String, required: true }
   },
-  data() {
+  data(): RoyalePublisherData {
     return {
       errorInfo: '',
       publisher: null,
       gameToModify: null,
-      advertisingBudgetToSet: 0,
-      gameFields: [
-        { key: 'masterGame.gameName', label: 'Game', thClass: 'bg-primary', sortable: true },
-        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'amountSpent', label: 'Amount Spent', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
-        { key: 'advertisingMoney', label: 'Advertising Budget', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
-        { key: 'masterGame.criticScore', label: 'Critic Score', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
-        { key: 'fantasyPoints', label: 'Fantasy Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
-        { key: 'timestamp', label: 'Purchase Date', thClass: 'bg-primary', sortable: true }
-      ],
-      actionFields: [
-        { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
-        { key: 'actionType', label: 'Action Type', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.gameName', label: 'Game', thClass: 'bg-primary', sortable: true },
-        { key: 'description', label: 'Description', thClass: 'bg-primary' }
-      ],
-      lockDateTimeField: { key: 'lockDateTime', label: 'Locks In', thClass: 'bg-primary', sortable: true },
-      sellGameField: { key: 'sellGame', thClass: 'bg-primary', label: 'Sell' }
+      advertisingBudgetToSet: 0
     };
   },
   computed: {
     ...mapState(useAuthStore, ['isPlusUser', 'isAuth']),
-    userIsPublisher() {
+    userIsPublisher(): boolean {
       const authStore = useAuthStore();
-      return this.isAuth && this.publisher.userID === authStore.userInfo.userID;
+      return this.isAuth && this.publisher !== null && this.publisher.userID === authStore.userInfo?.userID;
     },
-    allGameFields() {
+    allGameFields(): TableField<RoyalePublisherGameViewModel>[] {
       let allFields = this.gameFields.slice();
-      if (this.userIsPublisher && this.publisher.publisherGames.some((x) => !x.locked) && !this.quarterIsFinished) {
+      if (this.userIsPublisher && this.publisher !== null && this.publisher.publisherGames.some((x) => !x.locked) && !this.quarterIsFinished) {
         allFields.push(this.lockDateTimeField);
         allFields.push(this.sellGameField);
       }
       return allFields;
     },
-    iconIsValid() {
-      return publisherIconIsValid(this.publisher.publisherIcon);
+    iconIsValid(): boolean {
+      if (!this.publisher) {
+        return false;
+      }
+      return publisherIconIsValid(this.publisher.publisherIcon ?? '');
     },
-    quarterIsFinished() {
+    quarterIsFinished(): boolean {
+      if (!this.publisher) {
+        return false;
+      }
       return this.publisher.yearQuarter.finished;
     }
   },
@@ -261,39 +290,42 @@ export default {
     formatDateIso,
     formatDateTime,
     formatScore,
-    async fetchPublisher() {
+    async fetchPublisher(): Promise<void> {
       try {
-        const response = await axios.get('/api/Royale/GetRoyalePublisher/' + this.publisherid);
-        this.publisher = response.data;
+        this.publisher = await royaleClient.getRoyalePublisher(this.publisherid);
       } catch (error) {
-        this.error = error.response.data;
+        this.error = getApiErrorMessage(error);
       }
     },
-    async gamePurchased(purchaseInfo) {
+    async gamePurchased(purchaseInfo: RoyaleGamePurchase): Promise<void> {
       await this.fetchPublisher();
       let message = purchaseInfo.gameName + ' was purchased for ' + formatMoney(purchaseInfo.purchaseCost);
       makeToast(message);
     },
-    async publisherNameChanged() {
+    async publisherNameChanged(): Promise<void> {
       await this.fetchPublisher();
       let message = 'Publisher name changed.';
       makeToast(message);
     },
-    async publisherIconChanged() {
+    async publisherIconChanged(): Promise<void> {
       await this.fetchPublisher();
       let message = 'Publisher icon changed.';
       makeToast(message);
     },
-    async publisherSloganChanged() {
+    async publisherSloganChanged(): Promise<void> {
       await this.fetchPublisher();
       let message = 'Publisher slogan changed.';
       makeToast(message);
     },
-    setGameToSell(publisherGame) {
+    setGameToSell(publisherGame: RoyalePublisherGameViewModel): void {
       this.gameToModify = publisherGame;
     },
-    async sellGame() {
-      const request = {
+    async sellGame(): Promise<void> {
+      if (!this.publisher || !this.gameToModify) {
+        return;
+      }
+
+      const request: SellRoyaleGameRequest = {
         publisherID: this.publisher.publisherID,
         masterGameID: this.gameToModify.masterGame.masterGameID,
         expectedRefundAmount: this.gameToModify.refundAmount,
@@ -301,46 +333,50 @@ export default {
       };
 
       try {
-        await axios.post('/api/royale/SellGame', request);
+        await royaleClient.sellGame(request);
         await this.fetchPublisher();
         let message = this.gameToModify.masterGame.gameName + ' was sold for ' + formatMoney(this.gameToModify.refundAmount);
         makeToast(message);
       } catch (error) {
-        this.errorInfo = "You can't sell that game. " + error.response.data;
+        this.errorInfo = "You can't sell that game. " + getApiErrorMessage(error);
         await this.fetchPublisher();
       }
     },
-    setGameToSetBudget(publisherGame) {
+    setGameToSetBudget(publisherGame: RoyalePublisherGameViewModel): void {
       this.gameToModify = publisherGame;
       this.advertisingBudgetToSet = publisherGame.advertisingMoney;
-      this.$refs.setAdvertisingMoneyModalRef.show();
+      (this.$refs.setAdvertisingMoneyModalRef as InstanceType<typeof BModal> | undefined)?.show();
     },
-    async setBudget() {
-      const request = {
+    async setBudget(): Promise<void> {
+      if (!this.publisher || !this.gameToModify) {
+        return;
+      }
+
+      const request: SetAdvertisingMoneyRequest = {
         publisherID: this.publisher.publisherID,
         masterGameID: this.gameToModify.masterGame.masterGameID,
         advertisingMoney: this.advertisingBudgetToSet
       };
 
       try {
-        await axios.post('/api/royale/SetAdvertisingMoney', request);
+        await royaleClient.setAdvertisingMoney(request);
         await this.fetchPublisher();
         this.advertisingBudgetToSet = 0;
       } catch (error) {
         this.advertisingBudgetToSet = 0;
-        this.errorInfo = "You can't set that budget. " + error.response.data;
+        this.errorInfo = "You can't set that budget. " + getApiErrorMessage(error);
       }
     },
-    getReleaseDate(game) {
+    getReleaseDate(game: MasterGameYearViewModel): string {
       if (game.releaseDate) {
         return DateTime.fromISO(game.releaseDate).toFormat('yyyy-MM-dd');
       }
       return game.estimatedReleaseDate + ' (Estimated)';
     },
-    openCriticLink(game) {
+    openCriticLink(game: MasterGameYearViewModel): string {
       return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
     },
-    publisherGameRowClass(item, type) {
+    publisherGameRowClass(item: RoyalePublisherGameViewModel | null, type: TableRowType): string | undefined {
       if (!item || type !== 'row') {
         return;
       }
@@ -348,7 +384,7 @@ export default {
         return 'table-warning';
       }
     },
-    getLockCountdown(lockDateTime) {
+    getLockCountdown(lockDateTime: string | undefined): string {
       if (!lockDateTime) {
         return '--';
       }
@@ -369,14 +405,14 @@ export default {
       }
       return `${days} days`;
     },
-    getHiddenText(gameOrAction) {
+    getHiddenText(gameOrAction: string): PopoverContent {
       return {
         title: 'What does this mean?',
         body: `This ${gameOrAction} is hidden from other players. See the Royale home page for more details.`
       };
     }
   }
-};
+});
 </script>
 <style scoped>
 .publisher-header {

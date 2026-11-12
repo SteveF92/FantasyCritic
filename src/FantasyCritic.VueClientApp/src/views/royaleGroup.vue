@@ -73,24 +73,86 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
+import type { BTableSortBy, TableField } from 'bootstrap-vue-next';
 
+import {
+  royaleGroupClient,
+  type JoinRoyaleGroupWithInviteLinkRequest,
+  type RemoveRoyaleGroupMemberRequest,
+  type RoyaleGroupMemberListItemViewModel,
+  type RoyaleGroupViewModel,
+  type RoyaleYearQuarterViewModel
+} from '@/api/clients';
 import { numericComparer } from '@/globalFunctions';
 import { useAuthStore } from '@/store/authStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { useConfirm } from '@/utilities/confirm';
 import RoyaleGroupInviteLinksModal from '@/components/modals/royaleGroupInviteLinksModal.vue';
 
-export default {
+interface RoyaleGroupData {
+  group: RoyaleGroupViewModel | null;
+  members: RoyaleGroupMemberListItemViewModel[] | null;
+  activeQuarter: RoyaleYearQuarterViewModel | null;
+  notFound: boolean;
+  joinMessage: string | null;
+  joinSuccess: boolean;
+  sortBy: BTableSortBy[];
+}
+
+export default defineComponent({
   setup() {
-    return { confirm: useConfirm() };
+    const displayNameField: TableField<RoyaleGroupMemberListItemViewModel> = { key: 'displayName', label: 'Player Name', thClass: 'bg-primary' };
+    const quartersParticipatedField: TableField<RoyaleGroupMemberListItemViewModel> = {
+      key: 'quartersParticipated',
+      label: 'Quarters Played',
+      thClass: 'bg-primary',
+      tdClass: 'text-right',
+      sortable: true
+    };
+    const averageRankField: TableField<RoyaleGroupMemberListItemViewModel> = {
+      key: 'averageRankWithinGroup',
+      label: 'Avg. Rank (Within Group)',
+      thClass: 'bg-primary',
+      tdClass: 'text-right',
+      sortable: true,
+      sortCompare: numericComparer
+    };
+    const averageRankOverallField: TableField<RoyaleGroupMemberListItemViewModel> = {
+      key: 'averageRankOverall',
+      label: 'Avg. Rank (Overall)',
+      thClass: 'bg-primary',
+      tdClass: 'text-right',
+      sortable: true,
+      sortCompare: numericComparer
+    };
+    const totalPointsField: TableField<RoyaleGroupMemberListItemViewModel> = {
+      key: 'totalPoints',
+      label: 'Total Points',
+      thClass: 'bg-primary',
+      tdClass: 'text-right',
+      sortable: true,
+      sortCompare: numericComparer
+    };
+    const actionField: TableField<RoyaleGroupMemberListItemViewModel> = { key: 'actions', label: 'Actions', thClass: 'bg-primary', thStyle: 'width: 1%' };
+
+    return {
+      confirm: useConfirm(),
+      displayNameField,
+      quartersParticipatedField,
+      averageRankField,
+      averageRankOverallField,
+      totalPointsField,
+      actionField
+    };
   },
   components: { RoyaleGroupInviteLinksModal },
   props: {
     groupid: { type: String, required: true }
   },
-  data() {
+  data(): RoyaleGroupData {
     return {
       group: null,
       members: null,
@@ -98,66 +160,44 @@ export default {
       notFound: false,
       joinMessage: null,
       joinSuccess: false,
-      sortBy: [{ key: 'averageRankWithinGroup', order: 'asc' }],
-      displayNameField: { key: 'displayName', label: 'Player Name', thClass: 'bg-primary' },
-      quartersParticipatedField: {
-        key: 'quartersParticipated',
-        label: 'Quarters Played',
-        thClass: 'bg-primary',
-        tdClass: 'text-right',
-        sortable: true
-      },
-      averageRankField: {
-        key: 'averageRankWithinGroup',
-        label: 'Avg. Rank (Within Group)',
-        thClass: 'bg-primary',
-        tdClass: 'text-right',
-        sortable: true,
-        sortCompare: numericComparer
-      },
-      averageRankOverallField: {
-        key: 'averageRankOverall',
-        label: 'Avg. Rank (Overall)',
-        thClass: 'bg-primary',
-        tdClass: 'text-right',
-        sortable: true,
-        sortCompare: numericComparer
-      },
-      totalPointsField: { key: 'totalPoints', label: 'Total Points', thClass: 'bg-primary', tdClass: 'text-right', sortable: true, sortCompare: numericComparer },
-      actionField: { key: 'actions', label: 'Actions', thClass: 'bg-primary', thStyle: 'width: 1%' }
+      sortBy: [{ key: 'averageRankWithinGroup', order: 'asc' }]
     };
   },
   computed: {
     ...mapState(useAuthStore, ['isAuth']),
-    memberFields() {
+    memberFields(): TableField<RoyaleGroupMemberListItemViewModel>[] {
       const statsFields = [this.displayNameField, this.quartersParticipatedField, this.averageRankField, this.averageRankOverallField, this.totalPointsField];
       if (this.isManager && this.showManagerActions) {
         return [...statsFields, this.actionField];
       }
       return statsFields;
     },
-    isManager() {
+    isManager(): boolean {
       const authStore = useAuthStore();
-      return this.isAuth && this.group && this.group.managerUserID && authStore.userInfo.userID === this.group.managerUserID;
+      return this.isAuth && this.group !== null && !!this.group.managerUserID && authStore.userInfo?.userID === this.group.managerUserID;
     },
-    showManagerActions() {
-      return this.group.groupType === 'Manual';
+    showManagerActions(): boolean {
+      return this.group?.groupType === 'Manual';
     },
-    isMember() {
+    isMember(): boolean {
       if (!this.isAuth || !this.members) return false;
       const authStore = useAuthStore();
-      return this.members.some((m) => m.userID === authStore.userInfo.userID);
+      return this.members.some((m) => m.userID === authStore.userInfo?.userID);
     },
-    isMemberNotManager() {
+    isMemberNotManager(): boolean {
       if (!this.isAuth || !this.group || !this.members) return false;
       const authStore = useAuthStore();
-      const uid = authStore.userInfo.userID;
+      const uid = authStore.userInfo?.userID;
       return uid !== this.group.managerUserID && this.members.some((m) => m.userID === uid);
     },
-    pendingInviteCode() {
-      return this.$route.query.inviteCode || null;
+    pendingInviteCode(): string | null {
+      const inviteCode = this.$route.query.inviteCode;
+      if (typeof inviteCode !== 'string') {
+        return null;
+      }
+      return inviteCode || null;
     },
-    currentYear() {
+    currentYear(): number {
       return new Date().getFullYear();
     }
   },
@@ -170,47 +210,53 @@ export default {
     await this.fetchData();
   },
   methods: {
-    formatAverageRank(value) {
+    formatAverageRank(value: number): string {
       const n = Number(value);
       if (Number.isNaN(n)) return '--';
       return n.toFixed(2);
     },
-    async fetchData() {
+    async fetchData(): Promise<void> {
       try {
-        const response = await axios.get(`/api/RoyaleGroup/GetRoyaleGroupData/${this.groupid}`);
-        this.group = response.data.group;
-        this.members = response.data.members;
-        this.activeQuarter = response.data.activeQuarter;
+        const response = await royaleGroupClient.getRoyaleGroupData(this.groupid);
+        this.group = response.group;
+        this.members = response.members;
+        this.activeQuarter = response.activeQuarter;
       } catch {
         this.notFound = true;
       }
     },
-    async removeMember(userID) {
+    async removeMember(userID: string): Promise<void> {
       const confirmed = await this.confirm('Are you sure you want to remove this member?');
       if (!confirmed) return;
-      await axios.post('/api/RoyaleGroup/RemoveMember', { groupID: this.groupid, userID });
+      const request: RemoveRoyaleGroupMemberRequest = { groupID: this.groupid, userID };
+      await royaleGroupClient.removeMember(request);
       await this.fetchData();
     },
-    async leaveGroup() {
+    async leaveGroup(): Promise<void> {
       const confirmed = await this.confirm('Are you sure you want to leave this group?');
       if (!confirmed) return;
-      await axios.post(`/api/RoyaleGroup/LeaveGroup/${this.groupid}`);
+      await royaleGroupClient.leaveGroup(this.groupid);
       this.$router.push({ name: 'criticsRoyale' });
     },
-    async joinViaInviteLink() {
+    async joinViaInviteLink(): Promise<void> {
+      if (!this.pendingInviteCode) {
+        return;
+      }
+
+      const request: JoinRoyaleGroupWithInviteLinkRequest = { inviteCode: this.pendingInviteCode };
       try {
-        await axios.post('/api/RoyaleGroup/JoinWithInviteLink', { inviteCode: this.pendingInviteCode });
+        await royaleGroupClient.joinWithInviteLink(request);
         this.joinMessage = 'You have joined the group!';
         this.joinSuccess = true;
         this.$router.replace({ query: {} });
         await this.fetchData();
       } catch (error) {
-        this.joinMessage = error.response?.data || 'Failed to join group.';
+        this.joinMessage = getApiErrorMessage(error, 'Failed to join group.');
         this.joinSuccess = false;
       }
     }
   }
-};
+});
 </script>
 
 <style scoped>

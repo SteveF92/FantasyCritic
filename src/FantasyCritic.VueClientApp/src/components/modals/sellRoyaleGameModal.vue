@@ -34,24 +34,30 @@
     </template>
   </b-modal>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import type { BModal } from 'bootstrap-vue-next';
+
+import type { RoyalePublisherGameViewModel } from '@/api/clients';
 import { formatCurrency } from '@/utilities/formatters';
 
-export default {
+export default defineComponent({
   props: {
-    publisherGame: { type: Object, default: null }
+    publisherGame: { type: Object as PropType<RoyalePublisherGameViewModel | null>, default: null }
   },
-  emits: ['sellGame'],
+  emits: {
+    sellGame: (_publisherGame: RoyalePublisherGameViewModel) => true
+  },
   methods: {
     formatCurrency,
-    sellGame() {
+    sellGame(): void {
       if (!this.publisherGame) {
         return;
       }
 
-      this.$refs.sellRoyaleGameModalRef.hide();
+      (this.$refs.sellRoyaleGameModalRef as InstanceType<typeof BModal> | undefined)?.hide();
       this.$emit('sellGame', this.publisherGame);
     }
   }
-};
+});
 </script>

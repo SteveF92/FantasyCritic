@@ -12,15 +12,25 @@
     </template>
   </b-modal>
 </template>
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import type { BModal } from 'bootstrap-vue-next';
 
-export default {
+import { royaleClient, type ChangeRoyalePublisherSloganRequest, type RoyalePublisherViewModel } from '@/api/clients';
+
+interface RoyaleChangePublisherSloganFormData {
+  newPublisherSlogan: string | undefined;
+  errorInfo: string;
+}
+
+export default defineComponent({
   props: {
-    userRoyalePublisher: { type: Object, required: true }
+    userRoyalePublisher: { type: Object as PropType<RoyalePublisherViewModel>, required: true }
   },
-  emits: ['publisherSloganChanged'],
-  data() {
+  emits: {
+    publisherSloganChanged: () => true
+  },
+  data(): RoyaleChangePublisherSloganFormData {
     return {
       newPublisherSlogan: '',
       errorInfo: ''
@@ -30,22 +40,22 @@ export default {
     this.clearData();
   },
   methods: {
-    changePublisherSlogan() {
-      const model = {
+    changePublisherSlogan(): void {
+      const request: ChangeRoyalePublisherSloganRequest = {
         publisherID: this.userRoyalePublisher.publisherID,
         publisherSlogan: this.newPublisherSlogan
       };
-      axios
-        .post('/api/royale/changePublisherSlogan', model)
+      royaleClient
+        .changePublisherSlogan(request)
         .then(() => {
-          this.$refs.changeRoyalePublisherSloganRef.hide();
+          (this.$refs.changeRoyalePublisherSloganRef as InstanceType<typeof BModal> | undefined)?.hide();
           this.$emit('publisherSloganChanged');
         })
         .catch(() => {});
     },
-    clearData() {
+    clearData(): void {
       this.newPublisherSlogan = this.userRoyalePublisher.publisherSlogan;
     }
   }
-};
+});
 </script>

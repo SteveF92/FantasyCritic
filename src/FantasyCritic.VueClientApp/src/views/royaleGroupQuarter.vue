@@ -85,54 +85,67 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import type { TableField } from 'bootstrap-vue-next';
 
+import { royaleClient, royaleGroupClient, type RoyaleGroupMemberRankedViewModel, type RoyaleGroupQuarterViewModel, type RoyaleYearQuarterViewModel } from '@/api/clients';
 import { orderBy } from '@/globalFunctions';
 import { formatCurrency } from '@/utilities/formatters';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
-export default {
+interface RoyaleGroupQuarterData {
+  groupQuarter: RoyaleGroupQuarterViewModel | null;
+  allQuarters: RoyaleYearQuarterViewModel[] | null;
+  selectedYear: number | null;
+  notFound: boolean;
+}
+
+export default defineComponent({
+  setup() {
+    const standingsFields: TableField<RoyaleGroupMemberRankedViewModel>[] = [
+      { key: 'ranking', label: 'Rank', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' },
+      { key: 'displayName', label: 'Player', thClass: 'bg-primary' },
+      { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
+      { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' },
+      { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
+      { key: 'gamesPurchased', label: 'Games Purchased', thClass: 'bg-primary' },
+      { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary' }
+    ];
+
+    return { standingsFields };
+  },
   components: { RoyalePublisherGraph },
   props: {
     groupid: { type: String, required: true },
     year: { type: Number, required: true },
     quarter: { type: Number, required: true }
   },
-  data() {
+  data(): RoyaleGroupQuarterData {
     return {
       groupQuarter: null,
       allQuarters: null,
       selectedYear: null,
-      notFound: false,
-      standingsFields: [
-        { key: 'ranking', label: 'Rank', thClass: ['bg-primary', 'ranking-column'], tdClass: 'ranking-column' },
-        { key: 'displayName', label: 'Player', thClass: 'bg-primary' },
-        { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
-        { key: 'totalFantasyPoints', label: 'Total Points', thClass: 'bg-primary' },
-        { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
-        { key: 'gamesPurchased', label: 'Games Purchased', thClass: 'bg-primary' },
-        { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary' }
-      ]
+      notFound: false
     };
   },
   computed: {
-    years() {
+    years(): number[] {
       if (!this.allQuarters) return [];
       const yearsList = this.allQuarters.map((x) => x.year);
       return orderBy([...new Set(yearsList)], (x) => x);
     },
-    quartersInSelectedYear() {
+    quartersInSelectedYear(): RoyaleYearQuarterViewModel[] {
       if (!this.allQuarters) return [];
       return this.allQuarters.filter((q) => q.year === this.selectedYear).sort((a, b) => a.quarter - b.quarter);
     },
-    chartMembers() {
+    chartMembers(): RoyaleGroupMemberRankedViewModel[] {
       if (!this.groupQuarter?.members) {
         return [];
       }
       return this.groupQuarter.members.filter((m) => m.hasPublisher && m.publisherID && m.statistics?.length > 0);
     },
-    showGroupPointsChart() {
+    showGroupPointsChart(): boolean {
       return this.chartMembers.length > 0;
     }
   },
@@ -146,24 +159,21 @@ export default {
   },
   methods: {
     formatCurrency,
-    async fetchData() {
+    async fetchData(): Promise<void> {
       try {
-        const [quarterResponse, allQuartersResponse] = await Promise.all([
-          axios.get(`/api/RoyaleGroup/GetRoyaleGroupQuarter/${this.groupid}/${this.year}/${this.quarter}`),
-          axios.get('/api/Royale/RoyaleQuarters')
-        ]);
-        this.groupQuarter = quarterResponse.data;
-        this.allQuarters = allQuartersResponse.data;
+        const [groupQuarter, allQuarters] = await Promise.all([royaleGroupClient.getRoyaleGroupQuarter(this.groupid, this.year, this.quarter), royaleClient.royaleQuarters()]);
+        this.groupQuarter = groupQuarter;
+        this.allQuarters = allQuarters;
         this.selectedYear = this.year;
       } catch {
         this.notFound = true;
       }
     },
-    selectYear(year) {
+    selectYear(year: number): void {
       this.selectedYear = year;
     }
   }
-};
+});
 </script>
 
 <style scoped>

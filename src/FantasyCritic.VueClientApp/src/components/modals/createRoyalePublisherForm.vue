@@ -11,37 +11,43 @@
     </template>
   </b-modal>
 </template>
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 
-export default {
+import { royaleClient, type CreateRoyalePublisherRequest, type RoyaleYearQuarterViewModel } from '@/api/clients';
+
+interface CreateRoyalePublisherFormData {
+  publisherName: string;
+  errorInfo: string;
+}
+
+export default defineComponent({
   props: {
-    royaleYearQuarter: { type: Object, required: true }
+    royaleYearQuarter: { type: Object as PropType<RoyaleYearQuarterViewModel>, required: true }
   },
-  data() {
+  data(): CreateRoyalePublisherFormData {
     return {
       publisherName: '',
       errorInfo: ''
     };
   },
   methods: {
-    createRoyalePublisher() {
-      const model = {
+    createRoyalePublisher(): void {
+      const request: CreateRoyalePublisherRequest = {
         year: this.royaleYearQuarter.year,
         quarter: this.royaleYearQuarter.quarter,
         publisherName: this.publisherName.trim()
       };
-      axios
-        .post('/api/royale/createRoyalePublisher', model)
-        .then((response) => {
-          let publisherid = response.data;
+      royaleClient
+        .createRoyalePublisher(request)
+        .then((publisherid) => {
           this.$router.push({ name: 'royalePublisher', params: { publisherid: publisherid } });
         })
         .catch(() => {});
     },
-    clearData() {
+    clearData(): void {
       this.publisherName = '';
     }
   }
-};
+});
 </script>

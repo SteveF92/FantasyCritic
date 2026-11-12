@@ -231,31 +231,33 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+export default defineComponent({
   components: {
     MasterGameTagBadge
   },
   props: {
-    year: { type: Number, default: null },
-    quarter: { type: Number, default: null }
+    year: { type: Number as PropType<number | null>, default: null },
+    quarter: { type: Number as PropType<number | null>, default: null }
   },
   computed: {
     // Secret Roster Rule was introduced in Q4 2022
-    hasSecretRoster() {
+    hasSecretRoster(): boolean {
       return this.year !== null && (this.year > 2022 || (this.year === 2022 && this.quarter !== null && this.quarter >= 4));
     },
-    isPre2026() {
+    isPre2026(): boolean {
       return this.year !== null && this.year < 2026;
     },
-    is2026Q1Q2() {
+    is2026Q1Q2(): boolean {
       return this.year === 2026 && this.quarter !== null && this.quarter <= 2;
     },
-    is2026Q3Plus() {
+    is2026Q3Plus(): boolean {
       return this.year !== null && (this.year > 2026 || (this.year === 2026 && this.quarter !== null && this.quarter >= 3));
     }
   }
-};
+});
 </script>

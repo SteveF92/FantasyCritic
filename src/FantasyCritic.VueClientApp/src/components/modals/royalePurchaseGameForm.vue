@@ -46,7 +46,9 @@
 
     <div class="form-horizontal">
       <div>
-        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="isBusy" @click="addGame">Purchase Game for {{ formatCurrency(purchaseRoyaleGame.cost) }}</b-button>
+        <b-button v-if="purchaseRoyaleGame && formIsValid" variant="primary" class="full-width-button" :disabled="isBusy" @click="addGame">
+          Purchase Game for {{ formatCurrency(purchaseRoyaleGame.cost) }}
+        </b-button>
       </div>
       <div v-if="purchaseResult && !purchaseResult.success" class="alert purchase-error" :class="{ 'alert-danger': !purchaseResult.overridable, 'alert-warning': purchaseResult.overridable }">
         <h3 v-if="purchaseResult.overridable" class="alert-heading">Warning!</h3>
@@ -59,17 +61,53 @@
   </b-modal>
 </template>
 
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import type { BModal } from 'bootstrap-vue-next';
 
+import {
+  royaleClient,
+  RoyalePossibleMasterGamesReleaseFilter,
+  type PlayerClaimResultViewModel,
+  type PossibleRoyaleMasterGameViewModel,
+  type PurchaseRoyaleGameRequest,
+  type RoyalePublisherViewModel,
+  type RoyaleYearQuarterViewModel
+} from '@/api/clients';
+import type { RoyaleGamePurchase } from '@/types/vueTypes';
 import { formatCurrency } from '@/utilities/formatters';
 import PossibleRoyaleMasterGamesTable from '@/components/possibleRoyaleMasterGamesTable.vue';
 
-export default {
+interface RoyalePurchaseGameFormData {
+  searchGameName: string | null;
+  purchaseRoyaleGame: PossibleRoyaleMasterGameViewModel | null;
+  purchaseResult: PlayerClaimResultViewModel | null;
+  possibleMasterGames: PossibleRoyaleMasterGameViewModel[];
+  searched: boolean;
+  searchedTop: boolean;
+  isBusy: boolean;
+  releaseFilter: RoyalePossibleMasterGamesReleaseFilter;
+}
+
+export default defineComponent({
+  setup() {
+    const releaseFilterOptions: { value: RoyalePossibleMasterGamesReleaseFilter; text: string }[] = [
+      { value: RoyalePossibleMasterGamesReleaseFilter.All, text: 'All Possible Releases' },
+      { value: RoyalePossibleMasterGamesReleaseFilter.ExpectedToReleaseInQuarter, text: 'Games Expected to Release in Quarter' },
+      { value: RoyalePossibleMasterGamesReleaseFilter.ConfirmedReleaseInQuarter, text: 'Games with Confirmed Release in Quarter' }
+    ];
+
+    return { releaseFilterOptions };
+  },
   components: { PossibleRoyaleMasterGamesTable },
-  props: { yearQuarter: { type: Object, required: true }, userRoyalePublisher: { type: Object, required: true } },
-  emits: ['gamePurchased'],
-  data() {
+  props: {
+    yearQuarter: { type: Object as PropType<RoyaleYearQuarterViewModel>, required: true },
+    userRoyalePublisher: { type: Object as PropType<RoyalePublisherViewModel>, required: true }
+  },
+  emits: {
+    gamePurchased: (_purchaseInfo: RoyaleGamePurchase) => true
+  },
+  data(): RoyalePurchaseGameFormData {
     return {
       searchGameName: null,
       purchaseRoyaleGame: null,
@@ -78,19 +116,14 @@ export default {
       searched: false,
       searchedTop: false,
       isBusy: false,
-      releaseFilter: 'All',
-      releaseFilterOptions: [
-        { value: 'All', text: 'All Possible Releases' },
-        { value: 'ExpectedToReleaseInQuarter', text: 'Games Expected to Release in Quarter' },
-        { value: 'ConfirmedReleaseInQuarter', text: 'Games with Confirmed Release in Quarter' }
-      ]
+      releaseFilter: RoyalePossibleMasterGamesReleaseFilter.All
     };
   },
   computed: {
-    formIsValid() {
-      return this.purchaseRoyaleGame && this.purchaseRoyaleGame.isAvailable;
+    formIsValid(): boolean {
+      return this.purchaseRoyaleGame !== null && this.purchaseRoyaleGame.isAvailable;
     },
-    ownedGamesCount() {
+    ownedGamesCount(): number {
       return this.userRoyalePublisher.publisherGames.length;
     }
   },
@@ -99,25 +132,17 @@ export default {
   },
   methods: {
     formatCurrency,
-    async listGames() {
+    async listGames(): Promise<void> {
       this.searchGameName = null;
       await this.searchGame();
     },
-    async searchGame() {
+    async searchGame(): Promise<void> {
       this.searched = false;
       this.searchedTop = false;
       this.purchaseResult = null;
       this.possibleMasterGames = [];
 
-      const params = new URLSearchParams();
-      params.set('publisherID', this.userRoyalePublisher.publisherID);
-      if (this.searchGameName) {
-        params.set('gameName', this.searchGameName);
-      }
-      params.set('releaseFilter', this.releaseFilter);
-
-      const response = await axios.get('/api/royale/PossibleMasterGames?' + params.toString());
-      this.possibleMasterGames = response.data;
+      this.possibleMasterGames = await royaleClient.possibleMasterGames(this.searchGameName || null, this.userRoyalePublisher.publisherID, this.releaseFilter);
       this.searched = true;
       this.showingUnlistedField = false;
       this.purchaseRoyaleGame = null;
@@ -125,35 +150,32 @@ export default {
         this.searchedTop = true;
       }
     },
-    async addGame() {
-      this.isBusy = true;
-
-      let masterGameID = null;
-      if (this.purchaseRoyaleGame !== null) {
-        masterGameID = this.purchaseRoyaleGame.masterGame.masterGameID;
+    async addGame(): Promise<void> {
+      const purchaseRoyaleGame = this.purchaseRoyaleGame;
+      if (!purchaseRoyaleGame) {
+        return;
       }
 
-      let request = {
+      this.isBusy = true;
+
+      const request: PurchaseRoyaleGameRequest = {
         publisherID: this.userRoyalePublisher.publisherID,
-        masterGameID: masterGameID,
-        expectedCost: this.purchaseRoyaleGame.cost
+        masterGameID: purchaseRoyaleGame.masterGame.masterGameID,
+        expectedCost: purchaseRoyaleGame.cost
       };
 
-      const response = await axios.post('/api/royale/PurchaseGame', request);
-      this.purchaseResult = response.data;
+      this.purchaseResult = await royaleClient.purchaseGame(request);
       if (!this.purchaseResult.success) {
         this.isBusy = false;
         return;
       }
 
-      let gameName = this.purchaseRoyaleGame.masterGame.gameName;
-      let purchaseCost = this.purchaseRoyaleGame.cost;
-      const purchaseInfo = { gameName, purchaseCost };
+      const purchaseInfo: RoyaleGamePurchase = { gameName: purchaseRoyaleGame.masterGame.gameName, purchaseCost: purchaseRoyaleGame.cost };
       this.$emit('gamePurchased', purchaseInfo);
       await this.clearData();
-      this.$refs.royalePurchaseGameFormRef.hide();
+      (this.$refs.royalePurchaseGameFormRef as InstanceType<typeof BModal> | undefined)?.hide();
     },
-    async clearData() {
+    async clearData(): Promise<void> {
       this.isBusy = false;
       this.searchGameName = null;
       this.purchaseRoyaleGame = null;
@@ -162,11 +184,11 @@ export default {
       this.searched = false;
       await this.searchGame();
     },
-    newGameSelected() {
+    newGameSelected(): void {
       this.purchaseResult = null;
     }
   }
-};
+});
 </script>
 <style scoped>
 .purchase-error {
