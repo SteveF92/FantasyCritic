@@ -1,5 +1,5 @@
 <template>
-  <LineChartGenerator ref="lineChartRef" :chart-id="chartId" dataset-id-key="label" :height="chartHeight" :styles="canvasStyles" :options="chartOptions" :data="chartData" />
+  <LineChartGenerator ref="lineChartRef" dataset-id-key="label" :height="chartHeight" :styles="canvasStyles" :options="chartOptions" :data="chartData" />
 </template>
 
 <script lang="ts">
@@ -15,17 +15,17 @@ const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#
 type LineChartVueRef = { chart?: Chart<'line'> };
 
 export default defineComponent({
+  setup() {
+    return { releaseLineBorderColor: 'rgba(255, 255, 255, 0.42)' };
+  },
   components: { LineChartGenerator },
-
   props: {
-    chartId: { type: String, required: true },
     royalePublishers: { type: Array as PropType<RoyalePublisherViewModel[]>, required: true },
     chartHeight: { type: Number, required: true }
   },
   data() {
     return {
       canvasStyles: {},
-      releaseLineBorderColor: 'rgba(255, 255, 255, 0.42)',
       legendDatasetVisible: [] as boolean[]
     };
   },
@@ -126,7 +126,6 @@ export default defineComponent({
       return annotations;
     },
     chartOptions() {
-      // markRaw keeps Vue 2 from recursing into Chart.js's option objects.
       const options: ChartOptions<'line'> = {
         maintainAspectRatio: false,
         layout: {
@@ -180,6 +179,8 @@ export default defineComponent({
           }
         }
       };
+
+      // markRaw keeps Vue from recursing into Chart.js's option objects.
       return markRaw(options);
     },
     chartData() {
