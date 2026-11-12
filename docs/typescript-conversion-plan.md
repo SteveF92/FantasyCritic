@@ -76,29 +76,55 @@ export default defineComponent({
   as `PopoverContent`, go in `src/types/vueTypes.ts`.
 - **Props:** `as PropType<T>` for objects and arrays. Make a prop `required: true` when every parent
   passes it, rather than optional plus `!` at each use. A route with `props: true` passes strings;
-  routes that parse their params pass numbers. Match what the route gives.
-- **Computed:** annotate every return type. The Options API needs it to type `this`.
-- **Data:** initial `null`s and empty arrays need a cast: `null as T | null`, `[] as T[]`.
+  routes that parse their params pass numbers. Match what the route gives. If a parent renders the
+  child before its data loads and passes `null` meanwhile, the prop is `T | null` with `default: null`,
+  and the child shows its own loading state (`topBidsAndDropsWidget`). A string prop with a few fixed
+  values gets a union, as in `String as PropType<'user' | 'league'>`.
+- **Computed:** annotate every return type. The Options API needs it to type `this`. A computed that
+  returns a list returns `[]` when there's no data, not `null`; `b-table`'s `items` doesn't accept `null`.
+- **Data:** declare a `<Component>Data` interface and annotate `data(): <Component>Data` (as in
+  `views/masterGame.vue`), or cast the initial values (`null as T | null`, `[] as T[]`). A value that's
+  `null` only until the page loads stays `T | null`. In the template, put that value itself in the
+  section's `v-if`; vue-tsc narrows only what the `v-if` tests, not something derived from it. Keep
+  function parameters non-null and check before calling. `this` inside `data()` only knows props, so a
+  starting value from a store reads the store directly: `useInterLeagueStore().supportedYears...`.
 - **Constants:** a value goes in `setup()` if it never changes and doesn't depend on props or state,
   such as a table's field list. Annotate it, because otherwise its type is only checked where it's used,
   and that check misses typos. Return the value itself, not a function that returns it. A value returned
   from `setup()` isn't reactive, so anything reassigned or mutated stays in `data()`, and anything derived
-  from props or the store stays in `computed`.
+  from props or the store stays in `computed`. A constant only the script uses (not the template) goes
+  at module level instead, outside the component.
 - **Emits:** declare every event in the object form, with a typed validator that returns `true`. It's
   the only Options API form that types the payload, both for `$emit` and for the parent's handler.
   Prefix the validator's parameters with `_`. ESLint ignores `_` arguments in `.vue` files for this.
+  The validator's parameters are the payload's types; its return value is only Vue's dev-mode
+  "is this payload valid?" check, which is why it's `true`.
+- **Generated enums** (`RecentMasterGameChangeMode` and the like) are numeric and exported as values
+  from `api/clients.ts`. Compare against the enum, never a string. A template that uses one needs it
+  returned from `setup()`.
+- **Route query values** are `string | null | (string | null)[]`. Check with
+  `typeof value === 'string'`, not `as string`.
+- **vee-validate:** to clear a form after a successful submit, give `ValidationForm` a `ref="form"` and
+  call `(this.$refs.form as InstanceType<typeof ValidationForm>).resetForm()` after clearing the bound
+  data. Without it, emptying a required field shows its "required" error.
+- **Shared link helpers:** `utilities/ggLinks.ts` and `utilities/openCriticLinks.ts`. `openCriticLink`
+  returns `undefined` when there's no ID, because `:href` takes `string | undefined`, not `null`.
 - **Fallthrough attributes** (`alt` on `BImg`, `title` on a component that doesn't declare it) are
   fine. vue-tsc's `checkUnknownProps` is off because it would flag them.
 - **Clickable icons:** `font-awesome-icon` doesn't declare `onClick`, so `@click` on one is a type error.
   Put the icon in `<button type="button" class="font-awesome-button" aria-label="...">` and move `@click`,
   `:disabled`, `title` and `v-b-popover` to the button, as in `components/toastHost.vue`. The aria-label is
-  needed because the button has no text. Still to do: `leagueTable.vue`, `recentJobsTable.vue` and
-  `modals/conference/assignPlayers.vue`.
+  needed because the button has no text, and it names the action ("Archive league"), not a copy of
+  another button's label. Still to do: `recentJobsTable.vue` and `modals/conference/assignPlayers.vue`.
 - **Handlers with optional parameters:** call them, as in `@click="hide()"`. `@click="hide"` passes the
   `MouseEvent` as the first argument, and type-check rejects it on a native element.
 - **`$refs`:** cast with `this.$refs.x as InstanceType<typeof Child> | undefined`.
 - **Requests:** build the generated request type (a typed object literal), not an untyped object.
-- **Errors:** `getApiErrorMessage(error)` from step 2, never `error.response.data`.
+- **Errors:** `getApiErrorMessage(error, '<what failed>')` from step 2, never `error.response.data`.
+  Show it in a basic `<b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>`
+  (show the message, not a generic line), and clear `errorInfo` at the start of each load or submit so a
+  later success removes it. A page whose spinner waits on data shows the alert in place of the spinner,
+  so a failure doesn't spin forever.
 - **No escape hatches:** no `any`, no `as unknown as T`, no `@ts-ignore`/`@ts-expect-error`. If the types
   fight back, that's often a real bug or a wrong spec. Stop and call Claude.
 
@@ -148,7 +174,19 @@ Pages behind a live draft (the draft modals, SignalR updates) need a league in d
 "Draft Start Test" league in `fantasycritic-fromsnapshot` was one.
 
 `scripts/Run-UiTests.ps1` covers some flows end to end. Run it after the shared steps and after the
-League steps.
+League steps. `-Filter "FullyQualifiedName~NavigationTests"` runs one fixture; it builds Release, so
+it can run while the dev servers are up.
+
+What worked in steps 6 to 8:
+- **Error paths and writes without touching data:** in the browser console, wrap `window.fetch` so one
+  endpoint returns a fake response (a 500, a `ValidationProblemDetails` 400, or a 200), then navigate
+  away and back with the router. Reload the page afterwards. The generated client uses `fetch`; pages
+  still on axios can't be faked this way.
+- **Missing data:** add rows to a real response the same way (fake invites on the home page).
+- **Snapshot database:** Most Desired Reviews and all-time Most Dreams Dashed time out locally; those
+  failures aren't the code under test.
+- **Console:** after loading a page, check for Vue warnings, not just errors. "Invalid prop" and
+  duplicate-key warnings are often the first sign of a wrong type.
 
 ## Steps
 
@@ -238,7 +276,7 @@ out.
 
 `masterGameRequest`, `masterGameChangeRequest`: create, delete and dismiss requests.
 
-### 8. Home
+### 8. Home (done)
 
 `home` (+ `leagueTable`, `conferenceTable`, `topBidsAndDropsWidget`, `gameNews`).
 
@@ -349,3 +387,8 @@ has the bug too.
 | 6 | `mostDreamsDashedPanel`, `masterGames`, `masterGameYearStats`, `publicLeagues`, `topBidsAndDrops` | Changing a dropdown while an earlier load is still running lets whichever response arrives last win. Seen on Most Dreams Dashed: a slow all-time request failed after the 2018 request succeeded, and its alert replaced the 2018 results. Fix by ignoring responses for anything other than the current selection | Yes | Not scheduled |
 | — | `views/criticsRoyale.vue`, `components/possibleRoyaleMasterGamesTable.vue`, `components/possibleMasterGamesTable.vue` | Each `b-pagination` has `aria-controls="my-table"`, but no element has that id. Give each table a real id and point `aria-controls` at it, or drop the attribute. `gameNews` was done in step 8 (`game-news-table`) | Yes | Steps 9, 13a |
 | 8 | `components/gameNews.vue` | The league pills were keyed on `leaguePublisherSet.LeagueID`, but the API sends `leagueID`, so every pill's key was `undefined` and a game in two or more of the user's leagues had duplicate keys | Yes | Done |
+| 7 | `views/masterGameChangeRequest.vue` | A failed request showed "An error has occurred with your request." instead of the server's message, and the error stayed after a later success. After a successful submit, the cleared note showed "The Request Note field is required" because the form was never reset | Error text: Yes. Reset: not checked | Done: shows `errorInfo`, clears it per submit, calls `resetForm()` |
+| 8 | `views/home.vue` | A failed home page load set `errorInfo`, which nothing displayed. It now shows in a `b-alert` | Yes | Done |
+| 8 | `views/home.vue`, `components/leagueInviteTable.vue` | The League Invites tab passed `CompleteLeagueInviteViewModel` rows to `leagueTable`, which takes `LeagueWithStatusViewModel`. Invites now have their own table (envelope icon, league link, manager), so `leagueTable` keeps its exact type. No visible change | — | Done |
+| 8 | `components/leagueTable.vue` | The archive and un-archive icons are now native buttons named "Archive league" and "Un-archive league", so a keyboard can reach them. Icon margins and transforms were adjusted for Font Awesome 7 | — | Done |
+| — | `router/index.ts` | vue-router 5 warned on every navigation that `next()` in guards is deprecated. The guard now returns `'/home'`, `true` or `false`. The signed-out redirect to login now cancels the navigation, so `afterEach` skips the title when a navigation fails | — | Done |
