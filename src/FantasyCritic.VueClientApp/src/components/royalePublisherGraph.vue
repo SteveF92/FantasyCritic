@@ -1,32 +1,32 @@
 <template>
-  <LineChartGenerator ref="lineChartRef" dataset-id-key="label" :height="chartHeight" :styles="canvasStyles" :options="chartOptions" :data="chartData" />
+  <LineChartGenerator ref="lineChartRef" dataset-id-key="label" :options="chartOptions" :data="chartData" />
 </template>
 
 <script lang="ts">
 import { defineComponent, markRaw, type PropType } from 'vue';
-import type { Chart, ChartOptions } from 'chart.js';
+import type { Chart, ChartData, ChartOptions } from 'chart.js';
 import type { AnnotationOptions } from 'chartjs-plugin-annotation';
 import { Line as LineChartGenerator } from 'vue-chartjs';
 
-import { RoyalePublisherViewModel } from '@/api/clients';
+import type { RoyalePublisherGraphSeries } from '@/types/vueTypes';
 
 const SERIES_COLORS = ['#d6993a', '#5cb8d4', '#9b7ed9', '#6bcf7a', '#e07a7a', '#e6d84a', '#4a9fe6', '#d46a9e'];
+const RELEASE_LINE_BORDER_COLOR = 'rgba(255, 255, 255, 0.42)';
 
 type LineChartVueRef = { chart?: Chart<'line'> };
 
+interface RoyalePublisherGraphData {
+  legendDatasetVisible: boolean[];
+}
+
 export default defineComponent({
-  setup() {
-    return { releaseLineBorderColor: 'rgba(255, 255, 255, 0.42)' };
-  },
   components: { LineChartGenerator },
   props: {
-    royalePublishers: { type: Array as PropType<RoyalePublisherViewModel[]>, required: true },
-    chartHeight: { type: Number, required: true }
+    royalePublishers: { type: Array as PropType<RoyalePublisherGraphSeries[]>, required: true }
   },
-  data() {
+  data(): RoyalePublisherGraphData {
     return {
-      canvasStyles: {},
-      legendDatasetVisible: [] as boolean[]
+      legendDatasetVisible: []
     };
   },
   computed: {
@@ -36,7 +36,7 @@ export default defineComponent({
     chartLabels(): string[] {
       const set = new Set<string>();
       for (const m of this.royalePublishers) {
-        for (const s of m.statistics || []) {
+        for (const s of m.statistics) {
           set.add(s.date);
         }
       }
@@ -45,7 +45,7 @@ export default defineComponent({
     showChart(): boolean {
       return this.royalePublishers.length > 0 && this.chartLabels.length > 0;
     },
-    shownPublishers(): RoyalePublisherViewModel[] {
+    shownPublishers(): RoyalePublisherGraphSeries[] {
       const pubs = this.royalePublishers;
       if (!pubs.length) {
         return [];
@@ -73,7 +73,7 @@ export default defineComponent({
           continue;
         }
 
-        for (const pg of member.publisherGames ?? []) {
+        for (const pg of member.publisherGames) {
           const masterGame = pg.masterGame;
           if (!masterGame) continue;
 
@@ -93,14 +93,13 @@ export default defineComponent({
 
       const labelBorder = 'rgba(214, 153, 58, 0.5)';
       const annotations: Record<string, AnnotationOptions<'line'>> = {};
-      const borderColor = this.releaseLineBorderColor;
       for (const [date, games] of Object.entries(byDate)) {
         const content = formatReleaseAnnotationLabel(date, games, this.isMultiPublisher);
         annotations[date] = {
           type: 'line',
           scaleID: 'x',
           value: date,
-          borderColor,
+          borderColor: RELEASE_LINE_BORDER_COLOR,
           borderWidth: 2,
           borderDash: [4, 4],
           label: {
@@ -125,7 +124,7 @@ export default defineComponent({
       }
       return annotations;
     },
-    chartOptions() {
+    chartOptions(): ChartOptions<'line'> {
       const options: ChartOptions<'line'> = {
         maintainAspectRatio: false,
         layout: {
@@ -183,7 +182,7 @@ export default defineComponent({
       // markRaw keeps Vue from recursing into Chart.js's option objects.
       return markRaw(options);
     },
-    chartData() {
+    chartData(): ChartData<'line', (number | null)[], string> {
       if (!this.showChart) {
         return markRaw({ labels: [], datasets: [] });
       }
@@ -203,18 +202,15 @@ export default defineComponent({
     }
   },
   watch: {
-    chartData: {
-      handler() {
-        this.$nextTick(() => this.syncLegendVisibilityFromChartIfReady());
-      },
-      deep: true
+    chartData() {
+      this.$nextTick(() => this.syncLegendVisibilityFromChartIfReady());
     }
   },
   mounted() {
     this.$nextTick(() => this.syncLegendVisibilityFromChartIfReady());
   },
   methods: {
-    syncLegendVisibilityFromChartIfReady() {
+    syncLegendVisibilityFromChartIfReady(): void {
       const holder = this.$refs.lineChartRef as LineChartVueRef | undefined;
       const chart = holder?.chart;
       if (!chart?.data?.datasets?.length) {
@@ -222,7 +218,7 @@ export default defineComponent({
       }
       this.syncLegendVisibilityFromChart(chart);
     },
-    syncLegendVisibilityFromChart(chart: Chart) {
+    syncLegendVisibilityFromChart(chart: Chart): void {
       const n = chart.data.datasets.length;
       const next: boolean[] = [];
       for (let i = 0; i < n; i++) {
@@ -269,13 +265,8 @@ function formatReleaseAnnotationLabel(date: string, games: Record<string, string
   return [date, ...lines];
 }
 
-function alignPublisherStatsToLabels(member: RoyalePublisherViewModel, labels: string[]): (number | null)[] {
-  const sorted = [...(member.statistics || [])]
-    .map((s) => ({
-      date: s.date,
-      fantasyPoints: Number(s.fantasyPoints)
-    }))
-    .sort((a, b) => a.date.localeCompare(b.date));
+function alignPublisherStatsToLabels(member: RoyalePublisherGraphSeries, labels: string[]): (number | null)[] {
+  const sorted = [...member.statistics].sort((a, b) => a.date.localeCompare(b.date));
   let j = 0;
   let last: number | null = null;
   return labels.map((label) => {
