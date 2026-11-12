@@ -8,8 +8,11 @@
         <router-link :to="{ name: 'topBidsAndDrops' }" title="Trending">Trending</router-link>
       </h2>
     </template>
-    <div v-if="topBidsAndDrops.length === 0">No Bids and Drops Found.</div>
-    <b-tabs v-if="topBidsAndDrops.length > 0" pills class="top-bids-and-drops-tabs">
+    <div v-if="!topBidsAndDrops" class="spinner">
+      <font-awesome-icon icon="circle-notch" size="3x" spin :style="{ color: '#D6993A' }" />
+    </div>
+    <div v-else-if="topBidsAndDrops.length === 0">No Bids and Drops Found.</div>
+    <b-tabs v-else pills class="top-bids-and-drops-tabs">
       <b-tab title="Top Bids" title-item-class="tab-header">
         <b-table :items="topBids" :fields="standardBidFields" v-model:sort-by="standardSortBy" bordered striped responsive class="top-bids-drops-widget-table">
           <template #cell(masterGameYear)="data">
@@ -43,9 +46,9 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import { BTableSortBy, TableField } from 'bootstrap-vue-next';
+import type { BTableSortBy, TableField } from 'bootstrap-vue-next';
 
-import { type TopBidsAndDropsGameViewModel } from '@/api/clients';
+import type { TopBidsAndDropsGameViewModel } from '@/api/clients';
 import { orderByDescending } from '@/globalFunctions';
 import { formatCurrency } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
@@ -79,8 +82,8 @@ export default defineComponent({
     MasterGamePopover
   },
   props: {
-    topBidsAndDrops: { type: Array as PropType<TopBidsAndDropsGameViewModel[]>, required: true },
-    processDate: { type: String, required: true }
+    topBidsAndDrops: { type: Array as PropType<TopBidsAndDropsGameViewModel[] | null>, default: null },
+    processDate: { type: String as PropType<string | null>, default: null }
   },
   data(): TopBidsAndDropsWidgetData {
     return {
@@ -91,14 +94,23 @@ export default defineComponent({
   },
   computed: {
     topBids(): TopBidsAndDropsGameViewModel[] {
+      if (!this.topBidsAndDrops) {
+        return [];
+      }
       const relevant = this.topBidsAndDrops.filter((x) => x.totalStandardBidCount > 0);
       return orderByDescending(relevant, (x) => x.successfulStandardBids).slice(0, 25);
     },
     topCounterPicks(): TopBidsAndDropsGameViewModel[] {
+      if (!this.topBidsAndDrops) {
+        return [];
+      }
       const relevant = this.topBidsAndDrops.filter((x) => x.totalCounterPickBidCount > 0);
       return orderByDescending(relevant, (x) => x.successfulCounterPickBids).slice(0, 25);
     },
     topDrops(): TopBidsAndDropsGameViewModel[] {
+      if (!this.topBidsAndDrops) {
+        return [];
+      }
       const relevant = this.topBidsAndDrops.filter((x) => x.totalDropCount > 0);
       return orderByDescending(relevant, (x) => x.successfulDrops).slice(0, 25);
     }
