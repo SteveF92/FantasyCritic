@@ -49,7 +49,7 @@
                   League Invites
                   <font-awesome-icon icon="exclamation-circle" size="lg" />
                 </template>
-                <leagueTable :leagues="invitedLeagues" :league-icon="'envelope'"></leagueTable>
+                <leagueInviteTable :invites="invitedLeagues"></leagueInviteTable>
               </b-tab>
               <b-tab v-if="myConferences.length > 0" title="My Conferences" title-item-class="tab-header">
                 <conferenceTable :conferences="myConferences"></conferenceTable>
@@ -135,6 +135,7 @@ import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { getApiErrorMessage } from '@/utilities/apiError';
 import ConferenceTable from '@/components/conferenceTable.vue';
 import GameNews from '@/components/gameNews.vue';
+import LeagueInviteTable from '@/components/leagueInviteTable.vue';
 import LeagueTable from '@/components/leagueTable.vue';
 import SiteAnnouncementsWidget from '@/components/siteAnnouncementsWidget.vue';
 import TopBidsAndDrops from '@/components/topBidsAndDropsWidget.vue';
@@ -165,6 +166,7 @@ export default defineComponent({
   },
   components: {
     LeagueTable,
+    LeagueInviteTable,
     ConferenceTable,
     GameNews,
     SiteAnnouncementsWidget,
