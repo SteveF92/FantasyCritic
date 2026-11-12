@@ -1,5 +1,5 @@
 <template>
-  <div v-if="interLeagueDataLoaded">
+  <div>
     <div v-if="userInfo && !userInfo.emailConfirmed" class="alert alert-warning">
       <div>Your email address has not been confirmed. You cannot accept league invites via email until you do so.</div>
       <div>Check your email account for an email from us.</div>
@@ -11,6 +11,7 @@
     </div>
 
     <div class="col-md-10 offset-md-1 col-sm-12">
+      <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
       <div v-if="userInfo" class="text-well welcome-area">
         <h2 class="welcome-header">Welcome {{ userInfo.displayName }}!</h2>
         <div class="row welcome-main">
@@ -36,35 +37,35 @@
           <b-card v-if="userInfo" title="Leagues">
             <b-tabs pills class="league-tabs">
               <b-tab title="My Leagues" title-item-class="tab-header">
-                <div v-if="myStandardLeagues && myStandardLeagues.length > 0">
+                <div v-if="myStandardLeagues.length > 0">
                   <leagueTable :leagues="myStandardLeagues" :league-icon="'user'" :show-archive="true"></leagueTable>
                 </div>
                 <div v-else>
                   <label>You are not in any leagues! Why not create one?</label>
                 </div>
               </b-tab>
-              <b-tab v-if="invitedLeagues && invitedLeagues.length > 0" title-item-class="tab-header">
+              <b-tab v-if="invitedLeagues.length > 0" title-item-class="tab-header">
                 <template #title>
                   League Invites
                   <font-awesome-icon icon="exclamation-circle" size="lg" />
                 </template>
                 <leagueTable :leagues="invitedLeagues" :league-icon="'envelope'"></leagueTable>
               </b-tab>
-              <b-tab v-if="myConferences && myConferences.length > 0" title="My Conferences" title-item-class="tab-header">
+              <b-tab v-if="myConferences.length > 0" title="My Conferences" title-item-class="tab-header">
                 <conferenceTable :conferences="myConferences"></conferenceTable>
               </b-tab>
               <b-tab title="Followed Leagues" title-item-class="tab-header">
-                <div v-if="myFollowedLeagues && myFollowedLeagues.length > 0">
+                <div v-if="myFollowedLeagues.length > 0">
                   <leagueTable :leagues="myFollowedLeagues" :league-icon="'users'" :show-unfollow="true" @league-unfollowed="onLeagueUnfollowed"></leagueTable>
                 </div>
                 <div v-else>
                   <label>You are not following any public leagues!</label>
                 </div>
               </b-tab>
-              <b-tab v-if="myArchivedLeagues && myArchivedLeagues.length > 0" title="Archived Leagues" title-item-class="tab-header">
+              <b-tab v-if="myArchivedLeagues.length > 0" title="Archived Leagues" title-item-class="tab-header">
                 <leagueTable :leagues="myArchivedLeagues" :league-icon="'archive'" :show-un-archive="true"></leagueTable>
               </b-tab>
-              <b-tab v-if="myTestLeagues && myTestLeagues.length > 0" title="Test Leagues" title-item-class="tab-header">
+              <b-tab v-if="myTestLeagues.length > 0" title="Test Leagues" title-item-class="tab-header">
                 <leagueTable :leagues="myTestLeagues" :league-icon="'atom'"></leagueTable>
               </b-tab>
             </b-tabs>
@@ -91,7 +92,7 @@
           <b-card title="Popular Public Leagues">
             <h5><router-link :to="{ name: 'publicLeagues' }">View All</router-link></h5>
 
-            <div v-if="publicLeagues && publicLeagues.length > 0" class="row">
+            <div v-if="publicLeagues.length > 0" class="row">
               <div class="col-12 px-0">
                 <b-table v-model:sort-by="sortBy" :items="publicLeagues" :fields="publicLeagueFields" bordered striped responsive small>
                   <template #cell(leagueName)="data">
@@ -144,7 +145,7 @@ interface HomeData {
   invitedLeagues: CompleteLeagueInviteViewModel[];
   myFollowedLeagues: LeagueWithStatusViewModel[];
   myConferences: MinimalConferenceViewModel[];
-  selectedYear: number | null;
+  selectedYear: number;
   publicLeagues: PublicLeagueYearViewModel[];
   sortBy: BTableSortBy[];
   gameNews: GameNewsViewModel | null;
@@ -176,7 +177,7 @@ export default defineComponent({
       invitedLeagues: [],
       myFollowedLeagues: [],
       myConferences: [],
-      selectedYear: null,
+      selectedYear: useInterLeagueStore().supportedYears.filter((x) => x.openForPlay)[0].year,
       publicLeagues: [],
       sortBy: [{ key: 'numberOfFollowers', order: 'desc' }],
       gameNews: null,
@@ -187,7 +188,6 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useAuthStore, ['isPlusUser', 'userInfo', 'isAdmin', 'isFactChecker']),
-    ...mapState(useInterLeagueStore, ['interLeagueDataLoaded', 'supportedYears']),
     ...mapState(useAdminStore, ['adminTaskCounts']),
     adminTaskTotalCount() {
       return this.adminTaskCounts ? this.adminTaskCounts.totalCount : 0;
@@ -207,7 +207,6 @@ export default defineComponent({
   },
   async created() {
     const adminStore = useAdminStore();
-    this.selectedYear = this.supportedYears.filter((x) => x.openForPlay)[0].year;
     await Promise.all([this.fetchHomePageData(), this.fetchSiteAnnouncements(), adminStore.fetchAdminTaskCounts()]);
   },
   methods: {
@@ -251,7 +250,7 @@ export default defineComponent({
         //Public Leagues
         this.publicLeagues = response.publicLeagues;
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error);
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load your home page.');
       }
     }
   }
