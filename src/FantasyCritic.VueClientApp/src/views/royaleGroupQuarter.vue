@@ -72,7 +72,7 @@
 
       <template v-if="showGroupPointsChart">
         <div class="royale-chart-container">
-          <RoyalePublisherGraph :royale-publishers="chartMembers" />
+          <RoyalePublisherGraph :royale-publishers="chartSeries" />
         </div>
       </template>
     </div>
@@ -91,6 +91,7 @@ import type { TableField } from 'bootstrap-vue-next';
 
 import { royaleClient, royaleGroupClient, type RoyaleGroupMemberRankedViewModel, type RoyaleGroupQuarterViewModel, type RoyaleYearQuarterViewModel } from '@/api/clients';
 import { orderBy } from '@/globalFunctions';
+import type { RoyalePublisherGraphSeries } from '@/types/vueTypes';
 import { formatCurrency } from '@/utilities/formatters';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
@@ -139,14 +140,19 @@ export default defineComponent({
       if (!this.allQuarters) return [];
       return this.allQuarters.filter((q) => q.year === this.selectedYear).sort((a, b) => a.quarter - b.quarter);
     },
-    chartMembers(): RoyaleGroupMemberRankedViewModel[] {
+    chartSeries(): RoyalePublisherGraphSeries[] {
       if (!this.groupQuarter) {
         return [];
       }
-      return this.groupQuarter.members.filter((m) => m.hasPublisher && m.publisherID && m.statistics.length > 0);
+      return this.groupQuarter.members.flatMap((m) => {
+        if (!m.hasPublisher || !m.publisherID || !m.publisherName || m.statistics.length === 0) {
+          return [];
+        }
+        return [{ publisherID: m.publisherID, publisherName: m.publisherName, statistics: m.statistics, publisherGames: m.publisherGames }];
+      });
     },
     showGroupPointsChart(): boolean {
-      return this.chartMembers.length > 0;
+      return this.chartSeries.length > 0;
     }
   },
   watch: {

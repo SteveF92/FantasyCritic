@@ -73,10 +73,6 @@ export default defineComponent({
           continue;
         }
 
-        if (!member.publisherID || !member.publisherName) {
-          continue;
-        }
-
         for (const pg of member.publisherGames) {
           const masterGame = pg.masterGame;
           if (!masterGame) continue;

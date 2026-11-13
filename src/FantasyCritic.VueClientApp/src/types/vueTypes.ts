@@ -11,8 +11,8 @@ export interface RoyaleGamePurchase {
 }
 
 export interface RoyalePublisherGraphSeries {
-  publisherID?: string;
-  publisherName?: string;
+  publisherID: string;
+  publisherName: string;
   statistics: RoyalePublisherStatisticsViewModel[];
   publisherGames: RoyalePublisherGameViewModel[];
 }
