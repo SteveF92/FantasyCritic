@@ -145,14 +145,14 @@
 
     <div v-if="publisher && publisher.publisherActions.length > 0">
       <h2>Action History</h2>
-      <b-table striped bordered small responsive :items="publisher.publisherActions" :fields="actionFields" :tbody-tr-class="publisherGameRowClass">
+      <b-table striped bordered small responsive :items="publisher.publisherActions" :fields="actionFields">
         <template #cell(timestamp)="data">
           {{ formatDateTime(data.item.timestamp) }}
         </template>
         <template #cell(masterGame.gameName)="data">
           <template v-if="data.item.masterGame">
             <span class="master-game-popover">
-              <masterGamePopover :master-game="data.item.masterGame" :currently-ineligible="data.item.currentlyIneligible"></masterGamePopover>
+              <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
             </span>
             <span v-if="data.item.gameHidden" class="game-ineligible">
               Hidden
@@ -175,7 +175,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import type { BModal, TableField, TableRowType } from 'bootstrap-vue-next';
+import type { BModal, TableField, TableRowType, TableStrictClassValue } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
 import {
@@ -295,12 +295,12 @@ export default defineComponent({
       try {
         this.publisher = await royaleClient.getRoyalePublisher(this.publisherid);
       } catch (error) {
-        this.error = getApiErrorMessage(error);
+        this.errorInfo = getApiErrorMessage(error);
       }
     },
     async gamePurchased(purchaseInfo: RoyaleGamePurchase): Promise<void> {
       await this.fetchPublisher();
-      let message = purchaseInfo.gameName + ' was purchased for ' + formatMoney(purchaseInfo.purchaseCost);
+      let message = purchaseInfo.gameName + ' was purchased for ' + formatMoney(purchaseInfo.purchaseCost, 2);
       makeToast(message);
     },
     async publisherNameChanged(): Promise<void> {
@@ -336,7 +336,7 @@ export default defineComponent({
       try {
         await royaleClient.sellGame(request);
         await this.fetchPublisher();
-        let message = this.gameToModify.masterGame.gameName + ' was sold for ' + formatMoney(this.gameToModify.refundAmount);
+        let message = this.gameToModify.masterGame.gameName + ' was sold for ' + formatMoney(this.gameToModify.refundAmount, 2);
         makeToast(message);
       } catch (error) {
         this.errorInfo = "You can't sell that game. " + getApiErrorMessage(error);
@@ -377,13 +377,15 @@ export default defineComponent({
     openCriticLink(game: MasterGameYearViewModel): string {
       return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
     },
-    publisherGameRowClass(item: RoyalePublisherGameViewModel | null, type: TableRowType): string | undefined {
+    publisherGameRowClass(item: RoyalePublisherGameViewModel | null, type: TableRowType): TableStrictClassValue {
       if (!item || type !== 'row') {
-        return;
+        return '';
       }
       if (item.currentlyIneligible) {
         return 'table-warning';
       }
+
+      return '';
     },
     getLockCountdown(lockDateTime: string | undefined): string {
       if (!lockDateTime) {
@@ -415,6 +417,7 @@ export default defineComponent({
   }
 });
 </script>
+
 <style scoped>
 .publisher-header {
   margin-top: 10px;

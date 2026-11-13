@@ -1,5 +1,6 @@
 <template>
   <b-modal id="royaleChangePublisherIconForm" ref="changeRoyalePublisherIconRef" title="Change Publisher Icon" @hidden="clearData" @show="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div v-show="!newPublisherIcon || !iconIsValid" class="alert alert-info">
       Your icon must be a single character, ideally an emoji.
       <br />
@@ -21,12 +22,14 @@
     </template>
   </b-modal>
 </template>
+
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { BModal } from 'bootstrap-vue-next';
 
 import { royaleClient, type ChangeRoyalePublisherIconRequest, type RoyalePublisherViewModel } from '@/api/clients';
 import { publisherIconIsValid } from '@/globalFunctions';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
 interface RoyaleChangePublisherIconFormData {
   newPublisherIcon: string | undefined;
@@ -55,18 +58,19 @@ export default defineComponent({
     this.clearData();
   },
   methods: {
-    changePublisherIcon(): void {
+    async changePublisherIcon(): Promise<void> {
       const request: ChangeRoyalePublisherIconRequest = {
         publisherID: this.userRoyalePublisher.publisherID,
         publisherIcon: this.newPublisherIcon
       };
-      royaleClient
-        .changePublisherIcon(request)
-        .then(() => {
-          (this.$refs.changeRoyalePublisherIconRef as InstanceType<typeof BModal> | undefined)?.hide();
-          this.$emit('publisherIconChanged');
-        })
-        .catch(() => {});
+
+      try {
+        await royaleClient.changePublisherIcon(request);
+        (this.$refs.changeRoyalePublisherIconRef as InstanceType<typeof BModal> | undefined)?.hide();
+        this.$emit('publisherIconChanged');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error);
+      }
     },
     clearData(): void {
       this.newPublisherIcon = this.userRoyalePublisher.publisherIcon;

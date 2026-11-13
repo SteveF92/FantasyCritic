@@ -34,6 +34,7 @@
     </template>
   </b-modal>
 </template>
+
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { BModal } from 'bootstrap-vue-next';

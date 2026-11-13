@@ -144,7 +144,6 @@ export default defineComponent({
 
       this.possibleMasterGames = await royaleClient.possibleMasterGames(this.searchGameName || null, this.userRoyalePublisher.publisherID, this.releaseFilter);
       this.searched = true;
-      this.showingUnlistedField = false;
       this.purchaseRoyaleGame = null;
       if (!this.searchGameName) {
         this.searchedTop = true;
