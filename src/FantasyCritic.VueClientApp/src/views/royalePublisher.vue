@@ -192,6 +192,7 @@ import { useAuthStore } from '@/store/authStore';
 import type { PopoverContent, RoyaleGamePurchase } from '@/types/vueTypes';
 import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatCurrency, formatDateIso, formatDateTime, formatScore } from '@/utilities/formatters';
+import { asOwnRoyalePublisherGame, type OwnRoyalePublisherGame } from '@/utilities/royaleGames';
 import { makeToast } from '@/utilities/toast';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import RoyaleChangePublisherIconForm from '@/components/modals/royaleChangePublisherIconForm.vue';
@@ -204,7 +205,7 @@ import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 interface RoyalePublisherData {
   errorInfo: string;
   publisher: RoyalePublisherViewModel | null;
-  gameToModify: RoyalePublisherGameViewModel | null;
+  gameToModify: OwnRoyalePublisherGame | null;
   advertisingBudgetToSet: number;
 }
 
@@ -318,7 +319,7 @@ export default defineComponent({
       makeToast(message);
     },
     setGameToSell(publisherGame: RoyalePublisherGameViewModel): void {
-      this.gameToModify = publisherGame;
+      this.gameToModify = asOwnRoyalePublisherGame(publisherGame);
     },
     async sellGame(): Promise<void> {
       if (!this.publisher || !this.gameToModify) {
@@ -343,7 +344,7 @@ export default defineComponent({
       }
     },
     setGameToSetBudget(publisherGame: RoyalePublisherGameViewModel): void {
-      this.gameToModify = publisherGame;
+      this.gameToModify = asOwnRoyalePublisherGame(publisherGame);
       this.advertisingBudgetToSet = publisherGame.advertisingMoney;
       (this.$refs.setAdvertisingMoneyModalRef as InstanceType<typeof BModal> | undefined)?.show();
     },

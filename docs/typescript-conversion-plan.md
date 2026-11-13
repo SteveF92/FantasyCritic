@@ -357,6 +357,8 @@ on the League page.
 - Confirm no `.js` is left under `src/`, and no `any` or `@ts-` comments outside generated code.
 - Run the UI test suite.
 
+Then make the API changes held in [api-breaking-changes-plan.md](api-breaking-changes-plan.md).
+
 ## Found along the way
 
 Bugs found by the conversion, and every deliberate behaviour change. "On main" says whether production

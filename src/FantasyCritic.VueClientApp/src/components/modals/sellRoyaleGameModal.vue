@@ -38,15 +38,15 @@
 import { defineComponent, type PropType } from 'vue';
 import type { BModal } from 'bootstrap-vue-next';
 
-import type { RoyalePublisherGameViewModel } from '@/api/clients';
 import { formatCurrency } from '@/utilities/formatters';
+import type { OwnRoyalePublisherGame } from '@/utilities/royaleGames';
 
 export default defineComponent({
   props: {
-    publisherGame: { type: Object as PropType<RoyalePublisherGameViewModel | null>, default: null }
+    publisherGame: { type: Object as PropType<OwnRoyalePublisherGame | null>, default: null }
   },
   emits: {
-    sellGame: (_publisherGame: RoyalePublisherGameViewModel) => true
+    sellGame: (_publisherGame: OwnRoyalePublisherGame) => true
   },
   methods: {
     formatCurrency,
