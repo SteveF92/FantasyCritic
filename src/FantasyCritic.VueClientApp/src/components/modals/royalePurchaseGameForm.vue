@@ -49,6 +49,10 @@
         <b-button v-if="purchaseRoyaleGame && formIsValid" variant="primary" class="full-width-button" :disabled="isBusy" @click="addGame">
           Purchase Game for {{ formatCurrency(purchaseRoyaleGame.cost) }}
         </b-button>
+        <b-alert v-else-if="purchaseRoyaleGame" variant="warning" :model-value="true">
+          <strong>{{ purchaseRoyaleGame.masterGame.gameName }}</strong>
+          can't be bought: {{ purchaseRoyaleGame.status }}
+        </b-alert>
       </div>
       <div v-if="purchaseResult && !purchaseResult.success" class="alert purchase-error" :class="{ 'alert-danger': !purchaseResult.overridable, 'alert-warning': purchaseResult.overridable }">
         <h3 v-if="purchaseResult.overridable" class="alert-heading">Warning!</h3>
