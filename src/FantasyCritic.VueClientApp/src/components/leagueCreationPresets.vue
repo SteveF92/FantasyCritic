@@ -32,11 +32,34 @@
   </div>
 </template>
 
-<script>
-import { computePreset } from '@/utilities/leagueCreationPresets';
+<script lang="ts">
+import { defineComponent } from 'vue';
 
-export default {
+import type { AppliedPreset } from '@/types/vueTypes';
+import { computePreset, type ExperienceLevel, type GameMode } from '@/utilities/leagueCreationPresets';
+
+interface LeagueCreationPresetsData {
+  playerCount: number | null;
+  gameMode: GameMode;
+  experienceLevel: ExperienceLevel;
+}
+
+export default defineComponent({
   name: 'LeagueCreationPresets',
+  setup() {
+    const gameModeOptions: { value: GameMode; text: string }[] = [
+      { value: 'Standard', text: 'Standard' },
+      { value: 'Multi Draft', text: 'Multi Draft' },
+      { value: 'One Shot', text: 'One Shot' }
+    ];
+    const experienceLevelOptions: { value: ExperienceLevel; text: string }[] = [
+      { value: 'Beginner', text: 'Beginner' },
+      { value: 'Standard', text: 'Standard' },
+      { value: 'Advanced', text: 'Advanced' }
+    ];
+
+    return { gameModeOptions, experienceLevelOptions };
+  },
   props: {
     year: { type: Number, required: true },
     playerCountLabel: {
@@ -44,30 +67,22 @@ export default {
       default: 'How many players do you think will be in this league?'
     }
   },
-  emits: ['preset-applied'],
-  data() {
+  emits: {
+    presetApplied: (_preset: AppliedPreset) => true
+  },
+  data(): LeagueCreationPresetsData {
     return {
       playerCount: null,
       gameMode: 'Standard',
-      experienceLevel: 'Standard',
-      gameModeOptions: [
-        { value: 'Standard', text: 'Standard' },
-        { value: 'Multi Draft', text: 'Multi Draft' },
-        { value: 'One Shot', text: 'One Shot' }
-      ],
-      experienceLevelOptions: [
-        { value: 'Beginner', text: 'Beginner' },
-        { value: 'Standard', text: 'Standard' },
-        { value: 'Advanced', text: 'Advanced' }
-      ]
+      experienceLevel: 'Standard'
     };
   },
   methods: {
-    emitIfReady() {
+    emitIfReady(): void {
       if (!this.playerCount || this.playerCount < 2 || this.playerCount > 20) return;
       const result = computePreset(this.gameMode, this.experienceLevel, this.playerCount, this.year);
-      this.$emit('preset-applied', { gameMode: this.gameMode, experienceLevel: this.experienceLevel, ...result });
+      this.$emit('presetApplied', { gameMode: this.gameMode, experienceLevel: this.experienceLevel, ...result });
     }
   }
-};
+});
 </script>

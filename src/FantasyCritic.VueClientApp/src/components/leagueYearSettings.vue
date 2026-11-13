@@ -326,12 +326,15 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
+import type { RouteLocationRaw } from 'vue-router';
 
+import type { LeagueYearSettingsViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { deepClone } from '@/utilities/deepClone';
-import { computeSpecialSlots } from '@/utilities/leagueCreationPresets';
+import { computeSpecialSlots, type ExperienceLevel, type GameMode } from '@/utilities/leagueCreationPresets';
 import DateInput from '@/components/dateInput.vue';
 import LeagueTagSelector from '@/components/leagueTagSelector.vue';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
@@ -343,7 +346,7 @@ const PUBLIC_BIDDING = 'PublicBidding';
 
 // The pickup systems that count as public bidding, labelled by how they treat counter picks rather than by their full
 // readable names, which all start with "Public Bidding" and read badly as answers to a question about counter picks.
-const COUNTER_PICK_HANDLING_OPTIONS = [
+const COUNTER_PICK_HANDLING_OPTIONS: { value: string; text: string }[] = [
   { value: 'SemiPublicBidding', text: 'Public Counter Picks' },
   { value: 'SemiPublicBiddingSecretCounterPicks', text: 'Secret Counter Picks' },
   { value: 'SemiPublicBiddingSemiPublicCounterPicks', text: 'Semi-Public Counter Picks' }
@@ -351,26 +354,41 @@ const COUNTER_PICK_HANDLING_OPTIONS = [
 
 const DEFAULT_COUNTER_PICK_HANDLING = 'SemiPublicBiddingSecretCounterPicks';
 
-export default {
+interface LeagueYearSettingsData {
+  internalValue: LeagueYearSettingsViewModel | null;
+  lastCounterPickHandling: string;
+}
+
+export default defineComponent({
   components: {
     DateInput,
     LeagueTagSelector,
     SpecialGameSlotSelector
   },
+  setup() {
+    const biddingModeOptions: { value: string; text: string }[] = [
+      { value: SECRET_BIDDING, text: 'Secret Bidding' },
+      { value: PUBLIC_BIDDING, text: 'Public Bidding' }
+    ];
+
+    return { biddingModeOptions };
+  },
   props: {
-    modelValue: { type: Object, required: true },
+    modelValue: { type: Object as PropType<LeagueYearSettingsViewModel>, required: true },
     year: { type: Number, required: true },
     editMode: { type: Boolean },
-    currentNumberOfPlayers: { type: Number, default: null },
+    currentNumberOfPlayers: { type: Number as PropType<number | null>, default: null },
     freshSettings: { type: Boolean, required: true },
     conferenceMode: { type: Boolean },
     isMultiDraft: { type: Boolean, default: false },
-    leagueId: { type: String, default: null },
-    gameMode: { type: String, default: 'Standard' },
-    experienceLevel: { type: String, default: 'Standard' }
+    leagueId: { type: String as PropType<string | null>, default: null },
+    gameMode: { type: String as PropType<GameMode>, default: 'Standard' },
+    experienceLevel: { type: String as PropType<ExperienceLevel>, default: 'Standard' }
   },
-  emits: ['update:modelValue'],
-  data() {
+  emits: {
+    'update:modelValue': (_value: LeagueYearSettingsViewModel) => true
+  },
+  data(): LeagueYearSettingsData {
     return {
       internalValue: null,
       // Remembered so that toggling to secret bidding and back doesn't silently discard the counter pick choice.
@@ -379,41 +397,35 @@ export default {
   },
   computed: {
     ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
-    biddingModeOptions() {
-      return [
-        { value: SECRET_BIDDING, text: 'Secret Bidding' },
-        { value: PUBLIC_BIDDING, text: 'Public Bidding' }
-      ];
-    },
-    counterPickHandlingOptions() {
+    counterPickHandlingOptions(): { value: string; text: string }[] {
       const availableSystems = new Set((this.possibleLeagueOptions?.pickupSystems ?? []).map((x) => x.value));
       return COUNTER_PICK_HANDLING_OPTIONS.filter((option) => availableSystems.has(option.value));
     },
-    publicBiddingSelected() {
+    publicBiddingSelected(): boolean {
       return this.biddingMode === PUBLIC_BIDDING;
     },
     // The two selects are a presentation of one underlying setting - pickupSystem is still the only thing sent to the server.
     biddingMode: {
-      get() {
+      get(): string {
         return this.internalValue.pickupSystem === SECRET_BIDDING ? SECRET_BIDDING : PUBLIC_BIDDING;
       },
-      set(mode) {
+      set(mode: string) {
         this.internalValue.pickupSystem = mode === SECRET_BIDDING ? SECRET_BIDDING : this.lastCounterPickHandling;
       }
     },
     counterPickHandling: {
-      get() {
+      get(): string {
         return this.internalValue.pickupSystem;
       },
-      set(pickupSystem) {
+      set(pickupSystem: string) {
         this.lastCounterPickHandling = pickupSystem;
         this.internalValue.pickupSystem = pickupSystem;
       }
     },
-    isStandardLeague() {
+    isStandardLeague(): boolean {
       return this.gameMode === 'Standard' && !this.isMultiDraft;
     },
-    manageDraftsRoute() {
+    manageDraftsRoute(): RouteLocationRaw | null {
       if (!this.leagueId) {
         return null;
       }
@@ -424,7 +436,7 @@ export default {
     internalValue: function () {
       this.updateInternalValue();
     },
-    gameMode(newMode) {
+    gameMode(newMode: GameMode) {
       if (!this.internalValue) {
         return;
       }
@@ -434,7 +446,7 @@ export default {
         this.internalValue.enableBids = true;
       }
     },
-    isMultiDraft(isMultiDraft) {
+    isMultiDraft(isMultiDraft: boolean) {
       if (!this.internalValue || isMultiDraft) {
         return;
       }
@@ -453,13 +465,13 @@ export default {
     }
   },
   methods: {
-    updateInternalValue() {
+    updateInternalValue(): void {
       this.$emit('update:modelValue', this.internalValue);
     },
-    fullAutoUpdate() {
+    fullAutoUpdate(): void {
       this.autoUpdateSpecialSlotOptions();
     },
-    autoUpdateSpecialSlotOptions() {
+    autoUpdateSpecialSlotOptions(): void {
       if (!this.freshSettings) {
         return;
       }
@@ -469,7 +481,7 @@ export default {
       this.internalValue.specialGameSlots = computeSpecialSlots(this.internalValue.standardGames, this.experienceLevel);
     }
   }
-};
+});
 </script>
 <style scoped>
 .eligibility-explanation {

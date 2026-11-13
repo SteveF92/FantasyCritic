@@ -1,4 +1,5 @@
 import type { RoyalePublisherGameViewModel, RoyalePublisherStatisticsViewModel } from '@/api/clients';
+import type { ExperienceLevel, GameMode, PresetResult } from '@/utilities/leagueCreationPresets';
 
 export interface PopoverContent {
   title: string;
@@ -15,4 +16,9 @@ export interface RoyalePublisherGraphSeries {
   publisherName: string;
   statistics: RoyalePublisherStatisticsViewModel[];
   publisherGames: RoyalePublisherGameViewModel[];
+}
+
+export interface AppliedPreset extends PresetResult {
+  gameMode: GameMode;
+  experienceLevel: ExperienceLevel;
 }

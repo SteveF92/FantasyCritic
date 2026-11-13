@@ -109,23 +109,39 @@
     </template>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
 
+import { conferenceClient, type CreateConferenceRequest, type DraftSettingsRequest, type LeagueYearSettingsViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
-import { buildOneShotDraft } from '@/utilities/leagueCreationPresets';
+import type { AppliedPreset } from '@/types/vueTypes';
+import { getApiErrorMessage } from '@/utilities/apiError';
+import { buildOneShotDraft, type ExperienceLevel, type GameMode } from '@/utilities/leagueCreationPresets';
 import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
 import LeagueCreationPresets from '@/components/leagueCreationPresets.vue';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
 
-export default {
+interface CreateConferenceData {
+  errorInfo: string;
+  conferenceName: string;
+  primaryLeagueName: string;
+  initialYear: number | '';
+  leagueYearSettings: LeagueYearSettingsViewModel | null;
+  drafts: DraftSettingsRequest[];
+  gameMode: GameMode;
+  experienceLevel: ExperienceLevel;
+  customRulesConference: boolean;
+  leagueYearEverValid: boolean;
+}
+
+export default defineComponent({
   components: {
     LeagueYearSettings,
     LeagueCreationPresets,
     DraftCreationSettings
   },
-  data() {
+  data(): CreateConferenceData {
     return {
       errorInfo: '',
       conferenceName: '',
@@ -141,10 +157,10 @@ export default {
   },
   computed: {
     ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
-    readyToSetupLeagueYear() {
+    readyToSetupLeagueYear(): boolean {
       return !!this.conferenceName && !!this.primaryLeagueName && !!this.initialYear;
     },
-    bidsOnlyBeforeNextDraftScheduleError() {
+    bidsOnlyBeforeNextDraftScheduleError(): string | null {
       if (!this.leagueYearSettings?.bidsOnlyBeforeNextScheduledDraft) return null;
       if (this.gameMode !== 'Multi Draft') return null;
       const draftsMissingDate = this.drafts.slice(1).some((d) => !d.scheduledDate);
@@ -153,7 +169,7 @@ export default {
       }
       return null;
     },
-    leagueYearIsValid() {
+    leagueYearIsValid(): boolean {
       if (!this.leagueYearSettings || !this.drafts.length) return false;
       const settingsOk =
         this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 && this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
@@ -162,13 +178,13 @@ export default {
     }
   },
   watch: {
-    leagueYearIsValid: function (newValue) {
+    leagueYearIsValid: function (newValue: boolean) {
       let allValid = this.readyToSetupLeagueYear && newValue;
       if (allValid) {
         this.leagueYearEverValid = true;
       }
     },
-    gameMode(mode) {
+    gameMode(mode: GameMode) {
       this.syncOneShotDrafts(mode);
     },
     leagueYearSettings: {
@@ -179,13 +195,13 @@ export default {
     }
   },
   methods: {
-    syncOneShotDrafts(gameMode) {
+    syncOneShotDrafts(gameMode: GameMode): void {
       if (gameMode !== 'One Shot' || !this.leagueYearSettings) {
         return;
       }
       this.drafts = [buildOneShotDraft(this.leagueYearSettings.standardGames, this.leagueYearSettings.counterPicks)];
     },
-    onPresetApplied({ gameMode, experienceLevel, settings, drafts }) {
+    onPresetApplied({ gameMode, experienceLevel, settings, drafts }: AppliedPreset): void {
       this.gameMode = gameMode;
       this.experienceLevel = experienceLevel;
       if (!this.leagueYearSettings) {
@@ -206,9 +222,9 @@ export default {
       this.leagueYearSettings.year = this.initialYear;
       this.drafts = drafts.map((d) => ({ ...d }));
     },
-    async postRequest() {
+    async postRequest(): Promise<void> {
       this.leagueYearSettings.year = this.initialYear;
-      const payload = {
+      const request: CreateConferenceRequest = {
         conferenceName: this.conferenceName.trim(),
         primaryLeagueName: this.primaryLeagueName.trim(),
         customRulesConference: this.customRulesConference,
@@ -217,11 +233,10 @@ export default {
       };
 
       try {
-        const response = await axios.post('/api/conference/createConference', payload);
-        const newConferenceID = response.data;
+        const newConferenceID = await conferenceClient.createConference(request);
         this.$router.push({ name: 'conference', params: { conferenceid: newConferenceID, year: this.initialYear } });
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error);
         window.scroll({
           top: 0,
           left: 0,
@@ -230,7 +245,7 @@ export default {
       }
     }
   }
-};
+});
 </script>
 <style scoped>
 label {

@@ -164,13 +164,66 @@
     </div>
   </div>
 </template>
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import type { ColorVariant } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
+import {
+  leagueClient,
+  leagueManagerClient,
+  type CreateLeagueDraftRequest,
+  type DeleteLeagueDraftRequest,
+  type EditLeagueDraftRequest,
+  type LeagueDraftViewModel,
+  type LeagueYearViewModel,
+  type SpecialGameSlotViewModel
+} from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import SpecialGameSlotSelector from '@/components/specialGameSlotSelector.vue';
 
-export default {
+const DRAFT_STATUS_LABELS: Record<string, string> = {
+  NotStartedDraft: 'Not Started',
+  Drafting: 'In Progress',
+  DraftPaused: 'Paused',
+  DraftFinal: 'Completed'
+};
+
+const DRAFT_STATUS_VARIANTS: Record<string, ColorVariant> = {
+  NotStartedDraft: 'secondary',
+  Drafting: 'success',
+  DraftPaused: 'warning',
+  DraftFinal: 'info'
+};
+
+interface EditDraftForm {
+  name: string;
+  scheduledDate: string | null;
+  gamesToDraft: number;
+  counterPicksToDraft: number;
+  counterPicksMustBeFromThisDraft: boolean;
+}
+
+interface NewDraftForm extends EditDraftForm {
+  additionalStandardGames: number;
+  additionalCounterPicks: number;
+  newSpecialGameSlots: SpecialGameSlotViewModel[];
+}
+
+interface ManageDraftsData {
+  leagueYear: LeagueYearViewModel | null;
+  errorInfo: string | null;
+  editingDraftId: string | null;
+  editForm: EditDraftForm;
+  editError: string | null;
+  deletingDraftId: string | null;
+  deleteError: string | null;
+  newDraft: NewDraftForm;
+  newDraftError: string | null;
+  successMessage: string | null;
+}
+
+export default defineComponent({
   components: {
     SpecialGameSlotSelector
   },
@@ -178,7 +231,7 @@ export default {
     leagueid: { type: String, required: true },
     year: { type: Number, required: true }
   },
-  data() {
+  data(): ManageDraftsData {
     return {
       leagueYear: null,
       errorInfo: null,
@@ -208,16 +261,16 @@ export default {
     };
   },
   computed: {
-    isManager() {
+    isManager(): boolean {
       return this.leagueYear?.league?.isManager ?? false;
     },
-    activeDraft() {
+    activeDraft(): LeagueDraftViewModel | null {
       return this.leagueYear?.drafts?.find((d) => d.draftIsActive || d.draftIsPaused) ?? null;
     },
-    newSpecialSlotCount() {
+    newSpecialSlotCount(): number {
       return this.newDraft.newSpecialGameSlots?.length ?? 0;
     },
-    specialSlotsExceedStandardGames() {
+    specialSlotsExceedStandardGames(): boolean {
       return this.newSpecialSlotCount > this.newDraft.additionalStandardGames;
     }
   },
@@ -225,42 +278,29 @@ export default {
     await this.fetchLeagueYear();
   },
   methods: {
-    async fetchLeagueYear() {
+    async fetchLeagueYear(): Promise<void> {
       try {
-        const response = await axios.get(`/api/League/GetLeagueYear?leagueID=${this.leagueid}&year=${this.year}`);
-        this.leagueYear = response.data;
+        this.leagueYear = await leagueClient.getLeagueYear(this.leagueid, this.year, undefined);
       } catch {
         this.errorInfo = 'Failed to load league data.';
       }
     },
-    draftDateLabel(draft) {
+    draftDateLabel(draft: LeagueDraftViewModel): string {
       return draft.playStarted ? 'Date Held' : 'Scheduled Date';
     },
-    draftStartedDisplay(draft) {
+    draftStartedDisplay(draft: LeagueDraftViewModel): string {
       if (!draft.draftStartedTimestamp) {
         return '—';
       }
       return DateTime.fromISO(draft.draftStartedTimestamp).toFormat('MMMM dd, yyyy');
     },
-    statusLabel(draft) {
-      const map = {
-        NotStartedDraft: 'Not Started',
-        Drafting: 'In Progress',
-        DraftPaused: 'Paused',
-        DraftFinal: 'Completed'
-      };
-      return map[draft.playStatus] ?? draft.playStatus;
+    statusLabel(draft: LeagueDraftViewModel): string {
+      return DRAFT_STATUS_LABELS[draft.playStatus] ?? draft.playStatus;
     },
-    statusVariant(draft) {
-      const map = {
-        NotStartedDraft: 'secondary',
-        Drafting: 'success',
-        DraftPaused: 'warning',
-        DraftFinal: 'info'
-      };
-      return map[draft.playStatus] ?? 'secondary';
+    statusVariant(draft: LeagueDraftViewModel): ColorVariant {
+      return DRAFT_STATUS_VARIANTS[draft.playStatus] ?? 'secondary';
     },
-    startEdit(draft) {
+    startEdit(draft: LeagueDraftViewModel): void {
       this.editingDraftId = draft.draftID;
       this.editForm = {
         name: draft.name,
@@ -272,12 +312,12 @@ export default {
       this.deletingDraftId = null;
       this.editError = null;
     },
-    cancelEdit() {
+    cancelEdit(): void {
       this.editingDraftId = null;
       this.editError = null;
     },
-    async submitEdit(draft) {
-      const model = {
+    async submitEdit(draft: LeagueDraftViewModel): Promise<void> {
+      const request: EditLeagueDraftRequest = {
         draftID: draft.draftID,
         leagueID: this.leagueid,
         year: this.year,
@@ -288,38 +328,38 @@ export default {
         counterPicksMustBeFromThisDraft: this.editForm.counterPicksMustBeFromThisDraft
       };
       try {
-        await axios.post('/api/leagueManager/EditLeagueDraft', model);
+        await leagueManagerClient.editLeagueDraft(request);
         this.editingDraftId = null;
         this.editError = null;
         await this.fetchLeagueYear();
       } catch (error) {
-        this.editError = error.response?.data || 'An error occurred saving the draft.';
+        this.editError = getApiErrorMessage(error, 'An error occurred saving the draft.');
       }
     },
-    confirmDelete(draft) {
+    confirmDelete(draft: LeagueDraftViewModel): void {
       this.deletingDraftId = draft.draftID;
       this.editingDraftId = null;
       this.deleteError = null;
     },
-    cancelDelete() {
+    cancelDelete(): void {
       this.deletingDraftId = null;
       this.deleteError = null;
     },
-    async submitDelete(draft) {
-      const model = {
+    async submitDelete(draft: LeagueDraftViewModel): Promise<void> {
+      const request: DeleteLeagueDraftRequest = {
         draftID: draft.draftID,
         leagueID: this.leagueid,
         year: this.year
       };
       try {
-        await axios.post('/api/leagueManager/DeleteLeagueDraft', model);
+        await leagueManagerClient.deleteLeagueDraft(request);
         this.deletingDraftId = null;
         await this.fetchLeagueYear();
       } catch (error) {
-        this.deleteError = error.response?.data || 'An error occurred deleting the draft.';
+        this.deleteError = getApiErrorMessage(error, 'An error occurred deleting the draft.');
       }
     },
-    resetNewDraftForm() {
+    resetNewDraftForm(): void {
       this.newDraft = {
         name: '',
         scheduledDate: null,
@@ -332,11 +372,11 @@ export default {
       };
       this.newDraftError = null;
     },
-    async submitNewDraft() {
+    async submitNewDraft(): Promise<void> {
       this.newDraftError = null;
       this.successMessage = null;
       const draftName = this.newDraft.name;
-      const model = {
+      const request: CreateLeagueDraftRequest = {
         leagueID: this.leagueid,
         year: this.year,
         name: draftName,
@@ -348,10 +388,10 @@ export default {
         newSpecialGameSlots: this.newDraft.newSpecialGameSlots
       };
       if (this.newDraft.counterPicksToDraft > 0) {
-        model.counterPicksMustBeFromThisDraft = this.newDraft.counterPicksMustBeFromThisDraft;
+        request.counterPicksMustBeFromThisDraft = this.newDraft.counterPicksMustBeFromThisDraft;
       }
       try {
-        await axios.post('/api/leagueManager/CreateLeagueDraft', model);
+        await leagueManagerClient.createLeagueDraft(request);
         this.resetNewDraftForm();
         await this.fetchLeagueYear();
         this.successMessage = `Draft "${draftName}" was added.`;
@@ -359,9 +399,9 @@ export default {
           window.scrollTo({ top: 0, behavior: 'smooth' });
         });
       } catch (error) {
-        this.newDraftError = error.response?.data || 'An error occurred adding the draft.';
+        this.newDraftError = getApiErrorMessage(error, 'An error occurred adding the draft.');
       }
     }
   }
-};
+});
 </script>

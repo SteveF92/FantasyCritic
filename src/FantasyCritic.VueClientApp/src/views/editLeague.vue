@@ -44,14 +44,25 @@
     </div>
   </div>
 </template>
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
 
+import { leagueClient, leagueManagerClient, type DraftSettingsRequest, type EditLeagueYearRequest, type LeagueYearSettingsViewModel, type LeagueYearViewModel } from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { buildOneShotDraft } from '@/utilities/leagueCreationPresets';
 import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
 
-export default {
+interface EditLeagueData {
+  errorInfo: string;
+  leagueYearSettings: LeagueYearSettingsViewModel | null;
+  leagueYearName: string | null;
+  leagueYear: LeagueYearViewModel | null;
+  firstDraft: DraftSettingsRequest | null;
+  freshSettings: boolean;
+}
+
+export default defineComponent({
   components: {
     LeagueYearSettings,
     DraftCreationSettings
@@ -60,7 +71,7 @@ export default {
     leagueid: { type: String, required: true },
     year: { type: Number, required: true }
   },
-  data() {
+  data(): EditLeagueData {
     return {
       errorInfo: '',
       leagueYearSettings: null,
@@ -71,7 +82,7 @@ export default {
     };
   },
   computed: {
-    bidsOnlyBeforeNextDraftScheduleError() {
+    bidsOnlyBeforeNextDraftScheduleError(): string | null {
       if (!this.leagueYearSettings?.bidsOnlyBeforeNextScheduledDraft) return null;
       if (!this.isMultiDraft) return null;
       const drafts = this.leagueYear?.drafts ?? [];
@@ -81,31 +92,31 @@ export default {
       }
       return null;
     },
-    leagueYearIsValid() {
+    leagueYearIsValid(): boolean {
       if (!this.leagueYearSettings) return false;
       const settingsOk =
         this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 && this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
       const draftOk = this.isMultiDraft || this.oneShotMode || (this.firstDraft && this.firstDraft.gamesToDraft >= 1 && this.firstDraft.counterPicksToDraft >= 0);
       return settingsOk && draftOk && !this.bidsOnlyBeforeNextDraftScheduleError;
     },
-    oneShotMode() {
+    oneShotMode(): boolean {
       return this.leagueYear?.settings?.oneShotMode ?? false;
     },
     firstDraftAsList: {
-      get() {
+      get(): DraftSettingsRequest[] {
         return this.firstDraft ? [this.firstDraft] : [];
       },
-      set(val) {
+      set(val: DraftSettingsRequest[]) {
         this.firstDraft = val[0] ?? null;
       }
     },
-    activePlayersInLeague() {
+    activePlayersInLeague(): number | null {
       if (!this.leagueYear || !this.leagueYear.players) {
         return null;
       }
       return this.leagueYear.players.length;
     },
-    isMultiDraft() {
+    isMultiDraft(): boolean {
       return (this.leagueYear?.drafts?.length ?? 0) >= 2;
     }
   },
@@ -129,19 +140,19 @@ export default {
     this.fetchLeagueYear();
   },
   methods: {
-    syncOneShotDraft() {
+    syncOneShotDraft(): void {
       if (!this.oneShotMode || !this.leagueYearSettings) {
         return;
       }
       this.firstDraft = buildOneShotDraft(this.leagueYearSettings.standardGames, this.leagueYearSettings.counterPicks, this.firstDraft ?? undefined);
     },
-    fetchLeagueYear() {
-      axios
-        .get('/api/League/GetLeagueYear?leagueID=' + this.leagueid + '&year=' + this.year)
-        .then((response) => {
-          this.leagueYear = response.data;
-          if (!this.isMultiDraft && response.data.drafts && response.data.drafts.length > 0) {
-            const d = response.data.drafts[0];
+    fetchLeagueYear(): void {
+      leagueClient
+        .getLeagueYear(this.leagueid, this.year, undefined)
+        .then((leagueYear) => {
+          this.leagueYear = leagueYear;
+          if (!this.isMultiDraft && leagueYear.drafts && leagueYear.drafts.length > 0) {
+            const d = leagueYear.drafts[0];
             this.firstDraft = {
               name: d.name,
               scheduledDate: d.scheduledDate ?? null,
@@ -153,30 +164,30 @@ export default {
         })
         .catch((returnedError) => (this.error = returnedError));
     },
-    fetchCurrentLeagueYearOptions() {
-      axios
-        .get('/api/League/GetLeagueYearOptions?leagueID=' + this.leagueid + '&year=' + this.year)
-        .then((response) => {
-          this.leagueYearSettings = response.data;
-          this.leagueYearName = response.data.leagueYearName ?? null;
+    fetchCurrentLeagueYearOptions(): void {
+      leagueClient
+        .getLeagueYearOptions(this.leagueid, this.year)
+        .then((leagueYearSettings) => {
+          this.leagueYearSettings = leagueYearSettings;
+          this.leagueYearName = leagueYearSettings.leagueYearName ?? null;
         })
         .catch((returnedError) => (this.error = returnedError));
     },
-    postRequest() {
-      const payload = {
+    postRequest(): void {
+      const request: EditLeagueYearRequest = {
         leagueID: this.leagueid,
         year: this.year,
         leagueYearName: this.leagueYearName || null,
         leagueYearSettings: this.leagueYearSettings,
         firstDraft: this.isMultiDraft ? null : this.firstDraft
       };
-      axios.post('/api/leagueManager/EditLeagueYearSettings', payload).then(this.responseHandler).catch(this.catchHandler);
+      leagueManagerClient.editLeagueYearSettings(request).then(this.responseHandler).catch(this.catchHandler);
     },
-    responseHandler() {
+    responseHandler(): void {
       this.$router.push({ name: 'league', params: { leagueid: this.leagueid, year: this.year } });
     },
-    catchHandler(returnedError) {
-      this.errorInfo = returnedError.response.data;
+    catchHandler(returnedError: unknown): void {
+      this.errorInfo = getApiErrorMessage(returnedError);
       window.scroll({
         top: 0,
         left: 0,
@@ -184,7 +195,7 @@ export default {
       });
     }
   }
-};
+});
 </script>
 <style scoped>
 .league-options {

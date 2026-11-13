@@ -56,36 +56,45 @@
   </div>
 </template>
 
-<script>
-import { getDefaultDraft, getDefaultDraftName } from '@/utilities/leagueCreationPresets';
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 
-export default {
+import type { DraftSettingsRequest } from '@/api/clients';
+import { getDefaultDraft, getDefaultDraftName, type GameMode } from '@/utilities/leagueCreationPresets';
+
+interface DraftCreationSettingsData {
+  internalDrafts: DraftSettingsRequest[];
+}
+
+export default defineComponent({
   name: 'DraftCreationSettings',
   props: {
-    modelValue: { type: Array, required: true },
+    modelValue: { type: Array as PropType<DraftSettingsRequest[]>, required: true },
     standardGames: { type: Number, default: 0 },
-    gameMode: { type: String, default: 'Standard' },
+    gameMode: { type: String as PropType<GameMode>, default: 'Standard' },
     editMode: { type: Boolean, default: false },
     bidsOnlyBeforeNextScheduledDraft: { type: Boolean, default: false }
   },
-  emits: ['update:modelValue'],
-  data() {
+  emits: {
+    'update:modelValue': (_value: DraftSettingsRequest[]) => true
+  },
+  data(): DraftCreationSettingsData {
     return {
       internalDrafts: []
     };
   },
   computed: {
-    totalGamesToDraft() {
+    totalGamesToDraft(): number {
       return this.internalDrafts.reduce((sum, d) => sum + (d.gamesToDraft || 0), 0);
     },
-    showAddButton() {
+    showAddButton(): boolean {
       return this.gameMode === 'Multi Draft' && !this.editMode;
     }
   },
   watch: {
     modelValue: {
       immediate: true,
-      handler(newVal) {
+      handler(newVal: DraftSettingsRequest[]) {
         const normalized = newVal.map((d, index) => ({
           ...d,
           name: d.name?.trim() ? d.name : getDefaultDraftName(index),
@@ -100,34 +109,34 @@ export default {
     }
   },
   methods: {
-    emitUpdate() {
+    emitUpdate(): void {
       this.$emit(
         'update:modelValue',
         this.internalDrafts.map((d) => ({ ...d }))
       );
     },
-    isScheduledDateOptional(index) {
+    isScheduledDateOptional(index: number): boolean {
       if (this.gameMode !== 'Multi Draft' || !this.bidsOnlyBeforeNextScheduledDraft) {
         return true;
       }
       return index === 0;
     },
-    canRemoveDraft(index) {
+    canRemoveDraft(index: number): boolean {
       // Only drafts beyond the first can be removed, and only if at least 2 remain (minimum for multi-draft)
       return !this.editMode && index > 0 && this.internalDrafts.length > 2;
     },
-    addDraft() {
+    addDraft(): void {
       const allocatedSoFar = this.internalDrafts.reduce((s, d) => s + (d.gamesToDraft || 0), 0);
       const newDraft = getDefaultDraft(this.internalDrafts.length, this.standardGames, allocatedSoFar);
       this.internalDrafts.push(newDraft);
       this.emitUpdate();
     },
-    removeDraft(index) {
+    removeDraft(index: number): void {
       this.internalDrafts.splice(index, 1);
       this.emitUpdate();
     }
   }
-};
+});
 </script>
 
 <style scoped>

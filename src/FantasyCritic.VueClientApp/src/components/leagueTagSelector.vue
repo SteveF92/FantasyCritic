@@ -46,25 +46,41 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
 
+import type { LeagueTagOptionsViewModel, MasterGameTagViewModel } from '@/api/clients';
 import { intersection } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { deepClone } from '@/utilities/deepClone';
+import type { GameMode } from '@/utilities/leagueCreationPresets';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+interface TagLists {
+  banned: string[];
+  allowed: string[];
+  required: string[];
+}
+
+interface LeagueTagSelectorData {
+  initialValue: TagLists;
+  internalValue: TagLists;
+}
+
+export default defineComponent({
   components: {
     VueDraggable,
     MasterGameTagBadge
   },
   props: {
-    modelValue: { type: Object, required: true },
-    gameMode: { type: String, required: true }
+    modelValue: { type: Object as PropType<LeagueTagOptionsViewModel>, required: true },
+    gameMode: { type: String as PropType<GameMode>, required: true }
   },
-  emits: ['update:modelValue'],
-  data() {
+  emits: {
+    'update:modelValue': (_value: LeagueTagOptionsViewModel) => true
+  },
+  data(): LeagueTagSelectorData {
     return {
       initialValue: {
         banned: [],
@@ -79,35 +95,35 @@ export default {
     };
   },
   computed: {
-    tagOptions() {
+    tagOptions(): MasterGameTagViewModel[] {
       const interLeagueStore = useInterLeagueStore();
       return interLeagueStore.allTags.filter((x) => !x.systemTagOnly);
     },
-    showWarning() {
+    showWarning(): boolean {
       let recommendedAllowedTags = ['Reimagining'];
       let recommendedBannedTags = ['DirectorsCut', 'ReleasedInternationally', 'CurrentlyInEarlyAccess'];
       let bannedIntersection = intersection(this.internalValue.banned, recommendedAllowedTags);
       let allowedIntersection = intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
-    showDanger() {
+    showDanger(): boolean {
       let recommendedAllowedTags = ['NewGame', 'NewGamingFranchise', 'WillReleaseInternationallyFirst'];
       let recommendedBannedTags = ['Port'];
       let bannedIntersection = intersection(this.internalValue.banned, recommendedAllowedTags);
       let allowedIntersection = intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
-    showPortDanger() {
-      let recommendedAllowedTags = [];
+    showPortDanger(): boolean {
+      let recommendedAllowedTags: string[] = [];
       let recommendedBannedTags = ['Port'];
       let bannedIntersection = intersection(this.internalValue.banned, recommendedAllowedTags);
       let allowedIntersection = intersection(this.internalValue.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
-    showEarlyAccessWarning() {
+    showEarlyAccessWarning(): boolean {
       return this.internalValue.allowed.includes('PlannedForEarlyAccess') && !this.internalValue.allowed.includes('CurrentlyInEarlyAccess');
     },
-    showEarlyAccessDanger() {
+    showEarlyAccessDanger(): boolean {
       return this.internalValue.allowed.includes('CurrentlyInEarlyAccess') && !this.internalValue.allowed.includes('PlannedForEarlyAccess');
     }
   },
@@ -115,13 +131,13 @@ export default {
     this.initializeValues();
   },
   methods: {
-    onChange() {
+    onChange(): void {
       this.$emit('update:modelValue', this.internalValue);
     },
-    resetValues() {
+    resetValues(): void {
       this.internalValue = deepClone(this.initialValue);
     },
-    initializeValues() {
+    initializeValues(): void {
       this.initialValue = {
         banned: [],
         allowed: [],
@@ -150,7 +166,7 @@ export default {
       this.internalValue = deepClone(this.initialValue);
     }
   }
-};
+});
 </script>
 
 <style>

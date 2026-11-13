@@ -22,28 +22,42 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+
+import type { MasterGameTagViewModel, SpecialGameSlotViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 
-export default {
+interface SpecialGameSlotWithTags {
+  specialSlotPosition: number;
+  requiredTags: MasterGameTagViewModel[];
+}
+
+interface SpecialGameSlotSelectorData {
+  internalValue: SpecialGameSlotWithTags[];
+}
+
+export default defineComponent({
   components: {
     MasterGameTagSelector
   },
   props: {
-    modelValue: { type: Array, default: () => [] }
+    modelValue: { type: Array as PropType<SpecialGameSlotViewModel[]>, default: () => [] }
   },
-  emits: ['update:modelValue'],
-  data() {
+  emits: {
+    'update:modelValue': (_value: SpecialGameSlotViewModel[]) => true
+  },
+  data(): SpecialGameSlotSelectorData {
     return {
       internalValue: []
     };
   },
   computed: {
-    showNoTagsWarning() {
+    showNoTagsWarning(): boolean {
       return this.internalValue.some((x) => x.requiredTags.length === 0);
     },
-    showPortDanger() {
+    showPortDanger(): boolean {
       return this.internalValue.some((x) => x.requiredTags.some((y) => y.name === 'Port'));
     }
   },
@@ -56,10 +70,10 @@ export default {
     this.updateInternal();
   },
   methods: {
-    handleInput() {
-      let returnValue = [];
+    handleInput(): void {
+      let returnValue: SpecialGameSlotViewModel[] = [];
       this.internalValue.forEach((singleValue) => {
-        let newReturnItem = {
+        let newReturnItem: SpecialGameSlotViewModel = {
           specialSlotPosition: singleValue.specialSlotPosition,
           requiredTags: singleValue.requiredTags.map((v) => v.name)
         };
@@ -68,10 +82,10 @@ export default {
 
       this.$emit('update:modelValue', returnValue);
     },
-    getTags(tagNames) {
+    getTags(tagNames: string[]): MasterGameTagViewModel[] {
       const interLeagueStore = useInterLeagueStore();
       let allTags = interLeagueStore.allTags;
-      let matchingTags = [];
+      let matchingTags: MasterGameTagViewModel[] = [];
       tagNames.forEach((tagName) => {
         const match = allTags.find((x) => x.name === tagName);
         matchingTags.push(match);
@@ -79,7 +93,7 @@ export default {
 
       return matchingTags;
     },
-    removeSlot(specialSlot) {
+    removeSlot(specialSlot: SpecialGameSlotWithTags): void {
       this.internalValue = this.internalValue.filter((x) => x.specialSlotPosition !== specialSlot.specialSlotPosition);
 
       let slotNumber = 0;
@@ -89,19 +103,19 @@ export default {
       });
       this.handleInput();
     },
-    addSlot() {
-      let newItem = {
+    addSlot(): void {
+      let newItem: SpecialGameSlotWithTags = {
         specialSlotPosition: this.internalValue.length,
         requiredTags: []
       };
       this.internalValue.push(newItem);
       this.handleInput();
     },
-    updateInternal() {
+    updateInternal(): void {
       this.internalValue = [];
 
       this.modelValue.forEach((singleValue) => {
-        let newInternalItem = {
+        let newInternalItem: SpecialGameSlotWithTags = {
           specialSlotPosition: singleValue.specialSlotPosition,
           requiredTags: this.getTags(singleValue.requiredTags)
         };
@@ -109,7 +123,7 @@ export default {
       });
     }
   }
-};
+});
 </script>
 
 <style scoped>
