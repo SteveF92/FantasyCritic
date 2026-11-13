@@ -4,7 +4,7 @@ namespace FantasyCritic.Web.Models.Responses.Royale;
 
 public class RoyalePublisherGameViewModel
 {
-    public RoyalePublisherGameViewModel(RoyalePublisherGame domain, RoyaleYearQuarter yearQuarter, LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags, bool thisPlayerIsViewing, IClock clock)
+    public RoyalePublisherGameViewModel(RoyalePublisherGame domain, LocalDate currentDate, IEnumerable<MasterGameTag> allMasterGameTags, bool thisPlayerIsViewing, IClock clock)
     {
         PublisherID = domain.PublisherID;
         Locked = domain.IsLocked(currentDate, allMasterGameTags);

@@ -14,7 +14,7 @@ public class RoyalePublisherViewModel
         PublisherName = domain.PublisherName;
         PublisherIcon = domain.PublisherIcon;
         PublisherSlogan = domain.PublisherSlogan;
-        PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, domain.YearQuarter, currentDate, allMasterGameTags, thisPlayerIsViewing, clock)).ToList();
+        PublisherGames = domain.PublisherGames.Select(x => new RoyalePublisherGameViewModel(x, currentDate, allMasterGameTags, thisPlayerIsViewing, clock)).ToList();
         PublisherActions = royaleActions.Select(x => new RoyaleActionViewModel(x, currentDate, thisPlayerIsViewing)).ToList();
         Statistics = statistics.Select(x => new RoyalePublisherStatisticsViewModel(x)).ToList();
         Budget = domain.Budget;
