@@ -280,7 +280,7 @@ out.
 
 `home` (+ `leagueTable`, `conferenceTable`, `topBidsAndDropsWidget`, `gameNews`).
 
-### 9. Critics Royale
+### 9. Critics Royale (done)
 
 - `royalePublisherGraph` (already TS, on `RoyalePublisherViewModel` since cf7ea5938): fix `chart-id`
   (see "Found along the way")
