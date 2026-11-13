@@ -52,7 +52,7 @@
           <b-button v-if="royaleStandings && userRoyalePublisherID" variant="info" :to="{ name: 'royalePublisher', params: { publisherid: userRoyalePublisherID } }">View My Publisher</b-button>
         </div>
         <div v-if="royaleStandings">
-          <b-table striped bordered responsive small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
+          <b-table id="royale-standings-table" striped bordered responsive small :items="royaleStandings" :fields="standingsFields" :per-page="perPage" :current-page="currentPage">
             <template #cell(ranking)="data">
               <template v-if="data.item.ranking">
                 {{ data.item.ranking }}
@@ -73,8 +73,9 @@
               <span>{{ formatCurrency(data.item.budget, 2) }}</span>
             </template>
           </b-table>
-          <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+          <b-pagination v-model="currentPage" class="pagination-dark" :total-rows="rows" :per-page="perPage" aria-controls="royale-standings-table"></b-pagination>
         </div>
+        <b-alert v-else-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
         <div v-else class="spinner">
           <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
         </div>
@@ -96,7 +97,7 @@
       <div v-if="showTopRankedChart" class="col-lg-12 top-publishers-section">
         <h3>Top 10 Publisher Statistics</h3>
         <div class="royale-chart-container">
-          <RoyalePublisherGraph chart-id="quarter-points-chart" :chart-height="650" :royale-publishers="topPublishers" />
+          <RoyalePublisherGraph :royale-publishers="topPublishers" />
         </div>
       </div>
     </div>
@@ -139,6 +140,7 @@ import RoyalePodium from '@/components/royalePodium.vue';
 import RoyalePublisherGraph from '@/components/royalePublisherGraph.vue';
 
 interface CriticsRoyaleData {
+  errorInfo: string;
   currentPage: number;
   selectedYear: number | null;
   userRoyalePublisherID: string | null;
@@ -167,15 +169,8 @@ export default defineComponent({
       { key: 'gamesPurchased', label: 'Games Purchased', thClass: 'bg-primary' },
       { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary' }
     ];
-    const topRankedChartCanvasWidth: number = 1200;
-    const topRankedChartCanvasHeight: number = 600;
-    const topRankedChartCanvasStyles: Record<string, string> = {
-      width: '100%',
-      height: '100%',
-      position: 'relative'
-    };
 
-    return { perPage, standingsFields, topRankedChartCanvasWidth, topRankedChartCanvasHeight, topRankedChartCanvasStyles };
+    return { perPage, standingsFields };
   },
   components: {
     CreateRoyalePublisherForm,
@@ -190,6 +185,7 @@ export default defineComponent({
   },
   data(): CriticsRoyaleData {
     return {
+      errorInfo: '',
       currentPage: 1,
       selectedYear: null,
       userRoyalePublisherID: null,
@@ -249,19 +245,31 @@ export default defineComponent({
   methods: {
     formatCurrency,
     async initializePage(): Promise<void> {
-      if (!this.year || !this.quarter) {
-        const royaleYearQuarterOptions = await this.fetchRoyaleQuarters();
-        const mostRecentQuarter = royaleYearQuarterOptions[royaleYearQuarterOptions.length - 1];
-        const parameters = {
-          year: mostRecentQuarter.year.toString(),
-          quarter: mostRecentQuarter.quarter.toString()
-        };
-        this.$router.replace({ params: parameters });
-        return;
-      }
+      this.errorInfo = '';
+      this.currentPage = 1;
+      this.royaleStandings = null;
+      this.topPublishers = [];
+      this.podium = null;
+      this.userRoyalePublisherID = null;
+      this.userPublisherBusy = true;
 
-      this.selectedYear = this.year;
-      await this.fetchRoyaleData(this.year, this.quarter);
+      try {
+        if (!this.year || !this.quarter) {
+          const royaleYearQuarterOptions = await this.fetchRoyaleQuarters();
+          const mostRecentQuarter = royaleYearQuarterOptions[royaleYearQuarterOptions.length - 1];
+          const parameters = {
+            year: mostRecentQuarter.year.toString(),
+            quarter: mostRecentQuarter.quarter.toString()
+          };
+          this.$router.replace({ params: parameters });
+          return;
+        }
+
+        this.selectedYear = this.year;
+        await this.fetchRoyaleData(this.year, this.quarter);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load Critics Royale.');
+      }
     },
     selectYear(year: number): void {
       this.selectedYear = year;

@@ -12,8 +12,8 @@
             <div class="group-detail text-white">{{ data.item.memberCount }} members</div>
           </template>
         </b-table>
-        <div v-else class="text-muted small">No groups yet.</div>
-        <b-button v-if="isAuth" v-b-modal="'createRoyaleGroupModal'" variant="primary" size="sm" class="mb-2">Create Group</b-button>
+        <div v-else-if="myGroups" class="text-muted small">No groups yet.</div>
+        <b-button v-b-modal="'createRoyaleGroupModal'" variant="primary" size="sm" class="mb-2">Create Group</b-button>
       </b-tab>
 
       <b-tab title="Featured" title-item-class="tab-header">
@@ -32,7 +32,7 @@
             <div class="group-detail text-muted">{{ data.item.memberCount }} members</div>
           </template>
         </b-table>
-        <div v-else class="text-muted small">No featured groups.</div>
+        <div v-else-if="rulesBasedGroups" class="text-muted small">No featured groups.</div>
       </b-tab>
 
       <b-tab title="Search" title-item-class="tab-header">

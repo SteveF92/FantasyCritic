@@ -1,5 +1,6 @@
 <template>
   <b-modal id="createRoyalePublisher" ref="createRoyalePublisherRef" title="Create Publisher" @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="form-horizontal">
       <div class="form-group">
         <label for="publisherName" class="control-label">Publisher Name</label>
@@ -15,6 +16,7 @@
 import { defineComponent, type PropType } from 'vue';
 
 import { royaleClient, type CreateRoyalePublisherRequest, type RoyaleYearQuarterViewModel } from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
 interface CreateRoyalePublisherFormData {
   publisherName: string;
@@ -33,16 +35,22 @@ export default defineComponent({
   },
   methods: {
     async createRoyalePublisher(): Promise<void> {
+      this.errorInfo = '';
       const request: CreateRoyalePublisherRequest = {
         year: this.royaleYearQuarter.year,
         quarter: this.royaleYearQuarter.quarter,
         publisherName: this.publisherName.trim()
       };
-      const publisherid = await royaleClient.createRoyalePublisher(request);
-      this.$router.push({ name: 'royalePublisher', params: { publisherid: publisherid } });
+      try {
+        const publisherid = await royaleClient.createRoyalePublisher(request);
+        this.$router.push({ name: 'royalePublisher', params: { publisherid: publisherid } });
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to create publisher.');
+      }
     },
     clearData(): void {
       this.publisherName = '';
+      this.errorInfo = '';
     }
   }
 });
