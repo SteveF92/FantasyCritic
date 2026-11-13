@@ -72,7 +72,7 @@
 
       <template v-if="showGroupPointsChart">
         <div class="royale-chart-container">
-          <RoyalePublisherGraph chart-id="group-quarter-points-chart" :chart-height="650" :royale-publishers="chartMembers" />
+          <RoyalePublisherGraph :royale-publishers="chartMembers" />
         </div>
       </template>
     </div>
@@ -140,10 +140,10 @@ export default defineComponent({
       return this.allQuarters.filter((q) => q.year === this.selectedYear).sort((a, b) => a.quarter - b.quarter);
     },
     chartMembers(): RoyaleGroupMemberRankedViewModel[] {
-      if (!this.groupQuarter?.members) {
+      if (!this.groupQuarter) {
         return [];
       }
-      return this.groupQuarter.members.filter((m) => m.hasPublisher && m.publisherID && m.statistics?.length > 0);
+      return this.groupQuarter.members.filter((m) => m.hasPublisher && m.publisherID && m.statistics.length > 0);
     },
     showGroupPointsChart(): boolean {
       return this.chartMembers.length > 0;
@@ -160,6 +160,8 @@ export default defineComponent({
   methods: {
     formatCurrency,
     async fetchData(): Promise<void> {
+      this.notFound = false;
+      this.groupQuarter = null;
       try {
         const [groupQuarter, allQuarters] = await Promise.all([royaleGroupClient.getRoyaleGroupQuarter(this.groupid, this.year, this.quarter), royaleClient.royaleQuarters()]);
         this.groupQuarter = groupQuarter;

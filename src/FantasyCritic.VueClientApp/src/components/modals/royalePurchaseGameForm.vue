@@ -57,6 +57,7 @@
           <li v-for="error in purchaseResult.errors" :key="error">{{ error }}</li>
         </ul>
       </div>
+      <b-alert v-if="errorInfo" variant="danger" :model-value="true" class="purchase-error">{{ errorInfo }}</b-alert>
     </div>
   </b-modal>
 </template>
@@ -71,10 +72,10 @@ import {
   type PlayerClaimResultViewModel,
   type PossibleRoyaleMasterGameViewModel,
   type PurchaseRoyaleGameRequest,
-  type RoyalePublisherViewModel,
-  type RoyaleYearQuarterViewModel
+  type RoyalePublisherViewModel
 } from '@/api/clients';
 import type { RoyaleGamePurchase } from '@/types/vueTypes';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatCurrency } from '@/utilities/formatters';
 import PossibleRoyaleMasterGamesTable from '@/components/possibleRoyaleMasterGamesTable.vue';
 
@@ -87,6 +88,7 @@ interface RoyalePurchaseGameFormData {
   searchedTop: boolean;
   isBusy: boolean;
   releaseFilter: RoyalePossibleMasterGamesReleaseFilter;
+  errorInfo: string;
 }
 
 export default defineComponent({
@@ -101,7 +103,6 @@ export default defineComponent({
   },
   components: { PossibleRoyaleMasterGamesTable },
   props: {
-    yearQuarter: { type: Object as PropType<RoyaleYearQuarterViewModel>, required: true },
     userRoyalePublisher: { type: Object as PropType<RoyalePublisherViewModel>, required: true }
   },
   emits: {
@@ -116,7 +117,8 @@ export default defineComponent({
       searched: false,
       searchedTop: false,
       isBusy: false,
-      releaseFilter: RoyalePossibleMasterGamesReleaseFilter.All
+      releaseFilter: RoyalePossibleMasterGamesReleaseFilter.All,
+      errorInfo: ''
     };
   },
   computed: {
@@ -141,8 +143,14 @@ export default defineComponent({
       this.searchedTop = false;
       this.purchaseResult = null;
       this.possibleMasterGames = [];
+      this.errorInfo = '';
 
-      this.possibleMasterGames = await royaleClient.possibleMasterGames(this.searchGameName || null, this.userRoyalePublisher.publisherID, this.releaseFilter);
+      try {
+        this.possibleMasterGames = await royaleClient.possibleMasterGames(this.searchGameName || null, this.userRoyalePublisher.publisherID, this.releaseFilter);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
+        return;
+      }
       this.searched = true;
       this.purchaseRoyaleGame = null;
       if (!this.searchGameName) {
@@ -156,6 +164,7 @@ export default defineComponent({
       }
 
       this.isBusy = true;
+      this.errorInfo = '';
 
       const request: PurchaseRoyaleGameRequest = {
         publisherID: this.userRoyalePublisher.publisherID,
@@ -163,7 +172,13 @@ export default defineComponent({
         expectedCost: purchaseRoyaleGame.cost
       };
 
-      this.purchaseResult = await royaleClient.purchaseGame(request);
+      try {
+        this.purchaseResult = await royaleClient.purchaseGame(request);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to purchase the game.');
+        this.isBusy = false;
+        return;
+      }
       if (!this.purchaseResult.success) {
         this.isBusy = false;
         return;

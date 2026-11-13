@@ -1,6 +1,6 @@
 <template>
   <b-modal id="royaleGroupInviteLinksModal" ref="royaleGroupInviteLinksRef" title="Invite Links" @show="fetchInviteLinks" no-footer>
-    <div v-if="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <label>Send one of these links to anyone you want to invite to the group.</label>
     <div v-for="link in activeLinks" :key="link.inviteID" class="invite-link">
       <input type="text" class="form-control input" :value="inviteLinkUrl(link.inviteCode)" readonly />
@@ -44,8 +44,9 @@ export default defineComponent({
       this.errorInfo = '';
       try {
         this.inviteLinks = await royaleGroupClient.getGroupInviteLinks(this.groupid);
-      } catch {
+      } catch (error) {
         this.inviteLinks = [];
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load invite links.');
       }
     },
     inviteLinkUrl(inviteCode: string): string {

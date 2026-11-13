@@ -43,6 +43,7 @@ export default defineComponent({
   },
   methods: {
     async changePublisherName(): Promise<void> {
+      this.errorInfo = '';
       const request: ChangeRoyalePublisherNameRequest = {
         publisherID: this.userRoyalePublisher.publisherID,
         publisherName: this.newPublisherName
@@ -57,6 +58,7 @@ export default defineComponent({
     },
     clearData(): void {
       this.newPublisherName = this.userRoyalePublisher.publisherName;
+      this.errorInfo = '';
     }
   }
 });

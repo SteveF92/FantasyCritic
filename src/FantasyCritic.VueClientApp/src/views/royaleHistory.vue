@@ -35,6 +35,7 @@
       </div>
       <div v-else class="alert alert-info history-table-area">This player has no Royale history yet.</div>
     </div>
+    <b-alert v-else-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div v-else class="spinner">
       <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#D6993A' }" />
     </div>
@@ -47,9 +48,11 @@ import type { TableField } from 'bootstrap-vue-next';
 
 import { royaleClient, type RoyalePublisherHistoryViewModel, type UserRoyaleHistoryViewModel } from '@/api/clients';
 import { numericComparer } from '@/globalFunctions';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatScore } from '@/utilities/formatters';
 
 interface RoyaleHistoryData {
+  errorInfo: string;
   historyData: UserRoyaleHistoryViewModel | null;
 }
 
@@ -69,6 +72,7 @@ export default defineComponent({
   },
   data(): RoyaleHistoryData {
     return {
+      errorInfo: '',
       historyData: null
     };
   },
@@ -83,10 +87,12 @@ export default defineComponent({
   methods: {
     formatScore,
     async fetchHistory(): Promise<void> {
+      this.errorInfo = '';
+      this.historyData = null;
       try {
         this.historyData = await royaleClient.userRoyaleHistory(this.userid);
-      } catch {
-        this.historyData = null;
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load Royale history.');
       }
     }
   }

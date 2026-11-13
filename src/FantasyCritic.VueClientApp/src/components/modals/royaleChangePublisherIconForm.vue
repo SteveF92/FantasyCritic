@@ -59,6 +59,7 @@ export default defineComponent({
   },
   methods: {
     async changePublisherIcon(): Promise<void> {
+      this.errorInfo = '';
       const request: ChangeRoyalePublisherIconRequest = {
         publisherID: this.userRoyalePublisher.publisherID,
         publisherIcon: this.newPublisherIcon
@@ -74,6 +75,7 @@ export default defineComponent({
     },
     clearData(): void {
       this.newPublisherIcon = this.userRoyalePublisher.publisherIcon;
+      this.errorInfo = '';
     }
   }
 });

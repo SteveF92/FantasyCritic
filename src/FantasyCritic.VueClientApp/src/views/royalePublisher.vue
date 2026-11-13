@@ -20,7 +20,7 @@
         <h4>Rank: {{ publisher.ranking ?? '--' }}</h4>
       </div>
 
-      <div v-if="publisher.quartersWon" class="won-quarters">
+      <div v-if="publisher.quartersWon.length > 0" class="won-quarters">
         <span v-for="quarter in publisher.quartersWon" :key="`${quarter.year}-${quarter.quarter}`" class="badge badge-success">
           <font-awesome-icon icon="crown" class="quarter-winner-crown" />
           {{ quarter.year }}-Q{{ quarter.quarter }} Winner
@@ -40,7 +40,7 @@
             <b-button v-if="isPlusUser" v-b-modal="'royaleChangePublisherIconForm'" variant="secondary" class="action-button">Change Publisher Icon</b-button>
             <b-button v-if="isPlusUser" v-b-modal="'royaleChangePublisherSloganForm'" variant="secondary" class="action-button">Change Publisher Slogan</b-button>
 
-            <royalePurchaseGameForm :year-quarter="publisher.yearQuarter" :user-royale-publisher="publisher" @gamePurchased="gamePurchased"></royalePurchaseGameForm>
+            <royalePurchaseGameForm :user-royale-publisher="publisher" @gamePurchased="gamePurchased"></royalePurchaseGameForm>
             <royaleChangePublisherNameForm :user-royale-publisher="publisher" @publisherNameChanged="publisherNameChanged"></royaleChangePublisherNameForm>
             <royaleChangePublisherIconForm :user-royale-publisher="publisher" @publisherIconChanged="publisherIconChanged"></royaleChangePublisherIconForm>
             <royaleChangePublisherSloganForm :user-royale-publisher="publisher" @publisherSloganChanged="publisherSloganChanged"></royaleChangePublisherSloganForm>
@@ -49,14 +49,14 @@
       </div>
 
       <hr />
-      <div v-if="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
+      <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
       <h2>Games</h2>
       <b-table v-if="publisher.publisherGames.length !== 0" striped bordered small responsive :items="publisher.publisherGames" :fields="allGameFields" :tbody-tr-class="publisherGameRowClass">
         <template #cell(masterGame.gameName)="data">
           <template v-if="data.item.masterGame">
             <span class="master-game-popover">
-              <masterGamePopover :master-game="data.item.masterGame" :currently-ineligible="data.item.currentlyIneligible"></masterGamePopover>
+              <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
             </span>
 
             <span v-if="data.item.currentlyIneligible" class="game-ineligible">
@@ -119,6 +119,7 @@
 
       <sellRoyaleGameModal :publisher-game="gameToModify" @sellGame="sellGame"></sellRoyaleGameModal>
     </div>
+    <b-alert v-else-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
     <b-modal id="setAdvertisingMoneyModal" ref="setAdvertisingMoneyModalRef" title="Set Advertising Budget" @ok="setBudget">
       <div v-if="gameToModify">
@@ -133,14 +134,14 @@
         <div class="form-group row">
           <label for="advertisingBudgetToSet" class="col-sm-2 col-form-label">Budget</label>
           <div class="col-sm-10">
-            <input v-model="advertisingBudgetToSet" class="form-control" />
+            <input id="advertisingBudgetToSet" v-model.number="advertisingBudgetToSet" type="number" min="0" max="10" class="form-control" />
           </div>
         </div>
       </div>
     </b-modal>
 
     <div v-if="publisher && publisher.statistics.length > 0" class="royale-chart-container">
-      <RoyalePublisherGraph chart-id="publisher-stats" :chart-height="425" :royale-publishers="[publisher]"></RoyalePublisherGraph>
+      <RoyalePublisherGraph :royale-publishers="[publisher]"></RoyalePublisherGraph>
     </div>
 
     <div v-if="publisher && publisher.publisherActions.length > 0">
@@ -326,6 +327,7 @@ export default defineComponent({
         return;
       }
 
+      this.errorInfo = '';
       const request: SellRoyaleGameRequest = {
         publisherID: this.publisher.publisherID,
         masterGameID: this.gameToModify.masterGame.masterGameID,
@@ -353,6 +355,7 @@ export default defineComponent({
         return;
       }
 
+      this.errorInfo = '';
       const request: SetAdvertisingMoneyRequest = {
         publisherID: this.publisher.publisherID,
         masterGameID: this.gameToModify.masterGame.masterGameID,
@@ -373,9 +376,6 @@ export default defineComponent({
         return DateTime.fromISO(game.releaseDate).toFormat('yyyy-MM-dd');
       }
       return game.estimatedReleaseDate + ' (Estimated)';
-    },
-    openCriticLink(game: MasterGameYearViewModel): string {
-      return `https://opencritic.com/game/${game.openCriticID}/${game.openCriticSlug ?? 'b'}`;
     },
     publisherGameRowClass(item: RoyalePublisherGameViewModel | null, type: TableRowType): TableStrictClassValue {
       if (!item || type !== 'row') {

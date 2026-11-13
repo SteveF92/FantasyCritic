@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+    <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="possible-royale-master-games-table"></b-pagination>
 
-    <b-table small bordered striped responsive :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage">
+    <b-table id="possible-royale-master-games-table" small bordered striped responsive :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage">
       <template #cell(masterGame.gameName)="data">
         <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
       </template>
@@ -39,8 +39,6 @@ import StatusBadge from '@/components/statusBadge.vue';
 
 interface PossibleRoyaleMasterGamesTableData {
   currentPage: number;
-  selectedPossibleRoyaleGame: PossibleRoyaleMasterGameViewModel | null;
-  lastPopoverShown: unknown;
 }
 
 export default defineComponent({
@@ -70,9 +68,7 @@ export default defineComponent({
   },
   data(): PossibleRoyaleMasterGamesTableData {
     return {
-      currentPage: 1,
-      selectedPossibleRoyaleGame: null,
-      lastPopoverShown: null
+      currentPage: 1
     };
   },
   computed: {
@@ -84,29 +80,13 @@ export default defineComponent({
     formatCurrency,
     formatScore,
     selectGame(possibleRoyaleGame: PossibleRoyaleMasterGameViewModel): void {
-      this.selectedPossibleRoyaleGame = possibleRoyaleGame;
-      this.$emit('update:modelValue', this.selectedPossibleRoyaleGame);
+      this.$emit('update:modelValue', possibleRoyaleGame);
     }
   }
 });
 </script>
 <style scoped>
-.fake-link {
-  text-decoration: underline;
-  cursor: pointer;
-}
-
 .release-date {
   font-weight: bold;
-}
-
-.select-cell {
-  text-align: center;
-}
-
-@media only screen and (max-width: 450px) {
-  .no-mobile {
-    display: none;
-  }
 }
 </style>

@@ -1,5 +1,6 @@
 <template>
   <b-modal id="royaleChangePublisherSloganForm" ref="changeRoyalePublisherSloganRef" title="Change Publisher Slogan" @hidden="clearData" @show="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-info">Your publisher slogan is a 'tagline' that you can choose to add to your publisher. Think of it like a "corporate motto".</div>
     <div class="form-horizontal">
       <div class="form-group">
@@ -12,11 +13,13 @@
     </template>
   </b-modal>
 </template>
+
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 import type { BModal } from 'bootstrap-vue-next';
 
 import { royaleClient, type ChangeRoyalePublisherSloganRequest, type RoyalePublisherViewModel } from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
 interface RoyaleChangePublisherSloganFormData {
   newPublisherSlogan: string | undefined;
@@ -40,21 +43,23 @@ export default defineComponent({
     this.clearData();
   },
   methods: {
-    changePublisherSlogan(): void {
+    async changePublisherSlogan(): Promise<void> {
+      this.errorInfo = '';
       const request: ChangeRoyalePublisherSloganRequest = {
         publisherID: this.userRoyalePublisher.publisherID,
         publisherSlogan: this.newPublisherSlogan
       };
-      royaleClient
-        .changePublisherSlogan(request)
-        .then(() => {
-          (this.$refs.changeRoyalePublisherSloganRef as InstanceType<typeof BModal> | undefined)?.hide();
-          this.$emit('publisherSloganChanged');
-        })
-        .catch(() => {});
+      try {
+        await royaleClient.changePublisherSlogan(request);
+        (this.$refs.changeRoyalePublisherSloganRef as InstanceType<typeof BModal> | undefined)?.hide();
+        this.$emit('publisherSloganChanged');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error);
+      }
     },
     clearData(): void {
       this.newPublisherSlogan = this.userRoyalePublisher.publisherSlogan;
+      this.errorInfo = '';
     }
   }
 });

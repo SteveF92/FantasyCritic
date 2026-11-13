@@ -1,6 +1,7 @@
 <template>
   <div class="col-md-10 offset-md-1 col-sm-12">
     <div v-if="joinMessage" class="alert" :class="joinSuccess ? 'alert-success' : 'alert-danger'">{{ joinMessage }}</div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
     <div v-if="group">
       <div v-if="pendingInviteCode && isAuth && !isMember" class="alert alert-info">
@@ -99,6 +100,7 @@ interface RoyaleGroupData {
   notFound: boolean;
   joinMessage: string | null;
   joinSuccess: boolean;
+  errorInfo: string;
   sortBy: BTableSortBy[];
 }
 
@@ -160,6 +162,7 @@ export default defineComponent({
       notFound: false,
       joinMessage: null,
       joinSuccess: false,
+      errorInfo: '',
       sortBy: [{ key: 'averageRankWithinGroup', order: 'asc' }]
     };
   },
@@ -211,9 +214,7 @@ export default defineComponent({
   },
   methods: {
     formatAverageRank(value: number): string {
-      const n = Number(value);
-      if (Number.isNaN(n)) return '--';
-      return n.toFixed(2);
+      return value.toFixed(2);
     },
     async fetchData(): Promise<void> {
       try {
@@ -228,14 +229,26 @@ export default defineComponent({
     async removeMember(userID: string): Promise<void> {
       const confirmed = await this.confirm('Are you sure you want to remove this member?');
       if (!confirmed) return;
+      this.errorInfo = '';
       const request: RemoveRoyaleGroupMemberRequest = { groupID: this.groupid, userID };
-      await royaleGroupClient.removeMember(request);
+      try {
+        await royaleGroupClient.removeMember(request);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to remove the member.');
+        return;
+      }
       await this.fetchData();
     },
     async leaveGroup(): Promise<void> {
       const confirmed = await this.confirm('Are you sure you want to leave this group?');
       if (!confirmed) return;
-      await royaleGroupClient.leaveGroup(this.groupid);
+      this.errorInfo = '';
+      try {
+        await royaleGroupClient.leaveGroup(this.groupid);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to leave the group.');
+        return;
+      }
       this.$router.push({ name: 'criticsRoyale' });
     },
     async joinViaInviteLink(): Promise<void> {
