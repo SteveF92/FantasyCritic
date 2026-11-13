@@ -101,8 +101,8 @@ export default defineComponent({
     groupQuarterLink(groupID: string): RouteLocationRaw {
       return { name: 'royaleGroupQuarter', params: { groupid: groupID, year: this.year, quarter: this.quarter } };
     },
-    onSearchInput(value: string): void {
-      this.$emit('search-query-change', value);
+    onSearchInput(value: string | number | null): void {
+      this.$emit('search-query-change', String(value ?? ''));
     },
     emitSearchRequest(): void {
       this.$emit('search-request');

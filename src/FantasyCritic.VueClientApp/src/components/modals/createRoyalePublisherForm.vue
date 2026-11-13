@@ -32,18 +32,14 @@ export default defineComponent({
     };
   },
   methods: {
-    createRoyalePublisher(): void {
+    async createRoyalePublisher(): Promise<void> {
       const request: CreateRoyalePublisherRequest = {
         year: this.royaleYearQuarter.year,
         quarter: this.royaleYearQuarter.quarter,
         publisherName: this.publisherName.trim()
       };
-      royaleClient
-        .createRoyalePublisher(request)
-        .then((publisherid) => {
-          this.$router.push({ name: 'royalePublisher', params: { publisherid: publisherid } });
-        })
-        .catch(() => {});
+      const publisherid = await royaleClient.createRoyalePublisher(request);
+      this.$router.push({ name: 'royalePublisher', params: { publisherid: publisherid } });
     },
     clearData(): void {
       this.publisherName = '';
