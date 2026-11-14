@@ -129,7 +129,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
 
-import { LeagueDraftViewModel, LeagueViewModel, LeagueYearSettingsViewModel, SupportedYearViewModel } from '@/api/clients';
+import { LeagueDraftViewModel, LeagueViewModel, LeagueYearSettingsResponse, SupportedYearViewModel } from '@/api/clients';
 import { formatLongDate } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { formatScore, formatYesNo, selectTextFromPossibleOptions } from '@/utilities/formatters';
@@ -140,7 +140,7 @@ export default defineComponent({
     MasterGameTagBadge
   },
   props: {
-    leagueYearOptions: { type: Object as PropType<LeagueYearSettingsViewModel>, required: true },
+    leagueYearOptions: { type: Object as PropType<LeagueYearSettingsResponse>, required: true },
     league: { type: Object as PropType<LeagueViewModel>, required: false },
     drafts: { type: Array as PropType<LeagueDraftViewModel[]>, required: false, default: () => [] },
     supportedYear: { type: Object as PropType<SupportedYearViewModel>, required: true },
