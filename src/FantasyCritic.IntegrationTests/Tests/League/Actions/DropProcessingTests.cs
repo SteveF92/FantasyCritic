@@ -18,6 +18,7 @@ public class DropProcessingTests : IntegrationTestBase
     private sealed record DropTargets(
         Guid P1DropMasterGameID,
         Guid P1DropPublisherGameID,
+        Guid? P1DropDraftID,
         Guid P2DropMasterGameID,
         Guid P2DropPublisherGameID,
         Guid P2BidTargetMasterGameID,
@@ -71,6 +72,7 @@ public class DropProcessingTests : IntegrationTestBase
         _targets = new DropTargets(
             p1DropGame.MasterGame!.MasterGameID,
             p1DropGame.PublisherGameID,
+            p1DropGame.DraftID,
             p2DropGame.MasterGame!.MasterGameID,
             p2DropGame.PublisherGameID,
             p2BidTargetMasterGameID,
@@ -155,6 +157,15 @@ public class DropProcessingTests : IntegrationTestBase
             p1.FormerGames.Any(g => g.MasterGame?.MasterGameID == _targets.P1DropMasterGameID),
             Is.True,
             "P1's standalone-dropped game should appear in FormerGames.");
+    }
+
+    [Test]
+    public void Drop_Standalone_P1_FormerGame_KeepsDraftID()
+    {
+        var p1 = _postProcessingSnapshot.Publishers.Single(p => p.PublisherID == _league.Publishers[0].PublisherID);
+        var formerGame = p1.FormerGames.Single(g => g.MasterGame?.MasterGameID == _targets.P1DropMasterGameID);
+        Assert.That(formerGame.DraftID, Is.Not.Null.And.EqualTo(_targets.P1DropDraftID),
+            "P1's dropped game should keep the draft it was picked in.");
     }
 
     [Test]
