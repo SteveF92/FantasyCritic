@@ -23,7 +23,6 @@ public class DeleteLeagueTests : IntegrationTestBase
         TiebreakSystem = "LowestProjectedPoints",
         ReleaseSystem = "OnlyNeedsScore",
         IneligibleGameSystem = "DroppableAsWillNotRelease",
-        HasSpecialSlots = true,
         SpecialGameSlots =
         [
             new SpecialGameSlotViewModel { SpecialSlotPosition = 0, RequiredTags = ["NewGame"] },

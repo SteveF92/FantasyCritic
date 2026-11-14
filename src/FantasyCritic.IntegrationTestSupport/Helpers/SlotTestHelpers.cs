@@ -47,7 +47,6 @@ public static class SlotTestHelpers
             TiebreakSystem = "LowestProjectedPoints",
             ReleaseSystem = "MustBeReleased",
             IneligibleGameSystem = "DroppableAsWillNotRelease",
-            HasSpecialSlots = specialSlotTags.Count > 0,
             SpecialGameSlots = specialSlotTags
                 .Select((tags, position) => new SpecialGameSlotViewModel { SpecialSlotPosition = position, RequiredTags = tags.ToList() })
                 .ToList(),
@@ -123,9 +122,9 @@ public static class SlotTestHelpers
             AllowIneligibleSlot = false,
         });
 
-    public static async Task EditSettingsAsync(LeagueFixture league, Action<LeagueYearSettingsViewModel> change)
+    public static async Task EditSettingsAsync(LeagueFixture league, Action<LeagueYearSettingsRequest> change)
     {
-        var settings = await league.Manager.League.GetLeagueYearOptionsAsync(league.LeagueID, league.Year);
+        var settings = (await league.Manager.League.GetLeagueYearOptionsAsync(league.LeagueID, league.Year)).ToRequest();
         change(settings);
         await league.Manager.LeagueManager.EditLeagueYearSettingsAsync(new EditLeagueYearRequest
         {

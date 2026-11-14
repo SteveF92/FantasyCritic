@@ -38,7 +38,6 @@ public class SpecialSlotRemovalTests : IntegrationTestBase
         TiebreakSystem = "LowestProjectedPoints",
         ReleaseSystem = "OnlyNeedsScore",
         IneligibleGameSystem = "DroppableAsWillNotRelease",
-        HasSpecialSlots = true,
         SpecialGameSlots =
         [
             new SpecialGameSlotViewModel { SpecialSlotPosition = 0, RequiredTags = ["NewGame"] },
@@ -71,7 +70,7 @@ public class SpecialSlotRemovalTests : IntegrationTestBase
 
         await RemoveSpecialSlotsAsync(league, keep: 2);
 
-        var settings = await league.Manager.League.GetLeagueYearOptionsAsync(league.LeagueID, league.Year);
+        var settings = (await league.Manager.League.GetLeagueYearOptionsAsync(league.LeagueID, league.Year)).ToRequest();
         settings.StandardGames += 2;
         await league.Manager.LeagueManager.EditLeagueYearSettingsAsync(new EditLeagueYearRequest
         {
@@ -89,7 +88,7 @@ public class SpecialSlotRemovalTests : IntegrationTestBase
 
     private static async Task RemoveSpecialSlotsAsync(LeagueFixture league, int keep)
     {
-        var settings = await league.Manager.League.GetLeagueYearOptionsAsync(league.LeagueID, league.Year);
+        var settings = (await league.Manager.League.GetLeagueYearOptionsAsync(league.LeagueID, league.Year)).ToRequest();
         settings.SpecialGameSlots = settings.SpecialGameSlots.OrderBy(slot => slot.SpecialSlotPosition).Take(keep).ToList();
         await league.Manager.LeagueManager.EditLeagueYearSettingsAsync(new EditLeagueYearRequest
         {

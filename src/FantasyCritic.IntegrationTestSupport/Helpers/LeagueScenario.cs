@@ -48,16 +48,14 @@ public sealed class LeagueScenario
     public string IneligibleGameSystem { get; init; } = "DroppableAsWillNotRelease";
 
     // Special slots — none by default
-    public bool HasSpecialSlots { get; init; } = false;
     public IReadOnlyList<SpecialGameSlotViewModel> SpecialGameSlots { get; init; } = [];
 
     /// <summary>
-    /// Builds the <see cref="LeagueYearSettingsViewModel"/> request body for the given year.
+    /// Builds the <see cref="LeagueYearSettingsRequest"/> request body for the given year.
     /// </summary>
-    public LeagueYearSettingsViewModel BuildSettings(int year) =>
+    public LeagueYearSettingsRequest BuildSettings(int year) =>
         new()
         {
-            LeagueID = Guid.Empty,
             Year = year,
             LeagueYearName = null,
             StandardGames = StandardGames,
@@ -85,7 +83,6 @@ public sealed class LeagueScenario
             CounterPickDeadline = new DateTimeOffset(year, 12, 1, 0, 0, 0, TimeSpan.Zero),
             MightReleaseDroppableDate = null,
             Tags = new LeagueTagOptionsViewModel { Banned = [], Required = [] },
-            HasSpecialSlots = HasSpecialSlots,
             SpecialGameSlots = SpecialGameSlots.ToList(),
         };
 

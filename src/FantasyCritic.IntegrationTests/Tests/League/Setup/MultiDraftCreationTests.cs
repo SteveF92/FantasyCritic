@@ -98,7 +98,7 @@ public class MultiDraftCreationTests : IntegrationTestBase
         var year = await LeagueTestHelpers.GetOpenYearAsync(session);
         var leagueID = await LeagueTestHelpers.CreateLeagueAsync(session, LeagueScenarios.Standard, year);
 
-        var settings = await session.League.GetLeagueYearOptionsAsync(leagueID, year);
+        var settings = (await session.League.GetLeagueYearOptionsAsync(leagueID, year)).ToRequest();
 
         await session.LeagueManager.EditLeagueYearSettingsAsync(new EditLeagueYearRequest
         {
@@ -145,7 +145,7 @@ public class MultiDraftCreationTests : IntegrationTestBase
         var originalLeagueYear = await session.League.GetLeagueYearAsync(leagueID, year, null);
         var originalGamesToDraft = originalLeagueYear.Drafts.Single(d => d.DraftNumber == 1).GamesToDraft;
 
-        var settings = await session.League.GetLeagueYearOptionsAsync(leagueID, year);
+        var settings = (await session.League.GetLeagueYearOptionsAsync(leagueID, year)).ToRequest();
 
         // Send FirstDraft with different counts — should be silently ignored for multi-draft leagues
         await session.LeagueManager.EditLeagueYearSettingsAsync(new EditLeagueYearRequest
