@@ -1,12 +1,11 @@
 using FantasyCritic.Lib.Domain.Requests;
-using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Requests.LeagueManager;
 
 public class EditLeagueYearRequest
 {
     public EditLeagueYearRequest(Guid leagueID, int year, string? leagueYearName,
-        LeagueYearSettingsViewModel leagueYearSettings, DraftSettingsRequest? firstDraft)
+        LeagueYearSettingsRequest leagueYearSettings, DraftSettingsRequest? firstDraft)
     {
         LeagueID = leagueID;
         Year = year;
@@ -18,7 +17,7 @@ public class EditLeagueYearRequest
     public Guid LeagueID { get; }
     public int Year { get; }
     public string? LeagueYearName { get; }
-    public LeagueYearSettingsViewModel LeagueYearSettings { get; }
+    public LeagueYearSettingsRequest LeagueYearSettings { get; }
     public DraftSettingsRequest? FirstDraft { get; }
 
     public Result IsValid() => LeagueYearSettings.IsValid();
@@ -30,7 +29,7 @@ public class EditLeagueYearRequest
         var reconciledSlots = ReconcileOldAndNewSlots(existingLeagueYear.Options.LeagueSlots, parsed.LeagueSlots);
 
         var settings = new LeagueYearParameters(
-            LeagueID, Year, LeagueYearName,
+            Year, LeagueYearName,
             parsed.UnrestrictedReleaseStatusDroppableGames,
             parsed.WillNotReleaseDroppableGames,
             parsed.WillReleaseDroppableGames,

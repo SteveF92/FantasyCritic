@@ -4,7 +4,6 @@ using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Lib.Utilities;
 using FantasyCritic.Web.Models.Responses.AllTimeStats;
-using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Responses;
 
@@ -45,7 +44,7 @@ public class ConsolidatedLeagueYearViewModel
         LeagueID = leagueYear.League.LeagueID;
         Year = leagueYear.Year;
         SupportedYear = new SupportedYearViewModel(leagueYear.SupportedYear);
-        Settings = new LeagueYearSettingsViewModel(leagueYear);
+        Settings = new LeagueYearSettingsResponse(leagueYear);
 
         IReadOnlyDictionary<PublisherGame, Publisher> counterPickedByDictionary = GameUtilities.GetCounterPickedByDictionary(leagueYear);
         List<FantasyCriticUser> activePublisherUsers = leagueYear.Publishers.Where(x => x.User is not null).Select(x => x.User!).ToList();
@@ -119,7 +118,7 @@ public class ConsolidatedLeagueYearViewModel
     public Guid LeagueID { get; }
     public int Year { get; }
     public SupportedYearViewModel SupportedYear { get; }
-    public LeagueYearSettingsViewModel Settings { get; }
+    public LeagueYearSettingsResponse Settings { get; }
     public PublisherSlotRequirementsViewModel SlotInfo { get; }
     public IReadOnlyList<PlayerWithPublisherViewModel> Players { get; }
     public IReadOnlyList<PublisherViewModel> Publishers { get; }

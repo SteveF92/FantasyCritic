@@ -2,7 +2,6 @@ using FantasyCritic.Lib.Domain.Combinations;
 using FantasyCritic.Lib.Domain.Draft;
 using FantasyCritic.Lib.Extensions;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Responses;
 
@@ -18,7 +17,7 @@ public class LeagueYearViewModel
         LeagueID = leagueYear.League.LeagueID;
         Year = leagueYear.Year;
         SupportedYear = new SupportedYearViewModel(leagueYear.SupportedYear);
-        Settings = new LeagueYearSettingsViewModel(leagueYear);
+        Settings = new LeagueYearSettingsResponse(leagueYear);
         UnlinkedGameExists = leagueYear.Publishers.SelectMany(x => x.PublisherGames).Any(x => x.MasterGame is null);
 
         if (accessingUser is not null)
@@ -156,7 +155,7 @@ public class LeagueYearViewModel
     public Guid LeagueID { get; }
     public int Year { get; }
     public SupportedYearViewModel SupportedYear { get; }
-    public LeagueYearSettingsViewModel Settings { get; }
+    public LeagueYearSettingsResponse Settings { get; }
     public PublisherSlotRequirementsViewModel SlotInfo { get; }
     public IReadOnlyList<LeagueDraftViewModel> Drafts { get; }
     public bool EnableBids { get; }

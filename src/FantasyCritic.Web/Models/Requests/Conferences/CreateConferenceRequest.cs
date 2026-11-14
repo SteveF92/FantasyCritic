@@ -2,14 +2,13 @@ using FantasyCritic.Lib.Domain.Conferences;
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Identity;
 using FantasyCritic.Web.Models.Requests.LeagueManager;
-using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Requests.Conferences;
 
 public class CreateConferenceRequest
 {
     public CreateConferenceRequest(string conferenceName, string primaryLeagueName, bool customRulesConference,
-        LeagueYearSettingsViewModel leagueYearSettings, IReadOnlyList<DraftSettingsRequest> drafts)
+        LeagueYearSettingsRequest leagueYearSettings, IReadOnlyList<DraftSettingsRequest> drafts)
     {
         ConferenceName = conferenceName;
         PrimaryLeagueName = primaryLeagueName;
@@ -21,7 +20,7 @@ public class CreateConferenceRequest
     public string ConferenceName { get; }
     public string PrimaryLeagueName { get; }
     public bool CustomRulesConference { get; }
-    public LeagueYearSettingsViewModel LeagueYearSettings { get; }
+    public LeagueYearSettingsRequest LeagueYearSettings { get; }
     public IReadOnlyList<DraftSettingsRequest> Drafts { get; }
 
     public Result IsValid()

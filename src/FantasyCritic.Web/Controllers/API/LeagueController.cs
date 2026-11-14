@@ -23,7 +23,6 @@ using FantasyCritic.Web.Models.Requests.League.Trades;
 using FantasyCritic.Web.Models.Requests.Shared;
 using FantasyCritic.Web.Models.Responses;
 using FantasyCritic.Web.Models.Responses.AllTimeStats;
-using FantasyCritic.Web.Models.RoundTrip;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -637,11 +636,11 @@ public class LeagueController : BaseLeagueController
 
     [HttpGet]
     [AllowAnonymous]
-    [ProducesResponseType<LeagueYearSettingsViewModel>(StatusCodes.Status200OK)]
+    [ProducesResponseType<LeagueYearSettingsResponse>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
-    public async Task<ActionResult<LeagueYearSettingsViewModel>> GetLeagueYearOptions(Guid leagueID, int year)
+    public async Task<ActionResult<LeagueYearSettingsResponse>> GetLeagueYearOptions(Guid leagueID, int year)
     {
         var leagueYearRecord = await GetExistingLeagueYear(leagueID, year, ActionProcessingModeBehavior.Allow, RequiredRelationship.AllowAnonymous, RequiredYearStatus.Any);
         if (leagueYearRecord.FailedResult is not null)
@@ -658,7 +657,7 @@ public class LeagueController : BaseLeagueController
             return UnauthorizedOrForbid(validResult.CurrentUser is not null);
         }
 
-        var leagueViewModel = new LeagueYearSettingsViewModel(leagueYear);
+        var leagueViewModel = new LeagueYearSettingsResponse(leagueYear);
         return leagueViewModel;
     }
 

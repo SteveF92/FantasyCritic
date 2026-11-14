@@ -1,13 +1,12 @@
 using FantasyCritic.Lib.Domain.Requests;
 using FantasyCritic.Lib.Identity;
-using FantasyCritic.Web.Models.RoundTrip;
 
 namespace FantasyCritic.Web.Models.Requests.LeagueManager;
 
 public class CreateLeagueRequest
 {
     public CreateLeagueRequest(string leagueName, bool publicLeague, bool testLeague, bool customRulesLeague,
-        LeagueYearSettingsViewModel leagueYearSettings, IReadOnlyList<DraftSettingsRequest> drafts)
+        LeagueYearSettingsRequest leagueYearSettings, IReadOnlyList<DraftSettingsRequest> drafts)
     {
         LeagueName = leagueName;
         PublicLeague = publicLeague;
@@ -21,7 +20,7 @@ public class CreateLeagueRequest
     public bool PublicLeague { get; }
     public bool TestLeague { get; }
     public bool CustomRulesLeague { get; }
-    public LeagueYearSettingsViewModel LeagueYearSettings { get; }
+    public LeagueYearSettingsRequest LeagueYearSettings { get; }
     public IReadOnlyList<DraftSettingsRequest> Drafts { get; }
 
     public Result IsValid()
