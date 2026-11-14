@@ -3711,9 +3711,9 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
     {
         const string sql =
             "insert into tbl_league_formerpublishergame (PublisherGameID,PublisherID,GameName,Timestamp,CounterPick,ManualCriticScore," +
-            "ManualWillNotRelease,FantasyPoints,MasterGameID,PickNumber,OverallPickNumber,BidAmount,AcquiredInTradeID,RemovedTimestamp,RemovedNote) VALUES " +
+            "ManualWillNotRelease,FantasyPoints,MasterGameID,PickNumber,OverallPickNumber,DraftID,BidAmount,AcquiredInTradeID,RemovedTimestamp,RemovedNote) VALUES " +
             "(@PublisherGameID,@PublisherID,@GameName,@Timestamp,@CounterPick,@ManualCriticScore," +
-            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@PickNumber,@OverallPickNumber,@BidAmount,@AcquiredInTradeID,@RemovedTimestamp,@RemovedNote);";
+            "@ManualWillNotRelease,@FantasyPoints,@MasterGameID,@PickNumber,@OverallPickNumber,@DraftID,@BidAmount,@AcquiredInTradeID,@RemovedTimestamp,@RemovedNote);";
         var entities = publisherGames.Select(x => new FormerPublisherGameEntity(x));
         return connection.ExecuteAsync(sql, entities, transaction);
     }

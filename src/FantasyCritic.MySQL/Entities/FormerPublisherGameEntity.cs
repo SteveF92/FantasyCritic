@@ -48,6 +48,7 @@ public class FormerPublisherGameEntity
         }
 
         BidAmount = publisherGame.BidAmount;
+        AcquiredInTradeID = publisherGame.AcquiredInTradeID;
         RemovedTimestamp = publisherGame.RemovedTimestamp;
         RemovedNote = publisherGame.RemovedNote;
     }
