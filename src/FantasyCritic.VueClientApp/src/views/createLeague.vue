@@ -115,7 +115,7 @@ import { leagueManagerClient, type CreateLeagueRequest, type DraftSettingsReques
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import type { AppliedPreset } from '@/types/vueTypes';
 import { getApiErrorMessage } from '@/utilities/apiError';
-import { buildOneShotDraft, type ExperienceLevel, type GameMode } from '@/utilities/leagueCreationPresets';
+import { buildOneShotDraft, computePreset, type ExperienceLevel, type GameMode } from '@/utilities/leagueCreationPresets';
 import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
 import LeagueCreationPresets from '@/components/leagueCreationPresets.vue';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
@@ -124,7 +124,7 @@ interface CreateLeagueData {
   errorInfo: string;
   leagueName: string;
   initialYear: number;
-  leagueYearSettings: LeagueYearSettingsRequest | null;
+  leagueYearSettings: LeagueYearSettingsRequest;
   drafts: DraftSettingsRequest[];
   gameMode: GameMode;
   experienceLevel: ExperienceLevel;
@@ -141,14 +141,22 @@ export default defineComponent({
     DraftCreationSettings
   },
   data(): CreateLeagueData {
+    const initialYear = useInterLeagueStore().supportedYears.filter((x) => x.openForPlay)[0].year;
+    const defaultGameMode = 'Standard';
+    const defaultExperienceLevel = 'Standard';
+    //We don't actually want to show a default number of players, but we have to choose something here to get default values for everything.
+    //The code is just simpler if we can always assume that leagueYearSettings is valid.
+    const defaultNumberOfPlayers = 6;
+    const defaultSettings = computePreset(defaultGameMode, defaultExperienceLevel, defaultNumberOfPlayers, initialYear);
+
     return {
       errorInfo: '',
       leagueName: '',
-      initialYear: useInterLeagueStore().supportedYears.filter((x) => x.openForPlay)[0].year,
-      leagueYearSettings: null,
-      drafts: [],
-      gameMode: 'Standard',
-      experienceLevel: 'Standard',
+      initialYear: initialYear,
+      leagueYearSettings: defaultSettings.settings,
+      drafts: defaultSettings.drafts,
+      gameMode: defaultGameMode,
+      experienceLevel: defaultExperienceLevel,
       publicLeague: true,
       testLeague: false,
       customRulesLeague: false,
@@ -248,6 +256,7 @@ export default defineComponent({
   }
 });
 </script>
+
 <style scoped>
 label {
   font-size: 18px;
