@@ -18,7 +18,7 @@
         <p>This is the total number of games that each player will have on their roster.</p>
 
         <ValidationField v-slot="{ errors }" :model-value="standardGames" name="Total Number of Games" rules="required|min_value:1|max_value:50|integer">
-          <input id="standardGames" v-model="standardGames" name="Total Number of Games" type="text" class="form-control input" />
+          <input id="standardGames" v-model="standardGames" name="Total Number of Games" type="number" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
@@ -31,7 +31,7 @@
         </p>
 
         <ValidationField v-slot="{ errors }" :model-value="counterPicks" name="Number of Counter picks" rules="required|max_value:50|integer">
-          <input id="counterPicks" v-model="counterPicks" name="Number of Counter picks" type="text" class="form-control input" />
+          <input id="counterPicks" v-model="counterPicks" name="Number of Counter picks" type="number" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
@@ -90,7 +90,7 @@
         <div class="form-group">
           <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
           <ValidationField v-slot="{ errors }" :model-value="minimumBidAmount" name="Minimum Bid Amount" rules="required|min_value:0|max_value:100|integer">
-            <input id="minimumBidAmount" v-model="minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" :disabled="!enableBids" />
+            <input id="minimumBidAmount" v-model="minimumBidAmount" name="Minimum Bid Amount" type="number" class="form-control input" :disabled="!enableBids" />
             <span class="text-danger">{{ errors[0] }}</span>
           </ValidationField>
           <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
@@ -144,7 +144,7 @@
                   :model-value="willReleaseDroppableGames"
                   name="Will Release Droppable Games"
                   rules="required|max_value:100|integer">
-                  <input id="willReleaseDroppableGames" v-model="willReleaseDroppableGames" name="Will Release Droppable Games" type="text" class="form-control input drop-number" />
+                  <input id="willReleaseDroppableGames" v-model="willReleaseDroppableGames" name="Will Release Droppable Games" type="number" class="form-control input drop-number" />
                   <span class="text-danger">{{ errors[0] }}</span>
                 </ValidationField>
               </td>
@@ -161,7 +161,7 @@
                   :model-value="willNotReleaseDroppableGames"
                   name="Will Not Release Droppable Games"
                   rules="required|max_value:100|integer">
-                  <input id="willNotReleaseDroppableGames" v-model="willNotReleaseDroppableGames" name="Will Not Release Droppable Games" type="text" class="form-control input drop-number" />
+                  <input id="willNotReleaseDroppableGames" v-model="willNotReleaseDroppableGames" name="Will Not Release Droppable Games" type="number" class="form-control input drop-number" />
                   <span class="text-danger">{{ errors[0] }}</span>
                 </ValidationField>
               </td>
@@ -182,7 +182,7 @@
                     id="unrestrictedReleaseStatusDroppableGames"
                     v-model="unrestrictedReleaseStatusDroppableGames"
                     name="Unrestricted Droppable Games"
-                    type="text"
+                    type="number"
                     class="form-control input drop-number" />
                   <span class="text-danger">{{ errors[0] }}</span>
                 </ValidationField>
