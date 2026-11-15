@@ -213,25 +213,11 @@ export default defineComponent({
       this.gameMode = gameMode;
       this.experienceLevel = experienceLevel;
       if (!this.leagueYearSettings) {
-        this.leagueYearSettings = {
-          ...settings,
-          year: this.initialYear,
-          pickupSystem: 'SemiPublicBiddingSecretCounterPicks',
-          tiebreakSystem: 'LowestProjectedPoints',
-          tradingSystem: 'Standard',
-          scoringSystem: 'LinearPositive',
-          releaseSystem: 'MustBeReleased',
-          ineligibleGameSystem: 'CaseByCase',
-          enableBids: true
-        };
+        this.leagueYearSettings = settings;
       }
-      this.drafts = drafts.map((d) => ({ ...d }));
+      this.drafts = drafts;
     },
     async postRequest(): Promise<void> {
-      if (!this.leagueYearSettings) {
-        throw new Error('League year settings not initialized.');
-      }
-      this.leagueYearSettings.year = this.initialYear;
       const request: CreateLeagueRequest = {
         leagueName: this.leagueName.trim(),
         publicLeague: this.publicLeague,
