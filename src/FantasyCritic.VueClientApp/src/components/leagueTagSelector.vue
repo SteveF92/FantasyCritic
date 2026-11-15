@@ -54,18 +54,40 @@ import type { LeagueTagOptionsViewModel, MasterGameTagViewModel } from '@/api/cl
 import { intersection } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { deepClone } from '@/utilities/deepClone';
-import type { GameMode } from '@/utilities/leagueCreationPresets';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 interface TagLists {
   banned: string[];
   allowed: string[];
-  required: string[];
 }
 
 interface LeagueTagSelectorData {
   initialValue: TagLists;
   internalValue: TagLists;
+}
+
+function getInitialValue(modelValue: LeagueTagOptionsViewModel, tagOptions: MasterGameTagViewModel[]): TagLists {
+  const initialValue = {
+    banned: [] as string[],
+    allowed: [] as string[]
+  };
+
+  for (const tag of tagOptions) {
+    if (modelValue.banned.includes(tag.name)) {
+      initialValue.banned.push(tag.name);
+      continue;
+    }
+
+    initialValue.allowed.push(tag.name);
+  }
+
+  return initialValue;
+}
+
+function getInitialInternalValue(modelValue: LeagueTagOptionsViewModel, tagOptions: MasterGameTagViewModel[]): TagLists {
+  const initialValue = getInitialValue(modelValue, tagOptions);
+  const internalValue = deepClone(initialValue);
+  return internalValue;
 }
 
 export default defineComponent({
@@ -74,31 +96,24 @@ export default defineComponent({
     MasterGameTagBadge
   },
   props: {
-    modelValue: { type: Object as PropType<LeagueTagOptionsViewModel>, required: true },
-    gameMode: { type: String as PropType<GameMode>, required: true }
+    modelValue: { type: Object as PropType<LeagueTagOptionsViewModel>, required: true }
   },
   emits: {
     'update:modelValue': (_value: LeagueTagOptionsViewModel) => true
   },
   data(): LeagueTagSelectorData {
     return {
-      initialValue: {
-        banned: [],
-        allowed: [],
-        required: []
-      },
-      internalValue: {
-        banned: [],
-        allowed: [],
-        required: []
-      }
+      initialValue: getInitialValue(
+        this.modelValue,
+        useInterLeagueStore().allTags.filter((x) => !x.systemTagOnly)
+      ),
+      internalValue: getInitialInternalValue(
+        this.modelValue,
+        useInterLeagueStore().allTags.filter((x) => !x.systemTagOnly)
+      )
     };
   },
   computed: {
-    tagOptions(): MasterGameTagViewModel[] {
-      const interLeagueStore = useInterLeagueStore();
-      return interLeagueStore.allTags.filter((x) => !x.systemTagOnly);
-    },
     showWarning(): boolean {
       let recommendedAllowedTags = ['Reimagining'];
       let recommendedBannedTags = ['DirectorsCut', 'ReleasedInternationally', 'CurrentlyInEarlyAccess'];
@@ -132,39 +147,13 @@ export default defineComponent({
   },
   methods: {
     onChange(): void {
-      this.$emit('update:modelValue', this.internalValue);
+      this.$emit('update:modelValue', { banned: this.internalValue.banned, required: [] });
     },
     resetValues(): void {
       this.internalValue = deepClone(this.initialValue);
+      this.$emit('update:modelValue', { banned: this.internalValue.banned, required: [] });
     },
-    initializeValues(): void {
-      this.initialValue = {
-        banned: [],
-        allowed: [],
-        required: []
-      };
-
-      this.internalValue = {
-        banned: [],
-        allowed: [],
-        required: []
-      };
-
-      this.tagOptions.forEach((tag) => {
-        if (this.modelValue.banned.includes(tag.name)) {
-          this.initialValue.banned.push(tag.name);
-          return;
-        }
-        if (this.modelValue.required.includes(tag.name)) {
-          this.initialValue.required.push(tag.name);
-          return;
-        }
-
-        this.initialValue.allowed.push(tag.name);
-      });
-
-      this.internalValue = deepClone(this.initialValue);
-    }
+    initializeValues(): void {}
   }
 });
 </script>
