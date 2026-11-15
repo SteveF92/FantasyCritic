@@ -206,6 +206,7 @@ export default defineComponent({
       this.experienceLevel = experienceLevel;
       if (!this.leagueYearSettings) {
         this.leagueYearSettings = {
+          ...settings,
           year: this.initialYear,
           pickupSystem: 'SemiPublicBiddingSecretCounterPicks',
           tiebreakSystem: 'LowestProjectedPoints',
@@ -213,16 +214,15 @@ export default defineComponent({
           scoringSystem: 'LinearPositive',
           releaseSystem: 'MustBeReleased',
           ineligibleGameSystem: 'CaseByCase',
-          enableBids: true,
-          tags: { banned: [], required: [] },
-          specialGameSlots: []
+          enableBids: true
         };
       }
-      Object.assign(this.leagueYearSettings, settings);
-      this.leagueYearSettings.year = this.initialYear;
       this.drafts = drafts.map((d) => ({ ...d }));
     },
     async postRequest(): Promise<void> {
+      if (!this.leagueYearSettings) {
+        throw new Error('League year settings not initialized.');
+      }
       this.leagueYearSettings.year = this.initialYear;
       const request: CreateLeagueRequest = {
         leagueName: this.leagueName.trim(),
