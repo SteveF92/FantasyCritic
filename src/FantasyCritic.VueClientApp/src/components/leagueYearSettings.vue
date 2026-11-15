@@ -7,7 +7,7 @@
       </div>
     </div>
 
-    <div v-if="internalValue">
+    <div>
       <div v-if="freshSettings">
         <hr />
         <label>We've pre-filled recommended settings below. You are free to change them.</label>
@@ -17,8 +17,8 @@
         <label for="standardGames" class="control-label">Total Number of Games</label>
         <p>This is the total number of games that each player will have on their roster.</p>
 
-        <ValidationField v-slot="{ errors }" :model-value="internalValue.standardGames" name="Total Number of Games" rules="required|min_value:1|max_value:50|integer">
-          <input id="standardGames" v-model="internalValue.standardGames" name="Total Number of Games" type="text" class="form-control input" @input="autoUpdateSpecialSlotOptions()" />
+        <ValidationField v-slot="{ errors }" :model-value="standardGames" name="Total Number of Games" rules="required|min_value:1|max_value:50|integer">
+          <input id="standardGames" v-model="standardGames" name="Total Number of Games" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
@@ -30,8 +30,8 @@
           <a href="/faq#scoring" target="_blank">click here.</a>
         </p>
 
-        <ValidationField v-slot="{ errors }" :model-value="internalValue.counterPicks" name="Number of Counter picks" rules="required|max_value:50|integer">
-          <input id="counterPicks" v-model="internalValue.counterPicks" name="Number of Counter picks" type="text" class="form-control input" />
+        <ValidationField v-slot="{ errors }" :model-value="counterPicks" name="Number of Counter picks" rules="required|max_value:50|integer">
+          <input id="counterPicks" v-model="counterPicks" name="Number of Counter picks" type="text" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
@@ -50,7 +50,7 @@
         <h3>Bidding Settings</h3>
 
         <div v-if="!isStandardLeague">
-          <b-form-checkbox v-model="internalValue.enableBids">
+          <b-form-checkbox v-model="enableBids">
             <span class="checkbox-label">Enable Bids</span>
             <p>Allow players to bid on pickup games after the draft.</p>
           </b-form-checkbox>
@@ -66,13 +66,13 @@
 
         <div class="form-group">
           <label for="biddingMode" class="control-label">Bidding System</label>
-          <b-form-select id="biddingMode" v-model="biddingMode" :options="biddingModeOptions" :disabled="!internalValue.enableBids"></b-form-select>
+          <b-form-select id="biddingMode" v-model="biddingMode" :options="biddingModeOptions" :disabled="!enableBids"></b-form-select>
         </div>
 
         <div v-if="publicBiddingSelected" class="form-group">
           <label for="counterPickHandling" class="control-label">Counter Pick Bids</label>
           <p>The options below allow you to choose how counter picks are handled within the public bidding system.</p>
-          <b-form-select id="counterPickHandling" v-model="counterPickHandling" :options="counterPickHandlingOptions" :disabled="!internalValue.enableBids"></b-form-select>
+          <b-form-select id="counterPickHandling" v-model="counterPickHandling" :options="counterPickHandlingOptions" :disabled="!enableBids"></b-form-select>
 
           <div class="counter-pick-handling-description">
             <p v-if="counterPickHandling === 'SemiPublicBidding'">
@@ -89,15 +89,15 @@
 
         <div class="form-group">
           <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
-          <ValidationField v-slot="{ errors }" :model-value="internalValue.minimumBidAmount" name="Minimum Bid Amount" rules="required|min_value:0|max_value:100|integer">
-            <input id="minimumBidAmount" v-model="internalValue.minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" :disabled="!internalValue.enableBids" />
+          <ValidationField v-slot="{ errors }" :model-value="minimumBidAmount" name="Minimum Bid Amount" rules="required|min_value:0|max_value:100|integer">
+            <input id="minimumBidAmount" v-model="minimumBidAmount" name="Minimum Bid Amount" type="text" class="form-control input" :disabled="!enableBids" />
             <span class="text-danger">{{ errors[0] }}</span>
           </ValidationField>
           <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
         </div>
 
-        <div v-if="isMultiDraft && internalValue.enableBids" class="form-group">
-          <b-form-checkbox v-model="internalValue.bidsOnlyBeforeNextScheduledDraft">
+        <div v-if="isMultiDraft && enableBids" class="form-group">
+          <b-form-checkbox v-model="bidsOnlyBeforeNextScheduledDraft">
             <span class="checkbox-label">Only allow bids for games that release before the next scheduled draft</span>
             <p>
               When enabled, bids can only be placed on games whose maximum known release date falls before your next draft's scheduled date. This ensures the bidding system is used only for games that
@@ -111,7 +111,7 @@
         <hr />
         <h3>Trade Settings</h3>
         <label for="tradingSystem" class="control-label">Trading System</label>
-        <b-form-select v-model="internalValue.tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
+        <b-form-select v-model="tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
       </div>
 
       <div v-show="gameMode !== 'One Shot'">
@@ -139,53 +139,48 @@
               <th scope="row">Will Release</th>
               <td>
                 <ValidationField
-                  v-if="!internalValue.unlimitedWillReleaseDroppableGames"
+                  v-if="!unlimitedWillReleaseDroppableGames"
                   v-slot="{ errors }"
-                  :model-value="internalValue.willReleaseDroppableGames"
+                  :model-value="willReleaseDroppableGames"
                   name="Will Release Droppable Games"
                   rules="required|max_value:100|integer">
-                  <input id="willReleaseDroppableGames" v-model="internalValue.willReleaseDroppableGames" name="Will Release Droppable Games" type="text" class="form-control input drop-number" />
+                  <input id="willReleaseDroppableGames" v-model="willReleaseDroppableGames" name="Will Release Droppable Games" type="text" class="form-control input drop-number" />
                   <span class="text-danger">{{ errors[0] }}</span>
                 </ValidationField>
               </td>
               <td>
-                <b-form-checkbox v-model="internalValue.unlimitedWillReleaseDroppableGames" class="unlimited-checkbox" @update:model-value="$forceUpdate()"></b-form-checkbox>
+                <b-form-checkbox v-model="unlimitedWillReleaseDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
               </td>
             </tr>
             <tr>
               <th scope="row">Will Not Release</th>
               <td>
                 <ValidationField
-                  v-if="!internalValue.unlimitedWillNotReleaseDroppableGames"
+                  v-if="!unlimitedWillNotReleaseDroppableGames"
                   v-slot="{ errors }"
-                  :model-value="internalValue.willNotReleaseDroppableGames"
+                  :model-value="willNotReleaseDroppableGames"
                   name="Will Not Release Droppable Games"
                   rules="required|max_value:100|integer">
-                  <input
-                    id="willNotReleaseDroppableGames"
-                    v-model="internalValue.willNotReleaseDroppableGames"
-                    name="Will Not Release Droppable Games"
-                    type="text"
-                    class="form-control input drop-number" />
+                  <input id="willNotReleaseDroppableGames" v-model="willNotReleaseDroppableGames" name="Will Not Release Droppable Games" type="text" class="form-control input drop-number" />
                   <span class="text-danger">{{ errors[0] }}</span>
                 </ValidationField>
               </td>
               <td>
-                <b-form-checkbox v-model="internalValue.unlimitedWillNotReleaseDroppableGames" class="unlimited-checkbox" @update:model-value="$forceUpdate()"></b-form-checkbox>
+                <b-form-checkbox v-model="unlimitedWillNotReleaseDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
               </td>
             </tr>
             <tr>
               <th scope="row">Any Unreleased</th>
               <td>
                 <ValidationField
-                  v-if="!internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames"
+                  v-if="!unlimitedUnrestrictedReleaseStatusDroppableGames"
                   v-slot="{ errors }"
-                  :model-value="internalValue.unrestrictedReleaseStatusDroppableGames"
+                  :model-value="unrestrictedReleaseStatusDroppableGames"
                   name="Unrestricted Droppable Games"
                   rules="required|max_value:100|integer">
                   <input
                     id="unrestrictedReleaseStatusDroppableGames"
-                    v-model="internalValue.unrestrictedReleaseStatusDroppableGames"
+                    v-model="unrestrictedReleaseStatusDroppableGames"
                     name="Unrestricted Droppable Games"
                     type="text"
                     class="form-control input drop-number" />
@@ -193,19 +188,19 @@
                 </ValidationField>
               </td>
               <td>
-                <b-form-checkbox v-model="internalValue.unlimitedUnrestrictedReleaseStatusDroppableGames" class="unlimited-checkbox" @update:model-value="$forceUpdate()"></b-form-checkbox>
+                <b-form-checkbox v-model="unlimitedUnrestrictedReleaseStatusDroppableGames" class="unlimited-checkbox"></b-form-checkbox>
               </td>
             </tr>
           </tbody>
         </table>
         <div>
-          <b-form-checkbox v-model="internalValue.dropOnlyDraftGames">
+          <b-form-checkbox v-model="dropOnlyDraftGames">
             <span class="checkbox-label">Only allow drafted to be dropped</span>
             <p>If this is checked, pickup games will not be droppable, no matter what the above settings are. Counter picks are never droppable.</p>
           </b-form-checkbox>
         </div>
         <div>
-          <b-form-checkbox v-model="internalValue.grantSuperDrops">
+          <b-form-checkbox v-model="grantSuperDrops">
             <span class="checkbox-label">Enable Super Drops</span>
             <p>
               Super drops allow players to drop a single game, with no conditions. For example, you can drop a game that already came out and scored poorly, or you can drop a counterpick that scored
@@ -216,7 +211,7 @@
           </b-form-checkbox>
         </div>
         <div>
-          <b-form-checkbox v-model="internalValue.counterPicksBlockDrops">
+          <b-form-checkbox v-model="counterPicksBlockDrops">
             <span class="checkbox-label">Counter Picks Block Drops</span>
             <p>If this is checked, counter picking a game will prevent the original player from dropping the game.</p>
           </b-form-checkbox>
@@ -232,7 +227,7 @@
         <br />
         All games have a number of tags associated with them. If you place a tag in the "Banned" column, any game with that tag will not be selectable.
       </div>
-      <leagueTagSelector v-model="internalValue.tags"></leagueTagSelector>
+      <leagueTagSelector v-model="tags"></leagueTagSelector>
 
       <hr />
       <h3>Special Game Slots</h3>
@@ -245,7 +240,7 @@
         <em>must</em>
         be a yearly installment. Then, every player must have exactly one 'Yearly Installment'.
       </div>
-      <specialGameSlotSelector v-model="internalValue.specialGameSlots"></specialGameSlotSelector>
+      <specialGameSlotSelector v-model="specialGameSlots"></specialGameSlotSelector>
 
       <hr />
       <h3 v-b-toggle.advanced-settings-collapse class="collapse-header">
@@ -257,7 +252,7 @@
         <div class="alert alert-info">We recommend you keep these settings to the default options.</div>
         <div class="form-group">
           <label for="scoringSystem" class="control-label">90+ Points Rule</label>
-          <b-form-select v-model="internalValue.scoringSystem" :options="possibleLeagueOptions.scoringSystems"></b-form-select>
+          <b-form-select v-model="scoringSystem" :options="possibleLeagueOptions.scoringSystems"></b-form-select>
           <p>
             This option controls how many fantasy points each critic score point over 90 counts as. To be truthful, any option other than 1 is a bit of a "legacy feature", and I'd recommend you stick
             with 1.
@@ -265,12 +260,12 @@
         </div>
         <div class="form-group">
           <label for="tiebreakSystem" class="control-label">Tiebreak System</label>
-          <b-form-select v-model="internalValue.tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
+          <b-form-select v-model="tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
           <p>This setting handles how ties on bids are handled. We recommend you stick with 'Lowest Projected Points', as it keeps leagues more competitive.</p>
         </div>
         <div class="form-group">
           <label for="releaseSystem" class="control-label">Game Release Rule</label>
-          <b-form-select v-model="internalValue.releaseSystem" :options="possibleLeagueOptions.releaseSystems"></b-form-select>
+          <b-form-select v-model="releaseSystem" :options="possibleLeagueOptions.releaseSystems"></b-form-select>
           <p>
             This setting handles whether or not a game must be officially released in order to get points. By default, they do. However, recently, more and more games have had "strange" release
             situations such as
@@ -284,7 +279,7 @@
         </div>
         <div class="form-group">
           <label for="ineligibleGameSystem" class="control-label">Handling of Ineligible Games on Roster</label>
-          <b-form-select v-model="internalValue.ineligibleGameSystem" :options="possibleLeagueOptions.ineligibleGameSystems"></b-form-select>
+          <b-form-select v-model="ineligibleGameSystem" :options="possibleLeagueOptions.ineligibleGameSystems"></b-form-select>
           <p>
             Controls how the league treats standard games on a roster that are ineligible under the league tag rules. This can happen in a couple of ways, but the most common is if a game's tags
             change after a player already has it. "Case by Case Basis" is effectively a legacy mode that's here as a default because this option is new. The other options all clarify exactly how an
@@ -297,7 +292,7 @@
         </div>
         <div class="form-group">
           <label for="counterPickDeadline" class="control-label">Counter Pick Deadline</label>
-          <dateInput id="counterPickDeadline" v-model="internalValue.counterPickDeadline" />
+          <dateInput id="counterPickDeadline" v-model="counterPickDeadline" />
           <p>
             After this date, a game without a confirmed release date can no longer be counter picked. This is only relevant if your league has "pickup counter picks". The intention for this is to
             prevent players from waiting until the very end of the year to counter pick a game that is almost certain to not release this year.
@@ -308,8 +303,8 @@
         <div class="form-group">
           <label for="mightReleaseDroppableDate" class="control-label">Might Release Droppable Date</label>
           <div class="clearable-date">
-            <dateInput id="mightReleaseDroppableDate" v-model="internalValue.mightReleaseDroppableDate" />
-            <b-button variant="warning" size="sm" @click="internalValue.mightReleaseDroppableDate = undefined">Clear</b-button>
+            <dateInput id="mightReleaseDroppableDate" v-model="mightReleaseDroppableDate" />
+            <b-button variant="warning" size="sm" @click="mightReleaseDroppableDate = undefined">Clear</b-button>
           </div>
 
           <p>If you enable this option, then after this date, a game that is considered "might release" will be treated like a "will not release" game for dropping and counter-picking purposes.</p>
@@ -317,7 +312,7 @@
           <p>In more technical terms, this is based on the "Maximum Release Date" that you can see on the Master Game page.</p>
         </div>
         <div>
-          <b-form-checkbox v-model="internalValue.allowMoveIntoIneligible">
+          <b-form-checkbox v-model="allowMoveIntoIneligible">
             <span class="checkbox-label">Allow games to be moved into ineligible slots</span>
             <p>Usually, you cannot intentionally move a game into a slot it is not eligible for. If you want to play with custom rules like having a "bench", then you'll need to enable this.</p>
           </b-form-checkbox>
@@ -333,7 +328,6 @@ import type { RouteLocationRaw } from 'vue-router';
 
 import type { LeagueYearSettingsRequest } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
-import { deepClone } from '@/utilities/deepClone';
 import { computeSpecialSlots, type ExperienceLevel, type GameMode } from '@/utilities/leagueCreationPresets';
 import DateInput from '@/components/dateInput.vue';
 import LeagueTagSelector from '@/components/leagueTagSelector.vue';
@@ -354,8 +348,20 @@ const COUNTER_PICK_HANDLING_OPTIONS: { value: string; text: string }[] = [
 
 const DEFAULT_COUNTER_PICK_HANDLING = 'SemiPublicBiddingSecretCounterPicks';
 
+function computeModelValue<K extends keyof LeagueYearSettingsRequest>(key: K) {
+  return {
+    get(this: { modelValue: LeagueYearSettingsRequest }): LeagueYearSettingsRequest[K] {
+      return this.modelValue[key];
+    },
+    set(this: { updateModelValue(changes: Partial<LeagueYearSettingsRequest>): void }, value: LeagueYearSettingsRequest[K]): void {
+      const changes: Partial<LeagueYearSettingsRequest> = {};
+      changes[key] = value;
+      this.updateModelValue(changes);
+    }
+  };
+}
+
 interface LeagueYearSettingsData {
-  internalValue: LeagueYearSettingsRequest;
   lastCounterPickHandling: string;
 }
 
@@ -387,14 +393,56 @@ export default defineComponent({
     'update:modelValue': (_value: LeagueYearSettingsRequest) => true
   },
   data(): LeagueYearSettingsData {
+    let lastCounterPickHandling = DEFAULT_COUNTER_PICK_HANDLING;
+    if (this.modelValue.pickupSystem !== SECRET_BIDDING) {
+      lastCounterPickHandling = this.modelValue.pickupSystem;
+    }
+
     return {
-      internalValue: deepClone(this.modelValue),
       // Remembered so that toggling to secret bidding and back doesn't silently discard the counter pick choice.
-      lastCounterPickHandling: DEFAULT_COUNTER_PICK_HANDLING
+      lastCounterPickHandling: lastCounterPickHandling
     };
   },
   computed: {
     ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
+    allowMoveIntoIneligible: computeModelValue('allowMoveIntoIneligible'),
+    bidsOnlyBeforeNextScheduledDraft: computeModelValue('bidsOnlyBeforeNextScheduledDraft'),
+    counterPickDeadline: computeModelValue('counterPickDeadline'),
+    counterPicks: computeModelValue('counterPicks'),
+    counterPicksBlockDrops: computeModelValue('counterPicksBlockDrops'),
+    dropOnlyDraftGames: computeModelValue('dropOnlyDraftGames'),
+    enableBids: computeModelValue('enableBids'),
+    grantSuperDrops: computeModelValue('grantSuperDrops'),
+    ineligibleGameSystem: computeModelValue('ineligibleGameSystem'),
+    mightReleaseDroppableDate: computeModelValue('mightReleaseDroppableDate'),
+    minimumBidAmount: computeModelValue('minimumBidAmount'),
+    releaseSystem: computeModelValue('releaseSystem'),
+    scoringSystem: computeModelValue('scoringSystem'),
+    specialGameSlots: computeModelValue('specialGameSlots'),
+    tags: computeModelValue('tags'),
+    tiebreakSystem: computeModelValue('tiebreakSystem'),
+    tradingSystem: computeModelValue('tradingSystem'),
+    pickupSystem: computeModelValue('pickupSystem'),
+    unlimitedUnrestrictedReleaseStatusDroppableGames: computeModelValue('unlimitedUnrestrictedReleaseStatusDroppableGames'),
+    unlimitedWillNotReleaseDroppableGames: computeModelValue('unlimitedWillNotReleaseDroppableGames'),
+    unlimitedWillReleaseDroppableGames: computeModelValue('unlimitedWillReleaseDroppableGames'),
+    unrestrictedReleaseStatusDroppableGames: computeModelValue('unrestrictedReleaseStatusDroppableGames'),
+    willNotReleaseDroppableGames: computeModelValue('willNotReleaseDroppableGames'),
+    willReleaseDroppableGames: computeModelValue('willReleaseDroppableGames'),
+    standardGames: {
+      get(): number {
+        return this.modelValue.standardGames;
+      },
+      set(standardGames: number) {
+        // Changing the number of standard games needs to update the special slots, so we do that here.
+        // It's important that we change both of these fields in one call to the updateModelValue function, or else the second call to updateModelValue would undo the first
+        const changes: Partial<LeagueYearSettingsRequest> = { standardGames };
+        if (this.freshSettings && standardGames && standardGames <= 50) {
+          changes.specialGameSlots = computeSpecialSlots(standardGames, this.experienceLevel);
+        }
+        this.updateModelValue(changes);
+      }
+    },
     counterPickHandlingOptions(): { value: string; text: string }[] {
       const availableSystems = new Set((this.possibleLeagueOptions?.pickupSystems ?? []).map((x) => x.value));
       return COUNTER_PICK_HANDLING_OPTIONS.filter((option) => availableSystems.has(option.value));
@@ -405,19 +453,19 @@ export default defineComponent({
     // The two selects are a presentation of one underlying setting - pickupSystem is still the only thing sent to the server.
     biddingMode: {
       get(): string {
-        return this.internalValue.pickupSystem === SECRET_BIDDING ? SECRET_BIDDING : PUBLIC_BIDDING;
+        return this.pickupSystem === SECRET_BIDDING ? SECRET_BIDDING : PUBLIC_BIDDING;
       },
       set(mode: string) {
-        this.internalValue.pickupSystem = mode === SECRET_BIDDING ? SECRET_BIDDING : this.lastCounterPickHandling;
+        this.pickupSystem = mode === SECRET_BIDDING ? SECRET_BIDDING : this.lastCounterPickHandling;
       }
     },
     counterPickHandling: {
       get(): string {
-        return this.internalValue.pickupSystem;
+        return this.pickupSystem;
       },
       set(pickupSystem: string) {
         this.lastCounterPickHandling = pickupSystem;
-        this.internalValue.pickupSystem = pickupSystem;
+        this.pickupSystem = pickupSystem;
       }
     },
     isStandardLeague(): boolean {
@@ -433,9 +481,9 @@ export default defineComponent({
   watch: {
     gameMode(newMode: GameMode) {
       if (newMode === 'One Shot') {
-        this.internalValue.enableBids = false;
-      } else if (newMode === 'Standard' && !this.isMultiDraft) {
-        this.internalValue.enableBids = true;
+        this.enableBids = false;
+      } else if (this.isStandardLeague) {
+        this.enableBids = true;
       }
     },
     isMultiDraft(isMultiDraft: boolean) {
@@ -443,31 +491,18 @@ export default defineComponent({
         return;
       }
       if (this.gameMode === 'Standard') {
-        this.internalValue.enableBids = true;
+        this.enableBids = true;
       }
     }
   },
   created() {
-    if (this.internalValue.pickupSystem !== SECRET_BIDDING) {
-      this.lastCounterPickHandling = this.internalValue.pickupSystem;
+    if (this.isStandardLeague && !this.enableBids) {
+      this.enableBids = true;
     }
-    if (this.isStandardLeague) {
-      this.internalValue.enableBids = true;
-    }
-    this.updateInternalValue();
   },
   methods: {
-    updateInternalValue(): void {
-      this.$emit('update:modelValue', this.internalValue);
-    },
-    autoUpdateSpecialSlotOptions(): void {
-      if (!this.freshSettings) {
-        return;
-      }
-      if (!this.internalValue.standardGames || this.internalValue.standardGames > 50) {
-        return;
-      }
-      this.internalValue.specialGameSlots = computeSpecialSlots(this.internalValue.standardGames, this.experienceLevel);
+    updateModelValue(changes: Partial<LeagueYearSettingsRequest>): void {
+      this.$emit('update:modelValue', { ...this.modelValue, ...changes });
     }
   }
 });
