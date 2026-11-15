@@ -431,9 +431,6 @@ export default defineComponent({
     }
   },
   watch: {
-    internalValue: function () {
-      this.updateInternalValue();
-    },
     gameMode(newMode: GameMode) {
       if (newMode === 'One Shot') {
         this.internalValue.enableBids = false;

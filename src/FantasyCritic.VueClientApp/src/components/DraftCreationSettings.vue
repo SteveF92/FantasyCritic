@@ -96,8 +96,7 @@ export default defineComponent({
       handler(newVal: DraftSettingsRequest[]) {
         const normalized = newVal.map((d, index) => ({
           ...d,
-          name: d.name?.trim() ? d.name : getDefaultDraftName(index),
-          counterPicksMustBeFromThisDraft: d.counterPicksMustBeFromThisDraft
+          name: d.name?.trim() ? d.name : getDefaultDraftName(index)
         }));
         const needsEmit = normalized.some((d, index) => d.name !== newVal[index]?.name);
         this.internalDrafts = normalized;

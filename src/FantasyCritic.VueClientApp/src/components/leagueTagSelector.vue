@@ -124,9 +124,6 @@ export default defineComponent({
       return this.internalValue.allowed.includes('CurrentlyInEarlyAccess') && !this.internalValue.allowed.includes('PlannedForEarlyAccess');
     }
   },
-  created() {
-    this.initializeValues();
-  },
   methods: {
     onChange(): void {
       this.$emit('update:modelValue', { banned: this.internalValue.banned, required: [] });
@@ -134,8 +131,7 @@ export default defineComponent({
     resetValues(): void {
       this.internalValue = deepClone(this.initialValue);
       this.$emit('update:modelValue', { banned: this.internalValue.banned, required: [] });
-    },
-    initializeValues(): void {}
+    }
   }
 });
 </script>
