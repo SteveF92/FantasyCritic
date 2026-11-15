@@ -33,76 +33,97 @@
           </div>
         </div>
 
-        <div v-if="readyToSetupLeagueYear">
+        <template v-if="readyToSetupLeagueYear && !presetSelected">
           <hr />
           <div class="text-well">
-            <leagueCreationPresets :year="initialYear" @preset-applied="onPresetApplied"></leagueCreationPresets>
+            <leagueCreationPresets v-model="presetInput"></leagueCreationPresets>
+            <b-button class="col-10 offset-1" variant="info" @click="lockPresets">Select Preset</b-button>
           </div>
-        </div>
+        </template>
 
-        <div v-if="leagueYearSettings" class="text-well">
-          <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" :game-mode="gameMode" :experience-level="experienceLevel" :is-multi-draft="gameMode === 'Multi Draft'" fresh-settings>
-            <template v-if="gameMode !== 'One Shot'" #draft-settings>
-              <hr />
-              <h3>Draft Settings</h3>
-              <b-alert v-if="gameMode === 'Multi Draft'" variant="info" :model-value="true">
-                This league will have multiple drafts. You need to add a least two now, but you can add more later.
-              </b-alert>
-              <DraftCreationSettings
-                v-model="drafts"
-                :standard-games="leagueYearSettings.standardGames"
-                :game-mode="gameMode"
-                :bids-only-before-next-scheduled-draft="leagueYearSettings.bidsOnlyBeforeNextScheduledDraft"></DraftCreationSettings>
-              <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" :model-value="true">{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
-            </template>
-          </leagueYearSettings>
-        </div>
-
-        <div v-if="leagueYearIsValid || leagueYearEverValid">
+        <template v-if="presetSelected">
           <hr />
           <div class="text-well">
-            <h2>Other Options</h2>
-            <div>
-              <b-form-checkbox v-model="publicLeague">
-                <span class="checkbox-label">Public League</span>
-                <p>If checked, everyone will be able to see your league. Players still need to be invited to join. If unchecked, your league will only be viewable by its members.</p>
-              </b-form-checkbox>
-            </div>
-            <div>
-              <b-form-checkbox v-model="customRulesLeague">
-                <span class="checkbox-label">Custom Rules League</span>
-                <p>
-                  If checked, this league won't affect the site's overall stats. Please use this if you are running a "highly custom" league, such as a league where you are picking the
-                  <em>worst</em>
-                  games of the year. If you want to change a custom rules league into a regular league, you'll need to contact us.
-                </p>
-              </b-form-checkbox>
-            </div>
-            <div>
-              <b-form-checkbox v-model="testLeague">
-                <span class="checkbox-label">Test League</span>
-                <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.</p>
-              </b-form-checkbox>
-            </div>
+            <b-alert variant="info" :model-value="true">
+              The following settings are our reccomendation for a
+              <span class="selected-preset-option">{{ presetInput.experienceLevel }}</span>
+              level,
+              <span class="selected-preset-option">{{ presetInput.playerCount }}</span>
+              player league in
+              <span class="selected-preset-option">{{ presetInput.gameMode }}</span>
+              mode, but you are free to change them.
+              <b-button variant="secondary" @click="unlockPresets">Select a different preset</b-button>
+            </b-alert>
+            <div></div>
+            <leagueYearSettings
+              v-model="leagueYearSettings"
+              :year="initialYear"
+              :game-mode="presetInput.gameMode"
+              :experience-level="presetInput.experienceLevel"
+              :is-multi-draft="presetInput.gameMode === 'Multi Draft'"
+              fresh-settings>
+              <template v-if="presetInput.gameMode !== 'One Shot'" #draft-settings>
+                <hr />
+                <h3>Draft Settings</h3>
+                <b-alert v-if="presetInput.gameMode === 'Multi Draft'" variant="info" :model-value="true">
+                  This league will have multiple drafts. You need to add a least two now, but you can add more later.
+                </b-alert>
+                <DraftCreationSettings
+                  v-model="drafts"
+                  :standard-games="leagueYearSettings.standardGames"
+                  :game-mode="presetInput.gameMode"
+                  :bids-only-before-next-scheduled-draft="leagueYearSettings.bidsOnlyBeforeNextScheduledDraft"></DraftCreationSettings>
+                <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" :model-value="true">{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
+              </template>
+            </leagueYearSettings>
           </div>
 
-          <b-alert variant="info">
-            The difference between a "Custom Rules League" and a "Test League" is that a "Custom Rules League" will still be listed alongside your normal leagues and you will see upcoming games for
-            that league on your home page. There is a dedicated home page tab for test leagues, and the games are not listed in your upcoming games on the home page. You
-            <em>are</em>
-            allowed to change your "Test League" into a "Custom Rules League", since neither affect the site's stats.
-          </b-alert>
+          <div v-if="leagueYearIsValid || leagueYearEverValid">
+            <hr />
+            <div class="text-well">
+              <h2>Other Options</h2>
+              <div>
+                <b-form-checkbox v-model="publicLeague">
+                  <span class="checkbox-label">Public League</span>
+                  <p>If checked, everyone will be able to see your league. Players still need to be invited to join. If unchecked, your league will only be viewable by its members.</p>
+                </b-form-checkbox>
+              </div>
+              <div>
+                <b-form-checkbox v-model="customRulesLeague">
+                  <span class="checkbox-label">Custom Rules League</span>
+                  <p>
+                    If checked, this league won't affect the site's overall stats. Please use this if you are running a "highly custom" league, such as a league where you are picking the
+                    <em>worst</em>
+                    games of the year. If you want to change a custom rules league into a regular league, you'll need to contact us.
+                  </p>
+                </b-form-checkbox>
+              </div>
+              <div>
+                <b-form-checkbox v-model="testLeague">
+                  <span class="checkbox-label">Test League</span>
+                  <p>If checked, this league won't affect the site's overall stats. Please check this if you are just testing out the site.</p>
+                </b-form-checkbox>
+              </div>
+            </div>
 
-          <hr />
-          <div class="alert alert-info disclaimer">Reminder: All of these settings can always be changed later.</div>
+            <b-alert variant="info">
+              The difference between a "Custom Rules League" and a "Test League" is that a "Custom Rules League" will still be listed alongside your normal leagues and you will see upcoming games for
+              that league on your home page. There is a dedicated home page tab for test leagues, and the games are not listed in your upcoming games on the home page. You
+              <em>are</em>
+              allowed to change your "Test League" into a "Custom Rules League", since neither affect the site's stats.
+            </b-alert>
 
-          <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" :model-value="true">{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
-          <div v-else-if="!leagueYearIsValid" class="alert alert-warning disclaimer">Can't create league. Some of your settings are invalid.</div>
+            <hr />
+            <div class="alert alert-info disclaimer">Reminder: All of these settings can always be changed later.</div>
 
-          <div class="form-group">
-            <b-button class="col-10 offset-1" variant="primary" :disabled="!leagueYearIsValid" @click="postRequest">Create League</b-button>
+            <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" :model-value="true">{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
+            <div v-else-if="!leagueYearIsValid" class="alert alert-warning disclaimer">Can't create league. Some of your settings are invalid.</div>
+
+            <div class="form-group">
+              <b-button class="col-10 offset-1" variant="primary" :disabled="!leagueYearIsValid" @click="postRequest">Create League</b-button>
+            </div>
           </div>
-        </div>
+        </template>
       </template>
     </template>
   </div>
@@ -113,9 +134,8 @@ import { mapState } from 'pinia';
 
 import { leagueManagerClient, type CreateLeagueRequest, type DraftSettingsRequest, type LeagueYearSettingsRequest } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
-import type { AppliedPreset } from '@/types/vueTypes';
 import { getApiErrorMessage } from '@/utilities/apiError';
-import { buildOneShotDraft, computePreset, type ExperienceLevel, type GameMode } from '@/utilities/leagueCreationPresets';
+import { buildOneShotDraft, computePreset, GameMode, type PresetInput } from '@/utilities/leagueCreationPresets';
 import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
 import LeagueCreationPresets from '@/components/leagueCreationPresets.vue';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
@@ -126,8 +146,8 @@ interface CreateLeagueData {
   initialYear: number;
   leagueYearSettings: LeagueYearSettingsRequest;
   drafts: DraftSettingsRequest[];
-  gameMode: GameMode;
-  experienceLevel: ExperienceLevel;
+  presetInput: PresetInput;
+  presetSelected: boolean;
   publicLeague: boolean;
   testLeague: boolean;
   customRulesLeague: boolean;
@@ -155,8 +175,8 @@ export default defineComponent({
       initialYear: initialYear,
       leagueYearSettings: defaultSettings.settings,
       drafts: defaultSettings.drafts,
-      gameMode: defaultGameMode,
-      experienceLevel: defaultExperienceLevel,
+      presetInput: { playerCount: undefined, gameMode: defaultGameMode, experienceLevel: defaultExperienceLevel },
+      presetSelected: false,
       publicLeague: true,
       testLeague: false,
       customRulesLeague: false,
@@ -170,7 +190,7 @@ export default defineComponent({
     },
     bidsOnlyBeforeNextDraftScheduleError(): string | null {
       if (!this.leagueYearSettings?.bidsOnlyBeforeNextScheduledDraft) return null;
-      if (this.gameMode !== 'Multi Draft') return null;
+      if (this.presetInput.gameMode !== 'Multi Draft') return null;
       const draftsMissingDate = this.drafts.slice(1).some((d) => !d.scheduledDate);
       if (draftsMissingDate) {
         return "'Only allow bids before next scheduled draft' is enabled — all drafts after the first must have a scheduled date.";
@@ -178,10 +198,14 @@ export default defineComponent({
       return null;
     },
     leagueYearIsValid(): boolean {
-      if (!this.leagueYearSettings || !this.drafts.length) return false;
+      const validNumberOfPlayers = this.presetInput.playerCount && this.presetInput.playerCount >= 2;
+      if (!validNumberOfPlayers || !this.drafts.length) {
+        return false;
+      }
+
       const settingsOk =
         this.leagueYearSettings.standardGames >= 1 && this.leagueYearSettings.standardGames <= 50 && this.leagueYearSettings.counterPicks >= 0 && this.leagueYearSettings.counterPicks <= 20;
-      const draftsOk = this.gameMode === 'Multi Draft' ? this.drafts.length >= 2 : this.drafts.length >= 1;
+      const draftsOk = this.presetInput.gameMode === 'Multi Draft' ? this.drafts.length >= 2 : this.drafts.length >= 1;
       return this.readyToSetupLeagueYear && settingsOk && draftsOk && !this.bidsOnlyBeforeNextDraftScheduleError;
     }
   },
@@ -198,7 +222,7 @@ export default defineComponent({
     leagueYearSettings: {
       deep: true,
       handler() {
-        this.syncOneShotDrafts(this.gameMode);
+        this.syncOneShotDrafts(this.presetInput.gameMode);
       }
     }
   },
@@ -209,13 +233,15 @@ export default defineComponent({
       }
       this.drafts = [buildOneShotDraft(this.leagueYearSettings.standardGames, this.leagueYearSettings.counterPicks)];
     },
-    onPresetApplied({ gameMode, experienceLevel, settings, drafts }: AppliedPreset): void {
-      this.gameMode = gameMode;
-      this.experienceLevel = experienceLevel;
-      if (!this.leagueYearSettings) {
-        this.leagueYearSettings = settings;
-      }
-      this.drafts = drafts;
+    lockPresets() {
+      if (!this.presetInput.playerCount || this.presetInput.playerCount < 2 || this.presetInput.playerCount > 20) return;
+      const presetValues = computePreset(this.presetInput.gameMode, this.presetInput.experienceLevel, this.presetInput.playerCount, this.initialYear);
+      this.leagueYearSettings = presetValues.settings;
+      this.drafts = presetValues.drafts;
+      this.presetSelected = true;
+    },
+    unlockPresets() {
+      this.presetSelected = false;
     },
     async postRequest(): Promise<void> {
       const request: CreateLeagueRequest = {
@@ -250,5 +276,10 @@ label {
 
 .submit-button {
   text-align: right;
+}
+
+.selected-preset-option {
+  color: black;
+  font-weight: bolder;
 }
 </style>

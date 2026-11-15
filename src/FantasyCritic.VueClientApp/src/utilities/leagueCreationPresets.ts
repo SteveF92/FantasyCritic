@@ -3,6 +3,12 @@ import type { DraftSettingsRequest, LeagueYearSettingsRequest, SpecialGameSlotVi
 export type GameMode = 'Standard' | 'Multi Draft' | 'One Shot';
 export type ExperienceLevel = 'Beginner' | 'Standard' | 'Advanced';
 
+export interface PresetInput {
+  playerCount?: number;
+  gameMode: GameMode;
+  experienceLevel: ExperienceLevel;
+}
+
 export interface PresetResult {
   settings: LeagueYearSettingsRequest;
   drafts: DraftSettingsRequest[];
