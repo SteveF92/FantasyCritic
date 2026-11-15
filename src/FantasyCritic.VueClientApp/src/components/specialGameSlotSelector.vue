@@ -84,13 +84,7 @@ export default defineComponent({
     },
     getTags(tagNames: string[]): MasterGameTagViewModel[] {
       const interLeagueStore = useInterLeagueStore();
-      let allTags = interLeagueStore.allTags;
-      let matchingTags: MasterGameTagViewModel[] = [];
-      tagNames.forEach((tagName) => {
-        const match = allTags.find((x) => x.name === tagName);
-        matchingTags.push(match);
-      });
-
+      const matchingTags = tagNames.map((x) => interLeagueStore.allTags.find((y) => y.name === x)).filter((x) => !!x);
       return matchingTags;
     },
     removeSlot(specialSlot: SpecialGameSlotWithTags): void {

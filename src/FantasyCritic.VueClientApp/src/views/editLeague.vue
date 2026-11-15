@@ -14,14 +14,7 @@
           <input id="leagueYearName" v-model="leagueYearName" name="League Year Name" type="text" class="form-control input" placeholder="Leave blank to use the league name" />
           <p>If set, this name will be displayed instead of the league name for this specific year only.</p>
         </div>
-        <leagueYearSettings
-          v-model="leagueYearSettings"
-          :year="year"
-          edit-mode
-          :current-number-of-players="activePlayersInLeague"
-          :fresh-settings="freshSettings"
-          :is-multi-draft="isMultiDraft"
-          :league-id="leagueid">
+        <leagueYearSettings v-model="leagueYearSettings" :year="year" edit-mode :fresh-settings="freshSettings" :is-multi-draft="isMultiDraft" :league-id="leagueid">
           <template v-if="!isMultiDraft && firstDraft && !oneShotMode" #draft-settings>
             <hr />
             <h3>Draft Settings</h3>

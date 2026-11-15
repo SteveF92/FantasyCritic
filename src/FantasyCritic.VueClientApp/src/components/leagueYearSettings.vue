@@ -232,7 +232,7 @@
         <br />
         All games have a number of tags associated with them. If you place a tag in the "Banned" column, any game with that tag will not be selectable.
       </div>
-      <leagueTagSelector v-model="internalValue.tags" :game-mode="gameMode"></leagueTagSelector>
+      <leagueTagSelector v-model="internalValue.tags"></leagueTagSelector>
 
       <hr />
       <h3>Special Game Slots</h3>
@@ -309,11 +309,11 @@
           <label for="mightReleaseDroppableDate" class="control-label">Might Release Droppable Date</label>
           <div class="clearable-date">
             <dateInput id="mightReleaseDroppableDate" v-model="internalValue.mightReleaseDroppableDate" />
-            <b-button variant="warning" size="sm" @click="internalValue.mightReleaseDroppableDate = null">Clear</b-button>
+            <b-button variant="warning" size="sm" @click="internalValue.mightReleaseDroppableDate = undefined">Clear</b-button>
           </div>
 
           <p>If you enable this option, then after this date, a game that is considered "might release" will be treated like a "will not release" game for dropping and counter-picking purposes.</p>
-          <p>"Might Release" means a game with a release date like "TBA". If a game has a non-specific {{ this.year }} date, then it will still be counter as "Will Release" for {{ this.year }}.</p>
+          <p>"Might Release" means a game with a release date like "TBA". If a game has a non-specific {{ year }} date, then it will still be counter as "Will Release" for {{ year }}.</p>
           <p>In more technical terms, this is based on the "Maximum Release Date" that you can see on the Master Game page.</p>
         </div>
         <div>
@@ -331,7 +331,7 @@ import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
 import type { RouteLocationRaw } from 'vue-router';
 
-import type { LeagueYearSettingsViewModel } from '@/api/clients';
+import type { LeagueYearSettingsRequest } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { deepClone } from '@/utilities/deepClone';
 import { computeSpecialSlots, type ExperienceLevel, type GameMode } from '@/utilities/leagueCreationPresets';
@@ -355,7 +355,7 @@ const COUNTER_PICK_HANDLING_OPTIONS: { value: string; text: string }[] = [
 const DEFAULT_COUNTER_PICK_HANDLING = 'SemiPublicBiddingSecretCounterPicks';
 
 interface LeagueYearSettingsData {
-  internalValue: LeagueYearSettingsViewModel | null;
+  internalValue: LeagueYearSettingsRequest;
   lastCounterPickHandling: string;
 }
 
@@ -374,23 +374,21 @@ export default defineComponent({
     return { biddingModeOptions };
   },
   props: {
-    modelValue: { type: Object as PropType<LeagueYearSettingsViewModel>, required: true },
+    modelValue: { type: Object as PropType<LeagueYearSettingsRequest>, required: true },
     year: { type: Number, required: true },
     editMode: { type: Boolean },
-    currentNumberOfPlayers: { type: Number as PropType<number | null>, default: null },
     freshSettings: { type: Boolean, required: true },
-    conferenceMode: { type: Boolean },
     isMultiDraft: { type: Boolean, default: false },
     leagueId: { type: String as PropType<string | null>, default: null },
     gameMode: { type: String as PropType<GameMode>, default: 'Standard' },
     experienceLevel: { type: String as PropType<ExperienceLevel>, default: 'Standard' }
   },
   emits: {
-    'update:modelValue': (_value: LeagueYearSettingsViewModel) => true
+    'update:modelValue': (_value: LeagueYearSettingsRequest) => true
   },
   data(): LeagueYearSettingsData {
     return {
-      internalValue: null,
+      internalValue: deepClone(this.modelValue),
       // Remembered so that toggling to secret bidding and back doesn't silently discard the counter pick choice.
       lastCounterPickHandling: DEFAULT_COUNTER_PICK_HANDLING
     };
@@ -437,9 +435,6 @@ export default defineComponent({
       this.updateInternalValue();
     },
     gameMode(newMode: GameMode) {
-      if (!this.internalValue) {
-        return;
-      }
       if (newMode === 'One Shot') {
         this.internalValue.enableBids = false;
       } else if (newMode === 'Standard' && !this.isMultiDraft) {
@@ -447,7 +442,7 @@ export default defineComponent({
       }
     },
     isMultiDraft(isMultiDraft: boolean) {
-      if (!this.internalValue || isMultiDraft) {
+      if (isMultiDraft) {
         return;
       }
       if (this.gameMode === 'Standard') {
@@ -456,20 +451,17 @@ export default defineComponent({
     }
   },
   created() {
-    this.internalValue = deepClone(this.modelValue);
     if (this.internalValue.pickupSystem !== SECRET_BIDDING) {
       this.lastCounterPickHandling = this.internalValue.pickupSystem;
     }
     if (this.isStandardLeague) {
       this.internalValue.enableBids = true;
     }
+    this.updateInternalValue();
   },
   methods: {
     updateInternalValue(): void {
       this.$emit('update:modelValue', this.internalValue);
-    },
-    fullAutoUpdate(): void {
-      this.autoUpdateSpecialSlotOptions();
     },
     autoUpdateSpecialSlotOptions(): void {
       if (!this.freshSettings) {

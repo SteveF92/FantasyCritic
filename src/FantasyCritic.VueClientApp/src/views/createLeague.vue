@@ -111,7 +111,7 @@
 import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 
-import { leagueManagerClient, type CreateLeagueRequest, type DraftSettingsRequest, type LeagueYearSettingsViewModel } from '@/api/clients';
+import { leagueManagerClient, type CreateLeagueRequest, type DraftSettingsRequest, type LeagueYearSettingsRequest } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import type { AppliedPreset } from '@/types/vueTypes';
 import { getApiErrorMessage } from '@/utilities/apiError';
@@ -123,8 +123,8 @@ import LeagueYearSettings from '@/components/leagueYearSettings.vue';
 interface CreateLeagueData {
   errorInfo: string;
   leagueName: string;
-  initialYear: number | '';
-  leagueYearSettings: LeagueYearSettingsViewModel | null;
+  initialYear: number;
+  leagueYearSettings: LeagueYearSettingsRequest | null;
   drafts: DraftSettingsRequest[];
   gameMode: GameMode;
   experienceLevel: ExperienceLevel;
@@ -144,7 +144,7 @@ export default defineComponent({
     return {
       errorInfo: '',
       leagueName: '',
-      initialYear: '',
+      initialYear: useInterLeagueStore().supportedYears.filter((x) => x.openForPlay)[0].year,
       leagueYearSettings: null,
       drafts: [],
       gameMode: 'Standard',
@@ -214,7 +214,7 @@ export default defineComponent({
           releaseSystem: 'MustBeReleased',
           ineligibleGameSystem: 'CaseByCase',
           enableBids: true,
-          tags: { banned: [], allowed: [], required: [] },
+          tags: { banned: [], required: [] },
           specialGameSlots: []
         };
       }

@@ -55,14 +55,7 @@
         </div>
 
         <div v-if="leagueYearSettings" class="text-well">
-          <leagueYearSettings
-            v-model="leagueYearSettings"
-            :year="initialYear"
-            :game-mode="gameMode"
-            :experience-level="experienceLevel"
-            :is-multi-draft="gameMode === 'Multi Draft'"
-            fresh-settings
-            conference-mode>
+          <leagueYearSettings v-model="leagueYearSettings" :year="initialYear" :game-mode="gameMode" :experience-level="experienceLevel" :is-multi-draft="gameMode === 'Multi Draft'" fresh-settings>
             <template v-if="gameMode !== 'One Shot'" #draft-settings>
               <hr />
               <h3>Draft Settings</h3>

@@ -1,42 +1,11 @@
-// src/FantasyCritic.VueClientApp/src/utilities/leagueCreationPresets.ts
+import type { DraftSettingsRequest, LeagueYearSettingsRequest, SpecialGameSlotViewModel } from '@/api/clients';
 
 export type GameMode = 'Standard' | 'Multi Draft' | 'One Shot';
 export type ExperienceLevel = 'Beginner' | 'Standard' | 'Advanced';
 
-export interface DraftSettings {
-  name: string | null;
-  scheduledDate: string | null;
-  gamesToDraft: number;
-  counterPicksToDraft: number;
-  counterPicksMustBeFromThisDraft: boolean;
-}
-
-export interface LeagueYearSettingsPartial {
-  standardGames: number;
-  counterPicks: number;
-  gamesToDraft?: number; // not used post-refactor; included for transitional compat
-  counterPicksToDraft?: number; // same
-  minimumBidAmount: number;
-  enableBids: boolean;
-  tradingSystem: string;
-  grantSuperDrops: boolean;
-  pickupSystem: string;
-  counterPicksBlockDrops: boolean;
-  unrestrictedReleaseStatusDroppableGames: number;
-  willNotReleaseDroppableGames: number;
-  willReleaseDroppableGames: number;
-  unlimitedUnrestrictedReleaseStatusDroppableGames: boolean;
-  unlimitedWillNotReleaseDroppableGames: boolean;
-  unlimitedWillReleaseDroppableGames: boolean;
-  specialGameSlots: object[];
-  tags: { banned: string[]; required: string[] };
-  counterPickDeadline: string;
-  mightReleaseDroppableDate: string;
-}
-
 export interface PresetResult {
-  settings: Partial<LeagueYearSettingsPartial>;
-  drafts: DraftSettings[];
+  settings: LeagueYearSettingsRequest;
+  drafts: DraftSettingsRequest[];
 }
 
 // ---------------------------------------------------------------------------
@@ -71,12 +40,12 @@ function computeGameCounts(
   return { standardGames, counterPicks, gamesToDraft, counterPicksToDraft };
 }
 
-export function computeSpecialSlots(standardGames: number, experienceLevel: ExperienceLevel): object[] {
+export function computeSpecialSlots(standardGames: number, experienceLevel: ExperienceLevel): SpecialGameSlotViewModel[] {
   if (experienceLevel === 'Beginner') return [];
   const numberOfSpecialSlots = Math.floor(standardGames / 2);
   if (numberOfSpecialSlots < 1) return [];
 
-  const slots: object[] = [];
+  const slots: SpecialGameSlotViewModel[] = [];
   const includeExpansion = numberOfSpecialSlots >= 2;
   const includeRemake = numberOfSpecialSlots >= 2;
   const nonNgfCount = (includeExpansion ? 1 : 0) + (includeRemake ? 1 : 0);
@@ -124,7 +93,7 @@ export function computePreset(gameMode: GameMode, experienceLevel: ExperienceLev
   const standardBanned = ['YearlyInstallment', 'DirectorsCut', 'PartialRemake', 'Remaster', 'ExpansionPack'];
   const bannedTags = experienceLevel === 'Beginner' ? alwaysBanned : [...alwaysBanned, ...standardBanned];
 
-  const settings: Partial<LeagueYearSettingsPartial> = {
+  const settings: LeagueYearSettingsRequest = {
     standardGames,
     counterPicks,
     minimumBidAmount: 0,
@@ -142,21 +111,29 @@ export function computePreset(gameMode: GameMode, experienceLevel: ExperienceLev
     specialGameSlots: computeSpecialSlots(standardGames, experienceLevel),
     tags: { banned: bannedTags, required: [] },
     counterPickDeadline: `${year}-11-01`,
-    mightReleaseDroppableDate: `${year}-11-01`
+    mightReleaseDroppableDate: `${year}-11-01`,
+    year: year,
+    dropOnlyDraftGames: false,
+    allowMoveIntoIneligible: false,
+    bidsOnlyBeforeNextScheduledDraft: false,
+    scoringSystem: 'LinearPositive',
+    tiebreakSystem: 'LowestProjectedPoints',
+    releaseSystem: 'MustBeReleased',
+    ineligibleGameSystem: 'CaseByCase'
   };
 
-  let drafts: DraftSettings[];
+  let drafts: DraftSettingsRequest[];
   if (gameMode === 'Multi Draft') {
     const draft1Games = Math.ceil(gamesToDraft / 2);
     const draft2Games = gamesToDraft - draft1Games;
     drafts = [
-      { name: getDefaultDraftName(0), scheduledDate: null, gamesToDraft: draft1Games, counterPicksToDraft, counterPicksMustBeFromThisDraft: true },
-      { name: getDefaultDraftName(1), scheduledDate: null, gamesToDraft: Math.max(1, draft2Games), counterPicksToDraft: 0, counterPicksMustBeFromThisDraft: true }
+      { name: getDefaultDraftName(0), scheduledDate: undefined, gamesToDraft: draft1Games, counterPicksToDraft, counterPicksMustBeFromThisDraft: true },
+      { name: getDefaultDraftName(1), scheduledDate: undefined, gamesToDraft: Math.max(1, draft2Games), counterPicksToDraft: 0, counterPicksMustBeFromThisDraft: true }
     ];
   } else if (gameMode === 'One Shot') {
     drafts = [buildOneShotDraft(standardGames, counterPicks)];
   } else {
-    drafts = [{ name: getDefaultDraftName(0), scheduledDate: null, gamesToDraft, counterPicksToDraft, counterPicksMustBeFromThisDraft: true }];
+    drafts = [{ name: getDefaultDraftName(0), scheduledDate: undefined, gamesToDraft, counterPicksToDraft, counterPicksMustBeFromThisDraft: true }];
   }
 
   return { settings, drafts };
@@ -166,17 +143,17 @@ export function getDefaultDraftName(draftIndex: number): string {
   return draftIndex === 0 ? 'Initial Draft' : `Draft ${draftIndex + 1}`;
 }
 
-export function buildOneShotDraft(standardGames: number, counterPicks: number, existing?: Partial<DraftSettings>): DraftSettings {
+export function buildOneShotDraft(standardGames: number, counterPicks: number, existing?: Partial<DraftSettingsRequest>): DraftSettingsRequest {
   return {
     name: getDefaultDraftName(0),
-    scheduledDate: existing?.scheduledDate ?? null,
+    scheduledDate: existing?.scheduledDate,
     gamesToDraft: standardGames,
     counterPicksToDraft: counterPicks,
     counterPicksMustBeFromThisDraft: true
   };
 }
 
-export function getDefaultDraft(draftIndex: number, standardGames: number, allocatedSoFar: number): DraftSettings {
+export function getDefaultDraft(draftIndex: number, standardGames: number, allocatedSoFar: number): DraftSettingsRequest {
   const remaining = Math.max(1, standardGames - allocatedSoFar);
-  return { name: getDefaultDraftName(draftIndex), scheduledDate: null, gamesToDraft: remaining, counterPicksToDraft: 0, counterPicksMustBeFromThisDraft: true };
+  return { name: getDefaultDraftName(draftIndex), scheduledDate: undefined, gamesToDraft: remaining, counterPicksToDraft: 0, counterPicksMustBeFromThisDraft: true };
 }

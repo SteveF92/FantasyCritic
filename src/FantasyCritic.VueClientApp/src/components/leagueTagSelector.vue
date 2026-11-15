@@ -50,7 +50,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { VueDraggable } from 'vue-draggable-plus';
 
-import type { LeagueTagOptionsViewModel, MasterGameTagViewModel } from '@/api/clients';
+import type { LeagueTagOptionsViewModel } from '@/api/clients';
 import { intersection } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { deepClone } from '@/utilities/deepClone';
@@ -66,28 +66,15 @@ interface LeagueTagSelectorData {
   internalValue: TagLists;
 }
 
-function getInitialValue(modelValue: LeagueTagOptionsViewModel, tagOptions: MasterGameTagViewModel[]): TagLists {
-  const initialValue = {
-    banned: [] as string[],
-    allowed: [] as string[]
+function initializeTagLists(tagLists: LeagueTagOptionsViewModel): TagLists {
+  const tagNames = useInterLeagueStore()
+    .allTags.filter((x) => !x.systemTagOnly)
+    .map((x) => x.name);
+
+  return {
+    banned: tagNames.filter((x) => tagLists.banned.includes(x)),
+    allowed: tagNames.filter((x) => !tagLists.banned.includes(x))
   };
-
-  for (const tag of tagOptions) {
-    if (modelValue.banned.includes(tag.name)) {
-      initialValue.banned.push(tag.name);
-      continue;
-    }
-
-    initialValue.allowed.push(tag.name);
-  }
-
-  return initialValue;
-}
-
-function getInitialInternalValue(modelValue: LeagueTagOptionsViewModel, tagOptions: MasterGameTagViewModel[]): TagLists {
-  const initialValue = getInitialValue(modelValue, tagOptions);
-  const internalValue = deepClone(initialValue);
-  return internalValue;
 }
 
 export default defineComponent({
@@ -102,15 +89,10 @@ export default defineComponent({
     'update:modelValue': (_value: LeagueTagOptionsViewModel) => true
   },
   data(): LeagueTagSelectorData {
+    const initialValue = initializeTagLists(this.modelValue);
     return {
-      initialValue: getInitialValue(
-        this.modelValue,
-        useInterLeagueStore().allTags.filter((x) => !x.systemTagOnly)
-      ),
-      internalValue: getInitialInternalValue(
-        this.modelValue,
-        useInterLeagueStore().allTags.filter((x) => !x.systemTagOnly)
-      )
+      initialValue,
+      internalValue: deepClone(initialValue)
     };
   },
   computed: {

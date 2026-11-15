@@ -1,4 +1,3 @@
-<!-- src/FantasyCritic.VueClientApp/src/components/DraftCreationSettings.vue -->
 <template>
   <div>
     <div v-if="totalGamesToDraft > standardGames" class="alert alert-warning">
@@ -98,7 +97,7 @@ export default defineComponent({
         const normalized = newVal.map((d, index) => ({
           ...d,
           name: d.name?.trim() ? d.name : getDefaultDraftName(index),
-          counterPicksMustBeFromThisDraft: d.counterPicksMustBeFromThisDraft ?? true
+          counterPicksMustBeFromThisDraft: d.counterPicksMustBeFromThisDraft
         }));
         const needsEmit = normalized.some((d, index) => d.name !== newVal[index]?.name);
         this.internalDrafts = normalized;
