@@ -22,8 +22,8 @@
       <div class="tag-flex-drag">
         <div class="tag-drag-list bg-secondary">
           <span class="tag-header">Banned Tags</span>
-          <VueDraggable v-model="internalValue.banned" class="tag-drag-items" group="tags" @update:model-value="onChange">
-            <div v-for="element in internalValue.banned" :key="element" class="tag-drag-item">
+          <VueDraggable v-model="banned" class="tag-drag-items" group="tags">
+            <div v-for="element in banned" :key="element" class="tag-drag-item">
               <font-awesome-icon icon="bars" />
               <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
             </div>
@@ -34,8 +34,8 @@
       <div class="tag-flex-drag">
         <div class="tag-drag-list bg-secondary">
           <span class="tag-header">Allowed Tags</span>
-          <VueDraggable v-model="internalValue.allowed" class="tag-drag-items" group="tags" @update:model-value="onChange">
-            <div v-for="element in internalValue.allowed" :key="element" class="tag-drag-item">
+          <VueDraggable v-model="allowed" class="tag-drag-items" group="tags">
+            <div v-for="element in allowed" :key="element" class="tag-drag-item">
               <font-awesome-icon icon="bars" />
               <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
             </div>
@@ -53,7 +53,6 @@ import { VueDraggable } from 'vue-draggable-plus';
 import type { LeagueTagOptionsViewModel } from '@/api/clients';
 import { intersection } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
-import { deepClone } from '@/utilities/deepClone';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
 interface TagLists {
@@ -63,7 +62,6 @@ interface TagLists {
 
 interface LeagueTagSelectorData {
   initialValue: TagLists;
-  internalValue: TagLists;
 }
 
 function initializeTagLists(tagLists: LeagueTagOptionsViewModel): TagLists {
@@ -74,6 +72,19 @@ function initializeTagLists(tagLists: LeagueTagOptionsViewModel): TagLists {
   return {
     banned: tagNames.filter((x) => tagLists.banned.includes(x)),
     allowed: tagNames.filter((x) => !tagLists.banned.includes(x))
+  };
+}
+
+function computeModelValue<K extends keyof LeagueTagOptionsViewModel>(key: K) {
+  return {
+    get(this: { modelValue: LeagueTagOptionsViewModel }): LeagueTagOptionsViewModel[K] {
+      return this.modelValue[key];
+    },
+    set(this: { updateModelValue(changes: Partial<LeagueTagOptionsViewModel>): void }, value: LeagueTagOptionsViewModel[K]): void {
+      const changes: Partial<LeagueTagOptionsViewModel> = {};
+      changes[key] = value;
+      this.updateModelValue(changes);
+    }
   };
 }
 
@@ -91,46 +102,60 @@ export default defineComponent({
   data(): LeagueTagSelectorData {
     const initialValue = initializeTagLists(this.modelValue);
     return {
-      initialValue,
-      internalValue: deepClone(initialValue)
+      initialValue
     };
   },
   computed: {
+    banned: computeModelValue('banned'),
+    //required is not used for the time being, but the code is clearer with this here
+    required: computeModelValue('required'),
+    allowed: {
+      get(): string[] {
+        const tagOptions = useInterLeagueStore()
+          .allTags.filter((x) => !x.systemTagOnly)
+          .map((x) => x.name);
+
+        const allowedTags = tagOptions.filter((x) => !this.banned.includes(x));
+        return allowedTags;
+      },
+      set(_allowedValues: string[]) {
+        //There's actually nothing for us to do here, because we don't send allowed values to the server.
+      }
+    },
     showWarning(): boolean {
       let recommendedAllowedTags = ['Reimagining'];
       let recommendedBannedTags = ['DirectorsCut', 'ReleasedInternationally', 'CurrentlyInEarlyAccess'];
-      let bannedIntersection = intersection(this.internalValue.banned, recommendedAllowedTags);
-      let allowedIntersection = intersection(this.internalValue.allowed, recommendedBannedTags);
+      let bannedIntersection = intersection(this.banned, recommendedAllowedTags);
+      let allowedIntersection = intersection(this.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showDanger(): boolean {
       let recommendedAllowedTags = ['NewGame', 'NewGamingFranchise', 'WillReleaseInternationallyFirst'];
       let recommendedBannedTags = ['Port'];
-      let bannedIntersection = intersection(this.internalValue.banned, recommendedAllowedTags);
-      let allowedIntersection = intersection(this.internalValue.allowed, recommendedBannedTags);
+      let bannedIntersection = intersection(this.banned, recommendedAllowedTags);
+      let allowedIntersection = intersection(this.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showPortDanger(): boolean {
       let recommendedAllowedTags: string[] = [];
       let recommendedBannedTags = ['Port'];
-      let bannedIntersection = intersection(this.internalValue.banned, recommendedAllowedTags);
-      let allowedIntersection = intersection(this.internalValue.allowed, recommendedBannedTags);
+      let bannedIntersection = intersection(this.banned, recommendedAllowedTags);
+      let allowedIntersection = intersection(this.allowed, recommendedBannedTags);
       return bannedIntersection.length > 0 || allowedIntersection.length > 0;
     },
     showEarlyAccessWarning(): boolean {
-      return this.internalValue.allowed.includes('PlannedForEarlyAccess') && !this.internalValue.allowed.includes('CurrentlyInEarlyAccess');
+      return this.allowed.includes('PlannedForEarlyAccess') && !this.allowed.includes('CurrentlyInEarlyAccess');
     },
     showEarlyAccessDanger(): boolean {
-      return this.internalValue.allowed.includes('CurrentlyInEarlyAccess') && !this.internalValue.allowed.includes('PlannedForEarlyAccess');
+      return this.allowed.includes('CurrentlyInEarlyAccess') && !this.allowed.includes('PlannedForEarlyAccess');
     }
   },
   methods: {
-    onChange(): void {
-      this.$emit('update:modelValue', { banned: this.internalValue.banned, required: [] });
+    updateModelValue(changes: Partial<LeagueTagOptionsViewModel>): void {
+      this.$emit('update:modelValue', { ...this.modelValue, ...changes });
     },
     resetValues(): void {
-      this.internalValue = deepClone(this.initialValue);
-      this.$emit('update:modelValue', { banned: this.internalValue.banned, required: [] });
+      this.$emit('update:modelValue', { banned: this.initialValue.banned, required: [] });
     }
   }
 });
