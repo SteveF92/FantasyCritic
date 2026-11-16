@@ -34,24 +34,28 @@
           <hr />
           <div class="text-well">
             <leagueCreationPresets v-model="presetInput"></leagueCreationPresets>
-            <b-alert variant="info" :model-value="true">These settings are just to provide a baseline, you'll be able to fine tune your settings in the next step.</b-alert>
-            <b-button class="col-10 offset-1" variant="info" @click="lockPresets" :disabled="!playerCountIsValid(presetInput.playerCount)">Select Preset</b-button>
+            <div class="preset-step">
+              <b-alert variant="info" :model-value="true" class="preset-step-copy">These settings are just to provide a baseline, you'll be able to fine tune your settings in the next step.</b-alert>
+              <b-button variant="primary" :disabled="!playerCountIsValid(presetInput.playerCount)" @click="lockPresets">Select Preset</b-button>
+            </div>
           </div>
         </template>
 
         <template v-if="presetSelected">
           <hr />
           <div class="text-well">
-            <b-alert variant="info" :model-value="true">
-              The following settings are our recommendation for a
-              <span class="selected-preset-option">{{ presetInput.experienceLevel }}</span>
-              level,
-              <span class="selected-preset-option">{{ presetInput.playerCount }}</span>
-              player league in
-              <span class="selected-preset-option">{{ presetInput.gameMode }}</span>
-              mode, but you are free to change them.
+            <div class="preset-step">
+              <b-alert variant="info" :model-value="true" class="preset-step-copy">
+                The following settings are our recommendation for a
+                <span class="selected-preset-option">{{ presetInput.experienceLevel }}</span>
+                level,
+                <span class="selected-preset-option">{{ presetInput.playerCount }}</span>
+                player league in
+                <span class="selected-preset-option">{{ presetInput.gameMode }}</span>
+                mode, but you are free to change them.
+              </b-alert>
               <b-button variant="secondary" @click="unlockPresets">Select a different preset</b-button>
-            </b-alert>
+            </div>
             <leagueYearSettings
               v-model="leagueYearSettings"
               :year="initialYear"
@@ -114,6 +118,7 @@
             <div class="alert alert-info disclaimer">Reminder: All of these settings can always be changed later.</div>
 
             <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" :model-value="true">{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
+            <div v-else-if="!readyToSetupLeagueYear" class="alert alert-warning disclaimer">Can't create league. Enter a league name.</div>
             <div v-else-if="!leagueYearIsValid" class="alert alert-warning disclaimer">Can't create league. Some of your settings are invalid.</div>
 
             <div class="form-group">
@@ -183,10 +188,10 @@ export default defineComponent({
   computed: {
     ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
     readyToSetupLeagueYear(): boolean {
-      return !!this.leagueName;
+      return !!this.leagueName.trim();
     },
     bidsOnlyBeforeNextDraftScheduleError(): string | null {
-      if (!this.leagueYearSettings?.bidsOnlyBeforeNextScheduledDraft) return null;
+      if (!this.leagueYearSettings.bidsOnlyBeforeNextScheduledDraft) return null;
       if (this.presetInput.gameMode !== 'Multi Draft') return null;
       const draftsMissingDate = this.drafts.slice(1).some((d) => !d.scheduledDate);
       if (draftsMissingDate) {
@@ -221,10 +226,10 @@ export default defineComponent({
   },
   methods: {
     playerCountIsValid(playerCount: number | null | undefined): boolean {
-      return !!playerCount && playerCount >= 2 && playerCount <= 20;
+      return typeof playerCount === 'number' && Number.isInteger(playerCount) && playerCount >= 2 && playerCount <= 20;
     },
     syncOneShotDrafts(gameMode: GameMode): void {
-      if (gameMode !== 'One Shot' || !this.leagueYearSettings) {
+      if (gameMode !== 'One Shot') {
         return;
       }
       this.drafts = [buildOneShotDraft(this.leagueYearSettings.standardGames, this.leagueYearSettings.counterPicks)];
@@ -275,8 +280,23 @@ label {
   text-align: right;
 }
 
+.preset-step {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  margin-bottom: 1rem;
+}
+
+.preset-step-copy {
+  flex: 1 1 20rem;
+  margin-bottom: 0;
+}
+
 .selected-preset-option {
-  color: black;
-  font-weight: bolder;
+  padding: 0.1em 0.45em;
+  border-radius: 0.25rem;
+  background-color: rgba(0, 0, 0, 0.3);
+  white-space: nowrap;
 }
 </style>
