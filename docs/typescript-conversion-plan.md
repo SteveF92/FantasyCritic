@@ -291,10 +291,17 @@ out.
 - `royaleHistory`
 - `royaleGroup` (+ `modals/royaleGroupInviteLinksModal`), `royaleGroupQuarter`
 
-### 10. League creation and settings
+### 10. League creation and settings (done)
 
 `DraftCreationSettings`, `leagueCreationPresets`, `leagueTagSelector`, `specialGameSlotSelector`,
 `leagueYearSettings`; then `createLeague`, `createConference`, `editLeague`, `manageDrafts`.
+
+- Server: `LeagueYearSettingsViewModel` split into `LeagueYearSettingsRequest` (no `LeagueID`,
+  `HasSpecialSlots` or `OneShotMode`) and `LeagueYearSettingsResponse`, which keeps the old shape for the
+  League page. Integration tests send fetched options back with `ToRequest()`.
+- `leagueYearSettings` and `leagueTagSelector` are real v-models: every edit emits a new object, with no
+  internal copy. `leagueCreationPresets` is a v-model of `PresetInput`, and `computePreset` returns a full
+  request.
 
 ### 11. Publisher
 
@@ -407,6 +414,15 @@ has the bug too.
 | 8 | `views/home.vue`, `components/leagueInviteTable.vue` | The League Invites tab passed `CompleteLeagueInviteViewModel` rows to `leagueTable`, which takes `LeagueWithStatusViewModel`. Invites now have their own table (envelope icon, league link, manager), so `leagueTable` keeps its exact type. No visible change | — | Done |
 | 8 | `components/leagueTable.vue` | The archive and un-archive icons are now native buttons named "Archive league" and "Un-archive league", so a keyboard can reach them. Icon margins and transforms were adjusted for Font Awesome 7 | — | Done |
 | — | `router/index.ts` | vue-router 5 warned on every navigation that `next()` in guards is deprecated. The guard now returns `'/home'`, `true` or `false`. The signed-out redirect to login now cancels the navigation, so `afterEach` skips the title when a navigation fails | — | Done |
+| 10 | `components/leagueYearSettings.vue` | Total games, counter picks, minimum bid and the three droppable counts were text inputs with plain `v-model`, so after an edit they held strings such as `"6"`. The server read them anyway, but `DraftCreationSettings`'s `Number` prop got a string. They're `type="number"` now, with spinner arrows | Yes | Done |
+| 10 | `components/leagueCreationPresets.vue` | The player count was a text input with `v-model.number`, so letters were stored as a string and produced a preset with `NaN` counts. It's `type="number"` now, and Select Preset needs a whole number from 2 to 20 | Yes | Done |
+| 10 | `components/leagueTagSelector.vue` | Reset Changes didn't emit, so after a drag the lists reset but the dragged value was what got saved | Yes | Done |
+| 10 | `components/leagueTagSelector.vue` | The lists were built once and never re-read, so re-applying a preset with a different experience level left the old lists up, and the next drag sent them back over the preset. The lists now come from the value | Yes | Done |
+| 10 | `components/leagueTagSelector.vue` | Banned system or unknown tags were hidden and silently un-banned on save; they now show in Banned and stay banned. Only one league has ever banned a system tag (`Cancelled`, in 2022). Banned follows the saved order instead of the store's; Allowed can't be reordered, since there's nothing to save | Yes | Done |
+| 10 | `components/specialGameSlotSelector.vue` | `getTags` drops tag names it can't find instead of pushing `undefined` | — | Done |
+| 10 | `views/createLeague.vue`, `views/createConference.vue` | New flow: choose a preset with Select Preset before any settings show. The year has a default and is locked once a preset is chosen. "Select a different preset" throws away edits to the settings. A name of only spaces counts as missing, and a missing name says so instead of "Some of your settings are invalid". Errors show in a `b-alert`, cleared on each submit | — | Done |
+| 10 | `views/createLeague.vue` | The "Custom Rules League" vs "Test League" explanation was a `b-alert` with no `show`, so it had never been visible. It shows now | Yes | Done |
+| 10 | `components/leagueTagSelector.vue` | At phone width the create pages scroll sideways, because the two tag columns are wider than the screen | Not checked | Not scheduled |
 | 10 | `views/editLeague.vue` | Passed no `game-mode` to `leagueYearSettings`, so a one-shot league was edited as `Standard`: the bidding section showed and `created()` turned `enableBids` on, which saving kept. It now passes One Shot, Multi Draft or Standard | Yes | Done |
 | 10 | `components/DraftCreationSettings.vue` | Clearing a draft's date sets it to `""`, which was sent as is, and the server can't read `""` as a date, so the create or edit failed. A cleared date is now sent as no date | Yes | Done |
 | 10 | `components/modals/addNewLeagueYearForm.vue`, `components/modals/conference/addNewConferenceYear.vue`, `views/editLeague.vue` | editLeague read a `freshSettings` query that nothing set. Starting a new league or conference year now sets it, so changing the standard game count recomputes the special slots, and the multi-draft "Visit the Manage Drafts page" alert is hidden | — | Done |
