@@ -14,6 +14,10 @@ export interface PresetResult {
   drafts: DraftSettingsRequest[];
 }
 
+export function playerCountIsValid(playerCount: number | null | undefined): playerCount is number {
+  return typeof playerCount === 'number' && Number.isInteger(playerCount) && playerCount >= 2 && playerCount <= 20;
+}
+
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------

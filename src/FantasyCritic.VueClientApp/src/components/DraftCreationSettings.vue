@@ -110,7 +110,7 @@ export default defineComponent({
     emitUpdate(): void {
       this.$emit(
         'update:modelValue',
-        this.internalDrafts.map((d) => ({ ...d }))
+        this.internalDrafts.map((d) => ({ ...d, scheduledDate: d.scheduledDate || undefined }))
       );
     },
     isScheduledDateOptional(index: number): boolean {

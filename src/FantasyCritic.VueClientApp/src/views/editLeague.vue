@@ -50,7 +50,6 @@ interface EditLeagueData {
   leagueYear: LeagueYearViewModel | null;
   firstDraft: DraftSettingsRequest | null;
   freshSettings: boolean;
-  isOneShotMode: boolean;
 }
 
 export default defineComponent({
@@ -69,8 +68,7 @@ export default defineComponent({
       leagueYearName: null,
       leagueYear: null,
       firstDraft: null,
-      freshSettings: false,
-      isOneShotMode: false
+      freshSettings: !!this.$route.query.freshSettings
     };
   },
   computed: {
@@ -124,10 +122,6 @@ export default defineComponent({
     }
   },
   async created() {
-    this.freshSettings = false;
-    if (this.$route.query.freshSettings) {
-      this.freshSettings = !!this.$route.query.freshSettings;
-    }
     await this.fetchLeagueYear();
   },
   methods: {
@@ -164,17 +158,21 @@ export default defineComponent({
         throw new Error('League Year settings not initialized');
       }
 
-      if (!this.isMultiDraft && !this.firstDraft) {
-        throw new Error('Draft settings are not properly configured.');
+      let firstDraft: DraftSettingsRequest | undefined;
+      if (!this.isMultiDraft) {
+        if (!this.firstDraft) {
+          throw new Error('Draft settings are not properly configured.');
+        }
+        firstDraft = this.firstDraft;
       }
 
       this.errorInfo = '';
       const request: EditLeagueYearRequest = {
         leagueID: this.leagueid,
         year: this.year,
-        leagueYearName: this.leagueYearName ?? undefined,
+        leagueYearName: this.leagueYearName || undefined,
         leagueYearSettings: this.leagueYearSettings,
-        firstDraft: this.isMultiDraft ? undefined : this.firstDraft!
+        firstDraft: firstDraft
       };
       leagueManagerClient.editLeagueYearSettings(request).then(this.responseHandler).catch(this.catchHandler);
     },

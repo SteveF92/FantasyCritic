@@ -380,7 +380,7 @@ export default defineComponent({
         leagueID: this.leagueid,
         year: this.year,
         name: draftName,
-        scheduledDate: this.newDraft.scheduledDate ?? undefined,
+        scheduledDate: this.newDraft.scheduledDate || undefined,
         gamesToDraft: this.newDraft.gamesToDraft,
         counterPicksToDraft: this.newDraft.counterPicksToDraft,
         additionalStandardGames: this.newDraft.additionalStandardGames,

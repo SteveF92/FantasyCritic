@@ -127,7 +127,7 @@ import { mapState } from 'pinia';
 import { conferenceClient, type CreateConferenceRequest, type DraftSettingsRequest, type LeagueYearSettingsRequest } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { getApiErrorMessage } from '@/utilities/apiError';
-import { buildOneShotDraft, computePreset, type GameMode, type PresetInput } from '@/utilities/leagueCreationPresets';
+import { buildOneShotDraft, computePreset, playerCountIsValid, type GameMode, type PresetInput } from '@/utilities/leagueCreationPresets';
 import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
 import LeagueCreationPresets from '@/components/leagueCreationPresets.vue';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
@@ -188,7 +188,7 @@ export default defineComponent({
       return null;
     },
     leagueYearIsValid(): boolean {
-      const validNumberOfPlayers = this.playerCountIsValid(this.presetInput.playerCount);
+      const validNumberOfPlayers = playerCountIsValid(this.presetInput.playerCount);
       if (!validNumberOfPlayers || !this.drafts.length) {
         return false;
       }
@@ -212,17 +212,15 @@ export default defineComponent({
     }
   },
   methods: {
-    playerCountIsValid(playerCount: number | null | undefined): boolean {
-      return typeof playerCount === 'number' && Number.isInteger(playerCount) && playerCount >= 2 && playerCount <= 20;
-    },
+    playerCountIsValid,
     syncOneShotDrafts(gameMode: GameMode): void {
-      if (gameMode !== 'One Shot' || !this.leagueYearSettings) {
+      if (gameMode !== 'One Shot') {
         return;
       }
       this.drafts = [buildOneShotDraft(this.leagueYearSettings.standardGames, this.leagueYearSettings.counterPicks)];
     },
     lockPresets() {
-      if (!this.presetInput.playerCount || this.presetInput.playerCount < 2 || this.presetInput.playerCount > 20) return;
+      if (!playerCountIsValid(this.presetInput.playerCount)) return;
       const presetValues = computePreset(this.presetInput.gameMode, this.presetInput.experienceLevel, this.presetInput.playerCount, this.initialYear);
       this.leagueYearSettings = presetValues.settings;
       this.drafts = presetValues.drafts;
