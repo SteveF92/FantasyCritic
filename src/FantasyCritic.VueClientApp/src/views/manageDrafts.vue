@@ -304,7 +304,7 @@ export default defineComponent({
       this.editingDraftId = draft.draftID;
       this.editForm = {
         name: draft.name,
-        scheduledDate: draft.scheduledDate,
+        scheduledDate: draft.scheduledDate ?? null,
         gamesToDraft: draft.gamesToDraft,
         counterPicksToDraft: draft.counterPicksToDraft,
         counterPicksMustBeFromThisDraft: draft.counterPicksMustBeFromThisDraft ?? true
@@ -322,7 +322,7 @@ export default defineComponent({
         leagueID: this.leagueid,
         year: this.year,
         name: this.editForm.name,
-        scheduledDate: this.editForm.scheduledDate || null,
+        scheduledDate: this.editForm.scheduledDate ?? undefined,
         gamesToDraft: this.editForm.gamesToDraft,
         counterPicksToDraft: this.editForm.counterPicksToDraft,
         counterPicksMustBeFromThisDraft: this.editForm.counterPicksMustBeFromThisDraft
@@ -380,16 +380,15 @@ export default defineComponent({
         leagueID: this.leagueid,
         year: this.year,
         name: draftName,
-        scheduledDate: this.newDraft.scheduledDate || null,
+        scheduledDate: this.newDraft.scheduledDate ?? undefined,
         gamesToDraft: this.newDraft.gamesToDraft,
         counterPicksToDraft: this.newDraft.counterPicksToDraft,
         additionalStandardGames: this.newDraft.additionalStandardGames,
         additionalCounterPicks: this.newDraft.additionalCounterPicks,
-        newSpecialGameSlots: this.newDraft.newSpecialGameSlots
+        newSpecialGameSlots: this.newDraft.newSpecialGameSlots,
+        counterPicksMustBeFromThisDraft: this.newDraft.counterPicksMustBeFromThisDraft
       };
-      if (this.newDraft.counterPicksToDraft > 0) {
-        request.counterPicksMustBeFromThisDraft = this.newDraft.counterPicksMustBeFromThisDraft;
-      }
+
       try {
         await leagueManagerClient.createLeagueDraft(request);
         this.resetNewDraftForm();
