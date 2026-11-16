@@ -85,13 +85,6 @@ export default defineComponent({
     updateModelValue(changes: Partial<PresetInput>): void {
       this.$emit('update:modelValue', { ...this.modelValue, ...changes });
     }
-
-    //I don't know if we need this anymore
-    // emitIfReady(): void {
-    //   if (!this.playerCount || this.playerCount < 2 || this.playerCount > 20) return;
-    //   const result = computePreset(this.gameMode, this.experienceLevel, this.playerCount, this.year);
-    //   this.$emit('presetApplied', { gameMode: this.gameMode, experienceLevel: this.experienceLevel, ...result });
-    // }
   }
 });
 </script>

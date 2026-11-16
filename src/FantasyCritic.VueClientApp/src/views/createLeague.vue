@@ -2,10 +2,7 @@
   <div class="col-md-10 offset-md-1 col-sm-12">
     <h1>Create a League</h1>
     <hr />
-    <div v-show="errorInfo" class="alert alert-danger">
-      <h2>Error!</h2>
-      <p>{{ errorInfo }}</p>
-    </div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <template v-if="possibleLeagueOptions">
       <div v-if="possibleLeagueOptions.openYears.length === 0" class="alert alert-warning">
         Unfortunately, leagues cannot be created right now, as the current year is closed and the next year is not open yet. Check Discord for updates.
@@ -27,7 +24,7 @@
           <div class="form-group">
             <label for="intialYear" class="control-label">Year to Play</label>
             <p>The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the December before the new year begins.</p>
-            <select id="initialYear" v-model="initialYear" class="form-control">
+            <select id="initialYear" v-model="initialYear" class="form-control" :disabled="presetSelected">
               <option v-for="possibleYear in possibleLeagueOptions.openYears" :key="possibleYear" :value="possibleYear">{{ possibleYear }}</option>
             </select>
           </div>
@@ -37,7 +34,8 @@
           <hr />
           <div class="text-well">
             <leagueCreationPresets v-model="presetInput"></leagueCreationPresets>
-            <b-button class="col-10 offset-1" variant="info" @click="lockPresets">Select Preset</b-button>
+            <b-alert variant="info" :model-value="true">These settings are just to provide a baseline, you'll be able to fine tune your settings in the next step.</b-alert>
+            <b-button class="col-10 offset-1" variant="info" @click="lockPresets" :disabled="!playerCountIsValid(presetInput.playerCount)">Select Preset</b-button>
           </div>
         </template>
 
@@ -45,7 +43,7 @@
           <hr />
           <div class="text-well">
             <b-alert variant="info" :model-value="true">
-              The following settings are our reccomendation for a
+              The following settings are our recommendation for a
               <span class="selected-preset-option">{{ presetInput.experienceLevel }}</span>
               level,
               <span class="selected-preset-option">{{ presetInput.playerCount }}</span>
@@ -54,7 +52,6 @@
               mode, but you are free to change them.
               <b-button variant="secondary" @click="unlockPresets">Select a different preset</b-button>
             </b-alert>
-            <div></div>
             <leagueYearSettings
               v-model="leagueYearSettings"
               :year="initialYear"
@@ -106,7 +103,7 @@
               </div>
             </div>
 
-            <b-alert variant="info">
+            <b-alert variant="info" :model-value="true">
               The difference between a "Custom Rules League" and a "Test League" is that a "Custom Rules League" will still be listed alongside your normal leagues and you will see upcoming games for
               that league on your home page. There is a dedicated home page tab for test leagues, and the games are not listed in your upcoming games on the home page. You
               <em>are</em>
@@ -135,7 +132,7 @@ import { mapState } from 'pinia';
 import { leagueManagerClient, type CreateLeagueRequest, type DraftSettingsRequest, type LeagueYearSettingsRequest } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { getApiErrorMessage } from '@/utilities/apiError';
-import { buildOneShotDraft, computePreset, GameMode, type PresetInput } from '@/utilities/leagueCreationPresets';
+import { buildOneShotDraft, computePreset, type GameMode, type PresetInput } from '@/utilities/leagueCreationPresets';
 import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
 import LeagueCreationPresets from '@/components/leagueCreationPresets.vue';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
@@ -161,7 +158,7 @@ export default defineComponent({
     DraftCreationSettings
   },
   data(): CreateLeagueData {
-    const initialYear = useInterLeagueStore().supportedYears.filter((x) => x.openForPlay)[0].year;
+    const initialYear = useInterLeagueStore().possibleLeagueOptions.openYears[0];
     const defaultGameMode = 'Standard';
     const defaultExperienceLevel = 'Standard';
     //We don't actually want to show a default number of players, but we have to choose something here to get default values for everything.
@@ -186,7 +183,7 @@ export default defineComponent({
   computed: {
     ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
     readyToSetupLeagueYear(): boolean {
-      return !!this.leagueName && !!this.initialYear;
+      return !!this.leagueName;
     },
     bidsOnlyBeforeNextDraftScheduleError(): string | null {
       if (!this.leagueYearSettings?.bidsOnlyBeforeNextScheduledDraft) return null;
@@ -198,7 +195,7 @@ export default defineComponent({
       return null;
     },
     leagueYearIsValid(): boolean {
-      const validNumberOfPlayers = this.presetInput.playerCount && this.presetInput.playerCount >= 2;
+      const validNumberOfPlayers = this.playerCountIsValid(this.presetInput.playerCount);
       if (!validNumberOfPlayers || !this.drafts.length) {
         return false;
       }
@@ -216,17 +213,16 @@ export default defineComponent({
         this.leagueYearEverValid = true;
       }
     },
-    gameMode(mode: GameMode) {
-      this.syncOneShotDrafts(mode);
-    },
     leagueYearSettings: {
-      deep: true,
       handler() {
         this.syncOneShotDrafts(this.presetInput.gameMode);
       }
     }
   },
   methods: {
+    playerCountIsValid(playerCount: number | null | undefined): boolean {
+      return !!playerCount && playerCount >= 2 && playerCount <= 20;
+    },
     syncOneShotDrafts(gameMode: GameMode): void {
       if (gameMode !== 'One Shot' || !this.leagueYearSettings) {
         return;
@@ -244,6 +240,7 @@ export default defineComponent({
       this.presetSelected = false;
     },
     async postRequest(): Promise<void> {
+      this.errorInfo = '';
       const request: CreateLeagueRequest = {
         leagueName: this.leagueName.trim(),
         publicLeague: this.publicLeague,
