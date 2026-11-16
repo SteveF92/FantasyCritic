@@ -26,7 +26,7 @@
 
       <slot name="draft-settings"></slot>
 
-      <div v-if="isMultiDraft" class="alert alert-info">
+      <div v-if="isMultiDraft && !freshSettings" class="alert alert-info">
         This league has multiple drafts.
         <router-link v-if="manageDraftsRoute" :to="manageDraftsRoute">Visit the Manage Drafts page</router-link>
         <span v-else>Visit the Manage Drafts page</span>

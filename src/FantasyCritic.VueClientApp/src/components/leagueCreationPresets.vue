@@ -16,7 +16,7 @@
         — the full Fantasy Critic experience with one draft, then you bid for games throughout the rest of the year.
         <br />
         <strong>Multi Draft</strong>
-        — run two or more drafts across the year. Bids between drafts are off by default.
+        — run two or more drafts at different points in the year. You can choose whether or not to enable bids in between drafts.
         <br />
         <strong>One Shot</strong>
         — one draft, which is final. No drops, bids, or trades. Great for a low-commitment league.
