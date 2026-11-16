@@ -1,18 +1,6 @@
 <template>
   <div>
     <div>
-      <div v-show="!editMode">
-        <h2>Game Settings</h2>
-        <p>Settings in this section can be different from year to year for your league.</p>
-      </div>
-    </div>
-
-    <div>
-      <div v-if="freshSettings">
-        <hr />
-        <label>We've pre-filled recommended settings below. You are free to change them.</label>
-      </div>
-
       <div class="form-group">
         <label for="standardGames" class="control-label">Total Number of Games</label>
         <p>This is the total number of games that each player will have on their roster.</p>

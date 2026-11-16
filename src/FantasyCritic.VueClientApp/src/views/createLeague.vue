@@ -12,7 +12,6 @@
           If you already have a league and are looking to renew it for a new year, use the "Start New League" link on the sidebar of your league. That will keep your years linked together.
         </div>
         <div class="text-well">
-          <h2>Basic Settings</h2>
           <div class="form-group">
             <label for="leagueName" class="control-label">League Name</label>
             <ValidationField v-slot="{ errors }" :model-value="leagueName" name="League Name" rules="required">
