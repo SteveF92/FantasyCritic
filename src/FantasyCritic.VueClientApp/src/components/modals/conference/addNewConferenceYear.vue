@@ -60,7 +60,7 @@ export default {
       try {
         await axios.post('/api/Conference/AddNewConferenceYear', model);
         this.$refs.addNewConferenceYearRef.hide();
-        this.$router.push({ name: 'editLeague', params: { leagueid: this.conference.primaryLeague.leagueID, year: this.selectedYear } });
+        this.$router.push({ name: 'editLeague', params: { leagueid: this.conference.primaryLeague.leagueID, year: this.selectedYear }, query: { freshSettings: true } });
       } catch (error) {
         this.errorInfo = error.response.data;
       }

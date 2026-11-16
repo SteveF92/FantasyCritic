@@ -34,7 +34,7 @@
         <div class="form-group">
           <label for="intialYear" class="control-label">Year to Play</label>
           <p>The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the December before the new year begins.</p>
-          <select id="initialYear" v-model="initialYear" class="form-control">
+          <select id="initialYear" v-model="initialYear" class="form-control" :disabled="presetSelected">
             <option v-for="possibleYear in possibleLeagueOptions.openYears" :key="possibleYear" :value="possibleYear">{{ possibleYear }}</option>
           </select>
         </div>
@@ -109,6 +109,7 @@
           <div class="alert alert-info disclaimer">Reminder: All of these settings can always be changed later.</div>
 
           <b-alert v-if="bidsOnlyBeforeNextDraftScheduleError" variant="warning" :model-value="true">{{ bidsOnlyBeforeNextDraftScheduleError }}</b-alert>
+          <div v-else-if="!readyToSetupLeagueYear" class="alert alert-warning disclaimer">Can't create league. Enter a league name.</div>
           <div v-else-if="!leagueYearIsValid" class="alert alert-warning disclaimer">Can't create league. Some of your settings are invalid.</div>
 
           <div class="form-group">

@@ -2,10 +2,7 @@
   <div class="col-md-10 offset-md-1 col-sm-12">
     <h1>Edit League Year Settings</h1>
     <hr />
-    <div v-show="errorInfo" class="alert alert-danger">
-      <h2>Error!</h2>
-      <p>{{ errorInfo }}</p>
-    </div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
     <div v-if="leagueYearSettings && leagueYear">
       <div class="text-well league-options">
@@ -14,7 +11,7 @@
           <input id="leagueYearName" v-model="leagueYearName" name="League Year Name" type="text" class="form-control input" placeholder="Leave blank to use the league name" />
           <p>If set, this name will be displayed instead of the league name for this specific year only.</p>
         </div>
-        <leagueYearSettings v-model="leagueYearSettings" :year="year" edit-mode :fresh-settings="freshSettings" :is-multi-draft="isMultiDraft" :league-id="leagueid">
+        <leagueYearSettings v-model="leagueYearSettings" :year="year" edit-mode :fresh-settings="freshSettings" :is-multi-draft="isMultiDraft" :game-mode="gameMode" :league-id="leagueid">
           <template v-if="!isMultiDraft && firstDraft && !oneShotMode" #draft-settings>
             <hr />
             <h3>Draft Settings</h3>
@@ -42,7 +39,7 @@ import { defineComponent } from 'vue';
 
 import { leagueClient, leagueManagerClient, type DraftSettingsRequest, type EditLeagueYearRequest, type LeagueYearSettingsRequest, type LeagueYearViewModel } from '@/api/clients';
 import { getApiErrorMessage } from '@/utilities/apiError';
-import { buildOneShotDraft } from '@/utilities/leagueCreationPresets';
+import { buildOneShotDraft, type GameMode } from '@/utilities/leagueCreationPresets';
 import DraftCreationSettings from '@/components/DraftCreationSettings.vue';
 import LeagueYearSettings from '@/components/leagueYearSettings.vue';
 
@@ -53,6 +50,7 @@ interface EditLeagueData {
   leagueYear: LeagueYearViewModel | null;
   firstDraft: DraftSettingsRequest | null;
   freshSettings: boolean;
+  isOneShotMode: boolean;
 }
 
 export default defineComponent({
@@ -71,7 +69,8 @@ export default defineComponent({
       leagueYearName: null,
       leagueYear: null,
       firstDraft: null,
-      freshSettings: false
+      freshSettings: false,
+      isOneShotMode: false
     };
   },
   computed: {
@@ -98,6 +97,9 @@ export default defineComponent({
     oneShotMode(): boolean {
       return this.leagueYear?.settings.oneShotMode ?? false;
     },
+    gameMode(): GameMode {
+      return this.oneShotMode ? 'One Shot' : this.isMultiDraft ? 'Multi Draft' : 'Standard';
+    },
     firstDraftAsList: {
       get(): DraftSettingsRequest[] {
         return this.firstDraft ? [this.firstDraft] : [];
@@ -105,12 +107,6 @@ export default defineComponent({
       set(val: DraftSettingsRequest[]) {
         this.firstDraft = val[0] ?? null;
       }
-    },
-    activePlayersInLeague(): number | null {
-      if (!this.leagueYear || !this.leagueYear.players) {
-        return null;
-      }
-      return this.leagueYear.players.length;
     },
     isMultiDraft(): boolean {
       return (this.leagueYear?.drafts?.length ?? 0) >= 2;
@@ -135,9 +131,6 @@ export default defineComponent({
     await this.fetchLeagueYear();
   },
   methods: {
-    playerCountIsValid(playerCount: number | null | undefined): boolean {
-      return typeof playerCount === 'number' && Number.isInteger(playerCount) && playerCount >= 2 && playerCount <= 20;
-    },
     syncOneShotDraft(): void {
       if (!this.oneShotMode || !this.leagueYearSettings) {
         return;
@@ -150,6 +143,7 @@ export default defineComponent({
 
         this.leagueYear = leagueYear;
         this.leagueYearSettings = leagueYear.settings;
+        this.leagueYearName = leagueYear.settings.leagueYearName ?? null;
         if (!this.isMultiDraft && leagueYear.drafts && leagueYear.drafts.length > 0) {
           const d = leagueYear.drafts[0];
           this.firstDraft = {
@@ -170,8 +164,8 @@ export default defineComponent({
         throw new Error('League Year settings not initialized');
       }
 
-      if (this.isMultiDraft && !this.firstDraft) {
-        throw new Error('FirstDraft not properly configured.');
+      if (!this.isMultiDraft && !this.firstDraft) {
+        throw new Error('Draft settings are not properly configured.');
       }
 
       this.errorInfo = '';

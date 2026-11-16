@@ -322,7 +322,7 @@ export default defineComponent({
         leagueID: this.leagueid,
         year: this.year,
         name: this.editForm.name,
-        scheduledDate: this.editForm.scheduledDate ?? undefined,
+        scheduledDate: this.editForm.scheduledDate || undefined,
         gamesToDraft: this.editForm.gamesToDraft,
         counterPicksToDraft: this.editForm.counterPicksToDraft,
         counterPicksMustBeFromThisDraft: this.editForm.counterPicksMustBeFromThisDraft
