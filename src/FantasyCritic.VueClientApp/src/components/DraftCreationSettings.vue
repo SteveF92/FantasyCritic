@@ -7,7 +7,7 @@
     <div v-for="(draft, index) in modelValue" :key="index" class="draft-section">
       <div v-if="modelValue.length > 1" class="form-group">
         <label :for="`draftName-${index}`" class="control-label">Draft Name</label>
-        <input :id="`draftName-${index}`" type="text" :model-value="draft.name" @update:model-value="(name) => updateDraftName(index, name)" class="form-control input" />
+        <input :id="`draftName-${index}`" type="text" :value="draft.name" @input="updateDraftName(index, $event)" class="form-control input" />
       </div>
 
       <div class="form-group">
@@ -15,18 +15,13 @@
           Scheduled Date
           <span v-show="isScheduledDateOptional(index)">(Optional)</span>
         </label>
-        <input :id="`scheduledDate-${index}`" type="date" :model-value="draft.scheduledDate" @update:model-value="(date) => updateDraftScheduledDate(index, date)" class="form-control input" />
+        <input :id="`scheduledDate-${index}`" type="date" :value="draft.scheduledDate" @input="updateDraftScheduledDate(index, $event)" class="form-control input" />
       </div>
 
       <div class="form-group">
         <label :for="`gamesToDraft-${index}`" class="control-label">Games to Draft</label>
         <ValidationField v-slot="{ errors }" :model-value="draft.gamesToDraft" :name="`gamesToDraft-${index}`" rules="required|min_value:1|max_value:50|integer">
-          <input
-            :id="`gamesToDraft-${index}`"
-            type="number"
-            :model-value="draft.gamesToDraft"
-            @update:model-value="(gamesToDraft) => updateDraftGamesToDraft(index, gamesToDraft)"
-            class="form-control input" />
+          <input :id="`gamesToDraft-${index}`" type="number" :value="draft.gamesToDraft" @input="updateDraftGamesToDraft(index, $event)" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
@@ -34,20 +29,13 @@
       <div class="form-group">
         <label :for="`counterPicksToDraft-${index}`" class="control-label">Counter Picks to Draft</label>
         <ValidationField v-slot="{ errors }" :model-value="draft.counterPicksToDraft" :name="`counterPicksToDraft-${index}`" rules="required|min_value:0|max_value:50|integer">
-          <input
-            :id="`counterPicksToDraft-${index}`"
-            type="number"
-            :model-value="draft.counterPicksToDraft"
-            @update:model-value="(counterPicksToDraft) => updateDraftCounterPicksToDraft(index, counterPicksToDraft)"
-            class="form-control input" />
+          <input :id="`counterPicksToDraft-${index}`" type="number" :value="draft.counterPicksToDraft" @input="updateDraftCounterPicksToDraft(index, $event)" class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
 
       <div v-if="gameMode === 'Multi Draft' && draft.counterPicksToDraft > 0" class="form-group">
-        <b-form-checkbox
-          :model-value="draft.counterPicksMustBeFromThisDraft"
-          @update:model-value="(counterPicksMustBeFromThisDraft) => updateDraftCounterPicksMustBeFromThisDraft(index, counterPicksMustBeFromThisDraft)">
+        <b-form-checkbox :model-value="draft.counterPicksMustBeFromThisDraft" @update:model-value="(checked) => updateDraftCounterPicksMustBeFromThisDraft(index, checked === true)">
           <span class="checkbox-label">Require counter picks to be made on games taken during this draft.</span>
           <p>
             If checked, all of the counter picks included in this draft must be of the standard games taken in this draft. If you don't enable this, players will be able to counter pick a game that
@@ -101,83 +89,25 @@ export default defineComponent({
       return this.gameMode === 'Multi Draft' && !this.editMode;
     }
   },
-  //TODO: Do I need anything from here?
-  // watch: {
-  //   modelValue: {
-  //     immediate: true,
-  //     handler(newVal: DraftSettingsRequest[]) {
-  //       const normalized = newVal.map((d, index) => ({
-  //         ...d,
-  //         name: d.name?.trim() ? d.name : getDefaultDraftName(index)
-  //       }));
-  //       const needsEmit = normalized.some((d, index) => d.name !== newVal[index]?.name);
-  //       this.internalDrafts = normalized;
-  //       if (needsEmit) {
-  //         this.$nextTick(() => this.emitUpdate());
-  //       }
-  //     }
-  //   }
-  // },
   methods: {
-    updateDraftName(indexToUpdate: number, name: string) {
-      const newDraftArray: DraftSettingsRequest[] = [];
-      for (const [index, draft] of this.computedModelValue.entries()) {
-        if (index === indexToUpdate) {
-          newDraftArray.push({ ...draft, name: name });
-        }
-
-        newDraftArray.push(draft);
-      }
-
-      this.computedModelValue = newDraftArray;
+    updateDraftName(indexToUpdate: number, event: Event): void {
+      const name = (event.target as HTMLInputElement).value;
+      this.computedModelValue = this.computedModelValue.map((draft, index) => (index === indexToUpdate ? { ...draft, name } : draft));
     },
-    updateDraftScheduledDate(indexToUpdate: number, scheduledDate: string) {
-      const newDraftArray: DraftSettingsRequest[] = [];
-      for (const [index, draft] of this.computedModelValue.entries()) {
-        if (index === indexToUpdate) {
-          newDraftArray.push({ ...draft, scheduledDate: scheduledDate });
-        }
-
-        newDraftArray.push(draft);
-      }
-
-      this.computedModelValue = newDraftArray;
+    updateDraftScheduledDate(indexToUpdate: number, event: Event): void {
+      const scheduledDate = (event.target as HTMLInputElement).value;
+      this.computedModelValue = this.computedModelValue.map((draft, index) => (index === indexToUpdate ? { ...draft, scheduledDate } : draft));
     },
-    updateDraftGamesToDraft(indexToUpdate: number, gamesToDraft: number) {
-      const newDraftArray: DraftSettingsRequest[] = [];
-      for (const [index, draft] of this.computedModelValue.entries()) {
-        if (index === indexToUpdate) {
-          newDraftArray.push({ ...draft, gamesToDraft: gamesToDraft });
-        }
-
-        newDraftArray.push(draft);
-      }
-
-      this.computedModelValue = newDraftArray;
+    updateDraftGamesToDraft(indexToUpdate: number, event: Event): void {
+      const gamesToDraft = (event.target as HTMLInputElement).valueAsNumber;
+      this.computedModelValue = this.computedModelValue.map((draft, index) => (index === indexToUpdate ? { ...draft, gamesToDraft } : draft));
     },
-    updateDraftCounterPicksToDraft(indexToUpdate: number, counterPicksToDraft: number) {
-      const newDraftArray: DraftSettingsRequest[] = [];
-      for (const [index, draft] of this.computedModelValue.entries()) {
-        if (index === indexToUpdate) {
-          newDraftArray.push({ ...draft, counterPicksToDraft: counterPicksToDraft });
-        }
-
-        newDraftArray.push(draft);
-      }
-
-      this.computedModelValue = newDraftArray;
+    updateDraftCounterPicksToDraft(indexToUpdate: number, event: Event): void {
+      const counterPicksToDraft = (event.target as HTMLInputElement).valueAsNumber;
+      this.computedModelValue = this.computedModelValue.map((draft, index) => (index === indexToUpdate ? { ...draft, counterPicksToDraft } : draft));
     },
-    updateDraftCounterPicksMustBeFromThisDraft(indexToUpdate: number, counterPicksMustBeFromThisDraft: boolean) {
-      const newDraftArray: DraftSettingsRequest[] = [];
-      for (const [index, draft] of this.computedModelValue.entries()) {
-        if (index === indexToUpdate) {
-          newDraftArray.push({ ...draft, counterPicksMustBeFromThisDraft: counterPicksMustBeFromThisDraft });
-        }
-
-        newDraftArray.push(draft);
-      }
-
-      this.computedModelValue = newDraftArray;
+    updateDraftCounterPicksMustBeFromThisDraft(indexToUpdate: number, counterPicksMustBeFromThisDraft: boolean): void {
+      this.computedModelValue = this.computedModelValue.map((draft, index) => (index === indexToUpdate ? { ...draft, counterPicksMustBeFromThisDraft } : draft));
     },
     isScheduledDateOptional(index: number): boolean {
       if (this.gameMode !== 'Multi Draft' || !this.bidsOnlyBeforeNextScheduledDraft) {
