@@ -4,10 +4,10 @@
       Total games to draft across all drafts ({{ totalGamesToDraft }}) exceeds the total number of games ({{ standardGames }}). Please adjust the numbers below.
     </div>
 
-    <div v-for="(draft, index) in internalDrafts" :key="index" class="draft-section">
-      <div v-if="internalDrafts.length > 1" class="form-group">
+    <div v-for="(draft, index) in modelValue" :key="index" class="draft-section">
+      <div v-if="modelValue.length > 1" class="form-group">
         <label :for="`draftName-${index}`" class="control-label">Draft Name</label>
-        <input :id="`draftName-${index}`" v-model="draft.name" type="text" class="form-control input" @input="emitUpdate" />
+        <input :id="`draftName-${index}`" type="text" :model-value="draft.name" @update:model-value="(name) => updateDraftName(index, name)" class="form-control input" />
       </div>
 
       <div class="form-group">
@@ -15,13 +15,18 @@
           Scheduled Date
           <span v-show="isScheduledDateOptional(index)">(Optional)</span>
         </label>
-        <input :id="`scheduledDate-${index}`" v-model="draft.scheduledDate" type="date" class="form-control input" @input="emitUpdate" />
+        <input :id="`scheduledDate-${index}`" type="date" :model-value="draft.scheduledDate" @update:model-value="(date) => updateDraftScheduledDate(index, date)" class="form-control input" />
       </div>
 
       <div class="form-group">
         <label :for="`gamesToDraft-${index}`" class="control-label">Games to Draft</label>
         <ValidationField v-slot="{ errors }" :model-value="draft.gamesToDraft" :name="`gamesToDraft-${index}`" rules="required|min_value:1|max_value:50|integer">
-          <input :id="`gamesToDraft-${index}`" v-model.number="draft.gamesToDraft" type="text" class="form-control input" @input="emitUpdate" />
+          <input
+            :id="`gamesToDraft-${index}`"
+            type="number"
+            :model-value="draft.gamesToDraft"
+            @update:model-value="(gamesToDraft) => updateDraftGamesToDraft(index, gamesToDraft)"
+            class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
@@ -29,13 +34,20 @@
       <div class="form-group">
         <label :for="`counterPicksToDraft-${index}`" class="control-label">Counter Picks to Draft</label>
         <ValidationField v-slot="{ errors }" :model-value="draft.counterPicksToDraft" :name="`counterPicksToDraft-${index}`" rules="required|min_value:0|max_value:50|integer">
-          <input :id="`counterPicksToDraft-${index}`" v-model.number="draft.counterPicksToDraft" type="text" class="form-control input" @input="emitUpdate" />
+          <input
+            :id="`counterPicksToDraft-${index}`"
+            type="number"
+            :model-value="draft.counterPicksToDraft"
+            @update:model-value="(counterPicksToDraft) => updateDraftCounterPicksToDraft(index, counterPicksToDraft)"
+            class="form-control input" />
           <span class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
 
       <div v-if="gameMode === 'Multi Draft' && draft.counterPicksToDraft > 0" class="form-group">
-        <b-form-checkbox v-model="draft.counterPicksMustBeFromThisDraft" @update:model-value="emitUpdate">
+        <b-form-checkbox
+          :model-value="draft.counterPicksMustBeFromThisDraft"
+          @update:model-value="(counterPicksMustBeFromThisDraft) => updateDraftCounterPicksMustBeFromThisDraft(index, counterPicksMustBeFromThisDraft)">
           <span class="checkbox-label">Require counter picks to be made on games taken during this draft.</span>
           <p>
             If checked, all of the counter picks included in this draft must be of the standard games taken in this draft. If you don't enable this, players will be able to counter pick a game that
@@ -59,11 +71,7 @@
 import { defineComponent, type PropType } from 'vue';
 
 import type { DraftSettingsRequest } from '@/api/clients';
-import { getDefaultDraft, getDefaultDraftName, type GameMode } from '@/utilities/leagueCreationPresets';
-
-interface DraftCreationSettingsData {
-  internalDrafts: DraftSettingsRequest[];
-}
+import { getDefaultDraft, type GameMode } from '@/utilities/leagueCreationPresets';
 
 export default defineComponent({
   name: 'DraftCreationSettings',
@@ -77,41 +85,99 @@ export default defineComponent({
   emits: {
     'update:modelValue': (_value: DraftSettingsRequest[]) => true
   },
-  data(): DraftCreationSettingsData {
-    return {
-      internalDrafts: []
-    };
-  },
   computed: {
+    computedModelValue: {
+      get(): DraftSettingsRequest[] {
+        return this.modelValue;
+      },
+      set(newValue: DraftSettingsRequest[]): void {
+        this.$emit('update:modelValue', newValue);
+      }
+    },
     totalGamesToDraft(): number {
-      return this.internalDrafts.reduce((sum, d) => sum + (d.gamesToDraft || 0), 0);
+      return this.modelValue.reduce((sum, d) => sum + (d.gamesToDraft || 0), 0);
     },
     showAddButton(): boolean {
       return this.gameMode === 'Multi Draft' && !this.editMode;
     }
   },
-  watch: {
-    modelValue: {
-      immediate: true,
-      handler(newVal: DraftSettingsRequest[]) {
-        const normalized = newVal.map((d, index) => ({
-          ...d,
-          name: d.name?.trim() ? d.name : getDefaultDraftName(index)
-        }));
-        const needsEmit = normalized.some((d, index) => d.name !== newVal[index]?.name);
-        this.internalDrafts = normalized;
-        if (needsEmit) {
-          this.$nextTick(() => this.emitUpdate());
-        }
-      }
-    }
-  },
+  //TODO: Do I need anything from here?
+  // watch: {
+  //   modelValue: {
+  //     immediate: true,
+  //     handler(newVal: DraftSettingsRequest[]) {
+  //       const normalized = newVal.map((d, index) => ({
+  //         ...d,
+  //         name: d.name?.trim() ? d.name : getDefaultDraftName(index)
+  //       }));
+  //       const needsEmit = normalized.some((d, index) => d.name !== newVal[index]?.name);
+  //       this.internalDrafts = normalized;
+  //       if (needsEmit) {
+  //         this.$nextTick(() => this.emitUpdate());
+  //       }
+  //     }
+  //   }
+  // },
   methods: {
-    emitUpdate(): void {
-      this.$emit(
-        'update:modelValue',
-        this.internalDrafts.map((d) => ({ ...d, scheduledDate: d.scheduledDate || undefined }))
-      );
+    updateDraftName(indexToUpdate: number, name: string) {
+      const newDraftArray: DraftSettingsRequest[] = [];
+      for (const [index, draft] of this.computedModelValue.entries()) {
+        if (index === indexToUpdate) {
+          newDraftArray.push({ ...draft, name: name });
+        }
+
+        newDraftArray.push(draft);
+      }
+
+      this.computedModelValue = newDraftArray;
+    },
+    updateDraftScheduledDate(indexToUpdate: number, scheduledDate: string) {
+      const newDraftArray: DraftSettingsRequest[] = [];
+      for (const [index, draft] of this.computedModelValue.entries()) {
+        if (index === indexToUpdate) {
+          newDraftArray.push({ ...draft, scheduledDate: scheduledDate });
+        }
+
+        newDraftArray.push(draft);
+      }
+
+      this.computedModelValue = newDraftArray;
+    },
+    updateDraftGamesToDraft(indexToUpdate: number, gamesToDraft: number) {
+      const newDraftArray: DraftSettingsRequest[] = [];
+      for (const [index, draft] of this.computedModelValue.entries()) {
+        if (index === indexToUpdate) {
+          newDraftArray.push({ ...draft, gamesToDraft: gamesToDraft });
+        }
+
+        newDraftArray.push(draft);
+      }
+
+      this.computedModelValue = newDraftArray;
+    },
+    updateDraftCounterPicksToDraft(indexToUpdate: number, counterPicksToDraft: number) {
+      const newDraftArray: DraftSettingsRequest[] = [];
+      for (const [index, draft] of this.computedModelValue.entries()) {
+        if (index === indexToUpdate) {
+          newDraftArray.push({ ...draft, counterPicksToDraft: counterPicksToDraft });
+        }
+
+        newDraftArray.push(draft);
+      }
+
+      this.computedModelValue = newDraftArray;
+    },
+    updateDraftCounterPicksMustBeFromThisDraft(indexToUpdate: number, counterPicksMustBeFromThisDraft: boolean) {
+      const newDraftArray: DraftSettingsRequest[] = [];
+      for (const [index, draft] of this.computedModelValue.entries()) {
+        if (index === indexToUpdate) {
+          newDraftArray.push({ ...draft, counterPicksMustBeFromThisDraft: counterPicksMustBeFromThisDraft });
+        }
+
+        newDraftArray.push(draft);
+      }
+
+      this.computedModelValue = newDraftArray;
     },
     isScheduledDateOptional(index: number): boolean {
       if (this.gameMode !== 'Multi Draft' || !this.bidsOnlyBeforeNextScheduledDraft) {
@@ -121,17 +187,24 @@ export default defineComponent({
     },
     canRemoveDraft(index: number): boolean {
       // Only drafts beyond the first can be removed, and only if at least 2 remain (minimum for multi-draft)
-      return !this.editMode && index > 0 && this.internalDrafts.length > 2;
+      return !this.editMode && index > 0 && this.computedModelValue.length > 2;
     },
     addDraft(): void {
-      const allocatedSoFar = this.internalDrafts.reduce((s, d) => s + (d.gamesToDraft || 0), 0);
-      const newDraft = getDefaultDraft(this.internalDrafts.length, this.standardGames, allocatedSoFar);
-      this.internalDrafts.push(newDraft);
-      this.emitUpdate();
+      const allocatedSoFar = this.computedModelValue.reduce((s, d) => s + (d.gamesToDraft || 0), 0);
+      const newDraft = getDefaultDraft(this.computedModelValue.length, this.standardGames, allocatedSoFar);
+      this.computedModelValue = [...this.computedModelValue, newDraft];
     },
-    removeDraft(index: number): void {
-      this.internalDrafts.splice(index, 1);
-      this.emitUpdate();
+    removeDraft(indexToRemove: number): void {
+      const newDraftArray: DraftSettingsRequest[] = [];
+      for (const [index, draft] of this.computedModelValue.entries()) {
+        if (index === indexToRemove) {
+          continue;
+        }
+
+        newDraftArray.push(draft);
+      }
+
+      this.computedModelValue = newDraftArray;
     }
   }
 });
