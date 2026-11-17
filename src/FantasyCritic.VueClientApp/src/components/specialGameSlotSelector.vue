@@ -9,12 +9,12 @@
       Please, please, don't allow the tag 'Port'. These games very very rarely get new OpenCritic pages, so we usually end up assigning the points from the original game. You're free to allow the tag,
       but please be aware that this is an "unsupported" feature.
     </div>
-    <div v-for="specialGameSlot in internalValue" :key="specialGameSlot.specialSlotPosition" class="special-game-slot">
+    <div v-for="specialGameSlot in modelValue" :key="specialGameSlot.specialSlotPosition" class="special-game-slot">
       <div class="special-slot-header">
         <h4>Special Slot {{ specialGameSlot.specialSlotPosition + 1 }}</h4>
         <b-button variant="danger" size="sm" @click="removeSlot(specialGameSlot)">Remove</b-button>
       </div>
-      <masterGameTagSelector v-model="specialGameSlot.requiredTags" @update:model-value="handleInput"></masterGameTagSelector>
+      <masterGameTagSelector :model-value="getMatchingTags(specialGameSlot.requiredTags)" @update:model-value="(tags) => updateTagsForSlot(specialGameSlot, tags)"></masterGameTagSelector>
     </div>
     <div class="add-slot-button-row">
       <b-button variant="primary" class="add-slot-button" @click="addSlot">Add Special Slot</b-button>
@@ -29,92 +29,65 @@ import type { MasterGameTagViewModel, SpecialGameSlotViewModel } from '@/api/cli
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 
-interface SpecialGameSlotWithTags {
-  specialSlotPosition: number;
-  requiredTags: MasterGameTagViewModel[];
-}
-
-interface SpecialGameSlotSelectorData {
-  internalValue: SpecialGameSlotWithTags[];
-}
-
 export default defineComponent({
   components: {
     MasterGameTagSelector
   },
   props: {
-    modelValue: { type: Array as PropType<SpecialGameSlotViewModel[]>, default: () => [] }
+    modelValue: { type: Array as PropType<SpecialGameSlotViewModel[]>, required: true }
   },
   emits: {
     'update:modelValue': (_value: SpecialGameSlotViewModel[]) => true
   },
-  data(): SpecialGameSlotSelectorData {
-    return {
-      internalValue: []
-    };
-  },
   computed: {
+    computedModelValue: {
+      get(): SpecialGameSlotViewModel[] {
+        return this.modelValue;
+      },
+      set(newValue: SpecialGameSlotViewModel[]): void {
+        this.$emit('update:modelValue', newValue);
+      }
+    },
     showNoTagsWarning(): boolean {
-      return this.internalValue.some((x) => x.requiredTags.length === 0);
+      return this.modelValue.some((x) => x.requiredTags.length === 0);
     },
     showPortDanger(): boolean {
-      return this.internalValue.some((x) => x.requiredTags.some((y) => y.name === 'Port'));
+      return this.modelValue.some((x) => x.requiredTags.some((y) => y === 'Port'));
     }
-  },
-  watch: {
-    modelValue() {
-      this.updateInternal();
-    }
-  },
-  created() {
-    this.updateInternal();
   },
   methods: {
-    handleInput(): void {
-      let returnValue: SpecialGameSlotViewModel[] = [];
-      this.internalValue.forEach((singleValue) => {
-        let newReturnItem: SpecialGameSlotViewModel = {
-          specialSlotPosition: singleValue.specialSlotPosition,
-          requiredTags: singleValue.requiredTags.map((v) => v.name)
-        };
-        returnValue.push(newReturnItem);
-      });
-
-      this.$emit('update:modelValue', returnValue);
-    },
-    getTags(tagNames: string[]): MasterGameTagViewModel[] {
+    getMatchingTags(tagNames: string[]): MasterGameTagViewModel[] {
       const interLeagueStore = useInterLeagueStore();
       const matchingTags = tagNames.map((x) => interLeagueStore.allTags.find((y) => y.name === x)).filter((x) => !!x);
       return matchingTags;
     },
-    removeSlot(specialSlot: SpecialGameSlotWithTags): void {
-      this.internalValue = this.internalValue.filter((x) => x.specialSlotPosition !== specialSlot.specialSlotPosition);
+    removeSlot(specialSlot: SpecialGameSlotViewModel): void {
+      const newValue = this.computedModelValue
+        .filter((x) => x.specialSlotPosition !== specialSlot.specialSlotPosition)
+        .map((x, index) => ({ specialSlotPosition: index, requiredTags: x.requiredTags }));
 
-      let slotNumber = 0;
-      this.internalValue.forEach((singleValue) => {
-        singleValue.specialSlotPosition = slotNumber;
-        slotNumber++;
-      });
-      this.handleInput();
+      this.computedModelValue = newValue;
     },
     addSlot(): void {
-      let newItem: SpecialGameSlotWithTags = {
-        specialSlotPosition: this.internalValue.length,
+      const newItem: SpecialGameSlotViewModel = {
+        specialSlotPosition: this.computedModelValue.length,
         requiredTags: []
       };
-      this.internalValue.push(newItem);
-      this.handleInput();
-    },
-    updateInternal(): void {
-      this.internalValue = [];
 
-      this.modelValue.forEach((singleValue) => {
-        let newInternalItem: SpecialGameSlotWithTags = {
-          specialSlotPosition: singleValue.specialSlotPosition,
-          requiredTags: this.getTags(singleValue.requiredTags)
-        };
-        this.internalValue.push(newInternalItem);
-      });
+      const newValue = [...this.computedModelValue, newItem];
+      this.computedModelValue = newValue;
+    },
+    updateTagsForSlot(slotWhichWasUpdated: SpecialGameSlotViewModel, updatedTags: MasterGameTagViewModel[]): void {
+      const newArray: SpecialGameSlotViewModel[] = [];
+      for (let slotNumber = 0; slotNumber < this.computedModelValue.length; slotNumber++) {
+        const existingSlot = this.computedModelValue[slotNumber];
+        if (existingSlot.specialSlotPosition === slotWhichWasUpdated.specialSlotPosition) {
+          newArray.push({ specialSlotPosition: slotNumber, requiredTags: updatedTags.map((x) => x.name) });
+          continue;
+        }
+        newArray.push(existingSlot);
+      }
+      this.computedModelValue = newArray;
     }
   }
 });
