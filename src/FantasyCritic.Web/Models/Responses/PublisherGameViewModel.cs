@@ -1,3 +1,4 @@
+#pragma warning disable CS0618 // Type or member is obsolete
 using FantasyCritic.Lib.Extensions;
 
 namespace FantasyCritic.Web.Models.Responses;
@@ -114,6 +115,7 @@ public class PublisherGameViewModel
     public Guid? AcquiredInTradeID { get; }
     public int SlotNumber { get; }
 
+    [Obsolete("MasterGame having a value implies linked, this will be removed in the future.")]
     public bool Linked { get; }
     public bool Released { get; }
     public bool WillRelease { get; }
