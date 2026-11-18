@@ -1,5 +1,5 @@
 <template>
-  <b-table :items="tableRows" :fields="tableFields" bordered responsive striped v-model:sort-by="sortBy" primary-key="overallSlotNumber" tbody-tr-class="btable-player-game-row">
+  <b-table :items="tableRows" :fields="tableFields" bordered responsive striped v-model:sort-by="sortBy" :primary-key="getRowKey" tbody-tr-class="btable-player-game-row">
     <template #head(projectedFantasyPoints)>
       Projected
       <br />
@@ -101,21 +101,13 @@ export default {
       if (!this.sortOrderMode) {
         return this.gameSlots;
       }
-      let slotsWithGames = this.publisher.gameSlots.filter((x) => x.publisherGame);
-      if (this.includeRemovedInSorted) {
-        let fakeFormerSlots = [];
 
-        let overallSlotNumber = Math.max(this.publisher.gameSlots.map((x) => x.overallSlotNumber));
-        for (const formerGame of this.publisher.formerGames) {
-          overallSlotNumber++;
-          let fakeSlot = this.getFakeGameSlot(formerGame, overallSlotNumber);
-          fakeFormerSlots.push(fakeSlot);
-        }
-
-        return slotsWithGames.concat(fakeFormerSlots);
+      const slotsWithGames = this.publisher.gameSlots.filter((x) => !!x.publisherGame);
+      if (!this.includeRemovedInSorted) {
+        return slotsWithGames;
       }
 
-      return slotsWithGames;
+      return slotsWithGames.concat(this.publisher.formerGameSlots);
     },
     tableRows() {
       let rows = this.tableItems;
@@ -168,6 +160,9 @@ export default {
   },
   methods: {
     formatScore,
+    getRowKey(slot) {
+      return String(slot.overallSlotNumber);
+    },
     getReleaseDate(publisherGame) {
       return formatPublisherGameReleaseDate(publisherGame);
     },
@@ -176,18 +171,6 @@ export default {
     },
     getRemovedDate(publisherGame) {
       return formatPublisherGameRemovedDate(publisherGame);
-    },
-    getFakeGameSlot(formerPublisherGame, overallSlotNumber) {
-      //Return a fake slot object so the row draws properly
-      return {
-        counterPick: formerPublisherGame.counterPick,
-        publisherGame: formerPublisherGame,
-        eligibilityErrors: [],
-        gameMeetsSlotCriteria: true,
-        overallSlotNumber: overallSlotNumber,
-        specialSlot: null,
-        dropped: true
-      };
     }
   }
 };

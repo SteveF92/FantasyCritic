@@ -3,23 +3,23 @@
     <span class="game-name-side">
       <b-button v-show="moveMode && game && !heldSlot && !gameSlot.counterPick" variant="danger" class="move-button" @click="holdGame">Move</b-button>
       <b-button v-show="heldSlot && !gameSlot.counterPick" variant="success" class="move-button" @click="placeGame">Here</b-button>
-      <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick || gameSlot.dropped" :game-slot="gameSlot"></slotTypeBadge>
+      <slotTypeBadge v-if="hasSpecialSlots || gameSlot.counterPick || gameSlot.former" :game-slot="gameSlot"></slotTypeBadge>
       <span v-if="game" class="master-game-popover">
-        <masterGamePopover v-if="game.linked" :master-game="game.masterGame" :show-as-warning="gameSlot.showWarningRow"></masterGamePopover>
-        <span v-if="!game.linked">{{ game.gameName }}</span>
+        <masterGamePopover v-if="game.masterGame" :master-game="game.masterGame" :show-as-warning="gameSlot.showWarningRow"></masterGamePopover>
+        <span v-if="!game.masterGame">{{ game.gameName }}</span>
       </span>
     </span>
 
     <span v-if="game" class="game-info-side">
-      <font-awesome-icon v-if="!game.linked" v-b-popover.hover.focus="unlinkedText" color="white" size="lg" icon="question-circle" />
-      <font-awesome-icon v-if="game.linked && !game.willRelease" v-b-popover.hover.focus="willNotReleaseText" color="white" size="lg" icon="calendar-times" />
-      <font-awesome-icon v-if="game.linked && game.willReleaseEarlyAccessOnly" v-b-popover.hover.focus="willReleaseEarlyAccessOnlyText" color="white" size="lg" icon="calendar-days" />
-      <font-awesome-icon v-if="game.linked && game.masterGame.delayContention" v-b-popover.hover.focus="delayContentionText" color="white" size="lg" icon="balance-scale" />
+      <font-awesome-icon v-if="!game.masterGame" v-b-popover.hover.focus="unlinkedText" color="white" size="lg" icon="question-circle" />
+      <font-awesome-icon v-if="game.masterGame && !game.willRelease" v-b-popover.hover.focus="willNotReleaseText" color="white" size="lg" icon="calendar-times" />
+      <font-awesome-icon v-if="game.masterGame && game.willReleaseEarlyAccessOnly" v-b-popover.hover.focus="willReleaseEarlyAccessOnlyText" color="white" size="lg" icon="calendar-days" />
+      <font-awesome-icon v-if="game.masterGame && game.masterGame.delayContention" v-b-popover.hover.focus="delayContentionText" color="white" size="lg" icon="balance-scale" />
       <font-awesome-icon v-if="game.counterPicked && !game.dropBlocked" v-b-popover.hover.focus="counterPickedText" color="white" size="lg" icon="crosshairs" />
       <font-awesome-icon v-if="gameSlot.counterPick && counterPickSourcePublisher" v-b-popover.hover.focus="counterPickSourceText" color="white" size="lg" icon="user" />
       <font-awesome-icon v-if="game.dropBlocked" v-b-popover.hover.focus="gameDropBlockedText" color="white" size="lg" icon="lock" />
-      <font-awesome-icon v-if="game.linked && game.masterGame.showNote && game.masterGame.notes" v-b-popover.hover.focus="game.masterGame.notes" color="white" size="lg" icon="flag" />
-      <template v-if="game.released && game.linked && !supportedYear.finished && !game.criticScore">
+      <font-awesome-icon v-if="game.masterGame && game.masterGame.showNote && game.masterGame.notes" v-b-popover.hover.focus="game.masterGame.notes" color="white" size="lg" icon="flag" />
+      <template v-if="game.released && game.masterGame && !supportedYear.finished && !game.criticScore">
         <font-awesome-icon v-if="!game.masterGame.openCriticID" v-b-popover.hover.focus="needsOpenCriticPage" color="white" size="lg" icon="link-slash" />
         <font-awesome-icon v-else v-b-popover.hover.focus="needsMoreReviewsText" color="white" size="lg" icon="hourglass-half" />
       </template>
@@ -99,39 +99,74 @@
     </span>
   </span>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import { mapState } from 'pinia';
+
+import type { PublisherSlotViewModel, SupportedYearViewModel } from '@/api/clients';
 import { formatLongDate } from '@/globalFunctions';
 import { useLeagueStore } from '@/store/leagueStore';
 import { usePublisherStore } from '@/store/publisherStore';
+import type { PopoverContent } from '@/types/vueTypes';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
-export default {
+export default defineComponent({
+  setup() {
+    const counterPickedGameIsInvalidText: PopoverContent = {
+      title: 'Counter Picked Game is Ineligible',
+      body: 'This counter pick counts for 0 points because the game in question is not eligible in this league, or in the slot the other player currently has it in.'
+    };
+
+    const delayContentionText: PopoverContent = {
+      title: 'Delay in Contention',
+      body:
+        'There are very credible reports that this game has been delayed and therefore will not release this year. The game is still counted as a "will release" ' +
+        'game for drop purposes, but it cannot be counter picked, just like a "will not release" game cannot be counter picked.'
+    };
+
+    const needsOpenCriticPage: PopoverContent = {
+      title: 'Needs OpenCritic Link',
+      body: "This game has released, but is not linked to an OpenCritic page. If one exists, you can 'suggest a correction' and we'll get it fixed."
+    };
+
+    const needsMoreReviewsText: PopoverContent = {
+      title: 'Needs more reviews',
+      body: 'This game has released, and has an OpenCritic page, but there are not enough reviews yet.'
+    };
+
+    const manuallyScoredText: PopoverContent = { title: 'Manually Scored', body: 'This game was manually scored by the league manager.' };
+
+    const willReleaseEarlyAccessOnlyText: PopoverContent = {
+      title: 'Planned for Early Access',
+      body:
+        'This game is planned for early access, and will not see a full release this year. ' +
+        'However, as your league uses "Only Needs Score" mode, you will still receive points if the game receives a score on OpenCritic this year.'
+    };
+
+    const emptyCounterpickFinalText: PopoverContent = {
+      title: 'Woops!',
+      body: 'Since this slot was not filled, it counts as -15 points.'
+    };
+
+    return { counterPickedGameIsInvalidText, delayContentionText, needsOpenCriticPage, needsMoreReviewsText, manuallyScoredText, willReleaseEarlyAccessOnlyText, emptyCounterpickFinalText };
+  },
   components: {
     MasterGamePopover,
     SlotTypeBadge
   },
   props: {
-    gameSlot: { type: Object, required: true },
-    supportedYear: { type: Object, required: true },
+    gameSlot: { type: Object as PropType<PublisherSlotViewModel>, required: true },
+    supportedYear: { type: Object as PropType<SupportedYearViewModel>, required: true },
     hasSpecialSlots: { type: Boolean, required: true },
     counterPickDeadline: { type: String, required: true }
   },
   computed: {
+    ...mapState(useLeagueStore, ['leagueYear']),
+    ...mapState(usePublisherStore, ['moveMode', 'heldSlot']),
     game() {
       return this.gameSlot.publisherGame;
-    },
-    leagueYear() {
-      const leagueStore = useLeagueStore();
-      return leagueStore.leagueYear;
-    },
-    moveMode() {
-      const publisherStore = usePublisherStore();
-      return publisherStore.moveMode;
-    },
-    heldSlot() {
-      const publisherStore = usePublisherStore();
-      return publisherStore.heldSlot;
     },
     counterPickSourcePublisher() {
       if (!this.gameSlot.counterPick || !this.game?.masterGame || !this.leagueYear?.publishers) {
@@ -156,19 +191,19 @@ export default {
     hasEarlyCounterPickDeadline() {
       return this.counterPickDeadline !== `${this.supportedYear.year}-12-31`;
     },
-    counterPickedGameIsInvalidText() {
-      return {
-        title: 'Counter Picked Game is Ineligible',
-        body: 'This counter pick counts for 0 points because the game in question is not eligible in this league, or in the slot the other player currently has it in.'
-      };
-    },
     gameDropBlockedText() {
+      if (!this.game) {
+        throw new Error("A slot without a game can't be drop blocked, and yet here we are.");
+      }
       return {
         title: 'Locked!',
         body: `This game was counter picked by ${this.game.counterPickedBy}, so it cannot be dropped.`
       };
     },
     counterPickedText() {
+      if (!this.game) {
+        throw new Error("A slot without a game can't be counter picked, and yet here we are.");
+      }
       return {
         title: 'Counter Picked!',
         body: `This game was counter picked by ${this.game.counterPickedBy}!`
@@ -184,33 +219,11 @@ export default {
         body
       };
     },
-    delayContentionText() {
-      return {
-        title: 'Delay in Contention',
-        body:
-          'There are very credible reports that this game has been delayed and therefore will not release this year. The game is still counted as a "will release" ' +
-          'game for drop purposes, but it cannot be counter picked, just like a "will not release" game cannot be counter picked.'
-      };
-    },
-    needsOpenCriticPage() {
-      return {
-        title: 'Needs OpenCritic Link',
-        body: "This game has released, but is not linked to an OpenCritic page. If one exists, you can 'suggest a correction' and we'll get it fixed."
-      };
-    },
-    needsMoreReviewsText() {
-      return {
-        title: 'Needs more reviews',
-        body: 'This game has released, and has an OpenCritic page, but there are not enough reviews yet.'
-      };
-    },
-    manuallyScoredText() {
-      return {
-        title: 'Manually Scored',
-        body: 'This game was manually scored by the league manager.'
-      };
-    },
     willNotReleaseText() {
+      if (!this.game) {
+        throw new Error("A slot without a game can't be will not release, and yet here we are.");
+      }
+
       if (this.supportedYear.finished) {
         return {
           title: 'Did Not Release',
@@ -228,24 +241,13 @@ export default {
         body: 'This game will not release this year.'
       };
     },
-    willReleaseEarlyAccessOnlyText() {
-      return {
-        title: 'Planned for Early Access',
-        body:
-          'This game is planned for early access, and will not see a full release this year. ' +
-          'However, as your league uses "Only Needs Score" mode, you will still receive points if the game receives a score on OpenCritic this year.'
-      };
-    },
     counterPickSourceText() {
+      if (!this.counterPickSourcePublisher) {
+        throw new Error("A slot without a game can't have a coutner pick source, and yet here we are.");
+      }
       return {
         title: 'Publisher With Game',
         body: `This game is in ${this.counterPickSourcePublisher.publisherName}'s roster.`
-      };
-    },
-    emptyCounterpickFinalText() {
-      return {
-        title: 'Woops!',
-        body: 'Since this slot was not filled, it counts as -15 points.'
       };
     }
   },
@@ -260,8 +262,9 @@ export default {
       publisherStore.moveGame(this.gameSlot);
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .game-name-column {
   display: inline-flex;

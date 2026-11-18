@@ -1,6 +1,6 @@
 <template>
   <span>
-    <span v-if="!gameSlot.dropped && gameSlot.specialSlot">
+    <span v-if="!gameSlot.former && gameSlot.specialSlot">
       <template v-if="gameSlot.specialSlot.requiredTags.length === 1">
         <masterGameTagBadge :tag-name="gameSlot.specialSlot.requiredTags[0]" short class="slot-badge"></masterGameTagBadge>
       </template>
@@ -16,10 +16,10 @@
         </b-popover>
       </template>
     </span>
-    <span v-if="!gameSlot.dropped && !gameSlot.specialSlot && !gameSlot.counterPick">
+    <span v-if="!gameSlot.former && !gameSlot.specialSlot && !gameSlot.counterPick">
       <span v-b-popover.hover.focus.top="regularText" class="badge tag-badge regular-slot-badge slot-badge mg-badge-text">REG</span>
     </span>
-    <span v-if="gameSlot.dropped">
+    <span v-if="gameSlot.former">
       <span v-b-popover.hover.focus.top="droppedText" class="badge tag-badge dropped-badge slot-badge mg-badge-text">DRP</span>
     </span>
     <span v-if="!gameSlot.specialSlot && gameSlot.counterPick">
@@ -31,12 +31,10 @@
 <script lang="ts">
 import { defineComponent, type CSSProperties, type PropType } from 'vue';
 
-import { MasterGameTagViewModel, PublisherSlotViewModel } from '@/api/clients';
+import type { MasterGameTagViewModel, PublisherSlotViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
-import { PopoverContent } from '@/types/vueTypes';
+import type { PopoverContent } from '@/types/vueTypes';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
-
-export type SlotTypeBadgeSlot = Pick<PublisherSlotViewModel, 'counterPick' | 'specialSlot'> & { dropped?: boolean };
 
 export default defineComponent({
   setup() {
@@ -59,7 +57,7 @@ export default defineComponent({
     MasterGameTagBadge
   },
   props: {
-    gameSlot: { type: Object as PropType<SlotTypeBadgeSlot>, required: true },
+    gameSlot: { type: Object as PropType<PublisherSlotViewModel>, required: true },
     hideBackground: { type: Boolean }
   },
   methods: {
