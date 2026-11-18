@@ -124,10 +124,12 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 import html2canvas from 'html2canvas';
 
+import type { PublisherViewModel } from '@/api/clients';
 import { publisherIconIsValid } from '@/globalFunctions';
 import { useAuthStore } from '@/store/authStore';
 import { usePublisherStore } from '@/store/publisherStore';
@@ -136,7 +138,12 @@ import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
 import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
 
-export default {
+interface PublisherData {
+  errorInfo: string;
+  renderingSnapshot: boolean;
+}
+
+export default defineComponent({
   components: {
     PlayerGameTable,
     ToggleSwitch,
@@ -145,8 +152,10 @@ export default {
   props: {
     publisherid: { type: String, required: true }
   },
-  emits: ['gamesMoved'],
-  data() {
+  emits: {
+    gamesMoved: () => true
+  },
+  data(): PublisherData {
     return {
       errorInfo: '',
       renderingSnapshot: false
@@ -154,48 +163,48 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['isPlusUser']),
-    ...mapState(usePublisherStore, ['publisher', 'leagueYear', 'moveMode', 'sortOrderMode', 'coverArtMode', 'includeRemovedInSorted', 'userIsPublisher', 'hasFormerGames']),
-    iconIsValid() {
-      return publisherIconIsValid(this.publisher.publisherIcon);
+    ...mapState(usePublisherStore, ['publisher', 'leagueYear', 'moveMode', 'sortOrderMode', 'coverArtMode', 'includeRemovedInSorted', 'userIsPublisher', 'hasFormerGames', 'moveGameError']),
+    iconIsValid(): boolean {
+      return publisherIconIsValid(this.publisher?.publisherIcon);
     },
-    moveGameError() {
-      const publisherStore = usePublisherStore();
-      return publisherStore.moveGameError;
+    hasIneligibleGame(): boolean {
+      return (this.publisher?.gameSlots ?? []).some((x) => !x.gameMeetsSlotCriteria);
     },
-    hasIneligibleGame() {
-      return this.publisher.gameSlots.some((x) => !x.gameMeetsSlotCriteria);
-    },
-    allowMoveIntoIneligible() {
-      return this.leagueYear.settings.allowMoveIntoIneligible;
+    allowMoveIntoIneligible(): boolean {
+      return this.leagueYear?.settings.allowMoveIntoIneligible ?? false;
     },
     editableSortOrderMode: {
-      get() {
+      get(): boolean {
         return this.sortOrderMode;
       },
-      set(value) {
+      set(value: boolean): void {
         const publisherStore = usePublisherStore();
         publisherStore.setSortOrderMode(value);
       }
     },
     editableCoverArtMode: {
-      get() {
+      get(): boolean {
         return this.coverArtMode;
       },
-      set(value) {
+      set(value: boolean): void {
         const publisherStore = usePublisherStore();
         publisherStore.setCoverArtMode(value);
       }
     },
     editableIncludeRemovedInSorted: {
-      get() {
+      get(): boolean {
         return this.includeRemovedInSorted;
       },
-      set(value) {
+      set(value: boolean): void {
         const publisherStore = usePublisherStore();
         publisherStore.setIncludeRemovedInSorted(value);
       }
     },
-    nextPublisher() {
+    nextPublisher(): PublisherViewModel | null {
+      if (!this.leagueYear || !this.publisher || this.leagueYear.publishers.length < 2) {
+        return null;
+      }
+
       let nextPublisher = this.leagueYear.publishers.filter((x) => x.draftPosition === this.publisher.draftPosition + 1)[0];
       if (!nextPublisher) {
         nextPublisher = this.leagueYear.publishers[0];
@@ -203,6 +212,9 @@ export default {
       return nextPublisher;
     },
     previousPublisher() {
+      if (!this.leagueYear || !this.publisher || this.leagueYear.publishers.length < 2) {
+        return null;
+      }
       let previousPublisher = this.leagueYear.publishers.filter((x) => x.draftPosition === this.publisher.draftPosition - 1)[0];
       if (!previousPublisher) {
         previousPublisher = this.leagueYear.publishers[this.leagueYear.publishers.length - 1];
@@ -222,11 +234,11 @@ export default {
   },
   methods: {
     formatCurrency,
-    async initializePage() {
+    async initializePage(): Promise<void> {
       const publisherStore = usePublisherStore();
       await publisherStore.initializePublisherPage(this.publisherid);
     },
-    getDropStatus(dropped, droppable) {
+    getDropStatus(dropped: number, droppable: number): string {
       if (!droppable) {
         return 'N/A';
       }
@@ -235,33 +247,33 @@ export default {
       }
       return dropped + '/' + droppable;
     },
-    referToPlayer(publisherText, notPublisherText) {
+    referToPlayer(publisherText: string, notPublisherText: string): string {
       if (this.userIsPublisher) {
         return publisherText;
       }
 
       return notPublisherText;
     },
-    enterMoveMode() {
+    enterMoveMode(): void {
       const publisherStore = usePublisherStore();
       publisherStore.enterMoveMode();
     },
-    cancelMoveMode() {
+    cancelMoveMode(): void {
       const publisherStore = usePublisherStore();
       publisherStore.cancelMoveMode();
     },
-    async confirmPositions() {
+    async confirmPositions(): Promise<void> {
       const publisherStore = usePublisherStore();
       await publisherStore.confirmPositions();
       this.$emit('gamesMoved');
     },
-    prepareSnapshot() {
+    prepareSnapshot(): void {
       this.renderingSnapshot = true;
       const viewport = document.querySelector('meta[name=viewport]');
       viewport.setAttribute('content', 'width=1920');
       setTimeout(this.sharePublisher, 1);
     },
-    sharePublisher() {
+    sharePublisher(): void {
       let elementID = '#full-cover-art-view';
       const options = { allowTaint: false, useCORS: true, scale: 2 };
       html2canvas(document.querySelector(elementID), options).then(async (canvas) => {
@@ -284,8 +296,9 @@ export default {
       viewport.setAttribute('content', 'width=device-width');
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .publisher-header {
   margin-bottom: 10px;

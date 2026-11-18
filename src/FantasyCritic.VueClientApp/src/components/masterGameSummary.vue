@@ -1,5 +1,5 @@
 <template>
-  <div v-if="masterGame" class="summary">
+  <div class="summary">
     <div v-if="!hideImage" class="game-image-area">
       <div v-if="ggLink && ggCoverArtLink" class="gg-image-area">
         <img v-if="ggCoverArtLink" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />

@@ -6,21 +6,23 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 
 import { usePublisherStore } from '@/store/publisherStore';
 import PublisherCoverViewSlot from '@/components/gameTables/publisherCoverViewSlot.vue';
 
-export default {
+export default defineComponent({
   components: {
     PublisherCoverViewSlot
   },
   computed: {
     ...mapState(usePublisherStore, ['gameSlots'])
   }
-};
+});
 </script>
+
 <style scoped>
 .cover-art-container {
   display: flex;

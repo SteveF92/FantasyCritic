@@ -4,8 +4,8 @@
       <slotTypeBadge class="header-badge" :game-slot="gameSlot" hide-background></slotTypeBadge>
       <div class="game-image-area" :class="{ 'small-game-image-area': useSmallImages }">
         <a :id="popoverID" href="javascript:;" class="no-link-style">
-          <img v-if="game && masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
-          <div v-if="game && !(masterGame && masterGame.ggToken && masterGame.ggCoverArtFileName)" class="game-text game-name">
+          <img v-if="ggCoverArtLink" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
+          <div v-else-if="game" class="game-text game-name">
             {{ gameName }}
           </div>
         </a>
@@ -21,28 +21,30 @@
             <div v-if="!game.criticScore" class="game-text">
               <span v-show="!useSmallImages" class="projection-label">Projection:</span>
               <span v-show="useSmallImages" class="projection-label">Proj.</span>
-              <span class="projected-text">~{{ roundNumber(gameSlot.projectedFantasyPoints, 2) }}</span>
+              <span v-if="gameSlot.projectedFantasyPoints != null" class="projected-text">~{{ roundNumber(gameSlot.projectedFantasyPoints, 2) }}</span>
             </div>
           </template>
           <template v-else>
-            <div v-if="!leagueYear.supportedYear.finished" class="game-text">Will Not Release</div>
+            <div v-if="leagueYear && !leagueYear.supportedYear.finished" class="game-text">Will Not Release</div>
             <div v-else class="game-text">Did Not Release</div>
           </template>
         </template>
       </div>
     </div>
 
-    <b-popover :target="popoverID" click placement="right" teleport-to="body" lazy class="master-game-popover">
+    <b-popover v-if="masterGame" :target="popoverID" click placement="right" teleport-to="body" lazy class="master-game-popover">
       <div class="mg-popover">
         <masterGameSummary :master-game="masterGame" hide-image></masterGameSummary>
       </div>
     </b-popover>
   </div>
 </template>
-<script>
-import { useId } from 'vue';
+
+<script lang="ts">
+import { CSSProperties, defineComponent, useId, type PropType } from 'vue';
 import { mapState } from 'pinia';
 
+import type { MasterGameTagViewModel, MasterGameYearViewModel, PublisherGameViewModel, PublisherSlotViewModel } from '@/api/clients';
 import { formatPublisherGameReleaseDate, roundNumber } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { usePublisherStore } from '@/store/publisherStore';
@@ -50,7 +52,7 @@ import { getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 
-export default {
+export default defineComponent({
   setup() {
     return { popoverID: `mg-popover-${useId()}` };
   },
@@ -59,21 +61,21 @@ export default {
     SlotTypeBadge
   },
   props: {
-    gameSlot: { type: Object, required: true }
+    gameSlot: { type: Object as PropType<PublisherSlotViewModel>, required: true }
   },
   computed: {
     ...mapState(usePublisherStore, ['leagueYear']),
-    useSmallImages() {
+    useSmallImages(): boolean {
       if (window.innerWidth < 500) {
         return true;
       }
 
       return false;
     },
-    game() {
+    game(): PublisherGameViewModel | undefined {
       return this.gameSlot.publisherGame;
     },
-    masterGame() {
+    masterGame(): MasterGameYearViewModel | undefined {
       if (!this.game) {
         return;
       }
@@ -82,22 +84,26 @@ export default {
       }
       return this.game.masterGame;
     },
-    gameName() {
+    gameName(): string | undefined {
       if (this.masterGame) {
         return this.masterGame.gameName;
       }
 
-      return this.game.gameName;
+      return this.game?.gameName;
     },
-    ggCoverArtLink() {
+    ggCoverArtLink(): string | null {
       let width = 165;
       if (this.useSmallImages) {
         width = 125;
       }
 
+      if (!this.masterGame) {
+        return null;
+      }
+
       return getGGCoverArtLinkForGame(this.masterGame, width);
     },
-    slotLabel() {
+    slotLabel(): string {
       if (this.gameSlot.counterPick) {
         return 'CPK';
       }
@@ -113,7 +119,7 @@ export default {
 
       return 'FLX';
     },
-    slotColor() {
+    slotColor(): CSSProperties {
       if (this.gameSlot.counterPick) {
         return {
           backgroundColor: '#aa1e1e'
@@ -139,11 +145,16 @@ export default {
   methods: {
     formatPublisherGameReleaseDate,
     roundNumber,
-    getTag(tagName) {
+    getTag(tagName: string): MasterGameTagViewModel {
       const interLeagueStore = useInterLeagueStore();
-      return interLeagueStore.allTags.find((x) => x.name === tagName);
+      const matchingTag = interLeagueStore.allTags.find((x) => x.name === tagName);
+      if (!matchingTag) {
+        throw new Error(`Could not find matching tag for: ${tagName}`);
+      }
+
+      return matchingTag;
     },
-    getMultiBadgeColor(tagNames) {
+    getMultiBadgeColor(tagNames: string[]): CSSProperties {
       let colorString = '';
       let stripeWidth = 100.0 / tagNames.length;
       for (let i = 0; i < tagNames.length; i++) {
@@ -162,8 +173,9 @@ export default {
       };
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .slot-area {
   border-radius: 5%;

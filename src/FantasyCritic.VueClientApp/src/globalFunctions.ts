@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 
 import type { LeagueDraftViewModel, MasterGameViewModel, MasterGameYearViewModel, PublisherGameViewModel } from '@/api/clients';
 
-export function publisherIconIsValid(publisherIcon: string): boolean {
+export function publisherIconIsValid(publisherIcon: string | undefined): boolean {
   if (!publisherIcon) {
     return true;
   }

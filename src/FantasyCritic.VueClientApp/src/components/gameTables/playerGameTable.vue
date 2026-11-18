@@ -1,5 +1,14 @@
 <template>
-  <b-table :items="tableRows" :fields="tableFields" bordered responsive striped v-model:sort-by="sortBy" :primary-key="getRowKey" tbody-tr-class="btable-player-game-row">
+  <b-table
+    v-if="publisher && leagueYear"
+    :items="tableRows"
+    :fields="tableFields"
+    bordered
+    responsive
+    striped
+    v-model:sort-by="sortBy"
+    :primary-key="getRowKey"
+    tbody-tr-class="btable-player-game-row">
     <template #head(projectedFantasyPoints)>
       Projected
       <br />
@@ -78,26 +87,37 @@
   </b-table>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
+import { type BTableSortBy } from 'bootstrap-vue-next';
 
+import type { PublisherGameViewModel, PublisherSlotViewModel } from '@/api/clients';
 import { formatPublisherGameAcquiredDate, formatPublisherGameReleaseDate, formatPublisherGameRemovedDate, numericComparer } from '@/globalFunctions';
 import { usePublisherStore } from '@/store/publisherStore';
 import { formatScore } from '@/utilities/formatters';
 import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 
-export default {
+interface PlayerGameTableData {
+  sortBy: BTableSortBy[];
+}
+
+export default defineComponent({
   components: {
     GameNameColumn
   },
-  data() {
+  data(): PlayerGameTableData {
     return {
       sortBy: [{ key: 'overallSlotNumber', order: 'asc' }]
     };
   },
   computed: {
     ...mapState(usePublisherStore, ['publisher', 'leagueYear', 'gameSlots', 'sortOrderMode', 'includeRemovedInSorted']),
-    tableItems() {
+    tableItems(): (PublisherSlotViewModel & { _rowVariant?: string })[] {
+      if (!this.publisher || !this.gameSlots) {
+        return [];
+      }
+
       if (!this.sortOrderMode) {
         return this.gameSlots;
       }
@@ -110,12 +130,12 @@ export default {
       return slotsWithGames.concat(this.publisher.formerGameSlots);
     },
     tableRows() {
-      let rows = this.tableItems;
+      const rows = this.tableItems;
       for (let i = 0; i < rows.length; ++i) {
         if (rows[i].publisherGame && rows[i].showWarningRow && !rows[i].gameIsCancelled) {
           rows[i]._rowVariant = 'warning';
         } else {
-          rows[i]._rowVariant = null;
+          rows[i]._rowVariant = undefined;
         }
       }
       return rows;
@@ -152,7 +172,7 @@ export default {
     }
   },
   watch: {
-    sortOrderMode: function () {
+    sortOrderMode: function (): void {
       if (!this.sortOrderMode) {
         this.sortBy = [{ key: 'overallSlotNumber', order: 'asc' }];
       }
@@ -160,21 +180,26 @@ export default {
   },
   methods: {
     formatScore,
-    getRowKey(slot) {
+    getRowKey(slot: PublisherSlotViewModel): string {
       return String(slot.overallSlotNumber);
     },
-    getReleaseDate(publisherGame) {
-      return formatPublisherGameReleaseDate(publisherGame);
+    getReleaseDate(publisherGame: PublisherGameViewModel): string {
+      return formatPublisherGameReleaseDate(publisherGame, false);
     },
-    getAcquiredDate(publisherGame) {
+    getAcquiredDate(publisherGame: PublisherGameViewModel) {
+      if (!this.leagueYear) {
+        throw new Error('League year not initialized yet.');
+      }
+
       return formatPublisherGameAcquiredDate(publisherGame, this.leagueYear.drafts);
     },
-    getRemovedDate(publisherGame) {
+    getRemovedDate(publisherGame: PublisherGameViewModel): string {
       return formatPublisherGameRemovedDate(publisherGame);
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .counter-pick-badge {
   background-color: #aa1e1e;
