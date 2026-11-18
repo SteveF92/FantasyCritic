@@ -47,11 +47,30 @@ public class PublisherSlotViewModel
             leagueYear.StandardGamesTaken, leagueYear.TotalNumberOfStandardGames, false);
     }
 
+    public PublisherSlotViewModel(FormerPublisherGame formerGame, int overallSlotNumber, LocalDate currentDate, LeagueYear leagueYear, Publisher publisher)
+    {
+        SlotNumber = 0;
+        OverallSlotNumber = overallSlotNumber;
+        CounterPick = formerGame.CounterPick;
+        PublisherGame = new PublisherGameViewModel(formerGame, leagueYear, publisher, currentDate);
+        Former = true;
+
+        EligibilityErrors = [];
+        GameMeetsSlotCriteria = true;
+        GameEligibleInAnyLeagueSlot = true;
+        ShowWarningRow = false;
+        IneligibleGameSystemValue = leagueYear.Options.IneligibleGameSystem.Value;
+        GameIsCancelled = false;
+        CounterPickedGameIsInvalid = false;
+        ProjectedFantasyPoints = null;
+    }
+
     public int SlotNumber { get; }
     public int OverallSlotNumber { get; }
     public bool CounterPick { get; }
     public SpecialGameSlotViewModel? SpecialSlot { get; }
     public PublisherGameViewModel? PublisherGame { get; }
+    public bool Former { get; }
     public IReadOnlyList<string> EligibilityErrors { get; }
     public bool GameMeetsSlotCriteria { get; }
     public bool GameEligibleInAnyLeagueSlot { get; }
@@ -59,5 +78,5 @@ public class PublisherSlotViewModel
     public string IneligibleGameSystemValue { get; }
     public bool GameIsCancelled { get; }
     public bool CounterPickedGameIsInvalid { get; }
-    public decimal ProjectedFantasyPoints { get; }
+    public decimal? ProjectedFantasyPoints { get; }
 }

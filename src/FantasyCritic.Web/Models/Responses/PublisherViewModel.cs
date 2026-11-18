@@ -39,6 +39,12 @@ public class PublisherViewModel
             .Select(x => new PublisherSlotViewModel(x, currentDate, leagueYear, publisher, systemWideValues, counterPickedByDictionary))
             .ToList();
 
+        var lastOverallSlotNumber = GameSlots.Select(x => x.OverallSlotNumber).DefaultIfEmpty(0).Max();
+        FormerGameSlots = publisher.FormerPublisherGames
+            .OrderBy(x => x.Timestamp)
+            .Select((x, index) => new PublisherSlotViewModel(x, lastOverallSlotNumber + index + 1, currentDate, leagueYear, publisher))
+            .ToList();
+
         AverageCriticScore = publisher.AverageCriticScore;
         TotalFantasyPoints = publisher.GetTotalFantasyPoints(leagueYear.SupportedYear, leagueYear.Options);
         TotalProjectedPoints = publisher.GetProjectedFantasyPoints(leagueYear, systemWideValues);
@@ -93,6 +99,7 @@ public class PublisherViewModel
     public IReadOnlyList<PublisherGameViewModel> Games { get; }
     public IReadOnlyList<PublisherGameViewModel> FormerGames { get; }
     public IReadOnlyList<PublisherSlotViewModel> GameSlots { get; }
+    public IReadOnlyList<PublisherSlotViewModel> FormerGameSlots { get; }
     public decimal? AverageCriticScore { get; }
     public decimal TotalFantasyPoints { get; }
     public decimal TotalProjectedPoints { get; }
