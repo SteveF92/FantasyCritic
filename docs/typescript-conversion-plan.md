@@ -308,7 +308,7 @@ out.
   internal copy. `leagueCreationPresets` is a v-model of `PresetInput`, and `computePreset` returns a full
   request.
 
-### 11. Publisher
+### 11. Publisher (done)
 
 `gameTables/gameNameColumn`, `gameTables/publisherCoverViewSlot`, `gameTables/publisherCoverView`,
 `gameTables/playerGameTable`, then `publisher`. Test sort mode and move mode.
@@ -319,7 +319,8 @@ out.
   once Vue 3 ships.
 - `gameNameColumn` takes `leagueYear` in place of `supportedYear`, `hasSpecialSlots` and
   `counterPickDeadline`. `minimalPlayerGameSlotRow` (step 13a) already passes it.
-- Left: `sharePublisher` (see "Found along the way").
+- `html2canvas` is replaced by `modern-screenshot`, through `utilities/shareImage.ts`. Both share
+  buttons use it: cover art mode here, and `minimalPlayerGameTable` (step 13a) on the League page.
 
 ### 12. League history and stats
 
@@ -447,4 +448,6 @@ has the bug too.
 | 11 | `components/gameTables/gameNameColumn.vue` | Read `leagueYear` from the league store, so on the publisher page the counter-pick source icon looked in whichever league was last opened, and showed nothing if none was. It now takes `leagueYear` as a prop from its parent | Yes | Done |
 | 11 | `views/publisher.vue` | A failed load wasn't caught, so the page was blank. The store now sets `errorInfo`, cleared on each load, and the page shows it in a `b-alert` | Yes | Done |
 | 11 | `views/publisher.vue` | Previous and Next Publisher are hidden in a league with fewer than two publishers, where both linked to the same publisher | — | Done |
-| 11 | `views/publisher.vue` `sharePublisher` | The watermark and the 1920px viewport were reset straight away, without waiting for `html2canvas`; they're now reset after the capture and the share. If anything before that throws, they stay up. Needs a `try`/`finally`, and a test on a device that supports sharing | Not checked | Step 11 |
+| 11 | `views/publisher.vue` `sharePublisher` | The watermark and the 1920px viewport were reset straight away, without waiting for `html2canvas`. They're now reset in a `finally` after the capture and the share, and the viewport goes back to its original content, where it was set to `width=device-width` and lost `initial-scale=1.0` | Not checked | Done |
+| 11 | `utilities/shareImage.ts`, `views/publisher.vue`, `components/gameTables/minimalPlayerGameTable.vue` | `html2canvas` re-implemented CSS rendering and got things wrong. It's replaced by `modern-screenshot`, which lets the browser render the copy. A browser that can't share files, such as desktop Firefox, threw on `navigator.share`; it now downloads the PNG. Cancelling the share sheet is no longer an error | Yes | Done |
+| 11 | `components/gameTables/minimalPlayerGameTable.vue` | `renderingSnapshot` was cleared before the capture finished, so whether the Details link and Share button were hidden in the image depended on timing. It's now cleared after the share | Yes | Done |
