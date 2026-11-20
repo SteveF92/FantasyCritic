@@ -1,4 +1,5 @@
 <template>
+  <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
   <div v-if="publisher && leagueYear" class="col-md-10 offset-md-1 col-sm-12">
     <div v-if="isPlusUser" class="cover-art-mode-options">
       <b-button v-if="userIsPublisher" v-show="coverArtMode" variant="secondary" size="sm" @click="prepareSnapshot">

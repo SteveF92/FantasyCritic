@@ -174,7 +174,7 @@ export default defineComponent({
       return this.leagueYear.settings.hasSpecialSlots;
     },
     counterPickSourcePublisher(): PublisherViewModel | null {
-      if (!this.gameSlot.counterPick || !this.game?.masterGame || !this.leagueYear?.publishers) {
+      if (!this.gameSlot.counterPick || !this.game?.masterGame || !this.leagueYear.publishers) {
         return null;
       }
       const masterGameID = this.game.masterGame.masterGameID;

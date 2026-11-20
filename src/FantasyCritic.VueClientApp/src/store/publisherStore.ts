@@ -48,7 +48,7 @@ export const usePublisherStore = defineStore('publisher', {
       this.clearPublisherStoreData();
       try {
         const leagueYear = await leagueClient.getLeagueYearForPublisher(publisherID);
-        const publisher = leagueYear?.publishers.find((x) => x.publisherID === publisherID);
+        const publisher = leagueYear.publishers.find((x) => x.publisherID === publisherID);
         if (!publisher) {
           this.errorInfo = `Publisher ${publisherID} not found`;
           return;
@@ -57,7 +57,7 @@ export const usePublisherStore = defineStore('publisher', {
         this._initializeInternal(publisher, leagueYear);
         this._setDesiredPositions();
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to load longest tenured games.');
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load publisher.');
       }
     },
     moveGame(moveIntoSlot: PublisherSlotViewModel) {
@@ -104,6 +104,7 @@ export const usePublisherStore = defineStore('publisher', {
       this.heldSlot = null;
       this.editableGameSlots = [];
       this.moveGameError = '';
+      this.errorInfo = '';
     },
     enterMoveMode() {
       this.moveMode = true;
