@@ -140,7 +140,6 @@ import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
 
 interface PublisherData {
-  errorInfo: string;
   renderingSnapshot: boolean;
 }
 
@@ -158,13 +157,23 @@ export default defineComponent({
   },
   data(): PublisherData {
     return {
-      errorInfo: '',
       renderingSnapshot: false
     };
   },
   computed: {
     ...mapState(useAuthStore, ['isPlusUser']),
-    ...mapState(usePublisherStore, ['publisher', 'leagueYear', 'moveMode', 'sortOrderMode', 'coverArtMode', 'includeRemovedInSorted', 'userIsPublisher', 'hasFormerGames', 'moveGameError']),
+    ...mapState(usePublisherStore, [
+      'publisher',
+      'leagueYear',
+      'moveMode',
+      'sortOrderMode',
+      'coverArtMode',
+      'includeRemovedInSorted',
+      'userIsPublisher',
+      'hasFormerGames',
+      'moveGameError',
+      'errorInfo'
+    ]),
     iconIsValid(): boolean {
       return publisherIconIsValid(this.publisher?.publisherIcon);
     },
