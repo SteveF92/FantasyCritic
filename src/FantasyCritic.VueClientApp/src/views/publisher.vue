@@ -2,7 +2,7 @@
   <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
   <div v-if="publisher && leagueYear" class="col-md-10 offset-md-1 col-sm-12">
     <div v-if="isPlusUser" class="cover-art-mode-options">
-      <b-button v-if="userIsPublisher" v-show="coverArtMode" variant="secondary" size="sm" @click="prepareSnapshot">
+      <b-button v-if="userIsPublisher" v-show="coverArtMode" variant="secondary" size="sm" @click="sharePublisher">
         <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
         <span>Share</span>
       </b-button>
@@ -128,13 +128,13 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import html2canvas from 'html2canvas';
 
 import type { PublisherViewModel } from '@/api/clients';
 import { publisherIconIsValid } from '@/globalFunctions';
 import { useAuthStore } from '@/store/authStore';
 import { usePublisherStore } from '@/store/publisherStore';
 import { formatCurrency } from '@/utilities/formatters';
+import { shareElementAsImage } from '@/utilities/shareImage';
 import PlayerGameTable from '@/components/gameTables/playerGameTable.vue';
 import PublisherCoverView from '@/components/gameTables/publisherCoverView.vue';
 import ToggleSwitch from '@/components/toggleSwitch.vue';
@@ -270,44 +270,24 @@ export default defineComponent({
       await publisherStore.confirmPositions();
       this.$emit('gamesMoved');
     },
-    prepareSnapshot(): void {
-      this.renderingSnapshot = true;
-      const viewport = document.querySelector('meta[name=viewport]');
-      if (!viewport) {
-        throw new Error('Could not take snapshot.');
-      }
-      viewport.setAttribute('content', 'width=1920');
-      setTimeout(this.sharePublisher, 1);
-    },
     async sharePublisher(): Promise<void> {
-      let elementID = '#full-cover-art-view';
-      const options = { allowTaint: false, useCORS: true, scale: 2 };
-      const elementToSnapshot: HTMLElement | null = document.querySelector(elementID);
-      if (!elementToSnapshot) {
+      const viewport = document.querySelector('meta[name=viewport]');
+      const elementToSnapshot: HTMLElement | null = document.querySelector('#full-cover-art-view');
+      if (!viewport || !elementToSnapshot) {
         throw new Error('Could not share publisher.');
       }
 
-      const canvas = await html2canvas(elementToSnapshot, options);
-      const dataUrl = canvas.toDataURL('png');
-      const blob = await (await fetch(dataUrl)).blob();
-      const filesArray = [
-        new File([blob], 'myPublisher.png', {
-          type: blob.type,
-          lastModified: new Date().getTime()
-        })
-      ];
-      const shareData = {
-        files: filesArray,
-        title: 'My Fantasy Critic Publisher'
-      };
-      navigator.share(shareData);
-
-      this.renderingSnapshot = false;
-      const viewport = document.querySelector('meta[name=viewport]');
-      if (!viewport) {
-        throw new Error('Could not take snapshot.');
+      const originalViewport = viewport.getAttribute('content') ?? 'width=device-width';
+      this.renderingSnapshot = true;
+      viewport.setAttribute('content', 'width=1920');
+      try {
+        await this.$nextTick();
+        await new Promise((resolve) => requestAnimationFrame(resolve));
+        await shareElementAsImage(elementToSnapshot, 'myPublisher.png', 'My Fantasy Critic Publisher', 2);
+      } finally {
+        this.renderingSnapshot = false;
+        viewport.setAttribute('content', originalViewport);
       }
-      viewport.setAttribute('content', 'width=device-width');
     }
   }
 });

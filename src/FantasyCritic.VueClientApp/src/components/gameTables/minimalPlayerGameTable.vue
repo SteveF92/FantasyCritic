@@ -19,7 +19,7 @@
       <div class="player-name">
         Player: {{ publisher.playerName }}
         <div v-show="!renderingSnapshot">
-          <b-button v-if="userIsPublisher && isPlusUser" variant="secondary" size="sm" @click="prepareSnapshot">
+          <b-button v-if="userIsPublisher && isPlusUser" variant="secondary" size="sm" @click="sharePublisher">
             <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
             <span>Share</span>
           </b-button>
@@ -94,12 +94,12 @@
 </template>
 <script>
 import { mapState } from 'pinia';
-import html2canvas from 'html2canvas';
 
 import { orderBy, publisherIconIsValid } from '@/globalFunctions';
 import { useAuthStore } from '@/store/authStore';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatCurrency, formatScore } from '@/utilities/formatters';
+import { shareElementAsImage } from '@/utilities/shareImage';
 import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow.vue';
 
 export default {
@@ -186,28 +186,14 @@ export default {
       }
       return droppable - dropped + '/' + droppable;
     },
-    prepareSnapshot() {
+    async sharePublisher() {
       this.renderingSnapshot = true;
-      setTimeout(this.sharePublisher, 1);
-    },
-    sharePublisher() {
-      let elementID = '#publisher-' + this.publisher.publisherID;
-      html2canvas(document.querySelector(elementID)).then(async (canvas) => {
-        const dataUrl = canvas.toDataURL('png');
-        const blob = await (await fetch(dataUrl)).blob();
-        const filesArray = [
-          new File([blob], 'myPublisher.png', {
-            type: blob.type,
-            lastModified: new Date().getTime()
-          })
-        ];
-        const shareData = {
-          files: filesArray,
-          title: 'My Fantasy Critic Publisher'
-        };
-        navigator.share(shareData);
-      });
-      this.renderingSnapshot = false;
+      try {
+        await this.$nextTick();
+        await shareElementAsImage(this.$el, 'myPublisher.png', 'My Fantasy Critic Publisher', window.devicePixelRatio);
+      } finally {
+        this.renderingSnapshot = false;
+      }
     }
   }
 };
