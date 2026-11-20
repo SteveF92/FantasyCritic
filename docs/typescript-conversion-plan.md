@@ -119,6 +119,11 @@ export default defineComponent({
 - **Handlers with optional parameters:** call them, as in `@click="hide()"`. `@click="hide"` passes the
   `MouseEvent` as the first argument, and type-check rejects it on a native element.
 - **`$refs`:** cast with `this.$refs.x as InstanceType<typeof Child> | undefined`.
+- **`b-table` rows:** if the `primary-key` field can be `0` (slot numbers start at 0), pass a getter
+  that returns a string, as in `playerGameTable`'s `getRowKey`. bootstrap-vue-next treats a falsy key as
+  missing and keys the row by its index, which collides with another row's key after sorting. Highlight
+  rows with a `tbody-tr-class` function, not by writing `_rowVariant` onto the items, which are often the
+  store's objects.
 - **Requests:** build the generated request type (a typed object literal), not an untyped object.
 - **Errors:** `getApiErrorMessage(error, '<what failed>')` from step 2, never `error.response.data`.
   Show it in a basic `<b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>`
@@ -308,6 +313,14 @@ out.
 `gameTables/gameNameColumn`, `gameTables/publisherCoverViewSlot`, `gameTables/publisherCoverView`,
 `gameTables/playerGameTable`, then `publisher`. Test sort mode and move mode.
 
+- Server: `PublisherViewModel.FormerGameSlots` sends former games as `PublisherSlotViewModel`s with
+  `Former` set, numbered after the real slots. `ProjectedFantasyPoints` is nullable, and `null` for a
+  former slot. `PublisherGameViewModel.Linked` is `[Obsolete]`: a `masterGame` means linked. Remove it
+  once Vue 3 ships.
+- `gameNameColumn` takes `leagueYear` in place of `supportedYear`, `hasSpecialSlots` and
+  `counterPickDeadline`. `minimalPlayerGameSlotRow` (step 13a) already passes it.
+- Left: `sharePublisher` (see "Found along the way").
+
 ### 12. League history and stats
 
 - `leagueHistory` (+ `tradeSummary`, `leagueActionSet`)
@@ -427,3 +440,11 @@ has the bug too.
 | 10 | `components/DraftCreationSettings.vue` | Clearing a draft's date sets it to `""`, which was sent as is, and the server can't read `""` as a date, so the create or edit failed. A cleared date is now sent as no date | Yes | Done |
 | 10 | `components/modals/addNewLeagueYearForm.vue`, `components/modals/conference/addNewConferenceYear.vue`, `views/editLeague.vue` | editLeague read a `freshSettings` query that nothing set. Starting a new league or conference year now sets it, so changing the standard game count recomputes the special slots, and the multi-draft "Visit the Manage Drafts page" alert is hidden | — | Done |
 | 10 | `views/manageDrafts.vue` | Adding a draft now always sends "counter picks must be from this draft", where it was sent only when the draft had counter picks (the server defaults it to true). With no counter picks it has no effect | — | Done |
+| 11 | `components/gameTables/playerGameTable.vue`, `PublisherViewModel` | Sort mode with "Include Dropped Games" built fake slots for former games on the client, missing most of a slot's fields, and numbered them with `Math.max(array)`, which is `NaN` when there's more than one slot. The server now sends `FormerGameSlots`. A former game's projection is still `~--`; the cover view hides the projection when it's `null` | Yes | Done |
+| 11 | `components/gameTables/playerGameTable.vue` | Rows were keyed on `overallSlotNumber`. bootstrap-vue-next keys a row by its index when the key is falsy, and the first standard slot is 0, so after a sort two rows shared a key and extra rows appeared. The key is now the number as a string | Not checked | Done |
+| 11 | `components/gameTables/playerGameTable.vue` | Warning rows were marked by writing `_rowVariant` onto the store's slot objects from inside a computed. A `tbody-tr-class` function does it now. No visible change | — | Done |
+| 11 | `components/gameTables/gameNameColumn.vue` | Uses `masterGame` instead of `linked` to decide whether a game is linked | — | Done |
+| 11 | `components/gameTables/gameNameColumn.vue` | Read `leagueYear` from the league store, so on the publisher page the counter-pick source icon looked in whichever league was last opened, and showed nothing if none was. It now takes `leagueYear` as a prop from its parent | Yes | Done |
+| 11 | `views/publisher.vue` | A failed load wasn't caught, so the page was blank. The store now sets `errorInfo`, cleared on each load, and the page shows it in a `b-alert` | Yes | Done |
+| 11 | `views/publisher.vue` | Previous and Next Publisher are hidden in a league with fewer than two publishers, where both linked to the same publisher | — | Done |
+| 11 | `views/publisher.vue` `sharePublisher` | The watermark and the 1920px viewport were reset straight away, without waiting for `html2canvas`; they're now reset after the capture and the share. If anything before that throws, they stay up. Needs a `try`/`finally`, and a test on a device that supports sharing | Not checked | Step 11 |
