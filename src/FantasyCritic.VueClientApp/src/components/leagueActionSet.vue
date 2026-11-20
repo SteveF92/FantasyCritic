@@ -41,7 +41,8 @@
           {{ formatYesNo(data.item.counterPick) }}
         </template>
         <template #cell(conditionalDropPublisherGame)="data">
-          <masterGamePopover v-if="data.item.conditionalDropPublisherGame" :master-game="data.item.conditionalDropPublisherGame.masterGame!"></masterGamePopover>
+          <masterGamePopover v-if="data.item.conditionalDropPublisherGame?.masterGame" :master-game="data.item.conditionalDropPublisherGame.masterGame"></masterGamePopover>
+          <span v-else-if="data.item.conditionalDropPublisherGame">{{ data.item.conditionalDropPublisherGame.gameName }}</span>
           <span v-else>None</span>
         </template>
         <template #cell(projectedPointsAtTimeOfBid)="data">

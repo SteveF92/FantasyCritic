@@ -75,7 +75,7 @@ import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 import type { BTableSortBy, TableField } from 'bootstrap-vue-next';
 
-import type { DeleteManagerMessageRequest, LeagueActionViewModel, leagueManagerClient, ManagerMessageViewModel } from '@/api/clients';
+import { leagueManagerClient, type DeleteManagerMessageRequest, type LeagueActionViewModel, type ManagerMessageViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatDateLong, formatDateTime, formatYesNo } from '@/utilities/formatters';
 import CollapseCard from '@/components/collapseCard.vue';
@@ -139,7 +139,7 @@ export default defineComponent({
       const leagueStore = useLeagueStore();
       leagueStore.initializeHistoryPage(leaguePageParams);
     },
-    async deleteMessage(message: ManagerMessageViewModel) {
+    async deleteMessage(message: ManagerMessageViewModel): Promise<void> {
       if (!this.leagueYear) {
         throw new Error('League Year is not initialized.');
       }
@@ -150,11 +150,12 @@ export default defineComponent({
       };
 
       await leagueManagerClient.deleteManagerMessage(model);
+      await useLeagueStore().refreshLeagueYear();
     },
-    exportHistoryToCsv() {
+    exportHistoryToCsv(): void {
       window.location.href = `/api/league/ExportLeagueActionSetsToCSV?leagueID=${this.leagueid}&year=${this.year}`;
     },
-    downloadYearAllDataJson() {
+    downloadYearAllDataJson(): void {
       window.location.href = `/api/league/DownloadConsolidatedLeagueYearData?leagueID=${this.leagueid}&year=${this.year}`;
     }
   }

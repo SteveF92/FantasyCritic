@@ -155,7 +155,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { mapActions, mapState } from 'pinia';
 
-import type { BasicTradeRequest, leagueClient, leagueManagerClient, TradeViewModel, TradeVoteRequest } from '@/api/clients';
+import { leagueClient, leagueManagerClient, type BasicTradeRequest, type TradeViewModel, type TradeVoteRequest } from '@/api/clients';
 import { except, formatLongDateTime, startCase } from '@/globalFunctions';
 import { useAuthStore } from '@/store/authStore';
 import { useLeagueStore } from '@/store/leagueStore';
@@ -187,7 +187,7 @@ export default defineComponent({
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
     ...mapState(useLeagueStore, ['requiredLeagueYear', 'userPublisher', 'requiredLeague']),
-    recievesVerbiage() {
+    recievesVerbiage(): string {
       if (this.tradeIsActive) {
         return 'Receives';
       }
@@ -198,22 +198,22 @@ export default defineComponent({
 
       return 'Would have Received';
     },
-    isProposer() {
+    isProposer(): boolean {
       return this.trade.proposerPublisherID === this.userPublisher?.publisherID;
     },
-    isCounterParty() {
+    isCounterParty(): boolean {
       return this.trade.counterPartyPublisherID === this.userPublisher?.publisherID;
     },
-    tradeIsActive() {
+    tradeIsActive(): boolean {
       return this.trade.status === 'Proposed' || this.trade.status === 'Accepted';
     },
-    isInLeagueButNotInvolved() {
+    isInLeagueButNotInvolved(): boolean {
       let involvedParties = [this.trade.proposerUserID, this.trade.counterPartyUserID];
       let allUserIDsInLeague = this.requiredLeagueYear.players.filter((x) => !!x.user).map((x) => x.user?.userID);
       let nonInvolvedParties = except(allUserIDsInLeague, involvedParties);
       return nonInvolvedParties.includes(this.userInfo?.userID);
     },
-    canVote() {
+    canVote(): boolean {
       if (!this.userInfo) {
         return false;
       }
@@ -222,7 +222,7 @@ export default defineComponent({
       let alreadyVoted = votedUserIDs.includes(this.userInfo.userID);
       return this.isInLeagueButNotInvolved && !alreadyVoted;
     },
-    header() {
+    header(): string {
       let finalHeader = `Trade between ${this.trade.proposerPublisherName} and ${this.trade.counterPartyPublisherName}`;
       if (this.trade.status === 'Proposed' || this.trade.status === 'Accepted') {
         const proposedDate = this.formatLongDateTime(this.trade.proposedTimestamp);
@@ -244,73 +244,32 @@ export default defineComponent({
     formatApprovedRejected,
     formatDateTimeAt,
     async acceptTrade(): Promise<void> {
-      const model: BasicTradeRequest = {
-        tradeID: this.trade.tradeID,
-        leagueID: this.requiredLeagueYear.leagueID,
-        year: this.requiredLeagueYear.year
-      };
-
-      try {
-        await leagueClient.acceptTrade(model);
-        this.notifyAction('You accepted a trade.');
-      } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Trade accept request failed.');
-      }
+      await this.sendGenericTradeRequest((request) => leagueClient.acceptTrade(request), 'You accepted a trade.');
     },
     async rejectTrade(): Promise<void> {
-      const model: BasicTradeRequest = {
-        tradeID: this.trade.tradeID,
-        leagueID: this.requiredLeagueYear.leagueID,
-        year: this.requiredLeagueYear.year
-      };
-
-      try {
-        await leagueClient.rejectTrade(model);
-        this.notifyAction('You rejected a trade.');
-      } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Trade rejection failed.');
-      }
+      await this.sendGenericTradeRequest((request) => leagueClient.rejectTrade(request), 'You rejected a trade.');
     },
     async rescindTrade(): Promise<void> {
-      const model: BasicTradeRequest = {
-        tradeID: this.trade.tradeID,
-        leagueID: this.requiredLeagueYear.leagueID,
-        year: this.requiredLeagueYear.year
-      };
-
-      try {
-        await leagueClient.rescindTrade(model);
-        this.notifyAction('You rescinded a trade.');
-      } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Request to rescind trade failed.');
-      }
+      await this.sendGenericTradeRequest((request) => leagueClient.rescindTrade(request), 'You rescinded a trade.');
     },
     async executeTrade(): Promise<void> {
-      const model: BasicTradeRequest = {
-        tradeID: this.trade.tradeID,
-        leagueID: this.requiredLeagueYear.leagueID,
-        year: this.requiredLeagueYear.year
-      };
-
-      try {
-        await leagueManagerClient.executeTrade(model);
-        this.notifyAction('Trade has been executed.');
-      } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Trade failed to execute.');
-      }
+      await this.sendGenericTradeRequest((request) => leagueManagerClient.executeTrade(request), 'Trade has been executed.');
     },
     async managerRejectTrade(): Promise<void> {
-      const model: BasicTradeRequest = {
+      await this.sendGenericTradeRequest((request) => leagueManagerClient.rejectTrade(request), 'Trade has been rejected.');
+    },
+    async sendGenericTradeRequest(action: (request: BasicTradeRequest) => Promise<void>, message: string): Promise<void> {
+      const model = {
         tradeID: this.trade.tradeID,
         leagueID: this.requiredLeagueYear.leagueID,
         year: this.requiredLeagueYear.year
       };
 
       try {
-        await leagueManagerClient.rejectTrade(model);
-        this.notifyAction('Trade has been rejected.');
+        await action(model);
+        this.notifyAction(message);
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Trade reject request failed.');
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong with your request.');
       }
     },
     async vote(approved: boolean): Promise<void> {

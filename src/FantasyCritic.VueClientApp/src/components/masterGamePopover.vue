@@ -1,5 +1,5 @@
 <template>
-  <span v-if="masterGame">
+  <span>
     <a :id="popoverID" href="javascript:;" :class="{ 'text-white': showAsWarning }">
       {{ masterGame.gameName }}
     </a>
