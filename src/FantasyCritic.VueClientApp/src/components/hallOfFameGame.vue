@@ -2,7 +2,7 @@
   <div class="hall-of-fame-game">
     <div class="game-image-area" :class="{ 'small-game-image-area': useSmallImages }">
       <a :id="popoverID" href="javascript:;" class="no-link-style">
-        <img v-if="masterGame.ggToken && masterGame.ggCoverArtFileName" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
+        <img v-if="ggCoverArtLink" :src="ggCoverArtLink" alt="Cover Image" class="game-image" />
         <div v-else class="game-text game-name">
           {{ masterGame.gameName }}
         </div>
@@ -29,14 +29,15 @@
   </div>
 </template>
 
-<script>
-import { useId } from 'vue';
+<script lang="ts">
+import { defineComponent, useId, type PropType } from 'vue';
 
+import type { HallOfFameGameResponse, HallOfFameGameStatResponse, MasterGameYearViewModel } from '@/api/clients';
 import { formatMoney, roundNumber } from '@/globalFunctions';
 import { getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 
-export default {
+export default defineComponent({
   setup() {
     return { popoverID: `mg-popover-${useId()}` };
   },
@@ -44,20 +45,20 @@ export default {
     MasterGameSummary
   },
   props: {
-    hallOfFameGame: { type: Object, required: true }
+    hallOfFameGame: { type: Object as PropType<HallOfFameGameResponse>, required: true }
   },
   computed: {
-    masterGame() {
+    masterGame(): MasterGameYearViewModel {
       return this.hallOfFameGame.masterGame;
     },
-    useSmallImages() {
+    useSmallImages(): boolean {
       if (window.innerWidth < 500) {
         return true;
       }
 
       return false;
     },
-    ggCoverArtLink() {
+    ggCoverArtLink(): string | null {
       let width = 165;
       if (this.useSmallImages) {
         width = 125;
@@ -67,7 +68,7 @@ export default {
     }
   },
   methods: {
-    formatStat(stat) {
+    formatStat(stat: HallOfFameGameStatResponse): unknown {
       const statValue = stat.stat;
       const statType = stat.statType;
       if (statValue === 'DNR' || statValue == 'None') {
@@ -83,8 +84,9 @@ export default {
       return statValue;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .hall-of-fame-game {
   border-radius: 5%;

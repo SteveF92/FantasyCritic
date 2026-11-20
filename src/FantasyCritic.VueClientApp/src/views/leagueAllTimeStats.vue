@@ -6,7 +6,7 @@
 
     <div v-if="league && !league.publicLeague && !(league.userIsInLeague || league.outstandingInvite)" class="alert alert-warning" role="info">You are viewing a private league.</div>
 
-    <div v-if="leagueAllTimeStats">
+    <div v-if="leagueAllTimeStats && league">
       <h1>{{ league.leagueName }} All Time Stats</h1>
       <div v-if="canDownloadFullLeagueArchive" class="my-2">
         <b-button variant="info" @click="downloadFullLeagueArchive">
@@ -75,56 +75,77 @@
     </div>
   </div>
 </template>
-<script>
-import axios from 'axios';
 
+<script lang="ts">
+import { defineComponent } from 'vue';
+import type { BTableSortBy, TableField } from 'bootstrap-vue-next';
+
+import { leagueClient, type AllTimeStatsPublisherViewModel, type LeagueAllTimeStatsResponse, type LeaguePlayerAllTimeStatsResponse, type LeagueViewModel } from '@/api/clients';
 import { numericComparer, ordinal_suffix_of } from '@/globalFunctions';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatScore } from '@/utilities/formatters';
 import HallOfFameSection from '@/components/hallOfFameSection.vue';
 
-export default {
+interface LeagueAllTimeStatsData {
+  errorInfo: string;
+  forbidden: boolean;
+  leagueAllTimeStats: LeagueAllTimeStatsResponse | null;
+  playerSortBy: BTableSortBy[];
+  individualSortBy: BTableSortBy[];
+}
+
+export default defineComponent({
+  setup() {
+    const playerStatFieldsInternal: TableField<LeaguePlayerAllTimeStatsResponse>[] = [
+      { key: 'playerName', label: 'User', thClass: 'bg-primary', sortable: true },
+      { key: 'yearsPlayedIn', label: 'Years Played In', thClass: 'bg-primary', sortable: true },
+      { key: 'yearsWon.length', accessor: (player) => player.yearsWon.length, label: 'Years Won', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+      { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+      { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary', sortable: true },
+      { key: 'averageFinishRanking', label: 'Average Rank', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+      { key: 'averageFantasyPoints', label: 'Average Fantasy Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+      { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+      { key: 'timesCounterPicked', label: 'Times Counter Picked', thClass: 'bg-primary', sortable: true }
+    ];
+
+    const publisherFields: TableField<AllTimeStatsPublisherViewModel>[] = [
+      { key: 'playerName', label: 'User', thClass: 'bg-primary', sortable: true },
+      { key: 'year', label: 'Year', thClass: 'bg-primary', sortable: true },
+      { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
+      { key: 'ranking', label: 'Rank', thClass: 'bg-primary', sortable: true },
+      { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
+      { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary', sortable: true },
+      { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer }
+    ];
+
+    return { playerStatFieldsInternal, publisherFields };
+  },
   components: { HallOfFameSection },
   props: {
     leagueid: { type: String, required: true }
   },
-  data() {
+  data(): LeagueAllTimeStatsData {
     return {
       errorInfo: '',
       forbidden: false,
       leagueAllTimeStats: null,
-      playerStatFieldsInternal: [
-        { key: 'playerName', label: 'User', thClass: 'bg-primary', sortable: true },
-        { key: 'yearsPlayedIn', label: 'Years Played In', thClass: 'bg-primary', sortable: true },
-        { key: 'yearsWon.length', accessor: (player) => player.yearsWon.length, label: 'Years Won', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
-        { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
-        { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary', sortable: true },
-        { key: 'averageFinishRanking', label: 'Average Rank', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
-        { key: 'averageFantasyPoints', label: 'Average Fantasy Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
-        { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
-        { key: 'timesCounterPicked', label: 'Times Counter Picked', thClass: 'bg-primary', sortable: true }
-      ],
       playerSortBy: [{ key: 'totalFantasyPoints', order: 'desc' }],
-      publisherFields: [
-        { key: 'playerName', label: 'User', thClass: 'bg-primary', sortable: true },
-        { key: 'year', label: 'Year', thClass: 'bg-primary', sortable: true },
-        { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
-        { key: 'ranking', label: 'Rank', thClass: 'bg-primary', sortable: true },
-        { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer },
-        { key: 'gamesReleased', label: 'Games Released', thClass: 'bg-primary', sortable: true },
-        { key: 'averageCriticScore', label: 'Average Critic Score', thClass: 'bg-primary', sortable: true, sortCompare: numericComparer }
-      ],
       individualSortBy: [{ key: 'totalFantasyPoints', order: 'desc' }]
     };
   },
   computed: {
-    league() {
+    league(): LeagueViewModel | undefined {
       return this.leagueAllTimeStats?.league;
     },
-    canDownloadFullLeagueArchive() {
+    canDownloadFullLeagueArchive(): boolean {
       const league = this.leagueAllTimeStats?.league;
-      return league && (league.userIsInLeague || league.isManager);
+      return !!league && (league.userIsInLeague || league.isManager);
     },
-    playerStatFields() {
+    playerStatFields(): TableField<LeaguePlayerAllTimeStatsResponse>[] {
+      if (!this.leagueAllTimeStats) {
+        throw new Error('League all time stats are not loaded.');
+      }
+
       const yearsPlayedIn = this.leagueAllTimeStats.playerAllTimeStats.map((x) => x.yearsPlayedIn);
       const allSameYearsPlayed = yearsPlayedIn.every((x) => x === yearsPlayedIn[0]);
       if (!allSameYearsPlayed) {
@@ -147,20 +168,20 @@ export default {
   methods: {
     formatScore,
     ordinal_suffix_of,
-    downloadFullLeagueArchive() {
+    downloadFullLeagueArchive(): void {
       window.location.href = `/api/league/DownloadConsolidatedLeagueData/${this.leagueid}`;
     },
-    async initializePage() {
+    async initializePage(): Promise<void> {
       try {
-        const response = await axios.get('/api/League/GetLeagueAllTimeStats/' + this.leagueid);
-        this.leagueAllTimeStats = response.data;
+        this.leagueAllTimeStats = await leagueClient.getLeagueAllTimeStats(this.leagueid);
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load league all time stats.');
       }
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .won-years span {
   margin-right: 2px;

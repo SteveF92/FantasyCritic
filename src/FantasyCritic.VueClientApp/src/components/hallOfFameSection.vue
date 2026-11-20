@@ -7,18 +7,22 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+
+import type { HallOfFameGameListResponse } from '@/api/clients';
 import HallOfFameGame from '@/components/hallOfFameGame.vue';
 
-export default {
+export default defineComponent({
   components: {
     HallOfFameGame
   },
   props: {
-    hallOfFameList: { type: Object, required: true }
+    hallOfFameList: { type: Object as PropType<HallOfFameGameListResponse>, required: true }
   }
-};
+});
 </script>
+
 <style scoped>
 .hall-of-fame-container {
   display: flex;
