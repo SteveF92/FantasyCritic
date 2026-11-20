@@ -37,6 +37,18 @@ export const useLeagueStore = defineStore('league', {
     draftOrderView: false
   }),
   getters: {
+    requiredLeagueYear(state) {
+      if (!state.leagueYear) {
+        throw new Error('leagueYear is not loaded. This component should only render under the league page v-if.');
+      }
+      return state.leagueYear;
+    },
+    requiredLeague(state) {
+      if (!state.leagueYear?.league) {
+        throw new Error('leagueYear is not loaded. This component should only render under the league page v-if.');
+      }
+      return state.leagueYear.league;
+    },
     league: (state) => state.leagueYear?.league,
     publishers: (state) => state.leagueYear?.publishers,
     players: (state) => state.leagueYear?.players,

@@ -46,7 +46,7 @@
               {{ trade.error }}
             </p>
 
-            <template v-if="league.isManager">
+            <template v-if="requiredLeague.isManager">
               <p>The only option at this point is to reject the trade. Another trade can be proposed if the players wish.</p>
               <b-button variant="success" @click="managerRejectTrade">Reject Trade</b-button>
             </template>
@@ -84,7 +84,7 @@
           </div>
 
           <div v-if="trade.status === 'Accepted'">
-            <div v-if="league.isManager" class="alert alert-info">League members can now vote on this trade.</div>
+            <div v-if="requiredLeague.isManager" class="alert alert-info">League members can now vote on this trade.</div>
             <div v-else class="alert alert-info">League members can now vote on this trade, and the league manager can execute or reject it.</div>
 
             <div v-if="isInLeagueButNotInvolved">
@@ -111,7 +111,7 @@
               <b-button variant="danger" @click="vote(false)">Vote Reject</b-button>
             </div>
 
-            <div v-if="league.isManager && !trade.error" class="alert alert-warning">
+            <div v-if="requiredLeague.isManager && !trade.error" class="alert alert-warning">
               <p>
                 As league manager, you ultimately make the choice to execute or reject the trade. If you reject it, the full record of the trade goes to the league history page, but nothing else
                 happens. If you execute the trade, the games and budget (if applicable) will change hands immediately, and again, the full record will be visible on the league history page.
@@ -151,24 +151,26 @@
   </collapseCard>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
 
+import type { BasicTradeRequest, leagueClient, leagueManagerClient, TradeViewModel, TradeVoteRequest } from '@/api/clients';
 import { except, formatLongDateTime, startCase } from '@/globalFunctions';
 import { useAuthStore } from '@/store/authStore';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatApprovedRejected, formatDateTimeAt } from '@/utilities/formatters';
 import CollapseCard from '@/components/collapseCard.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
-export default {
+export default defineComponent({
   components: {
     MasterGamePopover,
     CollapseCard
   },
   props: {
-    trade: { type: Object, required: true },
+    trade: { type: Object as PropType<TradeViewModel>, required: true },
     defaultVisible: { type: Boolean }
   },
   data() {
@@ -184,7 +186,7 @@ export default {
   },
   computed: {
     ...mapState(useAuthStore, ['userInfo']),
-    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'league']),
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'userPublisher', 'requiredLeague']),
     recievesVerbiage() {
       if (this.tradeIsActive) {
         return 'Receives';
@@ -207,13 +209,17 @@ export default {
     },
     isInLeagueButNotInvolved() {
       let involvedParties = [this.trade.proposerUserID, this.trade.counterPartyUserID];
-      let allUserIDsInLeague = this.leagueYear.players.filter((x) => !!x.user).map((x) => x.user.userID);
+      let allUserIDsInLeague = this.requiredLeagueYear.players.filter((x) => !!x.user).map((x) => x.user?.userID);
       let nonInvolvedParties = except(allUserIDsInLeague, involvedParties);
       return nonInvolvedParties.includes(this.userInfo?.userID);
     },
     canVote() {
+      if (!this.userInfo) {
+        return false;
+      }
+
       let votedUserIDs = this.trade.votes.map((x) => x.userID);
-      let alreadyVoted = votedUserIDs.includes(this.userInfo?.userID);
+      let alreadyVoted = votedUserIDs.includes(this.userInfo.userID);
       return this.isInLeagueButNotInvolved && !alreadyVoted;
     },
     header() {
@@ -222,6 +228,9 @@ export default {
         const proposedDate = this.formatLongDateTime(this.trade.proposedTimestamp);
         finalHeader += ` (Proposed on ${proposedDate})`;
       } else {
+        if (!this.trade.completedTimestamp) {
+          throw new Error("Trade should have a completedTimestamp, but it doesn't");
+        }
         const completedDate = this.formatLongDateTime(this.trade.completedTimestamp);
         finalHeader += ` (${startCase(this.trade.status)} on ${completedDate})`;
       }
@@ -234,72 +243,111 @@ export default {
     ...mapActions(useLeagueStore, ['notifyAction']),
     formatApprovedRejected,
     formatDateTimeAt,
-    acceptTrade() {
-      this.sendGenericTradeRequest('league/AcceptTrade', 'You accepted a trade.');
-    },
-    rejectTrade() {
-      this.sendGenericTradeRequest('league/RejectTrade', 'You rejected a trade.');
-    },
-    rescindTrade() {
-      this.sendGenericTradeRequest('league/RescindTrade', 'You rescinded a trade.');
-    },
-    executeTrade() {
-      this.sendGenericTradeRequest('leagueManager/ExecuteTrade', 'Trade has been executed.');
-    },
-    managerRejectTrade() {
-      this.sendGenericTradeRequest('leagueManager/RejectTrade', 'Trade has been rejected.');
-    },
-    sendGenericTradeRequest(endPoint, message) {
-      const model = {
+    async acceptTrade(): Promise<void> {
+      const model: BasicTradeRequest = {
         tradeID: this.trade.tradeID,
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year
       };
-      axios
-        .post(`/api/${endPoint}`, model)
-        .then(() => {
-          this.notifyAction(message);
-        })
-        .catch((response) => {
-          this.errorInfo = response.response.data;
-        });
+
+      try {
+        await leagueClient.acceptTrade(model);
+        this.notifyAction('You accepted a trade.');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Trade accept request failed.');
+      }
     },
-    vote(approved) {
-      const model = {
+    async rejectTrade(): Promise<void> {
+      const model: BasicTradeRequest = {
         tradeID: this.trade.tradeID,
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year,
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year
+      };
+
+      try {
+        await leagueClient.rejectTrade(model);
+        this.notifyAction('You rejected a trade.');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Trade rejection failed.');
+      }
+    },
+    async rescindTrade(): Promise<void> {
+      const model: BasicTradeRequest = {
+        tradeID: this.trade.tradeID,
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year
+      };
+
+      try {
+        await leagueClient.rescindTrade(model);
+        this.notifyAction('You rescinded a trade.');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Request to rescind trade failed.');
+      }
+    },
+    async executeTrade(): Promise<void> {
+      const model: BasicTradeRequest = {
+        tradeID: this.trade.tradeID,
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year
+      };
+
+      try {
+        await leagueManagerClient.executeTrade(model);
+        this.notifyAction('Trade has been executed.');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Trade failed to execute.');
+      }
+    },
+    async managerRejectTrade(): Promise<void> {
+      const model: BasicTradeRequest = {
+        tradeID: this.trade.tradeID,
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year
+      };
+
+      try {
+        await leagueManagerClient.rejectTrade(model);
+        this.notifyAction('Trade has been rejected.');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Trade reject request failed.');
+      }
+    },
+    async vote(approved: boolean): Promise<void> {
+      const model: TradeVoteRequest = {
+        tradeID: this.trade.tradeID,
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year,
         approved,
         comment: this.comment
       };
-      axios
-        .post('/api/league/VoteOnTrade', model)
-        .then(() => {
-          this.notifyAction('Voted on trade.');
-          this.comment = '';
-        })
-        .catch((response) => {
-          this.errorInfo = response.response.data;
-        });
+
+      try {
+        await leagueClient.voteOnTrade(model);
+        this.notifyAction('Voted on trade.');
+        this.comment = '';
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to vote on trade.');
+      }
     },
-    deleteVote() {
-      const model = {
+    async deleteVote(): Promise<void> {
+      const model: BasicTradeRequest = {
         tradeID: this.trade.tradeID,
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year
       };
-      axios
-        .post('/api/league/DeleteTradeVote', model)
-        .then(() => {
-          this.notifyAction('Deleted vote on trade.');
-        })
-        .catch((response) => {
-          this.errorInfo = response.response.data;
-        });
+
+      try {
+        await leagueClient.deleteTradeVote(model);
+        this.notifyAction('Deleted vote on trade.');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to delete vote on trade.');
+      }
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .component-row {
   width: 100%;

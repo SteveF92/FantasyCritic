@@ -69,17 +69,36 @@
     </div>
   </div>
 </template>
-<script>
-import { mapState } from 'pinia';
-import axios from 'axios';
 
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'pinia';
+import type { BTableSortBy, TableField } from 'bootstrap-vue-next';
+
+import type { DeleteManagerMessageRequest, LeagueActionViewModel, leagueManagerClient, ManagerMessageViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatDateLong, formatDateTime, formatYesNo } from '@/utilities/formatters';
 import CollapseCard from '@/components/collapseCard.vue';
 import LeagueActionSet from '@/components/leagueActionSet.vue';
 import TradeSummary from '@/components/tradeSummary.vue';
 
-export default {
+interface LeagueHistoryData {
+  errorInfo: string;
+  sortBy: BTableSortBy[];
+}
+
+export default defineComponent({
+  setup() {
+    const actionFields: TableField<LeagueActionViewModel>[] = [
+      { key: 'publisherName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
+      { key: 'actionType', label: 'Action Type', sortable: true, thClass: 'bg-primary' },
+      { key: 'description', label: 'Description', thClass: 'bg-primary' },
+      { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' }
+    ];
+
+    return { actionFields };
+  },
   components: {
     LeagueActionSet,
     CollapseCard,
@@ -89,18 +108,10 @@ export default {
     leagueid: { type: String, required: true },
     year: { type: Number, required: true }
   },
-  data() {
+  data(): LeagueHistoryData {
     return {
       errorInfo: '',
-      actionFields: [
-        { key: 'publisherName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
-        { key: 'actionType', label: 'Action Type', sortable: true, thClass: 'bg-primary' },
-        { key: 'description', label: 'Description', thClass: 'bg-primary' },
-        { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' }
-      ],
-      sortBy: [{ key: 'timestamp', order: 'desc' }],
-      lastID: 1
+      sortBy: [{ key: 'timestamp', order: 'desc' }]
     };
   },
   watch: {
@@ -128,19 +139,17 @@ export default {
       const leagueStore = useLeagueStore();
       leagueStore.initializeHistoryPage(leaguePageParams);
     },
-    getCollapseID() {
-      let thisID = this.lastID;
-      this.lastID = this.lastID + 1;
-      return thisID;
-    },
-    async deleteMessage(message) {
-      const model = {
-        leagueID: this.league.leagueID,
+    async deleteMessage(message: ManagerMessageViewModel) {
+      if (!this.leagueYear) {
+        throw new Error('League Year is not initialized.');
+      }
+      const model: DeleteManagerMessageRequest = {
+        leagueID: this.leagueYear.leagueID,
         year: this.leagueYear.year,
         messageID: message.messageID
       };
-      await axios.post('/api/leagueManager/DeleteManagerMessage', model);
-      await useLeagueStore().refreshLeagueYear();
+
+      await leagueManagerClient.deleteManagerMessage(model);
     },
     exportHistoryToCsv() {
       window.location.href = `/api/league/ExportLeagueActionSetsToCSV?leagueID=${this.leagueid}&year=${this.year}`;
@@ -149,8 +158,9 @@ export default {
       window.location.href = `/api/league/DownloadConsolidatedLeagueYearData?leagueID=${this.leagueid}&year=${this.year}`;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .history-download-actions {
   display: flex;

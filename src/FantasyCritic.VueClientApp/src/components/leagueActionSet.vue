@@ -41,7 +41,7 @@
           {{ formatYesNo(data.item.counterPick) }}
         </template>
         <template #cell(conditionalDropPublisherGame)="data">
-          <masterGamePopover v-if="data.item.conditionalDropPublisherGame" :master-game="data.item.conditionalDropPublisherGame.masterGame"></masterGamePopover>
+          <masterGamePopover v-if="data.item.conditionalDropPublisherGame" :master-game="data.item.conditionalDropPublisherGame.masterGame!"></masterGamePopover>
           <span v-else>None</span>
         </template>
         <template #cell(projectedPointsAtTimeOfBid)="data">
@@ -54,47 +54,54 @@
     </div>
   </div>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import { type TableField } from 'bootstrap-vue-next';
+
+import type { DropGameRequestViewModel, LeagueActionProcessingSetViewModel, PickupBidViewModel } from '@/api/clients';
 import { numericComparer } from '@/globalFunctions';
 import { formatDateTime, formatScore, formatYesNo } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
-export default {
+export default defineComponent({
+  setup() {
+    const dropFields: TableField<DropGameRequestViewModel>[] = [
+      { key: 'publisherName', label: 'Publisher', sortable: true, thClass: 'bg-primary' },
+      { key: 'timestamp', label: 'Time Placed', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame', label: 'Game', sortable: true, thClass: 'bg-primary' },
+      { key: 'successful', label: 'Successful', sortable: true, thClass: 'bg-primary' }
+    ];
+
+    const bidFields: TableField<PickupBidViewModel>[] = [
+      { key: 'publisherName', label: 'Publisher', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame', label: 'Game', sortable: true, thClass: 'bg-primary' },
+      { key: 'successful', label: 'Successful', sortable: true, thClass: 'bg-primary' },
+      { key: 'bidAmount', label: 'Bid Amount', sortable: true, thClass: 'bg-primary' },
+      { key: 'priority', label: 'Priority', sortable: true, thClass: 'bg-primary' },
+      { key: 'timestamp', label: 'Time Placed', sortable: true, thClass: 'bg-primary' },
+      { key: 'projectedPointsAtTimeOfBid', label: 'Projected Points (for tiebreaks)', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
+      { key: 'conditionalDropPublisherGame', label: 'Conditional Drop', sortable: true, thClass: 'bg-primary' },
+      { key: 'outcome', label: 'Outcome', sortable: true, thClass: 'bg-primary' }
+    ];
+
+    return { dropFields, bidFields };
+  },
   components: {
     MasterGamePopover
   },
   props: {
-    leagueActionSet: { type: Object, required: true },
+    leagueActionSet: { type: Object as PropType<LeagueActionProcessingSetViewModel>, required: true },
     mode: { type: String, required: true }
-  },
-  data() {
-    return {
-      dropFields: [
-        { key: 'publisherName', label: 'Publisher', sortable: true, thClass: 'bg-primary' },
-        { key: 'timestamp', label: 'Time Placed', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'successful', label: 'Successful', sortable: true, thClass: 'bg-primary' }
-      ],
-      bidFields: [
-        { key: 'publisherName', label: 'Publisher', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame', label: 'Game', sortable: true, thClass: 'bg-primary' },
-        { key: 'successful', label: 'Successful', sortable: true, thClass: 'bg-primary' },
-        { key: 'bidAmount', label: 'Bid Amount', sortable: true, thClass: 'bg-primary' },
-        { key: 'priority', label: 'Priority', sortable: true, thClass: 'bg-primary' },
-        { key: 'timestamp', label: 'Time Placed', sortable: true, thClass: 'bg-primary' },
-        { key: 'projectedPointsAtTimeOfBid', label: 'Projected Points (for tiebreaks)', sortable: true, thClass: 'bg-primary', sortCompare: numericComparer },
-        { key: 'conditionalDropPublisherGame', label: 'Conditional Drop', sortable: true, thClass: 'bg-primary' },
-        { key: 'outcome', label: 'Outcome', sortable: true, thClass: 'bg-primary' }
-      ]
-    };
   },
   methods: {
     formatDateTime,
     formatScore,
     formatYesNo
   }
-};
+});
 </script>
+
 <style scoped>
 .action-table {
   width: 100%;

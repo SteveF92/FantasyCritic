@@ -24,6 +24,7 @@ import {
   faCrosshairs,
   faCrown,
   faDollarSign,
+  faDownload,
   faEnvelope,
   faExclamationCircle,
   faExclamationTriangle,
@@ -140,7 +141,8 @@ library.add(
   faBook,
   faGlobe,
   faChessKing,
-  faXmark
+  faXmark,
+  faDownload
 );
 
 export { FontAwesomeIcon, FontAwesomeLayers, FontAwesomeLayersText };
