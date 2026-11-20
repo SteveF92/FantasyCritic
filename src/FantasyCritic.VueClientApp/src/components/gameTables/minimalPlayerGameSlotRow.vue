@@ -1,7 +1,7 @@
 <template>
   <tr :class="{ 'table-warning': gameSlot && gameSlot.showWarningRow }" class="minimal-game-row">
     <td>
-      <gameNameColumn :game-slot="gameSlot" :has-special-slots="hasSpecialSlots" :supported-year="supportedYear" :counter-pick-deadline="leagueYear.settings.counterPickDeadline"></gameNameColumn>
+      <gameNameColumn :league-year="leagueYear" :game-slot="gameSlot"></gameNameColumn>
     </td>
     <td class="score-column">
       <template v-if="scoreColumnMode === 'RealScore'">{{ formatScore(game.criticScore, decimalsToShow) }}</template>

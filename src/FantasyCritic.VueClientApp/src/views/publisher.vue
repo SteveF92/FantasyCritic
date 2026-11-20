@@ -201,21 +201,23 @@ export default defineComponent({
       }
     },
     nextPublisher(): PublisherViewModel | null {
-      if (!this.leagueYear || !this.publisher || this.leagueYear.publishers.length < 2) {
+      const publisher = this.publisher;
+      if (!this.leagueYear || !publisher || this.leagueYear.publishers.length < 2) {
         return null;
       }
 
-      let nextPublisher = this.leagueYear.publishers.filter((x) => x.draftPosition === this.publisher.draftPosition + 1)[0];
+      let nextPublisher = this.leagueYear.publishers.filter((x) => x.draftPosition === publisher.draftPosition + 1)[0];
       if (!nextPublisher) {
         nextPublisher = this.leagueYear.publishers[0];
       }
       return nextPublisher;
     },
-    previousPublisher() {
-      if (!this.leagueYear || !this.publisher || this.leagueYear.publishers.length < 2) {
+    previousPublisher(): PublisherViewModel | null {
+      const publisher = this.publisher;
+      if (!this.leagueYear || !publisher || this.leagueYear.publishers.length < 2) {
         return null;
       }
-      let previousPublisher = this.leagueYear.publishers.filter((x) => x.draftPosition === this.publisher.draftPosition - 1)[0];
+      let previousPublisher = this.leagueYear.publishers.filter((x) => x.draftPosition === publisher.draftPosition - 1)[0];
       if (!previousPublisher) {
         previousPublisher = this.leagueYear.publishers[this.leagueYear.publishers.length - 1];
       }
@@ -270,29 +272,40 @@ export default defineComponent({
     prepareSnapshot(): void {
       this.renderingSnapshot = true;
       const viewport = document.querySelector('meta[name=viewport]');
+      if (!viewport) {
+        throw new Error('Could not take snapshot.');
+      }
       viewport.setAttribute('content', 'width=1920');
       setTimeout(this.sharePublisher, 1);
     },
-    sharePublisher(): void {
+    async sharePublisher(): Promise<void> {
       let elementID = '#full-cover-art-view';
       const options = { allowTaint: false, useCORS: true, scale: 2 };
-      html2canvas(document.querySelector(elementID), options).then(async (canvas) => {
-        const dataUrl = canvas.toDataURL('png');
-        const blob = await (await fetch(dataUrl)).blob();
-        const filesArray = [
-          new File([blob], 'myPublisher.png', {
-            type: blob.type,
-            lastModified: new Date().getTime()
-          })
-        ];
-        const shareData = {
-          files: filesArray,
-          title: 'My Fantasy Critic Publisher'
-        };
-        navigator.share(shareData);
-      });
+      const elementToSnapshot: HTMLElement | null = document.querySelector(elementID);
+      if (!elementToSnapshot) {
+        throw new Error('Could not share publisher.');
+      }
+
+      const canvas = await html2canvas(elementToSnapshot, options);
+      const dataUrl = canvas.toDataURL('png');
+      const blob = await (await fetch(dataUrl)).blob();
+      const filesArray = [
+        new File([blob], 'myPublisher.png', {
+          type: blob.type,
+          lastModified: new Date().getTime()
+        })
+      ];
+      const shareData = {
+        files: filesArray,
+        title: 'My Fantasy Critic Publisher'
+      };
+      navigator.share(shareData);
+
       this.renderingSnapshot = false;
       const viewport = document.querySelector('meta[name=viewport]');
+      if (!viewport) {
+        throw new Error('Could not take snapshot.');
+      }
       viewport.setAttribute('content', 'width=device-width');
     }
   }

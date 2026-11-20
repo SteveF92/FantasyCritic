@@ -104,9 +104,8 @@
 import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
 
-import type { PublisherSlotViewModel, SupportedYearViewModel } from '@/api/clients';
+import type { LeagueYearViewModel, PublisherGameViewModel, PublisherSlotViewModel, PublisherViewModel, SupportedYearViewModel } from '@/api/clients';
 import { formatLongDate } from '@/globalFunctions';
-import { useLeagueStore } from '@/store/leagueStore';
 import { usePublisherStore } from '@/store/publisherStore';
 import type { PopoverContent } from '@/types/vueTypes';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
@@ -157,18 +156,24 @@ export default defineComponent({
     SlotTypeBadge
   },
   props: {
-    gameSlot: { type: Object as PropType<PublisherSlotViewModel>, required: true },
-    supportedYear: { type: Object as PropType<SupportedYearViewModel>, required: true },
-    hasSpecialSlots: { type: Boolean, required: true },
-    counterPickDeadline: { type: String, required: true }
+    leagueYear: { type: Object as PropType<LeagueYearViewModel>, required: true },
+    gameSlot: { type: Object as PropType<PublisherSlotViewModel>, required: true }
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear']),
     ...mapState(usePublisherStore, ['moveMode', 'heldSlot']),
-    game() {
+    game(): PublisherGameViewModel | undefined {
       return this.gameSlot.publisherGame;
     },
-    counterPickSourcePublisher() {
+    supportedYear(): SupportedYearViewModel {
+      return this.leagueYear.supportedYear;
+    },
+    counterPickDeadline(): string {
+      return this.leagueYear.settings.counterPickDeadline;
+    },
+    hasSpecialSlots(): boolean {
+      return this.leagueYear.settings.hasSpecialSlots;
+    },
+    counterPickSourcePublisher(): PublisherViewModel | null {
       if (!this.gameSlot.counterPick || !this.game?.masterGame || !this.leagueYear?.publishers) {
         return null;
       }
@@ -243,7 +248,7 @@ export default defineComponent({
     },
     counterPickSourceText() {
       if (!this.counterPickSourcePublisher) {
-        throw new Error("A slot without a game can't have a coutner pick source, and yet here we are.");
+        throw new Error('Could not find the publisher who this game was counter picked from.');
       }
       return {
         title: 'Publisher With Game',

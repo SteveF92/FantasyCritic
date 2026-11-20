@@ -17,6 +17,7 @@ interface PublisherStoreState {
   sortOrderMode: boolean;
   coverArtMode: boolean;
   includeRemovedInSorted: boolean;
+  errorInfo: string;
 }
 
 export const usePublisherStore = defineStore('publisher', {
@@ -31,7 +32,8 @@ export const usePublisherStore = defineStore('publisher', {
     moveGameError: '',
     sortOrderMode: false,
     coverArtMode: false,
-    includeRemovedInSorted: false
+    includeRemovedInSorted: false,
+    errorInfo: ''
   }),
   getters: {
     gameSlots: (state) => state.editableGameSlots,
@@ -44,14 +46,19 @@ export const usePublisherStore = defineStore('publisher', {
   actions: {
     async initializePublisherPage(publisherID: string) {
       this.clearPublisherStoreData();
-      const leagueYear = await leagueClient.getLeagueYearForPublisher(publisherID);
-      const publisher = leagueYear?.publishers.find((x) => x.publisherID === publisherID);
-      if (!publisher) {
-        throw new Error(`Publisher ${publisherID} not found`);
-      }
+      try {
+        const leagueYear = await leagueClient.getLeagueYearForPublisher(publisherID);
+        const publisher = leagueYear?.publishers.find((x) => x.publisherID === publisherID);
+        if (!publisher) {
+          this.errorInfo = `Publisher ${publisherID} not found`;
+          return;
+        }
 
-      this._initializeInternal(publisher, leagueYear);
-      this._setDesiredPositions();
+        this._initializeInternal(publisher, leagueYear);
+        this._setDesiredPositions();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load longest tenured games.');
+      }
     },
     moveGame(moveIntoSlot: PublisherSlotViewModel) {
       this._moveGameInternal(moveIntoSlot);

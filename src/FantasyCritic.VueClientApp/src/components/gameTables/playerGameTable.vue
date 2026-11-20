@@ -1,14 +1,14 @@
 <template>
   <b-table
     v-if="publisher && leagueYear"
-    :items="tableRows"
+    :items="tableItems"
     :fields="tableFields"
     bordered
     responsive
     striped
     v-model:sort-by="sortBy"
     :primary-key="getRowKey"
-    tbody-tr-class="btable-player-game-row">
+    :tbody-tr-class="publisherGameRowClass">
     <template #head(projectedFantasyPoints)>
       Projected
       <br />
@@ -34,11 +34,7 @@
     </template>
 
     <template #cell(publisherGame.gameName)="data">
-      <gameNameColumn
-        :game-slot="data.item"
-        :has-special-slots="leagueYear.settings.hasSpecialSlots"
-        :supported-year="leagueYear.supportedYear"
-        :counter-pick-deadline="leagueYear.settings.counterPickDeadline"></gameNameColumn>
+      <gameNameColumn :league-year="leagueYear" :game-slot="data.item"></gameNameColumn>
     </template>
 
     <template #cell(publisherGame.masterGame.maximumReleaseDate)="data">
@@ -90,7 +86,7 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import { type BTableSortBy } from 'bootstrap-vue-next';
+import type { BTableSortBy, TableField, TableRowType, TableStrictClassValue } from 'bootstrap-vue-next';
 
 import type { PublisherGameViewModel, PublisherSlotViewModel } from '@/api/clients';
 import { formatPublisherGameAcquiredDate, formatPublisherGameReleaseDate, formatPublisherGameRemovedDate, numericComparer } from '@/globalFunctions';
@@ -113,7 +109,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(usePublisherStore, ['publisher', 'leagueYear', 'gameSlots', 'sortOrderMode', 'includeRemovedInSorted']),
-    tableItems(): (PublisherSlotViewModel & { _rowVariant?: string })[] {
+    tableItems(): PublisherSlotViewModel[] {
       if (!this.publisher || !this.gameSlots) {
         return [];
       }
@@ -129,18 +125,7 @@ export default defineComponent({
 
       return slotsWithGames.concat(this.publisher.formerGameSlots);
     },
-    tableRows() {
-      const rows = this.tableItems;
-      for (let i = 0; i < rows.length; ++i) {
-        if (rows[i].publisherGame && rows[i].showWarningRow && !rows[i].gameIsCancelled) {
-          rows[i]._rowVariant = 'warning';
-        } else {
-          rows[i]._rowVariant = undefined;
-        }
-      }
-      return rows;
-    },
-    tableFields() {
+    tableFields(): TableField<PublisherSlotViewModel>[] {
       return [
         { key: 'publisherGame.gameName', label: 'Game Name', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header'], class: ['full-table-game-name-column'] },
         { key: 'publisherGame.masterGame.maximumReleaseDate', label: 'Release Date', sortable: this.sortOrderMode, thClass: ['bg-primary', 'btable-player-table-header', 'release-date-column'] },
@@ -180,13 +165,23 @@ export default defineComponent({
   },
   methods: {
     formatScore,
+    publisherGameRowClass(item: PublisherSlotViewModel | null, type: TableRowType): TableStrictClassValue {
+      if (!item || type !== 'row') {
+        return '';
+      }
+      if (item.publisherGame && item.showWarningRow && !item.gameIsCancelled) {
+        return ['btable-player-game-row', 'table-warning'];
+      }
+
+      return 'btable-player-game-row';
+    },
     getRowKey(slot: PublisherSlotViewModel): string {
       return String(slot.overallSlotNumber);
     },
     getReleaseDate(publisherGame: PublisherGameViewModel): string {
       return formatPublisherGameReleaseDate(publisherGame, false);
     },
-    getAcquiredDate(publisherGame: PublisherGameViewModel) {
+    getAcquiredDate(publisherGame: PublisherGameViewModel): string {
       if (!this.leagueYear) {
         throw new Error('League year not initialized yet.');
       }

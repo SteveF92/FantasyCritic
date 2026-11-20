@@ -41,7 +41,7 @@
 </template>
 
 <script lang="ts">
-import { CSSProperties, defineComponent, useId, type PropType } from 'vue';
+import { defineComponent, useId, type CSSProperties, type PropType } from 'vue';
 import { mapState } from 'pinia';
 
 import type { MasterGameTagViewModel, MasterGameYearViewModel, PublisherGameViewModel, PublisherSlotViewModel } from '@/api/clients';
