@@ -1,5 +1,7 @@
 <template>
   <div class="col-md-10 offset-md-1 col-sm-12">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+
     <div v-if="forbidden">
       <div class="alert alert-danger" role="alert">You do not have permission to view this league.</div>
     </div>
@@ -172,6 +174,7 @@ export default defineComponent({
       window.location.href = `/api/league/DownloadConsolidatedLeagueData/${this.leagueid}`;
     },
     async initializePage(): Promise<void> {
+      this.errorInfo = '';
       try {
         this.leagueAllTimeStats = await leagueClient.getLeagueAllTimeStats(this.leagueid);
       } catch (error) {
