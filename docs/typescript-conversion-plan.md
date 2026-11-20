@@ -322,7 +322,7 @@ out.
 - `html2canvas` is replaced by `modern-screenshot`, through `utilities/shareImage.ts`. Both share
   buttons use it: cover art mode here, and `minimalPlayerGameTable` (step 13a) on the League page.
 
-### 12. League history and stats
+### 12. League history and stats (done)
 
 - `leagueHistory` (+ `tradeSummary`, `leagueActionSet`)
 - `leagueAllTimeStats` (+ `hallOfFameGame`, `hallOfFameSection`)
