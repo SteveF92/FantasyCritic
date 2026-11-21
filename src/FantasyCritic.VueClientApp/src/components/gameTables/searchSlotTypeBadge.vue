@@ -15,11 +15,19 @@
     </span>
   </span>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import { MasterGameTagViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { getMultiBadgeColor } from '@/utilities/masterGameTags';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+export default defineComponent({
+  setup() {
+    return { getMultiBadgeColor };
+  },
   components: {
     MasterGameTagBadge
   },
@@ -29,32 +37,18 @@ export default {
     selected: { type: Boolean, default: false }
   },
   methods: {
-    getTag(tagName) {
+    getTag(tagName: string): MasterGameTagViewModel {
       const interLeagueStore = useInterLeagueStore();
-      return interLeagueStore.allTags.find((x) => x.name === tagName);
-    },
-    getMultiBadgeColor(tagNames) {
-      let colorString = '';
-      let stripeWidth = 100.0 / tagNames.length;
-      for (let i = 0; i < tagNames.length; i++) {
-        let tag = this.getTag(tagNames[i]);
-        let badgeColor = tag.badgeColor;
-
-        colorString += `#${badgeColor} ${i * stripeWidth}%, #${badgeColor} ${(i + 1) * stripeWidth}%,`;
+      const tag = interLeagueStore.allTags.find((x) => x.name === tagName);
+      if (!tag) {
+        throw new Error(`Unknown master game tag: ${tagName}`);
       }
-
-      colorString = colorString.substring(0, colorString.length - 1);
-      let backGroundString = `linear-gradient(135deg, ${colorString})`;
-
-      return {
-        backgroundImage: backGroundString,
-        color: 'white',
-        'text-shadow': '0 0 2px black, 0 0 2px black, 0 0 2px black, 0 0 2px black'
-      };
+      return tag;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .popover-header {
   color: black;

@@ -26,7 +26,7 @@
 import { defineComponent, type PropType } from 'vue';
 
 import type { MasterGameTagViewModel, SpecialGameSlotViewModel } from '@/api/clients';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { getMatchingTags } from '@/utilities/masterGameTags';
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 
 export default defineComponent({
@@ -56,11 +56,7 @@ export default defineComponent({
     }
   },
   methods: {
-    getMatchingTags(tagNames: string[]): MasterGameTagViewModel[] {
-      const interLeagueStore = useInterLeagueStore();
-      const matchingTags = tagNames.map((x) => interLeagueStore.allTags.find((y) => y.name === x)).filter((x) => !!x);
-      return matchingTags;
-    },
+    getMatchingTags,
     removeSlot(specialSlot: SpecialGameSlotViewModel): void {
       const newValue = this.computedModelValue
         .filter((x) => x.specialSlotPosition !== specialSlot.specialSlotPosition)

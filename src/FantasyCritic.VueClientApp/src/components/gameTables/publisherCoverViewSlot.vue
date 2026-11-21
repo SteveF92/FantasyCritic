@@ -44,11 +44,11 @@
 import { defineComponent, useId, type CSSProperties, type PropType } from 'vue';
 import { mapState } from 'pinia';
 
-import type { MasterGameTagViewModel, MasterGameYearViewModel, PublisherGameViewModel, PublisherSlotViewModel } from '@/api/clients';
+import type { MasterGameYearViewModel, PublisherGameViewModel, PublisherSlotViewModel } from '@/api/clients';
 import { formatPublisherGameReleaseDate, roundNumber } from '@/globalFunctions';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { usePublisherStore } from '@/store/publisherStore';
 import { getGGCoverArtLinkForGame } from '@/utilities/ggLinks';
+import { getMatchingTag, getMultiBadgeColor } from '@/utilities/masterGameTags';
 import SlotTypeBadge from '@/components/gameTables/slotTypeBadge.vue';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 
@@ -113,7 +113,7 @@ export default defineComponent({
       }
 
       if (this.gameSlot.specialSlot.requiredTags.length === 1) {
-        const singleTag = this.getTag(this.gameSlot.specialSlot.requiredTags[0]);
+        const singleTag = getMatchingTag(this.gameSlot.specialSlot.requiredTags[0]);
         return singleTag.shortName;
       }
 
@@ -133,45 +133,18 @@ export default defineComponent({
       }
 
       if (this.gameSlot.specialSlot.requiredTags.length === 1) {
-        const singleTag = this.getTag(this.gameSlot.specialSlot.requiredTags[0]);
+        const singleTag = getMatchingTag(this.gameSlot.specialSlot.requiredTags[0]);
         return {
           backgroundColor: '#' + singleTag.badgeColor
         };
       }
 
-      return this.getMultiBadgeColor(this.gameSlot.specialSlot.requiredTags);
+      return getMultiBadgeColor(this.gameSlot.specialSlot.requiredTags);
     }
   },
   methods: {
     formatPublisherGameReleaseDate,
-    roundNumber,
-    getTag(tagName: string): MasterGameTagViewModel {
-      const interLeagueStore = useInterLeagueStore();
-      const matchingTag = interLeagueStore.allTags.find((x) => x.name === tagName);
-      if (!matchingTag) {
-        throw new Error(`Could not find matching tag for: ${tagName}`);
-      }
-
-      return matchingTag;
-    },
-    getMultiBadgeColor(tagNames: string[]): CSSProperties {
-      let colorString = '';
-      let stripeWidth = 100.0 / tagNames.length;
-      for (let i = 0; i < tagNames.length; i++) {
-        let tag = this.getTag(tagNames[i]);
-        let badgeColor = tag.badgeColor;
-
-        colorString += `#${badgeColor} ${i * stripeWidth}%, #${badgeColor} ${(i + 1) * stripeWidth}%,`;
-      }
-
-      colorString = colorString.substring(0, colorString.length - 1);
-      let backGroundString = `linear-gradient(135deg, ${colorString})`;
-
-      return {
-        backgroundImage: backGroundString,
-        color: 'white'
-      };
-    }
+    roundNumber
   }
 });
 </script>
