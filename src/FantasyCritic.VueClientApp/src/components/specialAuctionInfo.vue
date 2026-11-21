@@ -11,14 +11,14 @@
           </template>
         </countdown>
       </div>
-      <b-button v-if="requiredLeague.userIsInLeague" v-b-modal="`bidGameForm-${specialAuction.masterGameYear.masterGameID}`" variant="primary" class="bid-button">Place Bid</b-button>
+      <b-button v-if="userPublisher" v-b-modal="modalId" variant="primary" class="bid-button">Place Bid</b-button>
     </div>
     <div v-else>
       <div>Auction closed at: {{ formatDateTime(scheduledEndTime) }}</div>
       <h3>This auction is now locked, and will process shortly.</h3>
       On a good day, bids process within 10 minutes. If it's been more than 20 minutes, contact us on Discord.
     </div>
-    <bidGameForm :special-auction="specialAuction"></bidGameForm>
+    <bidGameForm v-if="userPublisher" :special-auction="specialAuction" :modal-id="modalId"></bidGameForm>
   </b-alert>
 </template>
 
@@ -53,12 +53,15 @@ export default defineComponent({
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['requiredLeague']),
+    ...mapState(useLeagueStore, ['requiredLeague', 'userPublisher']),
     scheduledEndTime(): string {
       return DateTime.fromISO(this.specialAuction.scheduledEndTime).toFormat('yyyy-MM-dd HH:mm:ss');
     },
     isLocked(): boolean {
       return this.specialAuction.isLocked || this.specialAuction.processed || this.forceLocked;
+    },
+    modalId(): string {
+      return `bid-game-form-${this.specialAuction.masterGameYear.masterGameID}`;
     }
   },
   methods: {

@@ -1,5 +1,5 @@
 <template>
-  <b-modal :id="modalID" :ref="modalRef" size="lg" title="Make a Bid" no-footer @hidden="clearData" @show="getTopGames">
+  <b-modal :id="modalId" size="lg" title="Make a Bid" no-footer @hidden="clearData" @show="initialize">
     <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div v-if="!specialAuction" class="alert alert-info">
       You can use this form to place a bid on a game.
@@ -25,28 +25,25 @@
         </span>
       </div>
 
-      <div v-if="!requiredLeagueYear.settings.hasSpecialSlots">
-        <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
-        <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
-        <b-button variant="secondary" class="show-top-button" @click="getThisWeeksPublicBids" v-if="requiredLeagueYear.publicBiddingGames">Show This Week's Bids</b-button>
-      </div>
-      <div v-else>
-        <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
-        <b-button variant="secondary" class="show-top-button" @click="getThisWeeksPublicBids" v-if="requiredLeagueYear.publicBiddingGames">Show This Week's Bids</b-button>
+      <b-button v-if="!requiredLeagueYear.settings.hasSpecialSlots" variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
+      <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
+      <b-button variant="secondary" class="show-top-button" @click="getThisWeeksPublicBids" v-if="requiredLeagueYear.publicBiddingGames">Show This Week's Bids</b-button>
+
+      <div v-if="requiredLeagueYear.settings.hasSpecialSlots">
         <h5 class="text-black">Top Available by Slot</h5>
         <span class="search-tags">
-          <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click="getTopGames"></searchSlotTypeBadge>
+          <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="searchMode === 'topAvailable' && !selectedSlot" @click="getTopGames"></searchSlotTypeBadge>
           <searchSlotTypeBadge
             :game-slot="requiredLeagueYear.slotInfo.regularSlot"
             name="REG"
-            :selected="selectedSlotIndex === 1"
-            @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot, 1)"></searchSlotTypeBadge>
+            :selected="selectedSlot === requiredLeagueYear.slotInfo.regularSlot"
+            @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
           <searchSlotTypeBadge
             v-for="(specialSlot, index) in requiredLeagueYear.slotInfo.specialSlots"
-            :key="specialSlot.overallSlotNumber"
+            :key="index"
             :game-slot="specialSlot"
-            :selected="selectedSlotIndex === 2 + index"
-            @click="getGamesForSlot(specialSlot, 2 + index)"></searchSlotTypeBadge>
+            :selected="selectedSlot === specialSlot"
+            @click="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
         </span>
       </div>
 
@@ -54,22 +51,12 @@
         <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#000000' }" />
       </div>
 
-      <div class="search-results">
-        <div v-if="!bidMasterGame">
-          <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
-          <h3 v-show="showingQueuedGames" class="text-black">Watchlist</h3>
-          <h3 v-show="showingPublicBids" class="text-black">This Week's Public Bids</h3>
-          <h3 v-show="!showingTopAvailable && !showingQueuedGames && !showingPublicBids && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
-          <possibleMasterGamesTable
-            v-if="possibleMasterGames.length > 0"
-            v-model="bidMasterGame"
-            :possible-games="possibleMasterGames"
-            @update:model-value="newGameSelected"
-            bid-mode></possibleMasterGamesTable>
-        </div>
+      <div v-if="!bidMasterGame && searchMode && possibleMasterGames.length > 0" class="search-results">
+        <h3 class="text-black">{{ searchHeading }}</h3>
+        <possibleMasterGamesTable v-model="bidMasterGame" :possible-games="possibleMasterGames" @update:model-value="newGameSelected" bid-mode></possibleMasterGamesTable>
       </div>
 
-      <div v-show="searched && !bidMasterGame && possibleMasterGames.length === 0" class="alert alert-info">
+      <div v-show="searchMode && !bidMasterGame && possibleMasterGames.length === 0" class="alert alert-info">
         <div class="row">
           <span class="col-12 col-md-7">No games were found.</span>
         </div>
@@ -77,7 +64,7 @@
     </form>
 
     <div v-if="bidMasterGame">
-      <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
+      <h3 class="selected-game text-black">Selected Game:</h3>
       <masterGameSummary :master-game="bidMasterGame"></masterGameSummary>
       <hr />
       <div class="form-group">
@@ -103,9 +90,7 @@
         </b-form-select>
       </div>
 
-      <b-alert
-        :model-value="!bidMasterGame.willRelease && bidMasterGame.tags.filter((x) => x.includes('EarlyAccess')).length > 0 && requiredLeagueYear.settings.releaseSystem === 'OnlyNeedsScore'"
-        variant="warning">
+      <b-alert :model-value="showEarlyAccessWarning" variant="warning">
         Warning! This game is not planned for full release this year, but your league does allow games that are in early access and get an OpenCritic score to count for points. The system will let you
         bid for it (provided there are no other reasons it could be banned), but do so at your own risk, as early access games don't often get reviewed.
       </b-alert>
@@ -118,7 +103,7 @@
         </label>
       </div>
 
-      <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="!canPlaceBid" @click="bidGame">Place Bid</b-button>
+      <b-button variant="primary" class="full-width-button" :disabled="!canPlaceBid" @click="bidGame">Place Bid</b-button>
       <div v-if="bidResult && !bidResult.success" class="alert bid-error" :class="{ 'alert-danger': !bidResult.showAsWarning, 'alert-warning': bidResult.showAsWarning }">
         <h3 v-if="bidResult.showAsWarning" class="alert-heading">Warning!</h3>
         <h3 v-else class="alert-heading">Error!</h3>
@@ -157,6 +142,8 @@ import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 
+type SearchMode = 'search' | 'topAvailable' | 'watchlist' | 'publicBids' | null;
+
 interface BidGameFormData {
   searchGameName: string;
   bidMasterGame: MasterGameYearViewModel | null;
@@ -164,14 +151,11 @@ interface BidGameFormData {
   bidResult: PickupBidResultViewModel | null;
   conditionalDrop: PublisherGameViewModel | null;
   possibleMasterGames: PossibleMasterGameYearViewModel[];
+  searchMode: SearchMode;
   errorInfo: string;
-  showingTopAvailable: boolean;
-  showingQueuedGames: boolean;
-  showingPublicBids: boolean;
-  searched: boolean;
   isBusy: boolean;
-  requestIsBusy: boolean;
-  selectedSlotIndex: number | null;
+  bidRequestIsBusy: boolean;
+  selectedSlot: PublisherSingleSlotRequirementsViewModel | null;
   allowIneligibleSlot: boolean;
 }
 
@@ -192,7 +176,8 @@ export default defineComponent({
     SearchSlotTypeBadge
   },
   props: {
-    specialAuction: { type: Object as PropType<SpecialAuctionViewModel>, required: false, default: null }
+    specialAuction: { type: Object as PropType<SpecialAuctionViewModel | null>, required: false, default: null },
+    modalId: { type: String, required: true }
   },
   data(): BidGameFormData {
     let defaultMasterGame: MasterGameYearViewModel | null = null;
@@ -208,20 +193,33 @@ export default defineComponent({
       conditionalDrop: null,
       possibleMasterGames: [],
       errorInfo: '',
-      showingTopAvailable: false,
-      showingQueuedGames: false,
-      showingPublicBids: false,
-      searched: false,
+      searchMode: null,
       isBusy: false,
-      requestIsBusy: false,
-      selectedSlotIndex: null,
+      bidRequestIsBusy: false,
+      selectedSlot: null,
       allowIneligibleSlot: false
     };
   },
   computed: {
     ...mapState(useLeagueStore, ['requiredLeagueYear', 'requiredUserPublisher', 'currentDrops']),
-    formIsValid(): boolean {
-      return !!this.bidMasterGame;
+    searchHeading(): string {
+      switch (this.searchMode) {
+        case 'search':
+          return 'Search Results';
+        case 'topAvailable':
+          return 'Top Available Games';
+        case 'watchlist':
+          return 'Watchlist';
+        case 'publicBids':
+          return "This Week's Public Bids";
+        default:
+          return '';
+      }
+    },
+    showEarlyAccessWarning(): boolean {
+      return (
+        !!this.bidMasterGame && !this.bidMasterGame.willRelease && this.bidMasterGame.tags.some((x) => x.includes('EarlyAccess')) && this.requiredLeagueYear.settings.releaseSystem === 'OnlyNeedsScore'
+      );
     },
     hasBidSlotAcquisitionPath(): boolean {
       if (!this.publisherSlotsAreFilled) {
@@ -233,104 +231,65 @@ export default defineComponent({
       return this.currentDrops.length > 0;
     },
     canPlaceBid(): boolean {
-      return this.formIsValid && this.hasBidSlotAcquisitionPath && !this.requestIsBusy;
+      return !!this.bidMasterGame && this.hasBidSlotAcquisitionPath && !this.bidRequestIsBusy;
     },
     publisherSlotsAreFilled(): boolean {
-      let userGames = this.requiredUserPublisher.games;
-      let standardGameSlots = this.requiredLeagueYear.settings.standardGames;
-      let userStandardGames = userGames.filter((x) => !x.counterPick);
+      const userGames = this.requiredUserPublisher.games;
+      const standardGameSlots = this.requiredLeagueYear.settings.standardGames;
+      const userStandardGames = userGames.filter((x) => !x.counterPick);
       return userStandardGames.length >= standardGameSlots;
     },
     droppableGames(): PublisherGameViewModel[] {
       return this.requiredUserPublisher.games.filter((x) => !x.counterPick);
-    },
-    modalID(): string {
-      if (!this.specialAuction) {
-        return 'bidGameForm';
-      }
-      return `bidGameForm-${this.specialAuction.masterGameYear.masterGameID}`;
-    },
-    modalRef(): string {
-      if (!this.specialAuction) {
-        return 'bidGameFormRef';
-      }
-      return `bidGameFormRef-${this.specialAuction.masterGameYear.masterGameID}`;
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
     formatCurrency,
-    async searchGame(): Promise<void> {
-      this.clearDataExceptSearch();
-      this.isBusy = true;
-
-      try {
-        this.possibleMasterGames = await leagueClient.possibleMasterGames(this.searchGameName, this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID);
-        this.searched = true;
-      } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
-      } finally {
-        this.isBusy = false;
+    async initialize(): Promise<void> {
+      if (this.specialAuction) {
+        return;
       }
+      await this.getTopGames();
+    },
+    async searchGame(): Promise<void> {
+      await this.fetchGames('search', null, () => leagueClient.possibleMasterGames(this.searchGameName, this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID));
     },
     async getTopGames(): Promise<void> {
-      this.clearDataExceptSearch();
-      this.selectedSlotIndex = null;
-      this.isBusy = true;
-
-      try {
-        this.possibleMasterGames = await leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID, null);
-        this.showingTopAvailable = true;
-      } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
-      } finally {
-        this.isBusy = false;
-      }
+      await this.fetchGames('topAvailable', null, () =>
+        leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID, null)
+      );
     },
     async getQueuedGames(): Promise<void> {
-      this.clearDataExceptSearch();
-      this.isBusy = true;
-
-      try {
-        this.possibleMasterGames = await leagueClient.currentQueuedGameYears(this.requiredUserPublisher.publisherID, null);
-        this.showingQueuedGames = true;
-      } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
-      } finally {
-        this.isBusy = false;
-      }
+      await this.fetchGames('watchlist', null, () => leagueClient.currentQueuedGameYears(this.requiredUserPublisher.publisherID, null));
     },
     async getThisWeeksPublicBids(): Promise<void> {
-      this.clearDataExceptSearch();
-      this.isBusy = true;
-
-      try {
-        this.possibleMasterGames = await leagueClient.thisWeeksPublicBiddingGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID);
-        this.showingPublicBids = true;
-      } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
-      } finally {
-        this.isBusy = false;
-      }
+      await this.fetchGames('publicBids', null, () =>
+        leagueClient.thisWeeksPublicBiddingGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID)
+      );
     },
-    async getGamesForSlot(slotInfo: PublisherSingleSlotRequirementsViewModel, slotIndex: number): Promise<void> {
-      this.clearDataExceptSearch();
-      this.selectedSlotIndex = slotIndex;
-      this.isBusy = true;
+    async getGamesForSlot(slotInfo: PublisherSingleSlotRequirementsViewModel): Promise<void> {
       const slotJSON = JSON.stringify(slotInfo);
       const base64Slot = btoa(slotJSON);
-      const urlEncodedSlot = encodeURI(base64Slot);
+      await this.fetchGames('topAvailable', slotInfo, () =>
+        leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID, base64Slot)
+      );
+    },
+    async fetchGames(searchMode: SearchMode, slotToSelect: PublisherSingleSlotRequirementsViewModel | null, searchAction: () => Promise<PossibleMasterGameYearViewModel[]>): Promise<void> {
+      this.clearDataExceptSearch();
+      this.selectedSlot = slotToSelect;
+      this.isBusy = true;
 
       try {
-        this.possibleMasterGames = await leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID, urlEncodedSlot);
-        this.showingTopAvailable = true;
+        this.possibleMasterGames = await searchAction();
+        this.searchMode = searchMode;
       } catch (error) {
         this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
       } finally {
         this.isBusy = false;
       }
     },
-    async bidGame() {
+    async bidGame(): Promise<void> {
       if (!this.bidMasterGame) {
         throw new Error('No game is selected to bid on.');
       }
@@ -344,18 +303,19 @@ export default defineComponent({
         conditionalDropPublisherGameID: this.conditionalDrop ? this.conditionalDrop.publisherGameID : undefined
       };
 
-      this.requestIsBusy = true;
+      this.bidRequestIsBusy = true;
       try {
         this.bidResult = await leagueClient.makePickupBid(request);
         if (!this.bidResult.success) {
           return;
         }
-        this.notifyAction('Bid for ' + this.bidMasterGame.gameName + ' for $' + this.bidAmount + ' was made.');
+
+        await this.notifyAction('Bid for ' + this.bidMasterGame.gameName + ' for $' + this.bidAmount + ' was made.');
         this.clearDataAfterBid();
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
+        this.errorInfo = getApiErrorMessage(error, 'Failed to place bid.');
       } finally {
-        this.requestIsBusy = false;
+        this.bidRequestIsBusy = false;
       }
     },
     clearDataAfterBid(): void {
@@ -364,8 +324,6 @@ export default defineComponent({
       }
       this.bidResult = null;
       this.bidAmount = 0;
-      this.isBusy = false;
-      this.requestIsBusy = false;
       this.conditionalDrop = null;
     },
     clearDataExceptSearch(): void {
@@ -375,14 +333,12 @@ export default defineComponent({
       this.bidResult = null;
       this.bidAmount = 0;
       this.possibleMasterGames = [];
-      this.searched = false;
-      this.showingTopAvailable = false;
-      this.showingQueuedGames = false;
-      this.showingPublicBids = false;
+      this.searchMode = null;
       this.isBusy = false;
-      this.requestIsBusy = false;
+      this.bidRequestIsBusy = false;
       this.conditionalDrop = null;
-      this.selectedSlotIndex = null;
+      this.selectedSlot = null;
+      this.errorInfo = '';
     },
     clearData(): void {
       this.clearDataExceptSearch();
