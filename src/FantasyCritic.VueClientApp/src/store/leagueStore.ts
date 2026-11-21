@@ -3,19 +3,19 @@ import { DateTime } from 'luxon';
 
 import {
   ApiException,
-  DropGameRequestViewModel,
-  GameNewsViewModel,
   leagueClient,
-  LeagueDraftViewModel,
-  LeagueViewModel,
-  PickupBidViewModel,
-  PlayerWithPublisherViewModel,
-  QueuedGameViewModel,
-  SupportedYearViewModel,
+  type DropGameRequestViewModel,
+  type GameNewsViewModel,
   type LeagueActionProcessingSetViewModel,
   type LeagueActionViewModel,
+  type LeagueDraftViewModel,
+  type LeagueViewModel,
   type LeagueYearViewModel,
+  type PickupBidViewModel,
+  type PlayerWithPublisherViewModel,
   type PublisherViewModel,
+  type QueuedGameViewModel,
+  type SupportedYearViewModel,
   type TradeViewModel
 } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
@@ -235,31 +235,31 @@ export const useLeagueStore = defineStore('league', {
         this.leagueYear = leagueYear;
         document.title = leagueYear.league.leagueName + ' - Fantasy Critic';
       } catch (error) {
-        this.setError(error);
+        this._setError(error);
       }
     },
     async _fetchLeagueActions(leaguePageParams: LeaguePageParams) {
       try {
         this.leagueActions = await leagueClient.getLeagueActions(leaguePageParams.leagueID, leaguePageParams.year);
       } catch (error) {
-        this.setError(error);
+        this._setError(error);
       }
     },
     async _fetchLeagueActionSets(leaguePageParams: LeaguePageParams) {
       try {
         this.leagueActionSets = await leagueClient.getLeagueActionSets(leaguePageParams.leagueID, leaguePageParams.year);
       } catch (error) {
-        this.setError(error);
+        this._setError(error);
       }
     },
     async _fetchHistoricalTrades(leaguePageParams: LeaguePageParams) {
       try {
         this.historicalTrades = await leagueClient.tradeHistory(leaguePageParams.leagueID, leaguePageParams.year);
       } catch (error) {
-        this.setError(error);
+        this._setError(error);
       }
     },
-    setError(error: unknown) {
+    _setError(error: unknown) {
       if (ApiException.isApiException(error) && (error.status === 401 || error.status === 403)) {
         this.forbidden = true;
       } else {

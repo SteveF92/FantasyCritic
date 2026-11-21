@@ -2,6 +2,7 @@
   <div>
     <h2>Standings</h2>
 
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <b-table v-model:sort-by="sortBy" :items="requiredLeagueYear.players" :fields="standingFields" :sort-compare="sortCompare" :tbody-tr-class="standingsRowClass" bordered small responsive striped>
       <template #cell(userName)="data">
         <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
@@ -49,13 +50,15 @@ import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
 import { BTableSortBy, TableField, TableRowType, TableStrictClassValue } from 'bootstrap-vue-next';
 
-import { leagueManagerClient, type PlayerPublisherViewModel, type PlayerWithPublisherViewModel, type PublisherViewModel } from '@/api/clients';
+import { leagueManagerClient, type DeleteInviteRequest, type PlayerPublisherViewModel, type PlayerWithPublisherViewModel, type PublisherViewModel } from '@/api/clients';
 import { maxBy, ordinal_suffix_of } from '@/globalFunctions';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatCurrency, formatScore } from '@/utilities/formatters';
 
 interface LeagueYearStandingsData {
   sortBy: BTableSortBy[];
+  errorInfo: string;
 }
 
 export default defineComponent({
@@ -93,7 +96,8 @@ export default defineComponent({
     const firstDraftFinished = leagueStore.firstDraftFinished;
     const defaultSort: BTableSortBy = firstDraftFinished ? { key: 'totalFantasyPoints', order: 'desc' } : { key: 'draftPosition', order: 'asc' };
     return {
-      sortBy: [defaultSort]
+      sortBy: [defaultSort],
+      errorInfo: ''
     };
   },
   computed: {
@@ -131,7 +135,7 @@ export default defineComponent({
     }
   },
   methods: {
-    ...mapActions(useLeagueStore, ['notifyAction', 'setError']),
+    ...mapActions(useLeagueStore, ['notifyAction']),
     formatCurrency,
     formatScore,
     ordinal_suffix_of,
@@ -147,7 +151,8 @@ export default defineComponent({
       return '';
     },
     async rescindInvite(inviteID: string, inviteName: string): Promise<void> {
-      const model = {
+      this.errorInfo = '';
+      const model: DeleteInviteRequest = {
         leagueID: this.requiredLeague.leagueID,
         inviteID: inviteID
       };
@@ -156,7 +161,7 @@ export default defineComponent({
         await leagueManagerClient.rescindInvite(model);
         this.notifyAction('The invite to ' + inviteName + ' has been rescinded.');
       } catch (error) {
-        this.setError(error);
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when rescinding the invite.');
       }
     },
     isTopPublisher(publisher: PlayerPublisherViewModel | undefined): boolean {
@@ -196,41 +201,6 @@ function compareValues(a: unknown, b: unknown): number {
 </script>
 
 <style scoped>
-.header {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.projections-label {
-  margin-top: 14px;
-}
-
-.toggle {
-  margin-top: 4px;
-}
-
-.publisher-name {
-  display: inline-block;
-  word-wrap: break-word;
-  max-width: 300px;
-}
-
-@media only screen and (min-width: 1550px) {
-  .publisher-name {
-    max-width: 650px;
-  }
-}
-@media only screen and (max-width: 1549px) {
-  .publisher-name {
-    max-width: 150px;
-  }
-}
-@media only screen and (max-width: 768px) {
-  .publisher-name {
-    max-width: 200px;
-  }
-}
 div :deep(tr.table-success td) {
   font-weight: bolder;
 }
