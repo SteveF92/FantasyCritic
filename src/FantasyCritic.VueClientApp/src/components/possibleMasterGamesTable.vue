@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-pagination v-model="currentPage" :total-rows="possibleGames.length" :per-page="perPage" aria-controls="my-table"></b-pagination>
+    <b-pagination v-model="currentPage" :total-rows="possibleGames.length" :per-page="perPage" :aria-controls="tableID"></b-pagination>
 
-    <b-table v-model:sort-by="sortBy" :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
+    <b-table :id="tableID" v-model:sort-by="sortBy" :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
       <template #cell(masterGame.gameName)="data">
         <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
       </template>
@@ -39,7 +39,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, type PropType } from 'vue';
+import { defineComponent, useId, type PropType } from 'vue';
 import type { BTableSortBy, TableField } from 'bootstrap-vue-next';
 
 import type { MasterGameYearViewModel, PossibleMasterGameYearViewModel } from '@/api/clients';
@@ -68,7 +68,7 @@ export default defineComponent({
       { key: 'select', label: '', thClass: 'bg-primary' }
     ];
 
-    return { gameFields };
+    return { gameFields, tableID: `possible-master-games-table-${useId()}` };
   },
   components: {
     StatusBadge,

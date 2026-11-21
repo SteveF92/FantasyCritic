@@ -97,7 +97,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
 
-import { PublisherSlotViewModel, PublisherViewModel } from '@/api/clients';
+import type { PublisherSlotViewModel, PublisherViewModel } from '@/api/clients';
 import { orderBy, publisherIconIsValid } from '@/globalFunctions';
 import { useAuthStore } from '@/store/authStore';
 import { useLeagueStore } from '@/store/leagueStore';

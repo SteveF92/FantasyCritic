@@ -1,4 +1,4 @@
-import { type CSSProperties } from 'vue';
+import type { CSSProperties } from 'vue';
 
 import type { MasterGameTagViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';

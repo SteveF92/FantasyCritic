@@ -332,10 +332,18 @@ out.
 The League page has 64 components of its own, so it's split into four steps. Each one still tests
 on the League page.
 
-**13a. Display components.** `leagueYearStandings`, `countdown`, `bidCountdowns`,
+**13a. Display components (done).** `leagueYearStandings`, `countdown`, `bidCountdowns`,
 `draftReadinessBanner`, `draftStatusHeader`, `gameTables/searchSlotTypeBadge`,
 `gameTables/minimalPlayerGameSlotRow`, `gameTables/minimalPlayerGameTable`, `leagueGameSummary`,
 `specialAuctionInfo`, `activeBids`, `possibleMasterGamesTable`, `possibleCounterPicksTable`.
+
+- Server: the invite queries return the invited user as `InviteUserName`/`InviteUserEmailAddress`, the
+  names `LeagueInviteEntity` reads.
+- `utilities/masterGameTags.ts` has the tag lookups (`getMatchingTag`, `getMatchingTags`) and the
+  striped multi-tag badge colour, which `searchSlotTypeBadge`, `publisherCoverViewSlot` and
+  `specialGameSlotSelector` each had a copy of.
+- The league store's getters have return types, and it has `requiredSupportedYear` beside
+  `requiredLeagueYear` and `requiredLeague`.
 
 **13b. Player modals.**
 - Bids and drops: `bidGameForm`, `bidCounterPickForm`, `currentBidsForm`, `dropGameForm`,
@@ -415,7 +423,7 @@ has the bug too.
 | 6 | `views/publicLeagues.vue` | A failed load wasn't caught, so the page showed nothing. It now shows a `b-alert`. The pagination's `aria-controls="my-table"` pointed at no element; the table is now `public-leagues-table` | Yes | Done |
 | 6 | `components/gameStats/longestTenuredGamesPanel.vue`, `components/gameStats/mostDreamsDashedPanel.vue` | A failed load wasn't caught, so the spinner stayed up forever. Errors now show in a `b-alert`. These panels and `topBidsAndDrops` clear the error at the start of each load, so it goes away when a later load succeeds | Yes | Done |
 | 6 | `mostDreamsDashedPanel`, `masterGames`, `masterGameYearStats`, `publicLeagues`, `topBidsAndDrops` | Changing a dropdown while an earlier load is still running lets whichever response arrives last win. Seen on Most Dreams Dashed: a slow all-time request failed after the 2018 request succeeded, and its alert replaced the 2018 results. Fix by ignoring responses for anything other than the current selection | Yes | Not scheduled |
-| — | `views/criticsRoyale.vue`, `components/possibleRoyaleMasterGamesTable.vue`, `components/possibleMasterGamesTable.vue` | Each `b-pagination` has `aria-controls="my-table"`, but no element has that id. Give each table a real id and point `aria-controls` at it, or drop the attribute. `gameNews` was done in step 8 (`game-news-table`) | Yes | `criticsRoyale` (`royale-standings-table`) and `possibleRoyaleMasterGamesTable` (`possible-royale-master-games-table`) done; `possibleMasterGamesTable` in step 13a |
+| — | `views/criticsRoyale.vue`, `components/possibleRoyaleMasterGamesTable.vue`, `components/possibleMasterGamesTable.vue` | Each `b-pagination` has `aria-controls="my-table"`, but no element has that id. Give each table a real id and point `aria-controls` at it, or drop the attribute. `gameNews` was done in step 8 (`game-news-table`) | Yes | Done: `criticsRoyale` (`royale-standings-table`) and `possibleRoyaleMasterGamesTable` (`possible-royale-master-games-table`) in step 9. In step 13a, `possibleMasterGamesTable` and `possibleCounterPicksTable` (whose `aria-controls="counter-pick-table"` also pointed at nothing) get an id from `useId()`, since several modals use them and more than one can be on the page |
 | 9 | `components/modals/createRoyalePublisherForm.vue` | A failed create was swallowed, so the modal did nothing. A name of only spaces passes the button's check and gets "You cannot have a blank name." from the server. The error now shows in a `b-alert` in the modal, cleared on each submit and when the modal closes | Yes | Done |
 | 9 | `views/criticsRoyale.vue` | A failed load wasn't caught, so the leaderboard spinner stayed up forever. Errors now show in a `b-alert` in place of the spinner | Yes | Done |
 | 9 | `views/criticsRoyale.vue` | Switching quarters kept the pagination page, so page 4 of one quarter showed an empty table in a quarter with fewer publishers, and the old quarter's standings, podium, chart and "View My Publisher" stayed up until the new ones arrived. Each load now goes back to page 1 and clears them, so the spinner shows while loading | Yes | Done |
@@ -467,3 +475,5 @@ has the bug too.
 | 13a | `components/leagueYearStandings.vue` | Rows without a publisher (invites, players who haven't created one) have no points and a draft position of 0, so they sorted to the top by draft position, and by points they compared equal to every row and could land anywhere. They now stay at the bottom in either direction | Yes | Done |
 | 13a | `components/leagueYearStandings.vue` | Once play started, rows without a publisher showed "-- - 0th" in both points columns, from a missing score and a ranking of 0. Those cells are now blank, like the row's other publisher columns | Yes | Done |
 | 13a | `components/leagueYearStandings.vue` | The winner's row is highlighted with a `tbody-tr-class` function instead of writing `_rowVariant` onto the store's players. No visible change | — | Done |
+| 13a | `components/activeBids.vue`, `components/possibleMasterGamesTable.vue` | The default sorts named `maximumReleaseDate` and `dateAdjustedHypeFactor`, but the columns are `masterGame.maximumReleaseDate` and `masterGame.dateAdjustedHypeFactor`, so neither applied: This Week's Public Bids and every game search modal showed the server's order with no sorted column. They now sort by release date and by hype factor | Yes | Done |
+| 13a | `components/gameTables/minimalPlayerGameTable.vue` | The rounding warning checked `userInfo.showDecimalPlaces`, but the field is `showDecimalPoints`, so it showed even to users who have decimal points turned on | Yes | Done |
