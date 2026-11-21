@@ -1687,8 +1687,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string sql = """
                            select tbl_league_invite.*, 
-                           tbl_user.DisplayName AS UserName, 
-                           tbl_user.EmailAddress AS UserEmailAddress 
+                           tbl_user.DisplayName AS InviteUserName, 
+                           tbl_user.EmailAddress AS InviteUserEmailAddress 
                            from tbl_league_invite
                            LEFT JOIN tbl_user ON tbl_league_invite.UserID = tbl_user.UserID
                            where tbl_league_invite.InviteID = @inviteID;
@@ -1751,8 +1751,8 @@ public class MySQLFantasyCriticRepo : IFantasyCriticRepo
 
         const string sql = """
                            select tbl_league_invite.*, 
-                           tbl_user.DisplayName AS UserName, 
-                           tbl_user.EmailAddress AS UserEmailAddress 
+                           tbl_user.DisplayName AS InviteUserName, 
+                           tbl_user.EmailAddress AS InviteUserEmailAddress 
                            from tbl_league_invite
                            LEFT JOIN tbl_user ON tbl_league_invite.UserID = tbl_user.UserID
                            where tbl_league_invite.LeagueID = @leagueID;
