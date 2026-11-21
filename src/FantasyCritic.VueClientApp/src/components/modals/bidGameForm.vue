@@ -1,8 +1,6 @@
 <template>
   <b-modal :id="modalID" :ref="modalRef" size="lg" title="Make a Bid" no-footer @hidden="clearData" @show="getTopGames">
-    <div v-if="errorInfo" class="alert alert-danger" role="alert">
-      {{ errorInfo }}
-    </div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div v-if="!specialAuction" class="alert alert-info">
       You can use this form to place a bid on a game.
       <br />
@@ -27,24 +25,24 @@
         </span>
       </div>
 
-      <div v-if="!leagueYear.settings.hasSpecialSlots">
+      <div v-if="!requiredLeagueYear.settings.hasSpecialSlots">
         <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
         <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
-        <b-button variant="secondary" class="show-top-button" @click="getThisWeeksPublicBids" v-if="leagueYear.publicBiddingGames">Show This Week's Bids</b-button>
+        <b-button variant="secondary" class="show-top-button" @click="getThisWeeksPublicBids" v-if="requiredLeagueYear.publicBiddingGames">Show This Week's Bids</b-button>
       </div>
       <div v-else>
         <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
-        <b-button variant="secondary" class="show-top-button" @click="getThisWeeksPublicBids" v-if="leagueYear.publicBiddingGames">Show This Week's Bids</b-button>
+        <b-button variant="secondary" class="show-top-button" @click="getThisWeeksPublicBids" v-if="requiredLeagueYear.publicBiddingGames">Show This Week's Bids</b-button>
         <h5 class="text-black">Top Available by Slot</h5>
         <span class="search-tags">
-          <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click="getTopGames"></searchSlotTypeBadge>
+          <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click="getTopGames"></searchSlotTypeBadge>
           <searchSlotTypeBadge
-            :game-slot="leagueYear.slotInfo.regularSlot"
+            :game-slot="requiredLeagueYear.slotInfo.regularSlot"
             name="REG"
             :selected="selectedSlotIndex === 1"
-            @click="getGamesForSlot(leagueYear.slotInfo.regularSlot, 1)"></searchSlotTypeBadge>
+            @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot, 1)"></searchSlotTypeBadge>
           <searchSlotTypeBadge
-            v-for="(specialSlot, index) in leagueYear.slotInfo.specialSlots"
+            v-for="(specialSlot, index) in requiredLeagueYear.slotInfo.specialSlots"
             :key="specialSlot.overallSlotNumber"
             :game-slot="specialSlot"
             :selected="selectedSlotIndex === 2 + index"
@@ -83,7 +81,7 @@
       <masterGameSummary :master-game="bidMasterGame"></masterGameSummary>
       <hr />
       <div class="form-group">
-        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget) }})</label>
+        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(requiredUserPublisher.budget) }})</label>
 
         <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" rules="required|integer">
           <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
@@ -106,13 +104,13 @@
       </div>
 
       <b-alert
-        :model-value="!bidMasterGame.willRelease && bidMasterGame.tags.filter((x) => x.includes('EarlyAccess').length > 0) && leagueYear.settings.releaseSystem === 'OnlyNeedsScore'"
+        :model-value="!bidMasterGame.willRelease && bidMasterGame.tags.filter((x) => x.includes('EarlyAccess')).length > 0 && requiredLeagueYear.settings.releaseSystem === 'OnlyNeedsScore'"
         variant="warning">
         Warning! This game is not planned for full release this year, but your league does allow games that are in early access and get an OpenCritic score to count for points. The system will let you
         bid for it (provided there are no other reasons it could be banned), but do so at your own risk, as early access games don't often get reviewed.
       </b-alert>
 
-      <div v-if="leagueYear.settings.hasSpecialSlots" class="plain-check">
+      <div v-if="requiredLeagueYear.settings.hasSpecialSlots" class="plain-check">
         <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
         <label class="plain-check-label">
           Allow bid to succeed even if there are no slots this game is eligible in.
@@ -137,29 +135,74 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
 
+import {
+  leagueClient,
+  type MasterGameYearViewModel,
+  type PickupBidRequest,
+  type PickupBidResultViewModel,
+  type PossibleMasterGameYearViewModel,
+  type PublisherGameViewModel,
+  type PublisherSingleSlotRequirementsViewModel,
+  type SpecialAuctionViewModel
+} from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { PopoverContent } from '@/types/vueTypes';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatCurrency } from '@/utilities/formatters';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 
-export default {
+interface BidGameFormData {
+  searchGameName: string;
+  bidMasterGame: MasterGameYearViewModel | null;
+  bidAmount: number;
+  bidResult: PickupBidResultViewModel | null;
+  conditionalDrop: PublisherGameViewModel | null;
+  possibleMasterGames: PossibleMasterGameYearViewModel[];
+  errorInfo: string;
+  showingTopAvailable: boolean;
+  showingQueuedGames: boolean;
+  showingPublicBids: boolean;
+  searched: boolean;
+  isBusy: boolean;
+  requestIsBusy: boolean;
+  selectedSlotIndex: number | null;
+  allowIneligibleSlot: boolean;
+}
+
+export default defineComponent({
+  setup() {
+    const allowIneligibleText: PopoverContent = {
+      title: 'What does this mean?',
+      body:
+        'If you do not check this box, if you win the bidding for this game but do not have a slot open that this game is eligible in, then the bid will fail. ' +
+        'If you check this box, then the bid would succeed, but the game will land in an ineligible slot.'
+    };
+
+    return { allowIneligibleText };
+  },
   components: {
     PossibleMasterGamesTable,
     MasterGameSummary,
     SearchSlotTypeBadge
   },
   props: {
-    specialAuction: { type: Object, required: false, default: null }
+    specialAuction: { type: Object as PropType<SpecialAuctionViewModel>, required: false, default: null }
   },
-  data() {
+  data(): BidGameFormData {
+    let defaultMasterGame: MasterGameYearViewModel | null = null;
+    if (this.specialAuction) {
+      defaultMasterGame = this.specialAuction.masterGameYear;
+    }
+
     return {
       searchGameName: '',
-      bidMasterGame: null,
+      bidMasterGame: defaultMasterGame,
       bidAmount: 0,
       bidResult: null,
       conditionalDrop: null,
@@ -171,16 +214,16 @@ export default {
       searched: false,
       isBusy: false,
       requestIsBusy: false,
-      selectedSlotIndex: 0,
+      selectedSlotIndex: null,
       allowIneligibleSlot: false
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'currentDrops']),
-    formIsValid() {
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'requiredUserPublisher', 'currentDrops']),
+    formIsValid(): boolean {
       return !!this.bidMasterGame;
     },
-    hasBidSlotAcquisitionPath() {
+    hasBidSlotAcquisitionPath(): boolean {
       if (!this.publisherSlotsAreFilled) {
         return true;
       }
@@ -189,152 +232,133 @@ export default {
       }
       return this.currentDrops.length > 0;
     },
-    canPlaceBid() {
+    canPlaceBid(): boolean {
       return this.formIsValid && this.hasBidSlotAcquisitionPath && !this.requestIsBusy;
     },
-    publisherSlotsAreFilled() {
-      let userGames = this.userPublisher.games;
-      let standardGameSlots = this.leagueYear.settings.standardGames;
+    publisherSlotsAreFilled(): boolean {
+      let userGames = this.requiredUserPublisher.games;
+      let standardGameSlots = this.requiredLeagueYear.settings.standardGames;
       let userStandardGames = userGames.filter((x) => !x.counterPick);
       return userStandardGames.length >= standardGameSlots;
     },
-    droppableGames() {
-      return this.userPublisher.games.filter((x) => !x.counterPick);
+    droppableGames(): PublisherGameViewModel[] {
+      return this.requiredUserPublisher.games.filter((x) => !x.counterPick);
     },
-    modalID() {
+    modalID(): string {
       if (!this.specialAuction) {
         return 'bidGameForm';
       }
       return `bidGameForm-${this.specialAuction.masterGameYear.masterGameID}`;
     },
-    modalRef() {
+    modalRef(): string {
       if (!this.specialAuction) {
         return 'bidGameFormRef';
       }
       return `bidGameFormRef-${this.specialAuction.masterGameYear.masterGameID}`;
-    },
-    allowIneligibleText() {
-      return {
-        title: 'What does this mean?',
-        body:
-          'If you do not check this box, if you win the bidding for this game but do not have a slot open that this game is eligible in, then the bid will fail. ' +
-          'If you check this box, then the bid would succeed, but the game will land in an ineligible slot.'
-      };
-    }
-  },
-  created() {
-    if (this.specialAuction) {
-      this.bidMasterGame = this.specialAuction.masterGameYear;
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
     formatCurrency,
-    searchGame() {
+    async searchGame(): Promise<void> {
       this.clearDataExceptSearch();
       this.isBusy = true;
-      axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.searched = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+
+      try {
+        this.possibleMasterGames = await leagueClient.possibleMasterGames(this.searchGameName, this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID);
+        this.searched = true;
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    getTopGames() {
+    async getTopGames(): Promise<void> {
       this.clearDataExceptSearch();
-      this.selectedSlotIndex = 0;
+      this.selectedSlotIndex = null;
       this.isBusy = true;
-      axios
-        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&publisherid=' + this.userPublisher.publisherID)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.showingTopAvailable = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+
+      try {
+        this.possibleMasterGames = await leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID, null);
+        this.showingTopAvailable = true;
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    getQueuedGames() {
+    async getQueuedGames(): Promise<void> {
       this.clearDataExceptSearch();
       this.isBusy = true;
-      axios
-        .get('/api/league/CurrentQueuedGameYears/' + this.userPublisher.publisherID)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.showingQueuedGames = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+
+      try {
+        this.possibleMasterGames = await leagueClient.currentQueuedGameYears(this.requiredUserPublisher.publisherID, null);
+        this.showingQueuedGames = true;
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    getThisWeeksPublicBids() {
+    async getThisWeeksPublicBids(): Promise<void> {
       this.clearDataExceptSearch();
       this.isBusy = true;
-      axios
-        .get('/api/league/ThisWeeksPublicBiddingGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&publisherid=' + this.userPublisher.publisherID)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.showingPublicBids = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+
+      try {
+        this.possibleMasterGames = await leagueClient.thisWeeksPublicBiddingGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID);
+        this.showingPublicBids = true;
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    getGamesForSlot(slotInfo, slotIndex) {
+    async getGamesForSlot(slotInfo: PublisherSingleSlotRequirementsViewModel, slotIndex: number): Promise<void> {
       this.clearDataExceptSearch();
       this.selectedSlotIndex = slotIndex;
       this.isBusy = true;
-      let slotJSON = JSON.stringify(slotInfo);
-      let base64Slot = btoa(slotJSON);
-      let urlEncodedSlot = encodeURI(base64Slot);
-      axios
-        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&publisherid=' + this.userPublisher.publisherID + '&slotInfo=' + urlEncodedSlot)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.showingTopAvailable = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+      const slotJSON = JSON.stringify(slotInfo);
+      const base64Slot = btoa(slotJSON);
+      const urlEncodedSlot = encodeURI(base64Slot);
+
+      try {
+        this.possibleMasterGames = await leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID, urlEncodedSlot);
+        this.showingTopAvailable = true;
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
+      } finally {
+        this.isBusy = false;
+      }
     },
     async bidGame() {
-      const request = {
-        publisherID: this.userPublisher.publisherID,
+      if (!this.bidMasterGame) {
+        throw new Error('No game is selected to bid on.');
+      }
+
+      const request: PickupBidRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
         masterGameID: this.bidMasterGame.masterGameID,
         bidAmount: this.bidAmount,
         counterPick: false,
-        allowIneligibleSlot: this.allowIneligibleSlot
+        allowIneligibleSlot: this.allowIneligibleSlot,
+        conditionalDropPublisherGameID: this.conditionalDrop ? this.conditionalDrop.publisherGameID : undefined
       };
-
-      if (this.conditionalDrop) {
-        request.conditionalDropPublisherGameID = this.conditionalDrop.publisherGameID;
-      }
 
       this.requestIsBusy = true;
       try {
-        const response = await axios.post('/api/league/MakePickupBid', request);
-        this.bidResult = response.data;
-        this.requestIsBusy = false;
+        this.bidResult = await leagueClient.makePickupBid(request);
         if (!this.bidResult.success) {
           return;
         }
-
         this.notifyAction('Bid for ' + this.bidMasterGame.gameName + ' for $' + this.bidAmount + ' was made.');
         this.clearDataAfterBid();
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
+      } finally {
         this.requestIsBusy = false;
       }
     },
-    clearDataAfterBid() {
+    clearDataAfterBid(): void {
       if (!this.specialAuction) {
         this.bidMasterGame = null;
       }
@@ -344,7 +368,7 @@ export default {
       this.requestIsBusy = false;
       this.conditionalDrop = null;
     },
-    clearDataExceptSearch() {
+    clearDataExceptSearch(): void {
       if (!this.specialAuction) {
         this.bidMasterGame = null;
       }
@@ -360,16 +384,17 @@ export default {
       this.conditionalDrop = null;
       this.selectedSlotIndex = null;
     },
-    clearData() {
+    clearData(): void {
       this.clearDataExceptSearch();
       this.searchGameName = '';
     },
-    newGameSelected() {
+    newGameSelected(): void {
       this.bidResult = null;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .game-search-input {
   margin-bottom: 15px;

@@ -71,6 +71,20 @@ export const useLeagueStore = defineStore('league', {
       }
       return state.leagueYear.supportedYear;
     },
+    requiredUserPublisher(state): PublisherViewModel {
+      const authStore = useAuthStore();
+      if (!authStore.userInfo) {
+        throw new Error('A component that should only render for a user that is logged in has rendered while there is no user logged in.');
+      }
+
+      const userID = authStore.userInfo.userID;
+      const matchingPublisher = state.leagueYear?.publishers.find((x) => x.userID === userID);
+      if (!matchingPublisher) {
+        throw new Error('A component that should only render for a user with a publisher has rendered when there is no such publisher..');
+      }
+
+      return matchingPublisher;
+    },
     league: (state): LeagueViewModel | undefined => state.leagueYear?.league,
     publishers: (state): PublisherViewModel[] | undefined => state.leagueYear?.publishers,
     players: (state): PlayerWithPublisherViewModel[] | undefined => state.leagueYear?.players,
