@@ -5,8 +5,7 @@
 #   # From repo root:
 #   scripts/regenerate-api-client.sh
 #
-#   # After an API change:
-#   dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
+#   # After an API change (the script builds the Web project itself):
 #   scripts/regenerate-api-client.sh
 #   dotnet build
 
@@ -29,9 +28,18 @@ echo "Output:"
 echo "  $CLIENT_DIR/Generated/FantasyCriticClients.cs"
 echo "  $REPO_ROOT/src/FantasyCritic.VueClientApp/src/api/generated/FantasyCriticClients.ts"
 echo ""
-echo "Generating..."
-
 NSWAG_CONFIGURATION="${NSWAG_CONFIGURATION:-Debug}"
+
+# nswag.json uses noBuild, so it reflects over whatever DLL is on disk. Build the Web project
+# first, in the same configuration, or the clients are generated from a stale API surface.
+# (A no-op when CI or the Docker build has just built it.)
+echo "Building Web project ($NSWAG_CONFIGURATION)..."
+if ! dotnet build "$REPO_ROOT/src/FantasyCritic.Web/FantasyCritic.Web.csproj" -c "$NSWAG_CONFIGURATION" --nologo -v quiet; then
+    echo "ERROR: Web project build failed. If the dev server is running it may be locking the DLLs." >&2
+    exit 1
+fi
+
+echo "Generating..."
 
 # NSwag bootstraps the Web host without launchSettings.json; force Development so
 # Program.cs skips AWS Secrets Manager (some machines set ASPNETCORE_ENVIRONMENT globally).

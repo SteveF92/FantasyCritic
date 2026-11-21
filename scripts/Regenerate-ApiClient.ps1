@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     Runs `nswag run` using the pinned local tool from .config/dotnet-tools.json.
-    The Web project must have been built first. Outputs:
+    Builds the Web project first (nswag.json uses noBuild, so it would otherwise read a stale DLL). Outputs:
       - src/FantasyCritic.ApiClient/Generated/FantasyCriticClients.cs
       - src/FantasyCritic.VueClientApp/src/api/generated/FantasyCriticClients.ts
 
@@ -12,8 +12,7 @@
     # From repo root:
     scripts/Regenerate-ApiClient.ps1
 
-    # After an API change:
-    dotnet build src/FantasyCritic.Web/FantasyCritic.Web.csproj
+    # After an API change (the script builds the Web project itself):
     scripts/Regenerate-ApiClient.ps1
     dotnet build
 #>
@@ -33,9 +32,18 @@ Write-Host "Output:"
 Write-Host "  $clientDir\Generated\FantasyCriticClients.cs"
 Write-Host "  $repoRoot\src\FantasyCritic.VueClientApp\src\api\generated\FantasyCriticClients.ts"
 Write-Host ""
-Write-Host "Generating..."
-
 $nswagConfiguration = if ($env:NSWAG_CONFIGURATION) { $env:NSWAG_CONFIGURATION } else { "Debug" }
+
+# nswag.json uses noBuild, so it reflects over whatever DLL is on disk. Build the Web project
+# first, in the same configuration, or the clients are generated from a stale API surface.
+Write-Host "Building Web project ($nswagConfiguration)..."
+dotnet build (Join-Path $repoRoot "src/FantasyCritic.Web/FantasyCritic.Web.csproj") -c $nswagConfiguration --nologo -v quiet
+if ($LASTEXITCODE -ne 0) {
+    Write-Error "Web project build failed (exit code $LASTEXITCODE). If the dev server is running it may be locking the DLLs."
+    exit 1
+}
+
+Write-Host "Generating..."
 
 # NSwag bootstraps the Web host without launchSettings.json; force Development so
 # Program.cs skips AWS Secrets Manager (some machines set ASPNETCORE_ENVIRONMENT globally).
