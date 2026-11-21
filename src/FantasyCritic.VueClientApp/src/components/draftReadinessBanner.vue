@@ -1,5 +1,5 @@
 <template>
-  <div v-if="pendingDraftCalloutVisible">
+  <div v-if="pendingDraft && pendingDraftCalloutVisible">
     <!-- Main status banner: warning if not ready, success if ready -->
     <div :class="bannerClass" role="alert">
       <!-- Not ready -->
@@ -21,7 +21,7 @@
       </template>
 
       <!-- Ready to start -->
-      <template v-if="pendingDraft.readyToDraft && !league.outstandingInvite">
+      <template v-if="pendingDraft.readyToDraft && !requiredLeague.outstandingInvite">
         <template v-if="isManager">
           <p v-if="pendingDraftIsFirst">Things are all set to get started!</p>
           <p v-else>
@@ -73,32 +73,44 @@
     </div>
   </div>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
+import { type RouteLocationRaw } from 'vue-router';
 import { DateTime } from 'luxon';
 
 import { useLeagueStore } from '@/store/leagueStore';
 
-export default {
+export default defineComponent({
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'league', 'pendingDraft', 'isManager', 'pendingDraftIsFirst', 'pendingDraftIsOverdue', 'pendingDraftIsImminent', 'pendingDraftCalloutVisible']),
-    bannerClass() {
+    ...mapState(useLeagueStore, [
+      'requiredLeagueYear',
+      'requiredLeague',
+      'pendingDraft',
+      'isManager',
+      'pendingDraftIsFirst',
+      'pendingDraftIsOverdue',
+      'pendingDraftIsImminent',
+      'pendingDraftCalloutVisible'
+    ]),
+    bannerClass(): string {
       return this.pendingDraft?.readyToDraft ? 'alert alert-success' : 'alert alert-warning';
     },
-    mustSetDraftOrder() {
+    mustSetDraftOrder(): boolean {
       return (this.pendingDraft?.readyToSetDraftOrder ?? false) && (this.pendingDraft?.startDraftErrors ?? []).includes('You must set the draft order.');
     },
-    showImminentLine() {
-      if (!this.pendingDraftIsImminent) return false;
-      return this.pendingDraft.draftOrderSet || (this.scheduledDateDisplay && !this.pendingDraftIsOverdue);
+    showImminentLine(): boolean {
+      if (!this.pendingDraft || !this.pendingDraftIsImminent) return false;
+      return this.pendingDraft.draftOrderSet || (!!this.scheduledDateDisplay && !this.pendingDraftIsOverdue);
     },
-    scheduledDateDisplay() {
+    scheduledDateDisplay(): string | null {
       if (!this.pendingDraft?.scheduledDate) return null;
       return DateTime.fromISO(this.pendingDraft.scheduledDate).toFormat('MMMM d, yyyy');
     },
-    manageDraftsRoute() {
-      return { name: 'manageDrafts', params: { leagueid: this.league.leagueID, year: this.leagueYear.year } };
+    manageDraftsRoute(): RouteLocationRaw {
+      return { name: 'manageDrafts', params: { leagueid: this.requiredLeague.leagueID, year: this.requiredLeagueYear.year } };
     }
   }
-};
+});
 </script>

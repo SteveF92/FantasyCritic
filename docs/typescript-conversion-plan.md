@@ -375,6 +375,13 @@ on the League page.
 
 - Remove `axios` from `package.json`.
 - Add ESLint's `vue/block-lang` rule requiring `lang="ts"`.
+- Type the named routes. Declare a `RouteNamedMap` in vue-router's `TypesConfig` with a
+  `RouteRecordInfo` for each of the 43 named routes in `router/routes.ts` (name, path, raw params and
+  resolved params). Then a `{ name, params }` given to `router-link`, `:to` or `router.push` is checked:
+  a misspelled route name, a missing param or a wrong param name is an error. It's all or nothing: with
+  a map, any name not in it is an error. Until then, a computed that returns a route is annotated
+  `RouteLocationRaw`, which checks nothing about the name or params; with the map, it can be
+  `RouteLocationRaw<'manageDrafts'>`.
 - Confirm no `.js` is left under `src/`, and no `any` or `@ts-` comments outside generated code.
 - Run the UI test suite.
 

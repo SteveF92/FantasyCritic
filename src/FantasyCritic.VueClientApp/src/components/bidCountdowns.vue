@@ -17,55 +17,63 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import { mapState } from 'pinia';
+
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import Countdown from '@/components/countdown.vue';
 
-export default {
+type CountdownMode = 'NextBid' | 'NextPublic';
+
+interface BidCountdownsData {
+  forceActionProcessing: boolean;
+}
+
+export default defineComponent({
   components: {
     Countdown
   },
   props: {
-    mode: { type: String, required: true }
+    mode: { type: String as PropType<CountdownMode>, required: true }
   },
-  emits: ['publicBidRevealTimeElapsed'],
-  data() {
+  emits: { publicBidRevealTimeElapsed: () => true },
+  data(): BidCountdownsData {
     return {
       forceActionProcessing: false
     };
   },
   computed: {
-    nextPublicRevealTime() {
+    ...mapState(useInterLeagueStore, ['bidTimes']),
+    nextPublicRevealTime(): string | null {
       if (this.mode !== 'NextPublic') {
         return null;
       }
 
-      const interLeagueStore = useInterLeagueStore();
-      return interLeagueStore.bidTimes.nextPublicBiddingTime;
+      return this.bidTimes.nextPublicBiddingTime;
     },
-    nextBidTime() {
+    nextBidTime(): string | null {
       if (this.mode !== 'NextBid') {
         return null;
       }
 
-      const interLeagueStore = useInterLeagueStore();
-      return interLeagueStore.bidTimes.nextBidLockTime;
+      return this.bidTimes.nextBidLockTime;
     },
-    actionProcessing() {
-      const interLeagueStore = useInterLeagueStore();
-      return this.forceActionProcessing || interLeagueStore.bidTimes.actionProcessingMode;
+    actionProcessing(): boolean {
+      return this.forceActionProcessing || this.bidTimes.actionProcessingMode;
     }
   },
   methods: {
-    nextBidTimeElapsed() {
+    nextBidTimeElapsed(): void {
       this.forceActionProcessing = true;
     },
-    publicBidRevealTimeElapsed() {
+    publicBidRevealTimeElapsed(): void {
       this.$emit('publicBidRevealTimeElapsed');
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .countdown {
   font-size: 20px;
