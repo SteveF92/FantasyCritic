@@ -25,12 +25,16 @@
         </span>
       </template>
       <template #cell(projectedFantasyPoints)="data">
-        {{ formatScore(data.item.projectedFantasyPoints, 2) }}
-        <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isProjectedTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.projectedRanking) }}</span>
+        <template v-if="data.item.publisher">
+          {{ formatScore(data.item.projectedFantasyPoints, 2) }}
+          <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isProjectedTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.projectedRanking) }}</span>
+        </template>
       </template>
       <template #cell(totalFantasyPoints)="data">
-        {{ formatScore(data.item.totalFantasyPoints, 2) }}
-        <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.ranking) }}</span>
+        <template v-if="data.item.publisher">
+          {{ formatScore(data.item.totalFantasyPoints, 2) }}
+          <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.ranking) }}</span>
+        </template>
       </template>
       <template #cell(gamesReleased)="data">
         <span v-if="data.item.publisher">{{ data.item.publisher.gamesReleased }}</span>
@@ -164,16 +168,10 @@ export default defineComponent({
         this.errorInfo = getApiErrorMessage(error, 'Something went wrong when rescinding the invite.');
       }
     },
-    isTopPublisher(publisher: PlayerPublisherViewModel | undefined): boolean {
-      if (!publisher) {
-        return false;
-      }
+    isTopPublisher(publisher: PlayerPublisherViewModel): boolean {
       return !!this.topPublisher && this.topPublisher.publisherID === publisher.publisherID;
     },
-    isProjectedTopPublisher(publisher: PlayerPublisherViewModel | undefined): boolean {
-      if (!publisher) {
-        return false;
-      }
+    isProjectedTopPublisher(publisher: PlayerPublisherViewModel): boolean {
       return !!this.projectedTopPublisher && this.projectedTopPublisher.publisherID === publisher.publisherID;
     },
     sortCompare(aRow: PlayerWithPublisherViewModel, bRow: PlayerWithPublisherViewModel, key: string): number {
