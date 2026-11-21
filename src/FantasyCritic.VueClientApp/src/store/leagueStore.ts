@@ -1,7 +1,23 @@
 import { defineStore } from 'pinia';
 import { DateTime } from 'luxon';
 
-import { ApiException, LeagueActionProcessingSetViewModel, LeagueActionViewModel, leagueClient, LeagueYearViewModel, TradeViewModel } from '@/api/clients';
+import {
+  ApiException,
+  DropGameRequestViewModel,
+  GameNewsViewModel,
+  leagueClient,
+  LeagueDraftViewModel,
+  LeagueViewModel,
+  PickupBidViewModel,
+  PlayerWithPublisherViewModel,
+  QueuedGameViewModel,
+  SupportedYearViewModel,
+  type LeagueActionProcessingSetViewModel,
+  type LeagueActionViewModel,
+  type LeagueYearViewModel,
+  type PublisherViewModel,
+  type TradeViewModel
+} from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { usePublisherStore } from '@/store/publisherStore';
 import { makeToast } from '@/utilities/toast';
@@ -37,38 +53,38 @@ export const useLeagueStore = defineStore('league', {
     draftOrderView: false
   }),
   getters: {
-    requiredLeagueYear(state) {
+    requiredLeagueYear(state): LeagueYearViewModel {
       if (!state.leagueYear) {
         throw new Error('leagueYear is not loaded. This component should only render under the league page v-if.');
       }
       return state.leagueYear;
     },
-    requiredLeague(state) {
+    requiredLeague(state): LeagueViewModel {
       if (!state.leagueYear?.league) {
         throw new Error('leagueYear is not loaded. This component should only render under the league page v-if.');
       }
       return state.leagueYear.league;
     },
-    league: (state) => state.leagueYear?.league,
-    publishers: (state) => state.leagueYear?.publishers,
-    players: (state) => state.leagueYear?.players,
-    hasSpecialSlots: (state) => state.leagueYear?.settings.hasSpecialSlots ?? false,
-    supportedYear: (state) => state.leagueYear?.supportedYear,
-    oneShotMode: (state) => state.leagueYear?.settings.oneShotMode ?? false,
-    isManager: (state) => state.leagueYear?.league.isManager ?? false,
-    firstDraft: (state) => state.leagueYear?.drafts?.[0] ?? null,
-    pendingDraft: (state) => state.leagueYear?.drafts?.find((d) => d.playStatus === 'NotStartedDraft') ?? null,
-    activeDraft: (state) => state.leagueYear?.drafts?.find((d) => d.draftIsActive || d.draftIsPaused) ?? null,
-    nextPublisherUp: (state) => state.leagueYear?.publishers?.find((x) => x.nextToDraft) ?? null,
+    league: (state): LeagueViewModel | undefined => state.leagueYear?.league,
+    publishers: (state): PublisherViewModel[] | undefined => state.leagueYear?.publishers,
+    players: (state): PlayerWithPublisherViewModel[] | undefined => state.leagueYear?.players,
+    hasSpecialSlots: (state): boolean => state.leagueYear?.settings.hasSpecialSlots ?? false,
+    supportedYear: (state): SupportedYearViewModel | undefined => state.leagueYear?.supportedYear,
+    oneShotMode: (state): boolean => state.leagueYear?.settings.oneShotMode ?? false,
+    isManager: (state): boolean => state.leagueYear?.league.isManager ?? false,
+    firstDraft: (state): LeagueDraftViewModel | null => state.leagueYear?.drafts?.[0] ?? null,
+    pendingDraft: (state): LeagueDraftViewModel | null => state.leagueYear?.drafts?.find((d) => d.playStatus === 'NotStartedDraft') ?? null,
+    activeDraft: (state): LeagueDraftViewModel | null => state.leagueYear?.drafts?.find((d) => d.draftIsActive || d.draftIsPaused) ?? null,
+    nextPublisherUp: (state): PublisherViewModel | null => state.leagueYear?.publishers?.find((x) => x.nextToDraft) ?? null,
     // Publishers with no user stay in the standings, but can't win.
-    publishersThatCanWin: (state) => (state.leagueYear?.publishers ?? []).filter((x) => !!x.userID),
+    publishersThatCanWin: (state): PublisherViewModel[] => (state.leagueYear?.publishers ?? []).filter((x) => !!x.userID),
     // The server picks it, so ties break the same way as the recorded winner.
-    topPublisher: (state) => (state.leagueYear?.publishers ?? []).find((x) => x.publisherID === state.leagueYear?.winningPublisherID) ?? null,
-    currentBids: (state) => state.leagueYear?.privatePublisherData?.myActiveBids ?? [],
-    currentDrops: (state) => state.leagueYear?.privatePublisherData?.myActiveDrops ?? [],
-    queuedGames: (state) => state.leagueYear?.privatePublisherData?.queuedGames ?? [],
-    gameNews: (state) => state.leagueYear?.gameNews ?? [],
-    userPublisher(state) {
+    topPublisher: (state): PublisherViewModel | null => (state.leagueYear?.publishers ?? []).find((x) => x.publisherID === state.leagueYear?.winningPublisherID) ?? null,
+    currentBids: (state): PickupBidViewModel[] => state.leagueYear?.privatePublisherData?.myActiveBids ?? [],
+    currentDrops: (state): DropGameRequestViewModel[] => state.leagueYear?.privatePublisherData?.myActiveDrops ?? [],
+    queuedGames: (state): QueuedGameViewModel[] => state.leagueYear?.privatePublisherData?.queuedGames ?? [],
+    gameNews: (state): GameNewsViewModel | undefined => state.leagueYear?.gameNews,
+    userPublisher(state): PublisherViewModel | null {
       const authStore = useAuthStore();
       if (!authStore.userInfo) {
         return null;
@@ -219,31 +235,31 @@ export const useLeagueStore = defineStore('league', {
         this.leagueYear = leagueYear;
         document.title = leagueYear.league.leagueName + ' - Fantasy Critic';
       } catch (error) {
-        this._setError(error);
+        this.setError(error);
       }
     },
     async _fetchLeagueActions(leaguePageParams: LeaguePageParams) {
       try {
         this.leagueActions = await leagueClient.getLeagueActions(leaguePageParams.leagueID, leaguePageParams.year);
       } catch (error) {
-        this._setError(error);
+        this.setError(error);
       }
     },
     async _fetchLeagueActionSets(leaguePageParams: LeaguePageParams) {
       try {
         this.leagueActionSets = await leagueClient.getLeagueActionSets(leaguePageParams.leagueID, leaguePageParams.year);
       } catch (error) {
-        this._setError(error);
+        this.setError(error);
       }
     },
     async _fetchHistoricalTrades(leaguePageParams: LeaguePageParams) {
       try {
         this.historicalTrades = await leagueClient.tradeHistory(leaguePageParams.leagueID, leaguePageParams.year);
       } catch (error) {
-        this._setError(error);
+        this.setError(error);
       }
     },
-    _setError(error: unknown) {
+    setError(error: unknown) {
       if (ApiException.isApiException(error) && (error.status === 401 || error.status === 403)) {
         this.forbidden = true;
       } else {

@@ -2,7 +2,7 @@
   <div>
     <h2>Standings</h2>
 
-    <b-table v-model:sort-by="sortBy" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
+    <b-table v-model:sort-by="sortBy" :items="requiredLeagueYear.players" :fields="standingFields" :sort-compare="sortCompare" :tbody-tr-class="standingsRowClass" bordered small responsive striped>
       <template #cell(userName)="data">
         <span v-if="data.item.user">{{ data.item.user.displayName }}</span>
         <font-awesome-icon v-if="data.item.previousYearWinner" v-b-popover.hover.focus="'Reigning Champion'" icon="crown" class="previous-year-winner" />
@@ -16,9 +16,9 @@
           <span v-show="hasPendingOrActiveDraft && data.item.publisher.autoDraftMode === 'StandardGamesOnly'" class="publisher-badge badge rounded-pill bg-info">Auto Draft (No CPKs)</span>
         </span>
         <span v-if="data.item.user && !data.item.publisher">&lt;Not Created&gt;</span>
-        <span v-if="data.item.inviteID">
+        <span v-if="data.item.inviteID && data.item.inviteName">
           &lt;Invite Sent&gt;
-          <span v-if="league.isManager">
+          <span v-if="requiredLeague.isManager">
             <b-button variant="danger" size="sm" @click="rescindInvite(data.item.inviteID, data.item.inviteName)">Rescind Invite</b-button>
           </span>
         </span>
@@ -43,48 +43,72 @@
     </b-table>
   </div>
 </template>
-<script>
-import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
 
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapActions, mapState } from 'pinia';
+import { BTableSortBy, TableField, TableRowType, TableStrictClassValue } from 'bootstrap-vue-next';
+
+import { leagueManagerClient, type PlayerPublisherViewModel, type PlayerWithPublisherViewModel, type PublisherViewModel } from '@/api/clients';
 import { maxBy, ordinal_suffix_of } from '@/globalFunctions';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatCurrency, formatScore } from '@/utilities/formatters';
 
-export default {
-  data() {
+interface LeagueYearStandingsData {
+  sortBy: BTableSortBy[];
+}
+
+export default defineComponent({
+  setup() {
+    const leadingFields: TableField<PlayerWithPublisherViewModel>[] = [
+      { key: 'userName', label: 'User', thClass: 'bg-primary' },
+      { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' }
+    ];
+
+    const preDraftFields: TableField<PlayerWithPublisherViewModel>[] = [
+      { key: 'draftPosition', label: 'Draft Position', thClass: 'bg-primary', sortable: true },
+      { key: 'gamesWillRelease', label: 'Games Drafted', thClass: 'bg-primary', sortable: true }
+    ];
+
+    const nextDraftOrderField: TableField<PlayerWithPublisherViewModel> = { key: 'draftPosition', label: 'Next Draft Order', thClass: 'bg-primary', sortable: true };
+
+    const midYearFields: TableField<PlayerWithPublisherViewModel>[] = [
+      { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
+      { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
+      { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
+      { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' }
+    ];
+
+    const yearFinishedFields: TableField<PlayerWithPublisherViewModel>[] = [
+      { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true },
+      { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' }
+    ];
+
+    const budgetField: TableField<PlayerWithPublisherViewModel> = { key: 'budget', label: 'Budget', thClass: 'bg-primary' };
+
+    return { leadingFields, preDraftFields, nextDraftOrderField, midYearFields, yearFinishedFields, budgetField };
+  },
+  data(): LeagueYearStandingsData {
+    const leagueStore = useLeagueStore();
+    const firstDraftFinished = leagueStore.firstDraftFinished;
+    const defaultSort: BTableSortBy = firstDraftFinished ? { key: 'totalFantasyPoints', order: 'desc' } : { key: 'draftPosition', order: 'asc' };
     return {
-      leadingFields: [
-        { key: 'userName', label: 'User', thClass: 'bg-primary' },
-        { key: 'publisher', label: 'Publisher', thClass: 'bg-primary' }
-      ],
-      preDraftFields: [
-        { key: 'draftPosition', label: 'Draft Position', thClass: 'bg-primary', sortable: true },
-        { key: 'gamesWillRelease', label: 'Games Drafted', thClass: 'bg-primary', sortable: true }
-      ],
-      nextDraftOrderField: { key: 'draftPosition', label: 'Next Draft Order', thClass: 'bg-primary', sortable: true },
-      midYearFields: [
-        { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
-        { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
-        { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' },
-        { key: 'gamesWillRelease', label: 'Expecting', thClass: 'bg-primary' }
-      ],
-      yearFinishedFields: [
-        { key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true },
-        { key: 'gamesReleased', label: 'Released', thClass: 'bg-primary' }
-      ],
-      budgetField: { key: 'budget', label: 'Budget', thClass: 'bg-primary' },
-      sortBy: [{ key: 'totalFantasyPoints', order: 'desc' }]
+      sortBy: [defaultSort]
     };
   },
-  created() {
-    if (!this.firstDraftFinished) {
-      this.sortBy = [{ key: 'draftPosition', order: 'asc' }];
-    }
-  },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'league', 'pendingDraft', 'publishersThatCanWin', 'topPublisher', 'oneShotMode', 'playStarted', 'firstDraftFinished', 'hasPendingOrActiveDraft']),
-    standingFields() {
+    ...mapState(useLeagueStore, [
+      'requiredLeagueYear',
+      'requiredLeague',
+      'pendingDraft',
+      'publishersThatCanWin',
+      'topPublisher',
+      'oneShotMode',
+      'playStarted',
+      'firstDraftFinished',
+      'hasPendingOrActiveDraft'
+    ]),
+    standingFields(): TableField<PlayerWithPublisherViewModel>[] {
       if (!this.firstDraftFinished) {
         return [...this.leadingFields, ...this.preDraftFields];
       }
@@ -92,85 +116,85 @@ export default {
       const nextDraftOrder = this.pendingDraft?.draftOrderSet ? [this.nextDraftOrderField] : [];
       const budget = this.oneShotMode ? [] : [this.budgetField];
 
-      if (this.leagueYear.supportedYear.finished) {
+      if (this.requiredLeagueYear.supportedYear.finished) {
         return [...this.leadingFields, ...nextDraftOrder, ...this.yearFinishedFields, ...budget];
       }
 
       return [...this.leadingFields, ...nextDraftOrder, ...this.midYearFields, ...budget];
     },
-    standings() {
-      let standings = this.leagueYear.players;
-      if (!standings) {
-        return [];
-      }
-      for (let i = 0; i < standings.length; ++i) {
-        if (!standings[i].publisher) {
-          continue;
-        }
-        if (this.leagueYear.supportedYear.finished && this.topPublisher && this.topPublisher.publisherID === standings[i].publisher.publisherID) {
-          standings[i]._rowVariant = 'success';
-        }
-      }
-      return standings;
-    },
-    projectedTopPublisher() {
+    projectedTopPublisher(): PublisherViewModel | null {
       if (this.publishersThatCanWin.length > 0) {
-        return maxBy(this.publishersThatCanWin, (x) => x.totalProjectedPoints);
+        return maxBy(this.publishersThatCanWin, (x) => x.totalProjectedPoints) ?? null;
       }
 
       return null;
     }
   },
   methods: {
-    ...mapActions(useLeagueStore, ['notifyAction']),
+    ...mapActions(useLeagueStore, ['notifyAction', 'setError']),
     formatCurrency,
     formatScore,
-    rescindInvite(inviteID, inviteName) {
+    ordinal_suffix_of,
+    standingsRowClass(item: PlayerWithPublisherViewModel | null, type: TableRowType): TableStrictClassValue {
+      if (!item || !item.publisher || type !== 'row') {
+        return '';
+      }
+
+      if (this.requiredLeagueYear.supportedYear.finished && this.topPublisher && this.topPublisher.publisherID === item.publisher.publisherID) {
+        return 'table-success';
+      }
+
+      return '';
+    },
+    async rescindInvite(inviteID: string, inviteName: string): Promise<void> {
       const model = {
-        leagueID: this.leagueYear.league.leagueID,
+        leagueID: this.requiredLeague.leagueID,
         inviteID: inviteID
       };
-      axios
-        .post('/api/leagueManager/RescindInvite', model)
-        .then(() => {
-          this.notifyAction('The invite to ' + inviteName + ' has been rescinded.');
-        })
-        .catch(() => {});
+
+      try {
+        await leagueManagerClient.rescindInvite(model);
+        this.notifyAction('The invite to ' + inviteName + ' has been rescinded.');
+      } catch (error) {
+        this.setError(error);
+      }
     },
-    isTopPublisher(publisher) {
+    isTopPublisher(publisher: PlayerPublisherViewModel | undefined): boolean {
       if (!publisher) {
         return false;
       }
-      return this.topPublisher && this.topPublisher.publisherID === publisher.publisherID;
+      return !!this.topPublisher && this.topPublisher.publisherID === publisher.publisherID;
     },
-    isProjectedTopPublisher(publisher) {
+    isProjectedTopPublisher(publisher: PlayerPublisherViewModel | undefined): boolean {
       if (!publisher) {
         return false;
       }
-      return this.projectedTopPublisher && this.projectedTopPublisher.publisherID === publisher.publisherID;
+      return !!this.projectedTopPublisher && this.projectedTopPublisher.publisherID === publisher.publisherID;
     },
-    ordinal_suffix_of(num) {
-      return ordinal_suffix_of(num);
-    },
-    sortCompare(aRow, bRow, key) {
-      // Extend with other sortable columns as necessary.
-      const secondarySorts = {
-        totalFantasyPoints: 'projectedFantasyPoints',
-        projectedFantasyPoints: 'totalFantasyPoints'
-      };
-      const a = aRow[key];
-      const b = bRow[key];
-      const primarySort = a < b ? -1 : a > b ? 1 : 0;
-      // Return unless the primary Sort Key results in a Tie, i.e each row has 0 points.
-      if (primarySort != 0) return primarySort;
-      const secondarySortKey = secondarySorts[key];
-      const secondaryA = aRow[secondarySortKey];
-      const secondaryB = bRow[secondarySortKey];
-      return secondaryA < secondaryB ? -1 : secondaryA > secondaryB ? 1 : 0;
+    sortCompare(aRow: PlayerWithPublisherViewModel, bRow: PlayerWithPublisherViewModel, key: string): number {
+      const primaryKey = key as keyof PlayerWithPublisherViewModel;
+      const primary = compareValues(aRow[primaryKey], bRow[primaryKey]);
+      if (primary !== 0) return primary;
+
+      // Tie-break (e.g. everyone on 0 points before games release).
+      const secondaryKey = secondarySorts[key];
+      return secondaryKey ? compareValues(aRow[secondaryKey], bRow[secondaryKey]) : 0;
     }
   }
+});
+
+const secondarySorts: Partial<Record<string, keyof PlayerWithPublisherViewModel>> = {
+  totalFantasyPoints: 'projectedFantasyPoints',
+  projectedFantasyPoints: 'totalFantasyPoints'
 };
+
+function compareValues(a: unknown, b: unknown): number {
+  // Missing values (invited players with no publisher) sort below real ones.
+  if (a == null || b == null) return a == null && b == null ? 0 : a == null ? -1 : 1;
+  return a < b ? -1 : a > b ? 1 : 0;
+}
 </script>
+
 <style scoped>
 .header {
   display: flex;
