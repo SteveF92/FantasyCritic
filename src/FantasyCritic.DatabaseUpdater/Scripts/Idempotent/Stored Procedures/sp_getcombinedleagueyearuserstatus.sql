@@ -36,8 +36,8 @@ BEGIN
   
   
   SELECT tbl_league_invite.*,
-         tbl_user.DisplayName AS UserName,
-         tbl_user.EmailAddress AS UserEmailAddress
+         tbl_user.DisplayName AS InviteUserName,
+         tbl_user.EmailAddress AS InviteUserEmailAddress
   FROM tbl_league_invite
   LEFT JOIN tbl_user ON tbl_league_invite.UserID = tbl_user.UserID
   WHERE tbl_league_invite.LeagueID = P_LeagueID;

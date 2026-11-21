@@ -477,7 +477,6 @@ public class MySQLCombinedDataRepo : ICombinedDataRepo
         leagueEntity.ManagerEmailAddress = manager.UserName;
 
         var league = leagueEntity.ToDomain(years.Select(x => new MinimalLeagueYearInfo(x.Year, x.SupportedYearIsFinished, x.AnyDraftStarted)));
-        var leagueYearKey = new LeagueYearKey(leagueID, year);
         var domainLeagueTags = leagueTagEntities.Select(x => x.ToDomain(possibleTags[x.Tag])).ToList();
         var leagueSlots = ConvertLeagueSlots(leagueSlotEntities, leagueSlotRequiresTagEntities.ToLookup(x => x.LeagueSlotID), possibleTags);
         var domainEligibilityOverrides = DomainConversionUtilities.ConvertEligibilityOverrideEntities(eligibilityOverrideEntities, masterGameDictionary);
