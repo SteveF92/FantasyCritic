@@ -65,6 +65,12 @@ export const useLeagueStore = defineStore('league', {
       }
       return state.leagueYear.league;
     },
+    requiredSupportedYear(state): SupportedYearViewModel {
+      if (!state.leagueYear?.supportedYear) {
+        throw new Error('leagueYear is not loaded. This component should only render under the league page v-if.');
+      }
+      return state.leagueYear.supportedYear;
+    },
     league: (state): LeagueViewModel | undefined => state.leagueYear?.league,
     publishers: (state): PublisherViewModel[] | undefined => state.leagueYear?.publishers,
     players: (state): PlayerWithPublisherViewModel[] | undefined => state.leagueYear?.players,

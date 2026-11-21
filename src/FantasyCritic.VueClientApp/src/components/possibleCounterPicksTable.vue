@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="counter-pick-table"></b-pagination>
+    <b-pagination v-model="currentPage" :total-rows="possibleGames.length" :per-page="perPage" aria-controls="counter-pick-table"></b-pagination>
 
-    <b-table v-model:sort-by="sortBy" :items="gameRows" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
+    <b-table v-model:sort-by="sortBy" :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
       <template #cell(gameName)="data">
         <span v-if="data.item.masterGame">
           <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
@@ -34,60 +34,60 @@
     </b-table>
   </div>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import type { BTableSortBy, TableField } from 'bootstrap-vue-next';
+
+import type { PublisherGameViewModel } from '@/api/clients';
 import { numericComparer } from '@/globalFunctions';
 import { formatScore } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
-export default {
+interface PossibleCounterPicksTableData {
+  perPage: number;
+  currentPage: number;
+  sortBy: BTableSortBy[];
+}
+
+export default defineComponent({
+  setup() {
+    const gameFields: TableField<PublisherGameViewModel>[] = [
+      { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum', sortCompare: numericComparer },
+      { key: 'publisherName', label: 'Owned By', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+      { key: 'select', label: '', thClass: 'bg-primary' }
+    ];
+
+    return { gameFields };
+  },
   components: {
     MasterGamePopover
   },
   props: {
-    modelValue: { type: Object, default: null },
-    possibleGames: { type: Array, required: true }
+    modelValue: { type: Object as PropType<PublisherGameViewModel>, default: null },
+    possibleGames: { type: Array as PropType<PublisherGameViewModel[]>, required: true }
   },
-  emits: ['update:modelValue'],
-  data() {
+  emits: {
+    'update:modelValue': (_value: PublisherGameViewModel) => true
+  },
+  data(): PossibleCounterPicksTableData {
     return {
-      selectedPublisherGame: null,
       perPage: 10,
       currentPage: 1,
-      gameFieldsInternal: [
-        { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum', sortCompare: numericComparer },
-        { key: 'publisherName', label: 'Owned By', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        { key: 'select', label: '', thClass: 'bg-primary' }
-      ],
       sortBy: [{ key: 'gameName', order: 'asc' }]
     };
   },
-  computed: {
-    rows() {
-      return this.possibleGames.length;
-    },
-    gameRows() {
-      let gameRows = this.possibleGames;
-      if (!gameRows) {
-        return [];
-      }
-
-      return gameRows;
-    },
-    gameFields() {
-      return this.gameFieldsInternal;
-    }
-  },
   methods: {
     formatScore,
-    selectGame(publisherGame) {
-      this.selectedPublisherGame = publisherGame;
-      this.$emit('update:modelValue', this.selectedPublisherGame);
+    selectGame(publisherGame: PublisherGameViewModel): void {
+      this.$emit('update:modelValue', publisherGame);
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .release-date {
   font-weight: bold;

@@ -1,43 +1,48 @@
 <template>
   <tr :class="{ 'table-warning': gameSlot && gameSlot.showWarningRow }" class="minimal-game-row">
     <td>
-      <gameNameColumn :league-year="leagueYear" :game-slot="gameSlot"></gameNameColumn>
+      <gameNameColumn :league-year="requiredLeagueYear" :game-slot="gameSlot"></gameNameColumn>
     </td>
     <td class="score-column">
-      <template v-if="scoreColumnMode === 'RealScore'">{{ formatScore(game.criticScore, decimalsToShow) }}</template>
+      <template v-if="scoreColumnMode === 'RealScore'">{{ formatScore(game?.criticScore, decimalsToShow) }}</template>
       <template v-if="scoreColumnMode === 'Empty'"></template>
     </td>
 
     <td class="score-column" :class="{ 'projected-text': showProjectedScore }">
-      <template v-if="scoreColumnMode === 'RealScore'">{{ formatScore(game.fantasyPoints, decimalsToShow) }}</template>
+      <template v-if="scoreColumnMode === 'RealScore'">{{ formatScore(game?.fantasyPoints, decimalsToShow) }}</template>
       <template v-if="scoreColumnMode === 'ProjectedPoints'">~{{ formatScore(gameSlot.projectedFantasyPoints, decimalsToShow) }}</template>
       <template v-if="scoreColumnMode === 'Empty'">{{ emptySlotScore }}</template>
     </td>
   </tr>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
 
+import { PublisherGameViewModel, PublisherSlotViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatScore } from '@/utilities/formatters';
 import GameNameColumn from '@/components/gameTables/gameNameColumn.vue';
 
-export default {
+type ScoreColumnMode = 'RealScore' | 'ProjectedPoints' | 'Empty';
+
+export default defineComponent({
   components: {
     GameNameColumn
   },
   props: {
-    gameSlot: { type: Object, required: true }
+    gameSlot: { type: Object as PropType<PublisherSlotViewModel>, required: true }
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'showProjections', 'hasSpecialSlots', 'supportedYear']),
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'showProjections', 'hasSpecialSlots', 'requiredSupportedYear']),
     ...mapState(useAuthStore, ['decimalsToShow']),
-    game() {
+    game(): PublisherGameViewModel | undefined {
       return this.gameSlot.publisherGame;
     },
-    scoreColumnMode() {
-      if (this.game && (this.game.fantasyPoints || !this.game.willRelease || this.game.criticScore || this.game.released || this.supportedYear.finished)) {
+    scoreColumnMode(): ScoreColumnMode {
+      if (this.game && (this.game.fantasyPoints || !this.game.willRelease || this.game.criticScore || this.game.released || this.requiredSupportedYear.finished)) {
         return 'RealScore';
       }
       if (this.showProjections) {
@@ -46,11 +51,11 @@ export default {
 
       return 'Empty';
     },
-    showProjectedScore() {
+    showProjectedScore(): boolean {
       return this.showProjections && !(this.game && (this.game.fantasyPoints || !this.game.willRelease));
     },
-    emptySlotScore() {
-      if (this.gameSlot.counterPick && this.supportedYear.finished) {
+    emptySlotScore(): string {
+      if (this.gameSlot.counterPick && this.requiredSupportedYear.finished) {
         return '-15';
       }
 
@@ -60,8 +65,9 @@ export default {
   methods: {
     formatScore
   }
-};
+});
 </script>
+
 <style scoped>
 tr {
   height: 40px;

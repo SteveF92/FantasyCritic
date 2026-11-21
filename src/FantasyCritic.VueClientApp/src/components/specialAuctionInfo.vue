@@ -11,7 +11,7 @@
           </template>
         </countdown>
       </div>
-      <b-button v-if="league.userIsInLeague" v-b-modal="`bidGameForm-${specialAuction.masterGameYear.masterGameID}`" variant="primary" class="bid-button">Place Bid</b-button>
+      <b-button v-if="requiredLeague.userIsInLeague" v-b-modal="`bidGameForm-${specialAuction.masterGameYear.masterGameID}`" variant="primary" class="bid-button">Place Bid</b-button>
     </div>
     <div v-else>
       <div>Auction closed at: {{ formatDateTime(scheduledEndTime) }}</div>
@@ -22,24 +22,26 @@
   </b-alert>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent, PropType } from 'vue';
 import { mapState } from 'pinia';
 import { DateTime } from 'luxon';
 
+import type { SpecialAuctionViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatDateTime, formatDateTimeAt } from '@/utilities/formatters';
 import Countdown from '@/components/countdown.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import BidGameForm from '@/components/modals/bidGameForm.vue';
 
-export default {
+export default defineComponent({
   components: {
     Countdown,
     MasterGamePopover,
     BidGameForm
   },
   props: {
-    specialAuction: { type: Object, required: true }
+    specialAuction: { type: Object as PropType<SpecialAuctionViewModel>, required: true }
   },
   data() {
     return {
@@ -47,23 +49,24 @@ export default {
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['league']),
-    scheduledEndTime() {
+    ...mapState(useLeagueStore, ['requiredLeague']),
+    scheduledEndTime(): string {
       return DateTime.fromISO(this.specialAuction.scheduledEndTime).toFormat('yyyy-MM-dd HH:mm:ss');
     },
-    isLocked() {
+    isLocked(): boolean {
       return this.specialAuction.isLocked || this.specialAuction.processed || this.forceLocked;
     }
   },
   methods: {
     formatDateTime,
     formatDateTimeAt,
-    endTimeElapsed() {
+    endTimeElapsed(): void {
       this.forceLocked = true;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .countdown {
   font-weight: bold;

@@ -37,55 +37,68 @@
     </div>
   </div>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
+import type { BTableSortBy, TableField } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
+import type { MasterGameYearViewModel, PublicBiddingMasterGameViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import type { PopoverContent } from '@/types/vueTypes';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
-export default {
+interface ActiveBidsData {
+  sortBy: BTableSortBy[];
+}
+
+export default defineComponent({
+  setup() {
+    const counterPickText: PopoverContent = {
+      title: 'Counter Pick Bid',
+      body: 'This game is being bid on as a counter pick.'
+    };
+
+    const gamesFields: TableField<PublicBiddingMasterGameViewModel>[] = [
+      { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' }
+    ];
+
+    return { counterPickText, gamesFields };
+  },
   components: {
     MasterGamePopover
   },
-  data() {
+  data(): ActiveBidsData {
     return {
-      sortBy: [{ key: 'maximumReleaseDate', order: 'asc' }],
-      gamesFields: [
-        { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' }
-      ]
+      sortBy: [{ key: 'maximumReleaseDate', order: 'asc' }]
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear']),
-    counterPickText() {
-      return {
-        title: 'Counter Pick Bid',
-        body: 'This game is being bid on as a counter pick.'
-      };
-    },
-    games() {
-      if (!this.leagueYear.publicBiddingGames) {
+    ...mapState(useLeagueStore, ['requiredLeagueYear']),
+    games(): PublicBiddingMasterGameViewModel[] {
+      if (!this.requiredLeagueYear.publicBiddingGames) {
         return [];
       }
 
-      return this.leagueYear.publicBiddingGames.masterGames;
+      return this.requiredLeagueYear.publicBiddingGames.masterGames;
     },
-    anyHiddenCounterPickBids() {
-      return !!this.leagueYear.publicBiddingGames?.anyHiddenCounterPickBids;
+    anyHiddenCounterPickBids(): boolean {
+      return !!this.requiredLeagueYear.publicBiddingGames?.anyHiddenCounterPickBids;
     }
   },
   methods: {
-    getReleaseDate(game) {
+    getReleaseDate(game: MasterGameYearViewModel): string {
       if (game.releaseDate) {
         return DateTime.fromISO(game.releaseDate).toFormat('yyyy-MM-dd');
       }
       return game.estimatedReleaseDate + ' (Estimated)';
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .game-name-column {
   display: flex;

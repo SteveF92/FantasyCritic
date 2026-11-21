@@ -1,8 +1,8 @@
 <template>
   <div>
-    <b-pagination v-model="currentPage" :total-rows="rows" :per-page="perPage" aria-controls="my-table"></b-pagination>
+    <b-pagination v-model="currentPage" :total-rows="possibleGames.length" :per-page="perPage" aria-controls="my-table"></b-pagination>
 
-    <b-table v-model:sort-by="sortBy" :items="gameRows" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
+    <b-table v-model:sort-by="sortBy" :items="possibleGames" :fields="gameFields" :per-page="perPage" :current-page="currentPage" bordered small responsive striped>
       <template #cell(masterGame.gameName)="data">
         <masterGamePopover :master-game="data.item.masterGame"></masterGamePopover>
       </template>
@@ -37,7 +37,12 @@
     </b-table>
   </div>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
+import type { BTableSortBy, TableField } from 'bootstrap-vue-next';
+
+import type { MasterGameYearViewModel, PossibleMasterGameYearViewModel } from '@/api/clients';
 import { numericComparer } from '@/globalFunctions';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import { useLeagueStore } from '@/store/leagueStore';
@@ -45,72 +50,60 @@ import { formatScore } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import StatusBadge from '@/components/statusBadge.vue';
 
-export default {
+interface PossibleMasterGamesTableData {
+  perPage: number;
+  currentPage: number;
+  sortBy: BTableSortBy[];
+}
+
+type BidEligibility = 'notYetEligible' | 'tooLate' | 'lastChance' | 'noEligibilityWarning';
+
+export default defineComponent({
+  setup() {
+    const gameFields: TableField<PossibleMasterGameYearViewModel>[] = [
+      { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+      { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum', sortCompare: numericComparer },
+      { key: 'status', label: 'Status', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
+      { key: 'select', label: '', thClass: 'bg-primary' }
+    ];
+
+    return { gameFields };
+  },
   components: {
     StatusBadge,
     MasterGamePopover
   },
   props: {
-    modelValue: { type: Object, default: null },
-    possibleGames: { type: Array, required: true },
+    modelValue: { type: Object as PropType<MasterGameYearViewModel>, default: null },
+    possibleGames: { type: Array as PropType<PossibleMasterGameYearViewModel[]>, required: true },
     bidMode: { type: Boolean, required: false, default: false }
   },
-  emits: ['update:modelValue'],
-  data() {
+  emits: {
+    'update:modelValue': (_value: MasterGameYearViewModel) => true
+  },
+  data(): PossibleMasterGamesTableData {
     return {
-      selectedMasterGame: null,
-      lastPopoverShown: null,
       perPage: 10,
       currentPage: 1,
-      gameFieldsInternal: [
-        { key: 'masterGame.gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
-        { key: 'masterGame.dateAdjustedHypeFactor', label: 'Hype Factor', sortable: true, thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum', sortCompare: numericComparer },
-        { key: 'status', label: 'Status', thClass: ['bg-primary', 'lg-screen-minimum'], tdClass: 'lg-screen-minimum' },
-        { key: 'select', label: '', thClass: 'bg-primary' }
-      ],
       sortBy: [{ key: 'dateAdjustedHypeFactor', order: 'desc' }]
     };
   },
   computed: {
-    /**
-     * @returns {string|undefined} The pickup system value, or undefined outside a league page.
-     */
-    pickupSystem() {
+    pickupSystem(): string | undefined {
       const leagueStore = useLeagueStore();
       return leagueStore.leagueYear?.settings?.pickupSystem;
-    },
-    rows() {
-      return this.possibleGames.length;
-    },
-    gameRows() {
-      let gameRows = this.possibleGames;
-      if (!gameRows) {
-        return [];
-      }
-      return gameRows;
-    },
-    gameFields() {
-      return this.gameFieldsInternal;
     }
   },
   methods: {
     formatScore,
-    selectGame(masterGame) {
-      this.selectedMasterGame = masterGame;
-      this.$emit('update:modelValue', this.selectedMasterGame);
+    selectGame(masterGame: MasterGameYearViewModel): void {
+      this.$emit('update:modelValue', masterGame);
     },
     /**
      * Determines the bid eligibility status for a given master game based on its release date.
-     *
-     * @param {Object} masterGame - The master game object to check eligibility for.
-     * @param {string|Date} masterGame.releaseDate - The release date of the master game.
-     * @returns {string} - Returns one of the following statuses:
-     *   - 'tooLate': The game's release date is before the next open bidding time.
-     *   - 'lastChance': The game's release date is between the next and following open bidding times.
-     *   - '': The game is eligible for bidding beyond the following open bidding time.
      */
-    getBidEligibility(masterGame) {
+    getBidEligibility(masterGame: MasterGameYearViewModel): BidEligibility {
       if (!masterGame.releaseDate) {
         return 'notYetEligible';
       }
@@ -123,7 +116,7 @@ export default {
       } else if (releaseTime < followingBidTime) {
         return 'lastChance';
       } else {
-        return '';
+        return 'noEligibilityWarning';
       }
     },
     /**
@@ -131,10 +124,8 @@ export default {
      * - If the pickup system is "SecretBidding", returns the next bid lock time.
      * - For every public bidding system, returns the next public bidding time, since that reveal is the point after which
      *   you can no longer freely bid on a game that nobody else has bid on.
-     *
-     * @returns {Date} The next relevant bidding time as a Date object.
      */
-    retrieveNextOpenBiddingTime() {
+    retrieveNextOpenBiddingTime(): Date {
       const interLeagueStore = useInterLeagueStore();
       const bidTimes = interLeagueStore.bidTimes;
       if (this.pickupSystem === 'SecretBidding') {
@@ -147,18 +138,17 @@ export default {
      * - Retrieves the next open bidding time using `retrieveNextOpenBiddingTime()`.
      * - Determines the interval in days: 7 for "SecretBidding", 14 otherwise.
      * - Returns a new Date object representing the next open bidding time plus the interval.
-     *
-     * @returns {Date} The Date of the following open bidding time.
      */
-    retrieveFollowingOpenBiddingTime() {
+    retrieveFollowingOpenBiddingTime(): Date {
       const nextBidTime = this.retrieveNextOpenBiddingTime();
       const intervalDays = this.pickupSystem === 'SecretBidding' ? 7 : 14;
 
       return new Date(nextBidTime.getTime() + intervalDays * 24 * 60 * 60 * 1000);
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .fake-link {
   text-decoration: underline;

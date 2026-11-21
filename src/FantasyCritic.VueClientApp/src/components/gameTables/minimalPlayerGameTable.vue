@@ -92,101 +92,113 @@
     </table>
   </div>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
 
+import { PublisherSlotViewModel, PublisherViewModel } from '@/api/clients';
 import { orderBy, publisherIconIsValid } from '@/globalFunctions';
 import { useAuthStore } from '@/store/authStore';
 import { useLeagueStore } from '@/store/leagueStore';
+import type { PopoverContent } from '@/types/vueTypes';
 import { formatCurrency, formatScore } from '@/utilities/formatters';
 import { shareElementAsImage } from '@/utilities/shareImage';
 import MinimalPlayerGameSlotRow from '@/components/gameTables/minimalPlayerGameSlotRow.vue';
 
-export default {
+interface MinimalPlayerGameTableData {
+  renderingSnapshot: boolean;
+}
+
+export default defineComponent({
+  setup() {
+    const roundingWarning: PopoverContent = {
+      title: "Why aren't these points adding up correctly?",
+      body:
+        'Points displayed in this table are rounded, and may not add up the way they appear. You can choose to turn on decimal points in the "Manage Account" page. ' +
+        'Note: points are calculated to 4 decimal points no matter your display option.'
+    };
+
+    return { roundingWarning };
+  },
   components: {
     MinimalPlayerGameSlotRow
   },
   props: {
-    publisher: { type: Object, required: true }
+    publisher: { type: Object as PropType<PublisherViewModel>, required: true }
   },
-  data() {
+  data(): MinimalPlayerGameTableData {
     return {
       renderingSnapshot: false
     };
   },
   computed: {
     ...mapState(useAuthStore, ['isPlusUser', 'userInfo']),
-    ...mapState(useLeagueStore, ['leagueYear', 'showProjections', 'draftOrderView']),
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'showProjections', 'draftOrderView']),
     ...mapState(useAuthStore, ['decimalsToShow']),
-    userIsPublisher() {
-      return this.userInfo && this.publisher.userID === this.userInfo.userID;
+    userIsPublisher(): boolean {
+      return !!this.userInfo && this.publisher.userID === this.userInfo.userID;
     },
-    gameSlots() {
+    gameSlots(): PublisherSlotViewModel[] {
       if (!this.draftOrderView) {
         return this.publisher.gameSlots;
       }
 
       return orderBy(this.publisher.gameSlots, (x) => `${x.counterPick ? '1' : '0'}-${x.publisherGame?.timestamp ?? 'Z' + String(x.slotNumber).padStart(4, '0')}`);
     },
-    iconIsValid() {
+    iconIsValid(): boolean {
       return publisherIconIsValid(this.publisher.publisherIcon);
     },
-    hasAnyDrops() {
+    hasAnyDrops(): boolean {
       if (this.publisher.superDropsAvailable > 0) {
         return true;
       }
       if (
-        (this.leagueYear.settings.willReleaseDroppableGames === -1 && this.leagueYear.settings.willNotReleaseDroppableGames === -1) ||
-        this.leagueYear.settings.unrestrictedReleaseStatusDroppableGames === -1
+        (this.requiredLeagueYear.settings.willReleaseDroppableGames === -1 && this.requiredLeagueYear.settings.willNotReleaseDroppableGames === -1) ||
+        this.requiredLeagueYear.settings.unrestrictedReleaseStatusDroppableGames === -1
       ) {
         return false;
       }
       return (
-        this.leagueYear.settings.willReleaseDroppableGames > 0 || this.leagueYear.settings.willNotReleaseDroppableGames > 0 || this.leagueYear.settings.unrestrictedReleaseStatusDroppableGames > 0
+        this.requiredLeagueYear.settings.willReleaseDroppableGames > 0 ||
+        this.requiredLeagueYear.settings.willNotReleaseDroppableGames > 0 ||
+        this.requiredLeagueYear.settings.unrestrictedReleaseStatusDroppableGames > 0
       );
     },
-    showRoundingWarning() {
-      if (this.userInfo?.showDecimalPlaces) {
+    showRoundingWarning(): boolean {
+      if (this.userInfo?.showDecimalPoints) {
         return false;
       }
 
       const roundedTotal = Math.round(this.publisher.totalFantasyPoints);
       const fantasyPoints = this.publisher.games.map((x) => x.fantasyPoints);
-      const roundedFantasyPoints = fantasyPoints.map((x) => Math.round(x));
+      const roundedFantasyPoints = fantasyPoints.filter((x) => !!x).map((x) => Math.round(x!));
       let roundedSum = roundedFantasyPoints.reduce((partialSum, a) => partialSum + a, 0);
       roundedSum += this.getEmptyCounterPickSlotPoints;
       return roundedTotal !== roundedSum;
     },
-    getEmptyCounterPickSlotPoints() {
-      if (!this.leagueYear.supportedYear.finished) {
+    getEmptyCounterPickSlotPoints(): number {
+      if (!this.requiredLeagueYear.supportedYear.finished) {
         return 0;
       }
 
-      const expectedNumberOfCounterPicks = this.leagueYear.settings.counterPicks;
+      const expectedNumberOfCounterPicks = this.requiredLeagueYear.settings.counterPicks;
       const numberCounterPicks = this.publisher.games.filter((x) => x.counterPick).length;
       const emptySlots = expectedNumberOfCounterPicks - numberCounterPicks;
       const points = emptySlots * -15;
       return points;
-    },
-    roundingWarning() {
-      return {
-        title: "Why aren't these points adding up correctly?",
-        body:
-          'Points displayed in this table are rounded, and may not add up the way they appear. You can choose to turn on decimal points in the "Manage Account" page. ' +
-          'Note: points are calculated to 4 decimal points no matter your display option.'
-      };
     }
   },
   methods: {
     formatCurrency,
     formatScore,
-    dropStatus(dropped, droppable) {
+    dropStatus(dropped: number, droppable: number): string {
       if (droppable === -1) {
         return '\u221E';
       }
       return droppable - dropped + '/' + droppable;
     },
-    async sharePublisher() {
+    async sharePublisher(): Promise<void> {
       this.renderingSnapshot = true;
       try {
         await this.$nextTick();
@@ -196,8 +208,9 @@ export default {
       }
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .player-summary {
   margin-bottom: 10px;
