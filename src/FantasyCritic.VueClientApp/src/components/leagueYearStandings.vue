@@ -177,27 +177,43 @@ export default defineComponent({
       return !!this.projectedTopPublisher && this.projectedTopPublisher.publisherID === publisher.publisherID;
     },
     sortCompare(aRow: PlayerWithPublisherViewModel, bRow: PlayerWithPublisherViewModel, key: string): number {
-      const primaryKey = key as keyof PlayerWithPublisherViewModel;
-      const primary = compareValues(aRow[primaryKey], bRow[primaryKey]);
-      if (primary !== 0) return primary;
+      const sortValues = sortValuesByKey[key];
+      if (!sortValues) {
+        return 0;
+      }
 
-      // Tie-break (e.g. everyone on 0 points before games release).
-      const secondaryKey = secondarySorts[key];
-      return secondaryKey ? compareValues(aRow[secondaryKey], bRow[secondaryKey]) : 0;
+      if (!aRow.publisher || !bRow.publisher) {
+        if (!aRow.publisher && !bRow.publisher) {
+          return 0;
+        }
+
+        // Rows without a publisher (invites, players who haven't created one) stay at the bottom in both directions.
+        // bootstrap-vue-next negates the result for a descending sort, so negate it first to cancel that out.
+        const withoutPublisherLast = aRow.publisher ? -1 : 1;
+        const descending = this.sortBy.find((x) => x.key === key)?.order === 'desc';
+        return descending ? -withoutPublisherLast : withoutPublisherLast;
+      }
+
+      const aValues = sortValues(aRow.publisher);
+      const bValues = sortValues(bRow.publisher);
+      for (let i = 0; i < aValues.length; i++) {
+        if (aValues[i] !== bValues[i]) {
+          return aValues[i] < bValues[i] ? -1 : 1;
+        }
+      }
+
+      return 0;
     }
   }
 });
 
-const secondarySorts: Partial<Record<string, keyof PlayerWithPublisherViewModel>> = {
-  totalFantasyPoints: 'projectedFantasyPoints',
-  projectedFantasyPoints: 'totalFantasyPoints'
+// The values each sortable column sorts by, in order; the later ones break ties, such as everyone on 0 points before any games release.
+const sortValuesByKey: Partial<Record<string, (publisher: PlayerPublisherViewModel) => number[]>> = {
+  draftPosition: (x) => [x.draftPosition],
+  gamesWillRelease: (x) => [x.gamesWillRelease, -x.draftPosition],
+  totalFantasyPoints: (x) => [x.totalFantasyPoints, x.totalProjectedPoints],
+  projectedFantasyPoints: (x) => [x.totalProjectedPoints, x.totalFantasyPoints]
 };
-
-function compareValues(a: unknown, b: unknown): number {
-  // Missing values (invited players with no publisher) sort below real ones.
-  if (a == null || b == null) return a == null && b == null ? 0 : a == null ? -1 : 1;
-  return a < b ? -1 : a > b ? 1 : 0;
-}
 </script>
 
 <style scoped>
