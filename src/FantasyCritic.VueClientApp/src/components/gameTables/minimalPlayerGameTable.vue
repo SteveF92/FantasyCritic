@@ -172,7 +172,7 @@ export default defineComponent({
 
       const roundedTotal = Math.round(this.publisher.totalFantasyPoints);
       const fantasyPoints = this.publisher.games.map((x) => x.fantasyPoints);
-      const roundedFantasyPoints = fantasyPoints.filter((x) => !!x).map((x) => Math.round(x!));
+      const roundedFantasyPoints = fantasyPoints.map((x) => Math.round(x ?? 0));
       let roundedSum = roundedFantasyPoints.reduce((partialSum, a) => partialSum + a, 0);
       roundedSum += this.getEmptyCounterPickSlotPoints;
       return roundedTotal !== roundedSum;

@@ -75,7 +75,7 @@ export default defineComponent({
     MasterGamePopover
   },
   props: {
-    modelValue: { type: Object as PropType<MasterGameYearViewModel>, default: null },
+    modelValue: { type: Object as PropType<MasterGameYearViewModel | null>, default: null },
     possibleGames: { type: Array as PropType<PossibleMasterGameYearViewModel[]>, required: true },
     bidMode: { type: Boolean, required: false, default: false }
   },
@@ -86,7 +86,7 @@ export default defineComponent({
     return {
       perPage: 10,
       currentPage: 1,
-      sortBy: [{ key: 'dateAdjustedHypeFactor', order: 'desc' }]
+      sortBy: [{ key: 'masterGame.dateAdjustedHypeFactor', order: 'desc' }]
     };
   },
   computed: {

@@ -66,7 +66,7 @@ export default defineComponent({
     MasterGamePopover
   },
   props: {
-    modelValue: { type: Object as PropType<PublisherGameViewModel>, default: null },
+    modelValue: { type: Object as PropType<PublisherGameViewModel | null>, default: null },
     possibleGames: { type: Array as PropType<PublisherGameViewModel[]>, required: true }
   },
   emits: {

@@ -34,6 +34,10 @@ import Countdown from '@/components/countdown.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import BidGameForm from '@/components/modals/bidGameForm.vue';
 
+interface SpecialAuctionInfoData {
+  forceLocked: boolean;
+}
+
 export default defineComponent({
   components: {
     Countdown,
@@ -43,7 +47,7 @@ export default defineComponent({
   props: {
     specialAuction: { type: Object as PropType<SpecialAuctionViewModel>, required: true }
   },
-  data() {
+  data(): SpecialAuctionInfoData {
     return {
       forceLocked: false
     };

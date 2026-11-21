@@ -1,5 +1,5 @@
 <template>
-  <tr :class="{ 'table-warning': gameSlot && gameSlot.showWarningRow }" class="minimal-game-row">
+  <tr :class="{ 'table-warning': gameSlot.showWarningRow }" class="minimal-game-row">
     <td>
       <gameNameColumn :league-year="requiredLeagueYear" :game-slot="gameSlot"></gameNameColumn>
     </td>
@@ -20,7 +20,7 @@
 import { defineComponent, type PropType } from 'vue';
 import { mapState } from 'pinia';
 
-import { PublisherGameViewModel, PublisherSlotViewModel } from '@/api/clients';
+import type { PublisherGameViewModel, PublisherSlotViewModel } from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatScore } from '@/utilities/formatters';
@@ -36,7 +36,7 @@ export default defineComponent({
     gameSlot: { type: Object as PropType<PublisherSlotViewModel>, required: true }
   },
   computed: {
-    ...mapState(useLeagueStore, ['requiredLeagueYear', 'showProjections', 'hasSpecialSlots', 'requiredSupportedYear']),
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'showProjections', 'requiredSupportedYear']),
     ...mapState(useAuthStore, ['decimalsToShow']),
     game(): PublisherGameViewModel | undefined {
       return this.gameSlot.publisherGame;

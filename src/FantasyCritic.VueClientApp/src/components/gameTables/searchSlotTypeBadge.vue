@@ -17,10 +17,9 @@
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent, type PropType } from 'vue';
 
-import { MasterGameTagViewModel } from '@/api/clients';
-import { useInterLeagueStore } from '@/store/interLeagueStore';
+import type { PublisherSingleSlotRequirementsViewModel } from '@/api/clients';
 import { getMultiBadgeColor } from '@/utilities/masterGameTags';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
@@ -32,19 +31,9 @@ export default defineComponent({
     MasterGameTagBadge
   },
   props: {
-    gameSlot: { type: Object, required: true },
-    name: { type: String, default: null },
+    gameSlot: { type: Object as PropType<PublisherSingleSlotRequirementsViewModel>, required: true },
+    name: { type: String as PropType<string | null>, default: null },
     selected: { type: Boolean, default: false }
-  },
-  methods: {
-    getTag(tagName: string): MasterGameTagViewModel {
-      const interLeagueStore = useInterLeagueStore();
-      const tag = interLeagueStore.allTags.find((x) => x.name === tagName);
-      if (!tag) {
-        throw new Error(`Unknown master game tag: ${tagName}`);
-      }
-      return tag;
-    }
   }
 });
 </script>

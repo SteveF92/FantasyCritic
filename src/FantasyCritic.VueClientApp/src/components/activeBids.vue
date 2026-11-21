@@ -72,7 +72,7 @@ export default defineComponent({
   },
   data(): ActiveBidsData {
     return {
-      sortBy: [{ key: 'maximumReleaseDate', order: 'asc' }]
+      sortBy: [{ key: 'masterGame.maximumReleaseDate', order: 'asc' }]
     };
   },
   computed: {
