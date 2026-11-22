@@ -1,12 +1,13 @@
 <template>
-  <b-modal id="specialAuctionsModal" ref="specialAuctionsModalRef" size="lg" title="Manage Special Auctions" no-footer @hidden="clearData">
+  <b-modal id="special-auctions-modal" ref="specialAuctionsModalRef" size="lg" title="Manage Special Auctions" no-footer @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-info">
       Special auctions allow your league to process the bids for a given game before the normal bid processing time. The main reason to do this is in case of 'shadow drops', which is when a game is
       announced and then released very shortly after.
     </div>
-    <div v-if="leagueYear.activeSpecialAuctions.length > 0">
+    <div v-if="requiredLeagueYear.activeSpecialAuctions.length > 0">
       <label>Active Special Auctions</label>
-      <b-table-lite :items="leagueYear.activeSpecialAuctions" :fields="activeSpecialAuctionFields" bordered responsive striped>
+      <b-table-lite :items="requiredLeagueYear.activeSpecialAuctions" :fields="activeSpecialAuctionFields" bordered responsive striped>
         <template #cell(masterGame)="data">
           <masterGamePopover :master-game="data.item.masterGameYear"></masterGamePopover>
         </template>
@@ -16,7 +17,7 @@
         <template #cell(scheduledEndTime)="data">
           {{ formatDateTime(data.item.scheduledEndTime) }}
           <b-badge v-if="data.item.isLocked" variant="danger">Ended</b-badge>
-          <b-button v-else variant="danger" @click="cancelSpecialAuction(data.item.masterGameYear)">Cancel</b-button>
+          <b-button v-else variant="danger" @click="cancelSpecialAuction(data.item.masterGameYear)" :disabled="isBusy">Cancel</b-button>
         </template>
       </b-table-lite>
     </div>
@@ -31,14 +32,14 @@
           </span>
         </div>
         <possibleMasterGamesTable
-          v-if="possibleMasterGames.length > 0"
+          v-if="possibleMasterGames.length > 0 && !specialAuctionMasterGame"
           v-model="specialAuctionMasterGame"
           :possible-games="possibleMasterGames"
           @update:model-value="newGameSelected"></possibleMasterGamesTable>
       </div>
     </form>
     <div v-if="specialAuctionMasterGame">
-      <h3 for="bidMasterGame" class="selected-game text-black">Selected Game:</h3>
+      <h3 class="selected-game text-black">Selected Game:</h3>
       <masterGameSummary :master-game="specialAuctionMasterGame"></masterGameSummary>
       <div v-if="specialAuctionMasterGame.releasingToday" class="alert alert-warning">
         This game is releasing today. It may already be released. You can make a special auction, but it's up to you to decide if there is already too much information out about this game. You should
@@ -53,117 +54,152 @@
       <hr />
       <label>Auction End Time (In your local time zone)</label>
       <input v-model="scheduledEndTime" type="datetime-local" class="form-control" />
-      <b-button variant="success" class="create-button" @click="createSpecialAuction">Create Special Auction</b-button>
-    </div>
-    <br />
-    <div v-if="errorInfo" class="alert alert-danger">
-      <h3 class="alert-heading">Error!</h3>
-      <p class="text-white">{{ errorInfo }}</p>
+      <b-button variant="success" class="create-button" @click="createSpecialAuction" :disabled="!formIsValid || isBusy">Create Special Auction</b-button>
     </div>
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal, TableField } from 'bootstrap-vue-next';
 
+import {
+  leagueClient,
+  leagueManagerClient,
+  type CancelSpecialAuctionRequest,
+  type CreateSpecialAuctionRequest,
+  type MasterGameYearViewModel,
+  type PossibleMasterGameYearViewModel,
+  type SpecialAuctionViewModel
+} from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatDateTime } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 
-export default {
+interface SpecialAuctionsModalData {
+  searchGameName: string;
+  specialAuctionMasterGame: MasterGameYearViewModel | null;
+  scheduledEndTime: string;
+  possibleMasterGames: PossibleMasterGameYearViewModel[];
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  setup() {
+    const activeSpecialAuctionFields: TableField<SpecialAuctionViewModel>[] = [
+      { key: 'masterGame', label: 'Game', thClass: ['bg-primary'] },
+      { key: 'creationTime', label: 'Creation Time', thClass: ['bg-primary'] },
+      { key: 'scheduledEndTime', label: 'End Time', thClass: ['bg-primary'] }
+    ];
+
+    return { activeSpecialAuctionFields };
+  },
   components: {
     PossibleMasterGamesTable,
     MasterGameSummary,
     MasterGamePopover
   },
-  data() {
+  data(): SpecialAuctionsModalData {
     return {
       searchGameName: '',
       specialAuctionMasterGame: null,
-      scheduledEndTime: null,
+      scheduledEndTime: '',
       possibleMasterGames: [],
-      errorInfo: '',
-      activeSpecialAuctionFields: [
-        { key: 'masterGame', label: 'Game', thClass: ['bg-primary'] },
-        { key: 'creationTime', label: 'Creation Time', thClass: ['bg-primary'] },
-        { key: 'scheduledEndTime', label: 'End Time', thClass: ['bg-primary'] }
-      ]
+      isBusy: false,
+      errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear']),
-    formIsValid() {
-      return this.specialAuctionMasterGame;
+    ...mapState(useLeagueStore, ['requiredLeagueYear']),
+    formIsValid(): boolean {
+      return !!this.specialAuctionMasterGame && !!this.scheduledEndTime;
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
     formatDateTime,
-    async createSpecialAuction() {
+    async createSpecialAuction(): Promise<void> {
+      if (!this.scheduledEndTime || !this.specialAuctionMasterGame) {
+        throw new Error('Special auction form is not valid.');
+      }
+
       const dateObject = new Date(this.scheduledEndTime);
       const utcDate = dateObject.toISOString();
 
-      const model = {
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year,
+      const request: CreateSpecialAuctionRequest = {
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year,
         masterGameID: this.specialAuctionMasterGame.masterGameID,
         scheduledEndTime: utcDate
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/leagueManager/CreateSpecialAuction', model);
-        this.notifyAction('Special auction created for: ' + this.specialAuctionMasterGame.gameName);
+        await leagueManagerClient.createSpecialAuction(request);
+        const gameName = this.specialAuctionMasterGame.gameName;
+        (this.$refs.specialAuctionsModalRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction('Special auction created for: ' + gameName);
         this.clearData();
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when creating the special auction.');
+      } finally {
+        this.isBusy = false;
       }
     },
-    async cancelSpecialAuction(masterGameYear) {
-      const model = {
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year,
+    async cancelSpecialAuction(masterGameYear: MasterGameYearViewModel): Promise<void> {
+      const request: CancelSpecialAuctionRequest = {
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year,
         masterGameID: masterGameYear.masterGameID
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/leagueManager/CancelSpecialAuction', model);
-        this.notifyAction('Cancelled special auction for: ' + masterGameYear.gameName);
+        await leagueManagerClient.cancelSpecialAuction(request);
+        await this.notifyAction('Cancelled special auction for: ' + masterGameYear.gameName);
         this.clearData();
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when cancelling the special auction.');
+      } finally {
+        this.isBusy = false;
       }
     },
-    async searchGame() {
+    async searchGame(): Promise<void> {
       this.specialAuctionMasterGame = null;
       this.possibleMasterGames = [];
 
-      const endpointQuery = '/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID;
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        const response = await axios.get(endpointQuery);
-        this.possibleMasterGames = response.data;
+        this.possibleMasterGames = await leagueClient.possibleMasterGames(this.searchGameName, this.requiredLeagueYear.year, this.requiredLeagueYear.leagueID);
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when searching.');
+      } finally {
+        this.isBusy = false;
       }
     },
-    clearData() {
+    clearData(): void {
       this.searchGameName = '';
+      this.scheduledEndTime = '';
       this.specialAuctionMasterGame = null;
       this.possibleMasterGames = [];
       this.errorInfo = '';
     },
-    newGameSelected() {
+    newGameSelected(): void {
       this.errorInfo = '';
     }
   }
-};
+});
 </script>
+
 <style scoped>
-.select-cell {
-  text-align: center;
-}
 .game-search-input {
   margin-bottom: 15px;
 }
