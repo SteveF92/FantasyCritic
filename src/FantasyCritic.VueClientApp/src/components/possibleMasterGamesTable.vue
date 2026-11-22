@@ -86,7 +86,8 @@ export default defineComponent({
     return {
       perPage: 10,
       currentPage: 1,
-      sortBy: [{ key: 'masterGame.dateAdjustedHypeFactor', order: 'desc' }]
+      // No default sort: the server returns the games in order of how well they match the search.
+      sortBy: []
     };
   },
   computed: {
