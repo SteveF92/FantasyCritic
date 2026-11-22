@@ -1,13 +1,14 @@
 <template>
-  <b-modal id="claimGameForm" ref="claimGameFormRef" size="lg" title="Add Publisher Game" no-footer @hidden="clearData">
+  <b-modal id="manager-claim-game-form" ref="managerClaimGameFormRef" size="lg" title="Add Publisher Game" no-footer @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-warning">Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be adding games to player's rosters.</div>
     <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
       <div class="form-group">
-        <label for="claimGameName" class="control-label">Game Name</label>
+        <label for="searchGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
           <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
+            <b-button variant="info" :disabled="!searchGameName || isBusy" @click="searchGame">Search Game</b-button>
           </span>
         </div>
         <possibleMasterGamesTable
@@ -34,7 +35,7 @@
         </div>
 
         <div v-if="claimMasterGame">
-          <h3 for="claimMasterGame" class="selected-game text-black">Selected Game:</h3>
+          <h3 class="selected-game text-black">Selected Game:</h3>
           <masterGameSummary :master-game="claimMasterGame"></masterGameSummary>
         </div>
       </div>
@@ -42,20 +43,20 @@
     <form method="post" class="form-horizontal" role="form" @submit.prevent="addGame">
       <div class="form-group">
         <label for="claimPublisher" class="control-label">Publisher</label>
-        <b-form-select v-model="claimPublisher">
-          <option v-for="publisher in publishers" :key="publisher.publisherID" :value="publisher">
+        <b-form-select id="claimPublisher" v-model="claimPublisher">
+          <option v-for="publisher in requiredLeagueYear.publishers" :key="publisher.publisherID" :value="publisher">
             {{ publisher.publisherName }}
           </option>
         </b-form-select>
       </div>
       <div class="plain-check">
         <span>
-          <label class="plain-check-label">Counter Pick</label>
-          <input v-model="claimCounterPick" class="plain-check-input override-checkbox" type="checkbox" />
+          <label for="claimCounterPick" class="plain-check-label">Counter Pick</label>
+          <input id="claimCounterPick" v-model="claimCounterPick" class="plain-check-input override-checkbox" type="checkbox" />
         </span>
       </div>
       <div>
-        <input v-if="formIsValid" type="submit" class="btn btn-primary full-width-button" value="Add game to publisher" />
+        <input v-if="formIsValid" type="submit" class="btn btn-primary full-width-button" value="Add game to publisher" :disabled="isBusy" />
       </div>
       <div v-if="claimResult && !claimResult.success" class="alert claim-error" :class="{ 'alert-danger': !claimResult.showAsWarning, 'alert-warning': claimResult.showAsWarning }">
         <h3 v-if="claimResult.showAsWarning" class="alert-heading">Warning!</h3>
@@ -74,7 +75,7 @@
         <div v-if="claimResult.noEligibleSpaceError" class="plain-check">
           <div class="text-white">This game is going to end up in an ineligible slot.</div>
           <span>
-            <label class="text-white">Do you want add this game anyway anyway?</label>
+            <label class="text-white">Do you want to add this game anyway?</label>
             <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
           </span>
         </div>
@@ -83,23 +84,50 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import {
+  leagueClient,
+  leagueManagerClient,
+  type ClaimGameRequest,
+  type ManagerClaimResultViewModel,
+  type MasterGameYearViewModel,
+  type PossibleMasterGameYearViewModel,
+  type PublisherViewModel
+} from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 
-export default {
+interface ManagerClaimGameFormData {
+  searchGameName: string;
+  claimUnlistedGame: string;
+  claimPublisher: PublisherViewModel | null;
+  claimMasterGame: MasterGameYearViewModel | null;
+  claimResult: ManagerClaimResultViewModel | null;
+  claimOverride: boolean;
+  claimCounterPick: boolean;
+  possibleMasterGames: PossibleMasterGameYearViewModel[];
+  searched: boolean;
+  showingUnlistedField: boolean;
+  allowIneligibleSlot: boolean;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   components: {
     PossibleMasterGamesTable,
     MasterGameSummary
   },
-  data() {
+  data(): ManagerClaimGameFormData {
     return {
-      searchGameName: null,
-      claimUnlistedGame: null,
+      searchGameName: '',
+      claimUnlistedGame: '',
       claimPublisher: null,
       claimMasterGame: null,
       claimResult: null,
@@ -108,73 +136,70 @@ export default {
       possibleMasterGames: [],
       searched: false,
       showingUnlistedField: false,
-      allowIneligibleSlot: false
+      allowIneligibleSlot: false,
+      isBusy: false,
+      errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'publishers']),
-    formIsValid() {
-      return (this.claimUnlistedGame || this.claimMasterGame) && this.claimPublisher;
+    ...mapState(useLeagueStore, ['requiredLeagueYear']),
+    formIsValid(): boolean {
+      return (!!this.claimUnlistedGame || !!this.claimMasterGame) && !!this.claimPublisher;
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    searchGame() {
+    async searchGame(): Promise<void> {
       this.clearDataExceptSearch();
+
       this.isBusy = true;
-      axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.publishers[0].leagueID)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.searched = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+      try {
+        this.possibleMasterGames = await leagueClient.possibleMasterGames(this.searchGameName, this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID);
+        this.searched = true;
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when searching.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    addGame() {
-      let gameName = '';
-      if (this.claimMasterGame !== null) {
-        gameName = this.claimMasterGame.gameName;
-      } else if (this.claimUnlistedGame !== null) {
-        gameName = this.claimUnlistedGame;
+    async addGame(): Promise<void> {
+      const publisher = this.claimPublisher;
+      if (!publisher) {
+        return;
       }
 
-      let masterGameID = null;
-      if (this.claimMasterGame !== null) {
-        masterGameID = this.claimMasterGame.masterGameID;
-      }
-
-      const request = {
-        publisherID: this.claimPublisher.publisherID,
+      const gameName = this.claimMasterGame?.gameName ?? this.claimUnlistedGame;
+      const request: ClaimGameRequest = {
+        publisherID: publisher.publisherID,
         gameName: gameName,
         counterPick: this.claimCounterPick,
-        masterGameID: masterGameID,
+        masterGameID: this.claimMasterGame?.masterGameID,
         managerOverride: this.claimOverride,
         allowIneligibleSlot: this.allowIneligibleSlot
       };
 
-      axios
-        .post('/api/leagueManager/ManagerClaimGame', request)
-        .then((response) => {
-          this.claimResult = response.data;
-          if (!this.claimResult.success) {
-            return;
-          }
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        this.claimResult = await leagueManagerClient.managerClaimGame(request);
+        if (!this.claimResult.success) {
+          return;
+        }
 
-          this.$refs.claimGameFormRef.hide();
-          this.notifyAction(gameName + ' added to ' + this.claimPublisher.publisherName);
-          this.clearData();
-        })
-        .catch(() => {});
+        (this.$refs.managerClaimGameFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction(gameName + ' added to ' + publisher.publisherName);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when adding the game.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    showUnlistedField() {
+    showUnlistedField(): void {
       this.showingUnlistedField = true;
-      this.draftUnlistedGame = this.searchGameName;
+      this.claimUnlistedGame = this.searchGameName;
     },
-    clearDataExceptSearch() {
-      this.claimUnlistedGame = null;
+    clearDataExceptSearch(): void {
+      this.claimUnlistedGame = '';
       this.claimMasterGame = null;
       this.claimResult = null;
       this.claimOverride = false;
@@ -183,17 +208,22 @@ export default {
       this.showingUnlistedField = false;
       this.claimCounterPick = false;
       this.claimPublisher = null;
+      this.allowIneligibleSlot = false;
+      this.errorInfo = '';
     },
-    clearData() {
+    clearData(): void {
       this.clearDataExceptSearch();
-      this.searchGameName = null;
+      this.searchGameName = '';
     },
-    newGameSelected() {
+    newGameSelected(): void {
       this.claimResult = null;
+      this.claimOverride = false;
+      this.allowIneligibleSlot = false;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .claim-error {
   margin-top: 10px;

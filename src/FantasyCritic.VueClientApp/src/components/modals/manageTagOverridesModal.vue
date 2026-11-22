@@ -1,7 +1,8 @@
 <template>
-  <b-modal id="manageTagOverridesModal" ref="tagOverridesModalRef" size="lg" title="Manage Tag Overrides" no-footer @hidden="clearData">
+  <b-modal id="manage-tag-overrides-modal" size="lg" title="Manage Tag Overrides" no-footer @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-info">This option will allow you to override the tags of a game to whatever you want, if you disagree with how the site has classified something.</div>
-    <div v-if="leagueYear.tagOverrides.length > 0">
+    <div v-if="requiredLeagueYear.tagOverrides.length > 0">
       <table class="table table-bordered table-striped">
         <thead>
           <tr class="bg-primary">
@@ -11,7 +12,7 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="tagOverride in leagueYear.tagOverrides" :key="tagOverride.masterGame.masterGameID">
+          <tr v-for="tagOverride in requiredLeagueYear.tagOverrides" :key="tagOverride.masterGame.masterGameID">
             <td>{{ tagOverride.masterGame.gameName }}</td>
             <td>
               <span v-for="tag in tagOverride.tags" :key="tag">
@@ -19,7 +20,7 @@
               </span>
             </td>
             <td class="select-cell">
-              <b-button variant="danger" @click="resetTags(tagOverride)">Reset</b-button>
+              <b-button variant="danger" :disabled="isBusy" @click="resetTags(tagOverride)">Reset</b-button>
             </td>
           </tr>
         </tbody>
@@ -32,7 +33,7 @@
         <div class="input-group game-search-input">
           <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
-            <b-button variant="info" :disabled="!searchGameName" @click="searchGame">Search Game</b-button>
+            <b-button variant="info" :disabled="!searchGameName || isBusy" @click="searchGame">Search Game</b-button>
           </span>
         </div>
         <possibleMasterGamesTable
@@ -42,120 +43,136 @@
           @update:model-value="newGameSelected"></possibleMasterGamesTable>
       </div>
     </form>
-    <label v-if="overrideMasterGame" for="overrideMasterGame" class="control-label">Selected Game: {{ overrideMasterGame.gameName }}</label>
+    <label v-if="overrideMasterGame" class="control-label">Selected Game: {{ overrideMasterGame.gameName }}</label>
     <div v-if="overrideMasterGame">
       <masterGameTagSelector v-model="chosenTags"></masterGameTagSelector>
-      <b-button variant="info" class="set-tags-button" size="sm" @click="setTags(overrideMasterGame)">Set Tags</b-button>
-    </div>
-    <br />
-    <div v-if="errorInfo" class="alert alert-danger">
-      <h3 class="alert-heading">Error!</h3>
-      <p class="text-white">{{ errorInfo }}</p>
+      <b-button variant="info" class="set-tags-button" size="sm" :disabled="isBusy" @click="setTags(overrideMasterGame)">Set Tags</b-button>
     </div>
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
 
+import {
+  leagueClient,
+  leagueManagerClient,
+  type MasterGameTagViewModel,
+  type MasterGameYearViewModel,
+  type PossibleMasterGameYearViewModel,
+  type TagOverrideRequest,
+  type TagOverrideViewModel
+} from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 
-export default {
+interface ManageTagOverridesModalData {
+  searchGameName: string;
+  overrideMasterGame: MasterGameYearViewModel | null;
+  possibleMasterGames: PossibleMasterGameYearViewModel[];
+  chosenTags: MasterGameTagViewModel[];
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   components: {
     PossibleMasterGamesTable,
     MasterGameTagBadge,
     MasterGameTagSelector
   },
-  data() {
+  data(): ManageTagOverridesModalData {
     return {
       searchGameName: '',
       overrideMasterGame: null,
       possibleMasterGames: [],
-      errorInfo: '',
-      chosenTags: []
+      chosenTags: [],
+      isBusy: false,
+      errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear']),
-    formIsValid() {
-      return this.overrideMasterGame;
-    }
+    ...mapState(useLeagueStore, ['requiredLeagueYear'])
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    resetTags(tagOverride) {
-      const model = {
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year,
+    async resetTags(tagOverride: TagOverrideViewModel): Promise<void> {
+      const request: TagOverrideRequest = {
+        leagueID: this.requiredLeagueYear.league.leagueID,
+        year: this.requiredLeagueYear.year,
         masterGameID: tagOverride.masterGame.masterGameID,
         tags: []
       };
-      axios
-        .post('/api/leagueManager/SetGameTagOverride', model)
-        .then(() => {
-          this.notifyAction(tagOverride.masterGame.gameName + " had it's tags reset.");
-        })
-        .catch((response) => {
-          this.errorInfo = response.response.data;
-        });
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueManagerClient.setGameTagOverride(request);
+        await this.notifyAction(tagOverride.masterGame.gameName + ' had its tags reset.');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when resetting the tags.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    searchGame() {
+    async searchGame(): Promise<void> {
       this.overrideMasterGame = null;
       this.possibleMasterGames = [];
-      axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-        })
-        .catch(() => {});
-    },
-    setTags(masterGame) {
-      let tagNames = this.chosenTags.map((x) => x.name);
 
-      const model = {
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year,
-        masterGameID: masterGame.masterGameID,
-        tags: tagNames
-      };
-      axios
-        .post('/api/leagueManager/SetGameTagOverride', model)
-        .then(() => {
-          this.notifyAction(masterGame.gameName + " had it's tags overriden.");
-          this.clearData();
-        })
-        .catch((response) => {
-          this.errorInfo = response.response.data;
-        });
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        this.possibleMasterGames = await leagueClient.possibleMasterGames(this.searchGameName, this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when searching.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    clearData() {
+    async setTags(masterGame: MasterGameYearViewModel): Promise<void> {
+      const request: TagOverrideRequest = {
+        leagueID: this.requiredLeagueYear.league.leagueID,
+        year: this.requiredLeagueYear.year,
+        masterGameID: masterGame.masterGameID,
+        tags: this.chosenTags.map((x) => x.name)
+      };
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueManagerClient.setGameTagOverride(request);
+        await this.notifyAction(masterGame.gameName + ' had its tags overridden.');
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when setting the tags.');
+      } finally {
+        this.isBusy = false;
+      }
+    },
+    clearData(): void {
       this.searchGameName = '';
       this.overrideMasterGame = null;
       this.possibleMasterGames = [];
-      this.errorInfo = '';
       this.chosenTags = [];
+      this.errorInfo = '';
     },
-    newGameSelected() {
+    newGameSelected(): void {
       this.errorInfo = '';
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .select-cell {
   text-align: center;
 }
 .game-search-input {
   margin-bottom: 15px;
-}
-
-.eligibility-set-buttons {
-  display: flex;
-  justify-content: space-around;
 }
 .set-tags-button {
   margin-top: 10px;

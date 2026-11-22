@@ -1,97 +1,95 @@
 <template>
-  <div>
-    <form class="form-horizontal" no-footer>
-      <b-modal id="removePublisherGame" ref="removePublisherGameRef" size="lg" title="Remove Publisher Game" no-footer @hidden="clearData">
-        <div class="alert alert-warning">
-          Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be removing games from player's rosters.
-        </div>
-        <div class="form-group">
-          <label for="claimPublisher" class="control-label">Publisher</label>
-          <b-form-select v-model="removeGamePublisher">
-            <option v-for="publisher in leagueYear.publishers" :key="publisher.publisherID" :value="publisher">
-              {{ publisher.publisherName }}
-            </option>
-          </b-form-select>
-          <div v-if="removeGamePublisher">
-            <label for="removeGame" class="control-label">Game</label>
-            <b-form-select v-model="removeGame">
-              <option v-for="publisherGame in removeGamePublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
-                {{ formatGameOption(publisherGame) }}
-              </option>
-            </b-form-select>
-          </div>
-        </div>
+  <b-modal id="remove-game-form" ref="removeGameFormRef" size="lg" title="Remove Publisher Game" no-footer @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+    <div class="alert alert-warning">
+      Warning! This feature is intended to fix mistakes and other exceptional circumstances. In general, managers should not be removing games from player's rosters.
+    </div>
+    <div class="form-group">
+      <label for="removeGamePublisher" class="control-label">Publisher</label>
+      <b-form-select id="removeGamePublisher" v-model="removeGamePublisher">
+        <option v-for="publisher in requiredLeagueYear.publishers" :key="publisher.publisherID" :value="publisher">
+          {{ publisher.publisherName }}
+        </option>
+      </b-form-select>
+      <div v-if="removeGamePublisher">
+        <label for="removeGame" class="control-label">Game</label>
+        <b-form-select id="removeGame" v-model="removeGame">
+          <option v-for="publisherGame in removeGamePublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
+            {{ formatGameOption(publisherGame) }}
+          </option>
+        </b-form-select>
+      </div>
+    </div>
 
-        <div v-if="removeGame">
-          <b-button variant="primary" class="full-width-button" @click="removePublisherGame">Remove Game</b-button>
-          <div v-if="errorInfo" class="alert alert-danger remove-error">
-            <h3 class="alert-heading">Error!</h3>
-            <p class="text-white">{{ errorInfo }}</p>
-          </div>
-        </div>
-      </b-modal>
-    </form>
-  </div>
+    <div v-if="removeGame">
+      <b-button variant="primary" class="full-width-button" :disabled="isBusy" @click="removePublisherGame">Remove Game</b-button>
+    </div>
+  </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueManagerClient, type GameRemoveRequest, type PublisherGameViewModel, type PublisherViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
+interface RemoveGameFormData {
+  removeGamePublisher: PublisherViewModel | null;
+  removeGame: PublisherGameViewModel | null;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear'])
+    ...mapState(useLeagueStore, ['requiredLeagueYear'])
   },
-  data() {
+  data(): RemoveGameFormData {
     return {
       removeGamePublisher: null,
       removeGame: null,
+      isBusy: false,
       errorInfo: ''
     };
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    formatGameOption(publisherGame) {
-      if (!publisherGame) {
-        return '';
-      }
-
+    formatGameOption(publisherGame: PublisherGameViewModel): string {
       return publisherGame.counterPick ? `${publisherGame.gameName} (Counter Pick)` : publisherGame.gameName;
     },
-    removePublisherGame() {
-      const model = {
-        publisherGameID: this.removeGame.publisherGameID,
-        publisherID: this.removeGamePublisher.publisherID
+    async removePublisherGame(): Promise<void> {
+      const publisher = this.removeGamePublisher;
+      const game = this.removeGame;
+      if (!publisher || !game) {
+        return;
+      }
+
+      const request: GameRemoveRequest = {
+        publisherGameID: game.publisherGameID,
+        publisherID: publisher.publisherID
       };
-      axios
-        .post('/api/leagueManager/RemovePublisherGame', model)
-        .then(() => {
-          this.$refs.removePublisherGameRef.hide();
-          this.notifyAction(this.removeGame.gameName + ' removed from ' + this.removeGamePublisher.publisherName);
-          this.clearData();
-        })
-        .catch((response) => {
-          this.errorInfo = response.response.data;
-        });
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueManagerClient.removePublisherGame(request);
+
+        (this.$refs.removeGameFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction(game.gameName + ' removed from ' + publisher.publisherName);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when removing the game.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    clearData() {
+    clearData(): void {
       this.removeGamePublisher = null;
       this.removeGame = null;
+      this.errorInfo = '';
     }
   }
-};
+});
 </script>
-<style scoped>
-.claim-error {
-  margin-top: 10px;
-}
-
-.game-search-input {
-  margin-bottom: 15px;
-}
-
-.remove-error {
-  margin-top: 15px;
-}
-</style>

@@ -126,8 +126,8 @@
               <li v-if="!playStarted" v-b-modal="'create-publisher-for-user-form'" class="fake-link action">Create Publisher For User</li>
               <li v-if="hasPendingOrActiveDraft" v-b-modal="'manager-set-auto-draft-form'" class="fake-link action">Edit Player Auto Draft</li>
               <li v-if="postDraftPlayable" v-b-modal="'manager-edit-publishers-form'" class="fake-link action">Edit Publishers</li>
-              <li v-if="postDraftEditable" v-b-modal="'claimGameForm'" class="fake-link action">Add Publisher Game</li>
-              <li v-if="postDraftEditable" v-b-modal="'removePublisherGame'" class="fake-link action">Remove Publisher Game</li>
+              <li v-if="postDraftEditable" v-b-modal="'manager-claim-game-form'" class="fake-link action">Add Publisher Game</li>
+              <li v-if="postDraftEditable" v-b-modal="'remove-game-form'" class="fake-link action">Remove Publisher Game</li>
               <li v-if="postDraftPlayable" v-b-modal="'reassign-publisher-modal'" class="fake-link action">Reassign a Publisher</li>
               <li v-if="!leagueYear.supportedYear.finished && !draftIsActiveOrPaused" v-b-modal="'disconnect-player-modal'" class="fake-link action">Disconnect a Player</li>
               <li v-if="!leagueYear.supportedYear.finished && !draftIsActiveOrPaused && hasPublisherWithNoPlayer" v-b-modal="'remove-publisher-modal'" class="fake-link action">Remove a Publisher</li>
@@ -138,10 +138,10 @@
             <strong>Override Actions</strong>
             <ul class="actions-list">
               <li v-if="postDraftEditable" v-b-modal="'associateGameForm'" class="fake-link action">Associate Unlinked Game</li>
-              <li v-if="postDraftEditable" v-b-modal="'manuallyScorePublisherGame'" class="fake-link action">Score a Game Manually</li>
-              <li v-if="postDraftPlayable" v-b-modal="'manuallySetWillNotRelease'" class="fake-link action">Override "Will not Release"</li>
-              <li v-if="postDraftPlayable" v-b-modal="'manageEligibilityOverridesModal'" class="fake-link action">Override Game Eligibility</li>
-              <li v-if="postDraftPlayable" v-b-modal="'manageTagOverridesModal'" class="fake-link action">Override Game Tags</li>
+              <li v-if="postDraftEditable" v-b-modal="'manually-score-game-form'" class="fake-link action">Score a Game Manually</li>
+              <li v-if="postDraftPlayable" v-b-modal="'manually-set-will-not-release-form'" class="fake-link action">Override "Will not Release"</li>
+              <li v-if="postDraftPlayable" v-b-modal="'manage-eligibility-overrides-modal'" class="fake-link action">Override Game Eligibility</li>
+              <li v-if="postDraftPlayable" v-b-modal="'manage-tag-overrides-modal'" class="fake-link action">Override Game Tags</li>
             </ul>
           </li>
         </ul>
