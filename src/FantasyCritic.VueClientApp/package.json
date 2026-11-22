@@ -26,7 +26,6 @@
     "@microsoft/signalr": "^10.0.11",
     "@vee-validate/i18n": "^4.15.1",
     "@vee-validate/rules": "^4.15.1",
-    "axios": "^1.21.0",
     "bootstrap": "^5.3.8",
     "bootstrap-vue-next": "^1.2.3",
     "chart.js": "^4.6.1",

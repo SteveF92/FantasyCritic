@@ -46,6 +46,8 @@ export default [
     rules: {
       "vue/multi-word-component-names": "off", // Retaining rules from original config
       "vue/valid-v-slot": ["error", { allowModifiers: true }],
+      // Every component's script is TypeScript; a new one without lang="ts" would go unchecked.
+      "vue/block-lang": ["error", { script: { lang: "ts" } }],
       // Typed emits are declared as validators whose parameters exist only for their types:
       // emits: { gameSelected: (_game: MasterGameYearViewModel) => true }
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
