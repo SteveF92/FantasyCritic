@@ -1,8 +1,6 @@
 <template>
-  <b-modal id="removePlayerModal" ref="removePlayerModalRef" title="Remove a Player From the League" @hidden="clearData">
-    <div v-show="errorInfo" class="alert alert-danger">
-      {{ errorInfo }}
-    </div>
+  <b-modal id="remove-player-modal" ref="removePlayerModalRef" title="Remove a Player From the League" @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
     <div class="alert alert-info">
       This option will let you remove a player from the league, provided they have no publishers, either in the current year, or in previous years.
@@ -22,50 +20,70 @@
     </div>
 
     <template #footer>
-      <input type="submit" class="btn btn-danger" value="Remove Player" :disabled="!playerToRemove" @click="removePlayer" />
+      <input type="submit" class="btn btn-danger" value="Remove Player" :disabled="!playerToRemove || isBusy" @click="removePlayer" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueManagerClient, type PlayerViewModel, type RemovePlayerFromLeagueRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface RemovePlayerModalData {
+  playerToRemove: PlayerViewModel | null;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): RemovePlayerModalData {
     return {
       playerToRemove: null,
+      isBusy: false,
       errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['league']),
-    removablePlayers() {
-      return this.league.players.filter((x) => x.userID !== this.league.leagueManager.userID);
+    ...mapState(useLeagueStore, ['requiredLeague']),
+    removablePlayers(): PlayerViewModel[] {
+      return (this.requiredLeague.players ?? []).filter((x) => x.userID !== this.requiredLeague.leagueManager.userID);
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    async removePlayer() {
+    async removePlayer(): Promise<void> {
       const player = this.playerToRemove;
-      const model = {
-        leagueID: this.league.leagueID,
+      if (!player) {
+        return;
+      }
+
+      const request: RemovePlayerFromLeagueRequest = {
+        leagueID: this.requiredLeague.leagueID,
         userID: player.userID
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/leagueManager/RemovePlayerFromLeague', model);
-        this.$refs.removePlayerModalRef.hide();
-        this.notifyAction(`${player.displayName} has been removed from the league.`);
+        await leagueManagerClient.removePlayerFromLeague(request);
+
+        (this.$refs.removePlayerModalRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction(`${player.displayName} has been removed from the league.`);
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when removing the player.');
+      } finally {
+        this.isBusy = false;
       }
     },
-    clearData() {
+    clearData(): void {
       this.playerToRemove = null;
       this.errorInfo = '';
     }
   }
-};
+});
 </script>

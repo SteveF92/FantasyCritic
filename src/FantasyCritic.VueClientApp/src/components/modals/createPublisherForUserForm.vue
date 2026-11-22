@@ -1,12 +1,13 @@
 <template>
-  <b-modal id="createPublisherForUserForm" ref="createPublisherForUserFormRef" title="Create Publisher For User" @hidden="clearData">
+  <b-modal id="create-publisher-for-user-form" ref="createPublisherForUserFormRef" title="Create Publisher For User" @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-warning">It is better that the players in your league create their own publishers, but if they cannot, you can create one for them here. They can rename it later.</div>
 
     <div class="form-group">
-      <label for="playerToRemove" class="control-label">Player</label>
-      <b-form-select v-model="playerToCreatePublisherFor">
+      <label for="playerToCreatePublisherFor" class="control-label">Player</label>
+      <b-form-select id="playerToCreatePublisherFor" v-model="playerToCreatePublisherFor">
         <option v-for="player in playersWithoutPublishers" :key="player.userID" :value="player">
-          {{ player.user.displayName }}
+          {{ player.displayName }}
         </option>
       </b-form-select>
     </div>
@@ -18,61 +19,75 @@
       </div>
     </div>
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Create Publisher" :disabled="!publisherName" @click="createPublisher" />
+      <input type="submit" class="btn btn-primary" value="Create Publisher" :disabled="!playerToCreatePublisherFor || !publisherName.trim() || isBusy" @click="createPublisher" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueManagerClient, type CreatePublisherForUserRequest, type PlayerViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface CreatePublisherForUserFormData {
+  playerToCreatePublisherFor: PlayerViewModel | null;
+  publisherName: string;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): CreatePublisherForUserFormData {
     return {
       playerToCreatePublisherFor: null,
       publisherName: '',
+      isBusy: false,
       errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear']),
-    playersWithoutPublishers() {
-      let playersToReturn = [];
-      let userIDsWithPublishers = this.leagueYear.publishers.map((x) => x.userID);
-      let playersWithUsers = this.leagueYear.players.filter((x) => !!x.user);
-      for (const player of playersWithUsers) {
-        if (userIDsWithPublishers.includes(player.user.userID)) {
-          continue;
-        }
-        playersToReturn.push(player);
-      }
-      return playersToReturn;
+    ...mapState(useLeagueStore, ['requiredLeagueYear']),
+    playersWithoutPublishers(): PlayerViewModel[] {
+      const userIDsWithPublishers = this.requiredLeagueYear.publishers.map((x) => x.userID);
+      return this.requiredLeagueYear.players.flatMap((x) => (x.user && !userIDsWithPublishers.includes(x.user.userID) ? [x.user] : []));
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    createPublisher() {
-      const model = {
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year,
-        userID: this.playerToCreatePublisherFor.user.userID,
+    async createPublisher(): Promise<void> {
+      if (!this.playerToCreatePublisherFor) {
+        return;
+      }
+
+      const request: CreatePublisherForUserRequest = {
+        leagueID: this.requiredLeagueYear.league.leagueID,
+        year: this.requiredLeagueYear.year,
+        userID: this.playerToCreatePublisherFor.userID,
         publisherName: this.publisherName.trim()
       };
-      axios
-        .post('/api/leagueManager/createPublisherForUser', model)
-        .then(() => {
-          this.$refs.createPublisherForUserFormRef.hide();
-          this.notifyAction('Publisher ' + this.publisherName + ' has been created.');
-          this.clearData();
-        })
-        .catch(() => {});
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueManagerClient.createPublisherForUser(request);
+
+        (this.$refs.createPublisherForUserFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction('Publisher ' + request.publisherName + ' has been created.');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when creating the publisher.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    clearData() {
+    clearData(): void {
       this.publisherName = '';
       this.playerToCreatePublisherFor = null;
+      this.errorInfo = '';
     }
   }
-};
+});
 </script>

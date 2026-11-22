@@ -1,9 +1,7 @@
 <template>
   <ValidationForm v-slot="{ meta }" as="">
-    <b-modal id="invitePlayer" ref="invitePlayerRef" title="Invite a Player" @hidden="clearData" @show="fetchInviteLinks">
-      <div v-show="errorInfo" class="alert alert-danger">
-        {{ errorInfo }}
-      </div>
+    <b-modal id="invite-player-form" ref="invitePlayerFormRef" title="Invite a Player" @hidden="clearData" @show="fetchInviteLinks">
+      <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
       <div v-if="playStarted" class="alert alert-warning">
         This year has already been started. Any players invited now will be marked as "inactive". The only reason to do this is if you intend to use the "Reassign Publisher" option.
       </div>
@@ -11,12 +9,12 @@
         <h3 class="text-black">Invite Links</h3>
         <label>This is the easiest way to invite players. Just send one link to anyone you want to invite.</label>
         <div v-for="inviteLink in inviteLinks" :key="inviteLink.inviteID" class="invite-link">
-          <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly />
+          <input type="text" class="form-control input" :value="inviteLink.fullInviteLink" readonly aria-label="Invite link" />
           <b-button variant="info" size="sm" @click="copyInviteLink(inviteLink)">Copy</b-button>
-          <b-button variant="danger" size="sm" @click="deleteInviteLink(inviteLink)">Delete</b-button>
+          <b-button variant="danger" size="sm" :disabled="isBusy" @click="deleteInviteLink(inviteLink)">Delete</b-button>
         </div>
         <br />
-        <b-button variant="primary" size="sm" @click="createInviteLink()">Create Invite Link</b-button>
+        <b-button variant="primary" size="sm" :disabled="isBusy" @click="createInviteLink()">Create Invite Link</b-button>
       </div>
       <hr />
       <div>
@@ -47,116 +45,133 @@
         </div>
       </div>
       <template #footer>
-        <input type="submit" class="btn btn-primary" value="Send Invite" :disabled="!meta.valid || !valuesEntered" @click="invitePlayer" />
+        <input type="submit" class="btn btn-primary" value="Send Invite" :disabled="!meta.valid || !valuesEntered || isBusy" @click="invitePlayer" />
       </template>
     </b-modal>
   </ValidationForm>
 </template>
-<script>
-import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
 
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapActions, mapState } from 'pinia';
+import type { BModal } from 'bootstrap-vue-next';
+
+import { leagueManagerClient, type CreateInviteLinkRequest, type CreateInviteRequest, type DeleteInviteLinkRequest, type LeagueInviteLinkViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { makeToast } from '@/utilities/toast';
 
-export default {
-  data() {
+interface InvitePlayerFormData {
+  inviteEmail: string;
+  inviteDisplayName: string;
+  // A number input's v-model gives '' when the box is empty.
+  inviteDisplayNumber: number | '';
+  inviteLinks: LeagueInviteLinkViewModel[];
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): InvitePlayerFormData {
     return {
       inviteEmail: '',
       inviteDisplayName: '',
       inviteDisplayNumber: '',
-      inviteLinks: null,
+      inviteLinks: [],
+      isBusy: false,
       errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['league', 'playStarted']),
-    valuesEntered() {
-      return this.inviteEmail || (this.inviteDisplayName && this.inviteDisplayNumber);
+    ...mapState(useLeagueStore, ['requiredLeague', 'playStarted']),
+    valuesEntered(): boolean {
+      return !!this.inviteEmail || (!!this.inviteDisplayName && this.inviteDisplayNumber !== '');
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    invitePlayer() {
-      const model = {
-        leagueID: this.league.leagueID,
+    async invitePlayer(): Promise<void> {
+      const request: CreateInviteRequest = {
+        leagueID: this.requiredLeague.leagueID,
         inviteEmail: this.inviteEmail,
         inviteDisplayName: this.inviteDisplayName,
-        inviteDisplayNumber: this.inviteDisplayNumber === '' ? null : Number(this.inviteDisplayNumber)
+        inviteDisplayNumber: this.inviteDisplayNumber === '' ? undefined : this.inviteDisplayNumber
       };
-      axios
-        .post('/api/leagueManager/InvitePlayer', model)
-        .then(() => {
-          this.$refs.invitePlayerRef.hide();
-          let inviteName = this.inviteEmail;
-          if (this.inviteDisplayName) {
-            inviteName = this.inviteDisplayName;
-          }
-          this.notifyAction('Invite was sent to ' + inviteName);
-          this.inviteEmail = '';
-        })
-        .catch((error) => {
-          this.errorInfo = error.response.data;
-        });
+      const inviteName = this.inviteDisplayName || this.inviteEmail;
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueManagerClient.invitePlayer(request);
+
+        (this.$refs.invitePlayerFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction('Invite was sent to ' + inviteName);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when sending the invite.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    createInviteLink() {
-      const model = {
-        leagueID: this.league.leagueID
+    async createInviteLink(): Promise<void> {
+      const request: CreateInviteLinkRequest = {
+        leagueID: this.requiredLeague.leagueID
       };
-      axios
-        .post('/api/leagueManager/CreateInviteLink', model)
-        .then(() => {
-          this.fetchInviteLinks();
-        })
-        .catch((error) => {
-          this.errorInfo = error.response.data;
-        });
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueManagerClient.createInviteLink(request);
+        await this.fetchInviteLinks();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when creating the invite link.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    async copyInviteLink(inviteLink) {
+    async copyInviteLink(inviteLink: LeagueInviteLinkViewModel): Promise<void> {
       await navigator.clipboard.writeText(inviteLink.fullInviteLink);
       makeToast('Invite Link copied to clipboard.');
     },
-    deleteInviteLink(inviteLink) {
-      const model = {
-        leagueID: this.league.leagueID,
+    async deleteInviteLink(inviteLink: LeagueInviteLinkViewModel): Promise<void> {
+      const request: DeleteInviteLinkRequest = {
+        leagueID: this.requiredLeague.leagueID,
         inviteID: inviteLink.inviteID
       };
-      axios
-        .post('/api/leagueManager/DeleteInviteLink', model)
-        .then(() => {
-          this.fetchInviteLinks();
-        })
-        .catch((error) => {
-          this.errorInfo = error.response.data;
-        });
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueManagerClient.deleteInviteLink(request);
+        await this.fetchInviteLinks();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when deleting the invite link.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    fetchInviteLinks() {
-      axios
-        .get('/api/leagueManager/InviteLinks/' + this.league.leagueID)
-        .then((response) => {
-          this.inviteLinks = response.data;
-        })
-        .catch(() => {});
+    async fetchInviteLinks(): Promise<void> {
+      try {
+        this.inviteLinks = await leagueManagerClient.inviteLinks(this.requiredLeague.leagueID);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load the invite links.');
+      }
     },
-    clearData() {
+    clearData(): void {
       this.inviteEmail = '';
       this.inviteDisplayName = '';
       this.inviteDisplayNumber = '';
       this.errorInfo = '';
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .email-form {
   margin-bottom: 10px;
 }
 .text-black {
   color: black !important;
-}
-.display-number-label {
-  font-size: 35px;
-  margin-right: 3px;
 }
 .invite-link {
   display: flex;

@@ -1,8 +1,6 @@
 <template>
-  <b-modal id="removePublisherModal" ref="removePublisherModalRef" title="Remove a Publisher" @hidden="clearData">
-    <div v-show="errorInfo" class="alert alert-danger">
-      {{ errorInfo }}
-    </div>
+  <b-modal id="remove-publisher-modal" ref="removePublisherModalRef" title="Remove a Publisher" @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
     <div class="alert alert-info">Only a publisher with no player can be removed. To remove a player's publisher, use "Disconnect a Player" first.</div>
 
@@ -18,63 +16,81 @@
       </b-form-select>
     </div>
 
-    <div v-if="readyToConfirm">
+    <div v-if="publisherToRemove">
       <div class="alert alert-warning">If you are sure you want do this, please type "I acknowledge the implications for my league." below.</div>
       <input v-model="removeConfirmation" type="text" class="form-control input" />
     </div>
 
     <template #footer>
-      <input type="submit" class="btn btn-danger" value="Remove Publisher" :disabled="!readyToRemove" @click="removePublisher" />
+      <input type="submit" class="btn btn-danger" value="Remove Publisher" :disabled="!readyToRemove || isBusy" @click="removePublisher" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueManagerClient, type PublisherViewModel, type RemovePublisherRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface RemovePublisherModalData {
+  publisherToRemove: PublisherViewModel | null;
+  removeConfirmation: string;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): RemovePublisherModalData {
     return {
       publisherToRemove: null,
       removeConfirmation: '',
+      isBusy: false,
       errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['publishers', 'playStarted']),
-    removablePublishers() {
-      return this.publishers.filter((x) => !x.userID);
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'playStarted']),
+    removablePublishers(): PublisherViewModel[] {
+      return this.requiredLeagueYear.publishers.filter((x) => !x.userID);
     },
-    readyToConfirm() {
-      return !!this.publisherToRemove;
-    },
-    readyToRemove() {
-      return this.readyToConfirm && this.removeConfirmation === 'I acknowledge the implications for my league.';
+    readyToRemove(): boolean {
+      return !!this.publisherToRemove && this.removeConfirmation === 'I acknowledge the implications for my league.';
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    async removePublisher() {
+    async removePublisher(): Promise<void> {
       const publisher = this.publisherToRemove;
-      const model = {
+      if (!publisher) {
+        return;
+      }
+
+      const request: RemovePublisherRequest = {
         publisherID: publisher.publisherID
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/leagueManager/RemovePublisher', model);
-        this.$refs.removePublisherModalRef.hide();
-        this.notifyAction(`${publisher.publisherName} has been removed from the league.`);
+        await leagueManagerClient.removePublisher(request);
+
+        (this.$refs.removePublisherModalRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction(`${publisher.publisherName} has been removed from the league.`);
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when removing the publisher.');
+      } finally {
+        this.isBusy = false;
       }
     },
-    clearData() {
+    clearData(): void {
       this.publisherToRemove = null;
-      this.errorInfo = '';
       this.removeConfirmation = '';
+      this.errorInfo = '';
     }
   }
-};
+});
 </script>

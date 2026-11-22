@@ -1,8 +1,6 @@
 <template>
-  <b-modal id="reassignPublisherModal" ref="reassignPublisherModalRef" title="Reassign a Publisher" @hidden="clearData">
-    <div v-show="errorInfo" class="alert alert-danger">
-      {{ errorInfo }}
-    </div>
+  <b-modal id="reassign-publisher-modal" title="Reassign a Publisher" @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
     <div class="alert alert-warning">
       This feature will allow you to replace the user of one of the leagues publishers with a different player who is currently inactive (does not have a publisher for this year). If you need to
@@ -19,15 +17,15 @@
     <div class="form-horizontal">
       <div class="form-group">
         <label for="publisherToReassign" class="control-label">Publisher to Reassign</label>
-        <b-form-select v-model="publisherToReassign">
-          <option v-for="publisher in publishers" :key="publisher.publisherID" :value="publisher">{{ publisher.publisherName }} ({{ publisher.playerName }})</option>
+        <b-form-select id="publisherToReassign" v-model="publisherToReassign">
+          <option v-for="publisher in requiredLeagueYear.publishers" :key="publisher.publisherID" :value="publisher">{{ publisher.publisherName }} ({{ publisher.playerName }})</option>
         </b-form-select>
       </div>
 
       <div v-if="inactiveUsers.length > 0" class="form-group">
         <label for="newUser" class="control-label">New User to Assign Publisher To</label>
-        <b-form-select v-model="newUser">
-          <option v-for="user in inactiveUsers" :key="user.id" :value="user">
+        <b-form-select id="newUser" v-model="newUser">
+          <option v-for="user in inactiveUsers" :key="user.userID" :value="user">
             {{ user.displayName }}
           </option>
         </b-form-select>
@@ -41,77 +39,84 @@
     </div>
 
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Reassign Publisher" @click="reassignPublisher" :disabled="!readyToReassign" />
+      <input type="submit" class="btn btn-primary" value="Reassign Publisher" :disabled="!readyToReassign || isBusy" @click="reassignPublisher" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
 
+import { leagueManagerClient, type PlayerViewModel, type PublisherViewModel, type ReassignPublisherRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface ReassignPublisherModalData {
+  publisherToReassign: PublisherViewModel | null;
+  newUser: PlayerViewModel | null;
+  reassignConfirmation: string;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): ReassignPublisherModalData {
     return {
       publisherToReassign: null,
       newUser: null,
       reassignConfirmation: '',
+      isBusy: false,
       errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'publishers']),
-    readyToConfirm() {
+    ...mapState(useLeagueStore, ['requiredLeagueYear']),
+    readyToConfirm(): boolean {
       return !!this.publisherToReassign && !!this.newUser;
     },
-    readyToReassign() {
+    readyToReassign(): boolean {
       return this.readyToConfirm && this.reassignConfirmation === 'Reassign Publisher';
     },
-    inactiveUsers() {
-      const allPlayers = this.leagueYear.league.players;
-      const activePlayerUserIDs = this.leagueYear.players.filter((x) => !!x.user).map((x) => x.user.userID);
+    inactiveUsers(): PlayerViewModel[] {
+      const allPlayers = this.requiredLeagueYear.league.players ?? [];
+      const activePlayerUserIDs = this.requiredLeagueYear.players.flatMap((x) => (x.user ? [x.user.userID] : []));
       return allPlayers.filter((x) => !activePlayerUserIDs.includes(x.userID));
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    async reassignPublisher() {
-      const model = {
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year,
+    async reassignPublisher(): Promise<void> {
+      if (!this.publisherToReassign || !this.newUser) {
+        return;
+      }
+
+      const request: ReassignPublisherRequest = {
+        leagueID: this.requiredLeagueYear.league.leagueID,
+        year: this.requiredLeagueYear.year,
         publisherID: this.publisherToReassign.publisherID,
         newUserID: this.newUser.userID
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/leagueManager/ReassignPublisher', model);
-        this.notifyAction('Publisher has been reassigned.');
+        await leagueManagerClient.reassignPublisher(request);
+
+        await this.notifyAction('Publisher has been reassigned.');
         this.clearData();
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when reassigning the publisher.');
+      } finally {
+        this.isBusy = false;
       }
     },
-    clearData() {
+    clearData(): void {
       this.publisherToReassign = null;
       this.newUser = null;
+      this.reassignConfirmation = '';
       this.errorInfo = '';
     }
   }
-};
+});
 </script>
-<style scoped>
-.email-form {
-  margin-bottom: 10px;
-}
-.text-black {
-  color: black !important;
-}
-.display-number-label {
-  font-size: 35px;
-  margin-right: 3px;
-}
-.invite-link {
-  display: flex;
-}
-</style>

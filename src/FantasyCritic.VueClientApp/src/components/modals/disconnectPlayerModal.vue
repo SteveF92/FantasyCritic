@@ -1,8 +1,6 @@
 <template>
-  <b-modal id="disconnectPlayerModal" ref="disconnectPlayerModalRef" title="Disconnect a Player" @hidden="clearData">
-    <div v-show="errorInfo" class="alert alert-danger">
-      {{ errorInfo }}
-    </div>
+  <b-modal id="disconnect-player-modal" ref="disconnectPlayerModalRef" title="Disconnect a Player" @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
     <div class="alert alert-warning">
       You can use this option to remove a player from the league.
@@ -24,49 +22,70 @@
     </div>
 
     <template #footer>
-      <input type="submit" class="btn btn-danger" value="Disconnect Player" :disabled="!publisherToDisconnect" @click="disconnectPlayer" />
+      <input type="submit" class="btn btn-danger" value="Disconnect Player" :disabled="!publisherToDisconnect || isBusy" @click="disconnectPlayer" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueManagerClient, type DisconnectPlayerRequest, type PublisherViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface DisconnectPlayerModalData {
+  publisherToDisconnect: PublisherViewModel | null;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): DisconnectPlayerModalData {
     return {
       publisherToDisconnect: null,
+      isBusy: false,
       errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['league', 'publishers']),
-    disconnectablePublishers() {
-      return this.publishers.filter((x) => !!x.userID && x.userID !== this.league.leagueManager.userID);
+    ...mapState(useLeagueStore, ['requiredLeagueYear']),
+    disconnectablePublishers(): PublisherViewModel[] {
+      const managerUserID = this.requiredLeagueYear.league.leagueManager.userID;
+      return this.requiredLeagueYear.publishers.filter((x) => !!x.userID && x.userID !== managerUserID);
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    async disconnectPlayer() {
+    async disconnectPlayer(): Promise<void> {
       const publisher = this.publisherToDisconnect;
-      const model = {
+      if (!publisher) {
+        return;
+      }
+
+      const request: DisconnectPlayerRequest = {
         publisherID: publisher.publisherID
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/leagueManager/DisconnectPlayer', model);
-        this.$refs.disconnectPlayerModalRef.hide();
-        this.notifyAction(`${publisher.playerName} has been disconnected from ${publisher.publisherName}.`);
+        await leagueManagerClient.disconnectPlayer(request);
+
+        (this.$refs.disconnectPlayerModalRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction(`${publisher.playerName} has been disconnected from ${publisher.publisherName}.`);
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when disconnecting the player.');
+      } finally {
+        this.isBusy = false;
       }
     },
-    clearData() {
+    clearData(): void {
       this.publisherToDisconnect = null;
       this.errorInfo = '';
     }
   }
-};
+});
 </script>

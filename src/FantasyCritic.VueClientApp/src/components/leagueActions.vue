@@ -111,7 +111,7 @@
               </li>
               <li v-if="readyToSetDraftOrder" v-b-modal="'editDraftOrderForm'" class="fake-link action">Edit Draft Order</li>
               <li v-if="postDraftPlayable" v-b-modal="'special-auctions-modal'" class="fake-link action">Special Auctions</li>
-              <li v-b-modal="'transferManagerForm'" class="fake-link action">Promote new League Manager</li>
+              <li v-b-modal="'transfer-manager-modal'" class="fake-link action">Promote new League Manager</li>
               <li v-if="firstDraftFinished && leagueYear.supportedYear.finished" v-b-modal="'toggleUnderReview'" class="fake-link action">
                 {{ leagueYear.underReview ? 'Disable Editing Finished Year' : 'Enable Editing Finished Year' }}
               </li>
@@ -121,17 +121,17 @@
           <li>
             <strong>Player Management</strong>
             <ul class="actions-list">
-              <li v-b-modal="'invitePlayer'" class="fake-link action">Invite a Player</li>
-              <li v-if="!playStarted" v-b-modal="'manageActivePlayers'" class="fake-link action">Manage Active Players</li>
-              <li v-if="!playStarted" v-b-modal="'createPublisherForUserForm'" class="fake-link action">Create Publisher For User</li>
+              <li v-b-modal="'invite-player-form'" class="fake-link action">Invite a Player</li>
+              <li v-if="!playStarted" v-b-modal="'manage-active-players-form'" class="fake-link action">Manage Active Players</li>
+              <li v-if="!playStarted" v-b-modal="'create-publisher-for-user-form'" class="fake-link action">Create Publisher For User</li>
               <li v-if="hasPendingOrActiveDraft" v-b-modal="'manager-set-auto-draft-form'" class="fake-link action">Edit Player Auto Draft</li>
-              <li v-if="postDraftPlayable" v-b-modal="'managerEditPublishersForm'" class="fake-link action">Edit Publishers</li>
+              <li v-if="postDraftPlayable" v-b-modal="'manager-edit-publishers-form'" class="fake-link action">Edit Publishers</li>
               <li v-if="postDraftEditable" v-b-modal="'claimGameForm'" class="fake-link action">Add Publisher Game</li>
               <li v-if="postDraftEditable" v-b-modal="'removePublisherGame'" class="fake-link action">Remove Publisher Game</li>
-              <li v-if="postDraftPlayable" v-b-modal="'reassignPublisherModal'" class="fake-link action">Reassign a Publisher</li>
-              <li v-if="!leagueYear.supportedYear.finished && !draftIsActiveOrPaused" v-b-modal="'disconnectPlayerModal'" class="fake-link action">Disconnect a Player</li>
-              <li v-if="!leagueYear.supportedYear.finished && !draftIsActiveOrPaused && hasPublisherWithNoPlayer" v-b-modal="'removePublisherModal'" class="fake-link action">Remove a Publisher</li>
-              <li v-b-modal="'removePlayerModal'" class="fake-link action">Remove a Player From the League</li>
+              <li v-if="postDraftPlayable" v-b-modal="'reassign-publisher-modal'" class="fake-link action">Reassign a Publisher</li>
+              <li v-if="!leagueYear.supportedYear.finished && !draftIsActiveOrPaused" v-b-modal="'disconnect-player-modal'" class="fake-link action">Disconnect a Player</li>
+              <li v-if="!leagueYear.supportedYear.finished && !draftIsActiveOrPaused && hasPublisherWithNoPlayer" v-b-modal="'remove-publisher-modal'" class="fake-link action">Remove a Publisher</li>
+              <li v-b-modal="'remove-player-modal'" class="fake-link action">Remove a Player From the League</li>
             </ul>
           </li>
           <li v-if="postDraftEditable || postDraftPlayable">
