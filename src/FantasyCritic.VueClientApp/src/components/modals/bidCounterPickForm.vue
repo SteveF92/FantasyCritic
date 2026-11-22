@@ -101,7 +101,7 @@ export default defineComponent({
       try {
         this.possibleCounterPicks = await leagueClient.possibleCounterPicks(this.requiredUserPublisher.publisherID);
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load counter picks.');
       } finally {
         this.isBusy = false;
       }
@@ -112,8 +112,7 @@ export default defineComponent({
       }
 
       if (!this.bidCounterPick.masterGame) {
-        this.errorInfo = 'Games not linked to a master game cannot be counterpicked via bids, due to technical restrictions.';
-        return;
+        throw new Error('Games not linked to a master game cannot be counterpicked via bids, due to technical restrictions.');
       }
 
       const request: PickupBidRequest = {
@@ -131,16 +130,16 @@ export default defineComponent({
           return;
         }
 
-        this.notifyAction('Bid for ' + this.bidCounterPick.masterGame.gameName + ' for $' + this.bidAmount + ' was made.');
         (this.$refs.bidCounterPickFormRef as InstanceType<typeof BModal> | undefined)?.hide();
-        this.clearData();
+        await this.notifyAction('Bid for ' + this.bidCounterPick.masterGame.gameName + ' for $' + this.bidAmount + ' was made.');
       } catch (error) {
         this.errorInfo = getApiErrorMessage(error, 'Failed to place bid.');
       } finally {
         this.isBusy = false;
       }
     },
-    clearData() {
+    clearData(): void {
+      this.errorInfo = '';
       this.bidCounterPick = null;
       this.bidResult = null;
       this.bidAmount = 0;
@@ -151,30 +150,7 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.game-search-input {
-  margin-bottom: 15px;
-}
-
-.override-checkbox {
-  margin-left: 10px;
-  margin-top: 8px;
-}
-
 .search-results {
   margin-top: 20px;
-}
-
-.spinner {
-  margin-top: 20px;
-  text-align: center;
-}
-
-.search-tags {
-  display: flex;
-  flex-wrap: wrap;
-  padding: 5px;
-  background: rgba(50, 50, 50, 0.7);
-  border-radius: 5px;
-  justify-content: space-around;
 }
 </style>
