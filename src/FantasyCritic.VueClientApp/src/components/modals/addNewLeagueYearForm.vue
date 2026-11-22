@@ -1,5 +1,6 @@
 <template>
-  <b-modal id="addNewLeagueYear" ref="addNewLeagueYearRef" title="Start New Year" @show="fetchAvailableYears">
+  <b-modal id="add-new-league-year-form" ref="addNewLeagueYearFormRef" title="Start New Year" @show="fetchAvailableYears">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-info">
       Starting a new year will not impact your current year. You will always be able to access all years of your league, and starting a new year does not end your current year.
     </div>
@@ -8,57 +9,79 @@
         <label for="selectedYear" class="control-label">New Year to Play</label>
         <b-form-select id="selectedYear" v-model="selectedYear" class="form-control">
           <template #first>
-            <option value="">Select a Year</option>
+            <option :value="null">Select a Year</option>
           </template>
           <option v-for="possibleYear in availableYears" :key="possibleYear" :value="possibleYear">{{ possibleYear }}</option>
         </b-form-select>
       </div>
     </div>
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Start New Year" :disabled="!selectedYear" @click="addNewLeagueYear" />
+      <input type="submit" class="btn btn-primary" value="Start New Year" :disabled="!selectedYear || isBusy" @click="addNewLeagueYear" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueManagerClient, type NewLeagueYearRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
+interface AddNewLeagueYearFormData {
+  availableYears: number[];
+  selectedYear: number | null;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   computed: {
-    ...mapState(useLeagueStore, ['league'])
+    ...mapState(useLeagueStore, ['requiredLeague'])
   },
-  data() {
+  data(): AddNewLeagueYearFormData {
     return {
       availableYears: [],
-      selectedYear: '',
-      error: ''
+      selectedYear: null,
+      isBusy: false,
+      errorInfo: ''
     };
   },
   methods: {
-    async fetchAvailableYears() {
+    async fetchAvailableYears(): Promise<void> {
+      this.selectedYear = null;
+      this.errorInfo = '';
       try {
-        const response = await axios.get('/api/LeagueManager/AvailableYears/' + this.league.leagueID);
-        this.availableYears = response.data;
+        this.availableYears = await leagueManagerClient.availableYears(this.requiredLeague.leagueID);
       } catch (error) {
-        this.error = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load the years you can start.');
       }
     },
-    async addNewLeagueYear() {
-      const model = {
-        leagueID: this.league.leagueID,
+    async addNewLeagueYear(): Promise<void> {
+      if (!this.selectedYear) {
+        return;
+      }
+
+      const request: NewLeagueYearRequest = {
+        leagueID: this.requiredLeague.leagueID,
         year: this.selectedYear
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/leagueManager/AddNewLeagueYear', model);
-        this.$refs.addNewLeagueYearRef.hide();
-        this.$router.push({ name: 'editLeague', params: { leagueid: this.league.leagueID, year: this.selectedYear }, query: { freshSettings: true } });
+        await leagueManagerClient.addNewLeagueYear(request);
+
+        (this.$refs.addNewLeagueYearFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.$router.push({ name: 'editLeague', params: { leagueid: request.leagueID, year: request.year }, query: { freshSettings: 'true' } });
       } catch (error) {
-        this.error = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when starting the new year.');
+      } finally {
+        this.isBusy = false;
       }
     }
   }
-};
+});
 </script>

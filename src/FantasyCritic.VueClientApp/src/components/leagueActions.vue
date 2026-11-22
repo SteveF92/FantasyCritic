@@ -115,7 +115,7 @@
               <li v-if="firstDraftFinished && leagueYear.supportedYear.finished" v-b-modal="'under-review-modal'" class="fake-link action">
                 {{ leagueYear.underReview ? 'Disable Editing Finished Year' : 'Enable Editing Finished Year' }}
               </li>
-              <li v-b-modal="'addNewLeagueYear'" class="fake-link action">Start New Year</li>
+              <li v-b-modal="'add-new-league-year-form'" class="fake-link action">Start New Year</li>
             </ul>
           </li>
           <li>
@@ -137,7 +137,7 @@
           <li v-if="postDraftEditable || postDraftPlayable">
             <strong>Override Actions</strong>
             <ul class="actions-list">
-              <li v-if="postDraftEditable" v-b-modal="'associateGameForm'" class="fake-link action">Associate Unlinked Game</li>
+              <li v-if="postDraftEditable" v-b-modal="'manager-associate-game-form'" class="fake-link action">Associate Unlinked Game</li>
               <li v-if="postDraftEditable" v-b-modal="'manually-score-game-form'" class="fake-link action">Score a Game Manually</li>
               <li v-if="postDraftPlayable" v-b-modal="'manually-set-will-not-release-form'" class="fake-link action">Override "Will not Release"</li>
               <li v-if="postDraftPlayable" v-b-modal="'manage-eligibility-overrides-modal'" class="fake-link action">Override Game Eligibility</li>
