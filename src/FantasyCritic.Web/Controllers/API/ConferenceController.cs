@@ -133,6 +133,7 @@ public class ConferenceController : BaseLeagueController
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType<List<int>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -312,6 +313,7 @@ public class ConferenceController : BaseLeagueController
 
     [AllowAnonymous]
     [HttpGet("{id}")]
+    [ProducesResponseType<ConferenceViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]

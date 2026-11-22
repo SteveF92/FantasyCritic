@@ -17,31 +17,6 @@ namespace FantasyCritic.IntegrationTests.Tests.League.Setup;
 public class ConferenceCloneTests : IntegrationTestBase
 {
     // -------------------------------------------------------------------------
-    // Minimal POCOs for deserializing conference GET responses.
-    // The generated API client does not have typed overloads for GetConference/
-    // GetConferenceYear, so we deserialize the JSON manually.
-    // -------------------------------------------------------------------------
-
-    private sealed class SimpleConferenceVm
-    {
-        public Guid ConferenceID { get; set; }
-        public List<SimpleConferenceLeagueVm> LeaguesInConference { get; set; } = [];
-        public SimpleConferenceLeagueVm PrimaryLeague { get; set; } = new();
-    }
-
-    private sealed class SimpleConferenceLeagueVm
-    {
-        public Guid LeagueID { get; set; }
-        public string LeagueName { get; set; } = string.Empty;
-        public SimplePlayerVm LeagueManager { get; set; } = new();
-    }
-
-    private sealed class SimplePlayerVm
-    {
-        public Guid UserID { get; set; }
-    }
-
-    // -------------------------------------------------------------------------
     // Helper: register a user then grant them PlusUser role (required for
     // conference creation) and re-login to refresh their auth cookie.
     // -------------------------------------------------------------------------
@@ -107,17 +82,6 @@ public class ConferenceCloneTests : IntegrationTestBase
     }
 
     // -------------------------------------------------------------------------
-    // Helper: get the full conference data (minimal deserialization).
-    // -------------------------------------------------------------------------
-    private static async Task<SimpleConferenceVm> GetConferenceAsync(
-        ApiSession session,
-        Guid conferenceID)
-    {
-        return await session.GetAndDeserializeAsync<SimpleConferenceVm>(
-            $"api/Conference/GetConference/{conferenceID}");
-    }
-
-    // -------------------------------------------------------------------------
     // Test 1
     // -------------------------------------------------------------------------
 
@@ -150,8 +114,8 @@ public class ConferenceCloneTests : IntegrationTestBase
             LeagueManager = userB.UserID,
         });
 
-        // Retrieve conference data to find the secondary league's ID.
-        var conference = await GetConferenceAsync(sessionA, conferenceID);
+        // Retrieve the conference to find the secondary league's ID.
+        var conference = await sessionA.Conference.GetConferenceAsync(conferenceID);
 
         // The secondary league is the one that is NOT the primary league.
         var primaryLeagueID = conference.PrimaryLeague.LeagueID;
@@ -214,7 +178,7 @@ public class ConferenceCloneTests : IntegrationTestBase
             LeagueManager = userB.UserID,
         });
 
-        var conference = await GetConferenceAsync(sessionA, conferenceID);
+        var conference = await sessionA.Conference.GetConferenceAsync(conferenceID);
         var primaryLeagueYear = await sessionA.League.GetLeagueYearAsync(conference.PrimaryLeague.LeagueID, year, null);
         var secondLeagueID = conference.LeaguesInConference.Single(l => l.LeagueID != conference.PrimaryLeague.LeagueID).LeagueID;
         var secondLeagueYear = await sessionB.League.GetLeagueYearAsync(secondLeagueID, year, null);
@@ -272,7 +236,7 @@ public class ConferenceCloneTests : IntegrationTestBase
         });
 
         // Discover league IDs.
-        var conference = await GetConferenceAsync(sessionA, conferenceID);
+        var conference = await sessionA.Conference.GetConferenceAsync(conferenceID);
         var primaryLeagueID = conference.PrimaryLeague.LeagueID;
         var secondLeagueID = conference.LeaguesInConference
             .Single(l => l.LeagueID != primaryLeagueID).LeagueID;
