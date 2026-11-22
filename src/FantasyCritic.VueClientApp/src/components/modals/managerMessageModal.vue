@@ -1,58 +1,77 @@
 <template>
-  <b-modal id="managerMessageForm" ref="managerMessageFormRef" size="lg" title="Post New Message to League" @hidden="clearData">
+  <b-modal id="manager-message-modal" ref="managerMessageModalRef" size="lg" title="Post New Message to League" @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="form-horizontal">
       <div class="form-group">
         <label for="messageText" class="control-label">Message</label>
-        <textarea v-model="messageText" class="form-control" rows="3"></textarea>
+        <textarea id="messageText" v-model="messageText" class="form-control" rows="3"></textarea>
         <div class="plain-check">
-          <input v-model="isPublic" type="checkbox" class="plain-check-input" />
+          <input id="isPublic" v-model="isPublic" type="checkbox" class="plain-check-input" />
           <label class="plain-check-label" for="isPublic">Show message to users not in league? (only applies in public leagues)</label>
         </div>
       </div>
     </div>
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Post Message" :disabled="!messageText" @click="postNewMessage" />
+      <input type="submit" class="btn btn-primary" value="Post Message" :disabled="!messageText.trim() || isBusy" @click="postNewMessage" />
     </template>
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueManagerClient, type PostNewManagerMessageRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface ManagerMessageModalData {
+  messageText: string;
+  isPublic: boolean;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): ManagerMessageModalData {
     return {
-      messageText: null,
-      isPublic: false
+      messageText: '',
+      isPublic: false,
+      isBusy: false,
+      errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'league'])
+    ...mapState(useLeagueStore, ['requiredLeagueYear'])
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    postNewMessage() {
-      const model = {
-        leagueID: this.league.leagueID,
-        year: this.leagueYear.year,
+    async postNewMessage(): Promise<void> {
+      const request: PostNewManagerMessageRequest = {
+        leagueID: this.requiredLeagueYear.league.leagueID,
+        year: this.requiredLeagueYear.year,
         message: this.messageText,
         isPublic: this.isPublic
       };
-      axios
-        .post('/api/leagueManager/PostNewManagerMessage', model)
-        .then(() => {
-          this.$refs.managerMessageFormRef.hide();
-          this.notifyAction("New manager's message posted.");
-          this.clearData();
-        })
-        .catch(() => {});
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueManagerClient.postNewManagerMessage(request);
+
+        (this.$refs.managerMessageModalRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction("New manager's message posted.");
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when posting the message.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    clearData() {
-      this.messageText = null;
+    clearData(): void {
+      this.messageText = '';
+      this.errorInfo = '';
     }
   }
-};
+});
 </script>

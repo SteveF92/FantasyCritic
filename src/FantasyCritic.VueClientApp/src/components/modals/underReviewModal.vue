@@ -1,6 +1,7 @@
 <template>
-  <b-modal id="toggleUnderReview" ref="toggleUnderReviewRef" :title="modalTitle" @show="onShow">
-    <div v-if="!leagueYear.underReview" class="alert alert-warning">
+  <b-modal id="under-review-modal" ref="underReviewModalRef" :title="actionText" @show="onShow">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+    <div v-if="!requiredLeagueYear.underReview" class="alert alert-warning">
       <p class="text-white">
         <strong>Marking this league as Under Review</strong>
         will enable manager editing actions after the year has finished. Use this when you need to apply corrections (e.g., fixes to results, scoring, or roster issues) after the season is over.
@@ -8,7 +9,7 @@
       <p class="mb-0 text-white">
         <strong>Time limit:</strong>
         This can only be enabled through
-        <strong>January 31, {{ leagueYear.year + 1 }}</strong>
+        <strong>January 31, {{ requiredLeagueYear.year + 1 }}</strong>
         . After that date, the league can no longer be placed Under Review.
       </p>
     </div>
@@ -18,71 +19,68 @@
       While Under Review, manager editing actions are enabled even though the year has finished. Turn this off when you’re done making corrections.
     </div>
 
-    <div v-if="error" class="alert alert-danger mb-0">
-      {{ error }}
-    </div>
-
     <template #footer>
-      <input type="submit" class="btn" :class="leagueYear.underReview ? 'btn-secondary' : 'btn-warning'" :value="submitText" :disabled="isSubmitting" @click="toggleUnderReview" />
+      <input type="submit" class="btn" :class="requiredLeagueYear.underReview ? 'btn-secondary' : 'btn-warning'" :value="actionText" :disabled="isBusy" @click="toggleUnderReview" />
     </template>
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueManagerClient, type SetUnderReviewStatusRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface UnderReviewModalData {
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): UnderReviewModalData {
     return {
-      error: '',
-      isSubmitting: false
+      isBusy: false,
+      errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'league']),
-    modalTitle() {
-      return this.leagueYear.underReview ? 'Disable Under Review' : 'Mark Under Review';
-    },
-    submitText() {
-      return this.leagueYear.underReview ? 'Disable Under Review' : 'Mark Under Review';
+    ...mapState(useLeagueStore, ['requiredLeagueYear']),
+    actionText(): string {
+      return this.requiredLeagueYear.underReview ? 'Disable Under Review' : 'Mark Under Review';
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    onShow() {
-      this.error = '';
-      this.isSubmitting = false;
+    onShow(): void {
+      this.errorInfo = '';
     },
-    async toggleUnderReview() {
-      const newValue = !this.leagueYear.underReview;
-
-      const model = {
-        leagueID: this.league.leagueID,
-        year: this.leagueYear.year, // adjust if your property name differs
-        underReview: newValue
+    async toggleUnderReview(): Promise<void> {
+      const request: SetUnderReviewStatusRequest = {
+        leagueID: this.requiredLeagueYear.league.leagueID,
+        year: this.requiredLeagueYear.year,
+        underReview: !this.requiredLeagueYear.underReview
       };
 
-      this.isSubmitting = true;
-      this.error = '';
-
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/leagueManager/SetUnderReviewStatus', model);
-        if (newValue) {
-          this.notifyAction("League has been marked as 'under review'.");
-        } else {
-          this.notifyAction("League is no longer in 'under review' status.");
-        }
+        await leagueManagerClient.setUnderReviewStatus(request);
 
-        this.$refs.toggleUnderReviewRef.hide();
+        (this.$refs.underReviewModalRef as InstanceType<typeof BModal> | undefined)?.hide();
+        if (request.underReview) {
+          await this.notifyAction("League has been marked as 'under review'.");
+        } else {
+          await this.notifyAction("League is no longer in 'under review' status.");
+        }
       } catch (error) {
-        this.error = error && error.response && error.response.data ? error.response.data : 'Request failed.';
+        this.errorInfo = getApiErrorMessage(error, 'Request failed.');
       } finally {
-        this.isSubmitting = false;
+        this.isBusy = false;
       }
     }
   }
-};
+});
 </script>

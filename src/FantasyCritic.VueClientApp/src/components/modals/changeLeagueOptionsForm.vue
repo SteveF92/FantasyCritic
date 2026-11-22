@@ -1,9 +1,10 @@
 <template>
-  <b-modal id="changeLeagueOptionsForm" ref="changeLeagueOptionsFormRef" title="Change League Options" @hidden="clearData">
+  <b-modal id="change-league-options-form" ref="changeLeagueOptionsFormRef" title="Change League Options" @show="initialize">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="form-horizontal">
       <div class="form-group">
-        <label for="newleagueName" class="control-label">League Name</label>
-        <input id="newleagueName" v-model="newleagueName" name="newleagueName" type="text" class="form-control input" />
+        <label for="newLeagueName" class="control-label">League Name</label>
+        <input id="newLeagueName" v-model="newLeagueName" name="newLeagueName" type="text" class="form-control input" />
       </div>
       <div class="form-group">
         <b-form-checkbox v-model="publicLeague">
@@ -30,7 +31,7 @@
           </p>
         </b-form-checkbox>
       </div>
-      <b-alert variant="info">
+      <b-alert variant="info" :model-value="true">
         The difference between a "Custom Rules League" and a "Test League" is that a "Custom Rules League" will still be listed alongside your normal leagues and you will see upcoming games for that
         league on your home page. There is a dedicated home page tab for test leagues, and the games are not listed in your upcoming games on the home page. You
         <em>are</em>
@@ -41,63 +42,78 @@
       Changing a public league to a private league will remove it from any Discord servers it may be linked to via the official Discord bot.
     </b-alert>
 
-    <b-alert variant="danger" :model-value="!!errorInfo">{{ errorInfo }}</b-alert>
-
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Change Settings" :disabled="!newleagueName" @click="changeleagueName" />
+      <input type="submit" class="btn btn-primary" value="Change Settings" :disabled="!newLeagueName.trim() || isBusy" @click="changeLeagueOptions" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueManagerClient, type ChangeLeagueOptionsRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface ChangeLeagueOptionsFormData {
+  newLeagueName: string;
+  publicLeague: boolean;
+  testLeague: boolean;
+  customRulesLeague: boolean;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): ChangeLeagueOptionsFormData {
     return {
-      newleagueName: '',
+      newLeagueName: '',
       publicLeague: true,
       testLeague: false,
       customRulesLeague: false,
-      errorInfo: null
+      isBusy: false,
+      errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['league']),
-    showDiscordWarning() {
-      return this.league.publicLeague && !this.publicLeague;
+    ...mapState(useLeagueStore, ['requiredLeague']),
+    showDiscordWarning(): boolean {
+      return this.requiredLeague.publicLeague && !this.publicLeague;
     }
-  },
-  created() {
-    this.newleagueName = this.league.leagueName;
-    this.publicLeague = this.league.publicLeague;
-    this.testLeague = this.league.testLeague;
-    this.customRulesLeague = this.league.customRulesLeague;
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    async changeleagueName() {
-      const model = {
-        leagueID: this.league.leagueID,
-        leagueName: this.newleagueName.trim(),
+    initialize(): void {
+      this.newLeagueName = this.requiredLeague.leagueName;
+      this.publicLeague = this.requiredLeague.publicLeague;
+      this.testLeague = this.requiredLeague.testLeague;
+      this.customRulesLeague = this.requiredLeague.customRulesLeague;
+      this.errorInfo = '';
+    },
+    async changeLeagueOptions(): Promise<void> {
+      const request: ChangeLeagueOptionsRequest = {
+        leagueID: this.requiredLeague.leagueID,
+        leagueName: this.newLeagueName.trim(),
         publicLeague: this.publicLeague,
         testLeague: this.testLeague,
         customRulesLeague: this.customRulesLeague
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/leagueManager/ChangeLeagueOptions', model);
-        this.$refs.changeLeagueOptionsFormRef.hide();
-        this.notifyAction('League options have been updated.');
+        await leagueManagerClient.changeLeagueOptions(request);
+
+        (this.$refs.changeLeagueOptionsFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction('League options have been updated.');
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when changing the league options.');
+      } finally {
+        this.isBusy = false;
       }
-    },
-    clearData() {
-      this.newleagueName = this.league.leagueName;
     }
   }
-};
+});
 </script>

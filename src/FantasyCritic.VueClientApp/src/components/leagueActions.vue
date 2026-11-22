@@ -101,8 +101,8 @@
           <li>
             <strong>League Management</strong>
             <ul class="actions-list">
-              <li v-b-modal="'managerMessageForm'" class="fake-link action">Post new Message to League</li>
-              <li v-b-modal="'changeLeagueOptionsForm'" class="fake-link action">Change General League Options</li>
+              <li v-b-modal="'manager-message-modal'" class="fake-link action">Post new Message to League</li>
+              <li v-b-modal="'change-league-options-form'" class="fake-link action">Change General League Options</li>
               <li v-if="!leagueYear.supportedYear.finished" class="fake-link action">
                 <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year } }">Change Year-Specific Options</router-link>
               </li>
@@ -112,7 +112,7 @@
               <li v-if="readyToSetDraftOrder" v-b-modal="'editDraftOrderForm'" class="fake-link action">Edit Draft Order</li>
               <li v-if="postDraftPlayable" v-b-modal="'special-auctions-modal'" class="fake-link action">Special Auctions</li>
               <li v-b-modal="'transfer-manager-modal'" class="fake-link action">Promote new League Manager</li>
-              <li v-if="firstDraftFinished && leagueYear.supportedYear.finished" v-b-modal="'toggleUnderReview'" class="fake-link action">
+              <li v-if="firstDraftFinished && leagueYear.supportedYear.finished" v-b-modal="'under-review-modal'" class="fake-link action">
                 {{ leagueYear.underReview ? 'Disable Editing Finished Year' : 'Enable Editing Finished Year' }}
               </li>
               <li v-b-modal="'addNewLeagueYear'" class="fake-link action">Start New Year</li>
