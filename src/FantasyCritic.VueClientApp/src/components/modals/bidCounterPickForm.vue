@@ -1,8 +1,6 @@
 <template>
   <b-modal id="bidCounterPickForm" ref="bidCounterPickFormRef" size="lg" title="Make a Counter Pick Bid" no-footer @hidden="clearData" @show="getPossibleCounterPicks">
-    <div v-if="errorInfo" class="alert alert-danger" role="alert">
-      {{ errorInfo }}
-    </div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <p>
       You can use this form to place a bid on a game.
       <br />
@@ -24,7 +22,7 @@
           </option>
         </b-form-select>
 
-        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget, 0) }})</label>
+        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(requiredUserPublisher.budget, 0) }})</label>
 
         <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" rules="required|integer">
           <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
@@ -33,7 +31,7 @@
 
         <div v-show="counterPickInvalid" class="alert alert-warning" role="alert">Unfortunately, you cannot make a counter pick bid for a game that is not linked to a master game.</div>
 
-        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="!canPlaceCounterPickBid" @click="bidGame">{{ bidButtonText }}</b-button>
+        <b-button variant="primary" class="full-width-button" :disabled="!canPlaceCounterPickBid" @click="bidGame">Place Counter Pick Bid</b-button>
         <div v-if="bidResult && !bidResult.success" class="alert alert-danger bid-error">
           <h3 class="alert-heading">Error!</h3>
           <ul>
@@ -45,15 +43,27 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueClient, type PickupBidRequest, type PickupBidResultViewModel, type PublisherGameViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatCurrency } from '@/utilities/formatters';
 
-export default {
-  data() {
+interface BidCounterPickFormData {
+  bidCounterPick: PublisherGameViewModel | null;
+  bidAmount: number;
+  bidResult: PickupBidResultViewModel | null;
+  possibleCounterPicks: PublisherGameViewModel[];
+  errorInfo: string;
+  isBusy: boolean;
+}
+
+export default defineComponent({
+  data(): BidCounterPickFormData {
     return {
       bidCounterPick: null,
       bidAmount: 0,
@@ -64,83 +74,82 @@ export default {
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'counterPickBiddingAllowed']),
-    formIsValid() {
-      return !!this.bidCounterPick;
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'requiredUserPublisher', 'counterPickBiddingAllowed']),
+    canPlaceCounterPickBid(): boolean {
+      return !!this.bidCounterPick && !this.publisherSlotsAreFilled && !this.isBusy && !this.counterPickInvalid && this.counterPickBiddingAllowed;
     },
-    canPlaceCounterPickBid() {
-      return this.formIsValid && !this.publisherSlotsAreFilled && !this.isBusy && !this.counterPickInvalid && this.counterPickBiddingAllowed;
-    },
-    publisherSlotsAreFilled() {
-      let userGames = this.userPublisher.games;
-      let counterPickSlots = this.leagueYear.settings.counterPicks;
-      let counterPicks = userGames.filter((x) => x.counterPick);
+    publisherSlotsAreFilled(): boolean {
+      const userGames = this.requiredUserPublisher.games;
+      const counterPickSlots = this.requiredLeagueYear.settings.counterPicks;
+      const counterPicks = userGames.filter((x) => x.counterPick);
       return counterPicks.length >= counterPickSlots;
     },
-    bidButtonText() {
-      return 'Place Counter Pick Bid';
+    counterPickInvalid(): boolean {
+      return !!this.bidCounterPick && !this.bidCounterPick.masterGame;
     },
-    counterPickInvalid() {
-      return this.bidCounterPick && !this.bidCounterPick.masterGame;
-    },
-    availableCounterPicks() {
+    availableCounterPicks(): PublisherGameViewModel[] {
       return this.possibleCounterPicks.filter((x) => x.willRelease && !x.released);
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
     formatCurrency,
-    getPossibleCounterPicks() {
+    async getPossibleCounterPicks(): Promise<void> {
       this.clearData();
       this.isBusy = true;
-      axios
-        .get('/api/league/PossibleCounterPicks?publisherID=' + this.userPublisher.publisherID)
-        .then((response) => {
-          this.possibleCounterPicks = response.data;
-          this.isBusy = false;
-          this.counterPicking = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+
+      try {
+        this.possibleCounterPicks = await leagueClient.possibleCounterPicks(this.requiredUserPublisher.publisherID);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    bidGame() {
-      const request = {
-        publisherID: this.userPublisher.publisherID,
+    async bidGame(): Promise<void> {
+      if (!this.bidCounterPick) {
+        throw new Error('No game is selected to bid on.');
+      }
+
+      if (!this.bidCounterPick.masterGame) {
+        this.errorInfo = 'Games not linked to a master game cannot be counterpicked via bids, due to technical restrictions.';
+        return;
+      }
+
+      const request: PickupBidRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
         masterGameID: this.bidCounterPick.masterGame.masterGameID,
         bidAmount: this.bidAmount,
-        counterPick: true
+        counterPick: true,
+        allowIneligibleSlot: false //This has no bearing on a counter pick request, but we must include it regardless. This could change if we add special slots for counter picks.
       };
 
-      axios
-        .post('/api/league/MakePickupBid', request)
-        .then((response) => {
-          this.bidResult = response.data;
-          if (!this.bidResult.success) {
-            return;
-          }
+      this.isBusy = true;
+      try {
+        this.bidResult = await leagueClient.makePickupBid(request);
+        if (!this.bidResult.success) {
+          return;
+        }
 
-          this.$refs.bidCounterPickFormRef.hide();
-          this.notifyAction('Bid for ' + this.bidCounterPick.masterGame.gameName + ' for $' + this.bidAmount + ' was made.');
-          this.clearData();
-        })
-        .catch((response) => {
-          this.errorInfo = response.response.data;
-        });
+        this.notifyAction('Bid for ' + this.bidCounterPick.masterGame.gameName + ' for $' + this.bidAmount + ' was made.');
+        (this.$refs.bidCounterPickFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to place bid.');
+      } finally {
+        this.isBusy = false;
+      }
     },
     clearData() {
       this.bidCounterPick = null;
       this.bidResult = null;
       this.bidAmount = 0;
       this.isBusy = false;
-      this.conditionalDrop = false;
-    },
-    newGameSelected() {
-      this.bidCounterPick = null;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .game-search-input {
   margin-bottom: 15px;
