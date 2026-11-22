@@ -313,9 +313,10 @@ export default defineComponent({
         await this.initializePage();
       }
     },
-    async userIsNextInDraft(val, oldVal) {
+    userIsNextInDraft(val, oldVal) {
       if (val && val !== oldVal) {
-        await (document.getElementById('draft-notification-sound') as InstanceType<typeof HTMLAudioElement> | null)?.play();
+        // play() rejects when the browser blocks autoplay; the sound is only a nicety.
+        (document.getElementById('draft-notification-sound') as HTMLAudioElement | null)?.play().catch(() => {});
       }
     }
   },
