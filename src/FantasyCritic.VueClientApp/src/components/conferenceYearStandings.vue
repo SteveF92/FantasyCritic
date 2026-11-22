@@ -2,7 +2,16 @@
   <div>
     <h2>Standings</h2>
 
-    <b-table v-model:sort-by="sortBy" :items="standings" :fields="standingFields" :sort-compare="sortCompare" bordered small responsive striped>
+    <b-table
+      v-model:sort-by="sortBy"
+      :items="requiredConferenceYear.standings"
+      :fields="standingFields"
+      :sort-compare="sortCompare"
+      :tbody-tr-class="standingsRowClass"
+      bordered
+      small
+      responsive
+      striped>
       <template #cell(leagueName)="data">
         <router-link :to="{ name: 'league', params: { leagueid: data.item.leagueID, year: data.item.year } }" class="league-link">
           {{ data.item.leagueName }}
@@ -16,162 +25,124 @@
 
       <template #cell(projectedFantasyPoints)="data">
         {{ formatScore(data.item.projectedFantasyPoints, 2) }}
-        <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isProjectedTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.projectedRanking) }}</span>
+        <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isProjectedTopPublisher(data.item) }">- {{ ordinal_suffix_of(data.item.projectedRanking) }}</span>
       </template>
       <template #cell(totalFantasyPoints)="data">
         {{ formatScore(data.item.totalFantasyPoints, 2) }}
-        <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isTopPublisher(data.item.publisher) }">- {{ ordinal_suffix_of(data.item.ranking) }}</span>
+        <span v-if="playStarted" class="standings-position" :class="{ 'text-bold': isTopPublisher(data.item) }">- {{ ordinal_suffix_of(data.item.ranking) }}</span>
       </template>
 
-      <template #cell(projectedLeagueRanking)="data">
-        <span v-if="playStarted" class="standings-position">{{ ordinal_suffix_of(data.item.projectedLeagueRanking) }}</span>
+      <template #cell(leagueRanking)="data">
+        <span v-if="playStarted" class="standings-position">{{ ordinal_suffix_of(data.item.leagueRanking) }}</span>
       </template>
     </b-table>
   </div>
 </template>
-<script>
-import { mapState } from 'pinia';
 
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'pinia';
+import type { BTableSortBy, TableField, TableRowType, TableStrictClassValue } from 'bootstrap-vue-next';
+
+import type { ConferenceYearStandingViewModel } from '@/api/clients';
 import { maxBy, ordinal_suffix_of } from '@/globalFunctions';
 import { useConferenceStore } from '@/store/conferenceStore';
 import { formatScore } from '@/utilities/formatters';
 
-export default {
-  data() {
+interface ConferenceYearStandingsData {
+  sortBy: BTableSortBy[];
+}
+
+export default defineComponent({
+  setup() {
+    const leadingFields: TableField<ConferenceYearStandingViewModel>[] = [
+      { key: 'leagueName', label: 'League', thClass: 'bg-primary' },
+      { key: 'displayName', label: 'User', thClass: 'bg-primary' },
+      { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' }
+    ];
+
+    const midYearFields: TableField<ConferenceYearStandingViewModel>[] = [
+      { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
+      { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true }
+    ];
+
+    const yearFinishedFields: TableField<ConferenceYearStandingViewModel>[] = [{ key: 'totalFantasyPoints', label: 'Points', thClass: 'bg-primary', sortable: true }];
+
+    const leagueRankingField: TableField<ConferenceYearStandingViewModel> = { key: 'leagueRanking', label: 'League Rank', thClass: 'bg-primary', sortable: true };
+
+    return { leadingFields, midYearFields, yearFinishedFields, leagueRankingField };
+  },
+  data(): ConferenceYearStandingsData {
     return {
-      standingFieldsInternal: [
-        { key: 'leagueName', label: 'League', thClass: 'bg-primary' },
-        { key: 'displayName', label: 'User', thClass: 'bg-primary' },
-        { key: 'publisherName', label: 'Publisher', thClass: 'bg-primary' },
-        { key: 'totalFantasyPoints', label: 'Points (Actual)', thClass: 'bg-primary', sortable: true },
-        { key: 'projectedFantasyPoints', label: 'Points (Projected)', thClass: 'bg-primary', sortable: true },
-        { key: 'leagueRanking', label: 'League Rank', thClass: 'bg-primary', sortable: true }
-      ],
       sortBy: [{ key: 'totalFantasyPoints', order: 'desc' }]
     };
   },
   computed: {
-    ...mapState(useConferenceStore, ['conferenceYear', 'playStarted']),
-    standingFields() {
-      if (!this.conferenceYear.supportedYear.finished) {
-        return this.standingFieldsInternal;
-      }
-
-      let fieldsToUse = this.standingFieldsInternal;
-      fieldsToUse = fieldsToUse.slice(0, 3).concat(fieldsToUse.slice(4));
-      fieldsToUse[3].label = 'Points';
-
-      return fieldsToUse;
+    ...mapState(useConferenceStore, ['requiredConferenceYear', 'playStarted']),
+    standingFields(): TableField<ConferenceYearStandingViewModel>[] {
+      const pointsFields = this.requiredConferenceYear.supportedYear.finished ? this.yearFinishedFields : this.midYearFields;
+      return [...this.leadingFields, ...pointsFields, this.leagueRankingField];
     },
-    standings() {
-      let standings = this.conferenceYear.standings;
-      if (!standings) {
-        return [];
-      }
-      for (let i = 0; i < standings.length; ++i) {
-        if (this.conferenceYear.supportedYear.finished && this.topPublisher && this.topPublisher.publisherID === standings[i].publisherID) {
-          standings[i]._rowVariant = 'success';
-        }
-      }
-      return standings;
-    },
-    standingsThatCanWin() {
+    standingsThatCanWin(): ConferenceYearStandingViewModel[] {
       // Publishers with no user stay in the standings, but can't win.
-      return (this.conferenceYear.standings ?? []).filter((x) => x.hasUser);
+      return this.requiredConferenceYear.standings.filter((x) => x.hasUser);
     },
-    topPublisher() {
-      if (this.standingsThatCanWin.length > 0) {
-        return maxBy(this.standingsThatCanWin, (x) => x.totalFantasyPoints);
-      }
-
-      return null;
+    topPublisher(): ConferenceYearStandingViewModel | null {
+      return maxBy(this.standingsThatCanWin, (x) => x.totalFantasyPoints) ?? null;
     },
-    projectedTopPublisher() {
-      if (this.standingsThatCanWin.length > 0) {
-        return maxBy(this.standingsThatCanWin, (x) => x.projectedFantasyPoints);
-      }
-
-      return null;
+    projectedTopPublisher(): ConferenceYearStandingViewModel | null {
+      return maxBy(this.standingsThatCanWin, (x) => x.projectedFantasyPoints) ?? null;
     }
   },
   methods: {
     formatScore,
-    isTopPublisher(publisher) {
-      if (!publisher) {
-        return false;
+    ordinal_suffix_of,
+    standingsRowClass(item: ConferenceYearStandingViewModel | null, type: TableRowType): TableStrictClassValue {
+      if (!item || type !== 'row') {
+        return '';
       }
-      return this.topPublisher && this.topPublisher.publisherID === publisher.publisherID;
-    },
-    isProjectedTopPublisher(publisher) {
-      if (!publisher) {
-        return false;
+
+      if (this.requiredConferenceYear.supportedYear.finished && this.isTopPublisher(item)) {
+        return 'table-success';
       }
-      return this.projectedTopPublisher && this.projectedTopPublisher.publisherID === publisher.publisherID;
+
+      return '';
     },
-    ordinal_suffix_of(num) {
-      return ordinal_suffix_of(num);
+    isTopPublisher(standing: ConferenceYearStandingViewModel): boolean {
+      return !!this.topPublisher && this.topPublisher.publisherID === standing.publisherID;
     },
-    sortCompare(aRow, bRow, key) {
-      // Extend with other sortable columns as necessary.
-      const secondarySorts = {
-        totalFantasyPoints: 'projectedFantasyPoints',
-        projectedFantasyPoints: 'totalFantasyPoints'
-      };
-      const a = aRow[key];
-      const b = bRow[key];
-      const primarySort = a < b ? -1 : a > b ? 1 : 0;
-      // Return unless the primary Sort Key results in a Tie, i.e each row has 0 points.
-      if (primarySort != 0) return primarySort;
-      const secondarySortKey = secondarySorts[key];
-      const secondaryA = aRow[secondarySortKey];
-      const secondaryB = bRow[secondarySortKey];
-      return secondaryA < secondaryB ? -1 : secondaryA > secondaryB ? 1 : 0;
+    isProjectedTopPublisher(standing: ConferenceYearStandingViewModel): boolean {
+      return !!this.projectedTopPublisher && this.projectedTopPublisher.publisherID === standing.publisherID;
+    },
+    sortCompare(aRow: ConferenceYearStandingViewModel, bRow: ConferenceYearStandingViewModel, key: string): number {
+      const sortValues = sortValuesByKey[key];
+      if (!sortValues) {
+        return 0;
+      }
+
+      const aValues = sortValues(aRow);
+      const bValues = sortValues(bRow);
+      for (let i = 0; i < aValues.length; i++) {
+        if (aValues[i] !== bValues[i]) {
+          return aValues[i] < bValues[i] ? -1 : 1;
+        }
+      }
+
+      return 0;
     }
   }
+});
+
+// The values each sortable column sorts by, in order; the later ones break ties, such as everyone on 0 points before any games release.
+const sortValuesByKey: Partial<Record<string, (standing: ConferenceYearStandingViewModel) => number[]>> = {
+  totalFantasyPoints: (x) => [x.totalFantasyPoints, x.projectedFantasyPoints],
+  projectedFantasyPoints: (x) => [x.projectedFantasyPoints, x.totalFantasyPoints],
+  leagueRanking: (x) => [x.leagueRanking]
 };
 </script>
+
 <style scoped>
-.header {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-}
-
-.projections-label {
-  margin-top: 14px;
-}
-
-.toggle {
-  margin-top: 4px;
-}
-
-.publisher-name {
-  display: inline-block;
-  word-wrap: break-word;
-  max-width: 300px;
-}
-
-@media only screen and (min-width: 1550px) {
-  .publisher-name {
-    max-width: 650px;
-  }
-}
-@media only screen and (max-width: 1549px) {
-  .publisher-name {
-    max-width: 150px;
-  }
-}
-@media only screen and (max-width: 768px) {
-  .publisher-name {
-    max-width: 200px;
-  }
-}
 div :deep(tr.table-success td) {
   font-weight: bolder;
-}
-
-.previous-year-winner {
-  margin-left: 4px;
-  color: #d6993a;
 }
 </style>

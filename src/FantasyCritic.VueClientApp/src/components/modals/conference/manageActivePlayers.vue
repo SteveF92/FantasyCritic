@@ -1,8 +1,8 @@
 <template>
   <b-modal id="manageActivePlayers" ref="manageActivePlayersRef" title="Manage Active Players" @show="setData">
-    <h4 class="text-black">Active Players for {{ conferenceYear.year }}</h4>
-
-    <table v-if="showTable" class="table table-bordered table-striped table-sm">
+    <h4 class="text-black">Active Players for {{ requiredConferenceYear.year }}</h4>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+    <table class="table table-bordered table-striped table-sm">
       <thead>
         <tr class="bg-primary">
           <th scope="col">User</th>
@@ -10,99 +10,94 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(value, name) in internalPlayerActive" :key="name">
-          <td>{{ value.displayName }}</td>
+        <tr v-for="player in playerActiveStatus" :key="player.userID">
+          <td>{{ player.displayName }}</td>
           <td>
-            <input v-model="value.active" type="checkbox" />
+            <input v-model="player.active" type="checkbox" :aria-label="`${player.displayName} is active`" />
           </td>
         </tr>
       </tbody>
     </table>
-    <div v-show="errorInfo" class="alert alert-danger">
-      {{ errorInfo }}
-    </div>
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Set Active Players" @click="confirmActivePlayers" />
+      <input type="submit" class="btn btn-primary" value="Set Active Players" :disabled="isBusy" @click="confirmActivePlayers" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { conferenceClient, type ConferencePlayerActiveRequest } from '@/api/clients';
 import { useConferenceStore } from '@/store/conferenceStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
+interface PlayerActiveStatus {
+  userID: string;
+  displayName: string;
+  active: boolean;
+}
+
+interface ManageActivePlayersData {
+  playerActiveStatus: PlayerActiveStatus[];
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   computed: {
-    ...mapState(useConferenceStore, ['conference', 'conferenceYear'])
+    ...mapState(useConferenceStore, ['requiredConference', 'requiredConferenceYear'])
   },
-  data() {
+  data(): ManageActivePlayersData {
     return {
-      showTable: false,
-      internalPlayerActive: {},
+      playerActiveStatus: [],
+      isBusy: false,
       errorInfo: ''
     };
   },
-  created() {
-    this.setCurrentActivePlayers();
-  },
   methods: {
     ...mapActions(useConferenceStore, ['notifyAction']),
-    userIsActive(user) {
-      let matchingPlayer = this.conferenceYear.playersForYear.find((item) => item.userID === user.userID);
-      return !!matchingPlayer;
+    setData(): void {
+      const activeUserIDs = this.requiredConferenceYear.playersForYear.map((x) => x.userID);
+      this.playerActiveStatus = this.requiredConference.players.map((player) => ({
+        userID: player.userID,
+        displayName: player.displayName,
+        active: activeUserIDs.includes(player.userID)
+      }));
+      this.errorInfo = '';
     },
-    setCurrentActivePlayers() {
-      this.internalPlayerActive = {};
-      this.conference.players.forEach((player) => {
-        let playerIsActive = this.userIsActive(player);
-        this.internalPlayerActive[player.userID] = {
-          displayName: player.displayName,
-          active: playerIsActive
-        };
-      });
-      this.showTable = true;
-    },
-    confirmActivePlayers() {
-      let playerStatus = {};
-      let playerActiveDict = this.internalPlayerActive;
+    async confirmActivePlayers(): Promise<void> {
+      const activeStatus: Record<string, boolean> = {};
+      for (const player of this.playerActiveStatus) {
+        activeStatus[player.userID] = player.active;
+      }
 
-      Object.keys(playerActiveDict).forEach(function (key) {
-        playerStatus[key] = playerActiveDict[key].active;
-      });
-
-      const model = {
-        conferenceID: this.conference.conferenceID,
-        year: this.conferenceYear.year,
-        activeStatus: playerStatus
+      const request: ConferencePlayerActiveRequest = {
+        conferenceID: this.requiredConference.conferenceID,
+        year: this.requiredConferenceYear.year,
+        activeStatus
       };
 
-      axios
-        .post('/api/Conference/SetPlayerActiveStatus', model)
-        .then(() => {
-          this.$refs.manageActivePlayersRef.hide();
-          this.notifyAction('Active players were changed.');
-        })
-        .catch((response) => {
-          this.errorInfo = response.response.data;
-        });
-    },
-    setData() {
+      this.isBusy = true;
       this.errorInfo = '';
-      this.setCurrentActivePlayers();
+      try {
+        await conferenceClient.setPlayerActiveStatus(request);
+
+        (this.$refs.manageActivePlayersRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction('Active players were changed.');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when setting the active players.');
+      } finally {
+        this.isBusy = false;
+      }
     }
   }
-};
+});
 </script>
+
 <style scoped>
-.email-form {
-  margin-bottom: 10px;
-}
 .text-black {
   color: black !important;
-}
-.display-number-label {
-  font-size: 35px;
-  margin-right: 3px;
 }
 </style>

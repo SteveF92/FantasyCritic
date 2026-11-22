@@ -1,8 +1,6 @@
 <template>
   <b-modal id="assignPlayers" ref="assignPlayersRef" title="Assign Players" size="lg" @show="initialize" @hide="clearData">
-    <div v-show="errorInfo" class="alert alert-danger">
-      {{ errorInfo }}
-    </div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-info">
       <p class="text-white">
         This form allows you assign each of your conference's players to a league. If you want a player to be in more than one league, you'll need to do that manually by inviting them to the league
@@ -15,8 +13,8 @@
 
     <div class="player-drag-list bg-secondary">
       <h4 class="player-header">Unassigned Players</h4>
-      <VueDraggable v-model="editableUnassignedPlayers" group="players">
-        <div v-for="element in editableUnassignedPlayers" :key="element.userID" class="player-drag-item">
+      <VueDraggable v-model="unassignedPlayers" group="players">
+        <div v-for="element in unassignedPlayers" :key="element.userID" class="player-drag-item">
           <font-awesome-icon icon="bars" />
           {{ element.displayName }}
         </div>
@@ -24,38 +22,49 @@
     </div>
 
     <div class="player-flex-container">
-      <div v-for="(value, leagueID) in editableLeagueAssignments" :key="leagueID" class="player-flex-drag">
+      <div v-for="league in leagues" :key="league.leagueID" class="player-flex-drag">
         <div class="player-drag-list bg-secondary">
           <h4 class="assign-league-header">
-            <font-awesome-icon
-              v-if="!leaguesLocked[leagueID]"
-              icon="lock-open"
-              size="lg"
-              class="unlock-icon"
-              @click="setLockStatus(leagueID, true)"
-              v-b-popover.hover.focus.top="'Lock League (Enables Drafting)'" />
-            <font-awesome-icon
-              v-if="leaguesLocked[leagueID] && !leaguesDraftStarted[leagueID]"
-              icon="lock"
-              size="lg"
-              class="lock-icon"
-              @click="setLockStatus(leagueID, false)"
-              v-b-popover.hover.focus.top="'Unlock league (Enables Player Re-Assignment)'" />
-            <font-awesome-icon v-if="leaguesDraftStarted[leagueID]" icon="lock" size="lg" class="lock-icon draft-lock-icon" v-b-popover.hover.focus.right="'League has already started drafting'" />
-            <span class="league-name-header">{{ leagueNames[leagueID] }}</span>
-            <font-awesome-icon v-if="!leaguesCollapsed[leagueID]" icon="minus-circle" size="lg" class="collapse-icon" @click="collapseLeague(leagueID)" />
-            <font-awesome-icon v-if="leaguesCollapsed[leagueID]" icon="plus-circle" size="lg" class="collapse-icon" @click="uncollapseLeague(leagueID)" />
+            <button
+              v-if="!league.locked"
+              type="button"
+              class="font-awesome-button unlock-icon"
+              :aria-label="`Lock ${league.leagueName}`"
+              :disabled="isBusy"
+              v-b-popover.hover.focus.top="'Lock League (Enables Drafting)'"
+              @click="setLockStatus(league, true)">
+              <font-awesome-icon icon="lock-open" size="lg" />
+            </button>
+            <button
+              v-if="league.locked && !league.draftStarted"
+              type="button"
+              class="font-awesome-button lock-icon"
+              :aria-label="`Unlock ${league.leagueName}`"
+              :disabled="isBusy"
+              v-b-popover.hover.focus.top="'Unlock league (Enables Player Re-Assignment)'"
+              @click="setLockStatus(league, false)">
+              <font-awesome-icon icon="lock" size="lg" />
+            </button>
+            <font-awesome-icon v-if="league.draftStarted" icon="lock" size="lg" class="lock-icon draft-lock-icon" v-b-popover.hover.focus.right="'League has already started drafting'" />
+            <span class="league-name-header">{{ league.leagueName }}</span>
+            <button
+              type="button"
+              class="font-awesome-button collapse-icon"
+              :aria-label="league.collapsed ? `Expand ${league.leagueName}` : `Collapse ${league.leagueName}`"
+              @click="league.collapsed = !league.collapsed">
+              <font-awesome-icon :icon="league.collapsed ? 'plus-circle' : 'minus-circle'" size="lg" />
+            </button>
           </h4>
 
-          <template v-if="!leaguesCollapsed[leagueID]">
-            <VueDraggable v-if="!leaguesLocked[leagueID]" v-model="editableLeagueAssignments[leagueID]" group="players">
-              <div v-for="element in value" :key="element.userID" class="player-drag-item">
+          <template v-if="!league.collapsed">
+            <VueDraggable v-if="!league.locked" v-model="league.players" group="players">
+              <div v-for="element in league.players" :key="element.userID" class="player-drag-item">
                 <font-awesome-icon icon="bars" />
                 {{ element.displayName }}
               </div>
             </VueDraggable>
-            <ol v-if="leaguesLocked[leagueID]">
-              <li v-for="element in value" :key="element.userID">
+            <ol v-else>
+              <li v-for="element in league.players" :key="element.userID">
                 {{ element.displayName }}
               </li>
             </ol>
@@ -65,136 +74,127 @@
     </div>
     <template #footer>
       <b-button variant="warning" class="reset-button" @click="resetChanges">Reset Changes</b-button>
-      <input type="submit" class="btn btn-primary" value="Assign Players to Leagues" @click="submitAssignments" />
+      <input type="submit" class="btn btn-primary" value="Assign Players to Leagues" :disabled="isBusy" @click="submitAssignments" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 import { VueDraggable } from 'vue-draggable-plus';
 
+import { conferenceClient, type AssignLeaguePlayersRequest, type ConferenceYearPlayerViewModel, type SetConferenceLeagueLockStatusRequest } from '@/api/clients';
 import { useConferenceStore } from '@/store/conferenceStore';
-import { deepClone } from '@/utilities/deepClone';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
+interface LeagueAssignment {
+  leagueID: string;
+  leagueName: string;
+  locked: boolean;
+  draftStarted: boolean;
+  collapsed: boolean;
+  players: ConferenceYearPlayerViewModel[];
+}
+
+interface AssignPlayersData {
+  unassignedPlayers: ConferenceYearPlayerViewModel[];
+  leagues: LeagueAssignment[];
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   components: {
     VueDraggable
   },
   computed: {
-    ...mapState(useConferenceStore, ['conference', 'conferenceYear'])
+    ...mapState(useConferenceStore, ['requiredConference', 'requiredConferenceYear'])
   },
-  data() {
+  data(): AssignPlayersData {
     return {
-      errorInfo: null,
-      leagueNames: null,
-      initialUnassignedPlayers: null,
-      initialLeagueAssignments: null,
-      editableUnassignedPlayers: null,
-      editableLeagueAssignments: null,
-      leaguesCollapsed: null,
-      leaguesLocked: null,
-      leaguesDraftStarted: null
+      unassignedPlayers: [],
+      leagues: [],
+      isBusy: false,
+      errorInfo: ''
     };
   },
-  created() {
-    this.initialize();
-  },
   methods: {
-    ...mapActions(useConferenceStore, ['notifyAction']),
-    initialize() {
-      let unassignedPlayers = [];
-      for (const player of this.conferenceYear.playersForYear) {
-        if (player.leaguesActiveIn.length === 0) {
-          unassignedPlayers.push(player);
-        }
-      }
-      this.initialUnassignedPlayers = unassignedPlayers;
-
-      let leagueAssignments = {};
-      let leaguesCollapsed = {};
-      let leagueNames = {};
-      let leaguesLocked = {};
-      let leaguesDraftStarted = {};
-      for (const league of this.conference.leaguesInConference) {
-        leagueAssignments[league.leagueID] = [];
-        leagueNames[league.leagueID] = league.leagueName;
-        leaguesCollapsed[league.leagueID] = false;
-        leaguesLocked[league.leagueID] = league.conferenceLocked;
-        leaguesDraftStarted[league.leagueID] = league.draftStarted;
-      }
-
-      for (const leagueYear of this.conferenceYear.leagueYears) {
-        leaguesLocked[leagueYear.leagueID] = leagueYear.conferenceLocked;
-        leaguesDraftStarted[leagueYear.leagueID] = leagueYear.draftStarted;
-      }
-
-      for (const player of this.conferenceYear.playersForYear) {
-        for (const leagueIn of player.leaguesActiveIn) {
-          leagueAssignments[leagueIn].push(player);
-        }
-      }
-
-      this.leagueNames = leagueNames;
-      this.initialLeagueAssignments = leagueAssignments;
-      this.leaguesCollapsed = leaguesCollapsed;
-      this.leaguesLocked = leaguesLocked;
-      this.leaguesDraftStarted = leaguesDraftStarted;
-
-      this.editableUnassignedPlayers = deepClone(this.initialUnassignedPlayers);
-      this.editableLeagueAssignments = deepClone(this.initialLeagueAssignments);
+    ...mapActions(useConferenceStore, ['notifyAction', 'refreshConferenceYear']),
+    initialize(): void {
+      this.leagues = this.requiredConferenceYear.leagueYears.map((leagueYear) => ({
+        leagueID: leagueYear.leagueID,
+        leagueName: leagueYear.leagueName,
+        locked: leagueYear.conferenceLocked,
+        draftStarted: leagueYear.draftStarted,
+        collapsed: false,
+        players: []
+      }));
+      this.resetChanges();
+      this.errorInfo = '';
     },
-    collapseLeague(leagueID) {
-      this.leaguesCollapsed[leagueID] = true;
+    resetChanges(): void {
+      // The lists are new arrays, so dragging never reorders the store's players.
+      const playersForYear = this.requiredConferenceYear.playersForYear;
+      this.unassignedPlayers = playersForYear.filter((player) => player.leaguesActiveIn.length === 0);
+      for (const league of this.leagues) {
+        league.players = playersForYear.filter((player) => player.leaguesActiveIn.includes(league.leagueID));
+      }
     },
-    uncollapseLeague(leagueID) {
-      this.leaguesCollapsed[leagueID] = false;
-    },
-    async setLockStatus(leagueID, locked) {
-      const model = {
-        conferenceID: this.conference.conferenceID,
-        year: this.conferenceYear.year,
-        leagueID: leagueID,
-        locked: locked
+    async setLockStatus(league: LeagueAssignment, locked: boolean): Promise<void> {
+      const request: SetConferenceLeagueLockStatusRequest = {
+        conferenceID: this.requiredConference.conferenceID,
+        year: this.requiredConferenceYear.year,
+        leagueID: league.leagueID,
+        locked
       };
+
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/conference/SetConferenceLeagueLockStatus', model);
-        this.leaguesLocked[leagueID] = locked;
+        await conferenceClient.setConferenceLeagueLockStatus(request);
+        league.locked = locked;
+        await this.refreshConferenceYear();
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when changing the lock status.');
+      } finally {
+        this.isBusy = false;
       }
     },
-    resetChanges() {
-      this.editableUnassignedPlayers = deepClone(this.initialUnassignedPlayers);
-      this.editableLeagueAssignments = deepClone(this.initialLeagueAssignments);
-    },
-    clearData() {
-      this.errorInfo = null;
+    clearData(): void {
+      this.errorInfo = '';
       this.resetChanges();
     },
-    async submitAssignments() {
-      let finalLeagueAssignments = {};
-      Object.entries(this.editableLeagueAssignments).forEach(([key, value]) => {
-        finalLeagueAssignments[key] = value.map((item) => item.userID);
-      });
+    async submitAssignments(): Promise<void> {
+      const leagueAssignments: Record<string, string[]> = {};
+      for (const league of this.leagues) {
+        leagueAssignments[league.leagueID] = league.players.map((player) => player.userID);
+      }
 
-      const model = {
-        conferenceID: this.conference.conferenceID,
-        year: this.conferenceYear.year,
-        leagueAssignments: finalLeagueAssignments
+      const request: AssignLeaguePlayersRequest = {
+        conferenceID: this.requiredConference.conferenceID,
+        year: this.requiredConferenceYear.year,
+        leagueAssignments
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/conference/AssignLeaguePlayers', model);
-        this.$refs.assignPlayersRef.hide();
+        await conferenceClient.assignLeaguePlayers(request);
+
+        (this.$refs.assignPlayersRef as InstanceType<typeof BModal> | undefined)?.hide();
         await this.notifyAction('Player Assignments have been updated.');
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when assigning the players.');
+      } finally {
+        this.isBusy = false;
       }
     }
   }
-};
+});
 </script>
+
 <style>
 .reset-button-flex {
   display: flex;

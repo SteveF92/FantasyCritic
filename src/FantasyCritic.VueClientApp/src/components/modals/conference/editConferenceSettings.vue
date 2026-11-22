@@ -1,5 +1,6 @@
 <template>
-  <b-modal id="editConferenceSettings" ref="editConferenceSettingsRef" title="Change Conference Options" @hidden="clearData">
+  <b-modal id="editConferenceSettings" ref="editConferenceSettingsRef" title="Change Conference Options" @show="setData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-info">If you want to edit the actual game settings, like how many games per player, or what games are allowed, you'll need to do that inside each of the leagues.</div>
     <div class="form-horizontal">
       <div class="form-group">
@@ -16,56 +17,68 @@
           </p>
         </b-form-checkbox>
       </div>
-
-      <b-alert variant="danger" :model-value="!!errorInfo">{{ errorInfo }}</b-alert>
     </div>
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Change Settings" :disabled="!newConferenceName" @click="changeConferenceSettings" />
+      <input type="submit" class="btn btn-primary" value="Change Settings" :disabled="!newConferenceName.trim() || isBusy" @click="changeConferenceSettings" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { conferenceClient, type EditConferenceRequest } from '@/api/clients';
 import { useConferenceStore } from '@/store/conferenceStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
+interface EditConferenceSettingsData {
+  newConferenceName: string;
+  customRulesConference: boolean;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   computed: {
-    ...mapState(useConferenceStore, ['conference'])
+    ...mapState(useConferenceStore, ['requiredConference'])
   },
-  data() {
+  data(): EditConferenceSettingsData {
     return {
       newConferenceName: '',
       customRulesConference: false,
-      errorInfo: null
+      isBusy: false,
+      errorInfo: ''
     };
-  },
-  created() {
-    this.newConferenceName = this.conference.conferenceName;
-    this.customRulesConference = this.conference.customRulesConference;
   },
   methods: {
     ...mapActions(useConferenceStore, ['notifyAction']),
-    async changeConferenceSettings() {
-      const model = {
-        conferenceID: this.conference.conferenceID,
+    setData(): void {
+      this.newConferenceName = this.requiredConference.conferenceName;
+      this.customRulesConference = this.requiredConference.customRulesConference;
+      this.errorInfo = '';
+    },
+    async changeConferenceSettings(): Promise<void> {
+      const request: EditConferenceRequest = {
+        conferenceID: this.requiredConference.conferenceID,
         conferenceName: this.newConferenceName,
         customRulesConference: this.customRulesConference
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/conference/EditConference', model);
-        this.$refs.editConferenceSettingsRef.hide();
+        await conferenceClient.editConference(request);
+
+        (this.$refs.editConferenceSettingsRef as InstanceType<typeof BModal> | undefined)?.hide();
         await this.notifyAction('Conference settings have been updated.');
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when changing the conference settings.');
+      } finally {
+        this.isBusy = false;
       }
-    },
-    clearData() {
-      this.newConferenceName = this.conference.conferenceName;
-      this.customRulesConference = this.conference.customRulesConference;
     }
   }
-};
+});
 </script>

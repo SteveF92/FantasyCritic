@@ -4,8 +4,8 @@
       Something went wrong with this conference. Contact us on Discord or via email for support. Please include the conference ID in your message (Linking the URL will do).
     </div>
 
-    <div v-if="errorInfo" class="alert alert-danger" role="alert">{{ errorInfo }}</div>
-    <div v-if="conferenceYear">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+    <div v-if="conferenceYear && conference">
       <div v-if="isConferenceManager && !isPlusUser" class="alert alert-danger" role="alert">
         Your Fantasy Critic Plus membership has expired. In order to continue acting as conference manager, you must resubscribe to Fantasy Critic Plus. The only conference action you can take while
         not a Fantasy Critic Plus member is to pass the conference manager role to another player in your conference.
@@ -24,7 +24,7 @@
                 <router-link v-if="conferenceYear.managerMessages.length > 0" :to="{ name: 'conferenceHistory', params: { conferenceid: conference.conferenceID, year: conferenceYear.year } }">
                   Conference History
                 </router-link>
-                <router-link v-if="royaleGroupData && royaleGroupData.hasRoyaleGroup" :to="royaleGroupLink">View Royale Group</router-link>
+                <router-link v-if="royaleGroupLink" :to="royaleGroupLink">View Royale Group</router-link>
                 <a v-else-if="royaleGroupData && !royaleGroupData.hasRoyaleGroup && isConferenceManager" href="#" @click.prevent="enableRoyale">Enable Royale</a>
               </div>
             </div>
@@ -126,59 +126,80 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { RouteLocationRaw } from 'vue-router';
+import type { TableField } from 'bootstrap-vue-next';
 
+import { conferenceClient, royaleGroupClient } from '@/api/clients';
+import type {
+  ConferenceLeagueYearViewModel,
+  CreateConferenceTiedRoyaleGroupRequest,
+  DismissConferenceManagerMessageRequest,
+  JoinConferenceWithInviteLinkRequest,
+  ManagerMessageViewModel,
+  RoyaleGroupStatusViewModel
+} from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
-import { useConferenceStore } from '@/store/conferenceStore';
+import { useConferenceStore, type ConferencePageParams } from '@/store/conferenceStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatDateTime } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
 import ConferenceManagerActions from '@/components/conferenceManagerActions.vue';
 import ConferenceYearStandings from '@/components/conferenceYearStandings.vue';
 
-export default {
+interface ConferenceData {
+  selectedYear: number | null;
+  errorInfo: string;
+  royaleGroupData: RoyaleGroupStatusViewModel | null;
+}
+
+export default defineComponent({
   components: {
     ConferenceManagerActions,
     ConferenceYearStandings
+  },
+  setup() {
+    const leagueYearFields: TableField<ConferenceLeagueYearViewModel>[] = [
+      { key: 'leagueName', label: 'League', thClass: 'bg-primary' },
+      { key: 'leagueManager', label: 'League Manager', thClass: 'bg-primary' }
+    ];
+    return { leagueYearFields };
   },
   props: {
     conferenceid: { type: String, required: true },
     year: { type: Number, required: true }
   },
-  data() {
+  data(): ConferenceData {
     return {
       selectedYear: null,
-      errorInfo: null,
-      royaleGroupData: null,
-      leagueYearFields: [
-        { key: 'leagueName', label: 'League', thClass: 'bg-primary' },
-        { key: 'leagueManager', label: 'League Manager', thClass: 'bg-primary' }
-      ]
+      errorInfo: '',
+      royaleGroupData: null
     };
   },
   computed: {
     ...mapState(useAuthStore, ['isPlusUser', 'isAuth']),
     ...mapState(useInterLeagueStore, ['activeRoyaleQuarter']),
-    ...mapState(useConferenceStore, ['conference', 'conferenceYear', 'hasError', 'conferenceInviteCode', 'isConferenceManager']),
-    numberOfPlayersActiveForYear() {
-      return this.conferenceYear.playersForYear.length;
+    ...mapState(useConferenceStore, ['conference', 'conferenceYear', 'requiredConferenceYear', 'hasError', 'conferenceInviteCode', 'isConferenceManager']),
+    numberOfPlayersActiveForYear(): number {
+      return this.requiredConferenceYear.playersForYear.length;
     },
-    numberOfPlayersInConferenceNotInAnyLeague() {
-      return this.conferenceYear.playersForYear.filter((x) => x.leaguesActiveIn.length === 0).length;
+    numberOfPlayersInConferenceNotInAnyLeague(): number {
+      return this.requiredConferenceYear.playersForYear.filter((x) => x.leaguesActiveIn.length === 0).length;
     },
-    numberOfLeaguesNotStartedDrafting() {
-      return this.conferenceYear.leagueYears.filter((x) => !x.draftStarted).length;
+    numberOfLeaguesNotStartedDrafting(): number {
+      return this.requiredConferenceYear.leagueYears.filter((x) => !x.draftStarted).length;
     },
-    numberOfLeaguesStartedDrafting() {
-      return this.conferenceYear.leagueYears.filter((x) => x.draftStarted && !x.draftFinished).length;
+    numberOfLeaguesStartedDrafting(): number {
+      return this.requiredConferenceYear.leagueYears.filter((x) => x.draftStarted && !x.draftFinished).length;
     },
-    numberOfLeaguesFinishedDrafting() {
-      return this.conferenceYear.leagueYears.filter((x) => x.draftFinished).length;
+    numberOfLeaguesFinishedDrafting(): number {
+      return this.requiredConferenceYear.leagueYears.filter((x) => x.draftFinished).length;
     },
-    sortedLeagueYears() {
-      if (!this.conferenceYear || !this.conferenceYear.leagueYears) {
+    sortedLeagueYears(): ConferenceLeagueYearViewModel[] {
+      if (!this.conferenceYear) {
         return [];
       }
 
@@ -193,20 +214,20 @@ export default {
         return a.leagueName.localeCompare(b.leagueName);
       });
     },
-    royaleGroupLink() {
-      if (!this.royaleGroupData?.hasRoyaleGroup) return null;
+    royaleGroupLink(): RouteLocationRaw | null {
+      if (!this.royaleGroupData?.royaleGroup) return null;
       const group = this.royaleGroupData.royaleGroup;
       if (this.activeRoyaleQuarter) {
         return { name: 'royaleGroupQuarter', params: { groupid: group.groupID, year: this.activeRoyaleQuarter.year, quarter: this.activeRoyaleQuarter.quarter } };
       }
       return { name: 'royaleGroup', params: { groupid: group.groupID } };
     },
-    mostRecentManagerMessage() {
-      if (!this.conferenceYear || !this.conferenceYear.managerMessages || this.conferenceYear.managerMessages.length === 0) {
+    mostRecentManagerMessage(): ManagerMessageViewModel | null {
+      if (!this.conferenceYear || this.conferenceYear.managerMessages.length === 0) {
         return null;
       }
 
-      let mostRecentMessage = this.conferenceYear.managerMessages[this.conferenceYear.managerMessages.length - 1];
+      const mostRecentMessage = this.conferenceYear.managerMessages[this.conferenceYear.managerMessages.length - 1];
       if (mostRecentMessage.isDismissed) {
         return null;
       }
@@ -227,66 +248,88 @@ export default {
   methods: {
     ...mapActions(useConferenceStore, ['refreshConferenceYear']),
     formatDateTime,
-    async initializePage() {
+    async initializePage(): Promise<void> {
       this.selectedYear = this.year;
-      const inviteCode = this.$route.query.inviteCode;
-      const conferencePageParams = { conferenceID: this.conferenceid, year: this.year, inviteCode };
+      this.errorInfo = '';
+      this.royaleGroupData = null;
+      let inviteCode = undefined;
+      if (typeof this.$route.query.inviteCode === 'string') {
+        inviteCode = this.$route.query.inviteCode;
+      }
+      const conferencePageParams: ConferencePageParams = { conferenceID: this.conferenceid, year: this.year, inviteCode };
       const conferenceStore = useConferenceStore();
       await conferenceStore.initializeConferencePage(conferencePageParams);
       this.fetchRoyaleGroupForConference();
     },
-    changeConferenceYear(newVal) {
-      const parameters = {
-        conferenceid: this.conferenceid,
-        year: newVal
-      };
-      this.$router.push({ name: 'conference', params: parameters });
+    changeConferenceYear(newVal: number | number[] | null): void {
+      if (typeof newVal !== 'number') {
+        throw new Error('Invalid year chosen.');
+      }
+      this.$router.push({ name: 'conference', params: { conferenceid: this.conferenceid, year: newVal } });
     },
-    async joinWithInviteLink() {
-      const model = {
-        conferenceID: this.conference.conferenceID,
+    async joinWithInviteLink(): Promise<void> {
+      if (!this.conferenceInviteCode) {
+        return;
+      }
+      const request: JoinConferenceWithInviteLinkRequest = {
+        conferenceID: this.conferenceid,
         inviteCode: this.conferenceInviteCode
       };
 
+      this.errorInfo = '';
       try {
-        await axios.post('/api/conference/JoinWithInviteLink', model);
+        await conferenceClient.joinWithInviteLink(request);
         await this.refreshConferenceYear();
-      } catch {
-        this.errorInfo = 'Something went wrong joining the conference.';
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong joining the conference.');
       }
     },
-    async copyConferenceID() {
+    async copyConferenceID(): Promise<void> {
       await navigator.clipboard.writeText(this.conferenceid);
       makeToast('Conference ID copied to clipboard.');
     },
-    async dismissRecentManagerMessage() {
-      const model = {
+    async dismissRecentManagerMessage(): Promise<void> {
+      if (!this.mostRecentManagerMessage) {
+        return;
+      }
+      const request: DismissConferenceManagerMessageRequest = {
         messageID: this.mostRecentManagerMessage.messageID
       };
-      await axios.post('/api/conference/DismissManagerMessage', model);
-      await this.refreshConferenceYear();
-    },
-    async fetchRoyaleGroupForConference() {
+
+      this.errorInfo = '';
       try {
-        const response = await axios.get(`/api/RoyaleGroup/GetRoyaleGroupForConference/${this.conferenceid}`);
-        this.royaleGroupData = response.data;
+        await conferenceClient.dismissManagerMessage(request);
+        await this.refreshConferenceYear();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to dismiss manager message.');
+      }
+    },
+    async fetchRoyaleGroupForConference(): Promise<void> {
+      try {
+        this.royaleGroupData = await royaleGroupClient.getRoyaleGroupForConference(this.conferenceid);
       } catch {
         this.royaleGroupData = null;
       }
     },
-    async enableRoyale() {
+    async enableRoyale(): Promise<void> {
+      if (!this.conference) {
+        return;
+      }
+      const request: CreateConferenceTiedRoyaleGroupRequest = {
+        groupName: this.conference.conferenceName + ' Royale',
+        conferenceID: this.conferenceid
+      };
+
+      this.errorInfo = '';
       try {
-        const response = await axios.post('/api/RoyaleGroup/CreateConferenceTiedRoyaleGroup', {
-          groupName: this.conference.conferenceName + ' Royale',
-          conferenceID: this.conferenceid
-        });
-        this.$router.push({ name: 'royaleGroup', params: { groupid: response.data.groupID } });
+        const response = await royaleGroupClient.createConferenceTiedRoyaleGroup(request);
+        this.$router.push({ name: 'royaleGroup', params: { groupid: response.groupID } });
       } catch (error) {
-        this.errorInfo = error.response?.data || 'Failed to enable Royale for this conference.';
+        this.errorInfo = getApiErrorMessage(error, 'Failed to enable Royale for this conference.');
       }
     }
   }
-};
+});
 </script>
 <style scoped>
 .conference-manager-section {

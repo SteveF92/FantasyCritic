@@ -1,5 +1,6 @@
 <template>
   <b-modal id="addLeagueToConference" ref="addLeagueToConferenceRef" title="Add League to Conference" size="lg" @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-info">
       All leagues added to your conference will start with the same options as the primary league in the conference. You only need to chose the league name, and the league manager. Both can be changed
       later.
@@ -20,64 +21,80 @@
 
       <div class="form-group">
         <label for="newLeagueManager" class="control-label">League Manager</label>
-        <b-form-select v-model="newLeagueManager">
-          <option v-for="player in conference.players" :key="player.userID" :value="player">
+        <b-form-select id="newLeagueManager" v-model="newLeagueManager">
+          <option v-for="player in requiredConference.players" :key="player.userID" :value="player">
             {{ player.displayName }}
           </option>
         </b-form-select>
       </div>
     </div>
 
-    <b-alert variant="danger" :model-value="!!errorInfo">{{ errorInfo }}</b-alert>
-
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Add New League" :disabled="!newLeagueName || !newLeagueManager" @click="addNewLeague" />
+      <input type="submit" class="btn btn-primary" value="Add New League" :disabled="!newLeagueName.trim() || !newLeagueManager || isBusy" @click="addNewLeague" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { conferenceClient, type AddLeagueToConferenceRequest, type ConferencePlayerViewModel } from '@/api/clients';
 import { useConferenceStore } from '@/store/conferenceStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
+interface AddLeagueToConferenceData {
+  newLeagueName: string;
+  newLeagueManager: ConferencePlayerViewModel | null;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   computed: {
-    ...mapState(useConferenceStore, ['conference', 'conferenceYear'])
+    ...mapState(useConferenceStore, ['requiredConference', 'requiredConferenceYear'])
   },
-  data() {
+  data(): AddLeagueToConferenceData {
     return {
       newLeagueName: '',
       newLeagueManager: null,
-      errorInfo: null
+      isBusy: false,
+      errorInfo: ''
     };
-  },
-  created() {
-    this.clearData();
   },
   methods: {
     ...mapActions(useConferenceStore, ['notifyAction']),
-    async addNewLeague() {
-      const model = {
-        conferenceID: this.conference.conferenceID,
-        year: this.conferenceYear.year,
+    async addNewLeague(): Promise<void> {
+      if (!this.newLeagueManager) {
+        return;
+      }
+
+      const request: AddLeagueToConferenceRequest = {
+        conferenceID: this.requiredConference.conferenceID,
+        year: this.requiredConferenceYear.year,
         leagueName: this.newLeagueName,
         leagueManager: this.newLeagueManager.userID
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        await axios.post('/api/conference/AddLeagueToConference', model);
-        this.$refs.addLeagueToConferenceRef.hide();
+        await conferenceClient.addLeagueToConference(request);
+
+        (this.$refs.addLeagueToConferenceRef as InstanceType<typeof BModal> | undefined)?.hide();
         await this.notifyAction('A new league has been added.');
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when adding the league.');
+      } finally {
+        this.isBusy = false;
       }
     },
-    clearData() {
+    clearData(): void {
       this.newLeagueName = '';
       this.newLeagueManager = null;
-      this.errorInfo = null;
+      this.errorInfo = '';
     }
   }
-};
+});
 </script>

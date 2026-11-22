@@ -29,7 +29,9 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+
 import AddLeagueToConference from '@/components/modals/conference/addLeagueToConference.vue';
 import AddNewConferenceYear from '@/components/modals/conference/addNewConferenceYear.vue';
 import AssignPlayers from '@/components/modals/conference/assignPlayers.vue';
@@ -41,7 +43,7 @@ import PromoteNewConferenceManager from '@/components/modals/conference/promoteN
 import ReassignLeagueManager from '@/components/modals/conference/reassignLeagueManager.vue';
 import RenewLeagueForNewYear from '@/components/modals/conference/renewLeagueForNewYear.vue';
 
-export default {
+export default defineComponent({
   components: {
     AddLeagueToConference,
     AssignPlayers,
@@ -54,5 +56,5 @@ export default {
     RenewLeagueForNewYear,
     ManageActivePlayers
   }
-};
+});
 </script>
