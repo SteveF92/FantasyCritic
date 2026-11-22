@@ -392,6 +392,24 @@ on the League page.
   `RouteLocationRaw<'manageDrafts'>`.
 - Confirm no `.js` is left under `src/`, and no `any` or `@ts-` comments outside generated code.
 - Run the UI test suite.
+- Scope the remaining unscoped `<style>` blocks. `App.vue`'s global styles and the `vue-multiselect` CSS
+  imports stay global. Found while scoping `editDraftOrderForm` in 13c:
+  - `.ranking-column` is defined in `criticsRoyale` and `royaleGroupQuarter` (50px) and `royaleHistory`
+    (80px). They're global, so whichever page loaded last sets the width on all three.
+  - `.reset-button-flex` is defined in both `leagueTagSelector` and `conference/assignPlayers`.
+  - Classes given to `b-table` through a field's `thClass`, `tdClass` or `class`, or through
+    `tbody-tr-class` (`playerGameTable` and the three royale pages), are rendered by `BTable`, so scoped
+    rules need `:deep()`. A child component's root element and slot content written in the template do
+    get the scope; `editDraftOrderForm`'s `VueDraggable` list is styled that way, and so is
+    `leagueTagSelector`'s.
+  - `minimalPlayerGameTable`'s `.score-column` is also used by its child `minimalPlayerGameSlotRow`, and
+    `.share-button` by `views/publisher.vue`, which only gets it if the League page's styles already
+    loaded.
+  - `masterGameTagBadge` sets `.popover-header { color: black }`, which reaches every popover in the app.
+    Popovers are teleported, so if that's meant to be global it belongs in `css/site.css`.
+  - `masterGameCreator` and `masterGameRequest` style `.vue-slider-piecewise-label`, but there's no
+    `vue-slider` dependency any more. Remove both.
+  - `conference/assignPlayers` has `display: bcollapse`, which isn't valid CSS.
 
 Then make the API changes held in [api-breaking-changes-plan.md](api-breaking-changes-plan.md).
 
@@ -521,3 +539,4 @@ has the bug too.
 | 13c | `components/modals/managerAssociateGameForm.vue` | A failed search or associate was swallowed, and the search sent the name unencoded. Both now show in a `b-alert`. Choosing another publisher kept the game chosen from the previous one, so the request paired one publisher with another's game; it now clears the game. Associate is disabled until a publisher game is chosen (submitting without one threw a `TypeError`) and while the request runs. Choosing another game clears the result and the override box | Yes | Done |
 | 13c | `components/modals/addNewLeagueYearForm.vue` | A failed load or start set `error`, which nothing displayed, so the year list was empty or the button did nothing. Both now show in a `b-alert`. The chosen year is cleared each time the modal opens, and Start New Year is disabled while the request runs | Yes | Done |
 | 13c | `components/modals/editDraftOrderForm.vue` | The order list was read from the store on load and on close, so a publisher added while the page was open didn't show until the modal had been closed once. It's now read each time the modal opens. A failed attempt's error and the expanded manual list stayed up after closing; opening now clears both. The order buttons are disabled while the request runs, so a double click no longer sends two requests (two random orders, for Random). Errors use `getApiErrorMessage`, so a 5xx shows the fallback instead of the error page's text. The manual rows are keyed on `publisherID` instead of `draftPosition`. Dragging works on a copy of the list, so it never reorders the store's publishers | Yes | Done |
+| 13c | `components/modals/editDraftOrderForm.vue` | The styles are scoped. They were global, so `.list-group { min-height: 20px }` would reach any other Bootstrap list group once the League page had loaded; nothing else uses one today, so no visible change. `.ghost` was never applied (no `ghostClass` is set) and is gone. `.draft-order-item i` never matched, since Font Awesome renders an `svg`; the drag handle now gets the pointer cursor it meant to give | — | Done |

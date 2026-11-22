@@ -118,18 +118,13 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .draft-order-editor {
   border-radius: 5px;
   padding-left: 20px;
   padding-right: 20px;
   padding-top: 5px;
   padding-bottom: 5px;
-}
-
-.ghost {
-  opacity: 0.5;
-  background: #c8ebfb;
 }
 
 .list-group {
@@ -145,7 +140,7 @@ export default defineComponent({
   border: 1px solid #ddd;
 }
 
-.draft-order-item i {
+.handle {
   cursor: pointer;
 }
 
