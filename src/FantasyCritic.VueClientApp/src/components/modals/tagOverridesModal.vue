@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="tagOverridesModal" ref="tagOverridesModalRef" title="Tag Overrides" no-footer>
+  <b-modal id="tag-overrides-modal" title="Tag Overrides" no-footer>
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">
@@ -8,7 +8,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="tagOverride in tagOverrides" :key="tagOverride.masterGame.masterGameID">
+        <tr v-for="tagOverride in requiredLeagueYear.tagOverrides" :key="tagOverride.masterGame.masterGameID">
           <td>{{ tagOverride.masterGame.gameName }}</td>
           <td>
             <span v-for="tag in tagOverride.tags" :key="tag">
@@ -21,21 +21,19 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 
 import { useLeagueStore } from '@/store/leagueStore';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-export default {
+export default defineComponent({
   components: {
     MasterGameTagBadge
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear']),
-    tagOverrides() {
-      return this.leagueYear.tagOverrides;
-    }
+    ...mapState(useLeagueStore, ['requiredLeagueYear'])
   }
-};
+});
 </script>

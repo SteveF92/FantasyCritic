@@ -1,5 +1,6 @@
 <template>
-  <b-modal id="editAutoDraftForm" ref="editAutoDraftFormRef" size="lg" title="Edit Auto Draft">
+  <b-modal id="edit-auto-draft-form" ref="editAutoDraftFormRef" size="lg" title="Edit Auto Draft" @show="initialize">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-info">
       <p class="text-white">If "Auto Draft" is turned on, the site will select your games for you when it is your turn.</p>
       <p class="text-white">Games will be chosen from your watchlist first, and if there are no available games on your watchlist, the available game with the highest hype factor will be chosen.</p>
@@ -16,56 +17,80 @@
     <b-form-checkbox v-model="onlyDraftFromWatchlist" :disabled="autoDraftMode === 'Off'">Only Auto Draft from Watchlist</b-form-checkbox>
 
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Set Auto Draft" @click="setAutoDraft" />
+      <input type="submit" class="btn btn-primary" value="Set Auto Draft" :disabled="isBusy" @click="setAutoDraft" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueClient, type SetAutoDraftRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
+interface EditAutoDraftFormData {
+  autoDraftMode: string;
+  onlyDraftFromWatchlist: boolean;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  setup() {
+    const autoDraftOptions: { value: string; text: string }[] = [
+      { text: 'Off', value: 'Off' },
+      { text: "Standard Games Only (Don't Auto Draft Counter Picks)", value: 'StandardGamesOnly' },
+      { text: 'On (Including Counter Picks)', value: 'All' }
+    ];
+
+    return { autoDraftOptions };
+  },
   computed: {
-    ...mapState(useLeagueStore, ['userPublisher'])
+    ...mapState(useLeagueStore, ['requiredUserPublisher'])
   },
-  data() {
+  data(): EditAutoDraftFormData {
     return {
-      autoDraftMode: null,
+      autoDraftMode: '',
       onlyDraftFromWatchlist: false,
-      autoDraftOptions: [
-        { text: 'Off', value: 'Off' },
-        { text: "Standard Games Only (Don't Auto Draft Counter Picks)", value: 'StandardGamesOnly' },
-        { text: 'On (Including Counter Picks)', value: 'All' }
-      ]
+      isBusy: false,
+      errorInfo: ''
     };
-  },
-  created() {
-    this.autoDraftMode = this.userPublisher.autoDraftMode;
-    this.onlyDraftFromWatchlist = this.userPublisher.onlyAutoDraftFromWatchlist;
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    onModeChange(newMode) {
+    initialize(): void {
+      this.autoDraftMode = this.requiredUserPublisher.autoDraftMode;
+      this.onlyDraftFromWatchlist = this.requiredUserPublisher.onlyAutoDraftFromWatchlist;
+      this.errorInfo = '';
+    },
+    onModeChange(newMode: unknown): void {
       if (newMode === 'Off') {
         this.onlyDraftFromWatchlist = false;
       }
     },
-    setAutoDraft() {
-      const model = {
-        publisherID: this.userPublisher.publisherID,
+    async setAutoDraft(): Promise<void> {
+      const request: SetAutoDraftRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
         mode: this.autoDraftMode,
         onlyDraftFromWatchlist: this.onlyDraftFromWatchlist
       };
-      axios
-        .post('/api/league/setAutoDraft', model)
-        .then(() => {
-          this.$refs.editAutoDraftFormRef.hide();
-          this.notifyAction('Auto draft set to ' + this.autoDraftMode);
-        })
-        .catch(() => {});
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueClient.setAutoDraft(request);
+
+        (this.$refs.editAutoDraftFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction('Auto draft set to ' + request.mode);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when setting auto draft.');
+      } finally {
+        this.isBusy = false;
+      }
     }
   }
-};
+});
 </script>

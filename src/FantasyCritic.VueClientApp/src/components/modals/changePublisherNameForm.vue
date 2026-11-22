@@ -1,5 +1,6 @@
 <template>
-  <b-modal id="changePublisherNameForm" ref="changePublisherNameRef" title="Change Publisher Name" @hidden="clearData" @show="clearData">
+  <b-modal id="change-publisher-name-form" ref="changePublisherNameRef" title="Change Publisher Name" @hidden="clearData" @show="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="form-horizontal">
       <div class="form-group">
         <label for="newPublisherName" class="control-label">Publisher Name</label>
@@ -7,47 +8,63 @@
       </div>
     </div>
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Change Name" :disabled="!newPublisherName" @click="changePublisherName" />
+      <input type="submit" class="btn btn-primary" value="Change Name" :disabled="!newPublisherName.trim() || isBusy" @click="changePublisherName" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueClient, type ChangePublisherNameRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
+interface ChangePublisherNameFormData {
+  newPublisherName: string;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   computed: {
-    ...mapState(useLeagueStore, ['userPublisher'])
+    ...mapState(useLeagueStore, ['requiredUserPublisher'])
   },
-  data() {
+  data(): ChangePublisherNameFormData {
     return {
       newPublisherName: '',
+      isBusy: false,
       errorInfo: ''
     };
   },
-  created() {
-    this.clearData();
-  },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    changePublisherName() {
-      const model = {
-        publisherID: this.userPublisher.publisherID,
+    async changePublisherName(): Promise<void> {
+      const oldPublisherName = this.requiredUserPublisher.publisherName;
+      const request: ChangePublisherNameRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
         publisherName: this.newPublisherName.trim()
       };
-      axios
-        .post('/api/league/changePublisherName', model)
-        .then(() => {
-          this.$refs.changePublisherNameRef.hide();
-          this.notifyAction('Publisher name changed from ' + this.userPublisher.publisherName + ' to ' + this.newPublisherName);
-        })
-        .catch(() => {});
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueClient.changePublisherName(request);
+
+        (this.$refs.changePublisherNameRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction('Publisher name changed from ' + oldPublisherName + ' to ' + request.publisherName);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when changing your publisher name.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    clearData() {
-      this.newPublisherName = this.userPublisher.publisherName;
+    clearData(): void {
+      this.newPublisherName = this.requiredUserPublisher.publisherName;
+      this.errorInfo = '';
     }
   }
-};
+});
 </script>

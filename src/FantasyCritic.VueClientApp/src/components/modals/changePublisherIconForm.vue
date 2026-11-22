@@ -1,5 +1,6 @@
 <template>
-  <b-modal id="changePublisherIconForm" ref="changePublisherIconRef" title="Change Publisher Icon" @hidden="clearData" @show="clearData">
+  <b-modal id="change-publisher-icon-form" ref="changePublisherIconRef" title="Change Publisher Icon" @hidden="clearData" @show="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div v-show="!newPublisherIcon || !iconIsValid" class="alert alert-info">
       Your icon must be a single character, ideally an emoji.
       <br />
@@ -17,51 +18,66 @@
       </div>
     </div>
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Change Icon" :disabled="!iconIsValid" @click="changePublisherIcon" />
+      <input type="submit" class="btn btn-primary" value="Change Icon" :disabled="!iconIsValid || isBusy" @click="changePublisherIcon" />
     </template>
   </b-modal>
 </template>
-<script>
-import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
 
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapActions, mapState } from 'pinia';
+import type { BModal } from 'bootstrap-vue-next';
+
+import { leagueClient, type ChangePublisherIconRequest } from '@/api/clients';
 import { publisherIconIsValid } from '@/globalFunctions';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface ChangePublisherIconFormData {
+  newPublisherIcon: string | undefined;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): ChangePublisherIconFormData {
     return {
       newPublisherIcon: '',
+      isBusy: false,
       errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['userPublisher']),
-    iconIsValid() {
+    ...mapState(useLeagueStore, ['requiredUserPublisher']),
+    iconIsValid(): boolean {
       return publisherIconIsValid(this.newPublisherIcon);
     }
   },
-  created() {
-    this.clearData();
-  },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    changePublisherIcon() {
-      const model = {
-        publisherID: this.userPublisher.publisherID,
+    async changePublisherIcon(): Promise<void> {
+      const request: ChangePublisherIconRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
         publisherIcon: this.newPublisherIcon
       };
-      axios
-        .post('/api/league/changePublisherIcon', model)
-        .then(() => {
-          this.$refs.changePublisherIconRef.hide();
-          this.notifyAction('Publisher icon changed.');
-        })
-        .catch(() => {});
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueClient.changePublisherIcon(request);
+
+        (this.$refs.changePublisherIconRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction('Publisher icon changed.');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when changing your publisher icon.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    clearData() {
-      this.newPublisherIcon = this.userPublisher.publisherIcon;
+    clearData(): void {
+      this.newPublisherIcon = this.requiredUserPublisher.publisherIcon;
+      this.errorInfo = '';
     }
   }
-};
+});
 </script>

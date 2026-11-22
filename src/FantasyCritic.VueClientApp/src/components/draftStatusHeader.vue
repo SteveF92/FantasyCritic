@@ -39,7 +39,7 @@
             <b-button v-b-modal="'playerDraftGameForm'" variant="primary">Draft Game</b-button>
           </div>
           <div v-else>
-            <b-button v-b-modal="'playerDraftCounterPickForm'" variant="primary">Draft Counter Pick</b-button>
+            <b-button v-b-modal="'player-draft-counter-pick-form'" variant="primary">Draft Counter Pick</b-button>
           </div>
         </div>
       </div>

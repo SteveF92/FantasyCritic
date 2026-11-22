@@ -20,8 +20,8 @@
             <router-link :to="{ name: 'leagueHistory', params: { leagueid: league.leagueID, year: leagueYear.year } }">See League History</router-link>
           </li>
           <li v-b-modal="`leagueOptionsModal_${league.leagueID}-${leagueYear.year}`" class="fake-link action">See League Options</li>
-          <li v-b-modal="'eligibilityOverridesModal'" class="fake-link action">See Eligibility Overrides</li>
-          <li v-b-modal="'tagOverridesModal'" class="fake-link action">See Tag Overrides</li>
+          <li v-b-modal="'eligibility-overrides-modal'" class="fake-link action">See Eligibility Overrides</li>
+          <li v-b-modal="'tag-overrides-modal'" class="fake-link action">See Tag Overrides</li>
           <li v-if="leagueYear.drafts.length >= 2" v-b-modal="'draftScheduleModal'" class="fake-link action">See Draft Schedule</li>
         </ul>
       </div>
@@ -37,9 +37,9 @@
                   <template v-else>My Publisher Details</template>
                 </router-link>
               </li>
-              <li v-b-modal="'changePublisherNameForm'" class="fake-link action">Change Publisher Name</li>
-              <li v-if="isPlusUser" v-b-modal="'changePublisherIconForm'" class="fake-link action">Change Publisher Icon</li>
-              <li v-if="isPlusUser" v-b-modal="'changePublisherSloganForm'" class="fake-link action">Change Publisher Slogan</li>
+              <li v-b-modal="'change-publisher-name-form'" class="fake-link action">Change Publisher Name</li>
+              <li v-if="isPlusUser" v-b-modal="'change-publisher-icon-form'" class="fake-link action">Change Publisher Icon</li>
+              <li v-if="isPlusUser" v-b-modal="'change-publisher-slogan-form'" class="fake-link action">Change Publisher Slogan</li>
             </ul>
           </li>
           <template v-if="!leagueYear.supportedYear.finished">
@@ -47,10 +47,10 @@
               <strong>Draft Actions</strong>
               <ul class="actions-list">
                 <li v-show="activeDraft?.draftIsActive && !activeDraft?.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftGameForm'" class="fake-link action">Draft Game</li>
-                <li v-show="activeDraft?.draftIsActive && activeDraft?.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftCounterPickForm'" class="fake-link action">
+                <li v-show="activeDraft?.draftIsActive && activeDraft?.draftingCounterPicks && userIsNextInDraft" v-b-modal="'player-draft-counter-pick-form'" class="fake-link action">
                   Draft Counter Pick
                 </li>
-                <li v-b-modal="'editAutoDraftForm'" class="fake-link action">Set Auto Draft</li>
+                <li v-b-modal="'edit-auto-draft-form'" class="fake-link action">Set Auto Draft</li>
               </ul>
             </li>
             <li>

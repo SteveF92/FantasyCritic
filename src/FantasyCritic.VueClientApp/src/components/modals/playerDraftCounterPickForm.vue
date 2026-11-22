@@ -1,6 +1,7 @@
 <template>
-  <b-modal id="playerDraftCounterPickForm" ref="playerDraftCounterPickFormRef" size="lg" title="Select Counter Pick" no-footer @hidden="clearData" @show="getPossibleCounterPicks">
-    <form class="form-horizontal" no-footer @submit.prevent="selectCounterPick">
+  <b-modal id="player-draft-counter-pick-form" ref="playerDraftCounterPickFormRef" size="lg" title="Select Counter Pick" no-footer @hidden="clearData" @show="getPossibleCounterPicks">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+    <form class="form-horizontal" @submit.prevent="selectCounterPick">
       <div v-if="!selectedCounterPick && isBusy" class="game-list-spinner">
         <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: 'black' }" />
       </div>
@@ -10,12 +11,12 @@
         <possibleCounterPicksTable v-model="selectedCounterPick" :possible-games="possibleCounterPicks" @update:model-value="newGameSelected"></possibleCounterPicksTable>
       </div>
 
-      <div v-if="possibleCounterPicks.length === 0 && !isBusy" class="alert alert-info">No games are available for counter picks.</div>
+      <div v-if="possibleCounterPicks.length === 0 && !isBusy && !errorInfo" class="alert alert-info">No games are available for counter picks.</div>
 
       <div v-if="selectedCounterPick">
-        <h3 for="selectedCounterPick" class="selected-game text-black">Selected Game:</h3>
+        <h3 class="selected-game text-black">Selected Game:</h3>
         <masterGameSummary v-if="selectedCounterPick.masterGame" :master-game="selectedCounterPick.masterGame"></masterGameSummary>
-        <div v-if="!selectedCounterPick.masterGame" class="text-black">
+        <div v-else class="text-black">
           <h4>{{ selectedCounterPick.gameName }}</h4>
           <div v-if="selectedCounterPick.publisherName">Currently owned by {{ selectedCounterPick.publisherName }}</div>
         </div>
@@ -32,84 +33,100 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueClient, type DraftGameRequest, type PlayerClaimResultViewModel, type PublisherGameViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { makeToast } from '@/utilities/toast';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import PossibleCounterPicksTable from '@/components/possibleCounterPicksTable.vue';
 
-export default {
+interface PlayerDraftCounterPickFormData {
+  selectedCounterPick: PublisherGameViewModel | null;
+  possibleCounterPicks: PublisherGameViewModel[];
+  draftResult: PlayerClaimResultViewModel | null;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   components: {
     PossibleCounterPicksTable,
     MasterGameSummary
   },
   computed: {
-    ...mapState(useLeagueStore, ['userPublisher'])
+    ...mapState(useLeagueStore, ['requiredUserPublisher'])
   },
-  data() {
+  data(): PlayerDraftCounterPickFormData {
     return {
       selectedCounterPick: null,
       possibleCounterPicks: [],
       draftResult: null,
-      isBusy: false
+      isBusy: false,
+      errorInfo: ''
     };
   },
   methods: {
-    async selectCounterPick() {
-      this.isBusy = true;
-      let request = {
-        publisherID: this.userPublisher.publisherID,
-        gameName: this.selectedCounterPick.gameName,
-        counterPick: true,
-        masterGameID: null
-      };
-
-      if (this.selectedCounterPick.masterGame) {
-        request.masterGameID = this.selectedCounterPick.masterGame.masterGameID;
+    async selectCounterPick(): Promise<void> {
+      const counterPick = this.selectedCounterPick;
+      if (!counterPick) {
+        return;
       }
 
+      const request: DraftGameRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
+        gameName: counterPick.gameName,
+        counterPick: true,
+        masterGameID: counterPick.masterGame?.masterGameID,
+        allowIneligibleSlot: false
+      };
+
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        const response = await axios.post('/api/league/DraftGame', request);
-        this.draftResult = response.data;
-        this.isBusy = false;
+        this.draftResult = await leagueClient.draftGame(request);
         if (!this.draftResult.success) {
           return;
         }
 
-        this.$refs.playerDraftCounterPickFormRef.hide();
-        makeToast('You have selected ' + this.selectedCounterPick.gameName + ' as a counter pick.');
+        (this.$refs.playerDraftCounterPickFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        makeToast('You have selected ' + counterPick.gameName + ' as a counter pick.');
         this.selectedCounterPick = null;
-      } catch {
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when selecting your counter pick.');
+      } finally {
         this.isBusy = false;
       }
     },
-    getPossibleCounterPicks() {
+    async getPossibleCounterPicks(): Promise<void> {
       this.isBusy = true;
-      axios
-        .get('/api/league/PossibleCounterPicks?publisherID=' + this.userPublisher.publisherID)
-        .then((response) => {
-          this.possibleCounterPicks = response.data;
-          this.isBusy = false;
-          this.counterPicking = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+      this.errorInfo = '';
+      try {
+        this.possibleCounterPicks = await leagueClient.possibleCounterPicks(this.requiredUserPublisher.publisherID);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load counter picks.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    clearData() {
+    clearData(): void {
       this.isBusy = false;
       this.possibleCounterPicks = [];
       this.selectedCounterPick = null;
+      this.draftResult = null;
+      this.errorInfo = '';
     },
-    newGameSelected() {
+    newGameSelected(): void {
       this.draftResult = null;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .game-list-spinner {
   text-align: center;

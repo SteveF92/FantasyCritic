@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="eligibilityOverridesModal" ref="eligibilityOverridesModalRef" title="Eligibility Overrides" no-footer>
+  <b-modal id="eligibility-overrides-modal" title="Eligibility Overrides" no-footer>
     <table class="table table-sm table-responsive-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">
@@ -8,7 +8,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="eligibilityOverride in leagueYear.eligibilityOverrides" :key="eligibilityOverride.masterGame.masterGameID">
+        <tr v-for="eligibilityOverride in requiredLeagueYear.eligibilityOverrides" :key="eligibilityOverride.masterGame.masterGameID">
           <td>{{ eligibilityOverride.masterGame.gameName }}</td>
           <td>{{ formatYesNo(eligibilityOverride.eligible) }}</td>
         </tr>
@@ -16,18 +16,20 @@
     </table>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 
 import { useLeagueStore } from '@/store/leagueStore';
 import { formatYesNo } from '@/utilities/formatters';
 
-export default {
+export default defineComponent({
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear'])
+    ...mapState(useLeagueStore, ['requiredLeagueYear'])
   },
   methods: {
     formatYesNo
   }
-};
+});
 </script>
