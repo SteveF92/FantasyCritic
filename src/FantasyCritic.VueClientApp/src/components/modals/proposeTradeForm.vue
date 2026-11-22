@@ -1,6 +1,6 @@
 <template>
   <form class="form-horizontal" no-footer>
-    <b-modal id="proposeTradeForm" ref="proposeTradeFormRef" size="lg" title="Propose Trade" @hidden="clearData">
+    <b-modal id="propose-trade-form" ref="proposeTradeFormRef" size="lg" title="Propose Trade" @hidden="clearData">
       <div class="form-group">
         <label for="counterParty" class="control-label">Publisher to trade with</label>
         <b-form-select v-model="counterParty">
@@ -20,7 +20,7 @@
                 <div class="trade-game-row">
                   <label>{{ index + 1 }}</label>
                   <b-form-select v-model="item.game">
-                    <option v-for="publisherGame in userPublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
+                    <option v-for="publisherGame in requiredUserPublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
                       {{ getGameOptionName(publisherGame) }}
                     </option>
                   </b-form-select>
@@ -57,7 +57,7 @@
         </div>
         <div class="row">
           <div class="col-6">
-            <label>Budget (Current Budget: ${{ userPublisher.budget }})</label>
+            <label>Budget (Current Budget: ${{ requiredUserPublisher.budget }})</label>
             <input id="proposerBudgetSendAmount" v-model="proposerBudgetSendAmount" name="proposerBudgetSendAmount" type="number" class="form-control input" />
           </div>
           <div class="col-6">
@@ -81,14 +81,36 @@
     </b-modal>
   </form>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import { BModal } from 'bootstrap-vue-next';
 
+import { leagueClient, type PublisherGameViewModel, type PublisherViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface TradableGame {
+  id: number;
+  game: PublisherGameViewModel | null;
+}
+
+interface ProposeTradeFormData {
+  counterParty: PublisherViewModel | null;
+  proposerPublisherGames: TradableGame[];
+  counterPartyPublisherGames: TradableGame[];
+  proposerBudgetSendAmount: number;
+  counterPartyBudgetSendAmount: number;
+  message: string;
+  indexer: number;
+  clientError: string;
+  serverError: string;
+  isBusy: boolean;
+}
+
+export default defineComponent({
+  data(): ProposeTradeFormData {
     return {
       counterParty: null,
       proposerPublisherGames: [],
@@ -103,14 +125,14 @@ export default {
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher']),
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'requiredUserPublisher']),
     getTradeError() {
       if (this.proposerPublisherGames.length === 0 && this.counterPartyPublisherGames.length === 0) {
         return 'A trade must involve at least one game.';
       }
 
-      let allGames = this.proposerPublisherGames.concat(this.counterPartyPublisherGames);
-      let nullGames = allGames.some((x) => !x.game);
+      const allGames = this.proposerPublisherGames.concat(this.counterPartyPublisherGames);
+      const nullGames = allGames.some((x) => !x.game);
       if (nullGames) {
         return 'All games must be defined.';
       }
@@ -134,60 +156,66 @@ export default {
       return '';
     },
     otherPublishers() {
-      return this.leagueYear.publishers.filter((x) => x.publisherID !== this.userPublisher.publisherID && !!x.userID);
+      return this.requiredLeagueYear.publishers.filter((x) => x.publisherID !== this.requiredUserPublisher.publisherID && !!x.userID);
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    addGame(list) {
-      const element = {
+    addGame(list: TradableGame[]) {
+      const element: TradableGame = {
         id: this.indexer++,
         game: null
       };
       list.push(element);
     },
-    removeProposerGame(id) {
+    removeProposerGame(id: number) {
       this.proposerPublisherGames = this.proposerPublisherGames.filter((x) => x.id !== id);
     },
-    removeCounterPartyGame(id) {
+    removeCounterPartyGame(id: number) {
       this.counterPartyPublisherGames = this.counterPartyPublisherGames.filter((x) => x.id !== id);
     },
-    getGameOptionName(game) {
+    getGameOptionName(game: PublisherGameViewModel) {
       if (game.counterPick) {
         return `${game.gameName} (Counter Pick)`;
       }
 
       return game.gameName;
     },
-    async proposeTrade() {
+    async proposeTrade(): Promise<void> {
       this.clientError = this.getTradeError;
       if (this.clientError) {
         return;
       }
 
+      if (!this.counterParty) {
+        throw new Error('No counter party selected.');
+      }
+
       const request = {
-        proposerPublisherID: this.userPublisher.publisherID,
+        proposerPublisherID: this.requiredUserPublisher.publisherID,
         counterPartyPublisherID: this.counterParty.publisherID,
-        proposerPublisherGameIDs: this.proposerPublisherGames.map((x) => x.game.publisherGameID),
-        counterPartyPublisherGameIDs: this.counterPartyPublisherGames.map((x) => x.game.publisherGameID),
+        proposerPublisherGameIDs: this.proposerPublisherGames.map((x) => x.game!.publisherGameID),
+        counterPartyPublisherGameIDs: this.counterPartyPublisherGames.map((x) => x.game!.publisherGameID),
         proposerBudgetSendAmount: this.proposerBudgetSendAmount || 0,
         counterPartyBudgetSendAmount: this.counterPartyBudgetSendAmount || 0,
         message: this.message
       };
 
       this.isBusy = true;
+      this.serverError = '';
       try {
-        await axios.post('/api/league/ProposeTrade', request);
-        this.$refs.proposeTradeFormRef.hide();
-        this.notifyAction('You proposed a trade.');
+        leagueClient.proposeTrade(request);
+
+        (this.$refs.proposeTradeFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction('You proposed a trade.');
         this.clearData();
       } catch (error) {
-        this.serverError = error.response.data;
+        this.serverError = getApiErrorMessage(error, 'Failed to place bid.');
       } finally {
         this.isBusy = false;
       }
     },
-    clearData() {
+    clearData(): void {
       this.counterParty = null;
       this.proposerPublisherGames = [];
       this.counterPartyPublisherGames = [];
@@ -196,8 +224,9 @@ export default {
       this.message = '';
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .trade-game-row {
   width: 100%;

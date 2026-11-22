@@ -60,7 +60,7 @@
                 <li v-if="biddingAllowed" v-b-modal="'bid-game-form'" class="fake-link action">Make a Bid</li>
                 <li v-if="biddingAllowed" v-b-modal="'bid-counter-pick-form'" class="fake-link action">Make a Counter Pick Bid</li>
                 <li v-if="biddingAllowed" v-b-modal="'current-bids-form'" class="fake-link action">My Current Bids</li>
-                <li v-if="tradesAllowed" v-b-modal="'proposeTradeForm'" class="fake-link action">Propose a Trade</li>
+                <li v-if="tradesAllowed" v-b-modal="'propose-trade-form'" class="fake-link action">Propose a Trade</li>
                 <li v-if="tradesAllowed" v-b-modal="'activeTradesModal'" class="fake-link action">Active Trades</li>
                 <li v-if="dropsAllowed" v-b-modal="'drop-game-form'" class="fake-link action">Drop a Game</li>
                 <li v-if="dropsAllowed && userPublisher.superDropsAvailable > 0" v-b-modal="'super-drop-game-form'" class="fake-link action">Use a Super Drop</li>
