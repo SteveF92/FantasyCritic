@@ -46,7 +46,7 @@
             <li v-if="hasPendingOrActiveDraft">
               <strong>Draft Actions</strong>
               <ul class="actions-list">
-                <li v-show="activeDraft?.draftIsActive && !activeDraft?.draftingCounterPicks && userIsNextInDraft" v-b-modal="'playerDraftGameForm'" class="fake-link action">Draft Game</li>
+                <li v-show="activeDraft?.draftIsActive && !activeDraft?.draftingCounterPicks && userIsNextInDraft" v-b-modal="'player-draft-game-form'" class="fake-link action">Draft Game</li>
                 <li v-show="activeDraft?.draftIsActive && activeDraft?.draftingCounterPicks && userIsNextInDraft" v-b-modal="'player-draft-counter-pick-form'" class="fake-link action">
                   Draft Counter Pick
                 </li>
