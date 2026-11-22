@@ -6,7 +6,7 @@
       <br />
       Bids are processed on Saturday Nights. See the FAQ for more info.
       <br />
-      Games that have already released, or are confirmed not to release this year are not available to be counterpicked.
+      Games that have already released, or are confirmed not to release this year are not available to be counter picked.
     </p>
 
     <div v-if="!counterPickBiddingAllowed" class="alert alert-warning">No counter pick bids were placed before bids were revealed, so counter pick bidding is closed for this week.</div>
@@ -112,7 +112,7 @@ export default defineComponent({
       }
 
       if (!this.bidCounterPick.masterGame) {
-        throw new Error('Games not linked to a master game cannot be counterpicked via bids, due to technical restrictions.');
+        throw new Error('Games not linked to a master game cannot be counter picked via bids, due to technical restrictions.');
       }
 
       const request: PickupBidRequest = {

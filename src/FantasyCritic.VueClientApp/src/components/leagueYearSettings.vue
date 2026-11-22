@@ -191,7 +191,7 @@
           <b-form-checkbox v-model="grantSuperDrops">
             <span class="checkbox-label">Enable Super Drops</span>
             <p>
-              Super drops allow players to drop a single game, with no conditions. For example, you can drop a game that already came out and scored poorly, or you can drop a counterpick that scored
+              Super drops allow players to drop a single game, with no conditions. For example, you can drop a game that already came out and scored poorly, or you can drop a counter pick that scored
               very well. While league managers can always manually grant a player a super drop, if you choose this option, players that are doing poorly in the league will be given one automatically.
               For more details,
               <a href="/faq#dropping-games" target="_blank">click here.</a>
@@ -295,8 +295,8 @@
             <b-button variant="warning" size="sm" @click="mightReleaseDroppableDate = undefined">Clear</b-button>
           </div>
 
-          <p>If you enable this option, then after this date, a game that is considered "might release" will be treated like a "will not release" game for dropping and counter-picking purposes.</p>
-          <p>"Might Release" means a game with a release date like "TBA". If a game has a non-specific {{ year }} date, then it will still be counter as "Will Release" for {{ year }}.</p>
+          <p>If you enable this option, then after this date, a game that is considered "might release" will be treated like a "will not release" game for dropping and counter picking purposes.</p>
+          <p>"Might Release" means a game with a release date like "TBA". If a game has a non-specific {{ year }} date, then it will still be counted as "Will Release" for {{ year }}.</p>
           <p>In more technical terms, this is based on the "Maximum Release Date" that you can see on the Master Game page.</p>
         </div>
         <div>

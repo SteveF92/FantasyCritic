@@ -25,7 +25,7 @@
         </div>
 
         <div v-if="selectedCounterPick">
-          <input type="submit" class="btn btn-primary full-width-button" value="Select Game as Counter-Pick" />
+          <input type="submit" class="btn btn-primary full-width-button" value="Select Game as Counter Pick" />
         </div>
 
         <div v-if="draftResult && draftResult.overridable" class="plain-check">

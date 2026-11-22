@@ -261,7 +261,7 @@
       <template #body>
         If a player is not available at the scheduled draft time, they can set themselves on "Auto Draft". When this setting is on, the site will choose their games for them. Players can use the
         "Watch List" feature to rank the games they want to draft, and if their list is empty or if every game on it is taken, the site will choose the game with the highest hype factor that is still
-        available. Counterpicks are chosen in order of highest counterpick % accross the entire site. Both of these stats are viewable on the Master Games List.
+        available. Counter picks are chosen in order of highest counter pick % across the entire site. Both of these stats are viewable on the Master Games List.
       </template>
     </collapseCard>
     <br />
@@ -479,7 +479,7 @@
     <collapseCard>
       <template #header>What happens if I drop a game that someone counter picked?</template>
       <template #body>
-        Your game is dropped, but the counterpick the other player has stays and is not affected. However, if your league has the "counter picks block drops" option on, then you will not be able to
+        Your game is dropped, but the counter pick the other player has stays and is not affected. However, if your league has the "counter picks block drops" option on, then you will not be able to
         drop a game if it has been counter picked by another player.
       </template>
     </collapseCard>

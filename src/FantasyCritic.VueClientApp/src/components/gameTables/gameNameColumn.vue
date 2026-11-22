@@ -94,7 +94,7 @@
         </b-popover>
       </template>
       <template v-else>
-        <font-awesome-icon v-b-popover.hover.focus="emptyCounterpickFinalText" color="white" size="lg" icon="exclamation-triangle" />
+        <font-awesome-icon v-b-popover.hover.focus="emptyCounterPickFinalText" color="white" size="lg" icon="exclamation-triangle" />
       </template>
     </span>
   </span>
@@ -144,12 +144,20 @@ export default defineComponent({
         'However, as your league uses "Only Needs Score" mode, you will still receive points if the game receives a score on OpenCritic this year.'
     };
 
-    const emptyCounterpickFinalText: PopoverContent = {
+    const emptyCounterPickFinalText: PopoverContent = {
       title: 'Woops!',
       body: 'Since this slot was not filled, it counts as -15 points.'
     };
 
-    return { counterPickedGameIsInvalidText, delayContentionText, needsOpenCriticPage, needsMoreReviewsText, manuallyScoredText, willReleaseEarlyAccessOnlyText, emptyCounterpickFinalText };
+    return {
+      counterPickedGameIsInvalidText,
+      delayContentionText,
+      needsOpenCriticPage,
+      needsMoreReviewsText,
+      manuallyScoredText,
+      willReleaseEarlyAccessOnlyText,
+      emptyCounterPickFinalText
+    };
   },
   components: {
     MasterGamePopover,

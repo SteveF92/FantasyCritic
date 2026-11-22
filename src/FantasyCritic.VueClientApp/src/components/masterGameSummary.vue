@@ -37,7 +37,7 @@
           {{ formatPercent(masterGameYear.eligiblePercentStandardGame, 1) }}
         </div>
         <div>
-          <span class="detail-label">Percent Counterpicked:</span>
+          <span class="detail-label">Percent Counter Picked:</span>
           {{ formatPercent(masterGameYear.adjustedPercentCounterPick, 1) }}
         </div>
         <div>
