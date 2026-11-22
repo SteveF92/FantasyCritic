@@ -40,7 +40,6 @@ import { getApiErrorMessage } from '@/utilities/apiError';
 interface CurrentDropsFormData {
   dropToCancel: DropGameRequestViewModel | null;
   errorInfo: string;
-  isBusy: boolean;
 }
 
 export default defineComponent({
@@ -50,14 +49,12 @@ export default defineComponent({
   data(): CurrentDropsFormData {
     return {
       dropToCancel: null,
-      errorInfo: '',
-      isBusy: false
+      errorInfo: ''
     };
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
     confirmCancelDrop(drop: DropGameRequestViewModel): void {
-      this.errorInfo = '';
       this.dropToCancel = drop;
       (this.$refs.confirmCancelDropModalRef as InstanceType<typeof BModal> | undefined)?.show();
     },
@@ -71,21 +68,17 @@ export default defineComponent({
         dropRequestID: this.dropToCancel.dropRequestID
       };
 
-      this.isBusy = true;
       try {
         await leagueClient.deleteDropRequest(request);
         await this.notifyAction('Drop Request for ' + this.dropToCancel.masterGame.gameName + ' was cancelled.');
         this.clearData();
       } catch (error) {
         this.errorInfo = getApiErrorMessage(error, 'Failed to cancel drop request.');
-      } finally {
-        this.isBusy = false;
       }
     },
-    clearData() {
+    clearData(): void {
       this.dropToCancel = null;
       this.errorInfo = '';
-      this.isBusy = false;
     }
   }
 });
