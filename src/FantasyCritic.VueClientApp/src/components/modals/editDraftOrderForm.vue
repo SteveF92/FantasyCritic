@@ -4,23 +4,23 @@
     <label>How do you want to set the draft order?</label>
     <div v-if="isFirstDraft && hasPreviousYear" class="order-options-list">
       <label>Recommended:</label>
-      <b-button variant="success" size="sm" @click="setDraftOrder('InverseStandings')">Inverse of Last Year's Results</b-button>
+      <b-button variant="success" size="sm" :disabled="isBusy" @click="setDraftOrder('InverseStandings')">Inverse of Last Year's Results</b-button>
       <label>Other Options:</label>
-      <b-button variant="secondary" size="sm" @click="setDraftOrder('Random')">Randomly</b-button>
+      <b-button variant="secondary" size="sm" :disabled="isBusy" @click="setDraftOrder('Random')">Randomly</b-button>
       <b-button variant="warning" size="sm" @click="showManualSettings = true">Manually</b-button>
     </div>
     <div v-else-if="isFirstDraft" class="order-options-list">
       <label>Recommended:</label>
-      <b-button variant="success" size="sm" @click="setDraftOrder('Random')">Randomly</b-button>
+      <b-button variant="success" size="sm" :disabled="isBusy" @click="setDraftOrder('Random')">Randomly</b-button>
       <label>Other Options:</label>
       <b-button variant="warning" size="sm" @click="showManualSettings = true">Manually</b-button>
     </div>
     <div v-else class="order-options-list">
       <label>Recommended:</label>
-      <b-button variant="success" size="sm" @click="setDraftOrder('InverseProjectedPoints')">Inverse of Current Projected Points</b-button>
+      <b-button variant="success" size="sm" :disabled="isBusy" @click="setDraftOrder('InverseProjectedPoints')">Inverse of Current Projected Points</b-button>
       <label>Other Options:</label>
-      <b-button v-if="hasPreviousYear" variant="secondary" size="sm" @click="setDraftOrder('InverseStandings')">Inverse of Last Year's Results</b-button>
-      <b-button variant="secondary" size="sm" @click="setDraftOrder('Random')">Randomly</b-button>
+      <b-button v-if="hasPreviousYear" variant="secondary" size="sm" :disabled="isBusy" @click="setDraftOrder('InverseStandings')">Inverse of Last Year's Results</b-button>
+      <b-button variant="secondary" size="sm" :disabled="isBusy" @click="setDraftOrder('Random')">Randomly</b-button>
       <b-button variant="warning" size="sm" @click="showManualSettings = true">Manually</b-button>
     </div>
 
@@ -28,7 +28,7 @@
       <label>Drag and drop to change order.</label>
       <div class="fluid container draft-order-editor bg-secondary">
         <VueDraggable v-model="desiredDraftOrder" tag="ul" class="list-group" :animation="150" handle=".handle">
-          <li v-for="(publisher, index) in desiredDraftOrder" :key="publisher.draftPosition" class="draft-order-item">
+          <li v-for="(publisher, index) in desiredDraftOrder" :key="publisher.publisherID" class="draft-order-item">
             <font-awesome-icon icon="bars" class="handle" />
             <span class="badge">{{ index + 1 }}</span>
             {{ publisher.publisherName }} ({{ publisher.playerName }})
@@ -36,7 +36,7 @@
         </VueDraggable>
       </div>
 
-      <b-button class="confirm-button" variant="primary" size="sm" @click="setDraftOrder('Manual')">Confirm Draft Order</b-button>
+      <b-button class="confirm-button" variant="primary" size="sm" :disabled="isBusy" @click="setDraftOrder('Manual')">Confirm Draft Order</b-button>
     </div>
   </b-modal>
 </template>
@@ -56,6 +56,7 @@ type DraftOrderType = 'Random' | 'Manual' | 'InverseStandings' | 'InverseProject
 interface EditDraftOrderFormData {
   showManualSettings: boolean;
   desiredDraftOrder: PublisherViewModel[];
+  isBusy: boolean;
   errorInfo: string;
 }
 
@@ -67,6 +68,7 @@ export default defineComponent({
     return {
       showManualSettings: false,
       desiredDraftOrder: [],
+      isBusy: false,
       errorInfo: ''
     };
   },
@@ -78,9 +80,6 @@ export default defineComponent({
     isFirstDraft(): boolean {
       return (this.pendingDraft?.draftNumber ?? 1) === 1;
     }
-  },
-  created() {
-    this.clearData();
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
@@ -98,16 +97,22 @@ export default defineComponent({
         request.manualPublisherDraftPositions = this.desiredDraftOrder.map((x) => x.publisherID);
       }
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
         await leagueManagerClient.setDraftOrder(request);
         (this.$refs.editDraftOrderFormRef as InstanceType<typeof BModal> | undefined)?.hide();
         await this.notifyAction('Draft order has been changed.');
       } catch (error) {
         this.errorInfo = getApiErrorMessage(error, 'Something went wrong when setting draft order.');
+      } finally {
+        this.isBusy = false;
       }
     },
     clearData(): void {
       this.desiredDraftOrder = this.requiredLeagueYear.publishers;
+      this.showManualSettings = false;
+      this.errorInfo = '';
     }
   }
 });
