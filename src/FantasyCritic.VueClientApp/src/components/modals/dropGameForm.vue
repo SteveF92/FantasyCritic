@@ -1,8 +1,7 @@
 <template>
   <b-modal id="dropGameForm" ref="dropGameFormRef" size="lg" title="Drop a Game" no-footer @hidden="clearData">
-    <div v-if="errorInfo" class="alert alert-danger" role="alert">
-      {{ errorInfo }}
-    </div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+
     <p>
       You can use this form to request to drop a game.
       <br />
@@ -10,15 +9,19 @@
       <br />
       Drop requests are processed on Saturday Nights. See the FAQ for more info.
     </p>
-    <div v-if="userPublisher" class="drop-counts">
+    <div class="drop-counts">
       <strong>Drops Remaining:</strong>
       <ul>
-        <li v-if="userPublisher.willReleaseDroppableGames !== 0">Will Release: {{ dropStatus(userPublisher.willReleaseGamesDropped, userPublisher.willReleaseDroppableGames) }}</li>
-        <li v-if="userPublisher.willNotReleaseDroppableGames !== 0">Will Not Release: {{ dropStatus(userPublisher.willNotReleaseGamesDropped, userPublisher.willNotReleaseDroppableGames) }}</li>
-        <li v-if="userPublisher.unrestrictedReleaseStatusDroppableGames !== 0">
-          Any Unreleased: {{ dropStatus(userPublisher.unrestrictedReleaseStatusGamesDropped, userPublisher.unrestrictedReleaseStatusDroppableGames) }}
+        <li v-if="requiredUserPublisher.willReleaseDroppableGames !== 0">
+          Will Release: {{ dropStatus(requiredUserPublisher.willReleaseGamesDropped, requiredUserPublisher.willReleaseDroppableGames) }}
         </li>
-        <li v-if="userPublisher.superDropsAvailable !== undefined">Super Drops: {{ userPublisher.superDropsAvailable }}</li>
+        <li v-if="requiredUserPublisher.willNotReleaseDroppableGames !== 0">
+          Will Not Release: {{ dropStatus(requiredUserPublisher.willNotReleaseGamesDropped, requiredUserPublisher.willNotReleaseDroppableGames) }}
+        </li>
+        <li v-if="requiredUserPublisher.unrestrictedReleaseStatusDroppableGames !== 0">
+          Any Unreleased: {{ dropStatus(requiredUserPublisher.unrestrictedReleaseStatusGamesDropped, requiredUserPublisher.unrestrictedReleaseStatusDroppableGames) }}
+        </li>
+        <li v-if="requiredUserPublisher.superDropsAvailable !== undefined">Super Drops: {{ requiredUserPublisher.superDropsAvailable }}</li>
       </ul>
     </div>
     <form class="form-horizontal" no-footer @submit.prevent="dropGame">
@@ -44,14 +47,24 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueClient, type DropGameRequestRequest, type DropGameResultViewModel, type PublisherGameViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface DropGameFormData {
+  dropResult: DropGameResultViewModel | null;
+  gameToDrop: PublisherGameViewModel | null;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): DropGameFormData {
     return {
       dropResult: null,
       gameToDrop: null,
@@ -60,47 +73,49 @@ export default {
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['userPublisher']),
-    droppableGames() {
-      return this.userPublisher.games.filter((x) => !x.counterPick);
+    ...mapState(useLeagueStore, ['requiredUserPublisher']),
+    droppableGames(): PublisherGameViewModel[] {
+      return this.requiredUserPublisher.games.filter((x) => !x.counterPick);
     }
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    dropStatus(dropped, droppable) {
+    dropStatus(dropped: number, droppable: number): string {
       if (droppable === -1) {
         return '\u221E';
       }
-      return droppable - dropped;
+      return String(droppable - dropped);
     },
-    dropGame() {
-      const request = {
-        publisherID: this.userPublisher.publisherID,
+    async dropGame(): Promise<void> {
+      if (!this.gameToDrop) {
+        throw new Error('Attempted to drop a game with none selected.');
+      }
+
+      const request: DropGameRequestRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
         publisherGameID: this.gameToDrop.publisherGameID
       };
-      this.isBusy = true;
-      axios
-        .post('/api/league/MakeDropRequest', request)
-        .then((response) => {
-          this.isBusy = false;
-          this.dropResult = response.data;
-          if (!this.dropResult.success) {
-            return;
-          }
 
-          this.notifyAction('Drop Request for ' + this.gameToDrop.gameName + ' was made.');
-          this.$refs.dropGameFormRef.hide();
-          this.clearData();
-        })
-        .catch((response) => {
-          this.isBusy = false;
-          this.errorInfo = response.response.data;
-        });
+      this.isBusy = true;
+      try {
+        this.dropResult = await leagueClient.makeDropRequest(request);
+        if (!this.dropResult.success) {
+          return;
+        }
+
+        await this.notifyAction('Drop Request for ' + this.gameToDrop.gameName + ' was made.');
+        (this.$refs.dropGameFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to place drop request.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    clearData() {
+    clearData(): void {
       this.dropResult = null;
       this.gameToDrop = null;
     }
   }
-};
+});
 </script>

@@ -7,15 +7,15 @@
       Super drops work differently from normal drops. You can drop any game you wish, and drops happen immediately, rather than having to wait until Saturday.
       <br />
       <br />
-      <template v-if="userPublisher.superDropsAvailable > 1">You currently have {{ userPublisher.superDropsAvailable }} super drops.</template>
-      <template v-if="userPublisher.superDropsAvailable === 1">You currently have 1 super drop.</template>
-      <template v-if="!userPublisher.superDropsAvailable">You do not currently have any super drops.</template>
+      <template v-if="requiredUserPublisher.superDropsAvailable > 1">You currently have {{ requiredUserPublisher.superDropsAvailable }} super drops.</template>
+      <template v-if="requiredUserPublisher.superDropsAvailable === 1">You currently have 1 super drop.</template>
+      <template v-if="!requiredUserPublisher.superDropsAvailable">You do not currently have any super drops.</template>
     </div>
     <form class="form-horizontal" no-footer @submit.prevent="dropGame">
       <div class="form-group">
         <label for="gameToDrop" class="control-label">Game</label>
         <b-form-select v-model="gameToDrop">
-          <option v-for="publisherGame in userPublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
+          <option v-for="publisherGame in requiredUserPublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
             {{ publisherGame.gameName }}
           </option>
         </b-form-select>
@@ -35,14 +35,24 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueClient, type DropGameRequestRequest, type DropGameResultViewModel, type PublisherGameViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  data() {
+interface SuperDropGameFormData {
+  dropResult: DropGameResultViewModel | null;
+  gameToDrop: PublisherGameViewModel | null;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  data(): SuperDropGameFormData {
     return {
       dropResult: null,
       gameToDrop: null,
@@ -51,37 +61,40 @@ export default {
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['userPublisher'])
+    ...mapState(useLeagueStore, ['requiredUserPublisher'])
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    async dropGame() {
-      const request = {
-        publisherID: this.userPublisher.publisherID,
+    async dropGame(): Promise<void> {
+      if (!this.gameToDrop) {
+        throw new Error('Attempted to drop a game with none selected.');
+      }
+
+      const request: DropGameRequestRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
         publisherGameID: this.gameToDrop.publisherGameID
       };
 
       this.isBusy = true;
       try {
-        const response = await axios.post('/api/league/UseSuperDrop', request);
-        this.isBusy = false;
-        this.dropResult = response.data;
+        this.dropResult = await leagueClient.useSuperDrop(request);
         if (!this.dropResult.success) {
           return;
         }
 
-        this.notifyAction(this.gameToDrop.gameName + ' has been super dropped.');
-        this.$refs.superDropGameFormRef.hide();
+        await this.notifyAction(this.gameToDrop.gameName + ' has been super dropped.');
+        (this.$refs.superDropGameFormRef as InstanceType<typeof BModal> | undefined)?.hide();
         this.clearData();
       } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to use super drop.');
+      } finally {
         this.isBusy = false;
-        this.errorInfo = error.response.data;
       }
     },
-    clearData() {
+    clearData(): void {
       this.dropResult = null;
       this.gameToDrop = null;
     }
   }
-};
+});
 </script>
