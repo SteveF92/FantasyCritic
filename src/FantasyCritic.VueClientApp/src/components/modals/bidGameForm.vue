@@ -32,18 +32,18 @@
       <div v-if="requiredLeagueYear.settings.hasSpecialSlots">
         <h5 class="text-black">Top Available by Slot</h5>
         <span class="search-tags">
-          <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="searchMode === 'topAvailable' && !selectedSlot" @click="getTopGames"></searchSlotTypeBadge>
+          <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="searchMode === 'topAvailable' && !selectedSlotKey" @click="getTopGames"></searchSlotTypeBadge>
           <searchSlotTypeBadge
             :game-slot="requiredLeagueYear.slotInfo.regularSlot"
             name="REG"
-            :selected="selectedSlot === requiredLeagueYear.slotInfo.regularSlot"
-            @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
+            :selected="selectedSlotKey === 'regular'"
+            @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot, 'regular')"></searchSlotTypeBadge>
           <searchSlotTypeBadge
             v-for="(specialSlot, index) in requiredLeagueYear.slotInfo.specialSlots"
             :key="index"
             :game-slot="specialSlot"
-            :selected="selectedSlot === specialSlot"
-            @click="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
+            :selected="selectedSlotKey === `special-${index}`"
+            @click="getGamesForSlot(specialSlot, `special-${index}`)"></searchSlotTypeBadge>
         </span>
       </div>
 
@@ -155,7 +155,7 @@ interface BidGameFormData {
   errorInfo: string;
   isBusy: boolean;
   bidRequestIsBusy: boolean;
-  selectedSlot: PublisherSingleSlotRequirementsViewModel | null;
+  selectedSlotKey: string | null;
   allowIneligibleSlot: boolean;
   latestSearchID: number;
 }
@@ -197,7 +197,7 @@ export default defineComponent({
       searchMode: null,
       isBusy: false,
       bidRequestIsBusy: false,
-      selectedSlot: null,
+      selectedSlotKey: null,
       allowIneligibleSlot: false,
       latestSearchID: 0
     };
@@ -270,16 +270,16 @@ export default defineComponent({
         leagueClient.thisWeeksPublicBiddingGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID)
       );
     },
-    async getGamesForSlot(slotInfo: PublisherSingleSlotRequirementsViewModel): Promise<void> {
+    async getGamesForSlot(slotInfo: PublisherSingleSlotRequirementsViewModel, slotKey: string): Promise<void> {
       const slotJSON = JSON.stringify(slotInfo);
       const base64Slot = btoa(slotJSON);
-      await this.fetchGames('topAvailable', slotInfo, () =>
+      await this.fetchGames('topAvailable', slotKey, () =>
         leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID, base64Slot)
       );
     },
-    async fetchGames(searchMode: SearchMode, slotToSelect: PublisherSingleSlotRequirementsViewModel | null, searchAction: () => Promise<PossibleMasterGameYearViewModel[]>): Promise<void> {
+    async fetchGames(searchMode: SearchMode, slotKeyToSelect: string | null, searchAction: () => Promise<PossibleMasterGameYearViewModel[]>): Promise<void> {
       this.clearDataExceptSearch();
-      this.selectedSlot = slotToSelect;
+      this.selectedSlotKey = slotKeyToSelect;
       this.isBusy = true;
       const searchID = ++this.latestSearchID;
 
@@ -352,7 +352,7 @@ export default defineComponent({
       this.isBusy = false;
       this.bidRequestIsBusy = false;
       this.conditionalDrop = null;
-      this.selectedSlot = null;
+      this.selectedSlotKey = null;
       this.errorInfo = '';
     },
     clearData(): void {

@@ -16,18 +16,18 @@
       <div v-if="requiredLeagueYear.settings.hasSpecialSlots">
         <h5 class="text-black">Top Available by Slot</h5>
         <span class="search-tags">
-          <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="searchMode === 'topAvailable' && !selectedSlot" @click="getTopGames"></searchSlotTypeBadge>
+          <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="searchMode === 'topAvailable' && !selectedSlotKey" @click="getTopGames"></searchSlotTypeBadge>
           <searchSlotTypeBadge
             :game-slot="requiredLeagueYear.slotInfo.regularSlot"
             name="REG"
-            :selected="selectedSlot === requiredLeagueYear.slotInfo.regularSlot"
-            @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
+            :selected="selectedSlotKey === 'regular'"
+            @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot, 'regular')"></searchSlotTypeBadge>
           <searchSlotTypeBadge
             v-for="(specialSlot, index) in requiredLeagueYear.slotInfo.specialSlots"
             :key="index"
             :game-slot="specialSlot"
-            :selected="selectedSlot === specialSlot"
-            @click="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
+            :selected="selectedSlotKey === `special-${index}`"
+            @click="getGamesForSlot(specialSlot, `special-${index}`)"></searchSlotTypeBadge>
         </span>
       </div>
 
@@ -37,7 +37,7 @@
 
       <div v-if="!draftMasterGame && searchMode && possibleMasterGames.length > 0" class="search-results">
         <h3 class="text-black">{{ searchHeading }}</h3>
-        <possibleMasterGamesTable v-model="draftMasterGame" :possible-games="possibleMasterGames" @update:model-value="newGameSelected" bid-mode></possibleMasterGamesTable>
+        <possibleMasterGamesTable v-model="draftMasterGame" :possible-games="possibleMasterGames" @update:model-value="newGameSelected"></possibleMasterGamesTable>
       </div>
 
       <div v-show="(searchMode && !draftMasterGame) || showingUnlistedField" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
@@ -61,7 +61,7 @@
       <div v-if="draftMasterGame || draftUnlistedGameName">
         <h3 v-show="draftMasterGame" class="selected-game text-black">Selected Game:</h3>
         <masterGameSummary v-if="draftMasterGame" :master-game="draftMasterGame"></masterGameSummary>
-        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="isBusy" @click="addGame">Draft Game</b-button>
+        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="draftRequestIsBusy" @click="addGame">Draft Game</b-button>
         <div v-if="draftResult && !draftResult.success" class="alert draft-error" :class="{ 'alert-danger': !draftResult.showAsWarning, 'alert-warning': draftResult.showAsWarning }">
           <hr />
           <h3 v-if="draftResult.showAsWarning" class="alert-heading">Warning!</h3>
@@ -84,7 +84,7 @@
           <div v-if="draftResult.noEligibleSpaceError" class="plain-check">
             <div class="text-white">This game is going to end up in an ineligible slot.</div>
             <span>
-              <label class="text-white">Do you want draft this game anyway anyway?</label>
+              <label class="text-white">Do you want to draft this game anyway?</label>
               <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
             </span>
           </div>
@@ -125,8 +125,9 @@ interface PlayerDraftGameForm {
   showingUnlistedField: boolean;
   searchMode: SearchMode;
   isBusy: boolean;
+  draftRequestIsBusy: boolean;
   errorInfo: string;
-  selectedSlot: PublisherSingleSlotRequirementsViewModel | null;
+  selectedSlotKey: string | null;
   allowIneligibleSlot: boolean;
   latestSearchID: number;
 }
@@ -144,11 +145,12 @@ export default defineComponent({
       draftMasterGame: null,
       draftResult: null,
       possibleMasterGames: [],
-      searchMode: 'topAvailable',
+      searchMode: null,
       showingUnlistedField: false,
       isBusy: false,
+      draftRequestIsBusy: false,
       errorInfo: '',
-      selectedSlot: null,
+      selectedSlotKey: null,
       allowIneligibleSlot: false,
       latestSearchID: 0
     };
@@ -183,16 +185,16 @@ export default defineComponent({
     async getQueuedGames(): Promise<void> {
       await this.fetchGames('watchlist', null, () => leagueClient.currentQueuedGameYears(this.requiredUserPublisher.publisherID, null));
     },
-    async getGamesForSlot(slotInfo: PublisherSingleSlotRequirementsViewModel): Promise<void> {
+    async getGamesForSlot(slotInfo: PublisherSingleSlotRequirementsViewModel, slotKey: string): Promise<void> {
       const slotJSON = JSON.stringify(slotInfo);
       const base64Slot = btoa(slotJSON);
-      await this.fetchGames('topAvailable', slotInfo, () =>
+      await this.fetchGames('topAvailable', slotKey, () =>
         leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID, base64Slot)
       );
     },
-    async fetchGames(searchMode: SearchMode, slotToSelect: PublisherSingleSlotRequirementsViewModel | null, searchAction: () => Promise<PossibleMasterGameYearViewModel[]>): Promise<void> {
+    async fetchGames(searchMode: SearchMode, slotKeyToSelect: string | null, searchAction: () => Promise<PossibleMasterGameYearViewModel[]>): Promise<void> {
       this.clearDataExceptSearch();
-      this.selectedSlot = slotToSelect;
+      this.selectedSlotKey = slotKeyToSelect;
       this.isBusy = true;
       const searchID = ++this.latestSearchID;
 
@@ -222,28 +224,16 @@ export default defineComponent({
       this.draftUnlistedGameName = this.searchGameName;
     },
     async addGame(): Promise<void> {
-      this.isBusy = true;
-      let gameName = '';
-      if (this.draftMasterGame !== null) {
-        gameName = this.draftMasterGame.gameName;
-      } else if (this.draftUnlistedGameName !== null) {
-        gameName = this.draftUnlistedGameName;
-      }
-
-      let masterGameID = undefined;
-      if (this.draftMasterGame !== null) {
-        masterGameID = this.draftMasterGame.masterGameID;
-      }
-
+      const gameName = this.draftMasterGame?.gameName ?? this.draftUnlistedGameName;
       const request: DraftGameRequest = {
         publisherID: this.requiredUserPublisher.publisherID,
         gameName: gameName,
         counterPick: false,
-        masterGameID: masterGameID,
+        masterGameID: this.draftMasterGame?.masterGameID,
         allowIneligibleSlot: this.allowIneligibleSlot
       };
 
-      this.isBusy = true;
+      this.draftRequestIsBusy = true;
       try {
         this.draftResult = await leagueClient.draftGame(request);
         if (!this.draftResult.success) {
@@ -256,7 +246,7 @@ export default defineComponent({
       } catch (error) {
         this.errorInfo = getApiErrorMessage(error, 'Failed to draft game.');
       } finally {
-        this.isBusy = false;
+        this.draftRequestIsBusy = false;
       }
     },
     clearDataExceptSearch(): void {
@@ -265,15 +255,20 @@ export default defineComponent({
       this.draftMasterGame = null;
       this.draftResult = null;
       this.possibleMasterGames = [];
-      this.searchMode = 'topAvailable';
+      this.searchMode = null;
+      this.selectedSlotKey = null;
       this.showingUnlistedField = false;
+      this.allowIneligibleSlot = false;
+      this.errorInfo = '';
     },
     clearData(): void {
       this.clearDataExceptSearch();
       this.searchGameName = '';
+      this.latestSearchID++;
     },
     newGameSelected(): void {
       this.draftResult = null;
+      this.allowIneligibleSlot = false;
     }
   }
 });
