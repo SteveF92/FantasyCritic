@@ -213,6 +213,7 @@ public class AdminController : BaseJobQueuingController
     }
 
     [HttpPost]
+    [ProducesResponseType<SupportTicketViewModel>(StatusCodes.Status200OK)]
     public async Task<IActionResult> OpenSupportTicket([FromBody] OpenSupportTicketRequest request)
     {
         var user = await _userManager.FindByIdAsync(request.UserID.ToString());
