@@ -10,47 +10,37 @@
         </span>
       </div>
 
-      <div v-if="!requiredLeagueYear.settings.hasSpecialSlots">
-        <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
-        <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
-        <b-button variant="secondary" class="show-top-button" @click="showUnlistedField">Draft Unlisted Game</b-button>
-      </div>
-      <div v-else>
-        <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
-        <b-button variant="secondary" class="show-top-button" @click="showUnlistedField">Draft Unlisted Game</b-button>
+      <b-button v-if="!requiredLeagueYear.settings.hasSpecialSlots" variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
+      <b-button variant="secondary" class="show-top-button" @click="getQueuedGames">Show My Watchlist</b-button>
+
+      <div v-if="requiredLeagueYear.settings.hasSpecialSlots">
         <h5 class="text-black">Top Available by Slot</h5>
         <span class="search-tags">
-          <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click="getTopGames"></searchSlotTypeBadge>
+          <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="searchMode === 'topAvailable' && !selectedSlot" @click="getTopGames"></searchSlotTypeBadge>
           <searchSlotTypeBadge
             :game-slot="requiredLeagueYear.slotInfo.regularSlot"
             name="REG"
-            :selected="selectedSlotIndex === 1"
-            @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot, 1)"></searchSlotTypeBadge>
+            :selected="selectedSlot === requiredLeagueYear.slotInfo.regularSlot"
+            @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
           <searchSlotTypeBadge
             v-for="(specialSlot, index) in requiredLeagueYear.slotInfo.specialSlots"
-            :key="specialSlot.overallSlotNumber"
+            :key="index"
             :game-slot="specialSlot"
-            :selected="selectedSlotIndex === 2 + index"
-            @click="getGamesForSlot(specialSlot, 2 + index)"></searchSlotTypeBadge>
+            :selected="selectedSlot === specialSlot"
+            @click="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
         </span>
       </div>
 
-      <div v-if="!draftMasterGame && !showingUnlistedField">
-        <div v-if="isBusy" class="game-list-spinner">
-          <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: 'black' }" />
-        </div>
-
-        <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
-        <h3 v-show="showingQueuedGames" class="text-black">Watchlist</h3>
-        <h3 v-show="!showingTopAvailable && !showingQueuedGames && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
-        <possibleMasterGamesTable
-          v-if="possibleMasterGames.length > 0"
-          v-model="draftMasterGame"
-          :possible-games="possibleMasterGames"
-          @update:model-value="newGameSelected"></possibleMasterGamesTable>
+      <div v-show="isBusy" class="spinner">
+        <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#000000' }" />
       </div>
 
-      <div v-show="(searched && !draftMasterGame) || showingUnlistedField" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+      <div v-if="!draftMasterGame && searchMode && possibleMasterGames.length > 0" class="search-results">
+        <h3 class="text-black">{{ searchHeading }}</h3>
+        <possibleMasterGamesTable v-model="draftMasterGame" :possible-games="possibleMasterGames" @update:model-value="newGameSelected" bid-mode></possibleMasterGamesTable>
+      </div>
+
+      <div v-show="(searchMode && !draftMasterGame) || showingUnlistedField" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
         <div v-if="!showingUnlistedField">
           <span v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
           <span v-show="possibleMasterGames.length === 0">No games were found.</span>
@@ -124,7 +114,7 @@ import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 
-type SearchMode = 'search' | 'topAvailable' | 'watchlist' | 'publicBids' | null;
+type SearchMode = 'search' | 'topAvailable' | 'watchlist' | null;
 
 interface PlayerDraftGameForm {
   searchGameName: string;
@@ -165,6 +155,18 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useLeagueStore, ['requiredLeagueYear', 'requiredUserPublisher', 'isManager']),
+    searchHeading(): string {
+      switch (this.searchMode) {
+        case 'search':
+          return 'Search Results';
+        case 'topAvailable':
+          return 'Top Available Games';
+        case 'watchlist':
+          return 'Watchlist';
+        default:
+          return '';
+      }
+    },
     formIsValid(): boolean {
       return !!this.draftUnlistedGameName || !!this.draftMasterGame;
     }
@@ -180,11 +182,6 @@ export default defineComponent({
     },
     async getQueuedGames(): Promise<void> {
       await this.fetchGames('watchlist', null, () => leagueClient.currentQueuedGameYears(this.requiredUserPublisher.publisherID, null));
-    },
-    async getThisWeeksPublicBids(): Promise<void> {
-      await this.fetchGames('publicBids', null, () =>
-        leagueClient.thisWeeksPublicBiddingGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID)
-      );
     },
     async getGamesForSlot(slotInfo: PublisherSingleSlotRequirementsViewModel): Promise<void> {
       const slotJSON = JSON.stringify(slotInfo);
