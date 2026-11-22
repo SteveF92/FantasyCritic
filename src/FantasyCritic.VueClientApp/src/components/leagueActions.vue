@@ -62,8 +62,8 @@
                 <li v-if="biddingAllowed" v-b-modal="'current-bids-form'" class="fake-link action">My Current Bids</li>
                 <li v-if="tradesAllowed" v-b-modal="'proposeTradeForm'" class="fake-link action">Propose a Trade</li>
                 <li v-if="tradesAllowed" v-b-modal="'activeTradesModal'" class="fake-link action">Active Trades</li>
-                <li v-if="dropsAllowed" v-b-modal="'dropGameForm'" class="fake-link action">Drop a Game</li>
-                <li v-if="dropsAllowed && userPublisher.superDropsAvailable > 0" v-b-modal="'superDropGameForm'" class="fake-link action">Use a Super Drop</li>
+                <li v-if="dropsAllowed" v-b-modal="'drop-game-form'" class="fake-link action">Drop a Game</li>
+                <li v-if="dropsAllowed && userPublisher.superDropsAvailable > 0" v-b-modal="'super-drop-game-form'" class="fake-link action">Use a Super Drop</li>
                 <li v-if="dropsAllowed" v-b-modal="'currentDropsForm'" class="fake-link action">My Pending Drops</li>
               </ul>
             </li>

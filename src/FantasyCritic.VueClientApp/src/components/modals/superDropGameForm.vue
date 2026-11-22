@@ -1,8 +1,7 @@
 <template>
-  <b-modal id="superDropGameForm" ref="superDropGameFormRef" size="lg" title="Super Drop a Game" no-footer @hidden="clearData">
-    <div v-if="errorInfo" class="alert alert-danger" role="alert">
-      {{ errorInfo }}
-    </div>
+  <b-modal id="super-drop-game-form" ref="superDropGameFormRef" size="lg" title="Super Drop a Game" no-footer @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+
     <div class="alert alert-info">
       Super drops work differently from normal drops. You can drop any game you wish, and drops happen immediately, rather than having to wait until Saturday.
       <br />
@@ -11,10 +10,10 @@
       <template v-if="requiredUserPublisher.superDropsAvailable === 1">You currently have 1 super drop.</template>
       <template v-if="!requiredUserPublisher.superDropsAvailable">You do not currently have any super drops.</template>
     </div>
-    <form class="form-horizontal" no-footer @submit.prevent="dropGame">
+    <form class="form-horizontal" @submit.prevent="dropGame">
       <div class="form-group">
-        <label for="gameToDrop" class="control-label">Game</label>
-        <b-form-select v-model="gameToDrop">
+        <label for="game-to-super-drop" class="control-label">Game</label>
+        <b-form-select id="game-to-super-drop" v-model="gameToDrop">
           <option v-for="publisherGame in requiredUserPublisher.games" :key="publisherGame.publisherGameID" :value="publisherGame">
             {{ publisherGame.gameName }}
           </option>
@@ -76,15 +75,15 @@ export default defineComponent({
       };
 
       this.isBusy = true;
+      this.dropResult = null;
       try {
         this.dropResult = await leagueClient.useSuperDrop(request);
         if (!this.dropResult.success) {
           return;
         }
 
-        await this.notifyAction(this.gameToDrop.gameName + ' has been super dropped.');
         (this.$refs.superDropGameFormRef as InstanceType<typeof BModal> | undefined)?.hide();
-        this.clearData();
+        await this.notifyAction(this.gameToDrop.gameName + ' has been super dropped.');
       } catch (error) {
         this.errorInfo = getApiErrorMessage(error, 'Failed to use super drop.');
       } finally {
@@ -94,6 +93,7 @@ export default defineComponent({
     clearData(): void {
       this.dropResult = null;
       this.gameToDrop = null;
+      this.errorInfo = '';
     }
   }
 });

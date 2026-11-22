@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="dropGameForm" ref="dropGameFormRef" size="lg" title="Drop a Game" no-footer @hidden="clearData">
+  <b-modal id="drop-game-form" ref="dropGameFormRef" size="lg" title="Drop a Game" no-footer @hidden="clearData">
     <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
     <p>
@@ -21,13 +21,13 @@
         <li v-if="requiredUserPublisher.unrestrictedReleaseStatusDroppableGames !== 0">
           Any Unreleased: {{ dropStatus(requiredUserPublisher.unrestrictedReleaseStatusGamesDropped, requiredUserPublisher.unrestrictedReleaseStatusDroppableGames) }}
         </li>
-        <li v-if="requiredUserPublisher.superDropsAvailable !== undefined">Super Drops: {{ requiredUserPublisher.superDropsAvailable }}</li>
+        <li v-if="requiredUserPublisher.superDropsAvailable > 0">Super Drops: {{ requiredUserPublisher.superDropsAvailable }}</li>
       </ul>
     </div>
-    <form class="form-horizontal" no-footer @submit.prevent="dropGame">
+    <form class="form-horizontal" @submit.prevent="dropGame">
       <div class="form-group">
-        <label for="gameToDrop" class="control-label">Game</label>
-        <b-form-select v-model="gameToDrop">
+        <label for="game-to-drop" class="control-label">Game</label>
+        <b-form-select id="game-to-drop" v-model="gameToDrop">
           <option v-for="publisherGame in droppableGames" :key="publisherGame.publisherGameID" :value="publisherGame">
             {{ publisherGame.gameName }}
           </option>
@@ -97,15 +97,15 @@ export default defineComponent({
       };
 
       this.isBusy = true;
+      this.dropResult = null;
       try {
         this.dropResult = await leagueClient.makeDropRequest(request);
         if (!this.dropResult.success) {
           return;
         }
 
-        await this.notifyAction('Drop Request for ' + this.gameToDrop.gameName + ' was made.');
         (this.$refs.dropGameFormRef as InstanceType<typeof BModal> | undefined)?.hide();
-        this.clearData();
+        await this.notifyAction('Drop Request for ' + this.gameToDrop.gameName + ' was made.');
       } catch (error) {
         this.errorInfo = getApiErrorMessage(error, 'Failed to place drop request.');
       } finally {
@@ -115,6 +115,7 @@ export default defineComponent({
     clearData(): void {
       this.dropResult = null;
       this.gameToDrop = null;
+      this.errorInfo = '';
     }
   }
 });
