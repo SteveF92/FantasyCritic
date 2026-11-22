@@ -13,7 +13,7 @@
       </form>
     </div>
 
-    <div v-if="!leagueYear.settings.hasSpecialSlots">
+    <div v-if="!requiredLeagueYear.settings.hasSpecialSlots">
       <div class="watchlist-flex-area">
         <b-button variant="secondary" class="show-top-button" @click="getTopGames">Top Available Games</b-button>
         <b-dropdown text="My Other Watchlists">
@@ -35,14 +35,14 @@
         </b-dropdown>
       </div>
       <span class="search-tags">
-        <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click="getTopGames"></searchSlotTypeBadge>
+        <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click="getTopGames"></searchSlotTypeBadge>
         <searchSlotTypeBadge
-          :game-slot="leagueYear.slotInfo.regularSlot"
+          :game-slot="requiredLeagueYear.slotInfo.regularSlot"
           name="REG"
           :selected="selectedSlotIndex === 1"
-          @click="getGamesForSlot(leagueYear.slotInfo.regularSlot, 1)"></searchSlotTypeBadge>
+          @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot, 1)"></searchSlotTypeBadge>
         <searchSlotTypeBadge
-          v-for="(specialSlot, index) in leagueYear.slotInfo.specialSlots"
+          v-for="(specialSlot, index) in requiredLeagueYear.slotInfo.specialSlots"
           :key="specialSlot.overallSlotNumber"
           :game-slot="specialSlot"
           :selected="selectedSlotIndex === 2 + index"
@@ -128,19 +128,56 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import { BModal } from 'bootstrap-vue-next';
 import { VueDraggable } from 'vue-draggable-plus';
 
+import {
+  leagueClient,
+  type AddGameToQueueRequest,
+  type LeaguePublisherViewModel,
+  type MasterGameYearViewModel,
+  type PossibleMasterGameYearViewModel,
+  type PublisherSingleSlotRequirementsViewModel,
+  type QueuedGameDeleteRequest,
+  type QueuedGameViewModel,
+  type QueueRankingRequest,
+  type QueueResultViewModel,
+  type SetQueuedGameNotesRequest
+} from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatScore } from '@/utilities/formatters';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 import StatusBadge from '@/components/statusBadge.vue';
 
-export default {
+type SearchMode = 'search' | 'topAvailable' | 'otherPublisherWatchlist' | null;
+
+interface GameQueueFormData {
+  searchGameName: string;
+  possibleMasterGames: PossibleMasterGameYearViewModel[];
+  searchMode: SearchMode;
+  errorInfo: string;
+  queueResult: QueueResultViewModel | null;
+  desiredQueueRanks: QueuedGameViewModel[];
+  gameToQueue: MasterGameYearViewModel | null;
+  isBusy: boolean;
+  selectedSlot: PublisherSingleSlotRequirementsViewModel | null;
+  selectedOtherPublisher: LeaguePublisherViewModel | null;
+  gameToEditNotes: QueuedGameViewModel | null;
+  notesInEdit: string;
+  latestSearchID: number;
+}
+
+export default defineComponent({
+  setup() {
+    const maximumNotesLength = 1000;
+    return { maximumNotesLength };
+  },
   components: {
     VueDraggable,
     PossibleMasterGamesTable,
@@ -148,29 +185,29 @@ export default {
     SearchSlotTypeBadge,
     MasterGamePopover
   },
-  data() {
+  data(): GameQueueFormData {
     return {
-      searchGameName: null,
+      searchGameName: '',
       possibleMasterGames: [],
+      errorInfo: '',
       queueResult: null,
       desiredQueueRanks: [],
       gameToQueue: null,
-      showingTopAvailable: false,
-      showingOtherLeagueWatchlist: false,
+      searchMode: null,
       isBusy: false,
-      selectedSlotIndex: 0,
+      selectedSlot: null,
       selectedOtherPublisher: null,
       gameToEditNotes: null,
       notesInEdit: '',
-      maximumNotesLength: 1000
+      latestSearchID: 0
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'queuedGames']),
-    otherPublishers() {
-      return this.leagueYear.allPublishersForUser.filter((p) => p.publisherID !== this.userPublisher.publisherID);
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'requiredUserPublisher', 'queuedGames']),
+    otherPublishers(): LeaguePublisherViewModel[] {
+      return this.requiredLeagueYear.allPublishersForUser.filter((p) => p.publisherID !== this.requiredUserPublisher.publisherID);
     },
-    notesModalTitle() {
+    notesModalTitle(): string {
       return this.gameToEditNotes ? 'Notes: ' + this.gameToEditNotes.masterGame.gameName : 'Notes';
     }
   },
@@ -180,163 +217,168 @@ export default {
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
     formatScore,
-    initializeDesiredRankings() {
+    initializeDesiredRankings(): void {
       this.desiredQueueRanks = this.queuedGames;
     },
-    searchGame() {
-      this.clearDataExceptSearch();
-      this.isBusy = true;
-
-      axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.userPublisher.leagueID)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
-    },
     async onOpen() {
-      const leagueStore = useLeagueStore();
-      await leagueStore.refreshLeagueYear();
       await this.getTopGames();
     },
+    async searchGame(): Promise<void> {
+      await this.fetchGames('search', null, () => leagueClient.possibleMasterGames(this.searchGameName, this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID));
+    },
+
     async getTopGames() {
+      await this.fetchGames('topAvailable', null, () =>
+        leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID, null)
+      );
+    },
+    async getGamesForSlot(slotInfo: PublisherSingleSlotRequirementsViewModel): Promise<void> {
+      const slotJSON = JSON.stringify(slotInfo);
+      const base64Slot = btoa(slotJSON);
+      await this.fetchGames('topAvailable', slotInfo, () =>
+        leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID, base64Slot)
+      );
+    },
+    async getOtherPublisher(otherPublisher: LeaguePublisherViewModel): Promise<void> {
+      await this.fetchGames('otherPublisherWatchlist', null, () => leagueClient.currentQueuedGameYears(this.requiredUserPublisher.publisherID, otherPublisher.publisherID));
+    },
+    async fetchGames(searchMode: SearchMode, slotToSelect: PublisherSingleSlotRequirementsViewModel | null, searchAction: () => Promise<PossibleMasterGameYearViewModel[]>): Promise<void> {
       this.clearDataExceptSearch();
-      this.selectedSlotIndex = 0;
+      this.selectedSlot = slotToSelect;
       this.isBusy = true;
+      const searchID = ++this.latestSearchID;
 
       try {
-        const response = await axios.get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.userPublisher.leagueID + '&publisherid=' + this.userPublisher.publisherID);
-        this.possibleMasterGames = response.data;
-        this.showingTopAvailable = true;
-        this.isBusy = false;
-      } catch {
-        this.isBusy = false;
+        const games = await searchAction();
+        if (searchID !== this.latestSearchID) {
+          return;
+        }
+
+        this.possibleMasterGames = games;
+        this.searchMode = searchMode;
+      } catch (error) {
+        const message = getApiErrorMessage(error, 'Failed to search for games.');
+        if (searchID !== this.latestSearchID) {
+          return;
+        }
+
+        this.errorInfo = message;
+      } finally {
+        if (searchID === this.latestSearchID) {
+          this.isBusy = false;
+        }
       }
     },
-    getOtherPublisher(otherPublisher) {
-      this.clearDataExceptSearch();
+    async addGameToQueue(): Promise<void> {
+      if (!this.gameToQueue) {
+        throw new Error('No game is selected to queue.');
+      }
 
-      this.selectedSlotIndex = 0;
-      this.isBusy = true;
-
-      axios
-        .get('/api/league/CurrentQueuedGameYears/' + this.userPublisher.publisherID + `?otherPublisherID=${otherPublisher.publisherID}`)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.selectedOtherPublisher = otherPublisher;
-          this.showingOtherLeagueWatchlist = true;
-          this.isBusy = false;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
-    },
-    getGamesForSlot(slotInfo, slotIndex) {
-      this.clearDataExceptSearch();
-      this.selectedSlotIndex = slotIndex;
-      this.isBusy = true;
-      let slotJSON = JSON.stringify(slotInfo);
-      let base64Slot = btoa(slotJSON);
-      let urlEncodedSlot = encodeURI(base64Slot);
-      axios
-        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&publisherid=' + this.userPublisher.publisherID + '&slotInfo=' + urlEncodedSlot)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.showingTopAvailable = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
-    },
-    async addGameToQueue() {
-      const request = {
-        publisherID: this.userPublisher.publisherID,
+      const request: AddGameToQueueRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
         masterGameID: this.gameToQueue.masterGameID
       };
 
       this.isBusy = true;
       try {
-        const response = await axios.post('/api/league/AddGameToQueue', request);
-        this.queueResult = response.data;
+        this.queueResult = await leagueClient.addGameToQueue(request);
         if (this.queueResult.success) {
           await this.notifyAction('Game added to watchlist.');
           this.initializeDesiredRankings();
         }
-        this.isBusy = false;
       } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to queue game.');
+      } finally {
         this.isBusy = false;
-        this.errorInfo = error;
       }
     },
-    async setQueueRankings() {
-      let desiredMasterGameIDs = this.desiredQueueRanks.map(function (v) {
-        return v.masterGame.masterGameID;
-      });
-      const model = {
-        publisherID: this.userPublisher.publisherID,
-        queueRanks: desiredMasterGameIDs
+    async setQueueRankings(): Promise<void> {
+      const request: QueueRankingRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
+        queueRanks: this.desiredQueueRanks.map((x) => x.masterGame.masterGameID)
       };
 
-      await axios.post('/api/league/SetQueueRankings', model);
-      await this.notifyAction('Watchlist reordered.');
-      this.initializeDesiredRankings();
+      this.isBusy = true;
+      try {
+        await leagueClient.setQueueRankings(request);
+        await this.notifyAction('Watchlist reordered.');
+        this.initializeDesiredRankings();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to change rankings.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    startEditingNotes(queuedGame) {
+    startEditingNotes(queuedGame: QueuedGameViewModel) {
       this.gameToEditNotes = queuedGame;
       this.notesInEdit = queuedGame.notes ?? '';
-      this.$refs.editWatchlistNotesModalRef.show();
+      (this.$refs.editWatchlistNotesModalRef as InstanceType<typeof BModal> | undefined)?.show();
     },
-    clearNotesData() {
+    clearNotesData(): void {
       this.gameToEditNotes = null;
       this.notesInEdit = '';
     },
-    async saveNotes() {
-      const model = {
-        publisherID: this.userPublisher.publisherID,
+    async saveNotes(): Promise<void> {
+      if (!this.gameToEditNotes) {
+        throw new Error('No game is selected to edit notes for.');
+      }
+
+      const request: SetQueuedGameNotesRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
         masterGameID: this.gameToEditNotes.masterGame.masterGameID,
         notes: this.notesInEdit
       };
 
-      await axios.post('/api/league/SetQueuedGameNotes', model);
-      await this.notifyAction('Watchlist notes saved.');
-      this.initializeDesiredRankings();
+      this.isBusy = true;
+      try {
+        await leagueClient.setQueuedGameNotes(request);
+        await this.notifyAction('Watchlist notes saved.');
+        this.initializeDesiredRankings();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to edit notes.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    async removeQueuedGame(game) {
-      const model = {
-        publisherID: this.userPublisher.publisherID,
+    async removeQueuedGame(game: QueuedGameViewModel): Promise<void> {
+      const request: QueuedGameDeleteRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
         masterGameID: game.masterGame.masterGameID
       };
 
-      await axios.post('/api/league/DeleteQueuedGame', model);
-      await this.notifyAction('Game removed from watchlist.');
-      this.initializeDesiredRankings();
+      this.isBusy = true;
+      try {
+        await leagueClient.deleteQueuedGame(request);
+        await this.notifyAction('Game removed from watchlist.');
+        this.initializeDesiredRankings();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to edit notes.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    clearAllData() {
+    clearAllData(): void {
       this.clearNotesData();
       this.clearQueueData();
-      this.searchGameName = null;
+      this.searchGameName = '';
       this.possibleMasterGames = [];
-      this.showingTopAvailable = false;
+      this.searchMode = null;
     },
-    clearQueueData() {
+    clearQueueData(): void {
       this.desiredQueueRanks = this.queuedGames;
       this.queueResult = null;
     },
-    clearDataExceptSearch() {
+    clearDataExceptSearch(): void {
       this.queueResult = null;
       this.possibleMasterGames = [];
-      this.showingTopAvailable = false;
-      this.showingOtherLeagueWatchlist = false;
+      this.searchMode = null;
       this.selectedOtherPublisher = null;
       this.isBusy = false;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .select-cell {
   text-align: center;
