@@ -1,6 +1,6 @@
 <template>
-  <b-modal id="editDraftOrderForm" ref="editDraftOrderFormRef" title="Set Draft Order" no-footer @hidden="clearData">
-    <div v-show="errorInfo" class="alert alert-danger">{{ errorInfo }}</div>
+  <b-modal id="edit-draft-order-form" ref="editDraftOrderFormRef" title="Set Draft Order" no-footer @hidden="clearData" @show="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <label>How do you want to set the draft order?</label>
     <div v-if="isFirstDraft && hasPreviousYear" class="order-options-list">
       <label>Recommended:</label>
@@ -41,30 +41,41 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 import { VueDraggable } from 'vue-draggable-plus';
 
+import { leagueManagerClient, type DraftOrderRequest, type PublisherViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
+type DraftOrderType = 'Random' | 'Manual' | 'InverseStandings' | 'InverseProjectedPoints';
+
+interface EditDraftOrderFormData {
+  showManualSettings: boolean;
+  desiredDraftOrder: PublisherViewModel[];
+  errorInfo: string;
+}
+
+export default defineComponent({
   components: {
     VueDraggable
   },
-  data() {
+  data(): EditDraftOrderFormData {
     return {
       showManualSettings: false,
       desiredDraftOrder: [],
-      errorInfo: null
+      errorInfo: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'league', 'pendingDraft']),
-    hasPreviousYear() {
-      return this.league.years.includes(this.leagueYear.year - 1);
+    ...mapState(useLeagueStore, ['requiredLeague', 'requiredLeagueYear', 'pendingDraft']),
+    hasPreviousYear(): boolean {
+      return this.requiredLeague.years.includes(this.requiredLeagueYear.year - 1);
     },
-    isFirstDraft() {
+    isFirstDraft(): boolean {
       return (this.pendingDraft?.draftNumber ?? 1) === 1;
     }
   },
@@ -73,32 +84,35 @@ export default {
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    async setDraftOrder(draftOrderType) {
-      const model = {
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year,
+    async setDraftOrder(draftOrderType: DraftOrderType): Promise<void> {
+      if (!this.pendingDraft) {
+        throw new Error("Can't set draft order if there is no pending draft.");
+      }
+      const request: DraftOrderRequest = {
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year,
         draftID: this.pendingDraft.draftID,
         draftOrderType: draftOrderType
       };
       if (draftOrderType === 'Manual') {
-        const desiredDraftOrderIDs = this.desiredDraftOrder.map((v) => v.publisherID);
-        model.manualPublisherDraftPositions = desiredDraftOrderIDs;
+        request.manualPublisherDraftPositions = this.desiredDraftOrder.map((x) => x.publisherID);
       }
 
       try {
-        await axios.post('/api/leagueManager/SetDraftOrder', model);
-        this.$refs.editDraftOrderFormRef.hide();
-        this.notifyAction('Draft order has been changed.');
+        await leagueManagerClient.setDraftOrder(request);
+        (this.$refs.editDraftOrderFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction('Draft order has been changed.');
       } catch (error) {
-        this.errorInfo = error.response.data;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when setting draft order.');
       }
     },
-    clearData() {
-      this.desiredDraftOrder = this.leagueYear.publishers;
+    clearData(): void {
+      this.desiredDraftOrder = this.requiredLeagueYear.publishers;
     }
   }
-};
+});
 </script>
+
 <style>
 .draft-order-editor {
   border-radius: 5px;

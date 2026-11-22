@@ -16,7 +16,7 @@
         <p v-if="pendingDraftIsFirst && isManager">
           Please note that once you start the draft, you can no longer add/remove players. Please make sure that everyone who wants to play this year joins beforehand.
         </p>
-        <b-button v-if="mustSetDraftOrder && isManager" v-b-modal="'editDraftOrderForm'" variant="success">Set Draft Order</b-button>
+        <b-button v-if="mustSetDraftOrder && isManager" v-b-modal="'edit-draft-order-form'" variant="success">Set Draft Order</b-button>
         <b-button v-if="!pendingDraftIsFirst && isManager" variant="secondary" :to="manageDraftsRoute">Manage Drafts</b-button>
       </template>
 
