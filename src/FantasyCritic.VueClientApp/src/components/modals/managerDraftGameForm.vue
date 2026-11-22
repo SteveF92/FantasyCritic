@@ -1,5 +1,6 @@
 <template>
-  <b-modal id="managerDraftGameForm" ref="managerDraftGameFormRef" size="lg" title="Select Draft Game" no-footer @hidden="clearData" @show="getTopGames">
+  <b-modal id="manager-draft-game-form" ref="managerDraftGameFormRef" size="lg" title="Select Draft Game" no-footer @hidden="clearData" @show="getTopGames">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-info">
       This form will allow you to draft a game for another player. You can use this if you are running a draft off of one computer, for example. If you are just looking to draft your own games, you
       should use "Draft Game" under "Player Actions"
@@ -12,7 +13,7 @@
         </label>
       </div>
       <form method="post" class="form-horizontal" role="form" @submit.prevent="searchGame">
-        <label for="draftGameName" class="control-label">Game Name</label>
+        <label for="searchGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
           <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">
@@ -20,44 +21,43 @@
           </span>
         </div>
 
-        <div v-if="!leagueYear.settings.hasSpecialSlots">
-          <b-button variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
-          <b-button variant="secondary" class="show-top-button" @click="showUnlistedField">Draft Unlisted Game</b-button>
-        </div>
-        <div v-else>
-          <b-button variant="secondary" class="show-top-button" @click="showUnlistedField">Draft Unlisted Game</b-button>
+        <b-button v-if="!requiredLeagueYear.settings.hasSpecialSlots" variant="secondary" class="show-top-button" @click="getTopGames">Show Top Available Games</b-button>
+
+        <div v-if="requiredLeagueYear.settings.hasSpecialSlots">
           <h5 class="text-black">Top Available by Slot</h5>
           <span class="search-tags">
-            <searchSlotTypeBadge :game-slot="leagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click="getTopGames"></searchSlotTypeBadge>
             <searchSlotTypeBadge
-              :game-slot="leagueYear.slotInfo.regularSlot"
+              :game-slot="requiredLeagueYear.slotInfo.overallSlot"
+              name="ALL"
+              :selected="searchMode === 'topAvailable' && !selectedSlotKey"
+              @click="getTopGames"></searchSlotTypeBadge>
+            <searchSlotTypeBadge
+              :game-slot="requiredLeagueYear.slotInfo.regularSlot"
               name="REG"
-              :selected="selectedSlotIndex === 1"
-              @click="getGamesForSlot(leagueYear.slotInfo.regularSlot, 1)"></searchSlotTypeBadge>
+              :selected="selectedSlotKey === 'regular'"
+              @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot, 'regular')"></searchSlotTypeBadge>
             <searchSlotTypeBadge
-              v-for="(specialSlot, index) in leagueYear.slotInfo.specialSlots"
-              :key="specialSlot.overallSlotNumber"
+              v-for="(specialSlot, index) in requiredLeagueYear.slotInfo.specialSlots"
+              :key="index"
               :game-slot="specialSlot"
-              :selected="selectedSlotIndex === 2 + index"
-              @click="getGamesForSlot(specialSlot, 2 + index)"></searchSlotTypeBadge>
+              :selected="selectedSlotKey === `special-${index}`"
+              @click="getGamesForSlot(specialSlot, `special-${index}`)"></searchSlotTypeBadge>
           </span>
         </div>
 
-        <div v-if="!draftMasterGame && !showingUnlistedField">
-          <div v-if="isBusy" class="game-list-spinner">
-            <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: 'black' }" />
-          </div>
-
-          <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
-          <h3 v-show="!showingTopAvailable && possibleMasterGames && possibleMasterGames.length > 0" class="text-black">Search Results</h3>
-          <possibleMasterGamesTable
-            v-if="possibleMasterGames.length > 0"
-            v-model="draftMasterGame"
-            :possible-games="possibleMasterGames"
-            @update:model-value="newGameSelected"></possibleMasterGamesTable>
+        <div v-show="isBusy" class="spinner">
+          <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#000000' }" />
         </div>
 
-        <div v-show="(searched && !draftMasterGame) || showingUnlistedField" class="alert" :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
+        <div v-if="!draftMasterGame && searchMode && possibleMasterGames.length > 0" class="search-results">
+          <h3 class="text-black">{{ searchHeading }}</h3>
+          <possibleMasterGamesTable v-model="draftMasterGame" :possible-games="possibleMasterGames" @update:model-value="newGameSelected"></possibleMasterGamesTable>
+        </div>
+
+        <div
+          v-show="(searchMode && !draftMasterGame) || showingUnlistedField"
+          class="alert"
+          :class="{ 'alert-info': possibleMasterGames.length > 0, 'alert-warning': possibleMasterGames.length === 0 }">
           <div v-if="!showingUnlistedField">
             <span v-show="possibleMasterGames.length > 0">Don't see the game you are looking for?</span>
             <span v-show="possibleMasterGames.length === 0">No games were found.</span>
@@ -67,7 +67,7 @@
           <div v-if="showingUnlistedField">
             <h4>Custom Game Name</h4>
             <div class="input-group game-search-input">
-              <input id="draftUnlistedGame" v-model="draftUnlistedGame" name="draftUnlistedGame" type="text" class="form-control input" />
+              <input id="draftUnlistedGame" v-model="draftUnlistedGameName" name="draftUnlistedGame" type="text" class="form-control input" />
             </div>
             <div>Enter the full name of the game you want.</div>
             <div>You as league manager can link this custom game with a "master game" later.</div>
@@ -75,11 +75,11 @@
         </div>
       </form>
 
-      <div v-if="draftMasterGame || draftUnlistedGame">
-        <h3 v-show="draftMasterGame" for="draftMasterGame" class="selected-game text-black">Selected Game:</h3>
+      <div v-if="draftMasterGame || draftUnlistedGameName">
+        <h3 v-show="draftMasterGame" class="selected-game text-black">Selected Game:</h3>
         <masterGameSummary v-if="draftMasterGame" :master-game="draftMasterGame"></masterGameSummary>
         <hr />
-        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="isBusy" @click="addGame">Add Game to Publisher</b-button>
+        <b-button v-if="formIsValid" variant="primary" class="full-width-button" :disabled="draftRequestIsBusy" @click="addGame">Add Game to Publisher</b-button>
         <div v-if="draftResult && !draftResult.success" class="alert draft-error" :class="{ 'alert-danger': !draftResult.showAsWarning, 'alert-warning': draftResult.showAsWarning }">
           <h3 v-if="draftResult.showAsWarning" class="alert-heading">Warning!</h3>
           <h3 v-else class="alert-heading">Error!</h3>
@@ -97,7 +97,7 @@
           <div v-if="draftResult.noEligibleSpaceError" class="plain-check">
             <div class="text-white">This game is going to end up in an ineligible slot.</div>
             <span>
-              <label class="text-white">Do you want draft this game anyway anyway?</label>
+              <label class="text-white">Do you want to draft this game anyway?</label>
               <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
             </span>
           </div>
@@ -107,159 +107,199 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import {
+  leagueClient,
+  leagueManagerClient,
+  type ManagerClaimResultViewModel,
+  type ManagerDraftGameRequest,
+  type MasterGameYearViewModel,
+  type PossibleMasterGameYearViewModel,
+  type PublisherSingleSlotRequirementsViewModel
+} from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { makeToast } from '@/utilities/toast';
 import SearchSlotTypeBadge from '@/components/gameTables/searchSlotTypeBadge.vue';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 import PossibleMasterGamesTable from '@/components/possibleMasterGamesTable.vue';
 
-export default {
+type SearchMode = 'search' | 'topAvailable' | null;
+
+interface ManagerDraftGameFormData {
+  searchGameName: string;
+  draftUnlistedGameName: string;
+  draftMasterGame: MasterGameYearViewModel | null;
+  draftResult: ManagerClaimResultViewModel | null;
+  draftOverride: boolean;
+  possibleMasterGames: PossibleMasterGameYearViewModel[];
+  showingUnlistedField: boolean;
+  searchMode: SearchMode;
+  isBusy: boolean;
+  draftRequestIsBusy: boolean;
+  errorInfo: string;
+  selectedSlotKey: string | null;
+  allowIneligibleSlot: boolean;
+  latestSearchID: number;
+}
+
+export default defineComponent({
   components: {
     PossibleMasterGamesTable,
     MasterGameSummary,
     SearchSlotTypeBadge
   },
-  data() {
+  data(): ManagerDraftGameFormData {
     return {
-      searchGameName: null,
-      draftUnlistedGame: null,
+      searchGameName: '',
+      draftUnlistedGameName: '',
       draftMasterGame: null,
       draftResult: null,
       draftOverride: false,
       possibleMasterGames: [],
-      searched: false,
       showingUnlistedField: false,
-      showingTopAvailable: false,
+      searchMode: null,
       isBusy: false,
-      selectedSlotIndex: 0,
-      allowIneligibleSlot: false
+      draftRequestIsBusy: false,
+      errorInfo: '',
+      selectedSlotKey: null,
+      allowIneligibleSlot: false,
+      latestSearchID: 0
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'nextPublisherUp']),
-    formIsValid() {
-      return this.draftUnlistedGame || this.draftMasterGame;
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'nextPublisherUp']),
+    searchHeading(): string {
+      switch (this.searchMode) {
+        case 'search':
+          return 'Search Results';
+        case 'topAvailable':
+          return 'Top Available Games';
+        default:
+          return '';
+      }
+    },
+    formIsValid(): boolean {
+      return !!this.draftUnlistedGameName || !!this.draftMasterGame;
     }
   },
   methods: {
-    searchGame() {
-      this.clearDataExceptSearch();
-      this.isBusy = true;
-      axios
-        .get('/api/league/PossibleMasterGames?gameName=' + this.searchGameName + '&year=' + this.leagueYear.year + '&leagueid=' + this.nextPublisherUp.leagueID)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.searched = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+    async searchGame(): Promise<void> {
+      await this.fetchGames('search', null, () => leagueClient.possibleMasterGames(this.searchGameName, this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID));
     },
-    getTopGames() {
-      this.clearDataExceptSearch();
-      this.selectedSlotIndex = 0;
-      this.isBusy = true;
-      axios
-        .get('/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.nextPublisherUp.leagueID + '&publisherid=' + this.nextPublisherUp.publisherID)
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.showingTopAvailable = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+    async getTopGames(): Promise<void> {
+      const publisher = this.nextPublisherUp;
+      if (!publisher) {
+        return;
+      }
+
+      await this.fetchGames('topAvailable', null, () => leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, publisher.publisherID, null));
     },
-    getGamesForSlot(slotInfo, slotIndex) {
-      this.clearDataExceptSearch();
-      this.selectedSlotIndex = slotIndex;
-      this.isBusy = true;
-      let slotJSON = JSON.stringify(slotInfo);
-      let base64Slot = btoa(slotJSON);
-      let urlEncodedSlot = encodeURI(base64Slot);
-      axios
-        .get(
-          '/api/league/TopAvailableGames?year=' + this.leagueYear.year + '&leagueid=' + this.leagueYear.leagueID + '&publisherid=' + this.nextPublisherUp.publisherID + '&slotInfo=' + urlEncodedSlot
-        )
-        .then((response) => {
-          this.possibleMasterGames = response.data;
-          this.isBusy = false;
-          this.showingTopAvailable = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+    async getGamesForSlot(slotInfo: PublisherSingleSlotRequirementsViewModel, slotKey: string): Promise<void> {
+      const publisher = this.nextPublisherUp;
+      if (!publisher) {
+        return;
+      }
+
+      const slotJSON = JSON.stringify(slotInfo);
+      const base64Slot = btoa(slotJSON);
+      await this.fetchGames('topAvailable', slotKey, () => leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, publisher.publisherID, base64Slot));
     },
-    showUnlistedField() {
+    async fetchGames(searchMode: SearchMode, slotKeyToSelect: string | null, searchAction: () => Promise<PossibleMasterGameYearViewModel[]>): Promise<void> {
+      this.clearDataExceptSearch();
+      this.selectedSlotKey = slotKeyToSelect;
+      this.isBusy = true;
+      const searchID = ++this.latestSearchID;
+
+      try {
+        const games = await searchAction();
+        if (searchID !== this.latestSearchID) {
+          return;
+        }
+
+        this.possibleMasterGames = games;
+        this.searchMode = searchMode;
+      } catch (error) {
+        const message = getApiErrorMessage(error, 'Failed to search for games.');
+        if (searchID !== this.latestSearchID) {
+          return;
+        }
+
+        this.errorInfo = message;
+      } finally {
+        if (searchID === this.latestSearchID) {
+          this.isBusy = false;
+        }
+      }
+    },
+    showUnlistedField(): void {
       this.showingUnlistedField = true;
-      this.draftUnlistedGame = this.searchGameName;
+      this.draftUnlistedGameName = this.searchGameName;
     },
-    addGame() {
-      this.isBusy = true;
-      let gameName = '';
-      if (this.draftMasterGame !== null) {
-        gameName = this.draftMasterGame.gameName;
-      } else if (this.draftUnlistedGame !== null) {
-        gameName = this.draftUnlistedGame;
+    async addGame(): Promise<void> {
+      const publisher = this.nextPublisherUp;
+      if (!publisher) {
+        return;
       }
 
-      let masterGameID = null;
-      if (this.draftMasterGame !== null) {
-        masterGameID = this.draftMasterGame.masterGameID;
-      }
-
-      const request = {
-        publisherID: this.nextPublisherUp.publisherID,
+      const gameName = this.draftMasterGame?.gameName ?? this.draftUnlistedGameName;
+      const request: ManagerDraftGameRequest = {
+        publisherID: publisher.publisherID,
         gameName: gameName,
         counterPick: false,
-        masterGameID: masterGameID,
+        masterGameID: this.draftMasterGame?.masterGameID,
         managerOverride: this.draftOverride,
         allowIneligibleSlot: this.allowIneligibleSlot
       };
 
-      axios
-        .post('/api/leagueManager/ManagerDraftGame', request)
-        .then((response) => {
-          this.draftResult = response.data;
-          if (!this.draftResult.success) {
-            this.isBusy = false;
-            return;
-          }
+      this.draftRequestIsBusy = true;
+      this.errorInfo = '';
+      try {
+        this.draftResult = await leagueManagerClient.managerDraftGame(request);
+        if (!this.draftResult.success) {
+          return;
+        }
 
-          this.$refs.managerDraftGameFormRef.hide();
-          makeToast(gameName + ' drafted by ' + this.nextPublisherUp.publisherName);
-          this.clearData();
-        })
-        .catch(() => {});
+        (this.$refs.managerDraftGameFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        makeToast(gameName + ' drafted by ' + publisher.publisherName);
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to draft game.');
+      } finally {
+        this.draftRequestIsBusy = false;
+      }
     },
-    clearDataExceptSearch() {
+    clearDataExceptSearch(): void {
       this.isBusy = false;
-      this.draftUnlistedGame = null;
+      this.draftUnlistedGameName = '';
       this.draftMasterGame = null;
       this.draftResult = null;
       this.draftOverride = false;
       this.possibleMasterGames = [];
-      this.searched = false;
+      this.searchMode = null;
+      this.selectedSlotKey = null;
       this.showingUnlistedField = false;
-      this.claimCounterPick = false;
-      this.claimPublisher = null;
-      this.showingTopAvailable = false;
+      this.allowIneligibleSlot = false;
+      this.errorInfo = '';
     },
-    clearData() {
+    clearData(): void {
       this.clearDataExceptSearch();
-      this.searchGameName = null;
+      this.searchGameName = '';
+      this.latestSearchID++;
     },
-    newGameSelected() {
+    newGameSelected(): void {
       this.draftResult = null;
+      this.draftOverride = false;
+      this.allowIneligibleSlot = false;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .draft-error {
   margin-top: 10px;
@@ -271,6 +311,7 @@ export default {
   margin-left: 10px;
   margin-top: 8px;
 }
+
 .show-top-button {
   margin-bottom: 10px;
 }

@@ -1,5 +1,6 @@
 <template>
-  <b-modal id="managerDraftCounterPickForm" ref="managerDraftCounterPickFormRef" title="Select Counter Pick" no-footer @hidden="clearData" @show="getPossibleCounterPicks">
+  <b-modal id="manager-draft-counter-pick-form" ref="managerDraftCounterPickFormRef" title="Select Counter Pick" no-footer @hidden="clearData" @show="getPossibleCounterPicks">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div v-if="nextPublisherUp">
       <div class="form-group">
         <label for="nextPublisherUp" class="control-label">Select the next counter pick for publisher:</label>
@@ -7,10 +8,10 @@
           <strong>{{ nextPublisherUp.publisherName }} (Display Name: {{ nextPublisherUp.playerName }})</strong>
         </label>
       </div>
-      <form class="form-horizontal" no-footer @submit.prevent="selectCounterPick">
+      <form class="form-horizontal" @submit.prevent="selectCounterPick">
         <div class="form-group">
           <label for="selectedCounterPick" class="control-label">Game</label>
-          <b-form-select v-model="selectedCounterPick">
+          <b-form-select id="selectedCounterPick" v-model="selectedCounterPick" @update:model-value="newGameSelected">
             <option v-for="publisherGame in possibleCounterPicks" :key="publisherGame.publisherGameID" :value="publisherGame">
               {{ publisherGame.gameName }}
             </option>
@@ -25,7 +26,7 @@
         </div>
 
         <div v-if="selectedCounterPick">
-          <input type="submit" class="btn btn-primary full-width-button" value="Select Game as Counter Pick" />
+          <input type="submit" class="btn btn-primary full-width-button" value="Select Game as Counter Pick" :disabled="isBusy" />
         </div>
 
         <div v-if="draftResult && draftResult.overridable" class="plain-check">
@@ -39,82 +40,106 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueClient, leagueManagerClient, type ManagerClaimResultViewModel, type ManagerDraftGameRequest, type PublisherGameViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { makeToast } from '@/utilities/toast';
 
-export default {
+interface ManagerDraftCounterPickFormData {
+  selectedCounterPick: PublisherGameViewModel | null;
+  possibleCounterPicks: PublisherGameViewModel[];
+  draftResult: ManagerClaimResultViewModel | null;
+  draftOverride: boolean;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   computed: {
     ...mapState(useLeagueStore, ['nextPublisherUp'])
   },
-  data() {
+  data(): ManagerDraftCounterPickFormData {
     return {
       selectedCounterPick: null,
       possibleCounterPicks: [],
       draftResult: null,
-      draftOverride: false
+      draftOverride: false,
+      isBusy: false,
+      errorInfo: ''
     };
   },
   methods: {
-    selectCounterPick() {
-      let request = {
-        publisherID: this.nextPublisherUp.publisherID,
-        gameName: this.selectedCounterPick.gameName,
-        managerOverride: this.draftOverride,
-        counterPick: true,
-        masterGameID: null
-      };
-
-      if (this.selectedCounterPick.masterGame) {
-        request.masterGameID = this.selectedCounterPick.masterGame.masterGameID;
+    async selectCounterPick(): Promise<void> {
+      const counterPick = this.selectedCounterPick;
+      const publisher = this.nextPublisherUp;
+      if (!counterPick || !publisher) {
+        return;
       }
 
-      axios
-        .post('/api/leagueManager/ManagerDraftGame', request)
-        .then((response) => {
-          this.draftResult = response.data;
-          this.isBusy = false;
-          if (!this.draftResult.success) {
-            return;
-          }
+      const request: ManagerDraftGameRequest = {
+        publisherID: publisher.publisherID,
+        gameName: counterPick.gameName,
+        counterPick: true,
+        masterGameID: counterPick.masterGame?.masterGameID,
+        managerOverride: this.draftOverride,
+        allowIneligibleSlot: false
+      };
 
-          this.$refs.managerDraftCounterPickFormRef.hide();
-          makeToast(this.selectedCounterPick.gameName + ' selected as a counter pick by ' + this.nextPublisherUp.publisherName);
-          this.selectedCounterPick = null;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        this.draftResult = await leagueManagerClient.managerDraftGame(request);
+        if (!this.draftResult.success) {
+          return;
+        }
+
+        (this.$refs.managerDraftCounterPickFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        makeToast(counterPick.gameName + ' selected as a counter pick by ' + publisher.publisherName);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when selecting the counter pick.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    getPossibleCounterPicks() {
-      axios
-        .get('/api/league/PossibleCounterPicks?publisherID=' + this.nextPublisherUp.publisherID)
-        .then((response) => {
-          this.possibleCounterPicks = response.data;
-          this.isBusy = false;
-          this.counterPicking = true;
-        })
-        .catch(() => {
-          this.isBusy = false;
-        });
+    async getPossibleCounterPicks(): Promise<void> {
+      if (!this.nextPublisherUp) {
+        return;
+      }
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        this.possibleCounterPicks = await leagueClient.possibleCounterPicks(this.nextPublisherUp.publisherID);
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to load counter picks.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    clearData() {
+    clearData(): void {
+      this.isBusy = false;
       this.selectedCounterPick = null;
       this.possibleCounterPicks = [];
+      this.draftResult = null;
+      this.draftOverride = false;
+      this.errorInfo = '';
+    },
+    newGameSelected(): void {
+      this.draftResult = null;
       this.draftOverride = false;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .draft-error {
   margin-top: 10px;
-}
-.game-search-input {
-  margin-bottom: 15px;
 }
 .override-checkbox {
   margin-left: 10px;

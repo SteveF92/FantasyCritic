@@ -31,7 +31,7 @@
           <p v-if="pendingDraftIsFirst">
             Please note that once you start the draft, you can no longer add/remove players. Please make sure that everyone who wants to play this year joins beforehand.
           </p>
-          <b-button v-b-modal="'startDraft'" variant="primary" class="mx-2">Start Drafting!</b-button>
+          <b-button v-b-modal="'start-draft-modal'" variant="primary" class="mx-2">Start Drafting!</b-button>
         </template>
         <template v-else>
           <span v-if="pendingDraftIsFirst">Things are all set! The league manager can choose when to begin the draft.</span>

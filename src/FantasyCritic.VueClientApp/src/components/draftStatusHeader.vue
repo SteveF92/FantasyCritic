@@ -10,7 +10,7 @@
         <div v-if="!isManager">The draft has been paused. Speak to your league manager for details.</div>
         <div v-else>
           The draft has been paused. You can undo games that have been drafted.
-          <b-button v-b-modal="'setPauseModal'" variant="success">Resume Draft</b-button>
+          <b-button v-b-modal="'set-pause-modal'" variant="success">Resume Draft</b-button>
         </div>
       </div>
     </div>

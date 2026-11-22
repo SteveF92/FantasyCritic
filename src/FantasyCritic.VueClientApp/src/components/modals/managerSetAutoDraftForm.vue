@@ -1,5 +1,6 @@
 <template>
-  <b-modal id="managerSetAutoDraftForm" ref="managerSetAutoDraftFormRef" size="lg" title="Edit Auto Draft" @show="onShow">
+  <b-modal id="manager-set-auto-draft-form" ref="managerSetAutoDraftFormRef" size="lg" title="Edit Auto Draft" @show="onShow">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-info">
       <p class="text-white">You can use this form to turn on or turn off autodraft for one of your players.</p>
       <p class="text-white">
@@ -15,57 +16,79 @@
     <b-form-group class="form-checkbox-group">
       <div v-for="settings in localPublisherSettings" :key="settings.publisherID" class="publisher-autodraft">
         <label class="publisher-name">{{ settings.publisherName }}</label>
-        <b-form-select v-model="settings.autoDraftMode" :options="autoDraftOptions" class="mode-select" @update:model-value="onModeChange(settings)"></b-form-select>
+        <b-form-select v-model="settings.autoDraftMode" :options="autoDraftOptions" class="mode-select" @update:model-value="onModeChange()"></b-form-select>
         <b-form-checkbox v-model="settings.onlyDraftFromWatchlist" :disabled="settings.autoDraftMode === 'Off'" class="watchlist-checkbox">Only from Watchlist</b-form-checkbox>
       </div>
     </b-form-group>
 
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Set Auto Draft" @click="setAutoDraft" />
+      <input type="submit" class="btn btn-primary" value="Set Auto Draft" :disabled="isBusy" @click="setAutoDraft" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueManagerClient, type ManagerSetAutoDraftRequest, type PublisherAutoDraftSettingsRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
-  name: 'ManagerSetAutoDraftForm',
-  computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'publishers'])
+interface PublisherAutoDraftSettings {
+  publisherID: string;
+  publisherName: string;
+  autoDraftMode: string;
+  onlyDraftFromWatchlist: boolean;
+}
+
+interface ManagerSetAutoDraftFormData {
+  localPublisherSettings: PublisherAutoDraftSettings[];
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
+  setup() {
+    const autoDraftOptions: { value: string; text: string }[] = [
+      { text: 'Off', value: 'Off' },
+      { text: "Standard Games Only (Don't Auto Draft Counter Picks)", value: 'StandardGamesOnly' },
+      { text: 'On (Including Counter Picks)', value: 'All' }
+    ];
+
+    return { autoDraftOptions };
   },
-  data() {
+  computed: {
+    ...mapState(useLeagueStore, ['requiredLeagueYear'])
+  },
+  data(): ManagerSetAutoDraftFormData {
     return {
       localPublisherSettings: [],
-      autoDraftOptions: [
-        { text: 'Off', value: 'Off' },
-        { text: "Standard Games Only (Don't Auto Draft Counter Picks)", value: 'StandardGamesOnly' },
-        { text: 'On (Including Counter Picks)', value: 'All' }
-      ]
+      isBusy: false,
+      errorInfo: ''
     };
   },
-
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    onShow() {
-      this.localPublisherSettings = this.publishers.map((p) => ({
+    onShow(): void {
+      this.localPublisherSettings = this.requiredLeagueYear.publishers.map((p) => ({
         publisherID: p.publisherID,
         publisherName: p.publisherName,
         autoDraftMode: p.autoDraftMode,
         onlyDraftFromWatchlist: p.onlyAutoDraftFromWatchlist
       }));
+      this.errorInfo = '';
     },
-    onModeChange() {
+    onModeChange(): void {
       for (const settings of this.localPublisherSettings) {
         if (settings.autoDraftMode === 'Off') {
           settings.onlyDraftFromWatchlist = false;
         }
       }
     },
-    setAutoDraft() {
-      let publisherAutoDraft = {};
+    async setAutoDraft(): Promise<void> {
+      const publisherAutoDraft: Record<string, PublisherAutoDraftSettingsRequest> = {};
       for (const settings of this.localPublisherSettings) {
         publisherAutoDraft[settings.publisherID] = {
           mode: settings.autoDraftMode,
@@ -73,22 +96,29 @@ export default {
         };
       }
 
-      const model = {
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year,
+      const request: ManagerSetAutoDraftRequest = {
+        leagueID: this.requiredLeagueYear.league.leagueID,
+        year: this.requiredLeagueYear.year,
         publisherAutoDraft
       };
-      axios
-        .post('/api/leagueManager/SetAutoDraft', model)
-        .then(() => {
-          this.$refs.managerSetAutoDraftFormRef.hide();
-          this.notifyAction('Auto draft changed.');
-        })
-        .catch(() => {});
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueManagerClient.setAutoDraft(request);
+
+        (this.$refs.managerSetAutoDraftFormRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction('Auto draft changed.');
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when setting auto draft.');
+      } finally {
+        this.isBusy = false;
+      }
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .publisher-autodraft {
   display: flex;

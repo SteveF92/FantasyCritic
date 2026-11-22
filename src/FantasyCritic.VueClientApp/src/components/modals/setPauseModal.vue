@@ -1,41 +1,38 @@
 <template>
-  <b-modal id="setPauseModal" ref="setPauseModalRef" title="Warning!" @ok="setPause">
+  <b-modal id="set-pause-modal" title="Warning!" @ok="setPause">
     <p v-if="!draftIsPaused">Do you wish to pause the draft? No one will be able to draft any games while the draft is paused.</p>
     <p v-if="draftIsPaused">Do you wish to unpause the draft? Things will resume as normal.</p>
   </b-modal>
 </template>
-<script>
-import { mapState } from 'pinia';
-import axios from 'axios';
 
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'pinia';
+
+import { leagueManagerClient, type DraftPauseRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { makeToast } from '@/utilities/toast';
 
-export default {
+export default defineComponent({
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'league', 'activeDraft', 'draftIsPaused'])
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'draftIsPaused'])
   },
   methods: {
-    async setPause() {
-      let newPause = !this.draftIsPaused;
-      const model = {
-        leagueID: this.league.leagueID,
-        year: this.leagueYear.year,
-        draftID: this.activeDraft.draftID,
-        pause: newPause
+    async setPause(): Promise<void> {
+      const request: DraftPauseRequest = {
+        leagueID: this.requiredLeagueYear.league.leagueID,
+        year: this.requiredLeagueYear.year,
+        pause: !this.draftIsPaused
       };
+
       try {
-        await axios.post('/api/leagueManager/SetDraftPause', model);
-        let pauseMessage = 'Draft has been paused.';
-        if (!newPause) {
-          pauseMessage = 'Draft has been un-paused.';
-        }
-        makeToast(pauseMessage);
-        this.$refs.setPauseModalRef.hide();
+        await leagueManagerClient.setDraftPause(request);
+        makeToast(request.pause ? 'Draft has been paused.' : 'Draft has been un-paused.');
       } catch (error) {
-        console.log(error);
+        makeToast(getApiErrorMessage(error, 'Something went wrong when pausing or resuming the draft.'), 'danger');
       }
     }
   }
-};
+});
 </script>

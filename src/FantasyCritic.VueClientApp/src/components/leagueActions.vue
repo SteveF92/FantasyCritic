@@ -22,7 +22,7 @@
           <li v-b-modal="`leagueOptionsModal_${league.leagueID}-${leagueYear.year}`" class="fake-link action">See League Options</li>
           <li v-b-modal="'eligibility-overrides-modal'" class="fake-link action">See Eligibility Overrides</li>
           <li v-b-modal="'tag-overrides-modal'" class="fake-link action">See Tag Overrides</li>
-          <li v-if="leagueYear.drafts.length >= 2" v-b-modal="'draftScheduleModal'" class="fake-link action">See Draft Schedule</li>
+          <li v-if="leagueYear.drafts.length >= 2" v-b-modal="'draft-schedule-modal'" class="fake-link action">See Draft Schedule</li>
         </ul>
       </div>
       <div v-if="userPublisher">
@@ -75,20 +75,20 @@
         <div v-if="activeDraft?.draftIsActive || activeDraft?.draftIsPaused">
           <h4>Draft Management</h4>
           <ul class="actions-list">
-            <li v-show="!activeDraft?.draftingCounterPicks && activeDraft?.draftIsActive" v-b-modal="'managerDraftGameForm'" class="fake-link action">Draft Game for Next Player</li>
-            <li v-show="activeDraft?.draftingCounterPicks && activeDraft?.draftIsActive" v-b-modal="'managerDraftCounterPickForm'" class="fake-link action">Draft Game for Next Player</li>
-            <li v-b-modal="'setPauseModal'" class="fake-link action">
+            <li v-show="!activeDraft?.draftingCounterPicks && activeDraft?.draftIsActive" v-b-modal="'manager-draft-game-form'" class="fake-link action">Draft Game for Next Player</li>
+            <li v-show="activeDraft?.draftingCounterPicks && activeDraft?.draftIsActive" v-b-modal="'manager-draft-counter-pick-form'" class="fake-link action">Draft Game for Next Player</li>
+            <li v-b-modal="'set-pause-modal'" class="fake-link action">
               <span v-show="activeDraft?.draftIsActive">Pause Draft</span>
               <span v-show="activeDraft?.draftIsPaused">Resume Draft</span>
             </li>
-            <li v-b-modal="'resetDraftModal'" class="fake-link action">Reset Draft</li>
-            <li v-show="activeDraft?.draftIsPaused" v-b-modal="'undoLastDraftActionModal'" class="fake-link action">Undo Last Drafted Game</li>
+            <li v-b-modal="'reset-draft-modal'" class="fake-link action">Reset Draft</li>
+            <li v-show="activeDraft?.draftIsPaused" v-b-modal="'undo-last-draft-action-modal'" class="fake-link action">Undo Last Drafted Game</li>
             <li v-show="!activeDraft?.draftIsPaused">
               Undo Last Drafted Game
               <br />
               <span class="action-note">(Pause Draft First)</span>
             </li>
-            <li v-show="activeDraft?.draftIsPaused" v-b-modal="'skipCurrentDraftPickModal'" class="fake-link action">Skip Current Pick</li>
+            <li v-show="activeDraft?.draftIsPaused" v-b-modal="'skip-current-draft-pick-modal'" class="fake-link action">Skip Current Pick</li>
             <li v-show="!activeDraft?.draftIsPaused">
               Skip Current Pick
               <br />
@@ -124,7 +124,7 @@
               <li v-b-modal="'invitePlayer'" class="fake-link action">Invite a Player</li>
               <li v-if="!playStarted" v-b-modal="'manageActivePlayers'" class="fake-link action">Manage Active Players</li>
               <li v-if="!playStarted" v-b-modal="'createPublisherForUserForm'" class="fake-link action">Create Publisher For User</li>
-              <li v-if="hasPendingOrActiveDraft" v-b-modal="'managerSetAutoDraftForm'" class="fake-link action">Edit Player Auto Draft</li>
+              <li v-if="hasPendingOrActiveDraft" v-b-modal="'manager-set-auto-draft-form'" class="fake-link action">Edit Player Auto Draft</li>
               <li v-if="postDraftPlayable" v-b-modal="'managerEditPublishersForm'" class="fake-link action">Edit Publishers</li>
               <li v-if="postDraftEditable" v-b-modal="'claimGameForm'" class="fake-link action">Add Publisher Game</li>
               <li v-if="postDraftEditable" v-b-modal="'removePublisherGame'" class="fake-link action">Remove Publisher Game</li>

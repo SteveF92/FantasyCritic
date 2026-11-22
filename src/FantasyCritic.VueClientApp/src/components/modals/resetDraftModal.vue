@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="resetDraftModal" ref="resetDraftModalRef" title="Warning!" :ok-disabled="!resetConfirmed" @ok="resetDraft" @hidden="clearData">
+  <b-modal id="reset-draft-modal" title="Warning!" :ok-disabled="!resetConfirmed" @ok="resetDraft" @hidden="clearData">
     <p>Are you sure you want to reset the draft? Any games that have been drafted will be reset, and you will be able to change players/draft order/game settings again.</p>
 
     <p>
@@ -11,45 +11,54 @@
     <input v-model="resetConfirmation" type="text" class="form-control input" />
   </b-modal>
 </template>
-<script>
-import { mapState } from 'pinia';
-import axios from 'axios';
 
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapState } from 'pinia';
+
+import { leagueManagerClient, type ResetDraftRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { makeToast } from '@/utilities/toast';
 
-export default {
-  data() {
+interface ResetDraftModalData {
+  resetConfirmation: string;
+}
+
+export default defineComponent({
+  data(): ResetDraftModalData {
     return {
       resetConfirmation: ''
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'league', 'activeDraft']),
-    resetConfirmed() {
-      let upperCase = this.resetConfirmation.toUpperCase();
-      return upperCase === 'RESET DRAFT';
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'activeDraft']),
+    resetConfirmed(): boolean {
+      return this.resetConfirmation.toUpperCase() === 'RESET DRAFT';
     }
   },
   methods: {
-    resetDraft() {
-      this.resetConfirmation = '';
-      this.$refs.resetDraftModalRef.hide();
-      const model = {
-        leagueID: this.league.leagueID,
-        year: this.leagueYear.year,
+    async resetDraft(): Promise<void> {
+      if (!this.activeDraft) {
+        return;
+      }
+
+      const request: ResetDraftRequest = {
+        leagueID: this.requiredLeagueYear.league.leagueID,
+        year: this.requiredLeagueYear.year,
         draftID: this.activeDraft.draftID
       };
-      axios
-        .post('/api/leagueManager/ResetDraft', model)
-        .then(() => {
-          makeToast('Draft has been reset.');
-        })
-        .catch(() => {});
+
+      try {
+        await leagueManagerClient.resetDraft(request);
+        makeToast('Draft has been reset.');
+      } catch (error) {
+        makeToast(getApiErrorMessage(error, 'Something went wrong when resetting the draft.'), 'danger');
+      }
     },
-    clearData() {
+    clearData(): void {
       this.resetConfirmation = '';
     }
   }
-};
+});
 </script>
