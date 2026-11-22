@@ -26,7 +26,7 @@
               <div class="league-extra-links">
                 <router-link v-if="league.years.length > 2" :to="{ name: 'leagueAllTimeStats', params: { leagueid: league.leagueID } }">All-Time League Stats</router-link>
                 <router-link v-if="royaleGroupLink" :to="royaleGroupLink">View Royale Group</router-link>
-                <a v-else-if="royaleGroupData && !royaleGroupData.hasRoyaleGroup && league.isManager" href="#" @click.prevent="enableRoyale">Enable Royale</a>
+                <a v-else-if="royaleGroupData && !royaleGroupData.hasRoyaleGroup && isManager" href="#" @click.prevent="enableRoyale">Enable Royale</a>
               </div>
             </div>
 
@@ -130,7 +130,7 @@
         Alternatively, if you want to manage this league without playing in it, you will need to set yourself as "inactive" by going to "Manager Active Players" in the Manage League menu.
       </div>
 
-      <div v-if="league.isManager && !playStarted && !leagueYear.userIsActive" class="alert alert-info">You are currently set to manage this league without playing in it.</div>
+      <div v-if="isManager && !playStarted && !leagueYear.userIsActive" class="alert alert-info">You are currently set to manage this league without playing in it.</div>
 
       <draftStatusHeader></draftStatusHeader>
 
@@ -166,7 +166,6 @@ import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
 import { RouteLocationRaw } from 'vue-router';
 import * as signalR from '@microsoft/signalr';
-import { BModal } from 'bootstrap-vue-next';
 
 import { leagueClient, leagueManagerClient, royaleGroupClient } from '@/api/clients';
 import type {
@@ -314,9 +313,9 @@ export default defineComponent({
         await this.initializePage();
       }
     },
-    userIsNextInDraft(val, oldVal) {
+    async userIsNextInDraft(val, oldVal) {
       if (val && val !== oldVal) {
-        (document.getElementById('draft-notification-sound') as InstanceType<typeof HTMLAudioElement> | undefined)?.play();
+        await (document.getElementById('draft-notification-sound') as InstanceType<typeof HTMLAudioElement> | null)?.play();
       }
     }
   },
@@ -342,7 +341,7 @@ export default defineComponent({
       if (typeof newVal !== 'number') {
         throw new Error('Invalid year chosen.');
       }
-      this.$router.push({ name: 'league', params: { leagueID: this.leagueid, year: newVal } });
+      this.$router.push({ name: 'league', params: { leagueid: this.leagueid, year: newVal } });
     },
     async acceptInvite(): Promise<void> {
       const request: AcceptInviteRequest = {
@@ -396,7 +395,7 @@ export default defineComponent({
         await this.refreshLeagueYear();
         await this.startHubConnection();
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to accept invite');
+        this.errorInfo = getApiErrorMessage(error, 'Failed to start draft.');
       }
     },
     async followLeague(): Promise<void> {
@@ -433,7 +432,7 @@ export default defineComponent({
         await leagueClient.dismissManagerMessage(model);
         await this.refreshLeagueYear();
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to accept invite');
+        this.errorInfo = getApiErrorMessage(error, 'Failed to dismiss manager message.');
       }
     },
     async startHubConnection(): Promise<void> {
@@ -457,7 +456,7 @@ export default defineComponent({
       });
 
       hubConnection.on('DraftFinished', () => {
-        (this.$refs.draftCompleteModalRef as InstanceType<typeof BModal> | undefined)?.hide();
+        (this.$refs.draftCompleteModalRef as InstanceType<typeof DraftCompleteModal> | undefined)?.show();
       });
 
       hubConnection.onclose(async () => {
