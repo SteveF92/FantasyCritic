@@ -16,7 +16,7 @@
             <h4 class="text-black">Offer</h4>
 
             <div>
-              <div v-for="(item, index) in proposerPublisherGames" :key="item.publisherGameID">
+              <div v-for="(item, index) in proposerPublisherGames" :key="item.id">
                 <div class="trade-game-row">
                   <label>{{ index + 1 }}</label>
                   <b-form-select v-model="item.game">
@@ -37,7 +37,7 @@
             <h4 class="text-black">Receive</h4>
 
             <div>
-              <div v-for="(item, index) in counterPartyPublisherGames" :key="item.publisherGameID">
+              <div v-for="(item, index) in counterPartyPublisherGames" :key="item.id">
                 <div class="trade-game-row">
                   <label>{{ index + 1 }}</label>
                   <b-form-select v-model="item.game">
@@ -87,7 +87,7 @@ import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
 import { BModal } from 'bootstrap-vue-next';
 
-import { leagueClient, type PublisherGameViewModel, type PublisherViewModel } from '@/api/clients';
+import { leagueClient, ProposeTradeRequest, type PublisherGameViewModel, type PublisherViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
 import { getApiErrorMessage } from '@/utilities/apiError';
 
@@ -126,7 +126,7 @@ export default defineComponent({
   },
   computed: {
     ...mapState(useLeagueStore, ['requiredLeagueYear', 'requiredUserPublisher']),
-    getTradeError() {
+    getTradeError(): string {
       if (this.proposerPublisherGames.length === 0 && this.counterPartyPublisherGames.length === 0) {
         return 'A trade must involve at least one game.';
       }
@@ -161,20 +161,20 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    addGame(list: TradableGame[]) {
+    addGame(list: TradableGame[]): void {
       const element: TradableGame = {
         id: this.indexer++,
         game: null
       };
       list.push(element);
     },
-    removeProposerGame(id: number) {
+    removeProposerGame(id: number): void {
       this.proposerPublisherGames = this.proposerPublisherGames.filter((x) => x.id !== id);
     },
-    removeCounterPartyGame(id: number) {
+    removeCounterPartyGame(id: number): void {
       this.counterPartyPublisherGames = this.counterPartyPublisherGames.filter((x) => x.id !== id);
     },
-    getGameOptionName(game: PublisherGameViewModel) {
+    getGameOptionName(game: PublisherGameViewModel): string {
       if (game.counterPick) {
         return `${game.gameName} (Counter Pick)`;
       }
@@ -191,7 +191,7 @@ export default defineComponent({
         throw new Error('No counter party selected.');
       }
 
-      const request = {
+      const request: ProposeTradeRequest = {
         proposerPublisherID: this.requiredUserPublisher.publisherID,
         counterPartyPublisherID: this.counterParty.publisherID,
         proposerPublisherGameIDs: this.proposerPublisherGames.map((x) => x.game!.publisherGameID),
@@ -204,13 +204,13 @@ export default defineComponent({
       this.isBusy = true;
       this.serverError = '';
       try {
-        leagueClient.proposeTrade(request);
+        await leagueClient.proposeTrade(request);
 
         (this.$refs.proposeTradeFormRef as InstanceType<typeof BModal> | undefined)?.hide();
         await this.notifyAction('You proposed a trade.');
         this.clearData();
       } catch (error) {
-        this.serverError = getApiErrorMessage(error, 'Failed to place bid.');
+        this.serverError = getApiErrorMessage(error, 'Something went wrong with your trade proposal.');
       } finally {
         this.isBusy = false;
       }
