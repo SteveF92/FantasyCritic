@@ -227,6 +227,8 @@ export default defineComponent({
       this.proposerBudgetSendAmount = 0;
       this.counterPartyBudgetSendAmount = 0;
       this.message = '';
+      this.clientError = '';
+      this.serverError = '';
     }
   }
 });

@@ -8,7 +8,7 @@
       </div>
     </div>
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Create Publisher" :disabled="!publisherName || isBusy" @click="createPublisher" />
+      <input type="submit" class="btn btn-primary" value="Create Publisher" :disabled="!publisherName.trim() || isBusy" @click="createPublisher" />
     </template>
   </b-modal>
 </template>
@@ -54,7 +54,7 @@ export default defineComponent({
         await leagueClient.createPublisher(request);
 
         (this.$refs.createPublisherRef as InstanceType<typeof BModal> | undefined)?.hide();
-        await this.notifyAction(this.publisherName + ' created.');
+        await this.notifyAction(request.publisherName + ' created.');
         this.clearData();
       } catch (error) {
         this.errorInfo = getApiErrorMessage(error, 'Something went wrong when creating your publisher.');
@@ -62,9 +62,8 @@ export default defineComponent({
         this.isBusy = false;
       }
     },
-    clearData() {
+    clearData(): void {
       this.publisherName = '';
-      this.isBusy = false;
       this.errorInfo = '';
     }
   }

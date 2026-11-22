@@ -120,7 +120,7 @@
       <div v-if="leagueYear.userIsActive && !userPublisher" class="alert alert-info">
         <p>You need to create your publisher for this year.</p>
         <b-button v-b-modal="'create-publisher'" variant="primary" class="mx-2">Create Publisher</b-button>
-        <createPublisherForm :league-year="leagueYear"></createPublisherForm>
+        <createPublisherForm></createPublisherForm>
       </div>
 
       <div v-if="leagueYear.userIsActive && !userPublisher && league.isManager" class="alert alert-info">
