@@ -95,7 +95,7 @@ public static class LeagueSlotDifferenceFunctions
 
     private static string GetSlotLabel(LeagueSlot slot)
     {
-        var kind = slot.CounterPick ? "Counter pick slot" : "Slot";
+        var kind = slot.CounterPick ? "Counter Pick Slot" : "Slot";
         return $"{kind} {slot.SlotNumber + 1}";
     }
 

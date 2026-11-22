@@ -77,7 +77,7 @@ public class LeagueSlotDifferenceFunctionsTests
         {
             "Slot 3 removed (requiring 'Remake').",
             "Slot 3 added (requiring 'Remake' or 'Remaster').",
-            "Counter pick slot 1 added.",
+            "Counter Pick Slot 1 added.",
         }));
     }
 
@@ -128,7 +128,7 @@ public class LeagueSlotDifferenceFunctionsTests
 
         var differences = LeagueSlotDifferenceFunctions.GetSlotDifferences([slot], [counterPick]);
 
-        Assert.That(differences, Is.EqualTo(new[] { "Slot 1 removed.", "Counter pick slot 1 added." }));
+        Assert.That(differences, Is.EqualTo(new[] { "Slot 1 removed.", "Counter Pick Slot 1 added." }));
     }
 
     [Test]

@@ -57,7 +57,7 @@ public static class GameEligibilityFunctions
             bool otherPlayerHasCounterPick = gameSet.OtherPlayerCounterPicks.ContainsGame(request);
             if (otherPlayerHasCounterPick)
             {
-                claimErrors.Add(new ClaimError("Cannot counter-pick a game that someone else has already counter picked.", false));
+                claimErrors.Add(new ClaimError("Cannot counter pick a game that someone else has already counter picked.", false));
             }
             bool thisPlayerHasCounterPick = gameSet.ThisPlayerCounterPicks.ContainsGame(request);
             if (thisPlayerHasCounterPick)
@@ -300,7 +300,7 @@ public static class GameEligibilityFunctions
             bool otherPlayerHasCounterPick = gameSet.OtherPlayerCounterPicks.ContainsGame(request.MasterGame);
             if (otherPlayerHasCounterPick)
             {
-                associationErrors.Add(new ClaimError("Cannot counter-pick a game that someone else has already counter picked.", false));
+                associationErrors.Add(new ClaimError("Cannot counter pick a game that someone else has already counter picked.", false));
             }
             bool thisPlayerHasCounterPick = gameSet.ThisPlayerCounterPicks.ContainsGame(request.MasterGame);
             if (thisPlayerHasCounterPick)

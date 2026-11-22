@@ -329,7 +329,7 @@ public class DraftSkipBoundaryTests : IntegrationTestBase
 
             var snapshot = await league.GetLeagueYearAsync();
             DraftSkipBoundaryScenario.AssertDraftFinal(snapshot);
-            await DraftSkipBoundaryScenario.AssertTrailingAutoSkipPersistedAsync(league, "counter-pick");
+            await DraftSkipBoundaryScenario.AssertTrailingAutoSkipPersistedAsync(league, "counter pick");
         }
         finally
         {

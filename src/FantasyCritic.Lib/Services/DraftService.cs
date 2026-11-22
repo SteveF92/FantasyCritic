@@ -84,7 +84,7 @@ public class DraftService
 
         if (previousPick.Skipped)
         {
-            var slotType = previousPick.CounterPick ? "counter-pick" : "standard game";
+            var slotType = previousPick.CounterPick ? "counter pick" : "standard game";
             var publisherName = previousPick.Publisher.GetPublisherAndUserDisplayName();
             var description = $"Undid skip for {publisherName}, round {previousPick.RoundNumber} ({slotType}).";
             var action = new LeagueAction(previousPick.Publisher, _clock.GetCurrentInstant(), "Draft Skip Undone", description, managerAction: true);
@@ -138,7 +138,7 @@ public class DraftService
             return Result.Failure<StartDraftResult>("That turn has already been skipped.");
         }
 
-        var slotType = nextPick.CounterPick ? "counter-pick" : "standard game";
+        var slotType = nextPick.CounterPick ? "counter pick" : "standard game";
         var publisherName = nextPick.Publisher.GetPublisherAndUserDisplayName();
         var description = $"{publisherName} was skipped for round {nextPick.RoundNumber} ({slotType}).";
         var action = new LeagueAction(nextPick.Publisher, _clock.GetCurrentInstant(), "Draft Pick Skipped", description, managerAction: true);
@@ -369,7 +369,7 @@ public class DraftService
     {
         foreach (var pickToSkip in picksToSkip)
         {
-            var slotType = pickToSkip.CounterPick ? "counter-pick" : "standard game";
+            var slotType = pickToSkip.CounterPick ? "counter pick" : "standard game";
             var publisherName = pickToSkip.Publisher.GetPublisherAndUserDisplayName();
             var description = $"{publisherName} was auto-skipped for round {pickToSkip.RoundNumber} ({slotType}) because they have no open slots.";
             var action = new LeagueAction(pickToSkip.Publisher, _clock.GetCurrentInstant(), "Draft Pick Skipped", description, managerAction: false);
