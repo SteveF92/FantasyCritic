@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="bidCounterPickForm" ref="bidCounterPickFormRef" size="lg" title="Make a Counter Pick Bid" no-footer @hidden="clearData" @show="getPossibleCounterPicks">
+  <b-modal id="bid-counter-pick-form" ref="bidCounterPickFormRef" size="lg" title="Make a Counter Pick Bid" no-footer @hidden="clearData" @show="getPossibleCounterPicks">
     <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <p>
       You can use this form to place a bid on a game.
