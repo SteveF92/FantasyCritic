@@ -115,7 +115,7 @@ export default defineComponent({
   Put the icon in `<button type="button" class="font-awesome-button" aria-label="...">` and move `@click`,
   `:disabled`, `title` and `v-b-popover` to the button, as in `components/toastHost.vue`. The aria-label is
   needed because the button has no text, and it names the action ("Archive league"), not a copy of
-  another button's label. Still to do: `recentJobsTable.vue`.
+  another button's label.
 - **Handlers with optional parameters:** call them, as in `@click="hide()"`. `@click="hide"` passes the
   `MouseEvent` as the first argument, and type-check rejects it on a native element.
 - **`$refs`:** cast with `this.$refs.x as InstanceType<typeof Child> | undefined`.
@@ -123,7 +123,12 @@ export default defineComponent({
   that returns a string, as in `playerGameTable`'s `getRowKey`. bootstrap-vue-next treats a falsy key as
   missing and keys the row by its index, which collides with another row's key after sorting. Highlight
   rows with a `tbody-tr-class` function, not by writing `_rowVariant` onto the items, which are often the
-  store's objects.
+  store's objects. A field key with a dot (`user.emailAddress`) renders nothing on its own; give it a
+  `#cell(...)` slot.
+- **`b-table` row details** are row expansion in bootstrap-vue-next 1.x: a `#row-expansion` slot, and the
+  cell slots get `toggleExpansion()` and `expansionShowing`. Open rows are tracked by `primary-key`, so they
+  stay open when the items are reloaded. `#row-details`, `detailsShowing` and `_showDetails` do nothing.
+  The expansion row has no class of its own; `tbody-tr-class` gets it with the type `'row-expansion'`.
 - **Requests:** build the generated request type (a typed object literal), not an untyped object.
 - **Errors:** `getApiErrorMessage(error, '<what failed>')` from step 2, never `error.response.data`.
   Show it in a basic `<b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>`
@@ -377,12 +382,19 @@ on the League page.
   `GetLeagueYearsInConferenceYear`'s ambiguous `Year` is fixed (see "Found along the way").
 - The conference store has `requiredConferenceYear` and `requiredConference`, like the league store.
 
-### 15. Admin pages
+### 15. Admin pages (done)
 
 - `adminConsole` (+ `recentJobsTable`, `serviceMonitor`), `adminSupportTickets`,
   `adminSiteAnnouncements`
 - `activeMasterGameRequests`, `activeMasterGameChangeRequests`, `pendingMasterGameUpdates`
 - `masterGameCreator`, `masterGameEditor`, `actionProcessingDryRunResults`
+
+- Server: `AdminController.OpenSupportTicket` declares its `SupportTicketViewModel` response; the
+  generated clients typed it as a file.
+- No component imports `axios` any more, and every component with a script is TypeScript, so step 16
+  only has to remove the package.
+- The dry run's game lists are a small table of their own (name, release date, tags) instead of
+  `masterGamesTable`, whose year columns mean nothing there.
 
 ### 16. Lock it in
 
@@ -430,13 +442,13 @@ has the bug too.
 | 2 | `store/publisherStore.ts` `confirmPositions` | Now uses `getApiErrorMessage`. Changes: a 403 or 404 shows "Something went wrong." where it showed nothing (empty body); a 500 shows that instead of the error page's text; a network failure is rethrown after leaving move mode, where it showed "TypeError: Failed to fetch" | — | Done |
 | 2 | `store/publisherStore.ts` | `moveGameError` is never cleared, not by a later successful move and not by `clearPublisherStoreData`, so after one failed move the error stays up, even on another publisher's page | Yes | Done: cleared when a move is confirmed and in `clearPublisherStoreData`; `tests/store/publisherStore.test.ts` |
 | 4 | `components/leagueActions.vue` | Passes `:possible-league-options` to `leagueOptionsModal`, which has no such prop and reads the options from the store, so the value falls through as an attribute. `checkUnknownProps` is off, so type-check won't flag it. It's the only use of the `possibleLeagueOptions` `mapState` entry, so remove both | Yes | Step 13d |
-| 4 | `views/masterGameCreator.vue` | Passes `supportedYears.find(...)` to `leagueOptionsModal`'s required `supportedYear`. `find` can return `undefined`, and the modal reads `supportedYear.year`. Type-check should flag it once the page is converted; decide then what happens if no year matches | Yes | Step 15 |
+| 4 | `views/masterGameCreator.vue` | Passes `supportedYears.find(...)` to `leagueOptionsModal`'s required `supportedYear`. `find` can return `undefined`, and the modal reads `supportedYear.year`. Type-check should flag it once the page is converted; decide then what happens if no year matches | Yes | Done in step 15: a league whose year isn't supported keeps its link, without "(Settings)" or the modal |
 | 5 | `components/toastHost.vue` | The close icon is now a native button named "Close", so a keyboard can reach it. `hide` is now called with no arguments, where it was passed the `MouseEvent` as its trigger | — | Done |
 | 5 | `components/toastHost.vue` | Toasts had no fixed position on this branch, so they rendered in page flow just above the footer, off-screen on any long page. bootstrap-vue-next doesn't position a declarative `b-toast` the way BootstrapVue's default toaster did. Also, `.toast-body` didn't fill the toast, so the close button sat against the message | No | Done: pinned top right with `toast-container`; `.toast-body` grows |
 | 5 | `components/toastHost.vue` | Toasts never auto-hide on this branch. `visible` shows a `b-toast` without starting its countdown, which only runs when `modelValue` is a number, so a toast stayed until it was closed, even though `vue3-upgrade-plan.md` records auto-hide as checked | No | Done: `:model-value="5000" no-progress` in place of `visible`. Hovering pauses the countdown |
 | 5 | `css/site.css`, `views/welcome.vue` | Dropped the overrides that kept Font Awesome 6's icon and layer widths, along with the `left-*` transforms that compensated for them, so icons now use Font Awesome 7's 1.25em default. It looks better on the welcome page. Other pages get checked and adjusted as their steps come up | — | Done |
 | 6 | `components/gameTables/masterGamesTable.vue`, `views/actionProcessingDryRunResults.vue` | The table's `gameRows` computed turned rows with `error` red by writing to its prop. Only the dry run's games have `error`, so that page now marks its own rows and the table no longer does | — | Done |
-| 6 | `views/actionProcessingDryRunResults.vue` | Passes `MasterGameViewModel[]` to `masterGamesTable`, which takes `MasterGameYearViewModel[]`, and omits the required `show-year-stats`. The year columns mean nothing there, so the page probably wants its own small table. Type-check will flag the prop once the page is converted | Yes | Step 15 |
+| 6 | `views/actionProcessingDryRunResults.vue` | Passes `MasterGameViewModel[]` to `masterGamesTable`, which takes `MasterGameYearViewModel[]`, and omits the required `show-year-stats`. The year columns mean nothing there, so the page probably wants its own small table. Type-check will flag the prop once the page is converted | Yes | Done in step 15: its own table of name, release date and tags, sortable by the first two, without the filter and paging controls. Failed games are red through `tbody-tr-class` |
 | 6 | `components/masterGamePopover.vue`, `components/masterGameSummary.vue` | Both took only `MasterGameYearViewModel`, but pages such as Recent Changes pass a `MasterGameViewModel`, which has no year stats. The popover showed "0%", "Undrafted" and "Unhyped..." for every such game. Both now take either type, and the summary hides the year rows when there's no `year` | Yes | Done |
 | 6 | `views/masterGame.vue` | The sub-games section called `releaseDate` and `openCriticLink` methods that `b3e56008f` (June 2019) moved into `masterGameDetails`, so any game with sub-games has failed to render that section since. It now uses `formatDateLong` and its own `openCriticLink` | Yes | Done |
 | 6 | `views/masterGame.vue` | Every failed API call set `error`, which nothing displayed, so an unknown master game ID gave a blank page. Errors now go through `getApiErrorMessage` and show in a `b-alert` at the top of the page. A 404 shows "Something went wrong." | Yes | Done |
@@ -562,3 +574,19 @@ has the bug too.
 | 14 | `components/modals/conference/renewLeagueForNewYear.vue` | Fetched the conference when the page loaded as well as on open; now only on open. A failed load wasn't caught. The chosen league wasn't cleared on close, and Renew League with none chosen threw a `TypeError`. Errors show in a `b-alert`, and the button is disabled until a league is chosen and while the request runs | Yes | Done |
 | 14 | `views/conference.vue` | Dismissing the manager's message didn't catch a failure; it now shows in the page's `b-alert`, and the message stays. Joining and Enable Royale show the server's message through `getApiErrorMessage` | Yes | Done |
 | 14 | `views/conferenceHistory.vue` | A failed delete was swallowed, and a failed load showed a blank page. Errors now show in a `b-alert`, and a failed load shows the conference page's error. Delete is disabled while a request runs | Yes | Done |
+| 15 | `components/recentJobsTable.vue` | Details did nothing on this branch. bootstrap-vue-next 1.x renamed row details to row expansion, so the `#row-details` slot, `detailsShowing` and `_showDetails` were ignored, and the `b-table-has-details` classes the styles targeted don't exist. It uses `#row-expansion` now, tracked by `jobID`, so open jobs stay open across a refresh as before. The shared background and dashed divider are back | No | Done |
+| 15 | `components/recentJobsTable.vue` | Choosing a job type or status in the filter boxes didn't refresh the table. vue-multiselect 3 has no `input` event, so `@input` caught the search box's native input events instead: typing in the search refreshed, choosing didn't. It listens to `update:model-value` now | No | Done |
+| 15 | `components/recentJobsTable.vue` | A failed cancel's message was cleared by the refresh that follows it, so it never showed. It's shown after the refresh now | Yes | Done |
+| 15 | `components/recentJobsTable.vue` | The row filter icons are native buttons named "Show only X jobs" and "Hide X jobs". `:disabled` on the icon did nothing; on the button it works. Where there's a mouse they're transparent until hovered, where they were `display: none`, so the keyboard can reach them, and they show when focused | — | Done |
+| 15 | `adminConsole`, `recentJobsTable`, `serviceMonitor`, `pendingMasterGameUpdates` | Errors use `getApiErrorMessage`: a 5xx shows "Something went wrong." (or the caller's fallback) instead of the error page's text, and a network failure is rethrown instead of shown. The console's two failure alerts are one: "'X' failed: \<message\>" | — | Done |
+| 15 | `views/adminConsole.vue` | Merge Games and Send Confirmation sent an empty ID as `null` and got a validation 400; they're disabled until the IDs are filled, and the labels point at their inputs. A failed load of the automated action processing setting wasn't caught; it shows in the banner. A failed change of that setting no longer re-reads it, which replaced the error; the switch goes back by itself | Yes | Done |
+| 15 | `views/adminSupportTickets.vue` | A failed first load wasn't caught. Failures showed the error object and the axios response object instead of the server's message; there's one alert with the message now. "Opened" is a formatted date instead of the raw instant | Yes | Done |
+| 15 | `views/adminSiteAnnouncements.vue` | Editing an announcement and clearing "Posted at" threw a `RangeError` from `new Date('').toISOString()`, shown as the error. Save changes is disabled until an edited announcement has a time, and the hint says so. Failures showed error objects instead of the server's message | Yes | Done |
+| 15 | `views/activeMasterGameRequests.vue`, `activeMasterGameChangeRequests.vue` | A failed load was swallowed, and a failed response set `errorInfo`, which nothing declared or displayed. Both show in a `b-alert`. After a response the answered request stayed in the list and the form stayed open; the list now reloads, the form closes, and the success message names the game. Submit is disabled for a blank note, which the server requires, and while the request runs. The form's heading names the game | Yes | Done |
+| 15 | `views/activeMasterGameChangeRequests.vue` | Link OpenCritic and Link GG\| showed on every request. With no ID the request had no `openCriticID`, which the server reads as 0, and no GG token. They show only when the request has one now, and a failed link shows its error instead of nothing. The unused `editGame` method is gone; the links use the shared helpers | Yes | Done |
+| 15 | `views/masterGameCreator.vue` | Typing an OpenCritic ID and clearing it sent `""`, which the server can't read as a number; it's a number input now and an empty one isn't sent, nor an empty GG token. A failed create showed "An error has occurred with your request."; it shows the server's message. The estimated date was pasted into the parse request's query unencoded; the client encodes it. Submit is disabled while the request runs. Edit Master Game had `class="warning"` instead of `variant` | Yes | Done |
+| 15 | `views/masterGameEditor.vue` | Saving sent back the critic score shown on the page. For a game with sub-games and no score of its own, that's the sub-games' average, so saving stored the average as the game's own score and it stopped following the sub-games. No critic score is sent now; the server keeps the game's own | Yes | Done |
+| 15 | `views/masterGameEditor.vue` | Box Art File Name could be edited, but `EditMasterGameRequest` has no such field and the server keeps the old one. It's read-only now | Yes | Done |
+| 15 | `views/masterGameEditor.vue` | The warning "Are you sure you want to clear the critic score while leaving OpenCritic Score Refreshing on?" showed when Sync with OpenCritic was off. It shows when it's on now. Check that this is the intent | Yes | Done |
+| 15 | `views/masterGameEditor.vue` | Clearing the minimum release date sent `null`, which the server can't read, so the save failed with a generic error. It's a required field now, with a message. Failures show the server's message instead of the axios response data. Changing the route reloads the change request and tags as well as the game. OpenCritic ID is a number input | Yes | Done |
+| 15 | `views/actionProcessingDryRunResults.vue` | A failed dry run was swallowed and the spinner stayed up forever; it shows a `b-alert` now. "No actioned games." never showed, since it tested `.length` on an object; each game table says when it's empty instead | Yes | Done |

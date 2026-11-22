@@ -5,10 +5,11 @@
       <b-button variant="info" :to="{ name: 'adminConsole' }">Admin Console</b-button>
     </div>
     <hr />
-    <div v-if="showResponded" class="alert alert-success">Responded to request.</div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+    <b-alert v-if="respondedTo" variant="success" :model-value="true">Responded to the request for {{ respondedTo }}.</b-alert>
 
     <div v-if="requestSelected">
-      <h3>Respond to Request</h3>
+      <h3>Respond to Request for {{ requestSelected.gameName }}</h3>
       <div class="row">
         <div class="col-xl-8 col-lg-10 col-md-12 text-well">
           <form @submit.prevent="respondToRequest">
@@ -22,7 +23,7 @@
             </div>
             <div class="form-group">
               <div class="col-md-offset-2 col-md-4">
-                <input type="submit" class="btn btn-primary" value="Submit" />
+                <input type="submit" class="btn btn-primary" value="Submit" :disabled="isBusy || !responseNote.trim()" />
               </div>
             </div>
           </form>
@@ -31,7 +32,7 @@
       <hr />
     </div>
 
-    <div v-if="activeRequests && activeRequests.length === 0" class="alert alert-info">No active requests.</div>
+    <b-alert v-if="activeRequests && activeRequests.length === 0" variant="info" :model-value="true">No active requests.</b-alert>
     <div v-if="activeRequests && activeRequests.length !== 0" class="row">
       <table class="table table-sm table-responsive-sm table-bordered table-striped">
         <thead>
@@ -58,52 +59,78 @@
     </div>
   </div>
 </template>
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
 
-export default {
-  data() {
+import { factCheckerClient, type CompleteMasterGameRequestRequest, type MasterGameRequestViewModel } from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
+
+interface ActiveMasterGameRequestsData {
+  activeRequests: MasterGameRequestViewModel[] | null;
+  isBusy: boolean;
+  errorInfo: string;
+  respondedTo: string;
+  requestSelected: MasterGameRequestViewModel | null;
+  masterGameID: string;
+  responseNote: string;
+}
+
+export default defineComponent({
+  data(): ActiveMasterGameRequestsData {
     return {
       activeRequests: null,
-      showResponded: false,
+      isBusy: false,
+      errorInfo: '',
+      respondedTo: '',
       requestSelected: null,
-      masterGameID: null,
+      masterGameID: '',
       responseNote: ''
     };
   },
-  created() {
-    this.fetchMyRequests();
+  async created() {
+    try {
+      await this.fetchRequests();
+    } catch (error) {
+      this.errorInfo = getApiErrorMessage(error, 'Could not load the requests.');
+    }
   },
   methods: {
-    fetchMyRequests() {
-      axios
-        .get('/api/factChecker/ActiveMasterGameRequests')
-        .then((response) => {
-          this.activeRequests = response.data;
-        })
-        .catch(() => {});
+    async fetchRequests(): Promise<void> {
+      this.activeRequests = await factCheckerClient.activeMasterGameRequests();
     },
-    assignGame(request) {
+    assignGame(request: MasterGameRequestViewModel): void {
       this.requestSelected = request;
+      this.masterGameID = '';
       this.responseNote = 'Got that added, thanks!';
     },
-    respondToRequest() {
-      let request = {
+    async respondToRequest(): Promise<void> {
+      if (!this.requestSelected) {
+        return;
+      }
+
+      const masterGameID = this.masterGameID.trim();
+      const request: CompleteMasterGameRequestRequest = {
         requestID: this.requestSelected.requestID,
         responseNote: this.responseNote,
-        masterGameID: this.masterGameID
+        masterGameID: masterGameID || undefined
       };
-      axios
-        .post('/api/factChecker/CompleteMasterGameRequest', request)
-        .then(() => {
-          this.showResponded = true;
-        })
-        .catch((error) => {
-          this.errorInfo = error.response;
-        });
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      this.respondedTo = '';
+      try {
+        await factCheckerClient.completeMasterGameRequest(request);
+        this.respondedTo = this.requestSelected.gameName;
+        this.requestSelected = null;
+        await this.fetchRequests();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when responding to the request.');
+      } finally {
+        this.isBusy = false;
+      }
     }
   }
-};
+});
 </script>
 <style scoped>
 .select-cell {

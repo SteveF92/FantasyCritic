@@ -6,11 +6,11 @@
     </div>
     <hr />
     <p>These are the messages that are planned to be sent with the next cache refresh. If you don't want one to go out, you can delete it here.</p>
-    <div v-if="errorResponse" class="alert alert-danger">{{ errorResponse }}</div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
     <div v-if="pendingUpdates">
       <h3>New Games</h3>
-      <div v-if="pendingUpdates.newGames.length === 0" class="alert alert-info">No new games pending.</div>
+      <b-alert v-if="pendingUpdates.newGames.length === 0" variant="info" :model-value="true">No new games pending.</b-alert>
       <table v-else class="table table-sm table-responsive-sm table-bordered table-striped">
         <thead>
           <tr class="bg-primary">
@@ -29,7 +29,7 @@
       </table>
 
       <h3>Score Updates</h3>
-      <div v-if="pendingUpdates.scoreUpdates.length === 0" class="alert alert-info">No score updates pending.</div>
+      <b-alert v-if="pendingUpdates.scoreUpdates.length === 0" variant="info" :model-value="true">No score updates pending.</b-alert>
       <table v-else class="table table-sm table-responsive-sm table-bordered table-striped">
         <thead>
           <tr class="bg-primary">
@@ -52,7 +52,7 @@
       </table>
 
       <h3>Edits</h3>
-      <div v-if="pendingUpdates.edits.length === 0" class="alert alert-info">No edits pending.</div>
+      <b-alert v-if="pendingUpdates.edits.length === 0" variant="info" :model-value="true">No edits pending.</b-alert>
       <div v-else>
         <table class="table table-sm table-responsive-sm table-bordered table-striped">
           <thead>
@@ -80,23 +80,41 @@
     </div>
   </div>
 </template>
-<script>
-import { ApiException, factCheckerClient } from '@/api/clients';
+<script lang="ts">
+import { defineComponent } from 'vue';
+
+import {
+  factCheckerClient,
+  type DeletePendingMasterGameUpdateRequest,
+  type PendingMasterGameEditViewModel,
+  type PendingMasterGameUpdatesViewModel,
+  type PendingNewMasterGameViewModel,
+  type PendingScoreUpdateViewModel
+} from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { useConfirm } from '@/utilities/confirm';
 import { formatScore } from '@/utilities/formatters';
 import MasterGamePopover from '@/components/masterGamePopover.vue';
 
-export default {
+type PendingUpdate = PendingNewMasterGameViewModel | PendingScoreUpdateViewModel | PendingMasterGameEditViewModel;
+
+interface PendingMasterGameUpdatesData {
+  pendingUpdates: PendingMasterGameUpdatesViewModel | null;
+  errorInfo: string;
+  isBusy: boolean;
+}
+
+export default defineComponent({
   setup() {
     return { confirm: useConfirm() };
   },
   components: {
     MasterGamePopover
   },
-  data() {
+  data(): PendingMasterGameUpdatesData {
     return {
       pendingUpdates: null,
-      errorResponse: null,
+      errorInfo: '',
       isBusy: false
     };
   },
@@ -105,14 +123,14 @@ export default {
   },
   methods: {
     formatScore,
-    async fetchPendingUpdates() {
+    async fetchPendingUpdates(): Promise<void> {
       try {
         this.pendingUpdates = await factCheckerClient.pendingMasterGameUpdates();
       } catch (error) {
-        this.errorResponse = this.describeError(error);
+        this.errorInfo = getApiErrorMessage(error, 'Could not load the pending updates.');
       }
     },
-    async deleteUpdate(update) {
+    async deleteUpdate(update: PendingUpdate): Promise<void> {
       const confirmed = await this.confirm(`Delete the pending update for ${update.masterGame.gameName}? It will not go to Discord.`, {
         title: 'Delete Pending Update',
         okTitle: 'Delete',
@@ -123,30 +141,22 @@ export default {
         return;
       }
 
-      await this.runAndRefresh(() => factCheckerClient.deletePendingMasterGameUpdate({ masterGameUpdateID: update.masterGameUpdateID }));
-    },
-    //The list is refreshed even after a failure: a 400 usually means the update went out while the page was open.
-    async runAndRefresh(call) {
-      this.errorResponse = null;
+      const request: DeletePendingMasterGameUpdateRequest = { masterGameUpdateID: update.masterGameUpdateID };
+
+      //The list is refreshed even after a failure: a 400 usually means the update went out while the page was open.
+      this.errorInfo = '';
       this.isBusy = true;
       try {
-        await call();
+        await factCheckerClient.deletePendingMasterGameUpdate(request);
       } catch (error) {
-        this.errorResponse = this.describeError(error);
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when deleting the update.');
       } finally {
         await this.fetchPendingUpdates();
         this.isBusy = false;
       }
-    },
-    describeError(error) {
-      if (ApiException.isApiException(error) && error.response) {
-        return error.response;
-      }
-
-      return error.message || String(error);
     }
   }
-};
+});
 </script>
 <style scoped>
 .select-cell {

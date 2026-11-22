@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-show="errorResponse" class="alert alert-danger">{{ errorResponse }}</div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
     <div class="mb-2">
       <b-button variant="info" size="sm" :disabled="isBusy" @click="refresh">Refresh</b-button>
@@ -28,13 +28,31 @@
     </b-table>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+import type { ColorVariant, TableField } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
-import { adminClient, ApiException } from '@/api/clients';
+import { adminClient, type LogLinkViewModel, type ServiceHealthDetailViewModel, type ServiceHealthViewModel, type ServiceMonitorViewModel } from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
+
+interface ServiceRow {
+  name: string;
+  state: string;
+  description?: string;
+  details: ServiceHealthDetailViewModel[];
+  logLinks: LogLinkViewModel[];
+}
+
+interface ServiceMonitorData {
+  monitor: ServiceMonitorViewModel | null;
+  isBusy: boolean;
+  errorInfo: string;
+  lastRefreshedAt: DateTime | null;
+}
 
 //The worker's states come from WorkerState on the server; the web app and the bot only have their health status.
-const stateVariants = {
+const stateVariants: Record<string, ColorVariant> = {
   Running: 'success',
   Draining: 'warning',
   Off: 'secondary',
@@ -45,45 +63,42 @@ const stateVariants = {
 };
 
 //Links that show only one level's lines have that level's colour. The rest are plain.
-const logLevelVariants = {
+const logLevelVariants: Record<string, ColorVariant> = {
   Error: 'danger',
   Warning: 'warning'
 };
 
-export default {
-  data() {
+function toRow(service: ServiceHealthViewModel, state: string): ServiceRow {
+  return { name: service.name, state, description: service.description, details: service.details, logLinks: service.logLinks };
+}
+
+export default defineComponent({
+  setup() {
+    const fields: TableField<ServiceRow>[] = [
+      { key: 'name', label: 'Service', thClass: 'bg-primary' },
+      { key: 'state', label: 'State', thClass: 'bg-primary' },
+      { key: 'description', label: 'Description', thClass: 'bg-primary' },
+      { key: 'details', label: 'Details', thClass: 'bg-primary' },
+      { key: 'logLinks', label: 'Logs', thClass: 'bg-primary' }
+    ];
+
+    return { DateTime, fields };
+  },
+  data(): ServiceMonitorData {
     return {
-      DateTime,
       monitor: null,
       isBusy: false,
-      errorResponse: null,
-      lastRefreshedAt: null,
-      fields: [
-        { key: 'name', label: 'Service', thClass: 'bg-primary' },
-        { key: 'state', label: 'State', thClass: 'bg-primary' },
-        { key: 'description', label: 'Description', thClass: 'bg-primary' },
-        { key: 'details', label: 'Details', thClass: 'bg-primary' },
-        { key: 'logLinks', label: 'Logs', thClass: 'bg-primary' }
-      ]
+      errorInfo: '',
+      lastRefreshedAt: null
     };
   },
   computed: {
-    services() {
+    services(): ServiceRow[] {
       if (!this.monitor) {
         return [];
       }
 
-      return [
-        { name: this.monitor.web.name, state: this.monitor.web.status, description: this.monitor.web.description, details: this.monitor.web.details, logLinks: this.monitor.web.logLinks },
-        { name: this.monitor.worker.name, state: this.monitor.workerState, description: this.monitor.worker.description, details: this.monitor.worker.details, logLinks: this.monitor.worker.logLinks },
-        {
-          name: this.monitor.discordBot.name,
-          state: this.monitor.discordBot.status,
-          description: this.monitor.discordBot.description,
-          details: this.monitor.discordBot.details,
-          logLinks: this.monitor.discordBot.logLinks
-        }
-      ];
+      return [toRow(this.monitor.web, this.monitor.web.status), toRow(this.monitor.worker, this.monitor.workerState), toRow(this.monitor.discordBot, this.monitor.discordBot.status)];
     }
   },
   async created() {
@@ -91,23 +106,23 @@ export default {
   },
   methods: {
     //There is no timer. Watching the worker go from Draining to Off is a matter of pressing Refresh.
-    async refresh() {
+    async refresh(): Promise<void> {
       this.isBusy = true;
-      this.errorResponse = null;
+      this.errorInfo = '';
 
       try {
         this.monitor = await adminClient.getServiceMonitor();
         this.lastRefreshedAt = DateTime.now();
       } catch (error) {
-        this.errorResponse = this.describeError(error);
+        this.errorInfo = getApiErrorMessage(error, 'Could not load the service monitor.');
       } finally {
         this.isBusy = false;
       }
     },
     //Times are shown in the viewer's zone, with how long before the check they were, which is what says whether the worker is keeping up.
-    detailValue(detail) {
-      if (!detail.time) {
-        return detail.text;
+    detailValue(detail: ServiceHealthDetailViewModel): string {
+      if (!detail.time || !this.monitor) {
+        return detail.text ?? '';
       }
 
       const time = DateTime.fromISO(detail.time);
@@ -115,19 +130,12 @@ export default {
       const format = time.hasSame(checkedAt, 'day') ? DateTime.TIME_WITH_SECONDS : DateTime.DATETIME_SHORT_WITH_SECONDS;
       return `${time.toLocaleString(format)} (${time.toRelative({ base: checkedAt })})`;
     },
-    stateVariant(state) {
-      return stateVariants[state] || 'secondary';
+    stateVariant(state: string): ColorVariant {
+      return stateVariants[state] ?? 'secondary';
     },
-    logLinkVariant(link) {
-      return logLevelVariants[link.level] || 'info';
-    },
-    describeError(error) {
-      if (ApiException.isApiException(error) && error.response) {
-        return error.response;
-      }
-
-      return error.message || String(error);
+    logLinkVariant(link: LogLinkViewModel): ColorVariant {
+      return (link.level && logLevelVariants[link.level]) || 'info';
     }
   }
-};
+});
 </script>

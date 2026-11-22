@@ -9,14 +9,14 @@
     <div v-if="createdGame" class="alert alert-success">
       Master Game created: {{ createdGame.masterGameID }}
       <b-button variant="info" size="sm" @click="copyMasterGameID">Copy</b-button>
-      <b-button class="warning" :to="{ name: 'masterGameEditor', params: { mastergameid: createdGame.masterGameID } }">Edit Master Game</b-button>
+      <b-button variant="warning" :to="{ name: 'masterGameEditor', params: { mastergameid: createdGame.masterGameID } }">Edit Master Game</b-button>
     </div>
-    <div v-if="errorInfo" class="alert alert-danger">An error has occurred with your request.</div>
-    <div v-if="openCriticID || steamID || ggToken">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+    <div v-if="openCriticLink || steamID || ggLink">
       <h2>Links</h2>
       <ul>
         <li>
-          <a v-if="openCriticID" :href="openCriticLink" target="_blank">
+          <a v-if="openCriticLink" :href="openCriticLink" target="_blank">
             OpenCritic Link
             <font-awesome-icon icon="external-link-alt" />
           </a>
@@ -30,7 +30,7 @@
           <span v-else>No Steam Link</span>
         </li>
         <li>
-          <a v-if="ggToken" :href="ggLink" target="_blank">
+          <a v-if="ggLink" :href="ggLink" target="_blank">
             GG| Link
             <font-awesome-icon icon="external-link-alt" />
           </a>
@@ -39,22 +39,24 @@
       </ul>
       <hr />
     </div>
-    <div v-if="requestNote" class="row">
+    <div v-if="request?.requestNote" class="row">
       <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
         <h2>Request Note</h2>
-        <p>{{ requestNote }}</p>
+        <p>{{ request.requestNote }}</p>
       </div>
       <hr />
     </div>
-    <div v-if="request?.leagueOptionsForRequestingPlayer?.length > 0" class="row">
+    <div v-if="requestingPlayerLeagues.length > 0" class="row">
       <div class="col-lg-10 col-md-12 offset-lg-1 text-well">
         <h3>League Options for Requesting Player</h3>
         <ul>
-          <li v-for="(leagueOptions, index) in request.leagueOptionsForRequestingPlayer" :key="`${leagueOptions.leagueID}-${leagueOptions.year}`">
+          <li v-for="(league, index) in requestingPlayerLeagues" :key="league.key">
             League {{ index + 1 }}
-            <router-link :to="{ name: 'league', params: { leagueid: leagueOptions.leagueID, year: leagueOptions.year } }" class="league-link">(Link)</router-link>
-            <span v-b-modal="`leagueOptionsModal_${leagueOptions.leagueID}-${leagueOptions.year}`" class="fake-link action">(Settings)</span>
-            <leagueOptionsModal :league-year-options="leagueOptions" :supported-year="supportedYears.find((x) => x.year === leagueOptions.year)"></leagueOptionsModal>
+            <router-link :to="{ name: 'league', params: { leagueid: league.options.leagueID, year: league.options.year } }" class="league-link">(Link)</router-link>
+            <template v-if="league.supportedYear">
+              <span v-b-modal="`leagueOptionsModal_${league.key}`" class="fake-link action">(Settings)</span>
+              <leagueOptionsModal :league-year-options="league.options" :supported-year="league.supportedYear"></leagueOptionsModal>
+            </template>
           </li>
         </ul>
       </div>
@@ -104,7 +106,7 @@
 
             <div class="form-group">
               <label for="openCriticID" class="control-label">OpenCritic ID</label>
-              <input id="openCriticID" v-model="openCriticID" name="openCriticID" class="form-control input" />
+              <input id="openCriticID" v-model="openCriticID" name="openCriticID" type="number" class="form-control input" />
             </div>
 
             <div class="form-group">
@@ -122,7 +124,7 @@
 
             <div class="form-group">
               <div class="col-md-offset-2 col-md-4">
-                <input type="submit" class="btn btn-primary" value="Submit" :disabled="!meta.valid" />
+                <input type="submit" class="btn btn-primary" value="Submit" :disabled="!meta.valid || isBusy" />
               </div>
             </div>
           </form>
@@ -131,29 +133,67 @@
     </div>
   </div>
 </template>
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
-import axios from 'axios';
 
+import {
+  factCheckerClient,
+  type CreateMasterGameRequest,
+  type LeagueYearSettingsResponse,
+  type MasterGameRequestViewModel,
+  type MasterGameTagViewModel,
+  type MasterGameViewModel,
+  type SupportedYearViewModel
+} from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
+import { getGGLinkForGame } from '@/utilities/ggLinks';
+import { openCriticLink } from '@/utilities/openCriticLinks';
 import DateInput from '@/components/dateInput.vue';
 import MasterGameTagSelector from '@/components/masterGameTagSelector.vue';
 import LeagueOptionsModal from '@/components/modals/leagueOptionsModal.vue';
 
-export default {
+interface RequestingPlayerLeague {
+  key: string;
+  options: LeagueYearSettingsResponse;
+  //Undefined when the league's year is no longer a supported year, so there are no settings to show.
+  supportedYear: SupportedYearViewModel | undefined;
+}
+
+interface MasterGameCreatorData {
+  createdGame: MasterGameViewModel | null;
+  isBusy: boolean;
+  errorInfo: string;
+  request: MasterGameRequestViewModel | null;
+  //A number input's value: '' when empty.
+  openCriticID: number | '';
+  ggToken: string;
+  gameName: string;
+  estimatedReleaseDate: string;
+  minimumReleaseDate: string | null;
+  maximumReleaseDate: string | null;
+  earlyAccessReleaseDate: string | null;
+  internationalReleaseDate: string | null;
+  releaseDate: string | null;
+  notes: string;
+  tags: MasterGameTagViewModel[];
+}
+
+export default defineComponent({
   components: {
     DateInput,
     MasterGameTagSelector,
     LeagueOptionsModal
   },
-  data() {
+  data(): MasterGameCreatorData {
     return {
       createdGame: null,
+      isBusy: false,
       errorInfo: '',
-      requestNote: '',
-      steamID: null,
-      openCriticID: null,
-      ggToken: null,
+      request: null,
+      openCriticID: '',
+      ggToken: '',
       gameName: '',
       estimatedReleaseDate: '',
       minimumReleaseDate: null,
@@ -162,20 +202,33 @@ export default {
       internationalReleaseDate: null,
       releaseDate: null,
       notes: '',
-      request: null,
       tags: []
     };
   },
   computed: {
     ...mapState(useInterLeagueStore, ['supportedYears']),
-    openCriticLink() {
-      return `https://opencritic.com/game/${this.openCriticID}/a`;
+    steamID(): number | undefined {
+      return this.request?.steamID;
     },
-    steamLink() {
-      return 'https://store.steampowered.com/app/' + this.steamID;
+    openCriticLink(): string | undefined {
+      return openCriticLink({ openCriticID: this.openCriticID || null });
     },
-    ggLink() {
-      return `https://ggapp.io/games/${this.ggToken}/a`;
+    steamLink(): string {
+      return `https://store.steampowered.com/app/${this.steamID}`;
+    },
+    ggLink(): string | undefined {
+      return getGGLinkForGame({ ggToken: this.ggToken }) ?? undefined;
+    },
+    requestingPlayerLeagues(): RequestingPlayerLeague[] {
+      if (!this.request) {
+        return [];
+      }
+
+      return this.request.leagueOptionsForRequestingPlayer.map((options) => ({
+        key: `${options.leagueID}-${options.year}`,
+        options,
+        supportedYear: this.supportedYears.find((x) => x.year === options.year)
+      }));
     }
   },
   async created() {
@@ -183,89 +236,99 @@ export default {
     await this.parseEstimatedReleaseDate();
   },
   methods: {
-    async createMasterGame() {
-      let tagNames = this.tags.map((x) => x.name);
-
-      let request = {
+    async createMasterGame(): Promise<void> {
+      const ggToken = this.ggToken.trim();
+      const request: CreateMasterGameRequest = {
         gameName: this.gameName,
         estimatedReleaseDate: this.estimatedReleaseDate,
-        minimumReleaseDate: this.minimumReleaseDate,
-        maximumReleaseDate: this.maximumReleaseDate,
-        earlyAccessReleaseDate: this.earlyAccessReleaseDate,
-        internationalReleaseDate: this.internationalReleaseDate,
-        releaseDate: this.releaseDate,
-        openCriticID: this.openCriticID,
-        ggToken: this.ggToken,
-        tags: tagNames,
-        notes: this.notes
+        minimumReleaseDate: this.minimumReleaseDate ?? undefined,
+        maximumReleaseDate: this.maximumReleaseDate ?? undefined,
+        earlyAccessReleaseDate: this.earlyAccessReleaseDate ?? undefined,
+        internationalReleaseDate: this.internationalReleaseDate ?? undefined,
+        releaseDate: this.releaseDate ?? undefined,
+        openCriticID: this.openCriticID === '' ? undefined : this.openCriticID,
+        ggToken: ggToken || undefined,
+        tags: this.tags.map((x) => x.name),
+        notes: this.notes,
+        //The server's defaults for a new game.
+        syncWithExternalAPIs: true,
+        useSimpleEligibility: false,
+        delayContention: false,
+        showNote: false
       };
 
+      this.isBusy = true;
+      this.errorInfo = '';
       try {
-        const response = await axios.post('/api/factChecker/CreateMasterGame', request);
-        this.createdGame = response.data;
+        this.createdGame = await factCheckerClient.createMasterGame(request);
         window.scroll({
           top: 0,
           left: 0,
           behavior: 'smooth'
         });
       } catch (error) {
-        this.errorInfo = error;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when creating the master game.');
+      } finally {
+        this.isBusy = false;
       }
     },
-    async copyMasterGameID() {
+    async copyMasterGameID(): Promise<void> {
+      if (!this.createdGame) {
+        return;
+      }
+
       await navigator.clipboard.writeText(this.createdGame.masterGameID);
     },
-    async parseEstimatedReleaseDate() {
-      try {
-        if (this.releaseDate || !this.estimatedReleaseDate) {
-          return;
-        }
-        const response = await axios.get('/api/factChecker/ParseEstimatedDate?estimatedReleaseDate=' + this.estimatedReleaseDate);
-        this.minimumReleaseDate = response.data.minimumReleaseDate;
-        this.maximumReleaseDate = response.data.maximumReleaseDate;
-      } catch (error) {
-        this.errorInfo = error;
-      }
-    },
-    async fetchRequest() {
-      let requestID = this.$route.query.requestID;
-      if (!requestID) {
+    async parseEstimatedReleaseDate(): Promise<void> {
+      if (this.releaseDate || !this.estimatedReleaseDate) {
         return;
       }
 
       try {
-        const response = await axios.get('/api/factChecker/GetMasterGameRequest?requestID=' + requestID);
-        this.request = response.data;
-        this.gameName = this.request.gameName;
-        this.estimatedReleaseDate = this.request.estimatedReleaseDate;
-        if (this.request.releaseDate !== undefined) {
-          this.releaseDate = this.request.releaseDate;
-          this.minimumReleaseDate = this.request.releaseDate;
-          this.maximumReleaseDate = this.request.releaseDate;
-        }
-        this.steamID = this.request.steamID;
-        this.openCriticID = this.request.openCriticID;
-        this.ggToken = this.request.ggToken;
-        this.requestNote = this.request.requestNote;
+        const parsed = await factCheckerClient.parseEstimatedDate(this.estimatedReleaseDate);
+        this.minimumReleaseDate = parsed.minimumReleaseDate ?? null;
+        this.maximumReleaseDate = parsed.maximumReleaseDate ?? null;
       } catch (error) {
-        this.errorInfo = error;
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when parsing the estimated release date.');
       }
     },
-    propagateDate() {
+    async fetchRequest(): Promise<void> {
+      const requestID = this.$route.query.requestID;
+      if (typeof requestID !== 'string') {
+        return;
+      }
+
+      try {
+        const request = await factCheckerClient.getMasterGameRequest(requestID);
+        this.request = request;
+        this.gameName = request.gameName;
+        this.estimatedReleaseDate = request.estimatedReleaseDate;
+        if (request.releaseDate) {
+          this.releaseDate = request.releaseDate;
+          this.minimumReleaseDate = request.releaseDate;
+          this.maximumReleaseDate = request.releaseDate;
+        }
+        this.openCriticID = request.openCriticID ?? '';
+        this.ggToken = request.ggToken ?? '';
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when loading the request.');
+      }
+    },
+    propagateDate(): void {
       this.maximumReleaseDate = this.releaseDate;
       this.minimumReleaseDate = this.releaseDate;
-      this.estimatedReleaseDate = this.releaseDate;
+      this.estimatedReleaseDate = this.releaseDate ?? '';
     },
-    clearDates() {
+    clearDates(): void {
       this.releaseDate = null;
       this.minimumReleaseDate = null;
       this.maximumReleaseDate = null;
-      this.estimatedReleaseDate = null;
+      this.estimatedReleaseDate = '';
       this.internationalReleaseDate = null;
       this.earlyAccessReleaseDate = null;
     }
   }
-};
+});
 </script>
 <style scoped>
 .select-cell {

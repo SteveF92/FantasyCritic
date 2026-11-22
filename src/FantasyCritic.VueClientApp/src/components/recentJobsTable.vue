@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-show="errorResponse" class="alert alert-danger">{{ errorResponse }}</div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
 
     <div class="form-row align-items-end">
       <div class="form-group col-sm-3 mb-1">
@@ -19,7 +19,7 @@
           :options="jobTypeOptions"
           :multiple="true"
           :close-on-select="false"
-          @input="changeFilter"></multiselect>
+          @update:model-value="changeFilter"></multiselect>
       </div>
     </div>
     <div class="form-row align-items-end">
@@ -39,7 +39,7 @@
           :options="statusOptions"
           :multiple="true"
           :close-on-select="false"
-          @input="changeFilter"></multiselect>
+          @update:model-value="changeFilter"></multiselect>
       </div>
     </div>
     <div class="mb-2">
@@ -50,13 +50,29 @@
     </div>
 
     <p v-if="jobs && !jobs.length">{{ hasFilters ? 'No jobs match these filters.' : 'No jobs yet.' }}</p>
-    <b-table v-else-if="jobs" :items="jobs" :fields="fields" :tbody-tr-class="rowClass" striped bordered responsive small>
+    <b-table v-else-if="jobs" :items="jobs" :fields="fields" primary-key="jobID" :tbody-tr-class="rowClass" striped bordered responsive small>
       <template #cell(type)="row">
         <div class="row-filter-cell">
           {{ jobTypeDisplayName(row.item.type) }}
           <span class="row-filters">
-            <font-awesome-icon :disabled="isBusy" @click="filterJobType('only', row.item.type)" icon="eye" title="Show only this job type" />
-            <font-awesome-icon :disabled="isBusy" @click="filterJobType('hide', row.item.type)" icon="eye-slash" title="Hide this job type" />
+            <button
+              type="button"
+              class="font-awesome-button"
+              :disabled="isBusy"
+              title="Show only this job type"
+              :aria-label="`Show only ${jobTypeDisplayName(row.item.type)} jobs`"
+              @click="filterJobType('only', row.item.type)">
+              <font-awesome-icon icon="eye" />
+            </button>
+            <button
+              type="button"
+              class="font-awesome-button"
+              :disabled="isBusy"
+              title="Hide this job type"
+              :aria-label="`Hide ${jobTypeDisplayName(row.item.type)} jobs`"
+              @click="filterJobType('hide', row.item.type)">
+              <font-awesome-icon icon="eye-slash" />
+            </button>
           </span>
         </div>
       </template>
@@ -67,8 +83,24 @@
             {{ row.item.status }}
           </b-badge>
           <span class="row-filters">
-            <font-awesome-icon :disabled="isBusy" @click="filterStatus('only', row.item.status)" icon="eye" title="Show only this status" />
-            <font-awesome-icon :disabled="isBusy" @click="filterStatus('hide', row.item.status)" icon="eye-slash" title="Hide this status" />
+            <button
+              type="button"
+              class="font-awesome-button"
+              :disabled="isBusy"
+              title="Show only this status"
+              :aria-label="`Show only ${spaceOutWords(row.item.status)} jobs`"
+              @click="filterStatus('only', row.item.status)">
+              <font-awesome-icon icon="eye" />
+            </button>
+            <button
+              type="button"
+              class="font-awesome-button"
+              :disabled="isBusy"
+              title="Hide this status"
+              :aria-label="`Hide ${spaceOutWords(row.item.status)} jobs`"
+              @click="filterStatus('hide', row.item.status)">
+              <font-awesome-icon icon="eye-slash" />
+            </button>
           </span>
         </div>
       </template>
@@ -83,10 +115,10 @@
       </template>
       <template #cell(actions)="row">
         <b-button v-if="isCancellable(row.item)" variant="danger" size="sm" :disabled="isBusy" @click="cancelJob(row.item)">Cancel</b-button>
-        <b-button variant="secondary" size="sm" @click="toggleDetails(row.item)">{{ row.detailsShowing ? 'Hide' : 'Details' }}</b-button>
+        <b-button variant="secondary" size="sm" @click="row.toggleExpansion()">{{ row.expansionShowing ? 'Hide' : 'Details' }}</b-button>
         <b-button v-if="row.item.logsUrl" variant="info" size="sm" :href="row.item.logsUrl" target="_blank" rel="noopener">Logs</b-button>
       </template>
-      <template #row-details="row">
+      <template #row-expansion="row">
         <dl class="row mx-0 mb-0">
           <dt class="col-sm-3">Job ID</dt>
           <dd class="col-sm-9">{{ row.item.jobID }}</dd>
@@ -119,10 +151,10 @@
             <dd class="col-sm-9">
               <div class="job-error">
                 <div class="d-flex align-items-start">
-                  <div class="job-error-message flex-grow-1">{{ errorParts(row.item).message }}</div>
-                  <b-button variant="secondary" size="sm" class="ml-2" @click="copyError(row.item)">Copy</b-button>
+                  <div class="job-error-message flex-grow-1">{{ errorParts(row.item.errorMessage).message }}</div>
+                  <b-button variant="secondary" size="sm" class="ml-2" @click="copyError(row.item.errorMessage)">Copy</b-button>
                 </div>
-                <pre v-if="errorParts(row.item).trace" class="job-error-trace">{{ errorParts(row.item).trace }}</pre>
+                <pre v-if="errorParts(row.item.errorMessage).trace" class="job-error-trace">{{ errorParts(row.item.errorMessage).trace }}</pre>
               </div>
             </dd>
           </template>
@@ -131,13 +163,49 @@
     </b-table>
   </div>
 </template>
-<script>
-import { DateTime } from 'luxon';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import type { ColorVariant, TableField, TableRowType, TableStrictClassValue } from 'bootstrap-vue-next';
+import { DateTime, Duration } from 'luxon';
 import Multiselect from 'vue-multiselect';
 
-import { ApiException, jobManagerClient } from '@/api/clients';
+import { jobManagerClient, type FantasyCriticJobViewModel } from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { useConfirm } from '@/utilities/confirm';
 import { makeToast } from '@/utilities/toast';
+
+type FilterMode = 'only' | 'hide';
+
+interface FilterOption {
+  value: string;
+  label: string;
+}
+
+interface SavedFilters {
+  jobTypeMode: FilterMode;
+  jobTypes: string[];
+  statusMode: FilterMode;
+  statuses: string[];
+}
+
+interface ErrorParts {
+  message: string;
+  trace: string;
+}
+
+interface RecentJobsTableData {
+  jobs: FantasyCriticJobViewModel[] | null;
+  page: number;
+  //Each filter is a list plus whether the list is what to show or what to hide. An empty list filters nothing.
+  jobTypeMode: FilterMode;
+  selectedJobTypes: FilterOption[];
+  statusMode: FilterMode;
+  selectedStatuses: FilterOption[];
+  isBusy: boolean;
+  errorInfo: string;
+  lastRefreshedAt: DateTime | null;
+  highlightedJobID: string | null;
+}
 
 //The values of FantasyCriticJobType. The API does not expose the list, so it lives here for the filter.
 //A type missing from this list can still be hidden or shown by the server; it just cannot be picked here.
@@ -175,7 +243,9 @@ const cancellableStatuses = ['Queued', 'Running'];
 
 const savedFiltersKey = 'adminConsole.jobFilters';
 
-const statusVariants = {
+const pageSize = 10;
+
+const statusVariants: Record<string, ColorVariant> = {
   Queued: 'secondary',
   Running: 'primary',
   Cancelling: 'warning',
@@ -186,52 +256,68 @@ const statusVariants = {
 };
 
 //"RefreshGGInfo" -> "Refresh GG Info"
-function spaceOutWords(value) {
+function spaceOutWords(value: string): string {
   return value.replace(/([a-z])([A-Z])|([A-Z])([A-Z][a-z])/g, '$1$3 $2$4');
 }
 
-export default {
+function toOption(value: string): FilterOption {
+  return { value, label: spaceOutWords(value) };
+}
+
+const jobTypeOptions: FilterOption[] = jobTypes.map(toOption);
+const statusOptions: FilterOption[] = Object.keys(statusVariants).map(toOption);
+
+function readSavedFilters(): Partial<SavedFilters> | null {
+  const saved = localStorage.getItem(savedFiltersKey);
+  if (!saved) {
+    return null;
+  }
+
+  try {
+    const filters: Partial<SavedFilters> = JSON.parse(saved);
+    return filters;
+  } catch {
+    return null;
+  }
+}
+
+export default defineComponent({
   setup() {
-    return { confirm: useConfirm() };
+    const fields: TableField<FantasyCriticJobViewModel>[] = [
+      { key: 'type', label: 'Job', thClass: 'bg-primary' },
+      { key: 'status', label: 'Status', thClass: 'bg-primary' },
+      { key: 'requestedBy', label: 'Requested by', thClass: 'bg-primary' },
+      { key: 'createdAt', label: 'Queued', thClass: 'bg-primary', tdClass: 'text-nowrap' },
+      { key: 'duration', label: 'Duration', thClass: 'bg-primary', tdClass: 'text-nowrap' },
+      { key: 'detail', label: 'Detail', thClass: 'bg-primary' },
+      { key: 'actions', label: '', thClass: 'bg-primary' }
+    ];
+
+    return { confirm: useConfirm(), DateTime, fields, jobTypeOptions, statusOptions };
   },
   components: {
     Multiselect
   },
-  data() {
+  data(): RecentJobsTableData {
     return {
-      DateTime,
-      jobTypeOptions: jobTypes.map((value) => ({ value, label: spaceOutWords(value) })),
-      statusOptions: Object.keys(statusVariants).map((value) => ({ value, label: spaceOutWords(value) })),
       jobs: null,
       page: 1,
-      count: 10,
-      //Each filter is a list plus whether the list is what to show or what to hide. An empty list filters nothing.
       jobTypeMode: 'only',
       selectedJobTypes: [],
       statusMode: 'only',
       selectedStatuses: [],
       isBusy: false,
-      errorResponse: null,
+      errorInfo: '',
       lastRefreshedAt: null,
-      highlightedJobID: null,
-      expandedJobIDs: [],
-      fields: [
-        { key: 'type', label: 'Job', thClass: 'bg-primary' },
-        { key: 'status', label: 'Status', thClass: 'bg-primary' },
-        { key: 'requestedBy', label: 'Requested by', thClass: 'bg-primary' },
-        { key: 'createdAt', label: 'Queued', thClass: 'bg-primary', tdClass: 'text-nowrap' },
-        { key: 'duration', label: 'Duration', thClass: 'bg-primary', tdClass: 'text-nowrap' },
-        { key: 'detail', label: 'Detail', thClass: 'bg-primary' },
-        { key: 'actions', label: '', thClass: 'bg-primary' }
-      ]
+      highlightedJobID: null
     };
   },
   computed: {
-    hasFilters() {
+    hasFilters(): boolean {
       return this.selectedJobTypes.length > 0 || this.selectedStatuses.length > 0;
     },
-    mayHaveOlderPage() {
-      return this.jobs && this.jobs.length === this.count;
+    mayHaveOlderPage(): boolean {
+      return !!this.jobs && this.jobs.length === pageSize;
     }
   },
   async created() {
@@ -239,40 +325,33 @@ export default {
     await this.refresh();
   },
   methods: {
-    async refresh() {
+    spaceOutWords,
+    async refresh(): Promise<void> {
       this.isBusy = true;
-      this.errorResponse = null;
+      this.errorInfo = '';
       this.saveFilters();
 
       try {
         const jobTypeValues = this.selectedJobTypes.map((x) => x.value);
         const statusValues = this.selectedStatuses.map((x) => x.value);
-        const jobs = await jobManagerClient.getJobs(
+        //b-table keeps open the jobs that were open before the refresh, since it tracks them by jobID.
+        this.jobs = await jobManagerClient.getJobs(
           this.page,
-          this.count,
+          pageSize,
           this.jobTypeMode === 'only' ? jobTypeValues : null,
           this.jobTypeMode === 'hide' ? jobTypeValues : null,
           this.statusMode === 'only' ? statusValues : null,
           this.statusMode === 'hide' ? statusValues : null
         );
-        //b-table opens a row's details when its item has _showDetails. Setting it on every item up front keeps it reactive, and keeps open the jobs that were open before the refresh.
-        this.jobs = jobs.map((job) => ({ ...job, _showDetails: this.expandedJobIDs.includes(job.jobID) }));
         this.lastRefreshedAt = DateTime.now();
       } catch (error) {
-        this.errorResponse = this.describeError(error);
+        this.errorInfo = getApiErrorMessage(error, 'Could not load the recent jobs.');
       } finally {
         this.isBusy = false;
       }
     },
-    toggleDetails(job) {
-      job._showDetails = !job._showDetails;
-      this.expandedJobIDs = this.expandedJobIDs.filter((x) => x !== job.jobID);
-      if (job._showDetails) {
-        this.expandedJobIDs.push(job.jobID);
-      }
-    },
     //Jumps back to the newest jobs so a job the console just queued is on screen. A filter is only dropped if it would hide that job.
-    async showLatest(job) {
+    async showLatest(job: FantasyCriticJobViewModel): Promise<void> {
       this.page = 1;
       this.highlightedJobID = job.jobID;
       if (this.isHidden(job.type, this.jobTypeMode, this.selectedJobTypes)) {
@@ -285,8 +364,8 @@ export default {
       await this.refresh();
     },
     //Filters are remembered per browser, so a type hidden today is still hidden tomorrow. Every refresh saves them, since every filter change refreshes.
-    saveFilters() {
-      const filters = {
+    saveFilters(): void {
+      const filters: SavedFilters = {
         jobTypeMode: this.jobTypeMode,
         jobTypes: this.selectedJobTypes.map((x) => x.value),
         statusMode: this.statusMode,
@@ -294,20 +373,21 @@ export default {
       };
       localStorage.setItem(savedFiltersKey, JSON.stringify(filters));
     },
-    loadSavedFilters() {
-      const saved = localStorage.getItem(savedFiltersKey);
-      if (!saved) {
+    loadSavedFilters(): void {
+      const filters = readSavedFilters();
+      if (!filters) {
         return;
       }
 
       //Values that no longer exist, such as a renamed job type, are dropped rather than sent to the server as a 400.
-      const filters = JSON.parse(saved);
+      const savedJobTypes = filters.jobTypes ?? [];
+      const savedStatuses = filters.statuses ?? [];
       this.jobTypeMode = filters.jobTypeMode === 'hide' ? 'hide' : 'only';
-      this.selectedJobTypes = this.jobTypeOptions.filter((x) => (filters.jobTypes || []).includes(x.value));
+      this.selectedJobTypes = jobTypeOptions.filter((x) => savedJobTypes.includes(x.value));
       this.statusMode = filters.statusMode === 'hide' ? 'hide' : 'only';
-      this.selectedStatuses = this.statusOptions.filter((x) => (filters.statuses || []).includes(x.value));
+      this.selectedStatuses = statusOptions.filter((x) => savedStatuses.includes(x.value));
     },
-    isHidden(value, mode, selected) {
+    isHidden(value: string, mode: FilterMode, selected: FilterOption[]): boolean {
       if (selected.length === 0) {
         return false;
       }
@@ -316,36 +396,36 @@ export default {
       return mode === 'only' ? !isSelected : isSelected;
     },
     //The icons on each row. "only" narrows to that one value; "hide" adds the value to what is hidden.
-    async filterJobType(mode, jobType) {
-      const option = this.jobTypeOptions.find((x) => x.value === jobType) || { value: jobType, label: this.jobTypeDisplayName(jobType) };
+    async filterJobType(mode: FilterMode, jobType: string): Promise<void> {
+      const option = jobTypeOptions.find((x) => x.value === jobType) ?? toOption(jobType);
       this.selectedJobTypes = this.narrowFilter(this.jobTypeMode, this.selectedJobTypes, mode, option);
       this.jobTypeMode = mode;
       await this.changeFilter();
     },
-    async filterStatus(mode, status) {
-      const option = this.statusOptions.find((x) => x.value === status) || { value: status, label: spaceOutWords(status) };
+    async filterStatus(mode: FilterMode, status: string): Promise<void> {
+      const option = statusOptions.find((x) => x.value === status) ?? toOption(status);
       this.selectedStatuses = this.narrowFilter(this.statusMode, this.selectedStatuses, mode, option);
       this.statusMode = mode;
       await this.changeFilter();
     },
-    narrowFilter(currentMode, currentSelected, mode, option) {
+    narrowFilter(currentMode: FilterMode, currentSelected: FilterOption[], mode: FilterMode, option: FilterOption): FilterOption[] {
       const alreadyHiding = currentMode === 'hide' && mode === 'hide';
       const others = alreadyHiding ? currentSelected.filter((x) => x.value !== option.value) : [];
       return [...others, option];
     },
-    async changeFilter() {
+    async changeFilter(): Promise<void> {
       this.page = 1;
       await this.refresh();
     },
-    async newerPage() {
+    async newerPage(): Promise<void> {
       this.page = Math.max(this.page - 1, 1);
       await this.refresh();
     },
-    async olderPage() {
+    async olderPage(): Promise<void> {
       this.page += 1;
       await this.refresh();
     },
-    async cancelJob(job) {
+    async cancelJob(job: FantasyCriticJobViewModel): Promise<void> {
       const confirmed = await this.confirm(`Cancel the ${this.jobTypeDisplayName(job.type)} job queued ${this.formatTimestamp(job.createdAt)}?`, {
         title: 'Cancel Job',
         okTitle: 'Cancel job',
@@ -357,50 +437,40 @@ export default {
       }
 
       this.isBusy = true;
-      this.errorResponse = null;
+      this.errorInfo = '';
 
+      let cancelError = '';
       try {
         await jobManagerClient.cancelJob({ jobID: job.jobID });
       } catch (error) {
-        this.errorResponse = this.describeError(error);
+        cancelError = getApiErrorMessage(error, 'Could not cancel the job.');
       } finally {
         this.isBusy = false;
       }
 
       await this.refresh();
-    },
-    describeError(error) {
-      if (ApiException.isApiException(error) && error.response) {
-        return error.response;
+      //The refresh clears the error, so a failed cancel's message is put back after it.
+      if (cancelError) {
+        this.errorInfo = cancelError;
       }
-
-      return error.message || String(error);
     },
-    jobTypeDisplayName(jobType) {
+    jobTypeDisplayName(jobType: string): string {
       return spaceOutWords(jobType);
     },
-    statusVariant(status) {
-      return statusVariants[status] || 'secondary';
+    statusVariant(status: string): ColorVariant {
+      return statusVariants[status] ?? 'secondary';
     },
-    isCancellable(job) {
+    isCancellable(job: FantasyCriticJobViewModel): boolean {
       return cancellableStatuses.includes(job.status);
     },
     //Compact, for the grid. The year and the exact second are in the detail row.
-    formatTimestamp(value) {
-      if (!value) {
-        return '';
-      }
-
+    formatTimestamp(value: string): string {
       return DateTime.fromISO(value).toFormat('M/d h:mm a');
     },
-    formatFullTimestamp(value) {
-      if (!value) {
-        return '';
-      }
-
+    formatFullTimestamp(value: string): string {
       return DateTime.fromISO(value).toLocaleString(DateTime.DATETIME_SHORT_WITH_SECONDS);
     },
-    duration(job) {
+    duration(job: FantasyCriticJobViewModel): string {
       if (!job.startedAt) {
         return '';
       }
@@ -411,9 +481,13 @@ export default {
       }
 
       //Open jobs are measured as of the last refresh, not live, so the number matches the row it sits in.
+      if (!this.lastRefreshedAt) {
+        return '';
+      }
+
       return `${this.formatDuration(this.lastRefreshedAt.diff(started))} so far`;
     },
-    formatDuration(luxonDuration) {
+    formatDuration(luxonDuration: Duration): string {
       const totalSeconds = Math.max(Math.floor(luxonDuration.as('seconds')), 0);
       const hours = Math.floor(totalSeconds / 3600);
       const minutes = Math.floor((totalSeconds % 3600) / 60);
@@ -426,7 +500,7 @@ export default {
       }
       return `${seconds}s`;
     },
-    detailSummary(job) {
+    detailSummary(job: FantasyCriticJobViewModel): string {
       //"Amazon.RDS.Model.DBInstanceNotFoundException: DBInstance not found" -> "DBInstanceNotFoundException: DBInstance not found".
       //The namespace takes most of the room the message needs. The detail row has the whole thing.
       if (job.status === 'Error' && job.errorMessage) {
@@ -436,77 +510,86 @@ export default {
           .replace(/^[\w.`]+\.(\w+):/, '$1:');
       }
 
-      return job.detailedStatus || '';
+      return job.detailedStatus ?? '';
     },
     //The first line of an exception's text is its type and message; everything after is the stack trace.
-    errorParts(job) {
-      const firstLineEnd = job.errorMessage.indexOf('\n');
+    errorParts(errorMessage: string): ErrorParts {
+      const firstLineEnd = errorMessage.indexOf('\n');
       if (firstLineEnd === -1) {
-        return { message: job.errorMessage.trim(), trace: '' };
+        return { message: errorMessage.trim(), trace: '' };
       }
 
-      return { message: job.errorMessage.slice(0, firstLineEnd).trim(), trace: job.errorMessage.slice(firstLineEnd + 1) };
+      return { message: errorMessage.slice(0, firstLineEnd).trim(), trace: errorMessage.slice(firstLineEnd + 1) };
     },
-    async copyError(job) {
-      await navigator.clipboard.writeText(job.errorMessage);
+    async copyError(errorMessage: string): Promise<void> {
+      await navigator.clipboard.writeText(errorMessage);
       makeToast('Error copied to clipboard.');
     },
     //There is no worker heartbeat, so a job whose worker died stays Running forever. Flag it rather than hide it.
-    isRunningSuspiciouslyLong(job) {
+    isRunningSuspiciouslyLong(job: FantasyCriticJobViewModel): boolean {
       if (job.status !== 'Running' || !job.startedAt || !this.lastRefreshedAt) {
         return false;
       }
 
       return this.lastRefreshedAt.diff(DateTime.fromISO(job.startedAt)).as('minutes') > 60;
     },
-    rowClass(item, type) {
-      if (!item || type !== 'row') {
-        return;
+    rowClass(item: FantasyCriticJobViewModel | null, type: TableRowType): TableStrictClassValue {
+      if (!item) {
+        return '';
       }
 
-      if (item.jobID === this.highlightedJobID) {
+      if (type === 'row-expansion') {
+        return 'job-details';
+      }
+
+      if (type === 'row' && item.jobID === this.highlightedJobID) {
         return 'highlighted-job';
       }
+
+      return '';
     }
   }
-};
+});
 </script>
 
 <style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style scoped>
-/*An open job and its detail row read as one block on one background. Striping would otherwise give them different shades.*/
-div :deep(tr.b-table-has-details > td),
-div :deep(tr.b-table-details > td) {
+/*An open job and its detail row read as one block on one background. Striping would otherwise give them different shades.
+  b-table puts a hidden row between a job and its details, to keep the striping.*/
+div :deep(tr:has(+ tr.d-none + tr.job-details) > td),
+div :deep(tr.job-details > td) {
   background-color: #333333;
 }
 
 /*A fainter, dashed line than between jobs, so the column borders end somewhere without cutting the job off from its details.*/
-div :deep(tr.b-table-has-details > td) {
+div :deep(tr:has(+ tr.d-none + tr.job-details) > td) {
   border-bottom: 1px dashed #6c757d;
 }
 
-.row-filters svg {
+.row-filters button:not(:disabled) {
   cursor: pointer;
 }
 
-/*The filter icons cost the job name a line on every row and widen the status column, so where there is a mouse they only appear over the cell being pointed at.*/
+/*The filter icons cost the job name a line on every row and widen the status column, so where there is a mouse they only appear over the cell being pointed at,
+  or when one of them has keyboard focus. They're transparent rather than hidden, so the keyboard can reach them.*/
 @media (hover: hover) {
   .row-filter-cell {
     position: relative;
   }
 
   .row-filters {
-    display: none;
     position: absolute;
     top: 0;
     right: 0;
     padding: 0 0.25rem;
     border-radius: 0.25rem;
     background-color: #414141;
+    opacity: 0;
   }
 
-  td:hover .row-filters {
-    display: inline;
+  td:hover .row-filters,
+  .row-filters:focus-within {
+    opacity: 1;
   }
 }
 

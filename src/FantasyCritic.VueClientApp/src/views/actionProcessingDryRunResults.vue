@@ -2,23 +2,45 @@
   <div class="col-md-10 offset-md-1 col-sm-12">
     <h1>Action Processing Dry Run Results</h1>
 
-    <div v-if="dryRunResults && dryRunResults.length === 0" class="alert alert-info">No actioned games.</div>
-    <div v-if="dryRunResults && dryRunResults.length !== 0">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+    <div v-else-if="dryRunResults">
       <h2>Drops</h2>
       <b-button v-b-toggle.drop-collapse variant="primary">Toggle Collapse</b-button>
       <b-collapse id="drop-collapse" class="mt-2">
-        <div class="row">
-          <masterGamesTable :master-games="dryRunResults.dropActions"></masterGamesTable>
-        </div>
+        <b-alert v-if="dryRunResults.dropActions.length === 0" variant="info" :model-value="true">No games dropped.</b-alert>
+        <b-table v-else :items="dryRunResults.dropActions" :fields="gameFields" primary-key="masterGameID" :tbody-tr-class="gameRowClass" bordered striped small responsive>
+          <template #cell(gameName)="data">
+            <masterGamePopover :master-game="data.item"></masterGamePopover>
+          </template>
+          <template #cell(maximumReleaseDate)="data">
+            {{ formatMasterGameReleaseDate(data.item, false) }}
+          </template>
+          <template #cell(tags)="data">
+            <span v-for="tag in data.item.tags" :key="tag">
+              <masterGameTagBadge :tag-name="tag" short></masterGameTagBadge>
+            </span>
+          </template>
+        </b-table>
         <hr />
       </b-collapse>
 
       <h2>Bids</h2>
       <b-button v-b-toggle.bid-collapse variant="primary">Toggle Collapse</b-button>
       <b-collapse id="bid-collapse" class="mt-2">
-        <div class="row">
-          <masterGamesTable :master-games="dryRunResults.pickupActions"></masterGamesTable>
-        </div>
+        <b-alert v-if="dryRunResults.pickupActions.length === 0" variant="info" :model-value="true">No games picked up.</b-alert>
+        <b-table v-else :items="dryRunResults.pickupActions" :fields="gameFields" primary-key="masterGameID" :tbody-tr-class="gameRowClass" bordered striped small responsive>
+          <template #cell(gameName)="data">
+            <masterGamePopover :master-game="data.item"></masterGamePopover>
+          </template>
+          <template #cell(maximumReleaseDate)="data">
+            {{ formatMasterGameReleaseDate(data.item, false) }}
+          </template>
+          <template #cell(tags)="data">
+            <span v-for="tag in data.item.tags" :key="tag">
+              <masterGameTagBadge :tag-name="tag" short></masterGameTagBadge>
+            </span>
+          </template>
+        </b-table>
         <hr />
       </b-collapse>
 
@@ -43,7 +65,7 @@
       <b-button v-b-toggle.league-action-sets-collapse variant="primary">Toggle Collapse</b-button>
       <b-collapse id="league-action-sets-collapse" class="mt-2">
         <div v-for="leagueActionSet in dryRunResults.leagueActionSets" :key="`${leagueActionSet.leagueID}-${leagueActionSet.processSetID}`" class="row">
-          <leagueActionSet :league-action-set="leagueActionSet" :mode="'dryRunPage'"></leagueActionSet>
+          <leagueActionSet :league-action-set="leagueActionSet" mode="dryRunPage"></leagueActionSet>
         </div>
       </b-collapse>
     </div>
@@ -53,54 +75,75 @@
     </div>
   </div>
 </template>
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import type { BTableSortBy, TableField, TableRowType, TableStrictClassValue } from 'bootstrap-vue-next';
 
+import { actionRunnerClient, type ActionedGameSetViewModel, type LeagueActionViewModel, type MasterGameViewModel } from '@/api/clients';
+import { formatMasterGameReleaseDate } from '@/globalFunctions';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatDateTime, formatYesNo } from '@/utilities/formatters';
-import MasterGamesTable from '@/components/gameTables/masterGamesTable.vue';
 import LeagueActionSet from '@/components/leagueActionSet.vue';
+import MasterGamePopover from '@/components/masterGamePopover.vue';
+import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
 
-const markFailedGames = (games) => games.map((game) => (game.error ? { ...game, _rowVariant: 'danger' } : game));
+interface ActionProcessingDryRunResultsData {
+  dryRunResults: ActionedGameSetViewModel | null;
+  errorInfo: string;
+  sortBy: BTableSortBy[];
+}
 
-export default {
-  components: {
-    MasterGamesTable,
-    LeagueActionSet
+export default defineComponent({
+  setup() {
+    const gameFields: TableField<MasterGameViewModel>[] = [
+      { key: 'gameName', label: 'Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'maximumReleaseDate', label: 'Release Date', sortable: true, thClass: 'bg-primary' },
+      { key: 'tags', label: 'Tags', thClass: 'bg-primary' }
+    ];
+    const actionFields: TableField<LeagueActionViewModel>[] = [
+      { key: 'leagueName', label: 'League Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'publisherName', label: 'Publisher Name', sortable: true, thClass: 'bg-primary' },
+      { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
+      { key: 'actionType', label: 'Action Type', sortable: true, thClass: 'bg-primary' },
+      { key: 'description', label: 'Description', thClass: 'bg-primary' },
+      { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' }
+    ];
+
+    return { gameFields, actionFields };
   },
-  data() {
+  components: {
+    LeagueActionSet,
+    MasterGamePopover,
+    MasterGameTagBadge
+  },
+  data(): ActionProcessingDryRunResultsData {
     return {
       dryRunResults: null,
-      actionFields: [
-        { key: 'leagueName', label: 'League Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'publisherName', label: 'Publisher Name', sortable: true, thClass: 'bg-primary' },
-        { key: 'timestamp', label: 'Timestamp', sortable: true, thClass: 'bg-primary' },
-        { key: 'actionType', label: 'Action Type', sortable: true, thClass: 'bg-primary' },
-        { key: 'description', label: 'Description', thClass: 'bg-primary' },
-        { key: 'managerAction', label: 'Manager Action?', thClass: 'bg-primary' }
-      ],
+      errorInfo: '',
       sortBy: [{ key: 'timestamp', order: 'desc' }]
     };
   },
-  created() {
-    this.fetchActionedGames();
+  async created() {
+    try {
+      this.dryRunResults = await actionRunnerClient.actionProcessingDryRun();
+    } catch (error) {
+      this.errorInfo = getApiErrorMessage(error, 'Something went wrong with the dry run.');
+    }
   },
   methods: {
     formatDateTime,
     formatYesNo,
-    fetchActionedGames() {
-      axios
-        .get('/api/ActionRunner/ActionProcessingDryRun')
-        .then((response) => {
-          this.dryRunResults = {
-            ...response.data,
-            dropActions: markFailedGames(response.data.dropActions),
-            pickupActions: markFailedGames(response.data.pickupActions)
-          };
-        })
-        .catch(() => {});
+    formatMasterGameReleaseDate,
+    //A game the dry run couldn't process is red.
+    gameRowClass(item: MasterGameViewModel | null, type: TableRowType): TableStrictClassValue {
+      if (!item || type !== 'row' || !item.error) {
+        return '';
+      }
+
+      return 'table-danger';
     }
   }
-};
+});
 </script>
 <style scoped>
 .spinner {

@@ -6,11 +6,9 @@
     </div>
     <hr />
 
-    <div v-show="errorInfo" class="alert alert-danger">Request for '{{ jobAttempted }}' returned: {{ errorInfo }}</div>
-    <div v-show="errorResponse" class="alert alert-danger">{{ errorResponse }}</div>
-    <div v-show="lastJobFailed" class="alert alert-danger">'{{ jobAttempted }}' failed.</div>
-    <div v-show="isBusy" class="alert alert-info">Request is processing...</div>
-    <div v-show="jobAttempted && !lastJobFailed && !isBusy" class="alert alert-success">'{{ jobAttempted }}' successfully run.</div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">'{{ jobAttempted }}' failed: {{ errorInfo }}</b-alert>
+    <b-alert v-else-if="isBusy" variant="info" :model-value="true">Request is processing...</b-alert>
+    <b-alert v-else-if="jobAttempted" variant="success" :model-value="true">'{{ jobAttempted }}' successfully run.</b-alert>
 
     <h2>Find user</h2>
     <p class="text-muted">Search by user ID, display name (exact match), or email (exact).</p>
@@ -18,9 +16,9 @@
       <div class="form-group col-md-3">
         <label for="searchKind">Search by</label>
         <select id="searchKind" v-model="searchKind" class="form-control">
-          <option :value="0">User ID</option>
-          <option :value="1">Display name</option>
-          <option :value="2">Email</option>
+          <option :value="SupportUserSearchKind.UserId">User ID</option>
+          <option :value="SupportUserSearchKind.DisplayName">Display name</option>
+          <option :value="SupportUserSearchKind.Email">Email</option>
         </select>
       </div>
       <div class="form-group col-md-6">
@@ -32,7 +30,7 @@
       </div>
     </div>
 
-    <div v-if="searchMatches && searchMatches.length === 0 && searchWasRun" class="alert alert-warning">No users found.</div>
+    <b-alert v-if="searchMatches && searchMatches.length === 0" variant="warning" :model-value="true">No users found.</b-alert>
 
     <div v-if="searchMatches && searchMatches.length > 0">
       <h3 class="mt-4">Results</h3>
@@ -91,7 +89,9 @@
     <div>
       <b-button variant="info" class="mb-2" :disabled="isBusy" @click="getActiveSupportTickets">Refresh</b-button>
     </div>
-    <b-table v-if="activeSupportTickets" class="mt-2" :items="activeSupportTickets" :fields="activeSupportTicketFields" striped bordered responsive>
+    <b-table v-if="activeSupportTickets" class="mt-2" :items="activeSupportTickets" :fields="activeSupportTicketFields" primary-key="supportTicketID" striped bordered responsive>
+      <template #cell(emailAddress)="row">{{ row.item.user.emailAddress }}</template>
+      <template #cell(openedAt)="row">{{ formatDateTime(row.item.openedAt) }}</template>
       <template #cell(actions)="row">
         <b-button variant="primary" size="sm" @click="prefillCloseForm(row.item)">Close ticket</b-button>
       </template>
@@ -107,7 +107,7 @@
           </div>
           <div>
             <strong>Email address:</strong>
-            {{ selectedCloseTicket.emailAddress }}
+            {{ selectedCloseTicket.user.emailAddress }}
           </div>
           <div>
             <strong>Verification code:</strong>
@@ -115,7 +115,7 @@
           </div>
           <div>
             <strong>Opened:</strong>
-            {{ selectedCloseTicket.openedAt }}
+            {{ formatDateTime(selectedCloseTicket.openedAt) }}
           </div>
           <div>
             <strong>Issue:</strong>
@@ -132,139 +132,148 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import type { TableField } from 'bootstrap-vue-next';
 
-export default {
-  data() {
+import {
+  adminClient,
+  SupportUserSearchKind,
+  type CloseSupportTicketRequest,
+  type OpenSupportTicketRequest,
+  type SupportTicketAdminListEntryViewModel,
+  type SupportUserSearchMatchViewModel,
+  type SupportUserSearchRequest
+} from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
+import { formatDateTime } from '@/utilities/formatters';
+
+interface AdminSupportTicketsData {
+  isBusy: boolean;
+  errorInfo: string;
+  jobAttempted: string;
+  searchKind: SupportUserSearchKind;
+  searchValue: string;
+  searchMatches: SupportUserSearchMatchViewModel[] | null;
+  selectedUserId: string | null;
+  supportTicketIssueDescription: string;
+  selectedCloseTicket: SupportTicketAdminListEntryViewModel | null;
+  supportTicketResolutionNotes: string;
+  activeSupportTickets: SupportTicketAdminListEntryViewModel[] | null;
+}
+
+export default defineComponent({
+  setup() {
+    const activeSupportTicketFields: TableField<SupportTicketAdminListEntryViewModel>[] = [
+      { key: 'userDisplayName', label: 'Display name', thClass: 'bg-primary' },
+      { key: 'emailAddress', label: 'Email address', thClass: 'bg-primary' },
+      { key: 'verificationCode', label: 'Code', thClass: 'bg-primary' },
+      { key: 'issueDescription', label: 'Issue', thClass: 'bg-primary' },
+      { key: 'openedAt', label: 'Opened', thClass: 'bg-primary' },
+      { key: 'actions', label: '', thClass: 'bg-primary' }
+    ];
+
+    return { activeSupportTicketFields, SupportUserSearchKind };
+  },
+  data(): AdminSupportTicketsData {
     return {
       isBusy: false,
-      errorInfo: null,
-      errorResponse: null,
-      lastJobFailed: false,
+      errorInfo: '',
       jobAttempted: '',
-      searchKind: 0,
+      searchKind: SupportUserSearchKind.UserId,
       searchValue: '',
       searchMatches: null,
-      searchWasRun: false,
       selectedUserId: null,
-      supportTicketIssueDescription: null,
-      closeSupportTicketID: null,
+      supportTicketIssueDescription: '',
       selectedCloseTicket: null,
-      supportTicketResolutionNotes: null,
-      activeSupportTickets: null,
-      activeSupportTicketFields: [
-        { key: 'userDisplayName', label: 'Display name', thClass: 'bg-primary' },
-        { key: 'emailAddress', label: 'Email address', thClass: 'bg-primary' },
-        { key: 'verificationCode', label: 'Code', thClass: 'bg-primary' },
-        { key: 'issueDescription', label: 'Issue', thClass: 'bg-primary' },
-        { key: 'openedAt', label: 'Opened', thClass: 'bg-primary' },
-        { key: 'actions', label: '', thClass: 'bg-primary' }
-      ]
+      supportTicketResolutionNotes: '',
+      activeSupportTickets: null
     };
   },
   async mounted() {
-    await this.fetchActiveSupportTickets();
+    //Load quietly: the initial load isn't something the admin asked for, so it gets a banner only if it fails.
+    try {
+      await this.fetchActiveSupportTickets();
+    } catch (error) {
+      this.jobAttempted = 'Get active support tickets';
+      this.errorInfo = getApiErrorMessage(error);
+    }
   },
   methods: {
-    selectUserForTicket(userId) {
+    formatDateTime,
+    selectUserForTicket(userId: string): void {
       this.selectedUserId = userId;
     },
-    prefillCloseForm(ticket) {
+    prefillCloseForm(ticket: SupportTicketAdminListEntryViewModel): void {
       this.selectedCloseTicket = ticket;
-      this.closeSupportTicketID = ticket.supportTicketID;
-      this.supportTicketResolutionNotes = null;
+      this.supportTicketResolutionNotes = '';
     },
-    async searchUsers() {
-      this.lastJobFailed = false;
-      this.jobAttempted = 'Search users';
+    //Runs one request, with its result in the banner at the top of the page.
+    async runAction(label: string, call: () => Promise<void>): Promise<void> {
+      this.errorInfo = '';
+      this.jobAttempted = label;
       this.isBusy = true;
-      this.searchWasRun = true;
 
       try {
-        const response = await axios.post('/api/admin/SearchSupportUsers', {
-          SearchKind: this.searchKind,
-          SearchValue: this.searchValue
-        });
-        this.searchMatches = response.data;
+        await call();
       } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
-        this.lastJobFailed = true;
+        this.errorInfo = getApiErrorMessage(error);
       } finally {
         this.isBusy = false;
       }
     },
-    async fetchActiveSupportTickets() {
-      const response = await axios.get('/api/admin/GetActiveSupportTickets');
-      this.activeSupportTickets = response.data.map((ticket) => ({
-        ...ticket,
-        emailAddress: ticket.user?.emailAddress ?? ''
-      }));
-      if (this.closeSupportTicketID) {
-        this.selectedCloseTicket = this.activeSupportTickets.find((x) => x.supportTicketID === this.closeSupportTicketID) ?? null;
-      }
-    },
-    async getActiveSupportTickets() {
-      this.lastJobFailed = false;
-      this.jobAttempted = 'Get active support tickets';
-      this.isBusy = true;
+    async searchUsers(): Promise<void> {
+      const request: SupportUserSearchRequest = {
+        searchKind: this.searchKind,
+        searchValue: this.searchValue
+      };
 
-      try {
-        await this.fetchActiveSupportTickets();
-      } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
-        this.lastJobFailed = true;
-      } finally {
-        this.isBusy = false;
+      await this.runAction('Search users', async () => {
+        this.searchMatches = await adminClient.searchSupportUsers(request);
+      });
+    },
+    async fetchActiveSupportTickets(): Promise<void> {
+      this.activeSupportTickets = await adminClient.getActiveSupportTickets();
+      const selectedTicketID = this.selectedCloseTicket?.supportTicketID;
+      if (selectedTicketID) {
+        this.selectedCloseTicket = this.activeSupportTickets.find((x) => x.supportTicketID === selectedTicketID) ?? null;
       }
     },
-    async openSupportTicket() {
+    async getActiveSupportTickets(): Promise<void> {
+      await this.runAction('Get active support tickets', () => this.fetchActiveSupportTickets());
+    },
+    async openSupportTicket(): Promise<void> {
       if (!this.selectedUserId) {
         return;
       }
 
-      this.lastJobFailed = false;
-      this.jobAttempted = 'Open support ticket';
-      this.isBusy = true;
+      const request: OpenSupportTicketRequest = {
+        userID: this.selectedUserId,
+        issueDescription: this.supportTicketIssueDescription
+      };
 
-      try {
-        await axios.post('/api/admin/OpenSupportTicket', {
-          UserID: this.selectedUserId,
-          IssueDescription: this.supportTicketIssueDescription
-        });
+      await this.runAction('Open support ticket', async () => {
+        await adminClient.openSupportTicket(request);
         await this.fetchActiveSupportTickets();
-      } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
-        this.lastJobFailed = true;
-      } finally {
-        this.isBusy = false;
-      }
+      });
     },
-    async closeSupportTicket() {
-      this.lastJobFailed = false;
-      this.jobAttempted = 'Close support ticket';
-      this.isBusy = true;
-
-      try {
-        await axios.post('/api/admin/CloseSupportTicket', {
-          SupportTicketID: this.closeSupportTicketID,
-          ResolutionNotes: this.supportTicketResolutionNotes
-        });
-        await this.fetchActiveSupportTickets();
-        this.closeSupportTicketID = null;
-        this.selectedCloseTicket = null;
-        this.supportTicketResolutionNotes = null;
-      } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
-        this.lastJobFailed = true;
-      } finally {
-        this.isBusy = false;
+    async closeSupportTicket(): Promise<void> {
+      if (!this.selectedCloseTicket) {
+        return;
       }
+
+      const request: CloseSupportTicketRequest = {
+        supportTicketID: this.selectedCloseTicket.supportTicketID,
+        resolutionNotes: this.supportTicketResolutionNotes
+      };
+
+      await this.runAction('Close support ticket', async () => {
+        await adminClient.closeSupportTicket(request);
+        this.selectedCloseTicket = null;
+        this.supportTicketResolutionNotes = '';
+        await this.fetchActiveSupportTickets();
+      });
     }
   }
-};
+});
 </script>

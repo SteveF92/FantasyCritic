@@ -6,11 +6,9 @@
     </div>
     <hr />
 
-    <div v-show="errorInfo" class="alert alert-danger">Request for '{{ jobAttempted }}' returned: {{ errorInfo }}</div>
-    <div v-show="errorResponse" class="alert alert-danger">{{ errorResponse }}</div>
-    <div v-show="lastJobFailed" class="alert alert-danger">'{{ jobAttempted }}' failed.</div>
-    <div v-show="isBusy" class="alert alert-info">Request is processing...</div>
-    <div v-show="jobAttempted && !lastJobFailed && !isBusy" class="alert alert-success">'{{ jobAttempted }}' successfully run.</div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">'{{ jobAttempted }}' failed: {{ errorInfo }}</b-alert>
+    <b-alert v-else-if="isBusy" variant="info" :model-value="true">Request is processing...</b-alert>
+    <b-alert v-else-if="jobAttempted" variant="success" :model-value="true">'{{ jobAttempted }}' successfully run.</b-alert>
 
     <h2>{{ isEditing ? 'Edit announcement' : 'New announcement' }}</h2>
     <div class="form-group">
@@ -25,7 +23,7 @@
     <div class="form-group">
       <label for="announcementPostedAt">Posted at (in your local time zone)</label>
       <input id="announcementPostedAt" v-model="form.postedAt" type="datetime-local" class="form-control" />
-      <small class="text-muted">Announcements are shown newest first. Leave blank on a new announcement to use the current time.</small>
+      <small class="text-muted">Announcements are shown newest first. Leave blank on a new announcement to use the current time. An edited announcement needs one.</small>
     </div>
     <div class="form-row">
       <div class="form-group col-md-8">
@@ -48,7 +46,7 @@
       <b-button variant="info" class="mb-2" :disabled="isBusy" @click="refreshAnnouncements">Refresh</b-button>
     </div>
     <p v-if="announcements && !announcements.length" class="text-muted">No announcements have been posted yet.</p>
-    <b-table v-else-if="announcements" :items="announcements" :fields="announcementFields" striped bordered responsive>
+    <b-table v-else-if="announcements" :items="announcements" :fields="announcementFields" primary-key="id" striped bordered responsive>
       <template #cell(postedAt)="row">{{ formatDateTime(row.item.postedAt) }}</template>
       <template #cell(link)="row">
         <b-link v-if="row.item.linkAddress" :href="row.item.linkAddress" target="_blank" rel="noopener">{{ row.item.linkLabel || row.item.linkAddress }}</b-link>
@@ -61,158 +59,160 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import type { TableField } from 'bootstrap-vue-next';
 import { DateTime } from 'luxon';
 
+import { adminClient, type CreateSiteAnnouncementRequest, type DeleteSiteAnnouncementRequest, type EditSiteAnnouncementRequest, type SiteAnnouncementViewModel } from '@/api/clients';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { useConfirm } from '@/utilities/confirm';
 import { formatDateTime } from '@/utilities/formatters';
 
-export default {
+interface AnnouncementForm {
+  title: string;
+  body: string;
+  //The datetime-local input's value, in the browser's zone. Empty when not set.
+  postedAt: string;
+  linkAddress: string;
+  linkLabel: string;
+}
+
+interface AdminSiteAnnouncementsData {
+  isBusy: boolean;
+  errorInfo: string;
+  jobAttempted: string;
+  announcements: SiteAnnouncementViewModel[] | null;
+  editingAnnouncementID: string | null;
+  form: AnnouncementForm;
+}
+
+function emptyForm(): AnnouncementForm {
+  return {
+    title: '',
+    body: '',
+    postedAt: '',
+    linkAddress: '',
+    linkLabel: ''
+  };
+}
+
+export default defineComponent({
   setup() {
-    return { confirm: useConfirm() };
+    const announcementFields: TableField<SiteAnnouncementViewModel>[] = [
+      { key: 'title', label: 'Title', thClass: 'bg-primary' },
+      { key: 'postedAt', label: 'Posted', thClass: 'bg-primary' },
+      { key: 'link', label: 'Link', thClass: 'bg-primary' },
+      { key: 'actions', label: '', thClass: 'bg-primary' }
+    ];
+
+    return { confirm: useConfirm(), announcementFields };
   },
-  data() {
+  data(): AdminSiteAnnouncementsData {
     return {
       isBusy: false,
-      errorInfo: null,
-      errorResponse: null,
-      lastJobFailed: false,
+      errorInfo: '',
       jobAttempted: '',
       announcements: null,
       editingAnnouncementID: null,
-      form: {
-        title: '',
-        body: '',
-        postedAt: null,
-        linkAddress: '',
-        linkLabel: ''
-      },
-      announcementFields: [
-        { key: 'title', label: 'Title', thClass: 'bg-primary' },
-        { key: 'postedAt', label: 'Posted', thClass: 'bg-primary' },
-        { key: 'link', label: 'Link', thClass: 'bg-primary' },
-        { key: 'actions', label: '', thClass: 'bg-primary' }
-      ]
+      form: emptyForm()
     };
   },
   computed: {
-    isEditing() {
+    isEditing(): boolean {
       return !!this.editingAnnouncementID;
     },
-    formIsValid() {
-      return !!this.form.title.trim() && !!this.form.body.trim();
+    //A new announcement without a time is posted now. An edit keeps its time unless it's changed, so it needs one.
+    formIsValid(): boolean {
+      return !!this.form.title.trim() && !!this.form.body.trim() && (!this.isEditing || !!this.form.postedAt);
     }
   },
   async mounted() {
-    // Load quietly - the initial page load isn't a "job" the admin asked for, so it gets no result banner.
+    //Load quietly: the initial load isn't a "job" the admin asked for, so it gets a banner only if it fails.
     try {
       await this.fetchAnnouncements();
     } catch (error) {
       this.jobAttempted = 'Get site announcements';
-      this.errorInfo = error;
-      this.errorResponse = error.response;
-      this.lastJobFailed = true;
+      this.errorInfo = getApiErrorMessage(error);
     }
   },
   methods: {
     formatDateTime,
-    clearForm() {
+    clearForm(): void {
       this.editingAnnouncementID = null;
-      this.form = {
-        title: '',
-        body: '',
-        postedAt: null,
-        linkAddress: '',
-        linkLabel: ''
-      };
+      this.form = emptyForm();
     },
-    startEdit(announcement) {
+    startEdit(announcement: SiteAnnouncementViewModel): void {
       this.editingAnnouncementID = announcement.id;
       this.form = {
         title: announcement.title,
         body: announcement.body,
         postedAt: DateTime.fromISO(announcement.postedAt).toFormat("yyyy-MM-dd'T'HH:mm"),
-        linkAddress: announcement.linkAddress || '',
-        linkLabel: announcement.linkLabel || ''
+        linkAddress: announcement.linkAddress ?? '',
+        linkLabel: announcement.linkLabel ?? ''
       };
       window.scrollTo({ top: 0, behavior: 'smooth' });
     },
-    async fetchAnnouncements() {
-      const response = await axios.get('/api/admin/GetSiteAnnouncements');
-      this.announcements = response.data;
+    async fetchAnnouncements(): Promise<void> {
+      this.announcements = await adminClient.getSiteAnnouncements();
     },
-    async refreshAnnouncements() {
-      this.lastJobFailed = false;
-      this.jobAttempted = 'Get site announcements';
+    //Runs one request, with its result in the banner at the top of the page.
+    async runAction(label: string, call: () => Promise<void>): Promise<void> {
+      this.errorInfo = '';
+      this.jobAttempted = label;
       this.isBusy = true;
 
       try {
-        await this.fetchAnnouncements();
+        await call();
       } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
-        this.lastJobFailed = true;
+        this.errorInfo = getApiErrorMessage(error);
       } finally {
         this.isBusy = false;
       }
     },
-    async createAnnouncement() {
+    async refreshAnnouncements(): Promise<void> {
+      await this.runAction('Get site announcements', () => this.fetchAnnouncements());
+    },
+    async createAnnouncement(): Promise<void> {
       if (!this.formIsValid) {
         return;
       }
 
-      this.lastJobFailed = false;
-      this.jobAttempted = 'Create site announcement';
-      this.isBusy = true;
+      const request: CreateSiteAnnouncementRequest = {
+        title: this.form.title,
+        body: this.form.body,
+        postedAt: this.form.postedAt ? new Date(this.form.postedAt).toISOString() : undefined,
+        linkAddress: this.form.linkAddress,
+        linkLabel: this.form.linkLabel
+      };
 
-      try {
-        await axios.post('/api/admin/CreateSiteAnnouncement', {
-          title: this.form.title,
-          body: this.form.body,
-          postedAt: this.form.postedAt ? new Date(this.form.postedAt).toISOString() : null,
-          linkAddress: this.form.linkAddress,
-          linkLabel: this.form.linkLabel
-        });
+      await this.runAction('Create site announcement', async () => {
+        await adminClient.createSiteAnnouncement(request);
         this.clearForm();
         await this.fetchAnnouncements();
-      } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
-        this.lastJobFailed = true;
-      } finally {
-        this.isBusy = false;
-      }
+      });
     },
-    async saveEdit() {
+    async saveEdit(): Promise<void> {
       if (!this.formIsValid || !this.editingAnnouncementID) {
         return;
       }
 
-      this.lastJobFailed = false;
-      this.jobAttempted = 'Edit site announcement';
-      this.isBusy = true;
+      const request: EditSiteAnnouncementRequest = {
+        announcementID: this.editingAnnouncementID,
+        title: this.form.title,
+        body: this.form.body,
+        postedAt: new Date(this.form.postedAt).toISOString(),
+        linkAddress: this.form.linkAddress,
+        linkLabel: this.form.linkLabel
+      };
 
-      try {
-        await axios.post('/api/admin/EditSiteAnnouncement', {
-          announcementID: this.editingAnnouncementID,
-          title: this.form.title,
-          body: this.form.body,
-          postedAt: new Date(this.form.postedAt).toISOString(),
-          linkAddress: this.form.linkAddress,
-          linkLabel: this.form.linkLabel
-        });
+      await this.runAction('Edit site announcement', async () => {
+        await adminClient.editSiteAnnouncement(request);
         this.clearForm();
         await this.fetchAnnouncements();
-      } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
-        this.lastJobFailed = true;
-      } finally {
-        this.isBusy = false;
-      }
+      });
     },
-    async confirmDelete(announcement) {
+    async confirmDelete(announcement: SiteAnnouncementViewModel): Promise<void> {
       const confirmed = await this.confirm(`Are you sure you want to delete '${announcement.title}'? It will no longer show on the site or in the RSS feed.`, {
         title: 'Delete Announcement',
         okTitle: 'Delete',
@@ -223,26 +223,18 @@ export default {
         return;
       }
 
-      this.lastJobFailed = false;
-      this.jobAttempted = 'Delete site announcement';
-      this.isBusy = true;
+      const request: DeleteSiteAnnouncementRequest = {
+        announcementID: announcement.id
+      };
 
-      try {
-        await axios.post('/api/admin/DeleteSiteAnnouncement', {
-          announcementID: announcement.id
-        });
+      await this.runAction('Delete site announcement', async () => {
+        await adminClient.deleteSiteAnnouncement(request);
         if (this.editingAnnouncementID === announcement.id) {
           this.clearForm();
         }
         await this.fetchAnnouncements();
-      } catch (error) {
-        this.errorInfo = error;
-        this.errorResponse = error.response;
-        this.lastJobFailed = true;
-      } finally {
-        this.isBusy = false;
-      }
+      });
     }
   }
-};
+});
 </script>
