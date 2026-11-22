@@ -453,7 +453,7 @@ public class MySQLConferenceRepo : IConferenceRepo
                                      JOIN tbl_user ON tbl_league.LeagueManager = tbl_user.UserID
                                      JOIN tbl_league_draft ld1 ON ld1.LeagueID = tbl_league_year.LeagueID
                                          AND ld1.Year = tbl_league_year.Year AND ld1.DraftNumber = 1
-                                     WHERE ConferenceID = @conferenceID AND Year = @year;
+                                     WHERE tbl_league.ConferenceID = @conferenceID AND tbl_league_year.Year = @year;
                                      """;
         var queryObject = new
         {
