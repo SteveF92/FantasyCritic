@@ -1,8 +1,6 @@
 <template>
   <b-modal id="currentBidsForm" ref="currentBidsFormRef" size="lg" title="My Current Bids" no-footer @hidden="clearData">
-    <div v-show="errorInfo" class="alert alert-danger" role="alert">
-      {{ errorInfo }}
-    </div>
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <label v-show="settingPriority">Drag and drop to change order.</label>
 
     <b-form-checkbox v-model="settingPriority" class="priority-checkbox">
@@ -58,7 +56,7 @@
       <h3 for="bidBeingEdited" class="selected-game text-black">Edit Bid:</h3>
       <masterGameSummary :master-game="bidBeingEdited.masterGame"></masterGameSummary>
       <div class="form-group">
-        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(userPublisher.budget, 0) }})</label>
+        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(requiredUserPublisher.budget, 0) }})</label>
 
         <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" rules="required|integer">
           <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
@@ -79,7 +77,7 @@
           You have no open roster spots. Add a conditional drop to this bid or place a pending drop request before saving.
         </div>
       </div>
-      <div v-if="leagueYear.settings.hasSpecialSlots" class="plain-check">
+      <div v-if="requiredLeagueYear.settings.hasSpecialSlots" class="plain-check">
         <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
         <label class="plain-check-label">
           Allow bid to succeed even if there are no slots this game is eligible in.
@@ -104,25 +102,60 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 import { VueDraggable } from 'vue-draggable-plus';
 
+import {
+  leagueClient,
+  type BidPriorityOrderRequest,
+  type PickupBidDeleteRequest,
+  type PickupBidEditRequest,
+  type PickupBidResultViewModel,
+  type PickupBidViewModel,
+  type PublisherGameViewModel
+} from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import type { PopoverContent } from '@/types/vueTypes';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatCurrency, formatYesNo } from '@/utilities/formatters';
 import MasterGameSummary from '@/components/masterGameSummary.vue';
 
-export default {
+interface CurrentBidsFormData {
+  desiredBidPriorities: PickupBidViewModel[];
+  settingPriority: boolean;
+  errorInfo: string;
+  bidBeingEdited: PickupBidViewModel | null;
+  bidAmount: number | null;
+  conditionalDrop: PublisherGameViewModel | null;
+  editBidResult: PickupBidResultViewModel | null;
+  isBusy: boolean;
+  allowIneligibleSlot: boolean;
+  bidToCancel: PickupBidViewModel | null;
+}
+
+export default defineComponent({
+  setup() {
+    const allowIneligibleText: PopoverContent = {
+      title: 'What does this mean?',
+      body:
+        'If you do not check this box, if you win the bidding for this game but do not have a slot open that this game is eligible in, then the bid will fail. ' +
+        'If you check this box, then the bid would succeed, but the game will land in an ineligible slot.'
+    };
+
+    return { allowIneligibleText };
+  },
   components: {
     VueDraggable,
     MasterGameSummary
   },
-  data() {
+  data(): CurrentBidsFormData {
     return {
       desiredBidPriorities: [],
       settingPriority: false,
-      errorInfo: null,
+      errorInfo: '',
       bidBeingEdited: null,
       bidAmount: null,
       conditionalDrop: null,
@@ -133,16 +166,16 @@ export default {
     };
   },
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear', 'userPublisher', 'currentBids', 'currentDrops']),
-    droppableGames() {
-      return this.userPublisher.games.filter((x) => !x.counterPick);
+    ...mapState(useLeagueStore, ['requiredLeagueYear', 'requiredUserPublisher', 'currentBids', 'currentDrops']),
+    droppableGames(): PublisherGameViewModel[] {
+      return this.requiredUserPublisher.games.filter((x) => !x.counterPick);
     },
-    editHasBidSlotAcquisitionPath() {
+    editHasBidSlotAcquisitionPath(): boolean {
       if (!this.bidBeingEdited || this.bidBeingEdited.counterPick) {
         return true;
       }
-      const standardGameSlots = this.leagueYear.settings.standardGames;
-      const userStandardGames = this.userPublisher.games.filter((x) => !x.counterPick);
+      const standardGameSlots = this.requiredLeagueYear.settings.standardGames;
+      const userStandardGames = this.requiredUserPublisher.games.filter((x) => !x.counterPick);
       if (userStandardGames.length < standardGameSlots) {
         return true;
       }
@@ -150,14 +183,6 @@ export default {
         return true;
       }
       return this.currentDrops.length > 0;
-    },
-    allowIneligibleText() {
-      return {
-        title: 'What does this mean?',
-        body:
-          'If you do not check this box, if you win the bidding for this game but do not have a slot open that this game is eligible in, then the bid will fail. ' +
-          'If you check this box, then the bid would succeed, but the game will land in an ineligible slot.'
-      };
     }
   },
   watch: {
@@ -165,35 +190,45 @@ export default {
       this.desiredBidPriorities = this.currentBids;
     }
   },
-  created() {
-    this.clearData();
-  },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
     formatCurrency,
     formatYesNo,
-    async setBidPriorityOrder() {
-      let desiredBidPriorityIDs = this.desiredBidPriorities.map(function (v) {
-        return v.bidID;
-      });
-      const model = {
-        publisherID: this.userPublisher.publisherID,
-        BidPriorities: desiredBidPriorityIDs
+    async setBidPriorityOrder(): Promise<void> {
+      const request: BidPriorityOrderRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
+        bidPriorities: this.desiredBidPriorities.map((x) => x.bidID)
       };
-      await axios.post('/api/league/SetBidPriorities', model);
-      this.notifyAction('Bid priority has been changed.');
-      this.settingPriority = false;
+
+      this.isBusy = true;
+      try {
+        await leagueClient.setBidPriorities(request);
+        this.notifyAction('Bid priority has been changed.');
+        this.settingPriority = false;
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to change bid priorites.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    startEditingBid(bid) {
+    startEditingBid(bid: PickupBidViewModel): void {
       this.bidBeingEdited = bid;
       this.bidAmount = bid.bidAmount;
-      this.conditionalDrop = bid.conditionalDropPublisherGame;
+      this.conditionalDrop = bid.conditionalDropPublisherGame ?? null;
       this.allowIneligibleSlot = bid.allowIneligibleSlot;
     },
-    editBid() {
-      let request = {
+    async editBid(): Promise<void> {
+      if (!this.bidBeingEdited) {
+        throw new Error('Attempted to edit a bid with none selected.');
+      }
+
+      if (typeof this.bidAmount !== 'number') {
+        throw new Error('No valid bid amount entered on an edit request.');
+      }
+
+      const request: PickupBidEditRequest = {
         bidID: this.bidBeingEdited.bidID,
-        publisherID: this.userPublisher.publisherID,
+        publisherID: this.requiredUserPublisher.publisherID,
         bidAmount: this.bidAmount,
         allowIneligibleSlot: this.allowIneligibleSlot
       };
@@ -202,49 +237,57 @@ export default {
         request.conditionalDropPublisherGameID = this.conditionalDrop.publisherGameID;
       }
 
-      axios
-        .post('/api/league/EditPickupBid', request)
-        .then((response) => {
-          this.editBidResult = response.data;
-          if (!this.editBidResult.success) {
-            return;
-          }
-          this.notifyAction('Bid for ' + this.bidBeingEdited.masterGame.gameName + ' for $' + this.bidAmount + ' was made.');
-          this.clearData();
-        })
-        .catch((response) => {
-          this.errorInfo = response.response.data;
-        });
+      this.isBusy = true;
+      try {
+        this.editBidResult = await leagueClient.editPickupBid(request);
+        if (!this.editBidResult.success) {
+          return;
+        }
+        await this.notifyAction('Bid for ' + this.bidBeingEdited.masterGame.gameName + ' for $' + this.bidAmount + ' was made.');
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to change bid priorites.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    confirmCancelBid(bid) {
+    confirmCancelBid(bid: PickupBidViewModel) {
       this.bidToCancel = bid;
-      this.$refs.confirmCancelBidModalRef.show();
+      (this.$refs.confirmCancelBidModalRef as InstanceType<typeof BModal> | undefined)?.show();
     },
-    cancelBid() {
-      const model = {
+    async cancelBid(): Promise<void> {
+      if (!this.bidToCancel) {
+        throw new Error('Attempted to cancel a bid with none selected.');
+      }
+
+      const request: PickupBidDeleteRequest = {
         bidID: this.bidToCancel.bidID,
-        publisherID: this.userPublisher.publisherID
+        publisherID: this.requiredUserPublisher.publisherID
       };
-      axios
-        .post('/api/league/DeletePickupBid', model)
-        .then(() => {
-          this.notifyAction('Bid for ' + this.bidToCancel.masterGame.gameName + ' for $' + this.bidToCancel.bidAmount + ' was canceled.');
-        })
-        .catch((response) => {
-          this.errorInfo = response.response.data;
-        });
+
+      this.isBusy = true;
+      try {
+        await leagueClient.deletePickupBid(request);
+        this.notifyAction('Bid for ' + this.bidToCancel.masterGame.gameName + ' for $' + this.bidToCancel.bidAmount + ' was canceled.');
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to cancel bid.');
+      } finally {
+        this.isBusy = false;
+      }
     },
-    clearData() {
+    clearData(): void {
       this.desiredBidPriorities = this.currentBids;
       this.bidBeingEdited = null;
       this.conditionalDrop = null;
       this.bidAmount = null;
-      this.errorInfo = null;
+      this.errorInfo = '';
       this.bidToCancel = null;
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .select-cell {
   text-align: center;
