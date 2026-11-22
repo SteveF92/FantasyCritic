@@ -87,6 +87,7 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpGet("{id}")]
+    [ProducesResponseType<List<int>>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
@@ -689,6 +690,7 @@ public class LeagueManagerController : BaseLeagueController
     }
 
     [HttpPost]
+    [ProducesResponseType<ManagerClaimResultViewModel>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
