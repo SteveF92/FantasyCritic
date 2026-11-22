@@ -87,13 +87,18 @@ import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
 import { BModal } from 'bootstrap-vue-next';
 
-import { leagueClient, ProposeTradeRequest, type PublisherGameViewModel, type PublisherViewModel } from '@/api/clients';
+import { leagueClient, type ProposeTradeRequest, type PublisherGameViewModel, type PublisherViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
 import { getApiErrorMessage } from '@/utilities/apiError';
 
 interface TradableGame {
   id: number;
   game: PublisherGameViewModel | null;
+}
+
+// getTradeError has already rejected rows with no game selected.
+function getSelectedGameIDs(items: TradableGame[]): string[] {
+  return items.flatMap((x) => (x.game ? [x.game.publisherGameID] : []));
 }
 
 interface ProposeTradeFormData {
@@ -155,7 +160,7 @@ export default defineComponent({
 
       return '';
     },
-    otherPublishers() {
+    otherPublishers(): PublisherViewModel[] {
       return this.requiredLeagueYear.publishers.filter((x) => x.publisherID !== this.requiredUserPublisher.publisherID && !!x.userID);
     }
   },
@@ -194,8 +199,8 @@ export default defineComponent({
       const request: ProposeTradeRequest = {
         proposerPublisherID: this.requiredUserPublisher.publisherID,
         counterPartyPublisherID: this.counterParty.publisherID,
-        proposerPublisherGameIDs: this.proposerPublisherGames.map((x) => x.game!.publisherGameID),
-        counterPartyPublisherGameIDs: this.counterPartyPublisherGames.map((x) => x.game!.publisherGameID),
+        proposerPublisherGameIDs: getSelectedGameIDs(this.proposerPublisherGames),
+        counterPartyPublisherGameIDs: getSelectedGameIDs(this.counterPartyPublisherGames),
         proposerBudgetSendAmount: this.proposerBudgetSendAmount || 0,
         counterPartyBudgetSendAmount: this.counterPartyBudgetSendAmount || 0,
         message: this.message
