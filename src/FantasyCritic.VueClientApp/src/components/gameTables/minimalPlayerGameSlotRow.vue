@@ -81,6 +81,14 @@ tr {
   font-size: 10pt;
 }
 
+.score-column {
+  width: 30px;
+  text-align: center;
+  font-weight: bold;
+  height: 20px;
+  line-height: 20px;
+}
+
 .game-name-column {
   display: inline-flex;
   justify-content: space-between;

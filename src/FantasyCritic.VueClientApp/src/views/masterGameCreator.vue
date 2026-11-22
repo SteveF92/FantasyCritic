@@ -360,8 +360,3 @@ label {
   margin-right: 5px;
 }
 </style>
-<style>
-.vue-slider-piecewise-label {
-  color: white !important;
-}
-</style>

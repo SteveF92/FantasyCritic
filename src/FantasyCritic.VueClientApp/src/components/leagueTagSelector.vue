@@ -161,7 +161,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .reset-button-flex {
   display: flex;
   justify-content: space-between;

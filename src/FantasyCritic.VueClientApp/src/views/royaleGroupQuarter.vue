@@ -223,10 +223,9 @@ export default defineComponent({
   border: 1px solid rgba(214, 153, 58, 0.35);
   border-radius: 8px;
 }
-</style>
 
-<style>
-.ranking-column {
+/* Given to b-table through the fields, so BTable renders it. */
+:deep(.ranking-column) {
   width: 50px;
   text-align: right;
 }

@@ -195,7 +195,7 @@ export default defineComponent({
 });
 </script>
 
-<style>
+<style scoped>
 .reset-button-flex {
   display: flex;
   justify-content: space-between;
@@ -221,7 +221,6 @@ export default defineComponent({
 .player-drag-item {
   margin: 10px;
   position: relative;
-  display: bcollapse;
   padding: 10px 15px;
   margin-bottom: -1px;
   background-color: #5b6977 !important;

@@ -134,15 +134,14 @@ export default defineComponent({
   justify-content: space-around;
   margin-top: 50px;
 }
-</style>
 
-<style>
-.ranking-column {
+/* Given to b-table through the fields, so BTable renders them. */
+:deep(.ranking-column) {
   width: 80px;
   text-align: right;
 }
 
-.quarter-column {
+:deep(.quarter-column) {
   width: 120px;
 }
 </style>

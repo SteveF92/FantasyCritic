@@ -255,35 +255,35 @@ export default defineComponent({
     font-size: 25px;
   }
 }
-</style>
-<style>
-.btable-player-game-row {
+
+/* These classes are given to b-table through its fields and tbody-tr-class, so BTable renders them. */
+:deep(.btable-player-game-row) {
   height: 40px;
 }
 
-.btable-player-game-row td,
-th.btable-player-table-header {
+:deep(.btable-player-game-row td),
+:deep(th.btable-player-table-header) {
   padding: 0.3rem;
 }
 
-th.btable-player-table-header {
+:deep(th.btable-player-table-header) {
   text-align: center;
   font-weight: bold;
 }
 
-.full-table-game-name-column {
+:deep(.full-table-game-name-column) {
   min-width: 300px;
 }
 
-.release-date-column {
+:deep(.release-date-column) {
   min-width: 200px;
 }
 
-.acquired-column {
+:deep(.acquired-column) {
   min-width: 250px;
 }
 
-.numeric-column {
+:deep(.numeric-column) {
   text-align: center;
   font-weight: bold;
   width: 80px;

@@ -20,7 +20,7 @@
         Player: {{ publisher.playerName }}
         <div v-show="!renderingSnapshot">
           <b-button v-if="userIsPublisher && isPlusUser" variant="secondary" size="sm" @click="sharePublisher">
-            <font-awesome-icon icon="share-alt" size="lg" class="share-button" />
+            <font-awesome-icon icon="share-alt" size="lg" />
             <span>Share</span>
           </b-button>
         </div>
@@ -72,18 +72,18 @@
       <tbody>
         <minimalPlayerGameSlotRow v-for="gameSlot in gameSlots" :key="gameSlot.overallSlotNumber" :minimal="true" :game-slot="gameSlot"></minimalPlayerGameSlotRow>
         <tr class="minimal-game-row">
-          <td id="total-description">
-            <span v-if="!showProjections" id="total-description-text">
+          <td class="total-description">
+            <span v-if="!showProjections" class="total-description-text">
               Total Fantasy Points
               <font-awesome-icon v-if="showRoundingWarning" v-b-popover.hover.focus="roundingWarning" color="white" size="lg" icon="exclamation-triangle" />
             </span>
-            <span v-else id="total-description-text">Projected Fantasy Points</span>
+            <span v-else class="total-description-text">Projected Fantasy Points</span>
           </td>
           <template v-if="!showProjections">
-            <td id="total-column" class="bg-success" colspan="2">{{ formatScore(publisher.totalFantasyPoints, decimalsToShow) }}</td>
+            <td class="total-column bg-success" colspan="2">{{ formatScore(publisher.totalFantasyPoints, decimalsToShow) }}</td>
           </template>
           <template v-else>
-            <td id="total-column" class="bg-info" colspan="2">
+            <td class="total-column bg-info" colspan="2">
               <em>~{{ formatScore(publisher.totalProjectedPoints, decimalsToShow) }}</em>
             </td>
           </template>
@@ -351,13 +351,13 @@ export default defineComponent({
 .publisher-slogan {
   font-size: 15px;
 }
-</style>
-<style>
+
 .player-summary table th {
   border-top: none;
 }
 
-.player-summary table td {
+/* The game rows are minimalPlayerGameSlotRow's, so their cells need :deep(). */
+.player-summary table :deep(td) {
   border: 1px solid white;
 }
 
@@ -366,14 +366,9 @@ export default defineComponent({
   padding: 5px;
 }
 
-.player-summary table tbody tr td {
+.player-summary table tbody :deep(td) {
   height: 35px;
   padding: 5px;
-}
-
-.type-column {
-  width: 30px;
-  text-align: center;
 }
 
 .score-column {
@@ -384,11 +379,11 @@ export default defineComponent({
   line-height: 20px;
 }
 
-#total-description {
+.total-description {
   vertical-align: middle;
 }
 
-#total-description-text {
+.total-description-text {
   float: right;
   text-align: right;
   display: table-cell;
@@ -397,13 +392,9 @@ export default defineComponent({
   font-size: 20px;
 }
 
-#total-column {
+.total-column {
   text-align: center;
   font-weight: bold;
   font-size: 25px;
-}
-
-.share-button {
-  color: white;
 }
 </style>

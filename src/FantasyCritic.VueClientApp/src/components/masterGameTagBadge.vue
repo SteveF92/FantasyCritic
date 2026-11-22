@@ -55,12 +55,10 @@ export default defineComponent({
   }
 });
 </script>
-<style>
-.popover-header {
-  color: black;
-}
-
-.master-game-tag-popover {
+<style scoped>
+/* b-popover teleports the popover out of this component, so it doesn't get the scope. The z-index keeps a
+   tag's popover above the master game popover the tag is shown in. */
+:global(.master-game-tag-popover) {
   z-index: 300000;
 }
 </style>

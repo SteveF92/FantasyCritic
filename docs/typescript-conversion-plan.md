@@ -428,6 +428,11 @@ on the League page.
     `vue-slider` dependency any more. Remove both.
   - `conference/assignPlayers` has `display: bcollapse`, which isn't valid CSS.
 
+  Done. Every component's `<style>` is scoped except `App.vue`'s and the two `vue-multiselect` imports.
+  Each changed page's computed styles were captured before and after; the only difference is the royale
+  group page's Rank column (see "Found along the way"). `masterGameTagBadge`'s popover z-index uses
+  `:global()` on the popover's own class, because `b-popover` teleports the popover without the scope.
+
 Then make the API changes held in [api-breaking-changes-plan.md](api-breaking-changes-plan.md).
 
 ## Found along the way
@@ -590,3 +595,8 @@ has the bug too.
 | 15 | `views/masterGameEditor.vue` | The warning "Are you sure you want to clear the critic score while leaving OpenCritic Score Refreshing on?" showed when Sync with OpenCritic was off. It shows when it's on now, since the score refresh only runs for games with sync on, so a cleared score comes back | Yes | Done |
 | 15 | `views/masterGameEditor.vue` | Clearing the minimum release date sent `null`, which the server can't read, so the save failed with a generic error. It's a required field now, with a message. Failures show the server's message instead of the axios response data. Changing the route reloads the change request and tags as well as the game. OpenCritic ID is a number input | Yes | Done |
 | 15 | `views/actionProcessingDryRunResults.vue` | A failed dry run was swallowed and the spinner stayed up forever; it shows a `b-alert` now. "No actioned games." never showed, since it tested `.length` on an object; each game table says when it's empty instead | Yes | Done |
+| 16 | `views/criticsRoyale.vue`, `royaleGroupQuarter.vue`, `royaleHistory.vue` | `.ranking-column` was global in all three, at 50px in the first two and 80px in Royale History, so the width depended on which page's styles had loaded. Seen on a royale group's quarter page, whose Rank column was 80px. Each page's own width applies now | Yes | Done |
+| 16 | `components/masterGameTagBadge.vue`, `scss/custom-bootstrap.scss` | `.popover-header { color: black }` was global from the badge, and every popover in the app relied on it: without it, popover titles are white on the light grey header. It's `$popover-header-color` in the theme now. No visible change | — | Done |
+| 16 | `components/gameTables/minimalPlayerGameTable.vue` | The totals row used `id="total-description"`, `total-description-text` and `total-column`, repeated in every publisher's table on the League page. They're classes now. The unused `.type-column` is gone, and `.score-column` is also in `minimalPlayerGameSlotRow`, whose cells it styles. No visible change | Yes | Done |
+| 16 | `minimalPlayerGameTable.vue`, `views/publisher.vue` | `.share-button { color: white }` did nothing: the icon is in a `btn-secondary`, which is already white. The rule and the class are gone. The Publisher page's button only had the rule when the League page's styles had loaded | — | Done |
+| 16 | `views/masterGameCreator.vue`, `views/masterGameRequest.vue`, `components/modals/conference/assignPlayers.vue` | The `vue-slider` label rules (no `vue-slider` dependency any more) and `display: bcollapse` (not valid CSS) are gone. No visible change | — | Done |

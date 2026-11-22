@@ -428,9 +428,9 @@ div :deep(.tab-header .nav-link) {
 .critics-royale-info {
   margin-top: 20px;
 }
-</style>
-<style>
-.ranking-column {
+
+/* Given to b-table through the fields, so BTable renders it. */
+:deep(.ranking-column) {
   width: 50px;
   text-align: right;
 }

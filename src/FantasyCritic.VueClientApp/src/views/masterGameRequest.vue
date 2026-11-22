@@ -320,8 +320,3 @@ label {
   font-size: 18px;
 }
 </style>
-<style>
-.vue-slider-piecewise-label {
-  color: white !important;
-}
-</style>
