@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="currentBidsForm" ref="currentBidsFormRef" size="lg" title="My Current Bids" no-footer @hidden="clearData">
+  <b-modal id="current-bids-form" size="lg" title="My Current Bids" no-footer @hidden="clearData">
     <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <label v-show="settingPriority">Drag and drop to change order.</label>
 
@@ -51,9 +51,9 @@
         </b-tr>
       </b-tbody>
     </b-table-simple>
-    <b-button v-if="settingPriority" variant="primary" class="full-width-button" @click="setBidPriorityOrder()">Set Priority Order</b-button>
+    <b-button v-if="settingPriority" variant="primary" class="full-width-button" @click="setBidPriorityOrder()" :disabled="isBusy">Set Priority Order</b-button>
     <div v-if="bidBeingEdited">
-      <h3 for="bidBeingEdited" class="selected-game text-black">Edit Bid:</h3>
+      <h3 class="selected-game text-black">Edit Bid:</h3>
       <masterGameSummary :master-game="bidBeingEdited.masterGame"></masterGameSummary>
       <div class="form-group">
         <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(requiredUserPublisher.budget, 0) }})</label>
@@ -84,7 +84,7 @@
           <font-awesome-icon v-b-popover.hover.focus="allowIneligibleText" icon="info-circle" />
         </label>
       </div>
-      <b-button variant="primary" class="full-width-button" :disabled="isBusy || !editHasBidSlotAcquisitionPath" @click="editBid">Edit Bid</b-button>
+      <b-button variant="primary" class="full-width-button" :disabled="isBusy || !editHasBidSlotAcquisitionPath || typeof bidAmount !== 'number'" @click="editBid">Edit Bid</b-button>
       <div v-if="editBidResult && !editBidResult.success" class="alert alert-danger bid-error">
         <h3 class="alert-heading">Error!</h3>
         <ul>
@@ -203,15 +203,16 @@ export default defineComponent({
       this.isBusy = true;
       try {
         await leagueClient.setBidPriorities(request);
-        this.notifyAction('Bid priority has been changed.');
+        await this.notifyAction('Bid priority has been changed.');
         this.settingPriority = false;
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to change bid priorites.');
+        this.errorInfo = getApiErrorMessage(error, 'Failed to change bid priorities.');
       } finally {
         this.isBusy = false;
       }
     },
     startEditingBid(bid: PickupBidViewModel): void {
+      this.editBidResult = null;
       this.bidBeingEdited = bid;
       this.bidAmount = bid.bidAmount;
       this.conditionalDrop = bid.conditionalDropPublisherGame ?? null;
@@ -230,28 +231,26 @@ export default defineComponent({
         bidID: this.bidBeingEdited.bidID,
         publisherID: this.requiredUserPublisher.publisherID,
         bidAmount: this.bidAmount,
-        allowIneligibleSlot: this.allowIneligibleSlot
+        allowIneligibleSlot: this.allowIneligibleSlot,
+        conditionalDropPublisherGameID: this.conditionalDrop?.publisherGameID
       };
 
-      if (this.conditionalDrop) {
-        request.conditionalDropPublisherGameID = this.conditionalDrop.publisherGameID;
-      }
-
       this.isBusy = true;
+      this.editBidResult = null;
       try {
         this.editBidResult = await leagueClient.editPickupBid(request);
         if (!this.editBidResult.success) {
           return;
         }
-        await this.notifyAction('Bid for ' + this.bidBeingEdited.masterGame.gameName + ' for $' + this.bidAmount + ' was made.');
+        await this.notifyAction('Bid for ' + this.bidBeingEdited.masterGame.gameName + ' for $' + this.bidAmount + ' was updated.');
         this.clearData();
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to change bid priorites.');
+        this.errorInfo = getApiErrorMessage(error, 'Failed to edit bid.');
       } finally {
         this.isBusy = false;
       }
     },
-    confirmCancelBid(bid: PickupBidViewModel) {
+    confirmCancelBid(bid: PickupBidViewModel): void {
       this.bidToCancel = bid;
       (this.$refs.confirmCancelBidModalRef as InstanceType<typeof BModal> | undefined)?.show();
     },
@@ -268,7 +267,7 @@ export default defineComponent({
       this.isBusy = true;
       try {
         await leagueClient.deletePickupBid(request);
-        this.notifyAction('Bid for ' + this.bidToCancel.masterGame.gameName + ' for $' + this.bidToCancel.bidAmount + ' was canceled.');
+        await this.notifyAction('Bid for ' + this.bidToCancel.masterGame.gameName + ' for $' + this.bidToCancel.bidAmount + ' was canceled.');
         this.clearData();
       } catch (error) {
         this.errorInfo = getApiErrorMessage(error, 'Failed to cancel bid.');
@@ -279,6 +278,7 @@ export default defineComponent({
     clearData(): void {
       this.desiredBidPriorities = this.currentBids;
       this.bidBeingEdited = null;
+      this.editBidResult = null;
       this.conditionalDrop = null;
       this.bidAmount = null;
       this.errorInfo = '';

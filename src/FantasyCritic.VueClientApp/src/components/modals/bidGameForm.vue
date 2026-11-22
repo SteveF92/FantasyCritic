@@ -315,7 +315,7 @@ export default defineComponent({
         bidAmount: this.bidAmount,
         counterPick: false,
         allowIneligibleSlot: this.allowIneligibleSlot,
-        conditionalDropPublisherGameID: this.conditionalDrop ? this.conditionalDrop.publisherGameID : undefined
+        conditionalDropPublisherGameID: this.conditionalDrop?.publisherGameID
       };
 
       this.bidRequestIsBusy = true;
