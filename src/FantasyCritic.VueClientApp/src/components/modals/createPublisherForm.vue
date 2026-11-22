@@ -1,5 +1,6 @@
 <template>
-  <b-modal id="createPublisher" ref="createPublisherRef" title="Create Publisher" @hidden="clearData">
+  <b-modal id="create-publisher" ref="createPublisherRef" title="Create Publisher" @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="form-horizontal">
       <div class="form-group">
         <label for="publisherName" class="control-label">Publisher Name</label>
@@ -7,46 +8,65 @@
       </div>
     </div>
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Create Publisher" :disabled="!publisherName" @click="createPublisher" />
+      <input type="submit" class="btn btn-primary" value="Create Publisher" :disabled="!publisherName || isBusy" @click="createPublisher" />
     </template>
   </b-modal>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import { BModal } from 'bootstrap-vue-next';
 
+import { leagueClient, type CreatePublisherRequest } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
+interface CreatePublisherFormData {
+  publisherName: string;
+  isBusy: boolean;
+  errorInfo: string;
+}
+
+export default defineComponent({
   computed: {
-    ...mapState(useLeagueStore, ['leagueYear'])
+    ...mapState(useLeagueStore, ['requiredLeagueYear'])
   },
-  data() {
+  data(): CreatePublisherFormData {
     return {
       publisherName: '',
+      isBusy: false,
       errorInfo: ''
     };
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    createPublisher() {
-      const model = {
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year,
+    async createPublisher(): Promise<void> {
+      const request: CreatePublisherRequest = {
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year,
         publisherName: this.publisherName.trim()
       };
-      axios
-        .post('/api/league/createPublisher', model)
-        .then(() => {
-          this.$refs.createPublisherRef.hide();
-          this.notifyAction(this.publisherName + ' created.');
-          this.publisherName = '';
-        })
-        .catch(() => {});
+
+      this.isBusy = true;
+      this.errorInfo = '';
+      try {
+        await leagueClient.createPublisher(request);
+
+        (this.$refs.createPublisherRef as InstanceType<typeof BModal> | undefined)?.hide();
+        await this.notifyAction(this.publisherName + ' created.');
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when creating your publisher.');
+      } finally {
+        this.isBusy = false;
+      }
     },
     clearData() {
       this.publisherName = '';
+      this.isBusy = false;
+      this.errorInfo = '';
     }
   }
-};
+});
 </script>
