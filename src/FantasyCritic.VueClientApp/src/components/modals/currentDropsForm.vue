@@ -1,8 +1,7 @@
 <template>
-  <b-modal id="currentDropsForm" ref="currentDropsFormRef" title="My Pending Drop Requests" @hidden="clearData">
-    <div v-show="errorInfo" class="alert alert-danger" role="alert">
-      {{ errorInfo }}
-    </div>
+  <b-modal id="current-drops-form" title="My Pending Drop Requests" @hidden="clearData">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
+
     <table class="table table-sm table-bordered table-striped">
       <thead>
         <tr class="bg-primary">
@@ -29,51 +28,65 @@
   </b-modal>
 </template>
 
-<script>
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
-import axios from 'axios';
+import type { BModal } from 'bootstrap-vue-next';
 
+import { leagueClient, type DropGameRequestDeleteRequest, type DropGameRequestViewModel } from '@/api/clients';
 import { useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 
-export default {
+interface CurrentDropsFormData {
+  dropToCancel: DropGameRequestViewModel | null;
+  errorInfo: string;
+  isBusy: boolean;
+}
+
+export default defineComponent({
   computed: {
-    ...mapState(useLeagueStore, ['userPublisher', 'currentDrops'])
+    ...mapState(useLeagueStore, ['requiredUserPublisher', 'currentDrops'])
   },
-  data() {
+  data(): CurrentDropsFormData {
     return {
       dropToCancel: null,
-      errorInfo: null
+      errorInfo: '',
+      isBusy: false
     };
-  },
-  created() {
-    this.clearData();
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
-    confirmCancelDrop(drop) {
-      this.errorInfo = null;
+    confirmCancelDrop(drop: DropGameRequestViewModel): void {
+      this.errorInfo = '';
       this.dropToCancel = drop;
-      this.$refs.confirmCancelDropModalRef.show();
+      (this.$refs.confirmCancelDropModalRef as InstanceType<typeof BModal> | undefined)?.show();
     },
-    cancelDrop() {
-      const model = {
-        publisherID: this.userPublisher.publisherID,
+    async cancelDrop(): Promise<void> {
+      if (!this.dropToCancel) {
+        throw new Error('Attempted to delete a drop with none selected.');
+      }
+
+      const request: DropGameRequestDeleteRequest = {
+        publisherID: this.requiredUserPublisher.publisherID,
         dropRequestID: this.dropToCancel.dropRequestID
       };
-      axios
-        .post('/api/league/DeleteDropRequest', model)
-        .then(() => {
-          this.notifyAction('Drop Request for ' + this.dropToCancel.masterGame.gameName + ' was cancelled.');
-          this.clearData();
-        })
-        .catch((error) => {
-          this.errorInfo = error.response?.data || 'Failed to cancel drop request.';
-        });
+
+      this.isBusy = true;
+      try {
+        await leagueClient.deleteDropRequest(request);
+        await this.notifyAction('Drop Request for ' + this.dropToCancel.masterGame.gameName + ' was cancelled.');
+        this.clearData();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to cancel drop request.');
+      } finally {
+        this.isBusy = false;
+      }
     },
     clearData() {
       this.dropToCancel = null;
-      this.errorInfo = null;
+      this.errorInfo = '';
+      this.isBusy = false;
     }
   }
-};
+});
 </script>
