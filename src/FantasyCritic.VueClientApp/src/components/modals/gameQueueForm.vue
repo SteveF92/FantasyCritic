@@ -1,5 +1,6 @@
 <template>
   <b-modal id="gameQueueForm" ref="gameQueueFormRef" size="xl" title="My Watchlist" @hidden="clearAllData" @show="onOpen">
+    <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="form-group">
       <h3 class="text-black">Add Game to Watchlist</h3>
       <form class="form-horizontal" role="form" @submit.prevent="searchGame">
@@ -35,18 +36,18 @@
         </b-dropdown>
       </div>
       <span class="search-tags">
-        <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="selectedSlotIndex === 0" @click="getTopGames"></searchSlotTypeBadge>
+        <searchSlotTypeBadge :game-slot="requiredLeagueYear.slotInfo.overallSlot" name="ALL" :selected="searchMode === 'topAvailable' && !selectedSlot" @click="getTopGames"></searchSlotTypeBadge>
         <searchSlotTypeBadge
           :game-slot="requiredLeagueYear.slotInfo.regularSlot"
           name="REG"
-          :selected="selectedSlotIndex === 1"
-          @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot, 1)"></searchSlotTypeBadge>
+          :selected="selectedSlot === requiredLeagueYear.slotInfo.regularSlot"
+          @click="getGamesForSlot(requiredLeagueYear.slotInfo.regularSlot)"></searchSlotTypeBadge>
         <searchSlotTypeBadge
           v-for="(specialSlot, index) in requiredLeagueYear.slotInfo.specialSlots"
-          :key="specialSlot.overallSlotNumber"
+          :key="index"
           :game-slot="specialSlot"
-          :selected="selectedSlotIndex === 2 + index"
-          @click="getGamesForSlot(specialSlot, 2 + index)"></searchSlotTypeBadge>
+          :selected="selectedSlot === specialSlot"
+          @click="getGamesForSlot(specialSlot)"></searchSlotTypeBadge>
       </span>
     </div>
 
@@ -54,11 +55,10 @@
       <font-awesome-icon icon="circle-notch" size="5x" spin :style="{ color: '#000000' }" />
     </div>
 
-    <h3 v-show="showingTopAvailable" class="text-black">Top Available Games</h3>
-    <h3 v-if="showingOtherLeagueWatchlist" class="text-black">Watchlist for {{ selectedOtherPublisher.publisherName }} in {{ selectedOtherPublisher.leagueName }}</h3>
+    <h3 v-if="searchHeading" class="text-black">{{ searchHeading }}</h3>
 
     <possibleMasterGamesTable v-if="possibleMasterGames.length > 0" v-model="gameToQueue" :possible-games="possibleMasterGames" @update:model-value="addGameToQueue"></possibleMasterGamesTable>
-    <div v-if="possibleMasterGames.length === 0" class="alert alert-info">No games available to display.</div>
+    <div v-if="searchMode && possibleMasterGames.length === 0" class="alert alert-info">No games available to display.</div>
 
     <div v-if="queueResult && !queueResult.success" class="alert alert-danger bid-error">
       <h3 class="alert-heading">Error!</h3>
@@ -209,10 +209,17 @@ export default defineComponent({
     },
     notesModalTitle(): string {
       return this.gameToEditNotes ? 'Notes: ' + this.gameToEditNotes.masterGame.gameName : 'Notes';
+    },
+    searchHeading(): string {
+      switch (this.searchMode) {
+        case 'topAvailable':
+          return 'Top Available Games';
+        case 'otherPublisherWatchlist':
+          return this.selectedOtherPublisher ? `Watchlist for ${this.selectedOtherPublisher.publisherName} in ${this.selectedOtherPublisher.leagueName}` : '';
+        default:
+          return '';
+      }
     }
-  },
-  async created() {
-    this.initializeDesiredRankings();
   },
   methods: {
     ...mapActions(useLeagueStore, ['notifyAction']),
@@ -220,14 +227,14 @@ export default defineComponent({
     initializeDesiredRankings(): void {
       this.desiredQueueRanks = this.queuedGames;
     },
-    async onOpen() {
+    async onOpen(): Promise<void> {
+      this.initializeDesiredRankings();
       await this.getTopGames();
     },
     async searchGame(): Promise<void> {
       await this.fetchGames('search', null, () => leagueClient.possibleMasterGames(this.searchGameName, this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID));
     },
-
-    async getTopGames() {
+    async getTopGames(): Promise<void> {
       await this.fetchGames('topAvailable', null, () =>
         leagueClient.topAvailableGames(this.requiredLeagueYear.year, this.requiredLeagueYear.league.leagueID, this.requiredUserPublisher.publisherID, null)
       );
@@ -240,6 +247,7 @@ export default defineComponent({
       );
     },
     async getOtherPublisher(otherPublisher: LeaguePublisherViewModel): Promise<void> {
+      this.selectedOtherPublisher = otherPublisher;
       await this.fetchGames('otherPublisherWatchlist', null, () => leagueClient.currentQueuedGameYears(this.requiredUserPublisher.publisherID, otherPublisher.publisherID));
     },
     async fetchGames(searchMode: SearchMode, slotToSelect: PublisherSingleSlotRequirementsViewModel | null, searchAction: () => Promise<PossibleMasterGameYearViewModel[]>): Promise<void> {
@@ -279,6 +287,7 @@ export default defineComponent({
         masterGameID: this.gameToQueue.masterGameID
       };
 
+      this.errorInfo = '';
       this.isBusy = true;
       try {
         this.queueResult = await leagueClient.addGameToQueue(request);
@@ -298,6 +307,7 @@ export default defineComponent({
         queueRanks: this.desiredQueueRanks.map((x) => x.masterGame.masterGameID)
       };
 
+      this.errorInfo = '';
       this.isBusy = true;
       try {
         await leagueClient.setQueueRankings(request);
@@ -329,6 +339,7 @@ export default defineComponent({
         notes: this.notesInEdit
       };
 
+      this.errorInfo = '';
       this.isBusy = true;
       try {
         await leagueClient.setQueuedGameNotes(request);
@@ -346,13 +357,14 @@ export default defineComponent({
         masterGameID: game.masterGame.masterGameID
       };
 
+      this.errorInfo = '';
       this.isBusy = true;
       try {
         await leagueClient.deleteQueuedGame(request);
         await this.notifyAction('Game removed from watchlist.');
         this.initializeDesiredRankings();
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to edit notes.');
+        this.errorInfo = getApiErrorMessage(error, 'Failed to remove game from watchlist.');
       } finally {
         this.isBusy = false;
       }
@@ -360,9 +372,10 @@ export default defineComponent({
     clearAllData(): void {
       this.clearNotesData();
       this.clearQueueData();
+      this.clearDataExceptSearch();
       this.searchGameName = '';
-      this.possibleMasterGames = [];
-      this.searchMode = null;
+      this.selectedOtherPublisher = null;
+      this.latestSearchID++;
     },
     clearQueueData(): void {
       this.desiredQueueRanks = this.queuedGames;
@@ -372,7 +385,8 @@ export default defineComponent({
       this.queueResult = null;
       this.possibleMasterGames = [];
       this.searchMode = null;
-      this.selectedOtherPublisher = null;
+      this.selectedSlot = null;
+      this.errorInfo = '';
       this.isBusy = false;
     }
   }

@@ -10,11 +10,11 @@
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
 
-import type { PossibleMasterGameYearViewModel, PossibleRoyaleMasterGameViewModel } from '@/api/clients';
+import type { PossibleMasterGameYearViewModel, PossibleRoyaleMasterGameViewModel, QueuedGameViewModel } from '@/api/clients';
 
 export default defineComponent({
   props: {
-    possibleMasterGame: { type: Object as PropType<PossibleMasterGameYearViewModel | PossibleRoyaleMasterGameViewModel>, required: true },
+    possibleMasterGame: { type: Object as PropType<PossibleMasterGameYearViewModel | PossibleRoyaleMasterGameViewModel | QueuedGameViewModel>, required: true },
     stripThat: { type: Boolean, default: false }
   },
   computed: {
