@@ -157,6 +157,7 @@ interface BidGameFormData {
   bidRequestIsBusy: boolean;
   selectedSlot: PublisherSingleSlotRequirementsViewModel | null;
   allowIneligibleSlot: boolean;
+  latestSearchID: number;
 }
 
 export default defineComponent({
@@ -197,7 +198,8 @@ export default defineComponent({
       isBusy: false,
       bidRequestIsBusy: false,
       selectedSlot: null,
-      allowIneligibleSlot: false
+      allowIneligibleSlot: false,
+      latestSearchID: 0
     };
   },
   computed: {
@@ -279,14 +281,27 @@ export default defineComponent({
       this.clearDataExceptSearch();
       this.selectedSlot = slotToSelect;
       this.isBusy = true;
+      const searchID = ++this.latestSearchID;
 
       try {
-        this.possibleMasterGames = await searchAction();
+        const games = await searchAction();
+        if (searchID !== this.latestSearchID) {
+          return;
+        }
+
+        this.possibleMasterGames = games;
         this.searchMode = searchMode;
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Failed to search for games.');
+        const message = getApiErrorMessage(error, 'Failed to search for games.');
+        if (searchID !== this.latestSearchID) {
+          return;
+        }
+
+        this.errorInfo = message;
       } finally {
-        this.isBusy = false;
+        if (searchID === this.latestSearchID) {
+          this.isBusy = false;
+        }
       }
     },
     async bidGame(): Promise<void> {
@@ -343,6 +358,8 @@ export default defineComponent({
     clearData(): void {
       this.clearDataExceptSearch();
       this.searchGameName = '';
+      this.latestSearchID++;
+      this.isBusy = false;
     },
     newGameSelected(): void {
       this.bidResult = null;
