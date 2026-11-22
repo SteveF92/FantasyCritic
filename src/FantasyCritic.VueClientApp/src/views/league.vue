@@ -7,7 +7,7 @@
       Something went wrong with this league. Contact us on Discord or via email for support. Please include the league ID in your message (Linking the URL will do).
     </div>
     <div v-if="errorInfo" class="alert alert-danger" role="alert">{{ errorInfo }}</div>
-    <div v-if="leagueYear">
+    <div v-if="league && leagueYear">
       <div class="row">
         <div class="league-header-row">
           <div class="league-header-flex">
@@ -25,7 +25,7 @@
               <h4 v-if="leagueYear.settings.leagueYearName" class="league-year-name">{{ league.leagueName }}</h4>
               <div class="league-extra-links">
                 <router-link v-if="league.years.length > 2" :to="{ name: 'leagueAllTimeStats', params: { leagueid: league.leagueID } }">All-Time League Stats</router-link>
-                <router-link v-if="royaleGroupData && royaleGroupData.hasRoyaleGroup" :to="royaleGroupLink">View Royale Group</router-link>
+                <router-link v-if="royaleGroupLink" :to="royaleGroupLink">View Royale Group</router-link>
                 <a v-else-if="royaleGroupData && !royaleGroupData.hasRoyaleGroup && league.isManager" href="#" @click.prevent="enableRoyale">Enable Royale</a>
               </div>
             </div>
@@ -95,11 +95,14 @@
         Someone has proposed a trade with you.
         <b-button v-b-modal="'active-trades-modal'" variant="success">View Trades</b-button>
       </b-alert>
-      <b-alert v-if="(leagueYear.userIsActive || league.isManager) && hasActiveTrade" :model-value="true">
+      <b-alert v-if="(leagueYear.userIsActive || isManager) && hasActiveTrade" :model-value="true">
         There are active trades under consideration.
         <b-button v-b-modal="'active-trades-modal'" variant="success">View Trades</b-button>
       </b-alert>
-      <specialAuctionInfo v-for="activeSpecialAuction in leagueYear.activeSpecialAuctions" :key="activeSpecialAuction.masterGameID" :special-auction="activeSpecialAuction"></specialAuctionInfo>
+      <specialAuctionInfo
+        v-for="activeSpecialAuction in leagueYear.activeSpecialAuctions"
+        :key="activeSpecialAuction.masterGameYear.masterGameID"
+        :special-auction="activeSpecialAuction"></specialAuctionInfo>
       <div v-if="playStarted && leagueYear.supportedYear.finished">
         <div v-if="leagueYear.underReview" class="alert alert-danger" role="alert">
           This league has been set to "under review", which allows the league manager to make changes after the year is over.
@@ -111,7 +114,7 @@
           !
         </div>
       </div>
-      <div v-if="!leagueYear.userIsActive && league.userIsInLeague && !league.isManager">
+      <div v-if="!leagueYear.userIsActive && league.userIsInLeague && !isManager">
         <div class="alert alert-warning" role="alert">You are set to inactive for this year.</div>
       </div>
 
@@ -123,7 +126,7 @@
         <createPublisherForm></createPublisherForm>
       </div>
 
-      <div v-if="leagueYear.userIsActive && !userPublisher && league.isManager" class="alert alert-info">
+      <div v-if="leagueYear.userIsActive && !userPublisher && isManager" class="alert alert-info">
         Alternatively, if you want to manage this league without playing in it, you will need to set yourself as "inactive" by going to "Manager Active Players" in the Manage League menu.
       </div>
 
@@ -138,10 +141,10 @@
         <div class="col-xl-9 col-lg-8 col-md-12">
           <leagueYearStandings></leagueYearStandings>
           <div v-if="postDraftPlayable">
-            <gameNews :game-news="gameNews" mode="league" />
+            <gameNews v-if="gameNews" :game-news="gameNews" mode="league" />
             <br />
             <template v-if="biddingAllowed">
-              <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" @publicBidRevealTimeElapsed="revealPublicBids"></bidCountdowns>
+              <bidCountdowns v-if="showPublicRevealCountdown" mode="NextPublic" @publicBidRevealTimeElapsed="refreshLeagueYear"></bidCountdowns>
               <bidCountdowns v-else mode="NextBid"></bidCountdowns>
               <div v-if="leagueYear.publicBiddingGames">
                 <h2>This week's bids</h2>
@@ -158,14 +161,29 @@
   </div>
 </template>
 
-<script>
-import { mapState } from 'pinia';
+<script lang="ts">
+import { defineComponent } from 'vue';
+import { mapActions, mapState } from 'pinia';
+import { RouteLocationRaw } from 'vue-router';
 import * as signalR from '@microsoft/signalr';
-import axios from 'axios';
+import { BModal } from 'bootstrap-vue-next';
 
+import { leagueClient, leagueManagerClient, royaleGroupClient } from '@/api/clients';
+import type {
+  AcceptInviteRequest,
+  CreateLeagueTiedRoyaleGroupRequest,
+  DeleteInviteRequest,
+  DismissManagerMessageRequest,
+  FollowLeagueRequest,
+  JoinWithInviteLinkRequest,
+  ManagerMessageViewModel,
+  RoyaleGroupStatusViewModel,
+  StartDraftRequest
+} from '@/api/clients';
 import { useAuthStore } from '@/store/authStore';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
-import { useLeagueStore } from '@/store/leagueStore';
+import { LeaguePageParams, useLeagueStore } from '@/store/leagueStore';
+import { getApiErrorMessage } from '@/utilities/apiError';
 import { formatDateTime } from '@/utilities/formatters';
 import { makeToast } from '@/utilities/toast';
 import ActiveBids from '@/components/activeBids.vue';
@@ -181,7 +199,17 @@ import DraftCompleteModal from '@/components/modals/draftCompleteModal.vue';
 import StartDraftModal from '@/components/modals/startDraftModal.vue';
 import SpecialAuctionInfo from '@/components/specialAuctionInfo.vue';
 
-export default {
+interface LeagueData {
+  selectedYear: number | null;
+  errorInfo: string;
+  royaleGroupData: RoyaleGroupStatusViewModel | null;
+}
+
+export default defineComponent({
+  setup() {
+    const oneShotText = "This is a 'one shot' league, meaning there are no bids or drops. The draft is final.";
+    return { oneShotText };
+  },
   components: {
     LeagueGameSummary,
     LeagueYearStandings,
@@ -200,11 +228,10 @@ export default {
     leagueid: { type: String, required: true },
     year: { type: Number, required: true }
   },
-  data() {
+  data(): LeagueData {
     return {
       selectedYear: null,
-      errorInfo: null,
-      oneShotText: "This is a 'one shot' league, meaning there are no bids or drops. The draft is final.",
+      errorInfo: '',
       royaleGroupData: null
     };
   },
@@ -216,7 +243,10 @@ export default {
       'forbidden',
       'inviteCode',
       'leagueYear',
+      'requiredLeagueYear',
+      'requiredLeague',
       'userPublisher',
+      'isManager',
       'league',
       'pendingDraft',
       'activeDraft',
@@ -228,7 +258,7 @@ export default {
       'biddingAllowed',
       'postDraftPlayable'
     ]),
-    mostRecentManagerMessage() {
+    mostRecentManagerMessage(): ManagerMessageViewModel | null {
       if (!this.leagueYear || !this.leagueYear.managerMessages || this.leagueYear.managerMessages.length === 0) {
         return null;
       }
@@ -240,37 +270,37 @@ export default {
 
       return mostRecentMessage;
     },
-    showPublicRevealCountdown() {
+    showPublicRevealCountdown(): boolean {
       const publicBiddingSystems = ['SemiPublicBidding', 'SemiPublicBiddingSecretCounterPicks', 'SemiPublicBiddingSemiPublicCounterPicks'];
       if (!this.leagueYear || !publicBiddingSystems.includes(this.leagueYear.settings.pickupSystem)) {
         return false;
       }
 
       const interLeagueStore = useInterLeagueStore();
-      let revealIsNext = interLeagueStore.bidTimes.nextPublicBiddingTime < interLeagueStore.bidTimes.nextBidLockTime;
+      const revealIsNext = interLeagueStore.bidTimes.nextPublicBiddingTime < interLeagueStore.bidTimes.nextBidLockTime;
       return revealIsNext;
     },
-    hasActiveTrade() {
-      if (this.leagueYear.userIsActive) {
-        return this.leagueYear.activeTrades.some((x) => x.counterPartyPublisherID !== this.userPublisher.publisherID);
-      } else if (this.league.isManager) {
-        return this.leagueYear.activeTrades.length > 0;
+    hasActiveTrade(): boolean {
+      if (this.requiredLeagueYear.userIsActive) {
+        return this.requiredLeagueYear.activeTrades.some((x) => x.counterPartyPublisherID !== this.userPublisher?.publisherID);
+      } else if (this.isManager) {
+        return this.requiredLeagueYear.activeTrades.length > 0;
       }
       return false;
     },
-    hasProposedTrade() {
-      if (this.leagueYear.userIsActive) {
-        return this.leagueYear.activeTrades.some((x) => x.counterPartyPublisherID === this.userPublisher.publisherID);
-      } else if (this.league.isManager) {
-        return this.leagueYear.activeTrades.length > 0;
+    hasProposedTrade(): boolean {
+      if (this.requiredLeagueYear.userIsActive) {
+        return this.requiredLeagueYear.activeTrades.some((x) => x.counterPartyPublisherID === this.userPublisher?.publisherID);
+      } else if (this.isManager) {
+        return this.requiredLeagueYear.activeTrades.length > 0;
       }
       return false;
     },
-    mustSetDraftOrder() {
+    mustSetDraftOrder(): boolean {
       return (this.pendingDraft?.readyToSetDraftOrder ?? false) && (this.pendingDraft?.startDraftErrors ?? []).includes('You must set the draft order.');
     },
-    royaleGroupLink() {
-      if (!this.royaleGroupData?.hasRoyaleGroup) return null;
+    royaleGroupLink(): RouteLocationRaw | null {
+      if (!this.royaleGroupData?.royaleGroup) return null;
       const group = this.royaleGroupData.royaleGroup;
       if (this.activeRoyaleQuarter) {
         return { name: 'royaleGroupQuarter', params: { groupid: group.groupID, year: this.activeRoyaleQuarter.year, quarter: this.activeRoyaleQuarter.quarter } };
@@ -284,9 +314,9 @@ export default {
         await this.initializePage();
       }
     },
-    userIsNextInDraft: function (val, oldVal) {
+    userIsNextInDraft(val, oldVal) {
       if (val && val !== oldVal) {
-        document.getElementById('draft-notification-sound').play();
+        (document.getElementById('draft-notification-sound') as InstanceType<typeof HTMLAudioElement> | undefined)?.play();
       }
     }
   },
@@ -295,108 +325,118 @@ export default {
   },
   methods: {
     formatDateTime,
-    async initializePage() {
+    ...mapActions(useLeagueStore, ['refreshLeagueYear']),
+    async initializePage(): Promise<void> {
       this.selectedYear = this.year;
-      const inviteCode = this.$route.query.inviteCode;
-      const leaguePageParams = { leagueID: this.leagueid, year: this.year, inviteCode };
+      let inviteCode = undefined;
+      if (typeof this.$route.query.inviteCode === 'string') {
+        inviteCode = this.$route.query.inviteCode;
+      }
+      const leaguePageParams: LeaguePageParams = { leagueID: this.leagueid, year: this.year, inviteCode };
       const leagueStore = useLeagueStore();
       await leagueStore.initializeLeaguePage(leaguePageParams);
       await this.startHubConnection();
       this.fetchRoyaleGroupForLeague();
     },
-    refreshLeagueYear() {
-      const leagueStore = useLeagueStore();
-      return leagueStore.refreshLeagueYear();
+    changeLeagueYear(newVal: number | number[] | null): void {
+      if (typeof newVal !== 'number') {
+        throw new Error('Invalid year chosen.');
+      }
+      this.$router.push({ name: 'league', params: { leagueID: this.leagueid, year: newVal } });
     },
-    async revealPublicBids() {
-      await this.refreshLeagueYear();
-    },
-    changeLeagueYear(newVal) {
-      const parameters = {
-        leagueid: this.leagueid,
-        year: newVal
+    async acceptInvite(): Promise<void> {
+      const request: AcceptInviteRequest = {
+        leagueID: this.requiredLeagueYear.leagueID
       };
-      this.$router.push({ name: 'league', params: parameters });
+      try {
+        await leagueClient.acceptInvite(request);
+        await this.refreshLeagueYear();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to accept invite');
+      }
     },
-    acceptInvite() {
-      const model = {
-        leagueID: this.leagueYear.leagueID
+    async declineInvite(): Promise<void> {
+      const invite = this.requiredLeague.outstandingInvite;
+      if (!invite) {
+        return;
+      }
+      const request: DeleteInviteRequest = {
+        leagueID: invite.leagueID,
+        inviteID: invite.inviteID
       };
-      axios
-        .post('/api/league/AcceptInvite', model)
-        .then(() => {
-          this.refreshLeagueYear();
-        })
-        .catch(() => {});
+      try {
+        await leagueClient.declineInvite(request);
+        this.$router.push({ name: 'home' });
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to decline invite');
+      }
     },
-    declineInvite() {
-      const model = {
-        inviteID: this.league.outstandingInvite.inviteID
-      };
-      axios
-        .post('/api/league/DeclineInvite', model)
-        .then(() => {
-          this.$router.push({ name: 'home' });
-        })
-        .catch(() => {});
-    },
-    joinWithInviteLink() {
-      const model = {
-        leagueID: this.leagueYear.leagueID,
+    async joinWithInviteLink(): Promise<void> {
+      if (!this.inviteCode) {
+        return;
+      }
+      const request: JoinWithInviteLinkRequest = {
+        leagueID: this.requiredLeagueYear.leagueID,
         inviteCode: this.inviteCode
       };
-      axios
-        .post('/api/league/JoinWithInviteLink', model)
-        .then(() => {
-          this.refreshLeagueYear();
-        })
-        .catch(() => {
-          this.errorInfo = 'Something went wrong joining the league';
-        });
+      try {
+        await leagueClient.joinWithInviteLink(request);
+        await this.refreshLeagueYear();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to join league.');
+      }
     },
-    startDraft() {
-      const model = {
-        leagueID: this.leagueYear.leagueID,
-        year: this.leagueYear.year
+    async startDraft(): Promise<void> {
+      const request: StartDraftRequest = {
+        leagueID: this.requiredLeagueYear.leagueID,
+        year: this.requiredLeagueYear.year
       };
-      axios
-        .post('/api/leagueManager/startDraft', model)
-        .then(async () => {
-          await this.refreshLeagueYear();
-          await this.startHubConnection();
-        })
-        .catch(() => {});
+      try {
+        await leagueManagerClient.startDraft(request);
+        await this.refreshLeagueYear();
+        await this.startHubConnection();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to accept invite');
+      }
     },
-    followLeague() {
-      const model = {
-        leagueID: this.leagueYear.leagueID
+    async followLeague(): Promise<void> {
+      const model: FollowLeagueRequest = {
+        leagueID: this.requiredLeagueYear.leagueID
       };
-      axios
-        .post('/api/league/FollowLeague', model)
-        .then(() => {
-          this.refreshLeagueYear();
-        })
-        .catch(() => {});
+      try {
+        await leagueClient.followLeague(model);
+        await this.refreshLeagueYear();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to follow league.');
+      }
     },
-    unfollowLeague() {
-      const model = {
-        leagueID: this.leagueYear.leagueID
+    async unfollowLeague(): Promise<void> {
+      const model: FollowLeagueRequest = {
+        leagueID: this.requiredLeagueYear.leagueID
       };
-      axios
-        .post('/api/league/UnfollowLeague', model)
-        .then(() => {
-          this.refreshLeagueYear();
-        })
-        .catch(() => {});
+      try {
+        await leagueClient.unfollowLeague(model);
+        await this.refreshLeagueYear();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to unfollow league.');
+      }
     },
-    async dismissRecentManagerMessage() {
-      const model = {
+    async dismissRecentManagerMessage(): Promise<void> {
+      if (!this.mostRecentManagerMessage) {
+        return;
+      }
+      const model: DismissManagerMessageRequest = {
         messageID: this.mostRecentManagerMessage.messageID
       };
-      await axios.post('/api/league/DismissManagerMessage', model);
-      this.refreshLeagueYear();
+
+      try {
+        await leagueClient.dismissManagerMessage(model);
+        await this.refreshLeagueYear();
+      } catch (error) {
+        this.errorInfo = getApiErrorMessage(error, 'Failed to accept invite');
+      }
     },
-    async startHubConnection() {
+    async startHubConnection(): Promise<void> {
       if (!this.leagueYear || !this.activeDraft) {
         return;
       }
@@ -417,39 +457,40 @@ export default {
       });
 
       hubConnection.on('DraftFinished', () => {
-        this.$refs.draftCompleteModalRef.show();
+        (this.$refs.draftCompleteModalRef as InstanceType<typeof BModal> | undefined)?.hide();
       });
 
       hubConnection.onclose(async () => {
         await this.startHubConnection();
       });
     },
-    async copyLeagueID() {
+    async copyLeagueID(): Promise<void> {
       await navigator.clipboard.writeText(this.leagueid);
       makeToast('League ID copied to clipboard.');
     },
-    async fetchRoyaleGroupForLeague() {
+    async fetchRoyaleGroupForLeague(): Promise<void> {
       try {
-        const response = await axios.get(`/api/RoyaleGroup/GetRoyaleGroupForLeague/${this.leagueid}`);
-        this.royaleGroupData = response.data;
+        this.royaleGroupData = await royaleGroupClient.getRoyaleGroupForLeague(this.leagueid);
       } catch {
         this.royaleGroupData = null;
       }
     },
-    async enableRoyale() {
+    async enableRoyale(): Promise<void> {
       try {
-        const response = await axios.post('/api/RoyaleGroup/CreateLeagueTiedRoyaleGroup', {
-          groupName: this.league.leagueName + ' Royale',
+        const request: CreateLeagueTiedRoyaleGroupRequest = {
+          groupName: this.requiredLeague.leagueName + ' Royale',
           leagueID: this.leagueid
-        });
-        this.$router.push({ name: 'royaleGroup', params: { groupid: response.data.groupID } });
+        };
+        const response = await royaleGroupClient.createLeagueTiedRoyaleGroup(request);
+        this.$router.push({ name: 'royaleGroup', params: { groupid: response.groupID } });
       } catch (error) {
-        this.errorInfo = error.response?.data || 'Failed to enable Royale for this league.';
+        this.errorInfo = getApiErrorMessage(error, 'Failed to enable Royale for this league.');
       }
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .league-manager-info {
   display: flex;

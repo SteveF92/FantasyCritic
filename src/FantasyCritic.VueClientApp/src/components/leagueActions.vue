@@ -17,12 +17,12 @@
         <h4>Public Actions</h4>
         <ul class="actions-list">
           <li class="fake-link action">
-            <router-link :to="{ name: 'leagueHistory', params: { leagueid: league.leagueID, year: leagueYear.year } }">See League History</router-link>
+            <router-link :to="{ name: 'leagueHistory', params: { leagueid: requiredLeague.leagueID, year: requiredLeagueYear.year } }">See League History</router-link>
           </li>
-          <li v-b-modal="`leagueOptionsModal_${league.leagueID}-${leagueYear.year}`" class="fake-link action">See League Options</li>
+          <li v-b-modal="`leagueOptionsModal_${requiredLeague.leagueID}-${requiredLeagueYear.year}`" class="fake-link action">See League Options</li>
           <li v-b-modal="'eligibility-overrides-modal'" class="fake-link action">See Eligibility Overrides</li>
           <li v-b-modal="'tag-overrides-modal'" class="fake-link action">See Tag Overrides</li>
-          <li v-if="leagueYear.drafts.length >= 2" v-b-modal="'draft-schedule-modal'" class="fake-link action">See Draft Schedule</li>
+          <li v-if="requiredLeagueYear.drafts.length >= 2" v-b-modal="'draft-schedule-modal'" class="fake-link action">See Draft Schedule</li>
         </ul>
       </div>
       <div v-if="userPublisher">
@@ -33,7 +33,7 @@
             <ul class="actions-list">
               <li class="fake-link action">
                 <router-link :to="{ name: 'publisher', params: { publisherid: userPublisher.publisherID } }">
-                  <template v-if="leagueYear.settings.hasSpecialSlots && !leagueYear.supportedYear.finished">My Publisher Details / Move Games</template>
+                  <template v-if="requiredLeagueYear.settings.hasSpecialSlots && !requiredLeagueYear.supportedYear.finished">My Publisher Details / Move Games</template>
                   <template v-else>My Publisher Details</template>
                 </router-link>
               </li>
@@ -42,7 +42,7 @@
               <li v-if="isPlusUser" v-b-modal="'change-publisher-slogan-form'" class="fake-link action">Change Publisher Slogan</li>
             </ul>
           </li>
-          <template v-if="!leagueYear.supportedYear.finished">
+          <template v-if="!requiredLeagueYear.supportedYear.finished">
             <li v-if="hasPendingOrActiveDraft">
               <strong>Draft Actions</strong>
               <ul class="actions-list">
@@ -71,7 +71,7 @@
         </ul>
       </div>
 
-      <div v-if="league.isManager">
+      <div v-if="requiredLeague.isManager">
         <div v-if="activeDraft?.draftIsActive || activeDraft?.draftIsPaused">
           <h4>Draft Management</h4>
           <ul class="actions-list">
@@ -103,17 +103,17 @@
             <ul class="actions-list">
               <li v-b-modal="'manager-message-modal'" class="fake-link action">Post new Message to League</li>
               <li v-b-modal="'change-league-options-form'" class="fake-link action">Change General League Options</li>
-              <li v-if="!leagueYear.supportedYear.finished" class="fake-link action">
-                <router-link :to="{ name: 'editLeague', params: { leagueid: league.leagueID, year: leagueYear.year } }">Change Year-Specific Options</router-link>
+              <li v-if="!requiredLeagueYear.supportedYear.finished" class="fake-link action">
+                <router-link :to="{ name: 'editLeague', params: { leagueid: requiredLeague.leagueID, year: requiredLeagueYear.year } }">Change Year-Specific Options</router-link>
               </li>
-              <li v-if="!leagueYear.supportedYear.finished" class="fake-link action">
-                <router-link :to="{ name: 'manageDrafts', params: { leagueid: league.leagueID, year: leagueYear.year } }">Manage Drafts</router-link>
+              <li v-if="!requiredLeagueYear.supportedYear.finished" class="fake-link action">
+                <router-link :to="{ name: 'manageDrafts', params: { leagueid: requiredLeague.leagueID, year: requiredLeagueYear.year } }">Manage Drafts</router-link>
               </li>
               <li v-if="readyToSetDraftOrder" v-b-modal="'edit-draft-order-form'" class="fake-link action">Edit Draft Order</li>
               <li v-if="postDraftPlayable" v-b-modal="'special-auctions-modal'" class="fake-link action">Special Auctions</li>
               <li v-b-modal="'transfer-manager-modal'" class="fake-link action">Promote new League Manager</li>
-              <li v-if="firstDraftFinished && leagueYear.supportedYear.finished" v-b-modal="'under-review-modal'" class="fake-link action">
-                {{ leagueYear.underReview ? 'Disable Editing Finished Year' : 'Enable Editing Finished Year' }}
+              <li v-if="firstDraftFinished && requiredLeagueYear.supportedYear.finished" v-b-modal="'under-review-modal'" class="fake-link action">
+                {{ requiredLeagueYear.underReview ? 'Disable Editing Finished Year' : 'Enable Editing Finished Year' }}
               </li>
               <li v-b-modal="'add-new-league-year-form'" class="fake-link action">Start New Year</li>
             </ul>
@@ -129,8 +129,10 @@
               <li v-if="postDraftEditable" v-b-modal="'manager-claim-game-form'" class="fake-link action">Add Publisher Game</li>
               <li v-if="postDraftEditable" v-b-modal="'remove-game-form'" class="fake-link action">Remove Publisher Game</li>
               <li v-if="postDraftPlayable" v-b-modal="'reassign-publisher-modal'" class="fake-link action">Reassign a Publisher</li>
-              <li v-if="!leagueYear.supportedYear.finished && !draftIsActiveOrPaused" v-b-modal="'disconnect-player-modal'" class="fake-link action">Disconnect a Player</li>
-              <li v-if="!leagueYear.supportedYear.finished && !draftIsActiveOrPaused && hasPublisherWithNoPlayer" v-b-modal="'remove-publisher-modal'" class="fake-link action">Remove a Publisher</li>
+              <li v-if="!requiredLeagueYear.supportedYear.finished && !draftIsActiveOrPaused" v-b-modal="'disconnect-player-modal'" class="fake-link action">Disconnect a Player</li>
+              <li v-if="!requiredLeagueYear.supportedYear.finished && !draftIsActiveOrPaused && hasPublisherWithNoPlayer" v-b-modal="'remove-publisher-modal'" class="fake-link action">
+                Remove a Publisher
+              </li>
               <li v-b-modal="'remove-player-modal'" class="fake-link action">Remove a Player From the League</li>
             </ul>
           </li>
@@ -149,12 +151,12 @@
     </div>
     <div>
       <leagueOptionsModal
-        :league="league"
-        :league-year-options="leagueYear.settings"
-        :drafts="leagueYear.drafts"
-        :super-drop-point-cutoff="leagueYear.superDropPointCutoff"
+        :league="requiredLeague"
+        :league-year-options="requiredLeagueYear.settings"
+        :drafts="requiredLeagueYear.drafts"
+        :super-drop-point-cutoff="requiredLeagueYear.superDropPointCutoff"
         :possible-league-options="possibleLeagueOptions"
-        :supported-year="supportedYear"></leagueOptionsModal>
+        :supported-year="requiredSupportedYear"></leagueOptionsModal>
       <eligibilityOverridesModal></eligibilityOverridesModal>
       <tagOverridesModal></tagOverridesModal>
       <draftScheduleModal></draftScheduleModal>
@@ -213,7 +215,9 @@
     </div>
   </div>
 </template>
-<script>
+
+<script lang="ts">
+import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
 
 import { publisherIconIsValid } from '@/globalFunctions';
@@ -269,7 +273,7 @@ import TransferManagerModal from '@/components/modals/transferManagerModal.vue';
 import UnderReviewModal from '@/components/modals/underReviewModal.vue';
 import UndoLastDraftActionModal from '@/components/modals/undoLastDraftActionModal.vue';
 
-export default {
+export default defineComponent({
   components: {
     BidGameForm,
     BidCounterPickForm,
@@ -324,11 +328,11 @@ export default {
     ...mapState(useAuthStore, ['isPlusUser']),
     ...mapState(useInterLeagueStore, ['possibleLeagueOptions']),
     ...mapState(useLeagueStore, [
-      'leagueYear',
+      'requiredLeague',
+      'requiredLeagueYear',
+      'requiredSupportedYear',
       'userPublisher',
-      'league',
       'publishers',
-      'supportedYear',
       'activeDraft',
       'userIsNextInDraft',
       'playStarted',
@@ -342,15 +346,16 @@ export default {
       'postDraftPlayable',
       'postDraftEditable'
     ]),
-    iconIsValid() {
-      return publisherIconIsValid(this.userPublisher.publisherIcon);
+    iconIsValid(): boolean {
+      return publisherIconIsValid(this.userPublisher?.publisherIcon);
     },
-    hasPublisherWithNoPlayer() {
-      return this.publishers.some((x) => !x.userID);
+    hasPublisherWithNoPlayer(): boolean {
+      return (this.publishers ?? []).some((x) => !x.userID);
     }
   }
-};
+});
 </script>
+
 <style scoped>
 .league-actions {
   border: 2px;
