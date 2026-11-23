@@ -101,8 +101,9 @@ Kept or moved:
 
 - **`vue-multiselect` stays.** bootstrap-vue-next has no searchable multi-select, and building one is
   new UI, not a quick win. Its styling can be looked at in step 9 or 10.
-- **`@vee-validate/i18n`** is left for after this step, to be considered separately. Six rules' messages
-  would replace it.
+- **vee-validate stays, with `@vee-validate/rules` and `@vee-validate/i18n`.** It's the usual choice in
+  Vue, and i18n is its documented source of messages for string rules. What needs fixing is how we use
+  it, which goes on step 3's checklist.
 - **Stylesheet order** moves to step 9. `bootstrap-vue-next.css` is imported in `main.ts` after `App`, so
   it loads after our overrides and site CSS. Putting it straight after Bootstrap is the clear order,
   but it could change what wins, and there's no screenshot check until step 4.
@@ -124,6 +125,15 @@ what later steps did that earlier ones don't. For example: disabling a submit bu
 runs, clearing errors when a modal opens or closes, rejecting names of only spaces, `type="number"` for
 numbers, labels pointing at their inputs, ignoring stale responses. The result is the checklist the page
 pass (step 11) applies to each page. Anything that's a straight search-and-fix gets fixed here.
+
+Already on the list, from step 1, for the 23 `ValidationField`s in 13 files:
+
+- **A readable `label`** on each field. Messages use the field's `name`, so bids say "The bidAmount field"
+  and draft settings "The gamesToDraft-0 field".
+- **One statement of the rules.** Only 5 files have a `ValidationForm`; the other 8 show vee-validate's
+  messages but decide whether to submit with their own checks (`leagueYearIsValid`, `canPlaceBid`). Wrap
+  them in a `ValidationForm` and disable submit on its `meta.valid`, unless a rule can't be expressed there.
+- **Errors tied to their inputs** with `aria-describedby`, as only 2 fields do today.
 
 ### Phase B: foundations
 
