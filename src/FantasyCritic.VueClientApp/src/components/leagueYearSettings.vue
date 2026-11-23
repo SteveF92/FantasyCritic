@@ -114,7 +114,7 @@
           For more details, check out the
           <a href="/faq#dropping-games" target="_blank" class="text-secondary">FAQ.</a>
         </div>
-        <table class="table table-small table-bordered">
+        <table class="table table-sm table-bordered">
           <thead>
             <tr>
               <th scope="col"></th>

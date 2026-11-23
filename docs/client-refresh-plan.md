@@ -130,10 +130,26 @@ Decided:
 - **Touch drag waits for a long press** (Sortable's `delay` with `delayOnTouchOnly`). With the lists the
   full width of a phone, a drag that starts on touch would take every swipe over them, and the page
   couldn't scroll. The mouse drags at once, as now.
-- **The tag row is a flex row** (icon, badge, button), so a badge no longer wraps under its icon.
+- **The tag row is a flex row** (icon, badge, button), so a badge no longer wraps under its icon. A long
+  badge's text wraps inside it instead, so the button stays in the row.
+- **The drop limits table** on the same pages was the other thing wider than a phone: it had
+  `table-small`, which isn't a Bootstrap class, so it kept the full cell padding. It's `table-sm` now.
 
-Tests: a Vitest component test for the buttons, and a UI test that bans and allows a tag on a phone-sized
-Create League page, checks the page doesn't scroll sideways, and creates the league with the change.
+Tests: a Vitest component test for the buttons; a UI test that bans and allows a tag on a phone-sized
+Create League page, checks the page doesn't scroll sideways, and creates the league with the change; and a
+UI test that drags a tag between the lists with the mouse.
+
+As built:
+
+- `delay-on-touch-only` has to be bound (`:delay-on-touch-only="true"`). vue-draggable-plus passes its
+  attributes to Sortable as they are, so the bare attribute arrives as `""`, which is false, and the mouse
+  waited for the long press too.
+- `Ui.DragAsync` releases just inside the target's top edge. That reorders one list but doesn't move a
+  tag into the other, so the drag test has its own helper that rests over the middle of a row first. A
+  drag through the browser pane's tool doesn't start a native drag at all, so it can't check this by hand.
+- **`CreateLeagueTests` had been failing since 2026-11-15**, when the create page gained its "Select
+  Preset" step and lost its "Game Settings" heading. `StartAsync` now presses Select Preset and waits for
+  "Select a different preset".
 
 #### 3. List the late conventions
 
@@ -246,3 +262,9 @@ Bugs found, and every deliberate change in behaviour or appearance.
 
 | Step | Where | What | Fix |
 |---|---|---|---|
+| 2 | `leagueTagSelector.vue` | At phone width the tag lists sat side by side and the create and edit pages scrolled sideways (first pass, step 10) | The lists stack below `md` |
+| 2 | `leagueTagSelector.vue` | From `md` up the two lists are now equal widths; each was as wide as its longest badge | Visible change |
+| 2 | `leagueTagSelector.vue` | Each tag row has a Ban or Allow button, so rows are a few pixels taller; at phone width the longer badges wrap onto two lines | New control |
+| 2 | `leagueTagSelector.vue` | On touch, a drag starts after a long press, so a swipe over the lists scrolls the page | Behaviour change on touch only |
+| 2 | `CreateLeagueTests` | Every test failed at its start since the "Select Preset" step (2026-11-15): it waited for a "Game Settings" heading that no longer exists | `StartAsync` presses Select Preset |
+| 2 | `leagueYearSettings.vue` | The drop limits table's `table-small` isn't a class, so the table kept full padding and was 341px wide in a 275px column at phone width | `table-sm`: smaller cell padding at every width |

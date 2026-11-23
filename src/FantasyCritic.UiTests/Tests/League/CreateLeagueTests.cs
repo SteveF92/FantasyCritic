@@ -16,10 +16,10 @@ public sealed class CreateLeagueTests : UiTestBase
 {
     private static string NewLeagueName() => $"UI League {Guid.NewGuid():N}"[..20];
 
-    private async Task<(IPage Page, TestUser User, string LeagueName, int Year)> StartAsync(string gameMode)
+    private async Task<(IPage Page, TestUser User, string LeagueName, int Year)> StartAsync(string gameMode, ViewportSize? viewport = null)
     {
         var user = await NewUserAsync();
-        var page = await NewSignedInPageAsync(user, "/createLeague");
+        var page = await NewSignedInPageAsync(user, "/createLeague", viewport);
         var leagueName = NewLeagueName();
 
         await page.Locator("#leagueName").FillAsync(leagueName);
@@ -29,7 +29,8 @@ public sealed class CreateLeagueTests : UiTestBase
 
         await page.Locator("#intendedNumberOfPlayers").FillAsync("4");
         await page.Locator("#gameMode").SelectOptionAsync(new SelectOptionValue { Label = gameMode });
-        await Expect(Ui.Heading(page, "Game Settings")).ToBeVisibleAsync();
+        await page.GetByRole(AriaRole.Button, new() { Name = "Select Preset" }).ClickAsync();
+        await Expect(page.GetByRole(AriaRole.Button, new() { Name = "Select a different preset" })).ToBeVisibleAsync();
         return (page, user, leagueName, year);
     }
 
@@ -134,6 +135,63 @@ public sealed class CreateLeagueTests : UiTestBase
 
         await page.Locator("#standardGames").FillAsync("12");
         await Expect(create).ToBeEnabledAsync();
+    }
+
+    [Test]
+    public async Task TagButtonsMoveTagsOnAPhone()
+    {
+        var (page, user, leagueName, year) = await StartAsync("Standard", new ViewportSize { Width = 375, Height = 812 });
+        await Expect(page.GetByRole(AriaRole.Button, new() { Name = "Allow Remaster" })).ToBeVisibleAsync();
+        var scrollsSideways = await page.EvaluateAsync<bool>("() => document.documentElement.scrollWidth > document.documentElement.clientWidth");
+        Assert.That(scrollsSideways, Is.False);
+
+        await page.GetByRole(AriaRole.Button, new() { Name = "Ban Free to Play" }).ClickAsync();
+        await page.GetByRole(AriaRole.Button, new() { Name = "Allow Remaster" }).ClickAsync();
+        await Expect(page.GetByRole(AriaRole.Button, new() { Name = "Allow Free to Play" })).ToBeVisibleAsync();
+        await Expect(page.GetByRole(AriaRole.Button, new() { Name = "Ban Remaster" })).ToBeVisibleAsync();
+
+        await CreateAsTestLeagueAsync(page, leagueName, year);
+
+        var banned = (await user.Session.League.GetLeagueYearAsync(LeagueIDFrom(page), year, null)).Settings.Tags.Banned;
+        using (Assert.EnterMultipleScope())
+        {
+            Assert.That(banned, Does.Contain("FreeToPlay"));
+            Assert.That(banned, Does.Not.Contain("Remaster"));
+        }
+    }
+
+    [Test]
+    public async Task TagsDragBetweenLists()
+    {
+        var (page, _, _, _) = await StartAsync("Standard");
+        // A tag's row is its button's parent.
+        var remaster = page.GetByRole(AriaRole.Button, new() { Name = "Allow Remaster" }).Locator("..");
+        var virtualReality = page.GetByRole(AriaRole.Button, new() { Name = "Ban Virtual Reality" }).Locator("..");
+
+        await DragRowOntoRowAsync(page, remaster, virtualReality);
+
+        await Expect(page.GetByRole(AriaRole.Button, new() { Name = "Ban Remaster" })).ToBeVisibleAsync();
+    }
+
+    /// <summary>
+    /// Ui.DragAsync drops just inside the target's top edge, which is enough to reorder one list but not for Sortable to
+    /// move a row into another: the pointer has to rest over the middle of a row there for a moment. The drag starts at
+    /// the row's left edge, clear of its badge and button.
+    /// </summary>
+    private static async Task DragRowOntoRowAsync(IPage page, ILocator source, ILocator target)
+    {
+        await source.ScrollIntoViewIfNeededAsync();
+        var from = await source.BoundingBoxAsync() ?? throw new InvalidOperationException("The drag source isn't visible.");
+        var to = await target.BoundingBoxAsync() ?? throw new InvalidOperationException("The drop target isn't visible.");
+
+        await page.Mouse.MoveAsync(from.X + 5, from.Y + (from.Height / 2));
+        await page.Mouse.DownAsync();
+        await page.Mouse.MoveAsync(from.X + 10, from.Y + (from.Height / 2), new() { Steps = 5 });
+        await page.Mouse.MoveAsync(to.X + (to.Width / 2), to.Y + (to.Height / 2), new() { Steps = 30 });
+        await page.WaitForTimeoutAsync(300);
+        await page.Mouse.MoveAsync(to.X + (to.Width / 2), to.Y + (to.Height / 2) - 5, new() { Steps = 5 });
+        await page.WaitForTimeoutAsync(300);
+        await page.Mouse.UpAsync();
     }
 
     [Test]

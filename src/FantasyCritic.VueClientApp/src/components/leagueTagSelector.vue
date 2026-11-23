@@ -18,26 +18,34 @@
     <div v-show="showPortDanger" class="alert alert-danger">
       Please, please, don't allow the tag 'Port'. These games very very rarely get new OpenCritic pages. You're free to allow the tag, but please be aware that this is an "unsupported" feature.
     </div>
-    <div class="tag-flex-container">
-      <div class="tag-flex-drag">
+    <div class="row g-2">
+      <div class="col-12 col-md-6">
         <div class="tag-drag-list bg-secondary">
           <span class="tag-header">Banned Tags</span>
-          <VueDraggable v-model="banned" class="tag-drag-items" group="tags">
+          <VueDraggable v-model="banned" class="tag-drag-items" group="tags" :delay="touchDragDelay" :delay-on-touch-only="true">
             <div v-for="element in banned" :key="element" class="tag-drag-item">
               <font-awesome-icon icon="bars" />
               <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
+              <b-button size="sm" variant="secondary" class="ms-auto" @click="allowTag(element)">
+                Allow
+                <span class="visually-hidden">{{ readableName(element) }}</span>
+              </b-button>
             </div>
           </VueDraggable>
         </div>
       </div>
 
-      <div class="tag-flex-drag">
+      <div class="col-12 col-md-6">
         <div class="tag-drag-list bg-secondary">
           <span class="tag-header">Allowed Tags</span>
-          <VueDraggable v-model="allowed" class="tag-drag-items" group="tags">
+          <VueDraggable v-model="allowed" class="tag-drag-items" group="tags" :delay="touchDragDelay" :delay-on-touch-only="true">
             <div v-for="element in allowed" :key="element" class="tag-drag-item">
               <font-awesome-icon icon="bars" />
               <masterGameTagBadge :tag-name="element"></masterGameTagBadge>
+              <b-button size="sm" variant="secondary" class="ms-auto" @click="banTag(element)">
+                Ban
+                <span class="visually-hidden">{{ readableName(element) }}</span>
+              </b-button>
             </div>
           </VueDraggable>
         </div>
@@ -64,10 +72,16 @@ interface LeagueTagSelectorData {
   initialValue: TagLists;
 }
 
-function initializeTagLists(tagLists: LeagueTagOptionsViewModel): TagLists {
-  const tagNames = useInterLeagueStore()
+const touchDragDelay = 300;
+
+function selectableTagNames(): string[] {
+  return useInterLeagueStore()
     .allTags.filter((x) => !x.systemTagOnly)
     .map((x) => x.name);
+}
+
+function initializeTagLists(tagLists: LeagueTagOptionsViewModel): TagLists {
+  const tagNames = selectableTagNames();
 
   return {
     banned: tagNames.filter((x) => tagLists.banned.includes(x)),
@@ -99,6 +113,9 @@ export default defineComponent({
   emits: {
     'update:modelValue': (_value: LeagueTagOptionsViewModel) => true
   },
+  setup() {
+    return { touchDragDelay };
+  },
   data(): LeagueTagSelectorData {
     const initialValue = initializeTagLists(this.modelValue);
     return {
@@ -111,12 +128,7 @@ export default defineComponent({
     required: computeModelValue('required'),
     allowed: {
       get(): string[] {
-        const tagOptions = useInterLeagueStore()
-          .allTags.filter((x) => !x.systemTagOnly)
-          .map((x) => x.name);
-
-        const allowedTags = tagOptions.filter((x) => !this.banned.includes(x));
-        return allowedTags;
+        return selectableTagNames().filter((x) => !this.banned.includes(x));
       },
       set(_allowedValues: string[]) {
         //There's actually nothing for us to do here, because we don't send allowed values to the server.
@@ -156,6 +168,15 @@ export default defineComponent({
     },
     resetValues(): void {
       this.$emit('update:modelValue', { banned: this.initialValue.banned, required: [] });
+    },
+    banTag(tagName: string): void {
+      this.banned = [...this.banned, tagName];
+    },
+    allowTag(tagName: string): void {
+      this.banned = this.banned.filter((x) => x !== tagName);
+    },
+    readableName(tagName: string): string {
+      return useInterLeagueStore().allTags.find((x) => x.name === tagName)?.readableName ?? tagName;
     }
   }
 });
@@ -168,13 +189,6 @@ export default defineComponent({
   margin-bottom: 10px;
 }
 
-.tag-flex-container {
-  display: flex;
-}
-.tag-flex-drag {
-  flex-grow: 1;
-  margin: 3px;
-}
 .tag-drag-list {
   border-radius: 10px;
   padding: 5px;
@@ -185,11 +199,20 @@ export default defineComponent({
 .tag-drag-item {
   margin: 10px;
   position: relative;
-  display: block;
-  padding: 10px 15px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 4px 15px;
   margin-bottom: -1px;
   background-color: #5b6977 !important;
   border: 1px solid #ddd;
+}
+.tag-drag-item :deep(.badge) {
+  white-space: normal;
+  text-align: start;
+}
+.tag-drag-item .btn {
+  flex-shrink: 0;
 }
 .tag-header {
   padding-left: 10px;
