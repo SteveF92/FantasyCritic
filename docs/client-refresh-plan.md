@@ -115,8 +115,25 @@ Kept or moved:
 #### 2. League tag selector on phones
 
 At phone width the create pages scroll sideways because the two tag columns don't fit (logged in the
-first pass, step 10). Stack the lists below `md`. Dragging between lists is awkward on touch even once
-it fits, so consider a tap-to-move control alongside the drag.
+first pass, step 10). `leagueTagSelector` is used once, in `leagueYearSettings`, so this covers both
+Create League and Edit League. At 375px the page is 550px wide: the lists sit side by side in a flex
+row and size to their badges, and the longer badges wrap under the drag icon.
+
+Decided:
+
+- **Stack the lists below `md`:** a `row g-2` with a `col-12 col-md-6` for each list. From `md` up they
+  stay side by side, but at equal widths; today each list is as wide as its longest badge.
+- **A Ban or Allow button on every tag**, at the end of its row, at every width. It's the way to move a
+  tag on a phone, and drag and drop has no keyboard equivalent either. Its accessible name includes the
+  tag ("Ban Port"). A banned tag goes on the end of the banned list, as a drop there would; the allowed
+  list is always in the store's order, as now.
+- **Touch drag waits for a long press** (Sortable's `delay` with `delayOnTouchOnly`). With the lists the
+  full width of a phone, a drag that starts on touch would take every swipe over them, and the page
+  couldn't scroll. The mouse drags at once, as now.
+- **The tag row is a flex row** (icon, badge, button), so a badge no longer wraps under its icon.
+
+Tests: a Vitest component test for the buttons, and a UI test that bans and allows a tag on a phone-sized
+Create League page, checks the page doesn't scroll sideways, and creates the league with the change.
 
 #### 3. List the late conventions
 
