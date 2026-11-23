@@ -14,13 +14,13 @@
         <div class="form-group">
           <label for="leagueName" class="control-label">League Name</label>
           <ValidationField v-slot="{ errors }" :model-value="leagueName" name="League Name" rules="required">
-            <input id="leagueName" v-model="leagueName" name="leagueName" type="text" class="form-control input" />
-            <span class="text-danger">{{ errors[0] }}</span>
+            <input id="leagueName" v-model="leagueName" name="leagueName" type="text" class="form-control input" aria-describedby="leagueName-error" />
+            <span id="leagueName-error" class="text-danger">{{ errors[0] }}</span>
           </ValidationField>
         </div>
         <hr />
         <div class="form-group">
-          <label for="intialYear" class="control-label">Year to Play</label>
+          <label for="initialYear" class="control-label">Year to Play</label>
           <p>The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the December before the new year begins.</p>
           <select id="initialYear" v-model="initialYear" class="form-control" :disabled="presetSelected">
             <option v-for="possibleYear in possibleLeagueOptions.openYears" :key="possibleYear" :value="possibleYear">{{ possibleYear }}</option>

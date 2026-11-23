@@ -3,7 +3,7 @@
     <b-modal id="propose-trade-form" ref="proposeTradeFormRef" size="lg" title="Propose Trade" @hidden="clearData">
       <div class="form-group">
         <label for="counterParty" class="control-label">Publisher to trade with</label>
-        <b-form-select v-model="counterParty">
+        <b-form-select id="counterParty" v-model="counterParty">
           <option v-for="publisher in otherPublishers" :key="publisher.publisherID" :value="publisher">
             {{ publisher.publisherName }}
           </option>
@@ -25,9 +25,9 @@
                     </option>
                   </b-form-select>
 
-                  <div class="close-button fake-link" @click="removeProposerGame(item.id)">
+                  <button type="button" class="font-awesome-button" :aria-label="`Remove offered game ${index + 1}`" @click="removeProposerGame(item.id)">
                     <font-awesome-icon icon="times" size="lg" :style="{ color: '#414141' }" />
-                  </div>
+                  </button>
                 </div>
               </div>
               <b-button variant="secondary" class="full-width-button" @click="addGame(proposerPublisherGames)">Add Game</b-button>
@@ -46,9 +46,9 @@
                     </option>
                   </b-form-select>
 
-                  <div class="close-button fake-link" @click="removeCounterPartyGame(item.id)">
+                  <button type="button" class="font-awesome-button" :aria-label="`Remove received game ${index + 1}`" @click="removeCounterPartyGame(item.id)">
                     <font-awesome-icon icon="times" size="lg" :style="{ color: '#414141' }" />
-                  </div>
+                  </button>
                 </div>
               </div>
               <b-button variant="secondary" class="full-width-button" @click="addGame(counterPartyPublisherGames)">Add Game</b-button>
@@ -68,7 +68,7 @@
 
         <div class="form-group">
           <label for="messageText" class="control-label">Message (All players will see this message.)</label>
-          <textarea v-model="message" class="form-control" rows="3"></textarea>
+          <textarea id="messageText" v-model="message" class="form-control" rows="3"></textarea>
         </div>
       </div>
 

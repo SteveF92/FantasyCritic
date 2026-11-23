@@ -8,7 +8,7 @@
       </div>
     </div>
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Change Name" :disabled="!newPublisherName" @click="changePublisherName" />
+      <input type="submit" class="btn btn-primary" value="Change Name" :disabled="!newPublisherName.trim()" @click="changePublisherName" />
     </template>
   </b-modal>
 </template>
@@ -46,7 +46,7 @@ export default defineComponent({
       this.errorInfo = '';
       const request: ChangeRoyalePublisherNameRequest = {
         publisherID: this.userRoyalePublisher.publisherID,
-        publisherName: this.newPublisherName
+        publisherName: this.newPublisherName.trim()
       };
       try {
         await royaleClient.changePublisherName(request);

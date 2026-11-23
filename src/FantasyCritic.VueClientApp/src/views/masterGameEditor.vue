@@ -38,8 +38,8 @@
               <div class="form-group">
                 <label for="gameName" class="control-label">Game Name</label>
                 <ValidationField v-slot="{ errors }" :model-value="form.gameName" name="Game Name" rules="required">
-                  <input id="gameName" v-model="form.gameName" name="Game Name" type="text" class="form-control input" />
-                  <span class="text-danger">{{ errors[0] }}</span>
+                  <input id="gameName" v-model="form.gameName" name="Game Name" type="text" class="form-control input" aria-describedby="gameName-error" />
+                  <span id="gameName-error" class="text-danger">{{ errors[0] }}</span>
                 </ValidationField>
               </div>
 
@@ -59,8 +59,8 @@
               <div class="form-group">
                 <label for="minimumReleaseDate" class="control-label">Minimum Release Date</label>
                 <ValidationField v-slot="{ errors }" :model-value="form.minimumReleaseDate" name="Minimum Release Date" rules="required">
-                  <dateInput id="minimumReleaseDate" v-model="form.minimumReleaseDate" />
-                  <span class="text-danger">{{ errors[0] }}</span>
+                  <dateInput id="minimumReleaseDate" v-model="form.minimumReleaseDate" aria-describedby="minimumReleaseDate-error" />
+                  <span id="minimumReleaseDate-error" class="text-danger">{{ errors[0] }}</span>
                 </ValidationField>
               </div>
               <div class="form-group">

@@ -81,7 +81,8 @@ public sealed class ConferenceTests : UiTestBase
         var year = await yearSelect.Locator("option").First.GetAttributeAsync("value");
         await yearSelect.SelectOptionAsync(year!);
         await page.Locator("#intendedNumberOfPlayers").FillAsync("4");
-        await Expect(Ui.Heading(page, "Game Settings")).ToBeVisibleAsync();
+        await page.GetByRole(AriaRole.Button, new() { Name = "Select Preset" }).ClickAsync();
+        await Expect(page.GetByRole(AriaRole.Button, new() { Name = "Select a different preset" })).ToBeVisibleAsync();
 
         await page.GetByRole(AriaRole.Button, new() { Name = "Create Conference" }).ClickAsync();
         await Expect(page).ToHaveURLAsync(new Regex($"/conference/[0-9a-f-]{{36}}/{year}$"));

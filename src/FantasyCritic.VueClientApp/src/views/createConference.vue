@@ -13,8 +13,8 @@
         <div class="form-group">
           <label for="conferenceName" class="control-label">Conference Name</label>
           <ValidationField v-slot="{ errors }" :model-value="conferenceName" name="Conference Name" rules="required">
-            <input id="conferenceName" v-model="conferenceName" name="conferenceName" type="text" class="form-control input" />
-            <span class="text-danger">{{ errors[0] }}</span>
+            <input id="conferenceName" v-model="conferenceName" name="conferenceName" type="text" class="form-control input" aria-describedby="conferenceName-error" />
+            <span id="conferenceName-error" class="text-danger">{{ errors[0] }}</span>
           </ValidationField>
         </div>
 
@@ -26,13 +26,13 @@
         <div class="form-group">
           <label for="primaryLeagueName" class="control-label">Primary League Name</label>
           <ValidationField v-slot="{ errors }" :model-value="primaryLeagueName" name="Primary League Name" rules="required">
-            <input id="primaryLeagueName" v-model="primaryLeagueName" name="primaryLeagueName" type="text" class="form-control input" />
-            <span class="text-danger">{{ errors[0] }}</span>
+            <input id="primaryLeagueName" v-model="primaryLeagueName" name="primaryLeagueName" type="text" class="form-control input" aria-describedby="primaryLeagueName-error" />
+            <span id="primaryLeagueName-error" class="text-danger">{{ errors[0] }}</span>
           </ValidationField>
         </div>
         <hr />
         <div class="form-group">
-          <label for="intialYear" class="control-label">Year to Play</label>
+          <label for="initialYear" class="control-label">Year to Play</label>
           <p>The best time to start a game is at the beginning of the year, the earlier the better. You are free to start playing as early as the December before the new year begins.</p>
           <select id="initialYear" v-model="initialYear" class="form-control" :disabled="presetSelected">
             <option v-for="possibleYear in possibleLeagueOptions.openYears" :key="possibleYear" :value="possibleYear">{{ possibleYear }}</option>

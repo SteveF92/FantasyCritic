@@ -56,16 +56,16 @@
       <h3 class="selected-game text-black">Edit Bid:</h3>
       <masterGameSummary :master-game="bidBeingEdited.masterGame"></masterGameSummary>
       <div class="form-group">
-        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(requiredUserPublisher.budget, 0) }})</label>
+        <label for="editBidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(requiredUserPublisher.budget, 0) }})</label>
 
-        <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" rules="required|integer">
-          <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
-          <span class="text-danger">{{ errors[0] }}</span>
+        <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" label="Bid Amount" rules="required|integer">
+          <input id="editBidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" aria-describedby="editBidAmount-error" />
+          <span id="editBidAmount-error" class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
       <div v-if="!bidBeingEdited.counterPick" class="form-group">
-        <label for="conditionalDrop" class="control-label">Conditional Drop</label>
-        <b-form-select v-model="conditionalDrop">
+        <label for="editBidConditionalDrop" class="control-label">Conditional Drop</label>
+        <b-form-select id="editBidConditionalDrop" v-model="conditionalDrop">
           <template #first>
             <option :value="null">None</option>
           </template>
@@ -78,8 +78,8 @@
         </div>
       </div>
       <div v-if="requiredLeagueYear.settings.hasSpecialSlots" class="plain-check">
-        <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
-        <label class="plain-check-label">
+        <input id="editBidAllowIneligibleSlot" v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
+        <label for="editBidAllowIneligibleSlot" class="plain-check-label">
           Allow bid to succeed even if there are no slots this game is eligible in.
           <font-awesome-icon v-b-popover.hover.focus="allowIneligibleText" icon="info-circle" />
         </label>

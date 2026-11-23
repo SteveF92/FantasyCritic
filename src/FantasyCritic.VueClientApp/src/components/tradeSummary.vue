@@ -105,7 +105,7 @@
             <div v-if="canVote" class="alert alert-secondary">
               <h5>Vote</h5>
               <div class="form-group">
-                <input v-model="comment" type="text" class="form-control" aria-describedby="emailHelp" placeholder="Enter a comment (Optional)" />
+                <input v-model="comment" type="text" class="form-control" aria-label="Comment" placeholder="Enter a comment (Optional)" />
               </div>
               <b-button variant="success" @click="vote(true)">Vote Approve</b-button>
               <b-button variant="danger" @click="vote(false)">Vote Reject</b-button>

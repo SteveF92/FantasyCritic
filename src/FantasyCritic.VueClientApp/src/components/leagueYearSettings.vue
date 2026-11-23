@@ -6,8 +6,8 @@
         <p>This is the total number of games that each player will have on their roster.</p>
 
         <ValidationField v-slot="{ errors }" :model-value="standardGames" name="Total Number of Games" rules="required|min_value:1|max_value:50|integer">
-          <input id="standardGames" v-model="standardGames" name="Total Number of Games" type="number" class="form-control input" />
-          <span class="text-danger">{{ errors[0] }}</span>
+          <input id="standardGames" v-model="standardGames" name="Total Number of Games" type="number" class="form-control input" aria-describedby="standardGames-error" />
+          <span id="standardGames-error" class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
 
@@ -19,8 +19,8 @@
         </p>
 
         <ValidationField v-slot="{ errors }" :model-value="counterPicks" name="Number of Counter picks" rules="required|max_value:50|integer">
-          <input id="counterPicks" v-model="counterPicks" name="Number of Counter picks" type="number" class="form-control input" />
-          <span class="text-danger">{{ errors[0] }}</span>
+          <input id="counterPicks" v-model="counterPicks" name="Number of Counter picks" type="number" class="form-control input" aria-describedby="counterPicks-error" />
+          <span id="counterPicks-error" class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
 
@@ -78,8 +78,15 @@
         <div class="form-group">
           <label for="minimumBidAmount" class="control-label">Minimum Bid Amount</label>
           <ValidationField v-slot="{ errors }" :model-value="minimumBidAmount" name="Minimum Bid Amount" rules="required|min_value:0|max_value:100|integer">
-            <input id="minimumBidAmount" v-model="minimumBidAmount" name="Minimum Bid Amount" type="number" class="form-control input" :disabled="!enableBids" />
-            <span class="text-danger">{{ errors[0] }}</span>
+            <input
+              id="minimumBidAmount"
+              v-model="minimumBidAmount"
+              name="Minimum Bid Amount"
+              type="number"
+              class="form-control input"
+              :disabled="!enableBids"
+              aria-describedby="minimumBidAmount-error" />
+            <span id="minimumBidAmount-error" class="text-danger">{{ errors[0] }}</span>
           </ValidationField>
           <p>The minimum dollar amount that a player can bid on a game. The default is $0. A minimum of $1 is probably the best option other than zero, and I don't recommend going above $10</p>
         </div>
@@ -99,7 +106,7 @@
         <hr />
         <h3>Trade Settings</h3>
         <label for="tradingSystem" class="control-label">Trading System</label>
-        <b-form-select v-model="tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
+        <b-form-select id="tradingSystem" v-model="tradingSystem" :options="possibleLeagueOptions.tradingSystems"></b-form-select>
       </div>
 
       <div v-show="gameMode !== 'One Shot'">
@@ -132,8 +139,14 @@
                   :model-value="willReleaseDroppableGames"
                   name="Will Release Droppable Games"
                   rules="required|max_value:100|integer">
-                  <input id="willReleaseDroppableGames" v-model="willReleaseDroppableGames" name="Will Release Droppable Games" type="number" class="form-control input drop-number" />
-                  <span class="text-danger">{{ errors[0] }}</span>
+                  <input
+                    id="willReleaseDroppableGames"
+                    v-model="willReleaseDroppableGames"
+                    name="Will Release Droppable Games"
+                    type="number"
+                    class="form-control input drop-number"
+                    aria-describedby="willReleaseDroppableGames-error" />
+                  <span id="willReleaseDroppableGames-error" class="text-danger">{{ errors[0] }}</span>
                 </ValidationField>
               </td>
               <td>
@@ -149,8 +162,14 @@
                   :model-value="willNotReleaseDroppableGames"
                   name="Will Not Release Droppable Games"
                   rules="required|max_value:100|integer">
-                  <input id="willNotReleaseDroppableGames" v-model="willNotReleaseDroppableGames" name="Will Not Release Droppable Games" type="number" class="form-control input drop-number" />
-                  <span class="text-danger">{{ errors[0] }}</span>
+                  <input
+                    id="willNotReleaseDroppableGames"
+                    v-model="willNotReleaseDroppableGames"
+                    name="Will Not Release Droppable Games"
+                    type="number"
+                    class="form-control input drop-number"
+                    aria-describedby="willNotReleaseDroppableGames-error" />
+                  <span id="willNotReleaseDroppableGames-error" class="text-danger">{{ errors[0] }}</span>
                 </ValidationField>
               </td>
               <td>
@@ -171,8 +190,9 @@
                     v-model="unrestrictedReleaseStatusDroppableGames"
                     name="Unrestricted Droppable Games"
                     type="number"
-                    class="form-control input drop-number" />
-                  <span class="text-danger">{{ errors[0] }}</span>
+                    class="form-control input drop-number"
+                    aria-describedby="unrestrictedReleaseStatusDroppableGames-error" />
+                  <span id="unrestrictedReleaseStatusDroppableGames-error" class="text-danger">{{ errors[0] }}</span>
                 </ValidationField>
               </td>
               <td>
@@ -240,7 +260,7 @@
         <div class="alert alert-info">We recommend you keep these settings to the default options.</div>
         <div class="form-group">
           <label for="scoringSystem" class="control-label">90+ Points Rule</label>
-          <b-form-select v-model="scoringSystem" :options="possibleLeagueOptions.scoringSystems"></b-form-select>
+          <b-form-select id="scoringSystem" v-model="scoringSystem" :options="possibleLeagueOptions.scoringSystems"></b-form-select>
           <p>
             This option controls how many fantasy points each critic score point over 90 counts as. To be truthful, any option other than 1 is a bit of a "legacy feature", and I'd recommend you stick
             with 1.
@@ -248,12 +268,12 @@
         </div>
         <div class="form-group">
           <label for="tiebreakSystem" class="control-label">Tiebreak System</label>
-          <b-form-select v-model="tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
+          <b-form-select id="tiebreakSystem" v-model="tiebreakSystem" :options="possibleLeagueOptions.tiebreakSystems"></b-form-select>
           <p>This setting handles how ties on bids are handled. We recommend you stick with 'Lowest Projected Points', as it keeps leagues more competitive.</p>
         </div>
         <div class="form-group">
           <label for="releaseSystem" class="control-label">Game Release Rule</label>
-          <b-form-select v-model="releaseSystem" :options="possibleLeagueOptions.releaseSystems"></b-form-select>
+          <b-form-select id="releaseSystem" v-model="releaseSystem" :options="possibleLeagueOptions.releaseSystems"></b-form-select>
           <p>
             This setting handles whether or not a game must be officially released in order to get points. By default, they do. However, recently, more and more games have had "strange" release
             situations such as
@@ -267,7 +287,7 @@
         </div>
         <div class="form-group">
           <label for="ineligibleGameSystem" class="control-label">Handling of Ineligible Games on Roster</label>
-          <b-form-select v-model="ineligibleGameSystem" :options="possibleLeagueOptions.ineligibleGameSystems"></b-form-select>
+          <b-form-select id="ineligibleGameSystem" v-model="ineligibleGameSystem" :options="possibleLeagueOptions.ineligibleGameSystems"></b-form-select>
           <p>
             Controls how the league treats standard games on a roster that are ineligible under the league tag rules. This can happen in a couple of ways, but the most common is if a game's tags
             change after a player already has it. "Case by Case Basis" is effectively a legacy mode that's here as a default because this option is new. The other options all clarify exactly how an

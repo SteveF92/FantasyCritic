@@ -89,16 +89,16 @@
 
           <div v-if="draftResult.overridable" class="plain-check">
             <span>
-              <label class="text-white">Do you want to override these warnings?</label>
-              <input v-model="draftOverride" class="plain-check-input override-checkbox" type="checkbox" />
+              <label for="managerDraftOverride" class="text-white">Do you want to override these warnings?</label>
+              <input id="managerDraftOverride" v-model="draftOverride" class="plain-check-input override-checkbox" type="checkbox" />
             </span>
           </div>
 
           <div v-if="draftResult.noEligibleSpaceError" class="plain-check">
             <div class="text-white">This game is going to end up in an ineligible slot.</div>
             <span>
-              <label class="text-white">Do you want to draft this game anyway?</label>
-              <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
+              <label for="managerDraftAllowIneligibleSlot" class="text-white">Do you want to draft this game anyway?</label>
+              <input id="managerDraftAllowIneligibleSlot" v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
             </span>
           </div>
         </div>

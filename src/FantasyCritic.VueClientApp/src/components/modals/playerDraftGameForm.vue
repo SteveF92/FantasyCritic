@@ -84,8 +84,8 @@
           <div v-if="draftResult.noEligibleSpaceError" class="plain-check">
             <div class="text-white">This game is going to end up in an ineligible slot.</div>
             <span>
-              <label class="text-white">Do you want to draft this game anyway?</label>
-              <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
+              <label for="playerDraftAllowIneligibleSlot" class="text-white">Do you want to draft this game anyway?</label>
+              <input id="playerDraftAllowIneligibleSlot" v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
             </span>
           </div>
         </div>

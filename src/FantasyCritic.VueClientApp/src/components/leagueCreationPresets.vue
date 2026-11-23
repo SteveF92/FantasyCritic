@@ -3,8 +3,8 @@
     <div class="form-group">
       <label for="intendedNumberOfPlayers" class="control-label">{{ playerCountLabel }}</label>
       <ValidationField v-slot="{ errors }" :model-value="playerCount" name="Intended Number of Players" rules="required|min_value:2|max_value:20|integer">
-        <input id="intendedNumberOfPlayers" v-model.number="playerCount" name="Intended Number of Players" type="number" class="form-control input" />
-        <span class="text-danger">{{ errors[0] }}</span>
+        <input id="intendedNumberOfPlayers" v-model.number="playerCount" name="Intended Number of Players" type="number" class="form-control input" aria-describedby="intendedNumberOfPlayers-error" />
+        <span id="intendedNumberOfPlayers-error" class="text-danger">{{ errors[0] }}</span>
       </ValidationField>
       <p>You aren't locked into this number of people. This is just to recommend how many games to have per person.</p>
     </div>

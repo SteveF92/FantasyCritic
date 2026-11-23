@@ -70,21 +70,21 @@
             <div v-else class="mt-2">
               <div v-if="editError" class="alert alert-danger">{{ editError }}</div>
               <div class="form-group">
-                <label>Draft Name</label>
-                <input v-model="editForm.name" type="text" class="form-control" />
+                <label for="editDraftName">Draft Name</label>
+                <input id="editDraftName" v-model="editForm.name" type="text" class="form-control" />
               </div>
               <div class="form-group">
-                <label>Scheduled Date (optional)</label>
-                <input v-model="editForm.scheduledDate" type="date" class="form-control" />
+                <label for="editDraftScheduledDate">Scheduled Date (optional)</label>
+                <input id="editDraftScheduledDate" v-model="editForm.scheduledDate" type="date" class="form-control" />
               </div>
               <div class="form-group">
-                <label>Games to Draft</label>
-                <input v-model.number="editForm.gamesToDraft" type="number" class="form-control" :disabled="draft.playStatus !== 'NotStartedDraft'" />
+                <label for="editDraftGamesToDraft">Games to Draft</label>
+                <input id="editDraftGamesToDraft" v-model.number="editForm.gamesToDraft" type="number" class="form-control" :disabled="draft.playStatus !== 'NotStartedDraft'" />
                 <small v-if="draft.playStatus !== 'NotStartedDraft'" class="text-muted">Cannot change after draft has started.</small>
               </div>
               <div class="form-group">
-                <label>Counter Picks to Draft</label>
-                <input v-model.number="editForm.counterPicksToDraft" type="number" class="form-control" :disabled="draft.playStatus !== 'NotStartedDraft'" />
+                <label for="editDraftCounterPicksToDraft">Counter Picks to Draft</label>
+                <input id="editDraftCounterPicksToDraft" v-model.number="editForm.counterPicksToDraft" type="number" class="form-control" :disabled="draft.playStatus !== 'NotStartedDraft'" />
               </div>
               <div v-if="leagueYear.drafts.length > 1 && editForm.counterPicksToDraft > 0" class="form-group">
                 <b-form-checkbox v-model="editForm.counterPicksMustBeFromThisDraft" :disabled="draft.playStatus !== 'NotStartedDraft'">
@@ -95,7 +95,7 @@
                   </p>
                 </b-form-checkbox>
               </div>
-              <b-button size="sm" variant="primary" @click="submitEdit(draft)">Save</b-button>
+              <b-button size="sm" variant="primary" :disabled="!editForm.name.trim()" @click="submitEdit(draft)">Save</b-button>
               <b-button size="sm" variant="secondary" class="ms-2" @click="cancelEdit()">Cancel</b-button>
             </div>
           </b-card>
@@ -108,20 +108,20 @@
           <div v-if="newDraftError" class="alert alert-danger">{{ newDraftError }}</div>
           <b-card>
             <div class="form-group">
-              <label>Draft Name</label>
-              <input v-model="newDraft.name" type="text" class="form-control" placeholder="e.g. Summer Draft" />
+              <label for="newDraftName">Draft Name</label>
+              <input id="newDraftName" v-model="newDraft.name" type="text" class="form-control" placeholder="e.g. Summer Draft" />
             </div>
             <div class="form-group">
-              <label>Scheduled Date (optional)</label>
-              <input v-model="newDraft.scheduledDate" type="date" class="form-control" />
+              <label for="newDraftScheduledDate">Scheduled Date (optional)</label>
+              <input id="newDraftScheduledDate" v-model="newDraft.scheduledDate" type="date" class="form-control" />
             </div>
             <div class="form-group">
-              <label>Games to Draft</label>
-              <input v-model.number="newDraft.gamesToDraft" type="number" min="0" class="form-control" />
+              <label for="newDraftGamesToDraft">Games to Draft</label>
+              <input id="newDraftGamesToDraft" v-model.number="newDraft.gamesToDraft" type="number" min="0" class="form-control" />
             </div>
             <div class="form-group">
-              <label>Counter Picks to Draft</label>
-              <input v-model.number="newDraft.counterPicksToDraft" type="number" min="0" class="form-control" />
+              <label for="newDraftCounterPicksToDraft">Counter Picks to Draft</label>
+              <input id="newDraftCounterPicksToDraft" v-model.number="newDraft.counterPicksToDraft" type="number" min="0" class="form-control" />
             </div>
             <div v-if="newDraft.counterPicksToDraft > 0" class="form-group">
               <b-form-checkbox v-model="newDraft.counterPicksMustBeFromThisDraft">
@@ -133,15 +133,15 @@
               </b-form-checkbox>
             </div>
             <div class="form-group">
-              <label>Additional Standard Games</label>
+              <label for="newDraftAdditionalStandardGames">Additional Standard Games</label>
               <b-alert :model-value="true" variant="info">
                 If you want, you can expand the total roster size to make room for this draft's picks. If you already have all the slots you want set up, you can leave this at 0.
               </b-alert>
-              <input v-model.number="newDraft.additionalStandardGames" type="number" min="0" class="form-control" />
+              <input id="newDraftAdditionalStandardGames" v-model.number="newDraft.additionalStandardGames" type="number" min="0" class="form-control" />
             </div>
             <div class="form-group">
-              <label>Additional Counter Picks</label>
-              <input v-model.number="newDraft.additionalCounterPicks" type="number" min="0" class="form-control" />
+              <label for="newDraftAdditionalCounterPicks">Additional Counter Picks</label>
+              <input id="newDraftAdditionalCounterPicks" v-model.number="newDraft.additionalCounterPicks" type="number" min="0" class="form-control" />
             </div>
             <div class="form-group">
               <label>New Special Slots (optional)</label>
@@ -152,7 +152,7 @@
                 }}. You must add at least as many 'Additional Standard Games' as new special slots, otherwise the new special slots would convert existing standard slots into special slots.
               </b-alert>
             </div>
-            <b-button variant="success" :disabled="!newDraft.name || specialSlotsExceedStandardGames" @click="submitNewDraft()">Add Draft</b-button>
+            <b-button variant="success" :disabled="!newDraft.name.trim() || specialSlotsExceedStandardGames" @click="submitNewDraft()">Add Draft</b-button>
           </b-card>
         </div>
         <div v-else class="alert alert-info">You cannot add a draft while one is in progress.</div>
@@ -321,7 +321,7 @@ export default defineComponent({
         draftID: draft.draftID,
         leagueID: this.leagueid,
         year: this.year,
-        name: this.editForm.name,
+        name: this.editForm.name.trim(),
         scheduledDate: this.editForm.scheduledDate || undefined,
         gamesToDraft: this.editForm.gamesToDraft,
         counterPicksToDraft: this.editForm.counterPicksToDraft,
@@ -375,7 +375,7 @@ export default defineComponent({
     async submitNewDraft(): Promise<void> {
       this.newDraftError = null;
       this.successMessage = null;
-      const draftName = this.newDraft.name;
+      const draftName = this.newDraft.name.trim();
       const request: CreateLeagueDraftRequest = {
         leagueID: this.leagueid,
         year: this.year,

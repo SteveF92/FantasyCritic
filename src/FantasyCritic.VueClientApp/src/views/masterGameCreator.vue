@@ -69,8 +69,8 @@
             <div class="form-group">
               <label for="gameName" class="control-label">Game Name</label>
               <ValidationField v-slot="{ errors }" :model-value="gameName" name="Game Name" rules="required">
-                <input id="gameName" v-model="gameName" name="Game Name" type="text" class="form-control input" />
-                <span class="text-danger">{{ errors[0] }}</span>
+                <input id="gameName" v-model="gameName" name="Game Name" type="text" class="form-control input" aria-describedby="gameName-error" />
+                <span id="gameName-error" class="text-danger">{{ errors[0] }}</span>
               </ValidationField>
             </div>
 

@@ -24,7 +24,7 @@ public sealed class BidTests : PostDraftTestBase
         var dialog = Ui.Dialog(page, "Make a Bid");
         await Expect(dialog.GetByRole(AriaRole.Heading, new() { Name = "Top Available Games" })).ToBeVisibleAsync();
         await SelectGameRowAsync(dialog, game.GameName);
-        await dialog.Locator("#bidAmount").FillAsync("5");
+        await dialog.GetByLabel("Bid Amount").FillAsync("5");
         await dialog.GetByRole(AriaRole.Button, new() { Name = "Place Bid" }).ClickAsync();
 
         // The form stays open after a bid, ready for another.
@@ -69,9 +69,9 @@ public sealed class BidTests : PostDraftTestBase
         // Edit the first bid's amount.
         await rows.First.GetByRole(AriaRole.Button, new() { Name = "Edit" }).ClickAsync();
         await Expect(dialog.GetByRole(AriaRole.Heading, new() { Name = "Edit Bid:" })).ToBeVisibleAsync();
-        await dialog.Locator("#bidAmount").FillAsync("7");
+        await dialog.GetByLabel("Bid Amount").FillAsync("7");
         await dialog.GetByRole(AriaRole.Button, new() { Name = "Edit Bid" }).ClickAsync();
-        await Expect(page.GetByText($"Bid for {games[1].GameName} for $7 was made.")).ToBeVisibleAsync();
+        await Expect(page.GetByText($"Bid for {games[1].GameName} for $7 was updated.")).ToBeVisibleAsync();
 
         // Cancel the other through the confirm dialog. The modal stays open after an edit.
         await Expect(rows.Filter(new() { HasText = games[1].GameName })).ToContainTextAsync("$7");
@@ -93,7 +93,7 @@ public sealed class BidTests : PostDraftTestBase
         await Expect(target.Locator("option").First).ToBeAttachedAsync();
         var gameName = (await target.Locator("option").First.TextContentAsync())!.Trim();
         await target.SelectOptionAsync(new SelectOptionValue { Index = 0 });
-        await dialog.Locator("#bidAmount").FillAsync("2");
+        await dialog.GetByLabel("Bid Amount").FillAsync("2");
         await dialog.GetByRole(AriaRole.Button, new() { Name = "Place Counter Pick Bid" }).ClickAsync();
 
         await Expect(dialog).ToBeHiddenAsync();

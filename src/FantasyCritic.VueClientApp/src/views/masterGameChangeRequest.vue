@@ -62,8 +62,8 @@
               <div class="form-group">
                 <label for="requestNote" class="control-label">What seems to be the issue?</label>
                 <ValidationField v-slot="{ errors }" :model-value="requestNote" name="Request Note" rules="required">
-                  <input id="requestNote" v-model="requestNote" name="Request Note" type="text" class="form-control input" />
-                  <span class="text-danger">{{ errors[0] }}</span>
+                  <input id="requestNote" v-model="requestNote" name="Request Note" type="text" class="form-control input" aria-describedby="requestNote-error" />
+                  <span id="requestNote-error" class="text-danger">{{ errors[0] }}</span>
                 </ValidationField>
               </div>
 

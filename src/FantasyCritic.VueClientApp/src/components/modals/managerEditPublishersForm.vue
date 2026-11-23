@@ -43,7 +43,7 @@
         </div>
 
         <div>
-          <input type="submit" class="btn btn-primary modal-submit-button" value="Edit Publisher" :disabled="isBusy" @click="makeEditRequest" />
+          <input type="submit" class="btn btn-primary modal-submit-button" value="Edit Publisher" :disabled="!newPublisherName.trim() || isBusy" @click="makeEditRequest" />
         </div>
       </div>
     </div>
@@ -111,7 +111,7 @@ export default defineComponent({
 
       const request: PublisherEditRequest = {
         publisherID: this.editPublisher.publisherID,
-        publisherName: this.newPublisherName,
+        publisherName: this.newPublisherName.trim(),
         budget: this.newBudget,
         unrestrictedReleaseStatusGamesDropped: this.newUnrestrictedReleaseStatusGamesDropped,
         willNotReleaseGamesDropped: this.newWillNotReleaseGamesDropped,

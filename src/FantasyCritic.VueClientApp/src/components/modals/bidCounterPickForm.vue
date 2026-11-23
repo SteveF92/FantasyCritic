@@ -22,11 +22,11 @@
           </option>
         </b-form-select>
 
-        <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(requiredUserPublisher.budget, 0) }})</label>
+        <label for="counterPickBidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(requiredUserPublisher.budget, 0) }})</label>
 
-        <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" rules="required|integer">
-          <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
-          <span class="text-danger">{{ errors[0] }}</span>
+        <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" label="Bid Amount" rules="required|integer">
+          <input id="counterPickBidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" aria-describedby="counterPickBidAmount-error" />
+          <span id="counterPickBidAmount-error" class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
 
         <div v-show="counterPickInvalid" class="alert alert-warning" role="alert">Unfortunately, you cannot make a counter pick bid for a game that is not linked to a master game.</div>

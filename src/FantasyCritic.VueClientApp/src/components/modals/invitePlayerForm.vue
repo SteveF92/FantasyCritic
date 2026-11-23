@@ -23,8 +23,8 @@
           <div class="form-group email-form">
             <label for="inviteEmail" class="control-label">Email Address</label>
             <ValidationField v-slot="{ errors }" :model-value="inviteEmail" name="Email Address" rules="email">
-              <input id="inviteEmail" v-model="inviteEmail" name="inviteEmail" type="text" class="form-control input" />
-              <span class="text-danger">{{ errors[0] }}</span>
+              <input id="inviteEmail" v-model="inviteEmail" name="inviteEmail" type="text" class="form-control input" aria-describedby="inviteEmail-error" />
+              <span id="inviteEmail-error" class="text-danger">{{ errors[0] }}</span>
             </ValidationField>
           </div>
         </div>
@@ -38,8 +38,8 @@
           <div class="form-group">
             <label for="inviteDisplayNumber" class="control-label">Display Number (Found in the username dropdown)</label>
             <ValidationField v-slot="{ errors }" :model-value="inviteDisplayNumber" name="Display Number" rules="min_value:1000|max_value:9999">
-              <input id="inviteDisplayNumber" v-model="inviteDisplayNumber" name="inviteDisplayNumber" type="number" class="form-control input" />
-              <span class="text-danger">{{ errors[0] }}</span>
+              <input id="inviteDisplayNumber" v-model="inviteDisplayNumber" name="inviteDisplayNumber" type="number" class="form-control input" aria-describedby="inviteDisplayNumber-error" />
+              <span id="inviteDisplayNumber-error" class="text-danger">{{ errors[0] }}</span>
             </ValidationField>
           </div>
         </div>

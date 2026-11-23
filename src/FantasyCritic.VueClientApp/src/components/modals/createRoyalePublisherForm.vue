@@ -8,7 +8,7 @@
       </div>
     </div>
     <template #footer>
-      <input type="submit" class="btn btn-primary" value="Create Publisher" :disabled="!publisherName" @click="createRoyalePublisher" />
+      <input type="submit" class="btn btn-primary" value="Create Publisher" :disabled="!publisherName.trim()" @click="createRoyalePublisher" />
     </template>
   </b-modal>
 </template>

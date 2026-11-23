@@ -70,17 +70,17 @@
       <div class="form-group">
         <label for="bidAmount" class="control-label">Bid Amount (Remaining: {{ formatCurrency(requiredUserPublisher.budget) }})</label>
 
-        <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" rules="required|integer">
-          <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" />
-          <span class="text-danger">{{ errors[0] }}</span>
+        <ValidationField v-slot="{ errors }" :model-value="bidAmount" name="bidAmount" label="Bid Amount" rules="required|integer">
+          <input id="bidAmount" v-model="bidAmount" name="bidAmount" type="number" class="form-control input" aria-describedby="bidAmount-error" />
+          <span id="bidAmount-error" class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
       <div class="form-group">
-        <label for="conditionalDrop" class="control-label">
+        <label for="bidConditionalDrop" class="control-label">
           Conditional Drop (Optional)
           <font-awesome-icon v-b-popover.hover.focus="'You can use this to drop a game only if your bid succeeds.'" icon="info-circle" />
         </label>
-        <b-form-select v-model="conditionalDrop">
+        <b-form-select id="bidConditionalDrop" v-model="conditionalDrop">
           <template #first>
             <option :value="null">None</option>
           </template>
@@ -96,8 +96,8 @@
       </b-alert>
 
       <div v-if="requiredLeagueYear.settings.hasSpecialSlots" class="plain-check">
-        <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
-        <label class="plain-check-label">
+        <input id="bidAllowIneligibleSlot" v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
+        <label for="bidAllowIneligibleSlot" class="plain-check-label">
           Allow bid to succeed even if there are no slots this game is eligible in.
           <font-awesome-icon v-b-popover.hover.focus="allowIneligibleText" icon="info-circle" />
         </label>

@@ -67,16 +67,16 @@
 
         <div v-if="claimResult.overridable" class="plain-check">
           <span>
-            <label class="text-white">Do you want to override these warnings?</label>
-            <input v-model="claimOverride" class="plain-check-input override-checkbox" type="checkbox" />
+            <label for="claimOverride" class="text-white">Do you want to override these warnings?</label>
+            <input id="claimOverride" v-model="claimOverride" class="plain-check-input override-checkbox" type="checkbox" />
           </span>
         </div>
 
         <div v-if="claimResult.noEligibleSpaceError" class="plain-check">
           <div class="text-white">This game is going to end up in an ineligible slot.</div>
           <span>
-            <label class="text-white">Do you want to add this game anyway?</label>
-            <input v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
+            <label for="claimAllowIneligibleSlot" class="text-white">Do you want to add this game anyway?</label>
+            <input id="claimAllowIneligibleSlot" v-model="allowIneligibleSlot" class="plain-check-input override-checkbox" type="checkbox" />
           </span>
         </div>
       </div>

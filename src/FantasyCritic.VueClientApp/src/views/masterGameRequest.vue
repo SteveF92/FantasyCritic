@@ -19,8 +19,8 @@
           <div class="form-group">
             <label for="gameName" class="control-label">Game Name</label>
             <ValidationField v-slot="{ errors }" :model-value="gameName" name="Game Name" rules="required">
-              <input id="gameName" v-model="gameName" name="Game Name" type="text" class="form-control input" />
-              <span class="text-danger">{{ errors[0] }}</span>
+              <input id="gameName" v-model="gameName" name="Game Name" type="text" class="form-control input" aria-describedby="gameName-error" />
+              <span id="gameName-error" class="text-danger">{{ errors[0] }}</span>
             </ValidationField>
           </div>
 
@@ -69,8 +69,8 @@
               "just for the sake of having it on the site".
             </div>
             <ValidationField v-slot="{ errors }" :model-value="requestNote" name="Request Note" rules="required|min:30">
-              <input id="requestNote" v-model="requestNote" name="Request Note" class="form-control input" />
-              <span class="text-danger">{{ errors[0] }}</span>
+              <input id="requestNote" v-model="requestNote" name="Request Note" class="form-control input" aria-describedby="requestNote-error" />
+              <span id="requestNote-error" class="text-danger">{{ errors[0] }}</span>
             </ValidationField>
           </div>
 

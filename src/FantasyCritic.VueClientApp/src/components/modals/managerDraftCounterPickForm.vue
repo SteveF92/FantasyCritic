@@ -31,8 +31,8 @@
 
         <div v-if="draftResult && draftResult.overridable" class="plain-check">
           <span>
-            <label>Do you want to override these warnings?</label>
-            <input v-model="draftOverride" class="plain-check-input override-checkbox" type="checkbox" />
+            <label for="managerDraftCounterPickOverride">Do you want to override these warnings?</label>
+            <input id="managerDraftCounterPickOverride" v-model="draftOverride" class="plain-check-input override-checkbox" type="checkbox" />
           </span>
         </div>
       </form>

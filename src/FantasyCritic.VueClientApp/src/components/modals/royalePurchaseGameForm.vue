@@ -16,7 +16,7 @@
           <b-button type="button" variant="secondary" @click="listGames">List Games</b-button>
         </div>
 
-        <label for="PurchaseGameName" class="control-label">Game Name</label>
+        <label for="searchGameName" class="control-label">Game Name</label>
         <div class="input-group game-search-input">
           <input id="searchGameName" v-model="searchGameName" name="searchGameName" type="text" class="form-control input" />
           <span class="input-group-btn">

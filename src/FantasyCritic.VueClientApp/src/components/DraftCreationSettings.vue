@@ -20,22 +20,34 @@
 
       <div class="form-group">
         <label :for="`gamesToDraft-${index}`" class="control-label">Games to Draft</label>
-        <ValidationField v-slot="{ errors }" :model-value="numberOrEmpty(draft.gamesToDraft)" :name="`gamesToDraft-${index}`" rules="required|min_value:1|max_value:50|integer">
-          <input :id="`gamesToDraft-${index}`" type="number" :value="numberOrEmpty(draft.gamesToDraft)" @input="updateDraftGamesToDraft(index, $event)" class="form-control input" />
-          <span class="text-danger">{{ errors[0] }}</span>
+        <ValidationField v-slot="{ errors }" :model-value="numberOrEmpty(draft.gamesToDraft)" :name="`gamesToDraft-${index}`" label="Games to Draft" rules="required|min_value:1|max_value:50|integer">
+          <input
+            :id="`gamesToDraft-${index}`"
+            type="number"
+            :value="numberOrEmpty(draft.gamesToDraft)"
+            @input="updateDraftGamesToDraft(index, $event)"
+            class="form-control input"
+            :aria-describedby="`gamesToDraft-${index}-error`" />
+          <span :id="`gamesToDraft-${index}-error`" class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
 
       <div class="form-group">
         <label :for="`counterPicksToDraft-${index}`" class="control-label">Counter Picks to Draft</label>
-        <ValidationField v-slot="{ errors }" :model-value="numberOrEmpty(draft.counterPicksToDraft)" :name="`counterPicksToDraft-${index}`" rules="required|min_value:0|max_value:50|integer">
+        <ValidationField
+          v-slot="{ errors }"
+          :model-value="numberOrEmpty(draft.counterPicksToDraft)"
+          :name="`counterPicksToDraft-${index}`"
+          label="Counter Picks to Draft"
+          rules="required|min_value:0|max_value:50|integer">
           <input
             :id="`counterPicksToDraft-${index}`"
             type="number"
             :value="numberOrEmpty(draft.counterPicksToDraft)"
             @input="updateDraftCounterPicksToDraft(index, $event)"
-            class="form-control input" />
-          <span class="text-danger">{{ errors[0] }}</span>
+            class="form-control input"
+            :aria-describedby="`counterPicksToDraft-${index}-error`" />
+          <span :id="`counterPicksToDraft-${index}-error`" class="text-danger">{{ errors[0] }}</span>
         </ValidationField>
       </div>
 
