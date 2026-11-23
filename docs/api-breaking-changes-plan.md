@@ -20,3 +20,12 @@ for the owner's own hidden games, which still get the fields.
 picks it to sell or set a budget, and throws if the fields are missing. With the change, it checks
 `details` once instead of each field. `royalePublisher`'s table cells, which check `masterGame` for
 "Hidden Until Release", check `details` instead.
+
+## 2. Remove `PublisherGameViewModel.Linked`
+
+**Where:** `PublisherGameViewModel` (`FantasyCritic.Web`).
+
+**Now:** `Linked` is `[Obsolete]` since the TypeScript conversion's step 11. A game is linked when it has a
+`masterGame`, and the client already reads that.
+
+**Change:** remove the property, once no client still reads it.
