@@ -77,14 +77,32 @@ filled in when we reach it, then built, tested, committed and reviewed before th
 
 #### 1. Packages and tooling
 
-Candidates, to be checked when we get here:
+Decided:
 
-- `vue-multiselect`: used only by `masterGameTagSelector` and `recentJobsTable`.
-- `@vee-validate/i18n`: only supplies the English messages in `validation.ts`.
-- `jsconfig.json`: left over beside `tsconfig.json`.
-- `vite.config.js`, `vite.build.config.js`, `vite.client.config.js` and `vitest.config.js` repeat most
-  of their content; one config with modes, or a shared base.
-- The global `bootstrap-vue-next.css` import in `main.ts` and the order the stylesheets load in.
+- **One Vite config.** `vite.config.ts` replaces `vite.config.js`, `vite.build.config.js`,
+  `vite.client.config.js` and `vitest.config.js`. The default mode serves over HTTPS with the dev
+  certificate and proxies to local Web; `--mode client` proxies to production on port 5001; the build
+  has no server settings; the Vitest settings sit in the same file. The certificate is read only when
+  it's needed, which is why the build used to have a file of its own.
+- **Delete** `jsconfig.json` (`tsconfig.json` has the same path), the unused `preview` npm script, and the
+  Google Fonts import of Raleway, which every page fetched and none used (the font stack is the system
+  stack).
+- **ESLint:** drop the block of Vue 3 deprecation rules that `flat/essential` already turns on, the
+  unused `__dirname` and `process` globals, and the `--ext` flags the flat config doesn't need.
+- **Stale wording:** the `tsconfig.json` comments and redundant options, the `.esproj`'s "Vue 2", and
+  CLAUDE.md's Frontend section.
+
+Kept or moved:
+
+- **`vue-multiselect` stays.** bootstrap-vue-next has no searchable multi-select, and building one is
+  new UI, not a quick win. Its styling can be looked at in step 9 or 10.
+- **`@vee-validate/i18n`** is left for after this step, to be considered separately. Six rules' messages
+  would replace it.
+- **Stylesheet order** moves to step 9. `bootstrap-vue-next.css` is imported in `main.ts` after `App`, so
+  it loads after our overrides and site CSS. Putting it straight after Bootstrap is the clear order,
+  but it could change what wins, and there's no screenshot check until step 4.
+- **Lazy-loaded routes** move to step 5. `routes.ts` imports all 45 views, so the app is one 2 MB
+  script.
 
 `luxon` stays.
 
@@ -119,6 +137,8 @@ which covers the typed routes step 16 skipped. What the spike has to answer:
 - Where the `props: (route) => ...` parsing and the route `meta` (title, sign-in) go: `definePage` or
   the component.
 - How layouts per route fit (step 6).
+- Lazy loading: every view is imported up front today, so the whole app is one 2 MB script. Either way,
+  routes should load their views lazily.
 
 If it's worth it, move the views into the new tree before the page pass, so files move once. If not,
 declare `RouteNamedMap` by hand.
@@ -157,6 +177,9 @@ screenshots don't move. For example `.form-group` → `mb-3`, `plain-check` → 
 `site.css`, `footer.css` and `modal.css` become SCSS, using Bootstrap's variables where one exists (for
 example `$btn-border-radius: 0` instead of a rule). Hand-written utilities that Bootstrap has
 (`.lg-screen-minimum` → `d-none d-lg-block`, `.text-black`) go.
+
+Set the stylesheet order explicitly in one place: Bootstrap, bootstrap-vue-next, our overrides, then the
+site's own CSS. Today `bootstrap-vue-next.css` loads last, because `main.ts` imports it after `App`.
 
 #### 10. Bootstrap 5 defaults
 
