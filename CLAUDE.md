@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-Fantasy Critic (fantasycritic.games) — fantasy football, but for video games. Players draft upcoming games and score based on OpenCritic review scores. ASP.NET Core (.NET 10) backend + Vue 2.7 SPA, backed by MySQL.
+Fantasy Critic (fantasycritic.games) — fantasy football, but for video games. Players draft upcoming games and score based on OpenCritic review scores. ASP.NET Core (.NET 10) backend + Vue 3 SPA, backed by MySQL.
 
 Detailed conventions live in `.cursor/rules/*.mdc` and `.cursor/skills/` — they apply here too. This file summarizes the essentials.
 
@@ -59,7 +59,7 @@ scripts/Format.ps1          # apply
 scripts/Format.ps1 -Check   # verify only (CI-style)
 ```
 
-Client app (`src/FantasyCritic.VueClientApp`): `npm install` first; `npm test` runs the Vitest unit tests in `tests/` (`npm run test:watch` to watch; they need the regenerated TypeScript client); `npm run type-check` runs vue-tsc over the `.ts` files and `<script lang="ts">` components (CI runs it too); `npm run lint` / `npm run format` for JS-only passes; `npm run client` runs the SPA standalone against the production API. Stop the Vite dev server before `npm ci`, which can't replace the `esbuild.exe` it holds open.
+Client app (`src/FantasyCritic.VueClientApp`): `npm install` first; `npm test` runs the Vitest unit tests in `tests/` (`npm run test:watch` to watch; they need the regenerated TypeScript client); `npm run type-check` runs vue-tsc over the `.ts` files and `<script lang="ts">` components (CI runs it too); `npm run lint` / `npm run format` for JS-only passes; `npm run client` runs the SPA standalone against the production API, and `npm run preview` serves the last `npm run build` the same way. Stop the Vite dev server before `npm ci`, which can't replace the `esbuild.exe` it holds open.
 
 ## Signing in locally
 
@@ -113,7 +113,7 @@ Integration tests and the Vue client both consume clients generated from the Ope
 
 ### Frontend
 
-Vue 2.7 (Options API — match the file you're editing) + Vite + Bootstrap 4/bootstrap-vue + Pinia 2 + Luxon + axios. Generated TS client at `src/FantasyCritic.VueClientApp/src/api/generated/` with hand-written singletons in `src/FantasyCritic.VueClientApp/src/api/clients.ts`.
+Vue 3 (Options API with `<script lang="ts">`; stateful helpers as composables called from `setup()`) + Vite + Bootstrap 5/bootstrap-vue-next + Pinia + vue-router + vee-validate + Luxon. Generated TS client at `src/FantasyCritic.VueClientApp/src/api/generated/` with hand-written singletons in `src/FantasyCritic.VueClientApp/src/api/clients.ts`.
 
 ## C# conventions
 

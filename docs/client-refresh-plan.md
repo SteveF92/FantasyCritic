@@ -79,14 +79,19 @@ filled in when we reach it, then built, tested, committed and reviewed before th
 
 Decided:
 
-- **One Vite config.** `vite.config.ts` replaces `vite.config.js`, `vite.build.config.js`,
-  `vite.client.config.js` and `vitest.config.js`. The default mode serves over HTTPS with the dev
-  certificate and proxies to local Web; `--mode client` proxies to production on port 5001; the build
-  has no server settings; the Vitest settings sit in the same file. The certificate is read only when
-  it's needed, which is why the build used to have a file of its own.
-- **Delete** `jsconfig.json` (`tsconfig.json` has the same path), the unused `preview` npm script, and the
-  Google Fonts import of Raleway, which every page fetched and none used (the font stack is the system
-  stack).
+- **One Vite config.** `vite.config.js` absorbs `vite.build.config.js`, `vite.client.config.js` and
+  `vitest.config.js`. The default mode serves over HTTPS with the dev certificate and proxies to local
+  Web; `--mode client` proxies to production on port 5001; the build has no server settings; the Vitest
+  settings sit in the same file. The certificate is read only when it's needed, which is why the build
+  used to have a file of its own. It stays JavaScript: as TypeScript it would need `@types/node` and a
+  second tsconfig to be checked at all.
+- **`npm run preview`** serves the last build against production (`--mode client`), as the Vue 3
+  upgrade's notes used it.
+- **Delete** `jsconfig.json` (`tsconfig.json` has the same path), and the unused fonts: Raleway, imported
+  in `custom-bootstrap.scss`, and Material Icons, loaded in `index.html`. Every page fetched them and none
+  used them. Roboto stays for now (see step 10).
+- **`index.html`:** points at `main.ts`, not `main.js`; drops the Internet Explorer `X-UA-Compatible` tag
+  and a stray `data-react-helmet` attribute.
 - **ESLint:** drop the block of Vue 3 deprecation rules that `flat/essential` already turns on, the
   unused `__dirname` and `process` globals, and the `--ext` flags the flat config doesn't need.
 - **Stale wording:** the `tsconfig.json` comments and redundant options, the `.esproj`'s "Vue 2", and
@@ -187,6 +192,10 @@ The visible part. Return `custom-bootstrap.scss`'s Bootstrap 4 values to Bootstr
 at a time: gutters, container widths, font stack and RFS, card and alert padding, border radii, form
 controls, table padding, sort icons, badges. Each group gets before and after screenshots, and is kept
 or reverted.
+
+The font stack group includes `index.html`'s Google Fonts link to Roboto. Roboto is fourth in the stack,
+so the download only shows where Apple's and Segoe UI aren't installed and Roboto isn't either (mostly
+Linux desktops).
 
 ### Phase D: page by page
 

@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.VisualStudio.JavaScript.Sdk/1.0.6578810">
 
   <!--
-    JavaScript Project System (JSPS) wrapper around the Vue 2 client.
+    JavaScript Project System (JSPS) wrapper around the Vue client.
 
     This exists so the client app is a first-class project in the solution: Solution
     Explorer shows it, the npm scripts and dependencies get their own nodes, and it can be
@@ -13,7 +13,7 @@
   -->
 
   <PropertyGroup>
-    <!-- Where `npm run build` (vite.build.config.js) writes the production bundle.
+    <!-- Where `npm run build` writes the production bundle.
          FantasyCritic.Web's PublishRunVite target globs this into wwwroot. -->
     <BuildOutputFolder>$(MSBuildProjectDirectory)\dist</BuildOutputFolder>
 

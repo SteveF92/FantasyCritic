@@ -1,91 +1,61 @@
-import { defineConfig } from 'vite';
-import vue from '@vitejs/plugin-vue';
-import { readFileSync } from 'fs';
-import { join } from 'path';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { fileURLToPath, URL } from 'node:url';
-import Components from 'unplugin-vue-components/vite'
-import {BootstrapVueNextResolver} from 'bootstrap-vue-next/resolvers'
+import vue from '@vitejs/plugin-vue';
+import { BootstrapVueNextResolver } from 'bootstrap-vue-next/resolvers';
+import Components from 'unplugin-vue-components/vite';
+import { defineConfig } from 'vite';
 
-const baseFolder = process.env.APPDATA !== undefined && process.env.APPDATA !== '' ? `${process.env.APPDATA}/ASP.NET/https` : `${process.env.HOME}/.aspnet/https`;
+// The paths the web app serves itself, which the dev server passes through to it.
+const backEndPaths = ['/api', '/Account', '/updatehub', '/.well-known', '/css', '/img', '/js', '/lib', '/swagger'];
 
-const certificateName = process.env.npm_package_name;
+function proxyTo(target, secure) {
+  return Object.fromEntries(backEndPaths.map((path) => [path, { target, changeOrigin: true, secure, ws: path === '/updatehub' }]));
+}
 
-const certFilePath = join(baseFolder, `${certificateName}.pem`);
-const keyFilePath = join(baseFolder, `${certificateName}.key`);
+// `npm start`, which the web app launches: HTTPS with the ASP.NET Core dev certificate that
+// aspnetcore-https.js exports, on the port the web app's SpaProxyServerUrl expects.
+function localServer() {
+  const certificateFolder = process.env.APPDATA ? `${process.env.APPDATA}/ASP.NET/https` : `${process.env.HOME}/.aspnet/https`;
+  const certificateName = process.env.npm_package_name;
+  const target = process.env.ASPNETCORE_HTTPS_PORT
+    ? `https://localhost:${process.env.ASPNETCORE_HTTPS_PORT}`
+    : process.env.ASPNETCORE_URLS
+      ? process.env.ASPNETCORE_URLS.split(';')[0]
+      : 'https://localhost:4554';
 
-const target = process.env.ASPNETCORE_HTTPS_PORT
-  ? `https://localhost:${process.env.ASPNETCORE_HTTPS_PORT}`
-  : process.env.ASPNETCORE_URLS
-  ? process.env.ASPNETCORE_URLS.split(';')[0]
-  : 'https://localhost:4554';
+  return {
+    https: {
+      key: readFileSync(join(certificateFolder, `${certificateName}.key`)),
+      cert: readFileSync(join(certificateFolder, `${certificateName}.pem`))
+    },
+    port: 44477,
+    strictPort: true,
+    proxy: proxyTo(target, false)
+  };
+}
 
-export default defineConfig({
+// `npm run client` and `npm run preview`: the client app on its own, against the production API.
+function productionServer() {
+  return {
+    port: 5001,
+    strictPort: true,
+    proxy: proxyTo('https://www.fantasycritic.games', true)
+  };
+}
+
+export default defineConfig(({ command, mode }) => ({
   plugins: [
     vue(),
     Components({
       dirs: [],
-      resolvers: [BootstrapVueNextResolver()],
-    }),
+      resolvers: [BootstrapVueNextResolver()]
+    })
   ],
-  server: {
-    https: {
-      key: readFileSync(keyFilePath),
-      cert: readFileSync(certFilePath)
-    },
-    port: 44477,
-    strictPort: true,
-    proxy: {
-      '/api': {
-        target: target,
-        changeOrigin: true,
-        secure: false
-      },
-      '/Account': {
-        target: target,
-        changeOrigin: true,
-        secure: false
-      },
-      '/updatehub': {
-        target: target,
-        changeOrigin: true,
-        secure: false,
-        ws: true
-      },
-      '/.well-known': {
-        target: target,
-        changeOrigin: true,
-        secure: false
-      },
-      '/css': {
-        target: target,
-        changeOrigin: true,
-        secure: false
-      },
-      '/img': {
-        target: target,
-        changeOrigin: true,
-        secure: false
-      },
-      '/js': {
-        target: target,
-        changeOrigin: true,
-        secure: false
-      },
-      '/lib': {
-        target: target,
-        changeOrigin: true,
-        secure: false
-      },
-      '/swagger': {
-        target: target,
-        changeOrigin: true,
-        secure: false
-      },
-    }
-  },
+  server: command === 'serve' && mode === 'development' ? localServer() : mode === 'client' ? productionServer() : undefined,
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
+      '@': fileURLToPath(new URL('./src', import.meta.url))
     }
   },
   css: {
@@ -95,5 +65,9 @@ export default defineConfig({
         quietDeps: true
       }
     }
+  },
+  test: {
+    environment: 'jsdom',
+    include: ['tests/**/*.test.{js,ts}']
   }
-})
+}));

@@ -1,23 +1,18 @@
 {
   "compilerOptions": {
-    // Aligns with modern JavaScript while retaining compatibility
     "target": "esnext",
     "module": "esnext",
     "moduleResolution": "bundler", // Resolves imports the way Vite does
-    "strict": true, // Start with relaxed settings for gradual migration
-    "esModuleInterop": true, // Enables better compatibility with CommonJS modules
-    "skipLibCheck": true, // Speeds up compilation by skipping type checks of declaration files
-    "allowSyntheticDefaultImports": true, // Enables default import syntax
-    "allowImportingTsExtensions": true, // Enables importing .ts files as modules
-    "sourceMap": true, // Useful for debugging in Vite
+    "strict": true,
+    "esModuleInterop": true, // Default imports from CommonJS modules
+    "skipLibCheck": true, // Don't type-check packages' declaration files
+    "allowImportingTsExtensions": true,
     "noEmit": true, // Vite compiles; TypeScript only type-checks (npm run type-check)
     "paths": {
-      "@/*": ["./src/*"] // Matches Vite's default alias for `src`
+      "@/*": ["./src/*"] // The `@` alias in vite.config.js
     },
-    "lib": ["dom", "esnext"], // Adds DOM and modern JS features
-    // Vite's typings, plus the annotation plugin's additions to Chart.js's options (it is
-    // registered in main.js, which is outside this program)
-    "types": ["vite/client", "chartjs-plugin-annotation"]
+    "lib": ["dom", "esnext"],
+    "types": ["vite/client"]
   },
   "vueCompilerOptions": {
     // Unknown components, events and directives in templates are errors, not silent `any`s

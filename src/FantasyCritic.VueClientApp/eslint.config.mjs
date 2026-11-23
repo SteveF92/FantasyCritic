@@ -17,14 +17,12 @@ export default [
     languageOptions: {
       globals: {
         ...globals.browser,
-        __dirname: "readonly", // Adding `__dirname` global from your original config
-        process: "readonly", // Vite statically replaces `process.env.NODE_ENV` at build time
       },
     },
   },
   // Root-level Node scripts (dev server setup, Vite config) run outside the browser
   {
-    files: ["aspnetcore-https.js", "vite.config.js", "vite.client.config.js", "vite.build.config.js", "vitest.config.js", "eslint.config.mjs"],
+    files: ["aspnetcore-https.js", "vite.config.js", "eslint.config.mjs"],
     languageOptions: {
       globals: {
         ...globals.node,
@@ -44,7 +42,8 @@ export default [
       },
     },
     rules: {
-      "vue/multi-word-component-names": "off", // Retaining rules from original config
+      // Views and components are named for what they are: league.vue, faq.vue
+      "vue/multi-word-component-names": "off",
       "vue/valid-v-slot": ["error", { allowModifiers: true }],
       // Every component's script is TypeScript; a new one without lang="ts" would go unchecked.
       "vue/block-lang": ["error", { script: { lang: "ts" } }],
@@ -53,31 +52,6 @@ export default [
       "@typescript-eslint/no-unused-vars": ["error", { argsIgnorePattern: "^_" }],
       "no-console": process.env.NODE_ENV === "production" ? "warn" : "off",
       "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
-    },
-  },
-  // Vue 3 deprecations already cleared from the codebase, kept out ahead of the upgrade. Some of
-  // them (the events API, $set/$delete, Vue.config.keyCodes) are about script, not templates.
-  {
-    files: ["src/**/*.{js,ts,vue}"],
-    rules: {
-      "vue/no-deprecated-data-object-declaration": "error",
-      "vue/no-deprecated-delete-set": "error",
-      "vue/no-deprecated-dollar-listeners-api": "error",
-      "vue/no-deprecated-dollar-scopedslots-api": "error",
-      "vue/no-deprecated-events-api": "error",
-      "vue/no-deprecated-filter": "error",
-      "vue/no-deprecated-functional-template": "error",
-      "vue/no-deprecated-html-element-is": "error",
-      "vue/no-deprecated-inline-template": "error",
-      "vue/no-deprecated-model-definition": "error",
-      "vue/no-deprecated-props-default-this": "error",
-      "vue/no-deprecated-router-link-tag-prop": "error",
-      "vue/no-deprecated-scope-attribute": "error",
-      "vue/no-deprecated-slot-attribute": "error",
-      "vue/no-deprecated-slot-scope-attribute": "error",
-      "vue/no-deprecated-v-is": "error",
-      "vue/no-deprecated-v-on-number-modifiers": "error",
-      "vue/no-deprecated-vue-config-keycodes": "error",
     },
   },
 ];
