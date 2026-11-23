@@ -159,14 +159,93 @@ runs, clearing errors when a modal opens or closes, rejecting names of only spac
 numbers, labels pointing at their inputs, ignoring stale responses. The result is the checklist the page
 pass (step 11) applies to each page. Anything that's a straight search-and-fix gets fixed here.
 
-Already on the list, from step 1, for the 23 `ValidationField`s in 13 files:
+Surveyed 2026-11-22: the first pass's Conventions and its log from step 9 (Critics Royale) on, then a
+search of `src/` for each habit. Most of what's left is request handling (catching, busy state, stale
+responses), which step 7's request composable is for, so the page pass fixes those by adopting it rather
+than by hand here.
 
-- **A readable `label`** on each field. Messages use the field's `name`, so bids say "The bidAmount field"
-  and draft settings "The gamesToDraft-0 field".
-- **One statement of the rules.** Only 5 files have a `ValidationForm`; the other 8 show vee-validate's
-  messages but decide whether to submit with their own checks (`leagueYearIsValid`, `canPlaceBid`). Wrap
-  them in a `ValidationForm` and disable submit on its `meta.valid`, unless a rule can't be expressed there.
-- **Errors tied to their inputs** with `aria-describedby`, as only 2 fields do today.
+**Fixed in this step** (no visible change except where the log says):
+
+- **Labels point at their inputs.** Every `<label for>` that named a missing id now has its control:
+  `leagueYearSettings`'s five system selects, the conditional drop select in `bidGameForm` and
+  `currentBidsForm`, `proposeTradeForm`'s publisher and message, the year on `createLeague` and
+  `createConference` (`intialYear`), `royalePurchaseGameForm`'s search box. `manageDrafts`' ten labels
+  and the override checkboxes in the bid, claim and draft forms have ids too.
+- **vee-validate:** the fields named `bidAmount`, `gamesToDraft-0` and `counterPicksToDraft-0` have a
+  `label`, so their messages say "The Bid Amount field". Every field's error has an id, and its input
+  points at it with `aria-describedby`. (Step 1 counted 2 fields that did this; there were none.) The
+  three bid modals each had `id="bidAmount"`, so the edit and counter pick modals' labels pointed at the
+  bid form's box; they're `editBidAmount` and `counterPickBidAmount` now, and `BidTests` finds the box by
+  its label.
+- **Names of only spaces:** `createRoyalePublisherForm`, `royaleChangePublisherNameForm`,
+  `managerEditPublishersForm` and both `manageDrafts` forms disable their button for a blank name and send
+  it trimmed, as the late forms do.
+- **Clickable icons are buttons:** the remove icons in `proposeTradeForm`, as `font-awesome-button`s
+  with an aria-label.
+- `tradeSummary`'s comment box had `aria-describedby="emailHelp"`, pointing at nothing; it has an
+  aria-label instead.
+
+**Checked and already done everywhere:** numbers are `type="number"`; every `b-alert` has a
+`model-value`; no `_rowVariant`; every `aria-controls` names a real id; no `encodeURI`'d queries; no
+`@input` on `vue-multiselect`. Wrong `:key` fields are type errors now, so none are left.
+
+**The checklist for step 11.** On each page:
+
+1. **Every request is caught.** A failure shows the server's message (`getApiErrorMessage`) in a
+   `b-alert`, at the top of a modal; a load that fails shows the alert in place of the spinner. Not caught
+   today: `leagueTable` (archive, unfollow), `siteCounts`, `about` (donors), `leagueHistory` (delete
+   message), `masterGames` (both loads), `mostDesiredReviews`, `recentMasterGameChanges`,
+   `masterGameRequest` and `masterGameChangeRequest` (their lists, delete and dismiss),
+   `interLeagueStore.refreshBasicData`.
+2. **Errors clear** at the start of each request, and when a modal opens or closes.
+3. **Errors use the shared alert** from step 7. Still raw `<div class="alert">`: `league`, `manageDrafts`
+   (four), `masterGameRequest`, `masterGameChangeRequest`, `proposeTradeForm`, `tradeSummary`,
+   `publisher`'s move error.
+4. **A button is disabled while its request runs**, so a double click can't send twice. Missing on:
+   `createLeague` and `createConference` (a double click creates two), `editLeague`, `manageDrafts`,
+   `league` (accept, decline, join, follow, start draft), `conference`, `leagueYearStandings` (rescind),
+   `tradeSummary`, `currentDropsForm`, `createRoyalePublisherForm`, the three `royaleChangePublisher*`
+   forms, `royalePublisher`, `royaleGroup`, `royaleGroupInviteLinksModal`, `leagueTable`,
+   `leagueHistory`, and the delete and dismiss buttons on the two request pages. The draft control modals
+   (pause, reset, undo, skip) close on OK, so they don't need it.
+5. **A response for an old selection is ignored** (the "Not scheduled" race in the first pass's log):
+   `mostDreamsDashedPanel`, `masterGames`, `masterGameYearStats`, `publicLeagues`, `topBidsAndDrops`. The
+   game search forms already do it (`latestSearchID`).
+6. **Changing a selection clears what belonged to the old one** and goes back to page 1, so the old
+   data doesn't show under the new heading (`criticsRoyale`, `royaleGroupQuarter`). Check every year,
+   quarter and league selector.
+7. **"Nothing found" waits** for a load that succeeded, not an empty list during or after a failed one.
+8. **A button is disabled until its request can succeed:** required choices made (several used to
+   throw a `TypeError`), names and messages not only spaces, sent trimmed.
+9. **A modal reads its starting values when it opens** (`@show`), not when the page loads, and closing
+   clears its choices. Choosing another game or publisher clears what depended on the old one (results,
+   override boxes, the chosen game).
+10. **vee-validate:** one statement of the rules. Only 5 of the 13 files have a `ValidationForm`; the
+    other 8 show vee-validate's messages but decide whether to submit with their own checks
+    (`leagueYearIsValid`, `canPlaceBid`). Wrap them in a `ValidationForm` and disable submit on its
+    `meta.valid`, unless a rule can't be expressed there. Call `resetForm()` after a successful submit.
+11. **Every control has a label.** Still without one: the confirmation boxes in `removePublisherModal`,
+    `reassignPublisherModal`, `resetDraftModal`, `skipCurrentDraftPickModal` and `adminConsole` (their
+    instruction is an alert above them); the year selectors on `league`, `conference`, `masterGames` and
+    `publicLeagues`, and `masterGames`' league selector; the auto draft selects; `proposeTradeForm`'s game
+    selects; `bidCounterPickForm`'s select; `gameQueueForm`'s notes; `specialAuctionsModal`'s end time;
+    `royaleGroupInviteLinksModal`'s link boxes. A `toggleSwitch` is named by its state ("On", "Sort
+    Mode"), not by the label beside it ("Show Projections", "Cover Art Mode").
+12. **`<label>` only labels a control.** Used for prose or headings in `howToPlay`, `home`,
+    `editDraftOrderForm`, `invitePlayerForm`, `conference/invitePlayers`, `royaleGroupInviteLinksModal`,
+    `criticsRoyaleInfo`, `masterGameDetails`, `leagueGameSummary`, `publisher`, `topBidsAndDrops`,
+    `league` ("Followers:"), `manageDrafts` ("New Special Slots"), the "Selected Game" lines in the
+    override and associate modals, and the "Drag and drop" hints.
+13. **Anything clickable is a button or a link.** Still not: `leagueActions`' 50 `<li v-b-modal
+    class="fake-link">` items, `masterGameCreator`'s "(Settings)", the `href="#"` Enable Royale links
+    on `league` and `conference`, and the copy-ID icons on those two pages. The copy icons sit inside the
+    `<h1>`, so a named button there would join the heading's name ("UI League Copy League ID"), which the UI
+    tests find pages by; the button has to move out of the heading.
+14. **Ids are unique on the page.** A hidden `b-modal` still renders its content, so the League page's
+    modals share `searchGameName` (ten times), `publisherName`, `newPublisherName` (three each),
+    `newPublisherSlogan`, `newPublisherIcon`, `newLeagueName`, `draftUnlistedGame` and `selectedYear`
+    (twice each). A label or `aria-describedby` points at the first one in the page, which may be in another
+    modal. Use `useId()` where a component can appear more than once, as `possibleMasterGamesTable` does.
 
 ### Phase B: foundations
 
@@ -268,3 +347,11 @@ Bugs found, and every deliberate change in behaviour or appearance.
 | 2 | `leagueTagSelector.vue` | On touch, a drag starts after a long press, so a swipe over the lists scrolls the page | Behaviour change on touch only |
 | 2 | `CreateLeagueTests` | Every test failed at its start since the "Select Preset" step (2026-11-15): it waited for a "Game Settings" heading that no longer exists | `StartAsync` presses Select Preset |
 | 2 | `leagueYearSettings.vue` | The drop limits table's `table-small` isn't a class, so the table kept full padding and was 341px wide in a 275px column at phone width | `table-sm`: smaller cell padding at every width |
+| 3 | `createRoyalePublisherForm.vue`, `royaleChangePublisherNameForm.vue` | A name of only spaces enabled the button, and the server answered "You cannot have a blank name." The rename also sent the name untrimmed | The button is disabled for a blank name; both send it trimmed |
+| 3 | `managerEditPublishersForm.vue` | A manager could save a publisher's name as empty or spaces; the server accepts it | Edit Publisher is disabled for a blank name; the name is sent trimmed |
+| 3 | `views/manageDrafts.vue` | A draft could be added with a name of only spaces, or saved from Edit with an empty one; the server accepts both | Add Draft and Save are disabled for a blank name; the name is sent trimmed |
+| 3 | `bidCounterPickForm.vue`, `currentBidsForm.vue` | Their Bid Amount labels pointed at `bidGameForm`'s box, which comes first on the League page, so clicking the label focused nothing visible | Each modal's box has its own id |
+| 3 | `bidGameForm`, `bidCounterPickForm`, `currentBidsForm`, `DraftCreationSettings` | Validation messages named the field by its code name: "The bidAmount field is required", "The gamesToDraft-0 field must be 1 or more" | They say "Bid Amount", "Games to Draft" and "Counter Picks to Draft" |
+| 3 | `proposeTradeForm.vue` | The remove icons were a clickable `div`, out of keyboard reach | Buttons named "Remove offered game N" and "Remove received game N". No visible change |
+| 3 | `ConferenceTests.CreateAConference` | Failed at its start since the "Select Preset" step (2026-11-15), as `CreateLeagueTests` did in step 2 | Presses Select Preset |
+| 3 | `BidTests.ReorderEditAndCancelBids` | Expected "Bid for X for $7 was made." after an edit, but the edit's toast says "was updated." since 0a2bd8a28 (2026-11-21) | Expects "was updated." |
