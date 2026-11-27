@@ -127,8 +127,8 @@ export default defineComponent({
       return !!this.form.title.trim() && !!this.form.body.trim() && (!this.isEditing || !!this.form.postedAt);
     }
   },
-  async mounted() {
-    //Load quietly: the initial load isn't a "job" the admin asked for, so it gets a banner only if it fails.
+  async created() {
+    //Load quietly: the initial load isn't something the admin asked for, so it gets a banner only if it fails.
     try {
       await this.fetchAnnouncements();
     } catch (error) {

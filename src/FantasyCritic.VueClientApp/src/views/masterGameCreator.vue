@@ -133,6 +133,7 @@
     </div>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
@@ -330,6 +331,7 @@ export default defineComponent({
   }
 });
 </script>
+
 <style scoped>
 .select-cell {
   text-align: center;

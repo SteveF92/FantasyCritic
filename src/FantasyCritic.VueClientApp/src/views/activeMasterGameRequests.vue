@@ -6,10 +6,10 @@
     </div>
     <hr />
     <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
-    <b-alert v-if="respondedTo" variant="success" :model-value="true">Responded to the request for {{ respondedTo }}.</b-alert>
+    <b-alert v-if="requestRespondedTo" variant="success" :model-value="true">Responded to the request for {{ requestRespondedTo.gameName }} by {{ requestRespondedTo.requesterDisplayName }}.</b-alert>
 
     <div v-if="requestSelected">
-      <h3>Respond to Request for {{ requestSelected.gameName }}</h3>
+      <h3>Respond to Request for {{ requestSelected.gameName }} by {{ requestSelected.requesterDisplayName }}</h3>
       <div class="row">
         <div class="col-xl-8 col-lg-10 col-md-12 text-well">
           <form @submit.prevent="respondToRequest">
@@ -59,6 +59,7 @@
     </div>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 
@@ -69,7 +70,7 @@ interface ActiveMasterGameRequestsData {
   activeRequests: MasterGameRequestViewModel[] | null;
   isBusy: boolean;
   errorInfo: string;
-  respondedTo: string;
+  requestRespondedTo: MasterGameRequestViewModel | null;
   requestSelected: MasterGameRequestViewModel | null;
   masterGameID: string;
   responseNote: string;
@@ -81,7 +82,7 @@ export default defineComponent({
       activeRequests: null,
       isBusy: false,
       errorInfo: '',
-      respondedTo: '',
+      requestRespondedTo: null,
       requestSelected: null,
       masterGameID: '',
       responseNote: ''
@@ -100,8 +101,17 @@ export default defineComponent({
     },
     assignGame(request: MasterGameRequestViewModel): void {
       this.requestSelected = request;
-      this.masterGameID = '';
-      this.responseNote = 'Got that added, thanks!';
+      //Don't set the master game ID to blank, because we're often responding to multiple requests for the same game in a row.
+
+      if (this.requestSelected.openCriticID && this.requestSelected.ggToken) {
+        this.responseNote = 'Got that added, thanks for including the OpenCritic and GG links!';
+      } else if (this.requestSelected.openCriticID) {
+        this.responseNote = 'Got that added, thanks for including the OpenCritic page!';
+      } else if (this.requestSelected.ggToken) {
+        this.responseNote = 'Got that added, thanks for including the GG link!';
+      } else {
+        this.responseNote = 'Got that added, thanks!';
+      }
     },
     async respondToRequest(): Promise<void> {
       if (!this.requestSelected) {
@@ -117,10 +127,10 @@ export default defineComponent({
 
       this.isBusy = true;
       this.errorInfo = '';
-      this.respondedTo = '';
+      this.requestRespondedTo = null;
       try {
         await factCheckerClient.completeMasterGameRequest(request);
-        this.respondedTo = this.requestSelected.gameName;
+        this.requestRespondedTo = this.requestSelected;
         this.requestSelected = null;
         await this.fetchRequests();
       } catch (error) {
@@ -132,6 +142,7 @@ export default defineComponent({
   }
 });
 </script>
+
 <style scoped>
 .select-cell {
   text-align: center;

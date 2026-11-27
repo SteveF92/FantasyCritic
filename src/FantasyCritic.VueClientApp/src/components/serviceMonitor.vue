@@ -28,6 +28,7 @@
     </b-table>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { ColorVariant, TableField } from 'bootstrap-vue-next';
@@ -114,7 +115,7 @@ export default defineComponent({
         this.monitor = await adminClient.getServiceMonitor();
         this.lastRefreshedAt = DateTime.now();
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Could not load the service monitor.');
+        this.errorInfo = getApiErrorMessage(error, 'Could not refresh service monitor.');
       } finally {
         this.isBusy = false;
       }

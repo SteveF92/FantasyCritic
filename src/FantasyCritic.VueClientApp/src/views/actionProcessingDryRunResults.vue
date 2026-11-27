@@ -75,6 +75,7 @@
     </div>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { BTableSortBy, TableField, TableRowType, TableStrictClassValue } from 'bootstrap-vue-next';
@@ -145,6 +146,7 @@ export default defineComponent({
   }
 });
 </script>
+
 <style scoped>
 .spinner {
   display: flex;

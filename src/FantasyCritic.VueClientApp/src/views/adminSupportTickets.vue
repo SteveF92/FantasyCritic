@@ -190,7 +190,7 @@ export default defineComponent({
       activeSupportTickets: null
     };
   },
-  async mounted() {
+  async created() {
     //Load quietly: the initial load isn't something the admin asked for, so it gets a banner only if it fails.
     try {
       await this.fetchActiveSupportTickets();

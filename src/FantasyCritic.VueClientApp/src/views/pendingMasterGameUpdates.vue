@@ -80,6 +80,7 @@
     </div>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 
@@ -158,6 +159,7 @@ export default defineComponent({
   }
 });
 </script>
+
 <style scoped>
 .select-cell {
   text-align: center;

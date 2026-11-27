@@ -57,10 +57,10 @@
               <b-button variant="info" size="sm" @click="generateSQL(request)">Generate SQL</b-button>
             </td>
             <td class="select-cell">
-              <b-button v-if="request.openCriticID" variant="danger" size="sm" :disabled="isBusy" @click="linkToOpenCritic(request.masterGame, request.openCriticID)">Link OpenCritic</b-button>
+              <b-button v-if="request.openCriticID" variant="danger" size="sm" :disabled="isBusy" @click="linkToOpenCritic(request, request.openCriticID)">Link OpenCritic</b-button>
             </td>
             <td class="select-cell">
-              <b-button v-if="request.ggToken" variant="danger" size="sm" :disabled="isBusy" @click="linkToGG(request.masterGame, request.ggToken)">Link GG|</b-button>
+              <b-button v-if="request.ggToken" variant="danger" size="sm" :disabled="isBusy" @click="linkToGG(request, request.ggToken)">Link GG|</b-button>
             </td>
           </tr>
         </tbody>
@@ -80,7 +80,7 @@
     </div>
 
     <div v-if="requestSelected">
-      <h3>Respond to Request for {{ requestSelected.masterGame.gameName }}</h3>
+      <h3>Respond to Request for {{ requestSelected.masterGame.gameName }} by {{ requestSelected.requesterDisplayName }}</h3>
       <div class="row">
         <div class="col-xl-8 col-lg-10 col-md-12 text-well">
           <form @submit.prevent="respondToRequest">
@@ -99,17 +99,11 @@
     </div>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 
-import {
-  factCheckerClient,
-  type CompleteMasterGameChangeRequestRequest,
-  type LinkGameToGGRequest,
-  type LinkGameToOpenCriticRequest,
-  type MasterGameChangeRequestViewModel,
-  type MasterGameViewModel
-} from '@/api/clients';
+import { factCheckerClient, type CompleteMasterGameChangeRequestRequest, type LinkGameToGGRequest, type LinkGameToOpenCriticRequest, type MasterGameChangeRequestViewModel } from '@/api/clients';
 import { getApiErrorMessage } from '@/utilities/apiError';
 import { getGGLinkForGame } from '@/utilities/ggLinks';
 import { openCriticLink } from '@/utilities/openCriticLinks';
@@ -188,21 +182,23 @@ export default defineComponent({
         await this.fetchRequests();
       });
     },
-    async linkToOpenCritic(masterGame: MasterGameViewModel, openCriticID: number): Promise<void> {
-      const request: LinkGameToOpenCriticRequest = {
-        masterGameID: masterGame.masterGameID,
+    async linkToOpenCritic(request: MasterGameChangeRequestViewModel, openCriticID: number): Promise<void> {
+      const linkRequest: LinkGameToOpenCriticRequest = {
+        masterGameID: request.masterGame.masterGameID,
         openCriticID
       };
 
-      await this.runAction(`${masterGame.gameName} has been linked to OpenCritic.`, 'Something went wrong when linking the game to OpenCritic.', () => factCheckerClient.linkGameToOpenCritic(request));
+      await this.runAction(`${request.masterGame.gameName} has been linked to OpenCritic.`, 'Something went wrong when linking to OpenCritic.', () =>
+        factCheckerClient.linkGameToOpenCritic(linkRequest)
+      );
     },
-    async linkToGG(masterGame: MasterGameViewModel, ggToken: string): Promise<void> {
-      const request: LinkGameToGGRequest = {
-        masterGameID: masterGame.masterGameID,
+    async linkToGG(request: MasterGameChangeRequestViewModel, ggToken: string): Promise<void> {
+      const linkRequest: LinkGameToGGRequest = {
+        masterGameID: request.masterGame.masterGameID,
         ggToken
       };
 
-      await this.runAction(`${masterGame.gameName} has been linked to GG|.`, 'Something went wrong when linking the game to GG|.', () => factCheckerClient.linkGameToGG(request));
+      await this.runAction(`${request.masterGame.gameName} has been linked to GG|.`, 'Something went wrong when linking to GG|.', () => factCheckerClient.linkGameToGG(linkRequest));
     },
     generateSQL(request: MasterGameChangeRequestViewModel): void {
       this.generatedSQL = `select * from tbl_mastergame where MasterGameID = '${request.masterGame.masterGameID}';`;
@@ -210,6 +206,7 @@ export default defineComponent({
   }
 });
 </script>
+
 <style scoped>
 .select-cell {
   text-align: center;

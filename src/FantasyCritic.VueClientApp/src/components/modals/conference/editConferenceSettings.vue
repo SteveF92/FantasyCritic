@@ -1,5 +1,5 @@
 <template>
-  <b-modal id="editConferenceSettings" ref="editConferenceSettingsRef" title="Change Conference Options" @show="setData">
+  <b-modal id="editConferenceSettings" ref="editConferenceSettingsRef" title="Change Conference Options" @show="initialize">
     <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
     <div class="alert alert-info">If you want to edit the actual game settings, like how many games per player, or what games are allowed, you'll need to do that inside each of the leagues.</div>
     <div class="form-horizontal">
@@ -54,7 +54,7 @@ export default defineComponent({
   },
   methods: {
     ...mapActions(useConferenceStore, ['notifyAction']),
-    setData(): void {
+    initialize(): void {
       this.newConferenceName = this.requiredConference.conferenceName;
       this.customRulesConference = this.requiredConference.customRulesConference;
       this.errorInfo = '';

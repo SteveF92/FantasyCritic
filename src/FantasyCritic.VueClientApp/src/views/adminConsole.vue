@@ -258,6 +258,7 @@
     </b-modal>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapState } from 'pinia';
@@ -398,7 +399,7 @@ export default defineComponent({
       try {
         this.buildInfo = await adminClient.buildInfo();
       } catch (error) {
-        this.buildInfoError = getApiErrorMessage(error);
+        this.buildInfoError = getApiErrorMessage(error, 'Error when getting build info.');
       }
     },
     //For buttons that queue a background job. The call returns the queued job.

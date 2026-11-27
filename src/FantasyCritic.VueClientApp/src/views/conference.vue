@@ -5,7 +5,7 @@
     </div>
 
     <b-alert v-if="errorInfo" variant="danger" :model-value="true">{{ errorInfo }}</b-alert>
-    <div v-if="conferenceYear && conference">
+    <div v-if="conferenceYear">
       <div v-if="isConferenceManager && !isPlusUser" class="alert alert-danger" role="alert">
         Your Fantasy Critic Plus membership has expired. In order to continue acting as conference manager, you must resubscribe to Fantasy Critic Plus. The only conference action you can take while
         not a Fantasy Critic Plus member is to pass the conference manager role to another player in your conference.
@@ -15,13 +15,13 @@
           <div class="conference-header-flex">
             <div class="conference-name">
               <h1>
-                {{ conference.conferenceName }}
+                {{ requiredConference.conferenceName }}
                 <span @click="copyConferenceID">
                   <font-awesome-icon v-b-popover.hover.focus="'Copy Conference ID to Clipboard'" :icon="['far', 'copy']" size="xs" class="fake-link" />
                 </span>
               </h1>
               <div class="conference-extra-links">
-                <router-link v-if="conferenceYear.managerMessages.length > 0" :to="{ name: 'conferenceHistory', params: { conferenceid: conference.conferenceID, year: conferenceYear.year } }">
+                <router-link v-if="conferenceYear.managerMessages.length > 0" :to="{ name: 'conferenceHistory', params: { conferenceid: requiredConference.conferenceID, year: conferenceYear.year } }">
                   Conference History
                 </router-link>
                 <router-link v-if="royaleGroupLink" :to="royaleGroupLink">View Royale Group</router-link>
@@ -30,7 +30,7 @@
             </div>
 
             <div class="selector-area">
-              <b-form-select v-model="selectedYear" :options="conference.years" class="year-selector" @update:model-value="changeConferenceYear" />
+              <b-form-select v-model="selectedYear" :options="requiredConference.years" class="year-selector" @update:model-value="changeConferenceYear" />
             </div>
           </div>
         </div>
@@ -38,7 +38,7 @@
 
       <hr />
 
-      <div v-if="conferenceInviteCode && !conference.userIsInConference" class="alert alert-secondary">
+      <div v-if="conferenceInviteCode && !requiredConference.userIsInConference" class="alert alert-secondary">
         You have been invited to join this conference.
         <b-button v-if="isAuth" variant="primary" class="mx-2" @click="joinWithInviteLink()">Join Conference</b-button>
         <template v-else>
@@ -53,7 +53,7 @@
         </template>
       </div>
 
-      <div v-if="conference.userIsInConference && !conferenceYear.userIsInAtLeastOneLeague" class="alert alert-warning">
+      <div v-if="requiredConference.userIsInConference && !conferenceYear.userIsInAtLeastOneLeague" class="alert alert-warning">
         You have joined the conference, but your conference manager has not yet assigned you to any of the leagues in the conference.
       </div>
 
@@ -95,7 +95,7 @@
       <div class="conference-manager-section">
         <div class="conference-manager-info">
           <h4>Conference Manager:</h4>
-          <span class="conference-manager-info-item">{{ conference.conferenceManager.displayName }}</span>
+          <span class="conference-manager-info-item">{{ requiredConference.conferenceManager.displayName }}</span>
         </div>
 
         <ConferenceManagerActions v-if="isConferenceManager"></ConferenceManagerActions>
@@ -126,6 +126,7 @@
     </div>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { mapActions, mapState } from 'pinia';
@@ -182,7 +183,7 @@ export default defineComponent({
   computed: {
     ...mapState(useAuthStore, ['isPlusUser', 'isAuth']),
     ...mapState(useInterLeagueStore, ['activeRoyaleQuarter']),
-    ...mapState(useConferenceStore, ['conference', 'conferenceYear', 'requiredConferenceYear', 'hasError', 'conferenceInviteCode', 'isConferenceManager']),
+    ...mapState(useConferenceStore, ['conferenceYear', 'requiredConference', 'requiredConferenceYear', 'hasError', 'conferenceInviteCode', 'isConferenceManager']),
     numberOfPlayersActiveForYear(): number {
       return this.requiredConferenceYear.playersForYear.length;
     },
@@ -199,11 +200,7 @@ export default defineComponent({
       return this.requiredConferenceYear.leagueYears.filter((x) => x.draftFinished).length;
     },
     sortedLeagueYears(): ConferenceLeagueYearViewModel[] {
-      if (!this.conferenceYear) {
-        return [];
-      }
-
-      return [...this.conferenceYear.leagueYears].sort((a, b) => {
+      return [...this.requiredConferenceYear.leagueYears].sort((a, b) => {
         if (a.isPrimaryLeague) {
           return -1;
         }
@@ -223,11 +220,11 @@ export default defineComponent({
       return { name: 'royaleGroup', params: { groupid: group.groupID } };
     },
     mostRecentManagerMessage(): ManagerMessageViewModel | null {
-      if (!this.conferenceYear || this.conferenceYear.managerMessages.length === 0) {
+      if (this.requiredConferenceYear.managerMessages.length === 0) {
         return null;
       }
 
-      const mostRecentMessage = this.conferenceYear.managerMessages[this.conferenceYear.managerMessages.length - 1];
+      const mostRecentMessage = this.requiredConferenceYear.managerMessages[this.requiredConferenceYear.managerMessages.length - 1];
       if (mostRecentMessage.isDismissed) {
         return null;
       }
@@ -256,6 +253,7 @@ export default defineComponent({
       if (typeof this.$route.query.inviteCode === 'string') {
         inviteCode = this.$route.query.inviteCode;
       }
+
       const conferencePageParams: ConferencePageParams = { conferenceID: this.conferenceid, year: this.year, inviteCode };
       const conferenceStore = useConferenceStore();
       await conferenceStore.initializeConferencePage(conferencePageParams);
@@ -312,11 +310,8 @@ export default defineComponent({
       }
     },
     async enableRoyale(): Promise<void> {
-      if (!this.conference) {
-        return;
-      }
       const request: CreateConferenceTiedRoyaleGroupRequest = {
-        groupName: this.conference.conferenceName + ' Royale',
+        groupName: this.requiredConference.conferenceName + ' Royale',
         conferenceID: this.conferenceid
       };
 
@@ -331,6 +326,7 @@ export default defineComponent({
   }
 });
 </script>
+
 <style scoped>
 .conference-manager-section {
   display: flex;

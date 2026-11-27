@@ -163,10 +163,11 @@
     </b-table>
   </div>
 </template>
+
 <script lang="ts">
 import { defineComponent } from 'vue';
 import type { ColorVariant, TableField, TableRowType, TableStrictClassValue } from 'bootstrap-vue-next';
-import { DateTime, Duration } from 'luxon';
+import { DateTime, type Duration } from 'luxon';
 import Multiselect from 'vue-multiselect';
 
 import { jobManagerClient, type FantasyCriticJobViewModel } from '@/api/clients';
@@ -196,7 +197,6 @@ interface ErrorParts {
 interface RecentJobsTableData {
   jobs: FantasyCriticJobViewModel[] | null;
   page: number;
-  //Each filter is a list plus whether the list is what to show or what to hide. An empty list filters nothing.
   jobTypeMode: FilterMode;
   selectedJobTypes: FilterOption[];
   statusMode: FilterMode;
@@ -345,7 +345,7 @@ export default defineComponent({
         );
         this.lastRefreshedAt = DateTime.now();
       } catch (error) {
-        this.errorInfo = getApiErrorMessage(error, 'Could not load the recent jobs.');
+        this.errorInfo = getApiErrorMessage(error, 'Something went wrong when retrieving jobs.');
       } finally {
         this.isBusy = false;
       }
@@ -443,7 +443,7 @@ export default defineComponent({
       try {
         await jobManagerClient.cancelJob({ jobID: job.jobID });
       } catch (error) {
-        cancelError = getApiErrorMessage(error, 'Could not cancel the job.');
+        cancelError = getApiErrorMessage(error, 'Something went wrong when cancelling the job.');
       } finally {
         this.isBusy = false;
       }
