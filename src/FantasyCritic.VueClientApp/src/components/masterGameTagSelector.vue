@@ -8,11 +8,12 @@
 
 <script lang="ts">
 import { defineComponent, type PropType } from 'vue';
-import Multiselect from 'vue-multiselect';
 
 import type { MasterGameTagViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
 import MasterGameTagBadge from '@/components/masterGameTagBadge.vue';
+
+import Multiselect from './multiselect.vue';
 
 export default defineComponent({
   components: {
@@ -45,5 +46,3 @@ export default defineComponent({
   }
 });
 </script>
-
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>

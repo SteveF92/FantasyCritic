@@ -11,15 +11,7 @@
         </select>
       </div>
       <div class="form-group col-sm-9 mb-1">
-        <multiselect
-          v-model="selectedJobTypes"
-          placeholder="All job types"
-          label="label"
-          track-by="value"
-          :options="jobTypeOptions"
-          :multiple="true"
-          :close-on-select="false"
-          @update:model-value="changeFilter"></multiselect>
+        <multiselect v-model="selectedJobTypes" :options="jobTypeOptions" place-holder="All job types" @update:model-value="changeFilter"></multiselect>
       </div>
     </div>
     <div class="form-row align-items-end">
@@ -31,15 +23,7 @@
         </select>
       </div>
       <div class="form-group col-sm-9 mb-1">
-        <multiselect
-          v-model="selectedStatuses"
-          placeholder="All statuses"
-          label="label"
-          track-by="value"
-          :options="statusOptions"
-          :multiple="true"
-          :close-on-select="false"
-          @update:model-value="changeFilter"></multiselect>
+        <multiselect v-model="selectedStatuses" :options="statusOptions" place-holder="All statuses" @update:model-value="changeFilter"></multiselect>
       </div>
     </div>
     <div class="mb-2">
@@ -168,18 +152,19 @@
 import { defineComponent } from 'vue';
 import type { ColorVariant, TableField, TableRowType, TableStrictClassValue } from 'bootstrap-vue-next';
 import { DateTime, type Duration } from 'luxon';
-import Multiselect from 'vue-multiselect';
 
 import { jobManagerClient, type FantasyCriticJobViewModel } from '@/api/clients';
 import { getApiErrorMessage } from '@/utilities/apiError';
 import { useConfirm } from '@/utilities/confirm';
 import { makeToast } from '@/utilities/toast';
 
+import Multiselect from './multiselect.vue';
+
 type FilterMode = 'only' | 'hide';
 
 interface FilterOption {
   value: string;
-  label: string;
+  text: string;
 }
 
 interface SavedFilters {
@@ -261,7 +246,7 @@ function spaceOutWords(value: string): string {
 }
 
 function toOption(value: string): FilterOption {
-  return { value, label: spaceOutWords(value) };
+  return { value, text: spaceOutWords(value) };
 }
 
 const jobTypeOptions: FilterOption[] = jobTypes.map(toOption);
@@ -295,9 +280,7 @@ export default defineComponent({
 
     return { confirm: useConfirm(), DateTime, fields, jobTypeOptions, statusOptions };
   },
-  components: {
-    Multiselect
-  },
+  components: { Multiselect },
   data(): RecentJobsTableData {
     return {
       jobs: null,
@@ -552,7 +535,6 @@ export default defineComponent({
 });
 </script>
 
-<style src="vue-multiselect/dist/vue-multiselect.min.css"></style>
 <style scoped>
 /*An open job and its detail row read as one block on one background. Striping would otherwise give them different shades.
   b-table puts a hidden row between a job and its details, to keep the striping.*/

@@ -13,6 +13,7 @@ declare module 'vue' {
   export interface GlobalComponents {
     BAlert: typeof import('bootstrap-vue-next/components/BAlert')['BAlert']
     BApp: typeof import('bootstrap-vue-next/components/BApp')['BApp']
+    BAutocomplete: typeof import('bootstrap-vue-next/components/BAutocomplete')['BAutocomplete']
     BBadge: typeof import('bootstrap-vue-next/components/BBadge')['BBadge']
     BButton: typeof import('bootstrap-vue-next/components/BButton')['BButton']
     BCard: typeof import('bootstrap-vue-next/components/BCard')['BCard']
