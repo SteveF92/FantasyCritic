@@ -1,10 +1,8 @@
 <template>
   <span>
-    <span v-if="!short" :id="popoverID" class="badge tag-badge mg-badge-text" :style="badgeColor">
-      {{ tag.readableName }}
-    </span>
-    <span v-if="short" :id="popoverID" class="badge tag-badge mg-badge-text" :style="badgeColor">
-      {{ tag.shortName }}
+    <span :id="popoverID" class="badge tag-badge mg-badge-text" :style="badgeColor">
+      {{ short ? tag.shortName : tag.readableName }}
+      <button v-if="remove" type="button" class="tag-remove" :aria-label="`Remove ${tag.readableName}`" @click="remove">&times;</button>
     </span>
     <template v-if="!noPopover">
       <b-popover :target="popoverID" placement="right" class="master-game-tag-popover">
@@ -24,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, useId } from 'vue';
+import { defineComponent, useId, type PropType } from 'vue';
 
 import { MasterGameTagViewModel } from '@/api/clients';
 import { useInterLeagueStore } from '@/store/interLeagueStore';
@@ -36,7 +34,8 @@ export default defineComponent({
   props: {
     tagName: { type: String, required: true },
     short: { type: Boolean },
-    noPopover: { type: Boolean }
+    noPopover: { type: Boolean },
+    remove: { type: Function as PropType<() => void> }
   },
   computed: {
     tag(): MasterGameTagViewModel {
@@ -60,5 +59,15 @@ export default defineComponent({
    tag's popover above the master game popover the tag is shown in. */
 :global(.master-game-tag-popover) {
   z-index: 300000;
+}
+
+.tag-remove {
+  margin-left: 0.25em;
+  padding: 0;
+  border: none;
+  background: none;
+  color: inherit;
+  font: inherit;
+  line-height: 1;
 }
 </style>

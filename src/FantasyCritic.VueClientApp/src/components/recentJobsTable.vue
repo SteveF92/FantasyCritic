@@ -11,7 +11,14 @@
         </select>
       </div>
       <div class="form-group col-sm-9 mb-1">
-        <multiselect v-model="selectedJobTypes" :options="jobTypeOptions" place-holder="All job types" @update:model-value="changeFilter"></multiselect>
+        <multiselect
+          v-model="selectedJobTypes"
+          :options="jobTypeOptions"
+          value-field="value"
+          label-field="label"
+          placeholder="All job types"
+          @update:model-value="changeFilter"
+          size="sm"></multiselect>
       </div>
     </div>
     <div class="form-row align-items-end">
@@ -23,7 +30,7 @@
         </select>
       </div>
       <div class="form-group col-sm-9 mb-1">
-        <multiselect v-model="selectedStatuses" :options="statusOptions" place-holder="All statuses" @update:model-value="changeFilter"></multiselect>
+        <multiselect v-model="selectedStatuses" :options="statusOptions" value-field="value" label-field="label" placeholder="All statuses" @update:model-value="changeFilter" size="sm"></multiselect>
       </div>
     </div>
     <div class="mb-2">
@@ -164,7 +171,7 @@ type FilterMode = 'only' | 'hide';
 
 interface FilterOption {
   value: string;
-  text: string;
+  label: string;
 }
 
 interface SavedFilters {
@@ -246,7 +253,7 @@ function spaceOutWords(value: string): string {
 }
 
 function toOption(value: string): FilterOption {
-  return { value, text: spaceOutWords(value) };
+  return { value, label: spaceOutWords(value) };
 }
 
 const jobTypeOptions: FilterOption[] = jobTypes.map(toOption);

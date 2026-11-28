@@ -1,7 +1,7 @@
 <template>
-  <multiselect v-model="computedModelValue" tag-placeholder="Add this as new tag" placeholder="Search or add a tag" label="readableName" track-by="name" :options="tagOptions" :multiple="true">
-    <template #tag="{ option }">
-      <masterGameTagBadge :tag-name="option.name"></masterGameTagBadge>
+  <multiselect v-model="computedModelValue" :options="tagOptions" value-field="name" label-field="readableName" placeholder="Add Tags">
+    <template #tag="{ option, remove }">
+      <masterGameTagBadge :tag-name="option.name" :remove="remove"></masterGameTagBadge>
     </template>
   </multiselect>
 </template>

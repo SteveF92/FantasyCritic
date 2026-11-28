@@ -1,44 +1,60 @@
-<template>
-  <BAutocomplete v-model="internalModelValue" :options="flatOptions" :placeholder="placeHolder" multiple tags open-on-focus open-on-click size="sm">
-    <template #tags="{ selected }">
-      <slot name="tags" :selected="selected" />
-    </template>
-  </BAutocomplete>
-</template>
-<script lang="ts">
-import { defineComponent, PropType } from 'vue';
-import { BAutocomplete } from 'bootstrap-vue-next';
+<script setup lang="ts" generic="T extends object">
+import { computed } from 'vue';
+import type { Size } from 'bootstrap-vue-next';
 
-interface Option {
-  value: string;
-  text: string;
-}
+const { options, valueField, labelField } = defineProps<{
+  options: T[];
+  valueField: keyof T;
+  labelField: keyof T;
+  placeholder: string;
+  size?: Size;
+}>();
 
-export default defineComponent({
-  components: {
-    BAutocomplete
+const model = defineModel<T[]>({ required: true });
+
+const selectedKeys = computed({
+  get(): string[] {
+    return model.value.map((x) => String(x[valueField]));
   },
-  props: {
-    modelValue: { type: Object as PropType<Option[]>, required: true },
-    options: { type: Array as PropType<Option[]>, required: true },
-    placeHolder: { type: String, required: true }
-  },
-  emits: {
-    'update:modelValue': (_value: Option[]) => true
-  },
-  computed: {
-    internalModelValue: {
-      get(): string[] {
-        return this.modelValue.map((x) => x.value);
-      },
-      set(newValue: string[]): void {
-        const matchingValues = this.options.filter((x) => newValue.includes(x.value));
-        this.$emit('update:modelValue', matchingValues);
-      }
-    },
-    flatOptions() {
-      return this.options.map((x) => x.value);
-    }
+  set(newValue: string[]): void {
+    model.value = options.filter((x) => newValue.includes(String(x[valueField])));
   }
 });
+
+const normalizedOptions = computed(() => {
+  return options.map((x) => ({
+    value: String(x[valueField]),
+    text: String(x[labelField])
+  }));
+});
+
+function remove(value: T) {
+  model.value = model.value.filter((x) => x[valueField] !== value[valueField]);
+}
 </script>
+
+<template>
+  <div class="multiselect">
+    <BAutocomplete v-model="selectedKeys" :options="normalizedOptions" :placeholder="placeholder" multiple tags open-on-focus open-on-click :size="size">
+      <template v-if="$slots.tag" #tags>
+        <template v-for="singleModel in model" :key="String(singleModel[valueField])">
+          <slot name="tag" :option="singleModel" :remove="() => remove(singleModel)" />
+        </template>
+      </template>
+    </BAutocomplete>
+  </div>
+</template>
+
+<style scoped>
+/* The toggle is part of the field, not one of the site's buttons from site.css. */
+.multiselect :deep(button.b-autocomplete-trigger) {
+  --bs-btn-bg: var(--bs-body-bg);
+  --bs-btn-hover-bg: var(--bs-tertiary-bg);
+  --bs-btn-active-bg: var(--bs-tertiary-bg);
+  color: var(--bs-body-color);
+  min-height: 0;
+  border: var(--bs-border-width) solid var(--bs-border-color);
+  border-left: none;
+  border-radius: 0 var(--bs-border-radius) var(--bs-border-radius) 0;
+}
+</style>
