@@ -11,14 +11,7 @@
         </select>
       </div>
       <div class="form-group col-sm-9 mb-1">
-        <multiselect
-          v-model="selectedJobTypes"
-          :options="jobTypeOptions"
-          value-field="value"
-          label-field="label"
-          placeholder="All job types"
-          @update:model-value="changeFilter"
-          size="sm"></multiselect>
+        <multiselect v-model="selectedJobTypes" :options="jobTypeOptions" key-field="value" label-field="label" placeholder="All job types" @update:model-value="changeFilter" size="sm"></multiselect>
       </div>
     </div>
     <div class="form-row align-items-end">
@@ -30,7 +23,7 @@
         </select>
       </div>
       <div class="form-group col-sm-9 mb-1">
-        <multiselect v-model="selectedStatuses" :options="statusOptions" value-field="value" label-field="label" placeholder="All statuses" @update:model-value="changeFilter" size="sm"></multiselect>
+        <multiselect v-model="selectedStatuses" :options="statusOptions" key-field="value" label-field="label" placeholder="All statuses" @update:model-value="changeFilter" size="sm"></multiselect>
       </div>
     </div>
     <div class="mb-2">

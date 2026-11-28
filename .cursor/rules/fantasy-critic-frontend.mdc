@@ -9,6 +9,7 @@ alwaysApply: false
 ## Stack
 
 - **Vue 2.7** (Options API in existing views/components—match the file you are editing).
+- Use the Composition API (`<script setup lang="ts">`) only when it does something the Options API truly can't, such as a generic component (`components/multiselect.vue`).
 - **Vite** for dev/build; **Bootstrap 4** + **bootstrap-vue** for UI primitives.
 - **Luxon** for dates/times in the browser; **axios** for HTTP.
 

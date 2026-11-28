@@ -115,6 +115,8 @@ Integration tests and the Vue client both consume clients generated from the Ope
 
 Vue 3 (Options API with `<script lang="ts">`; stateful helpers as composables called from `setup()`) + Vite + Bootstrap 5/bootstrap-vue-next + Pinia + vue-router + vee-validate + Luxon. Generated TS client at `src/FantasyCritic.VueClientApp/src/api/generated/` with hand-written singletons in `src/FantasyCritic.VueClientApp/src/api/clients.ts`.
 
+Use the Composition API (`<script setup lang="ts">`) only when it does something the Options API truly can't, such as a generic component. `components/multiselect.vue` is the example: its `generic="T"` lets each caller keep its own object type.
+
 ## C# conventions
 
 - **No `Async` suffix** on app/repo/service methods (`GetLeague`, not `GetLeagueAsync`).

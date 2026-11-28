@@ -39,6 +39,10 @@ filled in when we reach it, then built, tested, committed and reviewed before th
 - **Composables are allowed now** for helpers that hold state (a request's busy and error state, ignoring
   stale responses). Components stay on the Options API and call them from `setup()`. Pure functions still
   go in `utilities/`.
+- **The Composition API only where the Options API can't do it.** A component uses
+  `<script setup lang="ts">` only for something the Options API truly can't do, such as a generic
+  component. `components/multiselect.vue` is the first: its `generic="T"` lets each caller keep its own
+  object type.
 - **One page column.** The `col-md-10 offset-md-1` and `col-lg-10 offset-lg-1` versions are probably
   merged into one; each page is checked when it's reached.
 - **Bootstrap 4 values** (gutters, container widths, font stack, square buttons) are decided one group

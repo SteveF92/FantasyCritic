@@ -1,5 +1,5 @@
 <template>
-  <multiselect v-model="computedModelValue" :options="tagOptions" value-field="name" label-field="readableName" placeholder="Add Tags">
+  <multiselect v-model="computedModelValue" :options="tagOptions" key-field="name" label-field="readableName" placeholder="Add Tags">
     <template #tag="{ option, remove }">
       <masterGameTagBadge :tag-name="option.name" :remove="remove"></masterGameTagBadge>
     </template>
